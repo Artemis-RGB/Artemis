@@ -10,7 +10,7 @@ namespace Artemis.UI.Shared.Converters
     ///     Converts <see cref="T:System.Windows.Media.Color" /> into <see cref="T:System.String" />.
     /// </summary>
     [ValueConversion(typeof(Color), typeof(string))]
-    internal class ColorToStringConverter : IValueConverter
+    public class ColorToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

@@ -5,10 +5,10 @@ using Stylet;
 
 namespace Artemis.UI.Shared.PropertyInput
 {
-    public abstract class PropertyInputViewModel<T> : ValidatingModelBase, IDisposable
+    public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     {
-        private T _inputValue;
         private bool _inputDragging;
+        private T _inputValue;
 
         protected PropertyInputViewModel(LayerProperty<T> layerProperty, IProfileEditorService profileEditorService)
         {
@@ -30,6 +30,7 @@ namespace Artemis.UI.Shared.PropertyInput
 
         public LayerProperty<T> LayerProperty { get; }
         public IProfileEditorService ProfileEditorService { get; }
+        internal override object InternalGuard { get; } = null;
 
         public bool InputDragging
         {
@@ -47,11 +48,14 @@ namespace Artemis.UI.Shared.PropertyInput
             }
         }
 
-        public virtual void Dispose()
+        public override void Dispose()
         {
             LayerProperty.Updated -= LayerPropertyOnUpdated;
             LayerProperty.BaseValueChanged -= LayerPropertyOnUpdated;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
 
         protected virtual void OnInputValueApplied()
         {
@@ -97,7 +101,6 @@ namespace Artemis.UI.Shared.PropertyInput
                 Validate();
         }
 
-
         #region Event handlers
 
         public void InputDragStarted(object sender, EventArgs e)
@@ -121,5 +124,34 @@ namespace Artemis.UI.Shared.PropertyInput
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// For internal use only, implement <see cref="PropertyInputViewModel{T}"/> instead.
+    /// </summary>
+    public abstract class PropertyInputViewModel : ValidatingModelBase, IDisposable
+    {
+        protected PropertyInputViewModel()
+        {
+        }
+
+        protected PropertyInputViewModel(IModelValidator validator) : base(validator)
+        {
+        }
+
+        /// <summary>
+        /// Prevents this type being implemented directly, implement <see cref="PropertyInputViewModel{T}"/> instead.
+        /// </summary>
+        // ReSharper disable once UnusedMember.Global
+        internal abstract object InternalGuard { get; }
+
+        public abstract void Dispose();
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
     }
 }

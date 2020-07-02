@@ -3,20 +3,25 @@ using System.Collections;
 using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.UI.Shared.Services;
 using Humanizer;
 using Stylet;
 
-namespace Artemis.UI.DataModelVisualization
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     public abstract class DataModelVisualizationViewModel : PropertyChangedBase
     {
+        private bool _isListProperty;
+        private string _listDescription;
+        private object _model;
+        private DataModelVisualizationViewModel _parent;
         private DataModelPropertyAttribute _propertyDescription;
         private PropertyInfo _propertyInfo;
         private Type _propertyType;
-        private DataModelVisualizationViewModel _parent;
-        private object _model;
-        private bool _isListProperty;
-        private string _listDescription;
+
+        internal DataModelVisualizationViewModel()
+        {
+        }
 
         public DataModelPropertyAttribute PropertyDescription
         {
@@ -62,7 +67,7 @@ namespace Artemis.UI.DataModelVisualization
 
         public abstract void Update();
 
-        protected DataModelVisualizationViewModel CreateChild(PropertyInfo propertyInfo)
+        protected DataModelVisualizationViewModel CreateChild(IDataModelVisualizationService dataModelVisualizationService, PropertyInfo propertyInfo)
         {
             // Skip properties decorated with DataModelIgnore
             if (Attribute.IsDefined(propertyInfo, typeof(DataModelIgnoreAttribute)))
@@ -73,11 +78,15 @@ namespace Artemis.UI.DataModelVisualization
             if (dataModelPropertyAttribute == null)
                 dataModelPropertyAttribute = new DataModelPropertyAttribute {Name = propertyInfo.Name.Humanize()};
 
+            // If a display VM was found, prefer to use that in any case
+            var typeViewModel = dataModelVisualizationService.GetDataModelDisplayViewModel(propertyInfo.PropertyType);
+            if (typeViewModel != null)
+                return new DataModelPropertyViewModel(propertyInfo, dataModelPropertyAttribute, this) {DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine
             if (propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType == typeof(string))
                 return new DataModelPropertyViewModel(propertyInfo, dataModelPropertyAttribute, this);
             if (typeof(IList).IsAssignableFrom(propertyInfo.PropertyType))
-                return new DataModelListViewModel(propertyInfo, dataModelPropertyAttribute, this);
+                return new DataModelListViewModel(propertyInfo, dataModelPropertyAttribute, this, dataModelVisualizationService);
             // For other value types create a child view model if the value type is not null
             if (propertyInfo.PropertyType.IsClass || propertyInfo.PropertyType.IsStruct())
             {
@@ -85,22 +94,26 @@ namespace Artemis.UI.DataModelVisualization
                 if (value == null)
                     return null;
 
-                return new DataModelViewModel(propertyInfo, value, dataModelPropertyAttribute, this);
+                return new DataModelViewModel(propertyInfo, value, dataModelPropertyAttribute, this, dataModelVisualizationService);
             }
 
             return null;
         }
 
-        protected DataModelVisualizationViewModel CreateChild(object value)
+        protected DataModelVisualizationViewModel CreateChild(IDataModelVisualizationService dataModelVisualizationService, object value)
         {
             var dataModelPropertyAttribute = new DataModelPropertyAttribute {Name = "Unknown property"};
 
+            // If a display VM was found, prefer to use that in any case
+            var typeViewModel = dataModelVisualizationService.GetDataModelDisplayViewModel(value.GetType());
+            if (typeViewModel != null)
+                return new DataModelPropertyViewModel(null, dataModelPropertyAttribute, this) {Model = value, DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine
             if (value.GetType().IsPrimitive || value is string)
                 return new DataModelPropertyViewModel(null, dataModelPropertyAttribute, this) {Model = value};
             // For other value types create a child view model if the value type is not null
             if (value.GetType().IsClass || value.GetType().IsStruct())
-                return new DataModelViewModel(null, value, dataModelPropertyAttribute, this);
+                return new DataModelViewModel(null, value, dataModelPropertyAttribute, this, dataModelVisualizationService);
 
             return null;
         }

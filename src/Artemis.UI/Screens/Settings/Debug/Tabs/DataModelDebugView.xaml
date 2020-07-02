@@ -4,11 +4,11 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Tabs"
-             xmlns:dataModel="clr-namespace:Artemis.UI.DataModelVisualization"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:plugins="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
+             xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
     <UserControl.Resources>
@@ -101,6 +101,8 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
+
+                        <!-- Value description -->
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
                             <Run>[</Run><Run Text="{Binding PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
@@ -112,17 +114,24 @@
                                    Text="{Binding ListDescription}"
                                    ToolTip="{Binding PropertyDescription.Description}"
                                    Visibility="{Binding IsListProperty, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                       
+                        <!-- Value display -->
                         <TextBlock Grid.Column="2"
                                    Text="{Binding Model, Mode=OneWay}"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right"
-                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}}" />
+                                   Visibility="{Binding ShowToString, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
                         <TextBlock Grid.Column="2"
                                    Text="null"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right"
                                    Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                   Visibility="{Binding Model, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                   Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                        <ContentControl Grid.Column="2" 
+                                        s:View.Model="{Binding DisplayViewModel}" 
+                                        FontFamily="Consolas"
+                                        Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
+                        
                     </Grid>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>

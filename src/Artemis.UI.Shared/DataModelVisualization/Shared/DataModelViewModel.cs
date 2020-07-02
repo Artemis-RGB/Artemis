@@ -1,21 +1,25 @@
 ﻿using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.DataModelVisualization
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     public class DataModelViewModel : DataModelVisualizationViewModel
     {
+        private readonly IDataModelVisualizationService _dataModelVisualizationService;
         private BindableCollection<DataModelVisualizationViewModel> _children;
 
-        public DataModelViewModel()
+        internal DataModelViewModel()
         {
             Children = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
-        public DataModelViewModel(PropertyInfo propertyInfo, object model, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent)
+        internal DataModelViewModel(PropertyInfo propertyInfo, object model, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent,
+            IDataModelVisualizationService dataModelVisualizationService)
         {
+            _dataModelVisualizationService = dataModelVisualizationService;
             PropertyInfo = propertyInfo;
             Model = model;
             PropertyDescription = propertyDescription;
@@ -36,7 +40,7 @@ namespace Artemis.UI.DataModelVisualization
             Children.Clear();
             foreach (var propertyInfo in Model.GetType().GetProperties())
             {
-                var child = CreateChild(propertyInfo);
+                var child = CreateChild(_dataModelVisualizationService, propertyInfo);
                 if (child != null)
                     Children.Add(child);
             }

@@ -3,8 +3,9 @@ using System.Linq;
 using System.Timers;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
-using Artemis.UI.DataModelVisualization;
 using Artemis.UI.Services;
+using Artemis.UI.Shared.DataModelVisualization.Shared;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug.Tabs

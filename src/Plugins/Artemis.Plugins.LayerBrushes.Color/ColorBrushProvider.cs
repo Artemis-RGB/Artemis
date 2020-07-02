@@ -6,7 +6,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
     {
         public override void EnablePlugin()
         {
-            AddLayerBrushDescriptor<ColorBrush>("Color", "A brush supporting solid colors and multiple types of gradients", "Brush");
+            RegisterLayerBrushDescriptor<ColorBrush>("Color", "A brush supporting solid colors and multiple types of gradients", "Brush");
         }
 
         public override void DisablePlugin()

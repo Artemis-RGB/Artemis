@@ -20,6 +20,8 @@ namespace Artemis.Plugins.Modules.General
         [DataModelProperty(Name = "A test boolean", Description = "This is a test boolean that's not of any use outside testing!")]
         public bool TestBoolean { get; set; }
 
+        public SKColor TestColor { get; set; } = new SKColor(221, 21, 152);
+
         [DataModelProperty(Name = "Player info", Description = "[TEST] Contains information about the player")]
         public PlayerInfo PlayerInfo { get; set; }
 

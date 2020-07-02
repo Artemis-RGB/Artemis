@@ -15,8 +15,8 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
 
         public override void EnablePlugin()
         {
-            _profileEditorService.RegisterPropertyInput(PluginInfo, typeof(StringPropertyInputViewModel));
-            AddLayerBrushDescriptor<RgbNetColorBrush>("RGB.NET Color", "A RGB.NET based color", "Brush");
+            _profileEditorService.RegisterPropertyInput<StringPropertyInputViewModel>(PluginInfo);
+            RegisterLayerBrushDescriptor<RgbNetColorBrush>("RGB.NET Color", "A RGB.NET based color", "Brush");
         }
 
         public override void DisablePlugin()
