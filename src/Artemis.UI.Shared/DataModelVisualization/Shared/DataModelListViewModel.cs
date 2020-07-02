@@ -3,18 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.DataModelVisualization
+namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
+        private readonly IDataModelVisualizationService _dataModelVisualizationService;
         private BindableCollection<DataModelVisualizationViewModel> _children;
-        private IList _list;
         private string _count;
+        private IList _list;
 
-        public DataModelListViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent)
+        internal DataModelListViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent, 
+            IDataModelVisualizationService dataModelVisualizationService)
         {
+            _dataModelVisualizationService = dataModelVisualizationService;
             PropertyInfo = propertyInfo;
             Parent = parent;
             PropertyDescription = propertyDescription;
@@ -53,7 +57,7 @@ namespace Artemis.UI.DataModelVisualization
                 DataModelVisualizationViewModel child;
                 if (Children.Count <= index)
                 {
-                    child = CreateChild(item);
+                    child = CreateChild(_dataModelVisualizationService, item);
                     Children.Add(child);
                 }
                 else

@@ -22,12 +22,12 @@ namespace Artemis.Core.Plugins.Abstract
         }
 
         /// <summary>
-        ///     A read-only collection of all layer brushes added with <see cref="AddLayerBrushDescriptor{T}" />
+        ///     A read-only collection of all layer brushes added with <see cref="RegisterLayerBrushDescriptor{T}" />
         /// </summary>
         public ReadOnlyCollection<LayerBrushDescriptor> LayerBrushDescriptors => _layerBrushDescriptors.AsReadOnly();
 
         /// <summary>
-        ///     Adds a layer brush descriptor for a given layer brush, so that it appears in the UI.
+        ///     Registers a layer brush descriptor for a given layer brush, so that it appears in the UI.
         ///     <para>Note: You do not need to manually remove these on disable</para>
         /// </summary>
         /// <typeparam name="T">The type of the layer brush you wish to register</typeparam>
@@ -37,7 +37,7 @@ namespace Artemis.Core.Plugins.Abstract
         ///     The Material icon to display in the UI, a full reference can be found
         ///     <see href="https://materialdesignicons.com">here</see>
         /// </param>
-        protected void AddLayerBrushDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerBrush
+        protected void RegisterLayerBrushDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerBrush
         {
             if (!Enabled)
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer brush descriptor when the plugin is enabled");

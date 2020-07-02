@@ -65,8 +65,6 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch">
-        <!-- Style="{StaticResource MaterialDesignFloatingHintTextBox}" -->
-        <!-- Padding="0 0 10 0" -->
         <TextBox x:Name="ColorCodeTextBox"
                  materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
                  Text="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorToStringConverter}}"

@@ -30,15 +30,10 @@ namespace Artemis.UI.Shared.PropertyInput
                 PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
         }
 
-        internal void Remove()
-        {
-            // It'll call Unsubscribe for us
-            _profileEditorService.RemovePropertyInput(this);
-        }
-
         private void InstanceOnPluginDisabled(object sender, EventArgs e)
         {
-            Remove();
+            // Profile editor service will call Unsubscribe
+            _profileEditorService.RemovePropertyInput(this);
         }
     }
 }

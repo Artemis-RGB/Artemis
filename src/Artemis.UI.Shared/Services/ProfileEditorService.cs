@@ -103,6 +103,7 @@ namespace Artemis.UI.Shared.Services
                 foreach (var baseLayerEffect in folder.LayerEffects)
                     baseLayerEffect.Update(delta.TotalSeconds);
             }
+
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
                 layer.OverrideProgress(CurrentTime);
@@ -153,12 +154,9 @@ namespace Artemis.UI.Shared.Services
             UpdateProfilePreview();
         }
 
-        public PropertyInputRegistration RegisterPropertyInput(PluginInfo pluginInfo, Type viewModelType)
+        public PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel
         {
-            // Bit ugly to do a name comparison but I don't know a nicer way right now
-            if (viewModelType.BaseType == null || viewModelType.BaseType.Name != typeof(PropertyInputViewModel<>).Name)
-                throw new ArtemisPluginException($"{nameof(viewModelType)} base type must be of type PropertyInputViewModel<T>");
-
+            var viewModelType = typeof(T);
             lock (_registeredPropertyEditors)
             {
                 var supportedType = viewModelType.BaseType.GetGenericArguments()[0];

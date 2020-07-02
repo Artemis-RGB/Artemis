@@ -2,26 +2,28 @@
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
+using SkiaSharp;
 
 namespace Artemis.UI.Shared.Converters
 {
     /// <inheritdoc />
     /// <summary>
-    ///     Converts <see cref="T:System.Windows.Media.Color" /> into a <see cref="T:System.Windows.Media.Color" /> with full
-    ///     opacity.
+    ///     Converts <see cref="SKColor"/>into <see cref="T:System.String" />.
     /// </summary>
     [ValueConversion(typeof(Color), typeof(string))]
-    public class ColorToSolidColorConverter : IValueConverter
+    public class SKColorToStringConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var color = (Color) value;
-            return Color.FromRgb(color.R, color.G, color.B);
+            return value?.ToString();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace((string) value))
+                return SKColor.Empty;
+
+            return SKColor.TryParse((string)value, out var color) ? color : SKColor.Empty;
         }
     }
 }

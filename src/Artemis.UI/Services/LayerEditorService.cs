@@ -141,13 +141,13 @@ namespace Artemis.UI.Services
 
         private void RegisterBuiltInPropertyEditors()
         {
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(BrushPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(ColorGradientPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(FloatPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(IntPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKColorPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKPointPropertyInputViewModel));
-            _profileEditorService.RegisterPropertyInput(Constants.CorePluginInfo, typeof(SKSizePropertyInputViewModel));
+            _profileEditorService.RegisterPropertyInput<BrushPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<ColorGradientPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<FloatPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<IntPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<SKColorPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePluginInfo);
         }
     }
 }
