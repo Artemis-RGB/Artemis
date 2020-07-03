@@ -7,5 +7,6 @@ namespace Artemis.Core.Models.Profile.Conditions
     public class LayerCondition
     {
         public Expression<Func<DataModel, bool>> ExpressionTree { get; set; }
+        public LayerConditionGroup RootGroup { get; set; }
     }
 }

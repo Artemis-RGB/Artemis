@@ -57,7 +57,8 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
-                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already registered by {pluginInfo.Name}");
+                        throw new ArtemisPluginException($"Cannot register data model input for type {supportedType.Name} " +
+                                                         $"because an editor was already registered by {pluginInfo.Name}");
                     return existing;
                 }
 
@@ -78,7 +79,8 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
-                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already registered by {pluginInfo.Name}");
+                        throw new ArtemisPluginException($"Cannot register data model display for type {supportedType.Name} " +
+                                                         $"because an editor was already registered by {pluginInfo.Name}");
                     return existing;
                 }
 
