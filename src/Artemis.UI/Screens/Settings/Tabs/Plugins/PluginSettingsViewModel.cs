@@ -102,8 +102,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             if (PluginInfo.Icon != null)
             {
                 var parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out var iconEnum);
-                if (parsedIcon == false)
-                    return PackIconKind.QuestionMarkCircle;
+                if (parsedIcon)
+                    return iconEnum;
             }
 
             switch (Plugin)

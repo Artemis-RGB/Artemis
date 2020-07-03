@@ -1,11 +1,15 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core.Models.Profile.Conditions.Operators;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Exceptions;
+using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 
 namespace Artemis.Core.Services
@@ -17,14 +21,18 @@ namespace Artemis.Core.Services
     {
         private readonly List<DataModel> _dataModelExpansions;
         private readonly IPluginService _pluginService;
+        private readonly List<LayerConditionOperator> _registeredConditionOperators;
 
         internal DataModelService(IPluginService pluginService)
         {
             _pluginService = pluginService;
             _dataModelExpansions = new List<DataModel>();
+            _registeredConditionOperators = new List<LayerConditionOperator>();
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
+
+            RegisterBuiltInConditionOperators();
 
             foreach (var module in _pluginService.GetPluginsOfType<Module>().Where(m => m.InternalExpandsMainDataModel))
                 AddModuleDataModel(module);
@@ -73,6 +81,52 @@ namespace Artemis.Core.Services
             return null;
         }
 
+
+        public void RegisterConditionOperator(PluginInfo pluginInfo, LayerConditionOperator layerConditionOperator)
+        {
+            if (pluginInfo == null)
+                throw new ArgumentNullException(nameof(pluginInfo));
+            if (layerConditionOperator == null)
+                throw new ArgumentNullException(nameof(layerConditionOperator));
+
+            lock (_registeredConditionOperators)
+            {
+                if (_registeredConditionOperators.Contains(layerConditionOperator))
+                    return;
+
+                layerConditionOperator.Register(pluginInfo, this);
+                _registeredConditionOperators.Add(layerConditionOperator);
+            }
+        }
+
+        public void RemoveConditionOperator(LayerConditionOperator layerConditionOperator)
+        {
+            if (layerConditionOperator == null)
+                throw new ArgumentNullException(nameof(layerConditionOperator));
+
+            lock (_registeredConditionOperators)
+            {
+                if (!_registeredConditionOperators.Contains(layerConditionOperator))
+                    return;
+
+                layerConditionOperator.Unsubscribe();
+                _registeredConditionOperators.Remove(layerConditionOperator);
+            }
+        }
+
+        public List<LayerConditionOperator> GetCompatibleConditionOperators(Type type)
+        {
+            lock (_registeredConditionOperators)
+            {
+                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Contains(type)).ToList();
+            }
+        }
+
+        private void RegisterBuiltInConditionOperators()
+        {
+            RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanConditionOperator());
+        }
+
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is Module module && module.InternalExpandsMainDataModel)
@@ -85,7 +139,7 @@ namespace Artemis.Core.Services
         {
             if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginException(dataModelExpansion.PluginInfo, "Data model expansion overrides GetDataModelDescription but returned null");
-            
+
             AddExpansion(dataModelExpansion.InternalDataModel);
         }
 
@@ -93,7 +147,7 @@ namespace Artemis.Core.Services
         {
             if (module.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginException(module.PluginInfo, "Module overrides GetDataModelDescription but returned null");
-            
+
             AddExpansion(module.InternalDataModel);
         }
 
