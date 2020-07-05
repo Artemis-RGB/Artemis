@@ -1,9 +1,12 @@
 ﻿using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.UI.Screens.Module;
 using Artemis.UI.Screens.Module.ProfileEditor;
+using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions;
+using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects;
@@ -70,6 +73,12 @@ namespace Artemis.UI.Ninject.Factories
         EditToolViewModel EditToolViewModel(ProfileViewModel profileViewModel);
         SelectionToolViewModel SelectionToolViewModel(ProfileViewModel profileViewModel);
         SelectionRemoveToolViewModel SelectionRemoveToolViewModel(ProfileViewModel profileViewModel);
+    }
+    public interface IDisplayConditionsVmFactory : IVmFactory
+    {
+        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent);
+        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate, DisplayConditionViewModel parent);
+        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

@@ -17,7 +17,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
         private Core.Plugins.Abstract.Module _selectedModule;
-        private DataModelViewModel _mainDataModel;
+        private DataModelPropertiesViewModel _mainDataModel;
         private string _propertySearch;
         private List<Core.Plugins.Abstract.Module> _modules;
 
@@ -26,12 +26,12 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             _dataModelVisualizationService = dataModelVisualizationService;
             _pluginService = pluginService;
             _updateTimer = new Timer(500);
-            _updateTimer.Elapsed += (sender, args) => MainDataModel.Update();
+            _updateTimer.Elapsed += (sender, args) => MainDataModel.Update(_dataModelVisualizationService);
 
             DisplayName = "Data model";
         }
 
-        public DataModelViewModel MainDataModel
+        public DataModelPropertiesViewModel MainDataModel
         {
             get => _mainDataModel;
             set => SetAndNotify(ref _mainDataModel, value);
@@ -93,8 +93,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private void GetDataModel()
         {
             MainDataModel = SelectedModule != null
-                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule)
-                : _dataModelVisualizationService.GetMainDataModelVisualization();
+                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule, false)
+                : _dataModelVisualizationService.GetMainDataModelVisualization(false);
         }
 
         private void PluginServiceOnPluginToggled(object? sender, PluginEventArgs e)

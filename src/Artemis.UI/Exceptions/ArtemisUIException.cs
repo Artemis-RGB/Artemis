@@ -2,7 +2,6 @@
 
 namespace Artemis.UI.Exceptions
 {
-    // ReSharper disable once InconsistentNaming
     public class ArtemisUIException : Exception
     {
         public ArtemisUIException()
