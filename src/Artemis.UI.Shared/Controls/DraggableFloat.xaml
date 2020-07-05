@@ -19,7 +19,8 @@
                 <VisualBrush>
                     <VisualBrush.Visual>
                         <Rectangle x:Name="BorderVisual"
-                                   StrokeDashArray="2 2" Stroke="{DynamicResource SecondaryAccentBrush}" StrokeThickness="1"
+                                   Stroke="{DynamicResource MaterialDesignTextBoxBorder}" 
+                                   StrokeThickness="1"
                                    Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
                                    Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
                     </VisualBrush.Visual>
@@ -32,7 +33,6 @@
                        Margin="0 3 0 0"
                        Text="{Binding Value, StringFormat=N3, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                        Cursor="/Resources/Cursors/aero_drag_ew.cur"
-                       Foreground="{DynamicResource SecondaryAccentBrush}"
                        MouseDown="InputMouseDown"
                        MouseUp="InputMouseUp"
                        MouseMove="InputMouseMove"

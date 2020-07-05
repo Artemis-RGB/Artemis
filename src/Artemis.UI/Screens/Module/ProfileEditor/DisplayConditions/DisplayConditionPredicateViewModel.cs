@@ -1,5 +1,6 @@
 ﻿using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
+using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -13,7 +14,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IProfileEditorService _profileEditorService;
         private DataModelPropertiesViewModel _dataModel;
         private DataModelVisualizationViewModel _selectedLeftSideProperty;
-        private bool _leftSidePropertySelectionOpen;
+        private DataModelVisualizationViewModel _selectedRightSideProperty;
+        private int _rightSideTransitionIndex;
+        private DataModelInputViewModel _rightSideInputViewModel;
 
         public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService, IDataModelVisualizationService dataModelVisualizationService) : base(displayConditionPredicate, parent)
@@ -21,12 +24,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             _profileEditorService = profileEditorService;
             _dataModelVisualizationService = dataModelVisualizationService;
 
-            SelectPropertyCommand = new DelegateCommand(ExecuteSelectProperty);
+            SelectLeftPropertyCommand = new DelegateCommand(ExecuteSelectLeftProperty);
+            SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);
 
             GetDataModel();
         }
 
-        public DelegateCommand SelectPropertyCommand { get; }
+        public DisplayConditionPredicate DisplayConditionPredicate => (DisplayConditionPredicate) Model;
+        public DelegateCommand SelectLeftPropertyCommand { get; }
+        public DelegateCommand SelectRightPropertyCommand { get; }
+        public bool ShowRightSidePropertySelection => DisplayConditionPredicate.PredicateType == PredicateType.Dynamic;
 
         public DataModelPropertiesViewModel DataModel
         {
@@ -40,18 +47,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _selectedLeftSideProperty, value);
         }
 
-        public bool LeftSidePropertySelectionOpen
+        public DataModelVisualizationViewModel SelectedRightSideProperty
         {
-            get => _leftSidePropertySelectionOpen;
-            set => SetAndNotify(ref _leftSidePropertySelectionOpen, value);
+            get => _selectedRightSideProperty;
+            set => SetAndNotify(ref _selectedRightSideProperty, value);
         }
 
-
-        public DisplayConditionPredicate DisplayConditionPredicate => (DisplayConditionPredicate) Model;
-
-        public void ToggleLeftSidePropertySelectionOpen()
+        public int RightSideTransitionIndex
         {
-            LeftSidePropertySelectionOpen = !LeftSidePropertySelectionOpen;
+            get => _rightSideTransitionIndex;
+            set => SetAndNotify(ref _rightSideTransitionIndex, value);
+        }
+
+        public DataModelInputViewModel RightSideInputViewModel
+        {
+            get => _rightSideInputViewModel;
+            set => SetAndNotify(ref _rightSideInputViewModel, value);
         }
 
         public void GetDataModel()
@@ -67,19 +78,37 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         public override void Update()
         {
-            if (DisplayConditionPredicate.PropertyPath != null)
-                SelectedLeftSideProperty = DataModel.GetChildByPath(DisplayConditionPredicate.DataModelGuid, DisplayConditionPredicate.PropertyPath);
-            else
-                SelectedLeftSideProperty = null;
+            SelectedLeftSideProperty = DisplayConditionPredicate.LeftPropertyPath != null 
+                ? DataModel.GetChildByPath(DisplayConditionPredicate.LeftDataModelGuid, DisplayConditionPredicate.LeftPropertyPath) 
+                : null;
+
+            SelectedRightSideProperty = DisplayConditionPredicate.RightPropertyPath != null 
+                ? DataModel.GetChildByPath(DisplayConditionPredicate.RightDataModelGuid, DisplayConditionPredicate.RightPropertyPath) 
+                : null;
         }
 
-        private void ExecuteSelectProperty(object context)
+        public void ActivateRightSideInputViewModel()
+        {
+            RightSideTransitionIndex = 1;
+        }
+
+        private void ExecuteSelectLeftProperty(object context)
         {
             if (!(context is DataModelVisualizationViewModel vm))
                 return;
 
-            DisplayConditionPredicate.PropertyPath = vm.GetCurrentPath();
-            DisplayConditionPredicate.DataModelGuid = vm.DataModel.PluginInfo.Guid;
+            DisplayConditionPredicate.LeftPropertyPath = vm.GetCurrentPath();
+            DisplayConditionPredicate.LeftDataModelGuid = vm.DataModel.PluginInfo.Guid;
+            Update();
+        }
+
+        private void ExecuteSelectRightProperty(object context)
+        {
+            if (!(context is DataModelVisualizationViewModel vm))
+                return;
+
+            DisplayConditionPredicate.RightPropertyPath = vm.GetCurrentPath();
+            DisplayConditionPredicate.RightDataModelGuid = vm.DataModel.PluginInfo.Guid;
             Update();
         }
     }

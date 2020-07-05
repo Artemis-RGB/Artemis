@@ -42,10 +42,10 @@
                 Content="{Binding SelectedBooleanOperator}">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="And" Command="{s:Action SelectBooleanOperator}" CommandParameter="And"/>
-                    <MenuItem Header="Or" Command="{s:Action SelectBooleanOperator}" CommandParameter="Or"/>
-                    <MenuItem Header="And not" Command="{s:Action SelectBooleanOperator}" CommandParameter="AndNot"/>
-                    <MenuItem Header="Or not" Command="{s:Action SelectBooleanOperator}" CommandParameter="OrNot"/>
+                    <MenuItem Header="And" Command="{s:Action SelectBooleanOperator}" CommandParameter="And" />
+                    <MenuItem Header="Or" Command="{s:Action SelectBooleanOperator}" CommandParameter="Or" />
+                    <MenuItem Header="And not" Command="{s:Action SelectBooleanOperator}" CommandParameter="AndNot" />
+                    <MenuItem Header="Or not" Command="{s:Action SelectBooleanOperator}" CommandParameter="OrNot" />
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
@@ -58,25 +58,44 @@
             <Button.Style>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
                     <Style.Triggers>
-                    <EventTrigger RoutedEvent="Click">
-                        <EventTrigger.Actions>
-                            <BeginStoryboard>
-                                <Storyboard>
-                                    <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                        <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
-                                    </BooleanAnimationUsingKeyFrames>
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </EventTrigger.Actions>
-                    </EventTrigger>
+                        <EventTrigger RoutedEvent="Click">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
                     </Style.Triggers>
                 </Style>
             </Button.Style>
             <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Add condition" Command="{s:Action AddCondition}" />
-                    <MenuItem Header="Add group" Command="{s:Action AddGroup}" />
+                    <MenuItem Header="Add static condition"
+                              ToolTip="A condition that compares a data model property to a static input"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Static">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="FormTextarea" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add dynamic condition"
+                              ToolTip="A condition that compares two data model properties"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Dynamic">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="InsertLink" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add group" ToolTip="A group can contain conditions and other groups" Command="{s:Action AddGroup}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="CodeParentheses" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
