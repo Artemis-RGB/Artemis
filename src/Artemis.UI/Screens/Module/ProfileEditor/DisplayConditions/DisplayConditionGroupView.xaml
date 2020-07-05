@@ -29,7 +29,8 @@
                 Visibility="{Binding IsRootGroup, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
                 Width="25"
                 Height="25"
-                Foreground="#E74C4C">
+                Foreground="#E74C4C"
+                Command="{s:Action Delete}">
             <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
         </Button>
         <Button Grid.Row="0"
@@ -37,25 +38,47 @@
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#E74C4C"
                 BorderBrush="#E74C4C"
-                Margin="3 1">
+                Margin="3 1"
+                Content="{Binding SelectedBooleanOperator}">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="And" />
-                    <MenuItem Header="Or" />
-                    <MenuItem Header="And not" />
-                    <MenuItem Header="Or not" />
+                    <MenuItem Header="And" Command="{s:Action SelectBooleanOperator}" CommandParameter="And"/>
+                    <MenuItem Header="Or" Command="{s:Action SelectBooleanOperator}" CommandParameter="Or"/>
+                    <MenuItem Header="And not" Command="{s:Action SelectBooleanOperator}" CommandParameter="AndNot"/>
+                    <MenuItem Header="Or not" Command="{s:Action SelectBooleanOperator}" CommandParameter="OrNot"/>
                 </ContextMenu>
             </Button.ContextMenu>
-            Or
         </Button>
         <Button Grid.Row="0"
                 Grid.Column="2"
-                Style="{StaticResource MaterialDesignIconForegroundButton}"
                 HorizontalAlignment="Left"
                 Foreground="#4CE758"
                 Width="25"
                 Height="25">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                    <Style.Triggers>
+                    <EventTrigger RoutedEvent="Click">
+                        <EventTrigger.Actions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                        <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True"/>
+                                    </BooleanAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger.Actions>
+                    </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
             <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add condition" Command="{s:Action AddCondition}" />
+                    <MenuItem Header="Add group" Command="{s:Action AddGroup}" />
+                </ContextMenu>
+            </Button.ContextMenu>
         </Button>
 
         <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Children}">

@@ -2,7 +2,7 @@
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
-    public class LayerConditionListStatement : LayerConditionPart
+    public class DisplayConditionListPredicate : DisplayConditionPart
     {
         public ListOperator ListOperator { get; set; }
 

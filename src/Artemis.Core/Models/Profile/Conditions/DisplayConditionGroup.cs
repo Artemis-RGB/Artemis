@@ -2,7 +2,7 @@
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
-    public class LayerConditionGroup : LayerConditionPart
+    public class DisplayConditionGroup : DisplayConditionPart
     {
         public BooleanOperator BooleanOperator { get; set; }
     }

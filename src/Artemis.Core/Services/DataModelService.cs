@@ -21,13 +21,13 @@ namespace Artemis.Core.Services
     {
         private readonly List<DataModel> _dataModelExpansions;
         private readonly IPluginService _pluginService;
-        private readonly List<LayerConditionOperator> _registeredConditionOperators;
+        private readonly List<DisplayConditionOperator> _registeredConditionOperators;
 
         internal DataModelService(IPluginService pluginService)
         {
             _pluginService = pluginService;
             _dataModelExpansions = new List<DataModel>();
-            _registeredConditionOperators = new List<LayerConditionOperator>();
+            _registeredConditionOperators = new List<DisplayConditionOperator>();
 
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
@@ -81,40 +81,50 @@ namespace Artemis.Core.Services
             return null;
         }
 
+        public bool GetPluginExtendsDataModel(Plugin plugin)
+        {
+            if (plugin is Module module)
+                return module.InternalExpandsMainDataModel;
+            if (plugin is BaseDataModelExpansion)
+                return true;
 
-        public void RegisterConditionOperator(PluginInfo pluginInfo, LayerConditionOperator layerConditionOperator)
+            return false;
+        }
+
+
+        public void RegisterConditionOperator(PluginInfo pluginInfo, DisplayConditionOperator displayConditionOperator)
         {
             if (pluginInfo == null)
                 throw new ArgumentNullException(nameof(pluginInfo));
-            if (layerConditionOperator == null)
-                throw new ArgumentNullException(nameof(layerConditionOperator));
+            if (displayConditionOperator == null)
+                throw new ArgumentNullException(nameof(displayConditionOperator));
 
             lock (_registeredConditionOperators)
             {
-                if (_registeredConditionOperators.Contains(layerConditionOperator))
+                if (_registeredConditionOperators.Contains(displayConditionOperator))
                     return;
 
-                layerConditionOperator.Register(pluginInfo, this);
-                _registeredConditionOperators.Add(layerConditionOperator);
+                displayConditionOperator.Register(pluginInfo, this);
+                _registeredConditionOperators.Add(displayConditionOperator);
             }
         }
 
-        public void RemoveConditionOperator(LayerConditionOperator layerConditionOperator)
+        public void RemoveConditionOperator(DisplayConditionOperator displayConditionOperator)
         {
-            if (layerConditionOperator == null)
-                throw new ArgumentNullException(nameof(layerConditionOperator));
+            if (displayConditionOperator == null)
+                throw new ArgumentNullException(nameof(displayConditionOperator));
 
             lock (_registeredConditionOperators)
             {
-                if (!_registeredConditionOperators.Contains(layerConditionOperator))
+                if (!_registeredConditionOperators.Contains(displayConditionOperator))
                     return;
 
-                layerConditionOperator.Unsubscribe();
-                _registeredConditionOperators.Remove(layerConditionOperator);
+                displayConditionOperator.Unsubscribe();
+                _registeredConditionOperators.Remove(displayConditionOperator);
             }
         }
 
-        public List<LayerConditionOperator> GetCompatibleConditionOperators(Type type)
+        public List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type)
         {
             lock (_registeredConditionOperators)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
+using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
@@ -22,6 +23,7 @@ namespace Artemis.Core.Models.Profile
     /// </summary>
     public sealed class Layer : EffectProfileElement
     {
+        private DisplayConditionGroup _displayConditionGroup;
         private LayerGeneralProperties _general;
         private SKBitmap _layerBitmap;
         private BaseLayerBrush _layerBrush;
@@ -113,6 +115,15 @@ namespace Artemis.Core.Models.Profile
         {
             get => _layerBrush;
             internal set => SetAndNotify(ref _layerBrush, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the root display condition group
+        /// </summary>
+        public DisplayConditionGroup DisplayConditionGroup
+        {
+            get => _displayConditionGroup;
+            set => SetAndNotify(ref _displayConditionGroup, value);
         }
 
         public override string ToString()

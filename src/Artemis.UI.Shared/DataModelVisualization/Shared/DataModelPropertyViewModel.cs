@@ -1,20 +1,26 @@
-﻿using System.Reflection;
-using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+﻿using System.Linq;
+using System.Reflection;
+using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
     public class DataModelPropertyViewModel : DataModelVisualizationViewModel
     {
+        private object _displayValue;
         private DataModelDisplayViewModel _displayViewModel;
         private bool _showNull;
         private bool _showToString;
         private bool _showViewModel;
 
-        internal DataModelPropertyViewModel(PropertyInfo propertyInfo, DataModelPropertyAttribute propertyDescription, DataModelVisualizationViewModel parent)
+        internal DataModelPropertyViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
         {
-            PropertyInfo = propertyInfo;
-            Parent = parent;
-            PropertyDescription = propertyDescription;
+        }
+
+        public object DisplayValue
+        {
+            get => _displayValue;
+            set => SetAndNotify(ref _displayValue, value);
         }
 
         public DataModelDisplayViewModel DisplayViewModel
@@ -41,19 +47,22 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _showViewModel, value);
         }
 
-        public override void Update()
+        public override void Update(IDataModelVisualizationService dataModelVisualizationService)
         {
-            if (PropertyInfo != null && Parent?.Model != null)
-            {
-                Model = PropertyInfo.GetValue(Parent.Model);
-                DisplayViewModel?.UpdateValue(Model);
-            }
+            if (DisplayViewModel == null && dataModelVisualizationService.RegisteredDataModelDisplays.Any(d => d.SupportedType == PropertyInfo.PropertyType))
+                dataModelVisualizationService.GetDataModelDisplayViewModel(PropertyInfo.PropertyType);
 
-            ShowToString = Model != null && DisplayViewModel == null;
-            ShowNull = Model == null;
-            ShowViewModel = Model != null && DisplayViewModel != null;
+            DisplayValue = GetCurrentValue();
+            UpdateDisplayParameters();
+        }
 
-            UpdateListStatus();
+        protected void UpdateDisplayParameters()
+        {
+            ShowToString = DisplayValue != null && DisplayViewModel == null;
+            ShowNull = DisplayValue == null;
+            ShowViewModel = DisplayValue != null && DisplayViewModel != null;
+
+            DisplayViewModel?.UpdateValue(DisplayValue);
         }
     }
 }

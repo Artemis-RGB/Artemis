@@ -18,6 +18,8 @@ namespace Artemis.UI.Shared.Services
         private readonly IKernel _kernel;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
+        private DataModelPropertiesViewModel _cachedMainDataModel;
+        private Dictionary<Plugin, DataModelPropertiesViewModel> _cachedDataModels;
 
         public DataModelVisualizationService(IDataModelService dataModelService, IKernel kernel)
         {
@@ -25,26 +27,64 @@ namespace Artemis.UI.Shared.Services
             _kernel = kernel;
             _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
             _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
+            _cachedDataModels = new Dictionary<Plugin, DataModelPropertiesViewModel>();
         }
 
-        public DataModelViewModel GetMainDataModelVisualization()
+        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors => _registeredDataModelEditors.AsReadOnly();
+        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays => _registeredDataModelDisplays.AsReadOnly();
+
+        public DataModelPropertiesViewModel GetMainDataModelVisualization(bool useCache)
         {
-            var viewModel = new DataModelViewModel();
+            // Return from cache if found
+            if (useCache && _cachedMainDataModel != null)
+                return _cachedMainDataModel;
+
+            var viewModel = new DataModelPropertiesViewModel(null, null, null);
             foreach (var dataModelExpansion in _dataModelService.DataModelExpansions)
-                viewModel.Children.Add(new DataModelViewModel(null, dataModelExpansion, dataModelExpansion.DataModelDescription, viewModel, this));
+                viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, null));
+
+            // Update to populate children
+            viewModel.Update(this);
+
+            // Add to cache
+            _cachedMainDataModel = viewModel;
 
             return viewModel;
         }
 
-        public DataModelViewModel GetPluginDataModelVisualization(Plugin plugin)
+        public DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool useCache)
         {
+            // Return from cache if found
+            var isCached = _cachedDataModels.TryGetValue(plugin, out var cachedMainDataModel);
+            if (useCache && isCached)
+                return cachedMainDataModel;
+
             var dataModel = _dataModelService.GetPluginDataModel(plugin);
             if (dataModel == null)
                 return null;
 
-            var viewModel = new DataModelViewModel();
-            viewModel.Children.Add(new DataModelViewModel(null, dataModel, dataModel.DataModelDescription, viewModel, this));
+            var viewModel = new DataModelPropertiesViewModel(null, null, null);
+            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, null));
+
+            // Update to populate children
+            viewModel.Update(this);
+
+            // Add to cache
+            if (!isCached)
+                _cachedDataModels.Add(plugin, viewModel);
+
             return viewModel;
+        }
+
+        public bool GetPluginExtendsDataModel(Plugin plugin)
+        {
+            return _dataModelService.GetPluginExtendsDataModel(plugin);
+        }
+
+        public void BustCache()
+        {
+            _cachedMainDataModel = null;
+            _cachedDataModels.Clear();
         }
 
         public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo) where T : DataModelInputViewModel
@@ -133,8 +173,17 @@ namespace Artemis.UI.Shared.Services
 
     public interface IDataModelVisualizationService : IArtemisSharedUIService
     {
-        DataModelViewModel GetMainDataModelVisualization();
-        DataModelViewModel GetPluginDataModelVisualization(Plugin plugin);
+        DataModelPropertiesViewModel GetMainDataModelVisualization(bool useCached);
+        DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool useCached);
+
+        /// <summary>
+        ///     Determines whether the given plugin expands the main data model
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <returns></returns>
+        bool GetPluginExtendsDataModel(Plugin plugin);
+
+        void BustCache();
 
         DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo) where T : DataModelInputViewModel;
         DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel;
@@ -142,5 +191,7 @@ namespace Artemis.UI.Shared.Services
         void RemoveDataModelDisplay(DataModelVisualizationRegistration registration);
 
         DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
+        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
+        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
     }
 }

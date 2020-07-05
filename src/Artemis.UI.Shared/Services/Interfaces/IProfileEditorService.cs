@@ -27,6 +27,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         void RedoUpdateProfile(ProfileModule module);
         void StopRegularRender();
         void ResumeRegularRender();
+        Module GetCurrentModule();
 
         /// <summary>
         ///     Occurs when a new profile is selected

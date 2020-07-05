@@ -34,7 +34,7 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            var test = new LayerCondition();
+            var test = new DisplayCondition();
 
             StartupArguments = Args.ToList();
 

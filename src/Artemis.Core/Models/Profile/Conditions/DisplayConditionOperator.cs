@@ -6,7 +6,7 @@ using Artemis.Core.Services.Interfaces;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
-    public abstract class LayerConditionOperator
+    public abstract class DisplayConditionOperator
     {
         private IDataModelService _dataModelService;
         private bool _registered;

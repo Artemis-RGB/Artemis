@@ -30,16 +30,23 @@ namespace Artemis.Core.Services.Interfaces
         DataModel GetPluginDataModel(Plugin plugin);
 
         /// <summary>
+        ///     Determines whether the given plugin expands the main data model
+        /// </summary>
+        /// <param name="plugin"></param>
+        /// <returns></returns>
+        bool GetPluginExtendsDataModel(Plugin plugin);
+
+        /// <summary>
         ///     Registers a new condition operator for use in layer conditions
         /// </summary>
         /// <param name="pluginInfo">The PluginInfo of the plugin this condition operator belongs to</param>
-        /// <param name="layerConditionOperator">The condition operator to register</param>
-        void RegisterConditionOperator([NotNull] PluginInfo pluginInfo, [NotNull] LayerConditionOperator layerConditionOperator);
+        /// <param name="displayConditionOperator">The condition operator to register</param>
+        void RegisterConditionOperator([NotNull] PluginInfo pluginInfo, [NotNull] DisplayConditionOperator displayConditionOperator);
 
         /// <summary>
         ///     Removes a condition operator so it is no longer available for use in layer conditions
         /// </summary>
-        /// <param name="layerConditionOperator">The layer condition operator to remove</param>
-        void RemoveConditionOperator([NotNull] LayerConditionOperator layerConditionOperator);
+        /// <param name="displayConditionOperator">The layer condition operator to remove</param>
+        void RemoveConditionOperator([NotNull] DisplayConditionOperator displayConditionOperator);
     }
 }

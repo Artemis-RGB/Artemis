@@ -189,6 +189,11 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
+        public Module GetCurrentModule()
+        {
+            return (Module) SelectedProfile?.PluginInfo.Instance;
+        }
+
         public event EventHandler<ProfileElementEventArgs> ProfileSelected;
         public event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
         public event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
