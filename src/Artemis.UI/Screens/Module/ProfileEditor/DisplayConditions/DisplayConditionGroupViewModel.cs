@@ -12,7 +12,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
+        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(
+            displayConditionGroup, parent)
         {
             _displayConditionsVmFactory = displayConditionsVmFactory;
         }
@@ -34,9 +35,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
         }
 
-        public void AddCondition()
+        public void AddCondition(string type)
         {
-            DisplayConditionGroup.AddChild(new DisplayConditionPredicate());
+            if (type == "Static")
+                DisplayConditionGroup.AddChild(new DisplayConditionPredicate {PredicateType = PredicateType.Static});
+            else if (type == "Dynamic")
+                DisplayConditionGroup.AddChild(new DisplayConditionPredicate {PredicateType = PredicateType.Dynamic});
             Update();
         }
 
