@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Core;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Services;
-using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using SkiaSharp;
@@ -14,14 +12,11 @@ namespace Artemis.UI.Services
 {
     public class LayerEditorService : ILayerEditorService
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly ISettingsService _settingsService;
 
         public LayerEditorService(ISettingsService settingsService, IProfileEditorService profileEditorService)
         {
             _settingsService = settingsService;
-            _profileEditorService = profileEditorService;
-            RegisterBuiltInPropertyEditors();
         }
 
         /// <inheritdoc />
@@ -137,17 +132,6 @@ namespace Artemis.UI.Services
 
             // The difference between the two is the offset
             return topLeft - tempTopLeft;
-        }
-
-        private void RegisterBuiltInPropertyEditors()
-        {
-            _profileEditorService.RegisterPropertyInput<BrushPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<ColorGradientPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<FloatPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<IntPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKColorPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePluginInfo);
         }
     }
 }

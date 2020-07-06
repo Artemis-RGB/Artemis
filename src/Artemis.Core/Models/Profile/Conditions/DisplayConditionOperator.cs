@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -8,6 +9,24 @@ namespace Artemis.Core.Models.Profile.Conditions
 {
     public abstract class DisplayConditionOperator
     {
+        /// <summary>
+        ///     A read-only collection containing all primitive number types
+        /// </summary>
+        protected static IReadOnlyCollection<Type> NumberTypes = new List<Type>
+        {
+            typeof(sbyte),
+            typeof(byte),
+            typeof(short),
+            typeof(ushort),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal)
+        };
+
         private IDataModelService _dataModelService;
         private bool _registered;
 
@@ -25,12 +44,12 @@ namespace Artemis.Core.Models.Profile.Conditions
         /// <summary>
         ///     Gets or sets the description of this logical operator
         /// </summary>
-        public string Description { get; set; }
+        public abstract string Description { get; }
 
         /// <summary>
         ///     Gets or sets the icon of this logical operator
         /// </summary>
-        public string Icon { get; set; }
+        public abstract string Icon { get; }
 
         /// <summary>
         ///     Creates a binary expression comparing two types
@@ -68,6 +87,13 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             // Profile editor service will call Unsubscribe
             _dataModelService.RemoveConditionOperator(this);
+        }
+
+        public bool SupportsType(Type type)
+        {
+            if (type == null)
+                return true;
+            return CompatibleTypes.Any(t => t.IsAssignableFrom(type));
         }
     }
 }

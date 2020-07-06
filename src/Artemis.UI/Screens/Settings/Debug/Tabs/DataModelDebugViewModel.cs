@@ -93,8 +93,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private void GetDataModel()
         {
             MainDataModel = SelectedModule != null
-                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule, false)
-                : _dataModelVisualizationService.GetMainDataModelVisualization(false);
+                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule)
+                : _dataModelVisualizationService.GetMainDataModelVisualization();
         }
 
         private void PluginServiceOnPluginToggled(object? sender, PluginEventArgs e)

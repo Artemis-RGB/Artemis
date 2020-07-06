@@ -48,9 +48,10 @@
                 Background="#ab47bc"
                 BorderBrush="#ab47bc"
                 Style="{StaticResource DisplayConditionButton}"
+                ToolTip="{Binding DisplayConditionPredicate.LeftPropertyPath}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding DataModel.Children}">
+                <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}">
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                             <Setter Property="ItemsSource" Value="{Binding Children}" />
@@ -59,14 +60,13 @@
                             <Setter Property="Command" Value="{Binding Data.SelectLeftPropertyCommand, Source={StaticResource DataContextProxy}}" />
                             <Setter Property="CommandParameter" Value="{Binding}" />
                             <Setter Property="CommandTarget" Value="{Binding}" />
-
+                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
             </Button.ContextMenu>
             <Grid>
                 <TextBlock Text="{Binding SelectedLeftSideProperty.PropertyDescription.Name}"
-                           ToolTip="{Binding SelectedLeftSideProperty.PropertyDescription.Description}"
                            Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
                 <TextBlock Text="« Select a property »"
                            FontStyle="Italic"
@@ -79,44 +79,26 @@
                 Grid.Column="2"
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
-                BorderBrush="#7B7B7B" Content="Equals">
+                BorderBrush="#7B7B7B" 
+                Content="{Binding DisplayConditionPredicate.Operator.Description}"
+                Click="PropertyButton_OnClick">
             <Button.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Equals">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="Equal" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Does not equal">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="NotEqualVariant" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Is less than">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="LessThan" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Is greater than">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="GreaterThan" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Is less than or equal to">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="LessThanOrEqual" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Is greater than or equal to">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="GreaterThanOrEqual" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Is null">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="Null" />
-                        </MenuItem.Icon>
-                    </MenuItem>
+                <ContextMenu ItemsSource="{Binding Operators}">
+                    <ContextMenu.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0"/>
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ContextMenu.ItemTemplate>
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                            <Setter Property="Command" Value="{Binding Data.SelectOperatorCommand, Source={StaticResource DataContextProxy}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="CommandTarget" Value="{Binding}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
@@ -127,10 +109,11 @@
                 Background="{DynamicResource PrimaryHueMidBrush}"
                 BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                 Style="{StaticResource DisplayConditionButton}"
+                ToolTip="{Binding DisplayConditionPredicate.RightPropertyPath}"
                 Click="PropertyButton_OnClick"
                 Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding DataModel.Children}">
+                <ContextMenu ItemsSource="{Binding RightSideDataModel.Children}">
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                             <Setter Property="ItemsSource" Value="{Binding Children}" />
@@ -139,14 +122,13 @@
                             <Setter Property="Command" Value="{Binding Data.SelectRightPropertyCommand, Source={StaticResource DataContextProxy}}" />
                             <Setter Property="CommandParameter" Value="{Binding}" />
                             <Setter Property="CommandTarget" Value="{Binding}" />
-
+                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
             </Button.ContextMenu>
             <Grid>
                 <TextBlock Text="{Binding SelectedRightSideProperty.PropertyDescription.Name}"
-                           ToolTip="{Binding SelectedRightSideProperty.PropertyDescription.Description}"
                            Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
                 <TextBlock Text="« Select a property »"
                            FontStyle="Italic"

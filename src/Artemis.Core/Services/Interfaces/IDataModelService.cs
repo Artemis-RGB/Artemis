@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Annotations;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Abstract;
@@ -9,7 +10,8 @@ namespace Artemis.Core.Services.Interfaces
 {
     public interface IDataModelService : IArtemisService
     {
-        ReadOnlyCollection<DataModel> DataModelExpansions { get; }
+        IReadOnlyCollection<DisplayConditionOperator> RegisteredConditionOperators { get; }
+        IReadOnlyCollection<DataModel> DataModelExpansions { get; }
 
         /// <summary>
         ///     Add an expansion to the datamodel to be available for use after the next update
@@ -48,5 +50,7 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="displayConditionOperator">The layer condition operator to remove</param>
         void RemoveConditionOperator([NotNull] DisplayConditionOperator displayConditionOperator);
+
+        List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type);
     }
 }

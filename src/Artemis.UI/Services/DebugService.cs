@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using Artemis.Core;
-using Artemis.UI.DataModelVisualization;
+using Artemis.UI.DataModelVisualization.Display;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
@@ -15,21 +15,12 @@ namespace Artemis.UI.Services
     {
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
         private DebugViewModel _debugViewModel;
 
-        public DebugService(IKernel kernel, IWindowManager windowManager, IDataModelVisualizationService dataModelVisualizationService)
+        public DebugService(IKernel kernel, IWindowManager windowManager)
         {
             _kernel = kernel;
             _windowManager = windowManager;
-            _dataModelVisualizationService = dataModelVisualizationService;
-
-            RegisterBuiltInDataModelDisplays();
-        }
-
-        private void RegisterBuiltInDataModelDisplays()
-        {
-            _dataModelVisualizationService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePluginInfo);
         }
 
         public void ShowDebugger()
