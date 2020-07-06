@@ -2,21 +2,26 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Services.Interfaces;
+using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Utilities;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionPredicateViewModel : DisplayConditionViewModel
+    public class DisplayConditionPredicateViewModel : DisplayConditionViewModel, IHandle<MainWindowKeyEvent>, IHandle<MainWindowMouseEvent>
     {
         private readonly IDataModelService _dataModelService;
         private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private DataModelPropertiesViewModel _leftSideDataModel;
         private List<DisplayConditionOperator> _operators;
@@ -28,13 +33,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         private List<Type> _supportedInputTypes;
 
-        public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent,
-            IProfileEditorService profileEditorService, IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService)
+        public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate,
+            DisplayConditionViewModel parent,
+            IProfileEditorService profileEditorService,
+            IDataModelVisualizationService dataModelVisualizationService,
+            IDataModelService dataModelService,
+            IEventAggregator eventAggregator)
             : base(displayConditionPredicate, parent)
         {
             _profileEditorService = profileEditorService;
             _dataModelVisualizationService = dataModelVisualizationService;
             _dataModelService = dataModelService;
+            _eventAggregator = eventAggregator;
 
             SelectLeftPropertyCommand = new DelegateCommand(ExecuteSelectLeftProperty);
             SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);
@@ -48,6 +58,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public DelegateCommand SelectRightPropertyCommand { get; }
         public DelegateCommand SelectOperatorCommand { get; }
         public bool ShowRightSidePropertySelection => DisplayConditionPredicate.PredicateType == PredicateType.Dynamic;
+        public bool CanActivateRightSideInputViewModel => SelectedLeftSideProperty?.PropertyInfo != null;
 
         public bool IsInitialized { get; private set; }
 
@@ -66,7 +77,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public DataModelVisualizationViewModel SelectedLeftSideProperty
         {
             get => _selectedLeftSideProperty;
-            set => SetAndNotify(ref _selectedLeftSideProperty, value);
+            set
+            {
+                if (!SetAndNotify(ref _selectedLeftSideProperty, value)) return;
+                NotifyOfPropertyChange(nameof(CanActivateRightSideInputViewModel));
+            }
         }
 
         public DataModelVisualizationViewModel SelectedRightSideProperty
@@ -91,6 +106,26 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         {
             get => _operators;
             set => SetAndNotify(ref _operators, value);
+        }
+
+        public void Handle(MainWindowKeyEvent message)
+        {
+            if (RightSideInputViewModel == null)
+                return;
+
+            if (!message.KeyDown && message.EventArgs.Key == Key.Escape) 
+                RightSideInputViewModel.Cancel();
+            if (!message.KeyDown && message.EventArgs.Key == Key.Enter)
+                RightSideInputViewModel.Submit();
+        }
+
+        public void Handle(MainWindowMouseEvent message)
+        {
+            if (RightSideInputViewModel == null)
+                return;
+
+            if (message.Sender is FrameworkElement frameworkElement && !frameworkElement.IsDescendantOf(RightSideInputViewModel.View)) 
+                RightSideInputViewModel.Submit();
         }
 
         public void Initialize()
@@ -155,7 +190,37 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         public void ActivateRightSideInputViewModel()
         {
+            if (SelectedLeftSideProperty?.PropertyInfo == null)
+                return;
+
             RightSideTransitionIndex = 1;
+            RightSideInputViewModel = _dataModelVisualizationService.GetDataModelInputViewModel(
+                SelectedLeftSideProperty.PropertyInfo.PropertyType,
+                SelectedLeftSideProperty.PropertyDescription,
+                DisplayConditionPredicate.RightStaticValue,
+                UpdateInputValue
+            );
+            _eventAggregator.Subscribe(this);
+
+            // After the animation finishes attempt to focus the input field
+            Task.Run(async () =>
+            {
+                await Task.Delay(400);
+                await Execute.OnUIThreadAsync(() => RightSideInputViewModel.View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
+            });
+        }
+
+        public void UpdateInputValue(object value, bool isSubmitted)
+        {
+            if (isSubmitted)
+            {
+                DisplayConditionPredicate.RightStaticValue = value;
+                Update();
+            }
+
+            RightSideTransitionIndex = 0;
+            RightSideInputViewModel = null;
+            _eventAggregator.Unsubscribe(this);
         }
 
         private void ExecuteSelectLeftProperty(object context)

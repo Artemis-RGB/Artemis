@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -9,6 +10,8 @@ using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
+using Ninject.Parameters;
+using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -142,6 +145,27 @@ namespace Artemis.UI.Shared.Services
                 return null;
             }
         }
+
+        public DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback)
+        {
+            lock (_registeredDataModelEditors)
+            {
+                var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType.IsAssignableFrom(propertyType));
+                if (match != null)
+                {
+                    var parameters = new IParameter[]
+                    {
+                        new ConstructorArgument("description", description),
+                        new ConstructorArgument("initialValue", initialValue)
+                    };
+                    var viewModel = (DataModelInputViewModel) _kernel.Get(match.ViewModelType, parameters);
+                    viewModel.UpdateCallback = updateCallback;
+                    return viewModel;
+                }
+
+                return null;
+            }
+        }
     }
 
     public interface IDataModelVisualizationService : IArtemisSharedUIService
@@ -162,6 +186,7 @@ namespace Artemis.UI.Shared.Services
         void RemoveDataModelDisplay(DataModelVisualizationRegistration registration);
 
         DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
+        DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
         IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
         IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
     }
