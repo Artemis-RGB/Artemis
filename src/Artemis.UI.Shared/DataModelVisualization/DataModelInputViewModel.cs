@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+﻿using System;
+using System.Windows;
+using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Stylet;
 
 namespace Artemis.UI.Shared.DataModelVisualization
@@ -22,20 +24,66 @@ namespace Artemis.UI.Shared.DataModelVisualization
         public DataModelPropertyAttribute Description { get; }
         internal override object InternalGuard { get; } = null;
 
-        protected void Submit()
+        /// <inheritdoc />
+        public sealed override void Submit()
         {
+            OnSubmit();
+            UpdateCallback(InputValue, true);
+        }
+
+        /// <inheritdoc />
+        public sealed  override void Cancel()
+        {
+            OnCancel();
+            UpdateCallback(InputValue, false);
         }
     }
 
     /// <summary>
     ///     For internal use only, implement <see cref="DataModelInputViewModel{T}" /> instead.
     /// </summary>
-    public abstract class DataModelInputViewModel : PropertyChangedBase
+    public abstract class DataModelInputViewModel : PropertyChangedBase, IViewAware
     {
         /// <summary>
         ///     Prevents this type being implemented directly, implement <see cref="DataModelInputViewModel{T}" /> instead.
         /// </summary>
         // ReSharper disable once UnusedMember.Global
         internal abstract object InternalGuard { get; }
+
+        internal Action<object, bool> UpdateCallback { get; set; }
+
+        public void AttachView(UIElement view)
+        {
+            if (View != null)
+                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
+
+            View = view;
+        }
+
+        public UIElement View { get; set; }
+
+        /// <summary>
+        ///     Submits the input value and removes this view model
+        /// </summary>
+        public abstract void Submit();
+
+        /// <summary>
+        ///     Discards changes to the input value and removes this view model
+        /// </summary>
+        public abstract void Cancel();
+
+        /// <summary>
+        ///     Called before the current value is submitted
+        /// </summary>
+        protected virtual void OnSubmit()
+        {
+        }
+
+        /// <summary>
+        ///     Called before the current value is discarded
+        /// </summary>
+        protected virtual void OnCancel()
+        {
+        }
     }
 }

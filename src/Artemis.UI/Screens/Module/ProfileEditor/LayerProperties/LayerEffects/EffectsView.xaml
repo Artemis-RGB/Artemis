@@ -27,7 +27,7 @@
                  Visibility="{Binding HasLayerEffectDescriptors, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
-                    <Setter Property="behaviors:MouseBehaviour.MouseUpCommand" Value="{x:Static materialDesign:Transitioner.MoveFirstCommand}" />
+                    <Setter Property="behaviors:MouseBehavior.MouseUpCommand" Value="{x:Static materialDesign:Transitioner.MoveFirstCommand}" />
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.ItemTemplate>

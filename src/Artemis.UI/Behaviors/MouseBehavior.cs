@@ -3,11 +3,11 @@ using System.Windows.Input;
 
 namespace Artemis.UI.Behaviors
 {
-    public class MouseBehaviour
+    public class MouseBehavior
     {
         public static readonly DependencyProperty MouseUpCommandProperty =
             DependencyProperty.RegisterAttached("MouseUpCommand", typeof(ICommand),
-                typeof(MouseBehaviour), new FrameworkPropertyMetadata(
+                typeof(MouseBehavior), new FrameworkPropertyMetadata(
                     MouseUpCommandChanged));
 
         public static void SetMouseUpCommand(UIElement element, ICommand value)
