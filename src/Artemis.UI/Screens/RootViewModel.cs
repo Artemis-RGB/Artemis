@@ -10,6 +10,7 @@ using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
 using MaterialDesignExtensions.Controls;
@@ -23,6 +24,7 @@ namespace Artemis.UI.Screens
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
+        private readonly IRegistrationService _builtInRegistrationService;
         private readonly IEventAggregator _eventAggregator;
         private readonly ThemeWatcher _themeWatcher;
         private readonly Timer _titleUpdateTimer;
@@ -33,13 +35,14 @@ namespace Artemis.UI.Screens
         private string _windowTitle;
 
         public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
-            IDebugService debugService, ISnackbarMessageQueue snackbarMessageQueue)
+            IDebugService debugService, IRegistrationService builtInRegistrationService, ISnackbarMessageQueue snackbarMessageQueue)
         {
             SidebarViewModel = sidebarViewModel;
             MainMessageQueue = snackbarMessageQueue;
             _eventAggregator = eventAggregator;
             _coreService = coreService;
             _debugService = debugService;
+            _builtInRegistrationService = builtInRegistrationService;
 
             _titleUpdateTimer = new Timer(500);
             _titleUpdateTimer.Elapsed += (sender, args) => UpdateWindowTitle();
@@ -56,7 +59,7 @@ namespace Artemis.UI.Screens
         }
 
         public SidebarViewModel SidebarViewModel { get; }
-        public ISnackbarMessageQueue MainMessageQueue { get;  }
+        public ISnackbarMessageQueue MainMessageQueue { get; }
 
         public bool IsSidebarVisible
         {
@@ -184,6 +187,10 @@ namespace Artemis.UI.Screens
         {
             UpdateWindowTitle();
             _titleUpdateTimer.Start();
+
+            _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
+            _builtInRegistrationService.RegisterBuiltInDataModelInputs();
+            _builtInRegistrationService.RegisterBuiltInPropertyEditors();
         }
 
         protected override void OnDeactivate()

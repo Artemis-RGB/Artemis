@@ -5,13 +5,26 @@ namespace Artemis.UI.Shared.DataModelVisualization
 {
     public abstract class DataModelInputViewModel<T> : DataModelInputViewModel
     {
-        protected DataModelInputViewModel(DataModelPropertyAttribute description)
+        private T _inputValue;
+
+        protected DataModelInputViewModel(DataModelPropertyAttribute description, T initialValue)
         {
             Description = description;
+            InputValue = initialValue;
+        }
+
+        public T InputValue
+        {
+            get => _inputValue;
+            set => SetAndNotify(ref _inputValue, value);
         }
 
         public DataModelPropertyAttribute Description { get; }
         internal override object InternalGuard { get; } = null;
+
+        protected void Submit()
+        {
+        }
     }
 
     /// <summary>

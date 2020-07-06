@@ -40,7 +40,18 @@ namespace Artemis.Core.Services
                 AddDataModelExpansionDataModel(dataModelExpansion);
         }
 
-        public ReadOnlyCollection<DataModel> DataModelExpansions
+        public IReadOnlyCollection<DisplayConditionOperator> RegisteredConditionOperators
+        {
+            get
+            {
+                lock (_registeredConditionOperators)
+                {
+                    return _registeredConditionOperators.AsReadOnly();
+                }
+            }
+        }
+
+        public IReadOnlyCollection<DataModel> DataModelExpansions
         {
             get
             {
@@ -128,13 +139,20 @@ namespace Artemis.Core.Services
         {
             lock (_registeredConditionOperators)
             {
-                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Contains(type)).ToList();
+                if (type == null)
+                    return new List<DisplayConditionOperator>(_registeredConditionOperators);
+                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Any(t => t.IsAssignableFrom(type))).ToList();
             }
         }
 
         private void RegisterBuiltInConditionOperators()
         {
+            RegisterConditionOperator(Constants.CorePluginInfo, new EqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new NotEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new LessThanConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new LessThanOrEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanOrEqualConditionOperator());
         }
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)

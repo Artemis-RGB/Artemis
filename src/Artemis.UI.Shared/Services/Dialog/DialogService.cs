@@ -22,6 +22,8 @@ namespace Artemis.UI.Shared.Services.Dialog
             _viewManager = viewManager;
         }
 
+        public bool IsExceptionDialogOpen { get; private set; }
+
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
             var arguments = new IParameter[]
@@ -90,31 +92,28 @@ namespace Artemis.UI.Shared.Services.Dialog
 
         public async Task ShowExceptionDialog(string message, Exception exception)
         {
+            if (IsExceptionDialogOpen)
+                return;
+
+            IsExceptionDialogOpen = true;
             var arguments = new IParameter[]
             {
                 new ConstructorArgument("message", message),
                 new ConstructorArgument("exception", exception)
             };
-
-            try
+            
+            await Execute.OnUIThreadAsync(async () =>
             {
-                await Execute.OnUIThreadAsync(async () =>
+                try
                 {
-                    try
-                    {
-                        DialogHost.CloseDialogCommand.Execute(new object(), null);
-                        await ShowDialog<ExceptionDialogViewModel>(arguments);
-                    }
-                    catch (Exception)
-                    {
-                        // ignored
-                    }
-                });
-            }
-            catch (Exception)
-            {
-                // ignored
-            }
+                    DialogHost.CloseDialogCommand.Execute(new object(), null);
+                    await ShowDialog<ExceptionDialogViewModel>(arguments);
+                }
+                finally
+                {
+                    IsExceptionDialogOpen = false;
+                }
+            });
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)

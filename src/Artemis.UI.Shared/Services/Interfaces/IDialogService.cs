@@ -102,5 +102,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <param name="exception">The exception to display. The exception message and stacktrace will be shown.</param>
         /// <returns>A task resolving when the dialog is closed</returns>
         Task ShowExceptionDialog(string message, Exception exception);
+
+        bool IsExceptionDialogOpen { get; }
     }
 }

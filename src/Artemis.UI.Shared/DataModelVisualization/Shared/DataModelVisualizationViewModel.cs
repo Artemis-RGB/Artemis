@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Extensions;
@@ -19,6 +20,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         private DataModelVisualizationViewModel _parent;
         private DataModelPropertyAttribute _propertyDescription;
         private PropertyInfo _propertyInfo;
+        private bool _isMatchingFilteredTypes;
 
         internal DataModelVisualizationViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo)
         {
@@ -26,6 +28,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             PropertyInfo = propertyInfo;
             Parent = parent;
             Children = new BindableCollection<DataModelVisualizationViewModel>();
+            IsMatchingFilteredTypes = true;
 
             if (dataModel == null && parent == null && propertyInfo == null)
                 IsRootViewModel = true;
@@ -65,11 +68,45 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _children, value);
         }
 
+        public bool IsMatchingFilteredTypes
+        {
+            get => _isMatchingFilteredTypes;
+            set => SetAndNotify(ref _isMatchingFilteredTypes, value);
+        }
+
         public abstract void Update(IDataModelVisualizationService dataModelVisualizationService);
 
         public virtual object GetCurrentValue()
         {
             return Parent == null ? null : PropertyInfo.GetValue(Parent.GetCurrentValue());
+        }
+
+        public void ApplyTypeFilter(params Type[] filteredTypes)
+        {
+            // If the VM has children, its own type is not relevant
+            if (Children.Any())
+            {
+                foreach (var child in Children)
+                    child.ApplyTypeFilter(filteredTypes);
+
+                IsMatchingFilteredTypes = true;
+                return;
+            }
+
+            // If null is passed, clear the type filter
+            if (filteredTypes == null || filteredTypes.Length == 0)
+            {
+                IsMatchingFilteredTypes = true;
+                return;
+            }
+            // If this VM has no property info, assume it does not match
+            if (PropertyInfo == null)
+            {
+                IsMatchingFilteredTypes = false;
+                return;
+            }
+
+            IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsAssignableFrom(PropertyInfo.PropertyType));
         }
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
