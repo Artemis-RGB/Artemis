@@ -81,13 +81,13 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             return Parent == null ? null : PropertyInfo.GetValue(Parent.GetCurrentValue());
         }
 
-        public void ApplyTypeFilter(params Type[] filteredTypes)
+        public void ApplyTypeFilter(bool looseMatch, params Type[] filteredTypes)
         {
             // If the VM has children, its own type is not relevant
             if (Children.Any())
             {
                 foreach (var child in Children)
-                    child.ApplyTypeFilter(filteredTypes);
+                    child.ApplyTypeFilter(looseMatch, filteredTypes);
 
                 IsMatchingFilteredTypes = true;
                 return;
@@ -99,6 +99,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 IsMatchingFilteredTypes = true;
                 return;
             }
+
             // If this VM has no property info, assume it does not match
             if (PropertyInfo == null)
             {
@@ -106,7 +107,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 return;
             }
 
-            IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsAssignableFrom(PropertyInfo.PropertyType));
+            if (looseMatch)
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType));
+            else
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType);
         }
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
@@ -129,7 +133,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                     return child.GetChildByPath(dataModelGuid, string.Join(".", path.Skip(1)));
                 return child;
             }
-            
         }
 
         public string GetCurrentPath()

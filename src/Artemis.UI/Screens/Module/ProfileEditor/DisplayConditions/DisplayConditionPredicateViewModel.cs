@@ -113,7 +113,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             if (RightSideInputViewModel == null)
                 return;
 
-            if (!message.KeyDown && message.EventArgs.Key == Key.Escape) 
+            if (!message.KeyDown && message.EventArgs.Key == Key.Escape)
                 RightSideInputViewModel.Cancel();
             if (!message.KeyDown && message.EventArgs.Key == Key.Enter)
                 RightSideInputViewModel.Submit();
@@ -124,7 +124,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             if (RightSideInputViewModel == null)
                 return;
 
-            if (message.Sender is FrameworkElement frameworkElement && !frameworkElement.IsDescendantOf(RightSideInputViewModel.View)) 
+            if (message.Sender is FrameworkElement frameworkElement && !frameworkElement.IsDescendantOf(RightSideInputViewModel.View))
                 RightSideInputViewModel.Submit();
         }
 
@@ -156,7 +156,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
             // If static, only allow selecting properties also supported by input
             if (DisplayConditionPredicate.PredicateType == PredicateType.Static)
-                LeftSideDataModel.ApplyTypeFilter(_supportedInputTypes.ToArray());
+                LeftSideDataModel.ApplyTypeFilter(false, _supportedInputTypes.ToArray());
 
             // Determine the left side property first
             SelectedLeftSideProperty = DisplayConditionPredicate.LeftPropertyPath != null
@@ -164,21 +164,29 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 : null;
             var leftSideType = SelectedLeftSideProperty?.PropertyInfo?.PropertyType;
 
-            // Right side may only select properties matching the left side
-            if (SelectedLeftSideProperty != null)
-                RightSideDataModel.ApplyTypeFilter(leftSideType);
-            else
-                RightSideDataModel.ApplyTypeFilter();
-
-            // Determine the right side property first
-            if (DisplayConditionPredicate.RightPropertyPath != null)
+            if (DisplayConditionPredicate.PredicateType == PredicateType.Dynamic)
             {
-                // Ensure the right side property still matches the left side type, else set it to null
-                var selectedProperty = RightSideDataModel.GetChildByPath(DisplayConditionPredicate.RightDataModelGuid, DisplayConditionPredicate.RightPropertyPath);
-                SelectedRightSideProperty = selectedProperty.IsMatchingFilteredTypes ? selectedProperty : null;
+                // Right side may only select properties matching the left side
+                if (SelectedLeftSideProperty != null)
+                    RightSideDataModel.ApplyTypeFilter(true, leftSideType);
+                else
+                    RightSideDataModel.ApplyTypeFilter(true);
+
+                // Determine the right side property
+                if (DisplayConditionPredicate.RightPropertyPath != null)
+                {
+                    // Ensure the right side property still matches the left side type, else set it to null
+                    var selectedProperty = RightSideDataModel.GetChildByPath(DisplayConditionPredicate.RightDataModelGuid, DisplayConditionPredicate.RightPropertyPath);
+                    SelectedRightSideProperty = selectedProperty.IsMatchingFilteredTypes ? selectedProperty : null;
+                }
+                else
+                    SelectedRightSideProperty = null;
             }
             else
-                SelectedRightSideProperty = null;
+            {
+                if (DisplayConditionPredicate.RightStaticValue != null && DisplayConditionPredicate.RightStaticValue.GetType() != leftSideType)
+                    DisplayConditionPredicate.RightStaticValue = null;
+            }
 
             // Get the supported operators
             Operators = _dataModelService.GetCompatibleConditionOperators(leftSideType);
@@ -201,13 +209,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 UpdateInputValue
             );
             _eventAggregator.Subscribe(this);
-
-            // After the animation finishes attempt to focus the input field
-            Task.Run(async () =>
-            {
-                await Task.Delay(400);
-                await Execute.OnUIThreadAsync(() => RightSideInputViewModel.View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
-            });
         }
 
         public void UpdateInputValue(object value, bool isSubmitted)

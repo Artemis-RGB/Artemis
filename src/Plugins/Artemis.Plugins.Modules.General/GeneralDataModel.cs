@@ -26,6 +26,7 @@ namespace Artemis.Plugins.Modules.General
         public PlayerInfo PlayerInfo { get; set; }
 
         public double UpdatesDividedByFour { get; set; }
+        public int Updates { get; set; }
 
         public List<int> IntsList { get; set; }
         public List<PlayerInfo> PlayerInfosList { get; set; }

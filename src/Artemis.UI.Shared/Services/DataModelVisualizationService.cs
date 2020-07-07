@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Exceptions;
@@ -150,9 +151,13 @@ namespace Artemis.UI.Shared.Services
         {
             lock (_registeredDataModelEditors)
             {
-                var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType.IsAssignableFrom(propertyType));
+                var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
                 {
+                    // The view models expecting value types shouldn't be given null, avoid that
+                    if (initialValue == null && propertyType.IsValueType)
+                        initialValue = Activator.CreateInstance(propertyType);
+
                     var parameters = new IParameter[]
                     {
                         new ConstructorArgument("description", description),

@@ -27,6 +27,7 @@ namespace Artemis.Plugins.Modules.General
         public override void Update(double deltaTime)
         {
             DataModel.UpdatesDividedByFour += 0.25;
+            DataModel.Updates += 1;
             DataModel.PlayerInfo.Position = new SKPoint(_rand.Next(100), _rand.Next(100));
 
             DataModel.IntsList[0] = _rand.Next();
