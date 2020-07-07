@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
@@ -96,6 +97,12 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
 
         internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
 
+        /// <summary>
+        ///     Gets or sets whether this plugin has a configuration view model.
+        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
+        /// </summary>
+        public bool HasConfigurationViewModel { get; protected set; }
+
         public void Dispose()
         {
             DisableLayerEffect();
@@ -138,5 +145,16 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core
         internal abstract void Initialize(ILayerService layerService);
+
+
+        /// <summary>
+        ///     Called when the effect configuration window is opened from the UI. The UI will only attempt to open if
+        ///     <see cref="HasConfigurationViewModel" /> is set to True.
+        /// </summary>
+        /// <returns></returns>
+        public virtual EffectConfigurationViewModel GetConfigurationViewModel()
+        {
+            return null;
+        }
     }
 }

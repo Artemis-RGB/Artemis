@@ -15,6 +15,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
             AddLayerEffectDescriptor<ErodeEffect>("Erode", "A layer effect providing an erode filter effect", "EyeMinus");
             AddLayerEffectDescriptor<GlowEffect>("Glow", "A layer effect providing a glow filter effect", "BoxShadow");
             AddLayerEffectDescriptor<GrayScaleEffect>("Gray-scale", "A layer effect providing a gray-scale filter effect", "InvertColors");
+            AddLayerEffectDescriptor<ColorMatrixEffect>("Color matrix", "A layer effect allowing you to apply a custom color matrix", "Matrix");
         }
 
         public override void DisablePlugin()

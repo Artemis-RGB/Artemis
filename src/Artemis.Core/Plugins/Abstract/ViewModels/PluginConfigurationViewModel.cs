@@ -9,6 +9,6 @@ namespace Artemis.Core.Plugins.Abstract.ViewModels
             Plugin = plugin;
         }
 
-        public Plugin Plugin { get; set; }
+        public Plugin Plugin { get; }
     }
 }
