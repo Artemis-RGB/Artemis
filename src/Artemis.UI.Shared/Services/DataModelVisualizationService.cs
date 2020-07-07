@@ -64,7 +64,7 @@ namespace Artemis.UI.Shared.Services
             return _dataModelService.GetPluginExtendsDataModel(plugin);
         }
 
-        public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo) where T : DataModelInputViewModel
+        public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes) where T : DataModelInputViewModel
         {
             var viewModelType = typeof(T);
             lock (_registeredDataModelEditors)
@@ -80,7 +80,14 @@ namespace Artemis.UI.Shared.Services
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
-                var registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, pluginInfo, supportedType, viewModelType);
+
+                // Create the registration
+                var registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, pluginInfo, supportedType, viewModelType)
+                {
+                    // Apply the compatible conversion types to the registration
+                    CompatibleConversionTypes = compatibleConversionTypes
+                };
+
                 _registeredDataModelEditors.Add(registration);
                 return registration;
             }
@@ -154,22 +161,29 @@ namespace Artemis.UI.Shared.Services
                 var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
                 {
-                    // The view models expecting value types shouldn't be given null, avoid that
-                    if (initialValue == null && propertyType.IsValueType)
-                        initialValue = Activator.CreateInstance(propertyType);
-
-                    var parameters = new IParameter[]
-                    {
-                        new ConstructorArgument("description", description),
-                        new ConstructorArgument("initialValue", initialValue)
-                    };
-                    var viewModel = (DataModelInputViewModel) _kernel.Get(match.ViewModelType, parameters);
+                    var viewModel = InstantiateDataModelInputViewModel(match, description, initialValue);
                     viewModel.UpdateCallback = updateCallback;
                     return viewModel;
                 }
 
                 return null;
             }
+        }
+
+        private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
+        {
+            // The view models expecting value types shouldn't be given null, avoid that
+            if (initialValue == null && registration.SupportedType.IsValueType)
+                initialValue = Activator.CreateInstance(registration.SupportedType);
+
+            var parameters = new IParameter[]
+            {
+                new ConstructorArgument("description", description),
+                new ConstructorArgument("initialValue", initialValue)
+            };
+            var viewModel = (DataModelInputViewModel) _kernel.Get(registration.ViewModelType, parameters);
+            viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
+            return viewModel;
         }
     }
 
@@ -185,7 +199,7 @@ namespace Artemis.UI.Shared.Services
         /// <returns></returns>
         bool GetPluginExtendsDataModel(Plugin plugin);
 
-        DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo) where T : DataModelInputViewModel;
+        DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes) where T : DataModelInputViewModel;
         DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel;
         void RemoveDataModelInput(DataModelVisualizationRegistration registration);
         void RemoveDataModelDisplay(DataModelVisualizationRegistration registration);

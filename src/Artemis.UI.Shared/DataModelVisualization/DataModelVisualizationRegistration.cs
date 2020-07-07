@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Plugins.Models;
 using Artemis.UI.Shared.Services;
@@ -29,6 +30,8 @@ namespace Artemis.UI.Shared.DataModelVisualization
         public PluginInfo PluginInfo { get; }
         public Type SupportedType { get; }
         public Type ViewModelType { get; }
+
+        public IReadOnlyCollection<Type> CompatibleConversionTypes { get; internal set; }
 
         internal void Unsubscribe()
         {

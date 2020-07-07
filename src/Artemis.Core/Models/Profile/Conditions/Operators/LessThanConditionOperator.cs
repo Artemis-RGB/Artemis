@@ -6,7 +6,7 @@ namespace Artemis.Core.Models.Profile.Conditions.Operators
 {
     public class LessThanConditionOperator : DisplayConditionOperator
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => NumberTypes;
+        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
 
         public override string Description => "Is less than";
         public override string Icon => "LessThan";

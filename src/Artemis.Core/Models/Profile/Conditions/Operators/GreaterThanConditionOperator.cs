@@ -6,7 +6,7 @@ namespace Artemis.Core.Models.Profile.Conditions.Operators
 {
     public class GreaterThanConditionOperator : DisplayConditionOperator
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => NumberTypes;
+        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
 
         public override string Description => "Is greater than";
         public override string Icon => "GreaterThan";
