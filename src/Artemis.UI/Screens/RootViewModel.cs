@@ -105,12 +105,21 @@ namespace Artemis.UI.Screens
 
         public void WindowKeyDown(object sender, KeyEventArgs e)
         {
-            _eventAggregator.Publish(new MainWindowKeyEvent(true, e));
+            _eventAggregator.Publish(new MainWindowKeyEvent(sender, true, e));
         }
 
         public void WindowKeyUp(object sender, KeyEventArgs e)
         {
-            _eventAggregator.Publish(new MainWindowKeyEvent(false, e));
+            _eventAggregator.Publish(new MainWindowKeyEvent(sender, false, e));
+        }
+        public void WindowMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowMouseEvent(sender, true, e));
+        }
+
+        public void WindowMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _eventAggregator.Publish(new MainWindowMouseEvent(sender, false, e));
         }
 
 
