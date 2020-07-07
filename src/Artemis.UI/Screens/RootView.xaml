@@ -20,6 +20,8 @@
                     Activated="{s:Action WindowActivated}"
                     KeyDown="{s:Action WindowKeyDown}"
                     KeyUp="{s:Action WindowKeyUp}"
+                    MouseDown="{s:Action WindowMouseDown}"
+                    MouseUp="{s:Action WindowMouseUp}"
                     d:DesignHeight="640" d:DesignWidth="1200" d:DataContext="{d:DesignInstance screens:RootViewModel}">
     <mde:MaterialWindow.Resources>
         <Style TargetType="ContentControl" x:Key="InitializingFade">

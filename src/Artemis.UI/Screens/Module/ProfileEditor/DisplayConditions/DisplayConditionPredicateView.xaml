@@ -79,7 +79,7 @@
                 Grid.Column="2"
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
-                BorderBrush="#7B7B7B" 
+                BorderBrush="#7B7B7B"
                 Content="{Binding DisplayConditionPredicate.Operator.Description}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
@@ -87,8 +87,8 @@
                     <ContextMenu.ItemTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0"/>
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0" />
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
                             </StackPanel>
                         </DataTemplate>
                     </ContextMenu.ItemTemplate>
@@ -139,26 +139,30 @@
         <Grid Grid.Row="0"
               Grid.Column="3"
               Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-            <materialDesign:Transitioner
-                SelectedIndex="{Binding RightSideTransitionIndex}"
-                DefaultTransitionOrigin="0.5, 0.5"
-                Margin="3 -4">
+            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}" DefaultTransitionOrigin="0.5, 0.5" Margin="3 -4">
                 <Button Style="{StaticResource DisplayConditionButton}"
                         Background="{DynamicResource PrimaryHueMidBrush}"
                         BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                         Margin="0 4"
-                        Content="PredicateRightSide"
                         Command="{s:Action ActivateRightSideInputViewModel}"
-                        HorizontalAlignment="Left" />
+                        HorizontalAlignment="Left">
+                    <Grid>
+                        <TextBlock Text="{Binding DisplayConditionPredicate.RightStaticValue}"
+                                   Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" />
+                        <TextBlock Text="« Enter a value »"
+                                   FontStyle="Italic"
+                                   Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                    </Grid>
+                </Button>
                 <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"
-                        BorderThickness="2"
+                        Background="{DynamicResource MaterialDesignPaper}"
                         CornerRadius="3"
                         Padding="3"
-                        Width="140">
+                        Width="140"
+                        HorizontalAlignment="Left">
                     <ContentControl s:View.Model="{Binding RightSideInputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Border>
             </materialDesign:Transitioner>
-
         </Grid>
     </Grid>
 </UserControl>
