@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.Conditions.Operators;
 using Artemis.Core.Plugins.Abstract;
@@ -141,7 +142,7 @@ namespace Artemis.Core.Services
             {
                 if (type == null)
                     return new List<DisplayConditionOperator>(_registeredConditionOperators);
-                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Any(t => t.IsAssignableFrom(type))).ToList();
+                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
             }
         }
 

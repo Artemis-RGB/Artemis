@@ -38,6 +38,8 @@ namespace Artemis.UI.Services
                 return;
 
             _dataModelVisualizationService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo);
+            _dataModelVisualizationService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo);
+            _dataModelVisualizationService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo);
 
             _registeredBuiltInDataModelInputs = true;
         }

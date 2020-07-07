@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
+using System.Windows.Input;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Stylet;
 
@@ -27,6 +30,9 @@ namespace Artemis.UI.Shared.DataModelVisualization
         /// <inheritdoc />
         public sealed override void Submit()
         {
+            foreach (var sourceUpdatingBinding in BindingOperations.GetSourceUpdatingBindings(View))
+                sourceUpdatingBinding.UpdateSource();
+
             OnSubmit();
             UpdateCallback(InputValue, true);
         }
@@ -58,6 +64,13 @@ namespace Artemis.UI.Shared.DataModelVisualization
                 throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
 
             View = view;
+
+            // After the animation finishes attempt to focus the input field
+            Task.Run(async () =>
+            {
+                await Task.Delay(400);
+                await Execute.OnUIThreadAsync(() => View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
+            });
         }
 
         public UIElement View { get; set; }

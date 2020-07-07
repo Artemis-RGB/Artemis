@@ -84,9 +84,6 @@
     <Resource Include="Resources\Images\Logo\logo-512.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="FodyWeavers.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
   </ItemGroup>
   <ItemGroup>
@@ -308,5 +305,13 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Update="DataModelVisualization\Input\DoubleDataModelInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DataModelVisualization\Input\IntDataModelInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

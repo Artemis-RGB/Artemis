@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 
@@ -93,7 +94,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             if (type == null)
                 return true;
-            return CompatibleTypes.Any(t => t.IsAssignableFrom(type));
+            return CompatibleTypes.Any(t => t.IsCastableFrom(type));
         }
     }
 }
