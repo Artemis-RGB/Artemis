@@ -10,24 +10,6 @@ namespace Artemis.Core.Models.Profile.Conditions
 {
     public abstract class DisplayConditionOperator
     {
-        /// <summary>
-        ///     A read-only collection containing all primitive number types
-        /// </summary>
-        protected static IReadOnlyCollection<Type> NumberTypes = new List<Type>
-        {
-            typeof(sbyte),
-            typeof(byte),
-            typeof(short),
-            typeof(ushort),
-            typeof(int),
-            typeof(uint),
-            typeof(long),
-            typeof(ulong),
-            typeof(float),
-            typeof(double),
-            typeof(decimal)
-        };
-
         private IDataModelService _dataModelService;
         private bool _registered;
 

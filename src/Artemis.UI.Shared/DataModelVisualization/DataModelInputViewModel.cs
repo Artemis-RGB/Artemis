@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.UI.Shared.Exceptions;
 using Stylet;
 
 namespace Artemis.UI.Shared.DataModelVisualization
@@ -38,10 +41,28 @@ namespace Artemis.UI.Shared.DataModelVisualization
         }
 
         /// <inheritdoc />
-        public sealed  override void Cancel()
+        public sealed override void Cancel()
         {
             OnCancel();
             UpdateCallback(InputValue, false);
+        }
+
+        /// <summary>
+        ///     May be called to convert an object to one of the types defined in CompatibleConversionTypes
+        /// </summary>
+        /// <param name="source">The object to convert, will always be of a type contained in CompatibleConversionTypes</param>
+        /// <returns>The converted value</returns>
+        protected virtual T ConvertToSupportedType(object source)
+        {
+            return default;
+        }
+
+        internal override object InternalConvertToSupportedType(object source)
+        {
+            if (CompatibleConversionTypes != null && CompatibleConversionTypes.Contains(source.GetType()))
+                return ConvertToSupportedType(source);
+
+            throw new ArtemisSharedUIException($"Cannot convert source of type {source.GetType().Name} because the data model input view model does not support it.");
         }
     }
 
@@ -57,6 +78,11 @@ namespace Artemis.UI.Shared.DataModelVisualization
         internal abstract object InternalGuard { get; }
 
         internal Action<object, bool> UpdateCallback { get; set; }
+
+        /// <summary>
+        ///     Gets the types this input view model can support through type conversion
+        /// </summary>
+        internal IReadOnlyCollection<Type> CompatibleConversionTypes { get; set; }
 
         public void AttachView(UIElement view)
         {
@@ -98,5 +124,7 @@ namespace Artemis.UI.Shared.DataModelVisualization
         protected virtual void OnCancel()
         {
         }
+
+        internal abstract object InternalConvertToSupportedType(object source);
     }
 }

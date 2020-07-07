@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.DataModelVisualization;
+using FluentValidation.TestHelper;
 
 namespace Artemis.UI.DataModelVisualization.Input
 {

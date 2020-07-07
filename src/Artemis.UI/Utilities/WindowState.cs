@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using MaterialDesignExtensions.Controls;
 
 namespace Artemis.UI.Utilities
@@ -22,8 +23,8 @@ namespace Artemis.UI.Utilities
 
         public void ApplyToWindow(MaterialWindow window)
         {
-            window.Top = Top;
-            window.Left = Left;
+            window.Top = Math.Max(0, Top);
+            window.Left = Math.Max(0, Left);
             window.Height = Height;
             window.Width = Width;
             window.WindowState = IsMaximized ? WindowState.Maximized : WindowState.Normal;
