@@ -102,9 +102,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             );
 
             if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
-            {
                 paint.Color = Properties.SecondaryColor.CurrentValue;
-            }
 
             using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
             paint.Shader = foregroundShader;

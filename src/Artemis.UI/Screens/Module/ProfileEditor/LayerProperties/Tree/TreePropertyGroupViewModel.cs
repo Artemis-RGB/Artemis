@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Screens.Module.ProfileEditor.Dialogs;
@@ -11,19 +12,51 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
     public class TreePropertyGroupViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
+        private readonly IWindowManager _windowManager;
         private readonly ILayerService _layerService;
         private readonly IProfileEditorService _profileEditorService;
 
         public TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel,
-            IProfileEditorService profileEditorService, ILayerService layerService, IDialogService dialogService)
+            IProfileEditorService profileEditorService, ILayerService layerService, IDialogService dialogService, IWindowManager windowManager)
         {
             _profileEditorService = profileEditorService;
             _layerService = layerService;
             _dialogService = dialogService;
+            _windowManager = windowManager;
             LayerPropertyGroupViewModel = (LayerPropertyGroupViewModel) layerPropertyBaseViewModel;
         }
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
+
+        public async void OpenBrushSettings()
+        {
+            try
+            {
+                var configurationViewModel = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.GetConfigurationViewModel();
+                if (configurationViewModel != null)
+                    _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(configurationViewModel));
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
+                throw;
+            }
+        }
+
+        public async void OpenEffectSettings()
+        {
+            try
+            {
+                var configurationViewModel = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.GetConfigurationViewModel();
+                if (configurationViewModel != null)
+                    _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(configurationViewModel));
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowExceptionDialog("An exception occured while trying to show the effect's settings window", e);
+                throw;
+            }
+        }
 
         public async void RenameEffect()
         {

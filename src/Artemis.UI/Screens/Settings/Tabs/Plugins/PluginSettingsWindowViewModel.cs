@@ -1,15 +1,17 @@
 ﻿using Artemis.Core.Plugins.Abstract.ViewModels;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginSettingsWindowViewModel : Conductor<PluginConfigurationViewModel>
     {
-        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel)
+        public PackIconKind Icon { get; }
+
+        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, PackIconKind icon)
         {
+            Icon = icon;
             ActiveItem = configurationViewModel;
         }
-
-        public string Title => "Plugin configuration - " + ActiveItem?.Plugin?.PluginInfo?.Name;
     }
 }

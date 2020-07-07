@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -70,6 +71,12 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             }
         }
 
+        /// <summary>
+        ///     Gets or sets whether this plugin has a configuration view model.
+        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
+        /// </summary>
+        public bool HasConfigurationViewModel { get; protected set; }
+
         public void Dispose()
         {
             DisableLayerBrush();
@@ -93,6 +100,16 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         /// </summary>
         /// <param name="deltaTime"></param>
         public abstract void Update(double deltaTime);
+
+        /// <summary>
+        ///     Called when the brush configuration window is opened from the UI. The UI will only attempt to open if
+        ///     <see cref="HasConfigurationViewModel" /> is set to True.
+        /// </summary>
+        /// <returns></returns>
+        public virtual BrushConfigurationViewModel GetConfigurationViewModel()
+        {
+            return null;
+        }
 
         // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
         // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
