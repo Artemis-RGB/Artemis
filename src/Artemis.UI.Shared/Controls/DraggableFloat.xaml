@@ -49,6 +49,7 @@
                  LostFocus="InputLostFocus"
                  KeyDown="InputKeyDown"
                  Visibility="Collapsed"
-                 RequestBringIntoView="Input_OnRequestBringIntoView" />
+                 RequestBringIntoView="Input_OnRequestBringIntoView"
+                 PreviewTextInput="Input_PreviewTextInput"/>
     </Grid>
 </UserControl>

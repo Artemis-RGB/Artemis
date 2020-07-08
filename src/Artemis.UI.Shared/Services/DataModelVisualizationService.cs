@@ -64,8 +64,10 @@ namespace Artemis.UI.Shared.Services
             return _dataModelService.GetPluginExtendsDataModel(plugin);
         }
 
-        public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes) where T : DataModelInputViewModel
+        public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes = null) where T : DataModelInputViewModel
         {
+            if (compatibleConversionTypes == null)
+                compatibleConversionTypes = new List<Type>();
             var viewModelType = typeof(T);
             lock (_registeredDataModelEditors)
             {
@@ -158,7 +160,12 @@ namespace Artemis.UI.Shared.Services
         {
             lock (_registeredDataModelEditors)
             {
+                // Prefer a VM that natively supports the type
                 var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == propertyType);
+                // Fall back on a VM that supports the type through conversion
+                if (match == null)
+                    match = _registeredDataModelEditors.FirstOrDefault(d => d.CompatibleConversionTypes.Contains(propertyType));
+
                 if (match != null)
                 {
                     var viewModel = InstantiateDataModelInputViewModel(match, description, initialValue);
@@ -173,8 +180,14 @@ namespace Artemis.UI.Shared.Services
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
         {
             // The view models expecting value types shouldn't be given null, avoid that
-            if (initialValue == null && registration.SupportedType.IsValueType)
-                initialValue = Activator.CreateInstance(registration.SupportedType);
+            if (registration.SupportedType.IsValueType)
+            {
+                if (initialValue == null)
+                    initialValue = Activator.CreateInstance(registration.SupportedType);
+            }
+            // This assumes the type can be converted, that has been checked when the VM was created
+            if (initialValue != null && initialValue.GetType() != registration.SupportedType)
+                initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
             var parameters = new IParameter[]
             {
