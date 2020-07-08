@@ -28,7 +28,7 @@ namespace Artemis.Core
         public static readonly PluginInfo CorePluginInfo = new PluginInfo {Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core"};
 
         /// <summary>
-        ///     A read-only collection containing all primitive number types
+        ///     A read-only collection containing all primitive numeric types
         /// </summary>
         public static IReadOnlyCollection<Type> NumberTypes = new List<Type>
         {
@@ -40,6 +40,31 @@ namespace Artemis.Core
             typeof(uint),
             typeof(long),
             typeof(ulong),
+            typeof(float),
+            typeof(double),
+            typeof(decimal)
+        };
+
+        /// <summary>
+        ///     A read-only collection containing all primitive integral numeric types
+        /// </summary>
+        public static IReadOnlyCollection<Type> IntegralNumberTypes = new List<Type>
+        {
+            typeof(sbyte),
+            typeof(byte),
+            typeof(short),
+            typeof(ushort),
+            typeof(int),
+            typeof(uint),
+            typeof(long),
+            typeof(ulong)
+        };
+
+        /// <summary>
+        ///     A read-only collection containing all primitive floating-point numeric types
+        /// </summary>
+        public static IReadOnlyCollection<Type> FloatNumberTypes = new List<Type>
+        {
             typeof(float),
             typeof(double),
             typeof(decimal)

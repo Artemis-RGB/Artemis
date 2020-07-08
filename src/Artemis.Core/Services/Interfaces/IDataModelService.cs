@@ -32,6 +32,12 @@ namespace Artemis.Core.Services.Interfaces
         DataModel GetPluginDataModel(Plugin plugin);
 
         /// <summary>
+        ///     If found, returns the data model of the provided plugin
+        /// </summary>
+        /// <param name="pluginGuid">Should be a module with a data model or a data model expansion</param>
+        DataModel GetPluginDataModelByGuid(Guid pluginGuid);
+
+        /// <summary>
         ///     Determines whether the given plugin expands the main data model
         /// </summary>
         /// <param name="plugin"></param>

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -81,7 +83,7 @@ namespace Artemis.UI.Shared.Controls
         private void InputMouseDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            
+
             _startValue = Value;
             ((IInputElement) sender).CaptureMouse();
             _mouseDragStartPoint = e.GetPosition((IInputElement) sender);
@@ -109,7 +111,7 @@ namespace Artemis.UI.Shared.Controls
                 return;
 
             e.Handled = true;
-            
+
             if (!_calledDragStarted)
             {
                 OnDragStarted();
@@ -160,6 +162,13 @@ namespace Artemis.UI.Shared.Controls
         private void Input_OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
+        }
+
+        private void Input_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var seperator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            var regex = new Regex("^[" + seperator + "][0-9]+$|^[0-9]*[" + seperator + "]{0,1}[0-9]*$");
+            e.Handled = !regex.IsMatch(e.Text);
         }
 
         private static decimal UltimateRoundingFunction(decimal amountToRound, decimal nearstOf, decimal fairness)
