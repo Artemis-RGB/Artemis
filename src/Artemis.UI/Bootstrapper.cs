@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Markup;
 using System.Windows.Threading;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Ninject;
@@ -34,8 +37,6 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            var test = new DisplayCondition();
-
             StartupArguments = Args.ToList();
 
             var logger = Kernel.Get<ILogger>();
@@ -51,6 +52,9 @@ namespace Artemis.UI
                 HandleFatalException(e, logger);
                 throw;
             }
+
+            // Ensure WPF uses the right culture in binding converters
+            FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Create and bind the root view, this is a tray icon so don't show it with the window manager
             Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using System.Windows.Input;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.DataModelVisualization;
@@ -16,11 +15,6 @@ namespace Artemis.UI.DataModelVisualization.Input
         {
             var regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
-        }
-
-        protected override int ConvertToSupportedType(object source)
-        {
-            return Convert.ToInt32(source);
         }
     }
 }

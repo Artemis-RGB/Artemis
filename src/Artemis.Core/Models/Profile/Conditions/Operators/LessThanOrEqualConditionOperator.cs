@@ -11,11 +11,9 @@ namespace Artemis.Core.Models.Profile.Conditions.Operators
         public override string Description => "Is less than or equal to";
         public override string Icon => "LessThanOrEqual";
 
-        public override BinaryExpression CreateExpression(Type leftSideType, Type rightSideType)
+        public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
         {
-            var leftSideParameter = Expression.Parameter(leftSideType, "a");
-            var rightSideParameter = Expression.Parameter(rightSideType, "b");
-            return Expression.LessThanOrEqual(leftSideParameter, rightSideParameter);
+            return Expression.LessThanOrEqual(leftSide, rightSide);
         }
     }
 }

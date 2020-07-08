@@ -37,9 +37,9 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelInputs)
                 return;
 
-            _dataModelVisualizationService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, Constants.NumberTypes);
-            _dataModelVisualizationService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.NumberTypes);
-            _dataModelVisualizationService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.NumberTypes);
+            _dataModelVisualizationService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelVisualizationService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
+            _dataModelVisualizationService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.FloatNumberTypes);
 
             _registeredBuiltInDataModelInputs = true;
         }

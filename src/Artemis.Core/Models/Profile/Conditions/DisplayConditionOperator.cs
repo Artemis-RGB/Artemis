@@ -34,14 +34,6 @@ namespace Artemis.Core.Models.Profile.Conditions
         /// </summary>
         public abstract string Icon { get; }
 
-        /// <summary>
-        ///     Creates a binary expression comparing two types
-        /// </summary>
-        /// <param name="leftSideType">The type of parameter passed to the left side of the expression</param>
-        /// <param name="rightSideType">The type of parameter passed to the right side of the expression</param>
-        /// <returns></returns>
-        public abstract BinaryExpression CreateExpression(Type leftSideType, Type rightSideType);
-
         internal void Register(PluginInfo pluginInfo, IDataModelService dataModelService)
         {
             if (_registered)
@@ -78,5 +70,13 @@ namespace Artemis.Core.Models.Profile.Conditions
                 return true;
             return CompatibleTypes.Any(t => t.IsCastableFrom(type));
         }
+
+        /// <summary>
+        ///     Creates a binary expression comparing two types
+        /// </summary>
+        /// <param name="leftSide">The parameter on the left side of the expression</param>
+        /// <param name="rightSide">The parameter on the right side of the expression</param>
+        /// <returns></returns>
+        public abstract BinaryExpression CreateExpression(Expression leftSide, Expression rightSide);
     }
 }
