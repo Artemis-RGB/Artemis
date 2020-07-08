@@ -40,6 +40,9 @@ namespace Artemis.Plugins.Modules.General
         [DataModelProperty(Name = "A test boolean", Description = "This is a test boolean that's not of any use outside testing!")]
         public bool TestBoolean { get; set; }
 
+        [DataModelProperty(Affix = "%", MinValue = 0, MaxValue = 100)]
+        public int Health { get; set; }
+
         public SKPoint Position { get; set; }
     }
 }

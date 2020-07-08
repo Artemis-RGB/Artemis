@@ -147,8 +147,18 @@
                         Command="{s:Action ActivateRightSideInputViewModel}"
                         HorizontalAlignment="Left">
                     <Grid>
-                        <TextBlock Text="{Binding DisplayConditionPredicate.RightStaticValue}"
-                                   Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" />
+                        <StackPanel Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
+                            <TextBlock Margin="0 0 3 0"
+                                       FontWeight="Light"
+                                       Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
+                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}"/>
+                            <TextBlock Text="{Binding DisplayConditionPredicate.RightStaticValue}"/>
+                            <TextBlock Margin="3 0 0 0"
+                                       FontWeight="Light"
+                                       Text="{Binding SelectedLeftSideProperty.PropertyDescription.Affix}"
+                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
+                        </StackPanel>
+
                         <TextBlock Text="« Enter a value »"
                                    FontStyle="Italic"
                                    Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />

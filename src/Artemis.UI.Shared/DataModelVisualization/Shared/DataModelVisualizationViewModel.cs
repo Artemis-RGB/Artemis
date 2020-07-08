@@ -180,6 +180,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                                       new DataModelPropertyAttribute {Name = PropertyInfo.Name.Humanize()};
             else
                 throw new ArtemisSharedUIException("Failed to get property description because plugin info is null but the parent has a datamodel");
+
+            // If a property description was provided but the name is null, use the humanized property name
+            if (PropertyDescription != null && PropertyDescription.Name == null && PropertyInfo != null)
+                PropertyDescription.Name = PropertyInfo.Name.Humanize();
         }
     }
 }
