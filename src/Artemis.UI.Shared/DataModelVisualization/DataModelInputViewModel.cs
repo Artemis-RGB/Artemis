@@ -46,24 +46,6 @@ namespace Artemis.UI.Shared.DataModelVisualization
             OnCancel();
             UpdateCallback(InputValue, false);
         }
-
-        /// <summary>
-        ///     May be called to convert an object to one of the types defined in CompatibleConversionTypes
-        /// </summary>
-        /// <param name="source">The object to convert, will always be of a type contained in CompatibleConversionTypes</param>
-        /// <returns>The converted value</returns>
-        protected virtual T ConvertToSupportedType(object source)
-        {
-            return default;
-        }
-
-        internal override object InternalConvertToSupportedType(object source)
-        {
-            if (CompatibleConversionTypes != null && CompatibleConversionTypes.Contains(source.GetType()))
-                return ConvertToSupportedType(source);
-
-            throw new ArtemisSharedUIException($"Cannot convert source of type {source.GetType().Name} because the data model input view model does not support it.");
-        }
     }
 
     /// <summary>
@@ -80,7 +62,7 @@ namespace Artemis.UI.Shared.DataModelVisualization
         internal Action<object, bool> UpdateCallback { get; set; }
 
         /// <summary>
-        ///     Gets the types this input view model can support through type conversion
+        ///     Gets the types this input view model can support through type conversion. This list is defined when registering the view model.
         /// </summary>
         internal IReadOnlyCollection<Type> CompatibleConversionTypes { get; set; }
 
@@ -124,7 +106,5 @@ namespace Artemis.UI.Shared.DataModelVisualization
         protected virtual void OnCancel()
         {
         }
-
-        internal abstract object InternalConvertToSupportedType(object source);
     }
 }

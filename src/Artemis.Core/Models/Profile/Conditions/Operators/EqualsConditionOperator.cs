@@ -11,11 +11,9 @@ namespace Artemis.Core.Models.Profile.Conditions.Operators
         public override string Description => "Equals";
         public override string Icon => "Equal";
 
-        public override BinaryExpression CreateExpression(Type leftSideType, Type rightSideType)
+        public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
         {
-            var leftSideParameter = Expression.Parameter(leftSideType, "a");
-            var rightSideParameter = Expression.Parameter(rightSideType, "b");
-            return Expression.Equal(leftSideParameter, rightSideParameter);
+            return Expression.Equal(leftSide, rightSide);
         }
     }
 }

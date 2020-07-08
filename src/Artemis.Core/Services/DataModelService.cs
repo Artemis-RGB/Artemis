@@ -93,6 +93,15 @@ namespace Artemis.Core.Services
             return null;
         }
 
+        public DataModel GetPluginDataModelByGuid(Guid pluginGuid)
+        {
+            var pluginInfo = _pluginService.GetAllPluginInfo().FirstOrDefault(i => i.Guid == pluginGuid);
+            if (pluginInfo == null || !pluginInfo.Enabled)
+                return null;
+
+            return GetPluginDataModel(pluginInfo.Instance);
+        }
+
         public bool GetPluginExtendsDataModel(Plugin plugin)
         {
             if (plugin is Module module)
