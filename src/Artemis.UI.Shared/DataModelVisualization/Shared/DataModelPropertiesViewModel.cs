@@ -22,9 +22,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
             return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
         }
-
-     
-
+        
         private void PopulateProperties(IDataModelVisualizationService dataModelVisualizationService)
         {
             if (Children.Any())
