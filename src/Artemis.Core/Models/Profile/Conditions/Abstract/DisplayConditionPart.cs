@@ -32,5 +32,7 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
                 _children.Remove(displayConditionPart);
             }
         }
+
+        public abstract void ApplyToEntity();
     }
 }

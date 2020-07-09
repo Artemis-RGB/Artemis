@@ -42,17 +42,17 @@ namespace Artemis.Core.Services.Interfaces
         ///     Instantiates and adds the <see cref="BaseLayerEffect" /> described by the provided
         ///     <see cref="LayerEffectDescriptor" /> to the <see cref="Layer" />.
         /// </summary>
-        /// <param name="effectProfileElement">The layer/folder to instantiate the effect for</param>
-        void InstantiateLayerEffects(EffectProfileElement effectProfileElement);
+        /// <param name="renderProfileElement">The layer/folder to instantiate the effect for</param>
+        void InstantiateLayerEffects(RenderProfileElement renderProfileElement);
 
         /// <summary>
         ///     Adds the <see cref="BaseLayerEffect" /> described by the provided <see cref="LayerEffectDescriptor" /> to the
         ///     <see cref="Layer" />.
         /// </summary>
-        /// <param name="effectProfileElement">The layer/folder to instantiate the effect for</param>
+        /// <param name="renderProfileElement">The layer/folder to instantiate the effect for</param>
         /// <param name="layerEffectDescriptor"></param>
         /// <returns></returns>
-        BaseLayerEffect AddLayerEffect(EffectProfileElement effectProfileElement, LayerEffectDescriptor layerEffectDescriptor);
+        BaseLayerEffect AddLayerEffect(RenderProfileElement renderProfileElement, LayerEffectDescriptor layerEffectDescriptor);
 
         void RemoveLayerEffect(BaseLayerEffect layerEffect);
     }

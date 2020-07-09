@@ -7,7 +7,7 @@ using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
 {
-    public sealed class Folder : EffectProfileElement
+    public sealed class Folder : RenderProfileElement
     {
         private SKBitmap _folderBitmap;
 
@@ -159,7 +159,7 @@ namespace Artemis.Core.Models.Profile
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var child in Children)
             {
-                if (child is EffectProfileElement effectChild && effectChild.Path != null)
+                if (child is RenderProfileElement effectChild && effectChild.Path != null)
                     path.AddPath(effectChild.Path);
             }
 
@@ -182,10 +182,13 @@ namespace Artemis.Core.Models.Profile
             FolderEntity.Enabled = Enabled;
 
             FolderEntity.ProfileId = Profile.EntityId;
+            FolderEntity.ExpandedPropertyGroups.Clear();
+            FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
 
             ApplyLayerEffectsToEntity();
 
-            // TODO: conditions
+            // Conditions
+            DisplayConditionGroup?.ApplyToEntity();
         }
 
         #region Events

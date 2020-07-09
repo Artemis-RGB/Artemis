@@ -14,7 +14,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
         private Guid _entityId;
-        private EffectProfileElement _profileElement;
+        private RenderProfileElement _profileElement;
         private string _name;
         private bool _enabled;
         private bool _hasBeenRenamed;
@@ -33,7 +33,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public EffectProfileElement ProfileElement
+        public RenderProfileElement ProfileElement
         {
             get => _profileElement;
             internal set => SetAndNotify(ref _profileElement, value);

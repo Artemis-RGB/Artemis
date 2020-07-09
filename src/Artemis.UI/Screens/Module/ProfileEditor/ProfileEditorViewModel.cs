@@ -28,6 +28,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private PluginSetting<GridLength> _displayConditionsHeight;
         private PluginSetting<GridLength> _bottomPanelsHeight;
         private PluginSetting<GridLength> _elementPropertiesWidth;
+        private ProfileViewModel _profileViewModel;
+        private ProfileTreeViewModel _profileTreeViewModel;
+        private LayerPropertiesViewModel _layerPropertiesViewModel;
+        private DisplayConditionsViewModel _displayConditionsViewModel;
 
         public ProfileEditorViewModel(ProfileModule module,
             ICollection<ProfileEditorPanelViewModel> viewModels,
@@ -44,21 +48,44 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Module = module;
             DialogService = dialogService;
 
-            DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
-            LayerPropertiesViewModel = (LayerPropertiesViewModel) viewModels.First(vm => vm is LayerPropertiesViewModel);
-            ProfileTreeViewModel = (ProfileTreeViewModel) viewModels.First(vm => vm is ProfileTreeViewModel);
-            ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
             Profiles = new BindableCollection<Profile>();
 
+            // Run this first to let VMs activate without causing constant UI updates
             Items.AddRange(viewModels);
+
+            // Populate the panels
+            ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
+            ProfileTreeViewModel = (ProfileTreeViewModel) viewModels.First(vm => vm is ProfileTreeViewModel);
+            DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
+            LayerPropertiesViewModel = (LayerPropertiesViewModel) viewModels.First(vm => vm is LayerPropertiesViewModel);
         }
 
         public ProfileModule Module { get; }
         public IDialogService DialogService { get; }
-        public DisplayConditionsViewModel DisplayConditionsViewModel { get; }
-        public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
-        public ProfileTreeViewModel ProfileTreeViewModel { get; }
-        public ProfileViewModel ProfileViewModel { get; }
+
+        public DisplayConditionsViewModel DisplayConditionsViewModel
+        {
+            get => _displayConditionsViewModel;
+            set => SetAndNotify(ref _displayConditionsViewModel, value);
+        }
+
+        public LayerPropertiesViewModel LayerPropertiesViewModel
+        {
+            get => _layerPropertiesViewModel;
+            set => SetAndNotify(ref _layerPropertiesViewModel, value);
+        }
+
+        public ProfileTreeViewModel ProfileTreeViewModel
+        {
+            get => _profileTreeViewModel;
+            set => SetAndNotify(ref _profileTreeViewModel, value);
+        }
+
+        public ProfileViewModel ProfileViewModel
+        {
+            get => _profileViewModel;
+            set => SetAndNotify(ref _profileViewModel, value);
+        }
 
         public BindableCollection<Profile> Profiles
         {

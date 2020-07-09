@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private LayerPropertyGroupViewModel _brushPropertyGroup;
         private bool _repeatAfterLastKeyframe;
         private int _propertyTreeIndex;
-        private PropertiesProfileElement _selectedPropertiesElement;
+        private RenderProfileElement _selectedProfileElement;
         private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
         private TreeViewModel _treeViewModel;
         private EffectsViewModel _effectsViewModel;
@@ -86,19 +86,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
-        public PropertiesProfileElement SelectedPropertiesElement
+        public RenderProfileElement SelectedProfileElement
         {
-            get => _selectedPropertiesElement;
+            get => _selectedProfileElement;
             set
             {
-                if (!SetAndNotify(ref _selectedPropertiesElement, value)) return;
+                if (!SetAndNotify(ref _selectedProfileElement, value)) return;
                 NotifyOfPropertyChange(nameof(SelectedLayer));
                 NotifyOfPropertyChange(nameof(SelectedFolder));
             }
         }
 
-        public Layer SelectedLayer => SelectedPropertiesElement as Layer;
-        public Folder SelectedFolder => SelectedPropertiesElement as Folder;
+        public Layer SelectedLayer => SelectedProfileElement as Layer;
+        public Folder SelectedFolder => SelectedProfileElement as Folder;
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
         {
@@ -126,8 +126,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         protected override void OnInitialActivate()
         {
-            if (ProfileEditorService.SelectedProfileElement is PropertiesProfileElement propertiesElement)
-                PopulateProperties(propertiesElement);
+            PopulateProperties(ProfileEditorService.SelectedProfileElement);
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
@@ -146,12 +145,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             base.OnClose();
         }
 
-        protected override void OnActivate()
-        {
-            PopulateProperties(ProfileEditorService.SelectedProfileElement as PropertiesProfileElement);
-            base.OnActivate();
-        }
-
         protected override void OnDeactivate()
         {
             Pause();
@@ -164,11 +157,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 EffectsViewModel.PopulateDescriptors();
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
+        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
-            PopulateProperties(e.ProfileElement as PropertiesProfileElement);
+            PopulateProperties(e.RenderProfileElement);
         }
-
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
         {
@@ -190,23 +182,27 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             return groups;
         }
 
-        private void PopulateProperties(PropertiesProfileElement profileElement)
+        private void PopulateProperties(RenderProfileElement profileElement)
         {
-            if (SelectedPropertiesElement != null && SelectedPropertiesElement is EffectProfileElement effectElement)
-                effectElement.LayerEffectsUpdated -= SelectedElementOnLayerEffectsUpdated;
+            // Unsubscribe from old selected element
+            if (SelectedProfileElement != null)
+                SelectedProfileElement.LayerEffectsUpdated -= SelectedElementOnLayerEffectsUpdated;
             if (SelectedLayer != null)
                 SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
+            // Clear old properties
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.Dispose();
             LayerPropertyGroups.Clear();
             _brushPropertyGroup = null;
 
-            SelectedPropertiesElement = profileElement;
-            if (SelectedPropertiesElement is EffectProfileElement newEffectElement)
-                newEffectElement.LayerEffectsUpdated += SelectedElementOnLayerEffectsUpdated;
+            if (profileElement == null)
+                return;
 
-            // Apply layer properties
+            // Subscribe to new element
+            SelectedProfileElement = profileElement;
+            SelectedProfileElement.LayerEffectsUpdated += SelectedElementOnLayerEffectsUpdated;
+
             if (SelectedLayer != null)
             {
                 SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
@@ -278,21 +274,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void ApplyEffects()
         {
-            EffectProfileElement effectElement;
+            RenderProfileElement renderElement;
             if (SelectedLayer != null)
-                effectElement = SelectedLayer;
+                renderElement = SelectedLayer;
             else if (SelectedFolder != null)
-                effectElement = SelectedFolder;
+                renderElement = SelectedFolder;
             else
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !effectElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
+            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !renderElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
             LayerPropertyGroups.RemoveRange(toRemove);
             foreach (var layerPropertyGroupViewModel in toRemove)
                 layerPropertyGroupViewModel.Dispose();
 
-            foreach (var layerEffect in effectElement.LayerEffects)
+            foreach (var layerEffect in renderElement.LayerEffects)
             {
                 if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect))
                     continue;

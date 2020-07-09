@@ -1,5 +1,4 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
+﻿using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -23,20 +22,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _rootGroup, value);
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, ProfileElementEventArgs e)
+        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
-            if (e.ProfileElement is Layer layer)
+            if (e.RenderProfileElement == null)
             {
-                // Ensure the layer has a root display condition group
-                if (layer.DisplayConditionGroup == null)
-                    layer.DisplayConditionGroup = new DisplayConditionGroup();
-
-                RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(layer.DisplayConditionGroup, null);
-                RootGroup.IsRootGroup = true;
-                RootGroup.Update();
-            }
-            else
                 RootGroup = null;
+                return;
+            }
+
+            // Ensure the layer has a root display condition group
+            if (e.RenderProfileElement.DisplayConditionGroup == null)
+                e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup();
+
+            RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null);
+            RootGroup.IsRootGroup = true;
+            RootGroup.Update();
         }
     }
 }

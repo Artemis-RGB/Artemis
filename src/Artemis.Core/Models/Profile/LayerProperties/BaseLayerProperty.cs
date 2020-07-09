@@ -20,7 +20,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public PropertiesProfileElement ProfileElement { get; internal set; }
+        public RenderProfileElement ProfileElement { get; internal set; }
 
         /// <summary>
         ///     The parent group of this layer property, set after construction

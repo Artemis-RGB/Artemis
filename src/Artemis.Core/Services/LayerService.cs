@@ -20,7 +20,7 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
 
-        public LayerService(IKernel kernel, ILogger logger, IPluginService pluginService)
+        public LayerService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService)
         {
             _kernel = kernel;
             _logger = logger;
@@ -39,7 +39,6 @@ namespace Artemis.Core.Services
             // With the properties loaded, the layer brush and effect can be instantiated
             InstantiateLayerBrush(layer);
             InstantiateLayerEffects(layer);
-
             return layer;
         }
 
@@ -85,21 +84,21 @@ namespace Artemis.Core.Services
             return brush;
         }
 
-        public BaseLayerEffect AddLayerEffect(EffectProfileElement effectElement, LayerEffectDescriptor layerEffectDescriptor)
+        public BaseLayerEffect AddLayerEffect(RenderProfileElement renderElement, LayerEffectDescriptor layerEffectDescriptor)
         {
             // Create the effect with dependency injection
             var effect = (BaseLayerEffect) _kernel.Get(layerEffectDescriptor.LayerEffectType);
 
-            effect.ProfileElement = effectElement;
+            effect.ProfileElement = renderElement;
             effect.EntityId = Guid.NewGuid();
             effect.Enabled = true;
-            effect.Order = effectElement.LayerEffects.Count + 1;
+            effect.Order = renderElement.LayerEffects.Count + 1;
             effect.Descriptor = layerEffectDescriptor;
 
             effect.Initialize(this);
             effect.Update(0);
 
-            effectElement.AddLayerEffect(effect);
+            renderElement.AddLayerEffect(effect);
             _logger.Debug("Added layer effect with root path {rootPath}", effect.PropertyRootPath);
             return effect;
         }
@@ -109,16 +108,16 @@ namespace Artemis.Core.Services
             layerEffect.ProfileElement.RemoveLayerEffect(layerEffect);
         }
 
-        public void InstantiateLayerEffects(EffectProfileElement effectElement)
+        public void InstantiateLayerEffects(RenderProfileElement renderElement)
         {
             var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
             var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
-            var entities = effectElement.EffectsEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
+            var entities = renderElement.EffectsEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
 
             foreach (var layerEffectEntity in entities)
             {
                 // Skip effects already on the element
-                if (effectElement.LayerEffects.Any(e => e.EntityId == layerEffectEntity.Id))
+                if (renderElement.LayerEffects.Any(e => e.EntityId == layerEffectEntity.Id))
                     continue;
 
                 // Get a matching descriptor
@@ -130,7 +129,7 @@ namespace Artemis.Core.Services
                 // Create the effect with dependency injection
                 var effect = (BaseLayerEffect) _kernel.Get(descriptor.LayerEffectType);
 
-                effect.ProfileElement = effectElement;
+                effect.ProfileElement = renderElement;
                 effect.EntityId = layerEffectEntity.Id;
                 effect.Order = layerEffectEntity.Order;
                 effect.Name = layerEffectEntity.Name;
@@ -140,9 +139,14 @@ namespace Artemis.Core.Services
                 effect.Initialize(this);
                 effect.Update(0);
 
-                effectElement.AddLayerEffect(effect);
+                renderElement.AddLayerEffect(effect);
                 _logger.Debug("Instantiated layer effect with root path {rootPath}", effect.PropertyRootPath);
             }
+        }
+        
+        public void InstantiateDisplayConditions(RenderProfileElement renderElement)
+        {
+            
         }
     }
 }

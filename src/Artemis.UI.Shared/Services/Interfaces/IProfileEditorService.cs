@@ -12,7 +12,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
     public interface IProfileEditorService : IArtemisSharedUIService
     {
         Profile SelectedProfile { get; }
-        ProfileElement SelectedProfileElement { get; }
+        RenderProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
         IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
@@ -20,7 +20,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
 
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();
-        void ChangeSelectedProfileElement(ProfileElement profileElement);
+        void ChangeSelectedProfileElement(RenderProfileElement profileElement);
         void UpdateSelectedProfileElement();
         void UpdateProfilePreview();
         void UndoUpdateProfile(ProfileModule module);
@@ -32,22 +32,22 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> ProfileSelected;
+        event EventHandler<ProfileEventArgs> ProfileSelected;
 
         /// <summary>
         ///     Occurs then the currently selected profile is updated
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> SelectedProfileUpdated;
+        event EventHandler<ProfileEventArgs> SelectedProfileUpdated;
 
         /// <summary>
         ///     Occurs when a new profile element is selected
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> ProfileElementSelected;
+        event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
 
         /// <summary>
         ///     Occurs when the currently selected profile element is updated
         /// </summary>
-        event EventHandler<ProfileElementEventArgs> SelectedProfileElementUpdated;
+        event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
 
         /// <summary>
         ///     Occurs when the current editor time is changed

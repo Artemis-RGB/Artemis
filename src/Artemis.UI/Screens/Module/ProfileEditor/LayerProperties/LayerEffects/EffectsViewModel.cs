@@ -56,11 +56,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
 
         private void HandleSelectedLayerEffectChanged(object sender, PropertyChangedEventArgs e)
         {
-            EffectProfileElement effectElement;
+            RenderProfileElement renderElement;
             if (LayerPropertiesViewModel.SelectedLayer != null)
-                effectElement = LayerPropertiesViewModel.SelectedLayer;
+                renderElement = LayerPropertiesViewModel.SelectedLayer;
             else if (LayerPropertiesViewModel.SelectedFolder != null)
-                effectElement = LayerPropertiesViewModel.SelectedFolder;
+                renderElement = LayerPropertiesViewModel.SelectedFolder;
             else
                 return;
 
@@ -70,7 +70,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
                 Execute.PostToUIThread(async () =>
                 {
                     await Task.Delay(500);
-                    _layerService.AddLayerEffect(effectElement, SelectedLayerEffectDescriptor);
+                    _layerService.AddLayerEffect(renderElement, SelectedLayerEffectDescriptor);
                     _profileEditorService.UpdateSelectedProfileElement();
                 });
             }

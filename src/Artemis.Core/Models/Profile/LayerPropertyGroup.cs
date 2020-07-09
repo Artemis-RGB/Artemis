@@ -31,7 +31,7 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
         /// </summary>
-        public PropertiesProfileElement ProfileElement { get; internal set; }
+        public RenderProfileElement ProfileElement { get; internal set; }
 
         /// <summary>
         ///     The path of this property group
@@ -129,7 +129,7 @@ namespace Artemis.Core.Models.Profile
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void InitializeProperties(ILayerService layerService, PropertiesProfileElement profileElement, [NotNull] string path)
+        internal void InitializeProperties(ILayerService layerService, RenderProfileElement profileElement, [NotNull] string path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -236,7 +236,7 @@ namespace Artemis.Core.Models.Profile
             OnPropertyGroupOverriding(new PropertyGroupUpdatingEventArgs(overrideTime));
         }
 
-        private void InitializeProperty(PropertiesProfileElement profileElement, string path, BaseLayerProperty instance)
+        private void InitializeProperty(RenderProfileElement profileElement, string path, BaseLayerProperty instance)
         {
             Guid pluginGuid;
             if (IsCorePropertyGroup || instance.IsCoreProperty)
