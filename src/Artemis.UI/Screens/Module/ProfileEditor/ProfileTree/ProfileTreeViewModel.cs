@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Shared.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 {
@@ -21,10 +23,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
         {
             _profileEditorService = profileEditorService;
             _folderVmFactory = folderVmFactory;
-
-            CreateRootFolderViewModel();
-            _profileEditorService.ProfileSelected += OnProfileSelected;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
         }
 
         public FolderViewModel RootFolder
@@ -39,8 +37,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             set
             {
                 if (_updatingTree) return;
-                SetAndNotify(ref _selectedTreeItem, value);
-                _profileEditorService.ChangeSelectedProfileElement(value?.ProfileElement);
+                if (!SetAndNotify(ref _selectedTreeItem, value)) return;
+
+                if (value != null && value.ProfileElement is RenderProfileElement renderElement)
+                    _profileEditorService.ChangeSelectedProfileElement(renderElement);
+                else
+                    _profileEditorService.ChangeSelectedProfileElement(null);
             }
         }
 
@@ -109,6 +111,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 
             RootFolder = _folderVmFactory.Create(folder);
             _updatingTree = false;
+
+            // Auto-select the first layer
+            if (_profileEditorService.SelectedProfile != null && SelectedTreeItem == null)
+            {
+                if (_profileEditorService.SelectedProfile.GetRootFolder().Children.FirstOrDefault() is RenderProfileElement firstElement)
+                    Execute.PostToUIThread(() => _profileEditorService.ChangeSelectedProfileElement(firstElement));
+            }
         }
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
@@ -140,8 +149,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             }
         }
 
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.ProfileSelected += OnProfileSelected;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+            CreateRootFolderViewModel();
+        }
+
         protected override void OnClose()
         {
+            _profileEditorService.ProfileSelected -= OnProfileSelected;
+            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+
             RootFolder?.Dispose();
             RootFolder = null;
             base.OnClose();

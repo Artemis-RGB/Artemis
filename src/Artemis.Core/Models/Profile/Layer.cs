@@ -21,9 +21,8 @@ namespace Artemis.Core.Models.Profile
     ///     Represents a layer on a profile. To create new layers use the <see cref="LayerService" /> by injecting
     ///     <see cref="ILayerService" /> into your code
     /// </summary>
-    public sealed class Layer : EffectProfileElement
+    public sealed class Layer : RenderProfileElement
     {
-        private DisplayConditionGroup _displayConditionGroup;
         private LayerGeneralProperties _general;
         private SKBitmap _layerBitmap;
         private BaseLayerBrush _layerBrush;
@@ -117,14 +116,7 @@ namespace Artemis.Core.Models.Profile
             internal set => SetAndNotify(ref _layerBrush, value);
         }
 
-        /// <summary>
-        ///     Gets or sets the root display condition group
-        /// </summary>
-        public DisplayConditionGroup DisplayConditionGroup
-        {
-            get => _displayConditionGroup;
-            set => SetAndNotify(ref _displayConditionGroup, value);
-        }
+  
 
         public override string ToString()
         {
@@ -164,8 +156,8 @@ namespace Artemis.Core.Models.Profile
                 LayerEntity.Leds.Add(ledEntity);
             }
 
-            // Conditions TODO
-            LayerEntity.Conditions.Clear();
+            // Conditions
+            DisplayConditionGroup?.ApplyToEntity();
         }
 
         #endregion

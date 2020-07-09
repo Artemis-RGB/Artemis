@@ -90,7 +90,7 @@
         <Popup AllowsTransparency="True"
                Placement="Bottom"
                CustomPopupPlacementCallback="{x:Static materialDesign:CustomPopupPlacementCallbackHelper.LargePopupCallback}"
-               PlacementTarget="{Binding ElementName=PART_TextBox}"
+               PlacementTarget="{Binding ElementName=ColorCodeTextBox}"
                StaysOpen="False"
                PopupAnimation="Fade"
                IsOpen="{Binding PopupOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
