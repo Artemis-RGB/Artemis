@@ -13,6 +13,7 @@ using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile

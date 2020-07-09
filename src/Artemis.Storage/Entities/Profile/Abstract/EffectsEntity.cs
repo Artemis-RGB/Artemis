@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Artemis.Storage.Entities.Profile
+namespace Artemis.Storage.Entities.Profile.Abstract
 {
     public abstract class EffectsEntity : PropertiesEntity
     {

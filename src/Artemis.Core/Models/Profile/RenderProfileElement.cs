@@ -6,6 +6,7 @@ using Artemis.Core.Annotations;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
 
 namespace Artemis.Core.Models.Profile
