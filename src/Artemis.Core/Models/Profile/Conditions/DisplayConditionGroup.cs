@@ -10,12 +10,13 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             EntityId = Guid.NewGuid();
+            DisplayConditionGroupEntity = new DisplayConditionGroupEntity();
         }
 
         public DisplayConditionGroup(DisplayConditionPart parent, DisplayConditionGroupEntity entity)
         {
-            DisplayConditionGroupEntity = entity;
             Parent = parent;
+            DisplayConditionGroupEntity = entity;
             EntityId = DisplayConditionGroupEntity.Id;
             BooleanOperator = (BooleanOperator) DisplayConditionGroupEntity.BooleanOperator;
 

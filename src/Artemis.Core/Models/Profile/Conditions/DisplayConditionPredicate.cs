@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using Artemis.Core.Exceptions;
+using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile.Conditions
@@ -13,12 +14,17 @@ namespace Artemis.Core.Models.Profile.Conditions
         public DisplayConditionPredicate(DisplayConditionPart parent)
         {
             Parent = parent;
+            DisplayConditionPredicateEntity = new DisplayConditionPredicateEntity();
         }
 
         public DisplayConditionPredicate(DisplayConditionPart parent, DisplayConditionPredicateEntity entity)
         {
             Parent = parent;
             DisplayConditionPredicateEntity = entity;
+
+            // TODO: This has to be done from somewhere
+            // LeftDataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.LeftDataModelGuid);
+            // RightDataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.RightDataModelGuid);
         }
 
         public DisplayConditionPredicateEntity DisplayConditionPredicateEntity { get; set; }
@@ -26,51 +32,122 @@ namespace Artemis.Core.Models.Profile.Conditions
         public PredicateType PredicateType { get; set; }
         public DisplayConditionOperator Operator { get; set; }
 
-        public Guid LeftDataModelGuid { get; set; }
-        public string LeftPropertyPath { get; set; }
-
-        public Guid RightDataModelGuid { get; set; }
-        public string RightPropertyPath { get; set; }
-
-        // TODO: Implement type-checking or perhaps convert it here
-        public object RightStaticValue { get; set; }
+        public DataModel LeftDataModel { get; private set; }
+        public string LeftPropertyPath { get; private set; }
+        public DataModel RightDataModel { get; private set; }
+        public string RightPropertyPath { get; private set; }
+        public object RightStaticValue { get; private set; }
 
         public Expression<Func<DataModel, DataModel, bool>> DynamicConditionLambda { get; private set; }
         public Func<DataModel, DataModel, bool> CompiledDynamicConditionLambda { get; private set; }
         public Expression<Func<DataModel, bool>> StaticConditionLambda { get; private set; }
         public Func<DataModel, bool> CompiledStaticConditionLambda { get; private set; }
 
-        public void CreateExpression(IDataModelService dataModelService)
+        public void UpdateLeftSide(DataModel dataModel, string path)
         {
-            if (PredicateType == PredicateType.Dynamic)
-                CreateDynamicExpression(dataModelService);
-            else
-                CreateStaticExpression(dataModelService);
+            if (!dataModel.ContainsPath(path))
+                throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+
+            LeftDataModel = dataModel;
+            LeftPropertyPath = path;
+
+            ValidateRightSide();
+            CreateExpression();
         }
 
-        private void CreateDynamicExpression(IDataModelService dataModelService)
+        public void UpdateRightSide(DataModel dataModel, string path)
         {
-            if (LeftDataModelGuid == Guid.Empty || string.IsNullOrWhiteSpace(LeftPropertyPath))
-                return;
-            if (RightDataModelGuid == Guid.Empty || string.IsNullOrWhiteSpace(RightPropertyPath))
-                return;
+            if (!dataModel.ContainsPath(path))
+                throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
 
-            var leftDataModel = dataModelService.GetPluginDataModelByGuid(LeftDataModelGuid);
-            if (leftDataModel == null)
-                return;
+            PredicateType = PredicateType.Dynamic;
+            RightDataModel = dataModel;
+            RightPropertyPath = path;
 
-            var rightDataModel = dataModelService.GetPluginDataModelByGuid(RightDataModelGuid);
-            if (rightDataModel == null)
+            CreateExpression();
+        }
+
+        public void UpdateRightSide(object staticValue)
+        {
+            PredicateType = PredicateType.Static;
+            RightDataModel = null;
+            RightPropertyPath = null;
+
+            SetStaticValue(staticValue);
+            CreateExpression();
+        }
+
+        public void CreateExpression()
+        {
+            if (PredicateType == PredicateType.Dynamic)
+                CreateDynamicExpression();
+            else
+                CreateStaticExpression();
+        }
+
+        public override void ApplyToEntity()
+        {
+        }
+
+        /// <summary>
+        ///     Validates the right side, ensuring it is still compatible with the current left side
+        /// </summary>
+        private void ValidateRightSide()
+        {
+            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            if (PredicateType == PredicateType.Dynamic)
+            {
+                var rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
+                if (!leftSideType.IsCastableFrom(rightSideType))
+                    UpdateRightSide(null, null);
+            }
+            else
+            {
+                // Just update the value with itself, it'll validate :)
+                UpdateRightSide(RightStaticValue);
+            }
+        }
+
+        /// <summary>
+        ///     Updates the current static value, ensuring it is a valid type. This assumes the types are compatible if they
+        ///     differ.
+        /// </summary>
+        private void SetStaticValue(object staticValue)
+        {
+            // If the left side is empty simply apply the value, any validation will wait
+            if (LeftDataModel == null)
+            {
+                RightStaticValue = staticValue;
+                return;
+            }
+
+            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+
+            // If not null ensure the types match and if not, convert it
+            if (staticValue != null && staticValue.GetType() == leftSideType)
+                RightStaticValue = staticValue;
+            else if (staticValue != null)
+                RightStaticValue = Convert.ChangeType(staticValue, leftSideType);
+            // If null create a default instance for value types or simply make it null for reference types
+            else if (leftSideType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(leftSideType);
+            else
+                RightStaticValue = null;
+        }
+
+        private void CreateDynamicExpression()
+        {
+            if (LeftDataModel == null || RightDataModel == null)
                 return;
 
             var leftSideParameter = Expression.Parameter(typeof(DataModel), "leftDataModel");
             var leftSideAccessor = LeftPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(leftSideParameter, leftDataModel.GetType()), // Cast to the appropriate type
+                Expression.Convert(leftSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
             var rightSideParameter = Expression.Parameter(typeof(DataModel), "rightDataModel");
             var rightSideAccessor = RightPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(rightSideParameter, rightDataModel.GetType()), // Cast to the appropriate type
+                Expression.Convert(rightSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
 
@@ -85,18 +162,14 @@ namespace Artemis.Core.Models.Profile.Conditions
             CompiledDynamicConditionLambda = DynamicConditionLambda.Compile();
         }
 
-        private void CreateStaticExpression(IDataModelService dataModelService)
+        private void CreateStaticExpression()
         {
-            if (LeftDataModelGuid == Guid.Empty || string.IsNullOrWhiteSpace(LeftPropertyPath))
-                return;
-
-            var leftDataModel = dataModelService.GetPluginDataModelByGuid(LeftDataModelGuid);
-            if (leftDataModel == null)
+            if (LeftDataModel == null)
                 return;
 
             var leftSideParameter = Expression.Parameter(typeof(DataModel), "leftDataModel");
             var leftSideAccessor = LeftPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(leftSideParameter, leftDataModel.GetType()), // Cast to the appropriate type
+                Expression.Convert(leftSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
 
@@ -109,11 +182,6 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             StaticConditionLambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
             CompiledStaticConditionLambda = StaticConditionLambda.Compile();
-        }
-
-        public override void ApplyToEntity()
-        {
-            
         }
     }
 
