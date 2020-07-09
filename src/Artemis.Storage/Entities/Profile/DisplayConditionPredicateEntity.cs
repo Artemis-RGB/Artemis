@@ -1,8 +1,9 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile
 {
-    public class DisplayConditionPredicateEntity
+    public class DisplayConditionPredicateEntity : DisplayConditionPartEntity
     {
         public Guid LeftDataModelGuid { get; set; }
         public string LeftPropertyPath { get; set; }

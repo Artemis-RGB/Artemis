@@ -4,11 +4,25 @@ using System.Linq.Expressions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
     public class DisplayConditionPredicate : DisplayConditionPart
     {
+        public DisplayConditionPredicate(DisplayConditionPart parent)
+        {
+            Parent = parent;
+        }
+
+        public DisplayConditionPredicate(DisplayConditionPart parent, DisplayConditionPredicateEntity entity)
+        {
+            Parent = parent;
+            DisplayConditionPredicateEntity = entity;
+        }
+
+        public DisplayConditionPredicateEntity DisplayConditionPredicateEntity { get; set; }
+
         public PredicateType PredicateType { get; set; }
         public DisplayConditionOperator Operator { get; set; }
 
@@ -95,6 +109,11 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             StaticConditionLambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
             CompiledStaticConditionLambda = StaticConditionLambda.Compile();
+        }
+
+        public override void ApplyToEntity()
+        {
+            
         }
     }
 

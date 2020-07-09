@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Storage.Entities.Profile.Abstract;
 using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
@@ -9,7 +10,6 @@ namespace Artemis.Storage.Entities.Profile
         public FolderEntity()
         {
             PropertyEntities = new List<PropertyEntity>();
-            Conditions = new List<ProfileConditionEntity>();
             LayerEffects = new List<LayerEffectEntity>();
             ExpandedPropertyGroups = new List<string>();
         }

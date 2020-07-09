@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Artemis.Core.Models.Profile.Conditions.Abstract
 {
     public abstract class DisplayConditionPart
     {
+        public Guid EntityId { get; internal set; }
+
         private readonly List<DisplayConditionPart> _children;
 
         protected DisplayConditionPart()
