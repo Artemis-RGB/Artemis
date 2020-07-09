@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Extensions;
+using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.Exceptions;
@@ -111,6 +112,11 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType));
             else
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType);
+        }
+
+        public DataModelVisualizationViewModel GetChildForCondition(DisplayConditionPredicate predicate)
+        {
+
         }
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)

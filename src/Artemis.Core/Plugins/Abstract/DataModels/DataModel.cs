@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+﻿using System;
+using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core.Plugins.Abstract.DataModels
@@ -16,5 +17,39 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
         /// </summary>
         [DataModelIgnore]
         public DataModelPropertyAttribute DataModelDescription { get; internal set; }
+
+        public bool ContainsPath(string path)
+        {
+            var parts = path.Split('.');
+            var current = GetType();
+            foreach (var part in parts)
+            {
+                var property = current?.GetProperty(part);
+                current = property?.PropertyType;
+                if (property == null)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public Type GetTypeAtPath(string path)
+        {
+            if (!ContainsPath(path))
+                return null;
+
+            var parts = path.Split('.');
+            var current = GetType();
+
+            Type result = null;
+            foreach (var part in parts)
+            {
+                var property = current.GetProperty(part);
+                current = property.PropertyType;
+                result = property.PropertyType;
+            }
+
+            return result;
+        }
     }
 }
