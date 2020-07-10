@@ -39,12 +39,12 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             LedGroup.Brush = GetBrush();
         }
 
-        internal override void Initialize(ILayerService layerService)
+        internal override void Initialize(IRenderElementService renderElementService)
         {
             LedGroup = new ListLedGroup();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
 
-            InitializeProperties(layerService);
+            InitializeProperties(renderElementService);
             UpdateLedGroup();
         }
 

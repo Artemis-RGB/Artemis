@@ -58,5 +58,6 @@ namespace Artemis.Core.Services.Interfaces
         void RemoveConditionOperator([NotNull] DisplayConditionOperator displayConditionOperator);
 
         List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type);
+        DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
     }
 }

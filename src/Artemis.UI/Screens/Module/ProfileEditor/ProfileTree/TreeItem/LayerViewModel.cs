@@ -11,10 +11,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement folder,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            ILayerService layerService,
+            IRenderElementService renderElementService,
             IFolderVmFactory folderVmFactory,
             ILayerVmFactory layerVmFactory) :
-            base(parent, folder, profileEditorService, dialogService, layerService, folderVmFactory, layerVmFactory)
+            base(parent, folder, profileEditorService, dialogService, renderElementService, folderVmFactory, layerVmFactory)
         {
         }
 

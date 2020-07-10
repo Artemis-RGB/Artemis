@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
     {
         private readonly IDialogService _dialogService;
         private readonly IFolderVmFactory _folderVmFactory;
-        private readonly ILayerService _layerService;
+        private readonly IRenderElementService _renderElementService;
         private readonly ILayerVmFactory _layerVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private BindableCollection<TreeItemViewModel> _children;
@@ -27,13 +27,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             ProfileElement profileElement,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            ILayerService layerService,
+            IRenderElementService renderElementService,
             IFolderVmFactory folderVmFactory,
             ILayerVmFactory layerVmFactory)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
-            _layerService = layerService;
+            _renderElementService = renderElementService;
             _folderVmFactory = folderVmFactory;
             _layerVmFactory = layerVmFactory;
 
@@ -145,7 +145,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            _layerService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
+            _renderElementService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
             UpdateProfileElements();
             _profileEditorService.UpdateSelectedProfile();
         }

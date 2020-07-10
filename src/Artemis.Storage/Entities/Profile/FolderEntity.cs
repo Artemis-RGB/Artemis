@@ -5,7 +5,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Entities.Profile
 {
-    public class FolderEntity : EffectsEntity
+    public class FolderEntity : RenderElementEntity
     {
         public FolderEntity()
         {

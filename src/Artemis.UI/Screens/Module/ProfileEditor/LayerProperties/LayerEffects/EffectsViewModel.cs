@@ -12,16 +12,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
 {
     public class EffectsViewModel : PropertyChangedBase
     {
-        private readonly ILayerService _layerService;
+        private readonly IRenderElementService _renderElementService;
         private readonly IPluginService _pluginService;
         private readonly IProfileEditorService _profileEditorService;
         private BindableCollection<LayerEffectDescriptor> _layerEffectDescriptors;
         private LayerEffectDescriptor _selectedLayerEffectDescriptor;
 
-        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, ILayerService layerService, IProfileEditorService profileEditorService)
+        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, IRenderElementService renderElementService, IProfileEditorService profileEditorService)
         {
             _pluginService = pluginService;
-            _layerService = layerService;
+            _renderElementService = renderElementService;
             _profileEditorService = profileEditorService;
             LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerEffectDescriptors = new BindableCollection<LayerEffectDescriptor>();
@@ -70,7 +70,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
                 Execute.PostToUIThread(async () =>
                 {
                     await Task.Delay(500);
-                    _layerService.AddLayerEffect(renderElement, SelectedLayerEffectDescriptor);
+                    _renderElementService.AddLayerEffect(renderElement, SelectedLayerEffectDescriptor);
                     _profileEditorService.UpdateSelectedProfileElement();
                 });
             }

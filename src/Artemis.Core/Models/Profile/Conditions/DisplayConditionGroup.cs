@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
@@ -9,7 +12,6 @@ namespace Artemis.Core.Models.Profile.Conditions
         public DisplayConditionGroup(DisplayConditionPart parent)
         {
             Parent = parent;
-            EntityId = Guid.NewGuid();
             DisplayConditionGroupEntity = new DisplayConditionGroupEntity();
         }
 
@@ -17,7 +19,6 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             DisplayConditionGroupEntity = entity;
-            EntityId = DisplayConditionGroupEntity.Id;
             BooleanOperator = (BooleanOperator) DisplayConditionGroupEntity.BooleanOperator;
 
             foreach (var childEntity in DisplayConditionGroupEntity.Children)
@@ -32,14 +33,25 @@ namespace Artemis.Core.Models.Profile.Conditions
         public BooleanOperator BooleanOperator { get; set; }
         public DisplayConditionGroupEntity DisplayConditionGroupEntity { get; set; }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
-            DisplayConditionGroupEntity.Id = EntityId;
-            DisplayConditionGroupEntity.ParentId = Parent?.EntityId ?? Guid.Empty;
             DisplayConditionGroupEntity.BooleanOperator = (int) BooleanOperator;
 
+            DisplayConditionGroupEntity.Children.Clear();
+            DisplayConditionGroupEntity.Children.AddRange(Children.Select(c => c.GetEntity()));
             foreach (var child in Children)
                 child.ApplyToEntity();
+        }
+
+        internal override void Initialize(IDataModelService dataModelService)
+        {
+            foreach (var child in Children)
+                child.Initialize(dataModelService);
+        }
+
+        public override DisplayConditionPartEntity GetEntity()
+        {
+            return DisplayConditionGroupEntity;
         }
     }
 

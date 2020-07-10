@@ -144,7 +144,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
 
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core
-        internal abstract void Initialize(ILayerService layerService);
+        internal abstract void Initialize(IRenderElementService renderElementService);
 
 
         /// <summary>

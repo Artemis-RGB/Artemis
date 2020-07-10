@@ -13,14 +13,14 @@ namespace Artemis.UI.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
-        private readonly ILayerService _layerService;
+        private readonly IRenderElementService _renderElementService;
         private readonly IPluginService _pluginService;
         private List<LayerBrushDescriptor> _descriptors;
 
         public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService,
-            ILayerService layerService, IPluginService pluginService) : base(layerProperty, profileEditorService)
+            IRenderElementService renderElementService, IPluginService pluginService) : base(layerProperty, profileEditorService)
         {
-            _layerService = layerService;
+            _renderElementService = renderElementService;
             _pluginService = pluginService;
 
             _pluginService.PluginEnabled += PluginServiceOnPluginLoaded;
@@ -59,8 +59,8 @@ namespace Artemis.UI.PropertyInput
         {
             if (LayerProperty.ProfileElement is Layer layer)
             {
-                _layerService.RemoveLayerBrush(layer);
-                _layerService.InstantiateLayerBrush(layer);
+                _renderElementService.RemoveLayerBrush(layer);
+                _renderElementService.InstantiateLayerBrush(layer);
             }
         }
 

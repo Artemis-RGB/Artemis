@@ -58,8 +58,7 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal FolderEntity FolderEntity { get; set; }
-        internal override PropertiesEntity PropertiesEntity => FolderEntity;
-        internal override EffectsEntity EffectsEntity => FolderEntity;
+        internal override RenderElementEntity RenderElementEntity => FolderEntity;
 
         public override void Update(double deltaTime)
         {
@@ -189,6 +188,7 @@ namespace Artemis.Core.Models.Profile
             ApplyLayerEffectsToEntity();
 
             // Conditions
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;
             DisplayConditionGroup?.ApplyToEntity();
         }
 
