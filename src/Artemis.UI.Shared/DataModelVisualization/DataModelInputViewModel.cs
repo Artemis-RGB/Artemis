@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
-using Artemis.UI.Shared.Exceptions;
 using Stylet;
 
 namespace Artemis.UI.Shared.DataModelVisualization
 {
     public abstract class DataModelInputViewModel<T> : DataModelInputViewModel
     {
+        private bool _closed;
         private T _inputValue;
 
         protected DataModelInputViewModel(DataModelPropertyAttribute description, T initialValue)
@@ -33,6 +32,10 @@ namespace Artemis.UI.Shared.DataModelVisualization
         /// <inheritdoc />
         public sealed override void Submit()
         {
+            if (_closed)
+                return;
+            _closed = true;
+
             foreach (var sourceUpdatingBinding in BindingOperations.GetSourceUpdatingBindings(View))
                 sourceUpdatingBinding.UpdateSource();
 
@@ -43,6 +46,10 @@ namespace Artemis.UI.Shared.DataModelVisualization
         /// <inheritdoc />
         public sealed override void Cancel()
         {
+            if (_closed)
+                return;
+            _closed = true;
+
             OnCancel();
             UpdateCallback(InputValue, false);
         }
@@ -62,7 +69,8 @@ namespace Artemis.UI.Shared.DataModelVisualization
         internal Action<object, bool> UpdateCallback { get; set; }
 
         /// <summary>
-        ///     Gets the types this input view model can support through type conversion. This list is defined when registering the view model.
+        ///     Gets the types this input view model can support through type conversion. This list is defined when registering the
+        ///     view model.
         /// </summary>
         internal IReadOnlyCollection<Type> CompatibleConversionTypes { get; set; }
 
@@ -84,12 +92,14 @@ namespace Artemis.UI.Shared.DataModelVisualization
         public UIElement View { get; set; }
 
         /// <summary>
-        ///     Submits the input value and removes this view model
+        ///     Submits the input value and removes this view model.
+        ///     <para>This is called automatically when the user presses enter or clicks outside the view</para>
         /// </summary>
         public abstract void Submit();
 
         /// <summary>
-        ///     Discards changes to the input value and removes this view model
+        ///     Discards changes to the input value and removes this view model.
+        ///     <para>This is called automatically when the user presses escape</para>
         /// </summary>
         public abstract void Cancel();
 

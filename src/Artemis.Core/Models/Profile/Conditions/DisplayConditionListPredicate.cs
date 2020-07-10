@@ -6,6 +6,10 @@ namespace Artemis.Core.Models.Profile.Conditions
     {
         public ListOperator ListOperator { get; set; }
 
+        public override void ApplyToEntity()
+        {
+            
+        }
     }
 
     public enum ListOperator

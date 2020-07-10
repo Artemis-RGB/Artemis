@@ -11,9 +11,10 @@ namespace Artemis.Core.Models.Profile.Conditions
 {
     public class DisplayConditionPredicate : DisplayConditionPart
     {
-        public DisplayConditionPredicate(DisplayConditionPart parent)
+        public DisplayConditionPredicate(DisplayConditionPart parent, PredicateType predicateType)
         {
             Parent = parent;
+            PredicateType = predicateType;
             DisplayConditionPredicateEntity = new DisplayConditionPredicateEntity();
         }
 
@@ -30,7 +31,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         public DisplayConditionPredicateEntity DisplayConditionPredicateEntity { get; set; }
 
         public PredicateType PredicateType { get; set; }
-        public DisplayConditionOperator Operator { get; set; }
+        public DisplayConditionOperator Operator { get; private set; }
 
         public DataModel LeftDataModel { get; private set; }
         public string LeftPropertyPath { get; private set; }
@@ -45,20 +46,37 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public void UpdateLeftSide(DataModel dataModel, string path)
         {
-            if (!dataModel.ContainsPath(path))
-                throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            if (dataModel != null && path == null)
+                throw new ArtemisCoreException("If a data model is provided, a path is also required");
+            if (dataModel == null && path != null)
+                throw new ArtemisCoreException("If path is provided, a data model is also required");
+
+            if (dataModel != null)
+            {
+                if (!dataModel.ContainsPath(path))
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            }
 
             LeftDataModel = dataModel;
             LeftPropertyPath = path;
 
+            ValidateOperator();
             ValidateRightSide();
             CreateExpression();
         }
 
         public void UpdateRightSide(DataModel dataModel, string path)
         {
-            if (!dataModel.ContainsPath(path))
-                throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            if (dataModel != null && path == null)
+                throw new ArtemisCoreException("If a data model is provided, a path is also required");
+            if (dataModel == null && path != null)
+                throw new ArtemisCoreException("If path is provided, a data model is also required");
+
+            if (dataModel != null)
+            {
+                if (!dataModel.ContainsPath(path))
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            }
 
             PredicateType = PredicateType.Dynamic;
             RightDataModel = dataModel;
@@ -77,6 +95,25 @@ namespace Artemis.Core.Models.Profile.Conditions
             CreateExpression();
         }
 
+        public void UpdateOperator(DisplayConditionOperator displayConditionOperator)
+        {
+            if (displayConditionOperator == null)
+            {
+                Operator = null;
+                return;
+            }
+
+            if (LeftDataModel == null)
+            {
+                Operator = displayConditionOperator;
+                return;
+            }
+
+            var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            if (displayConditionOperator.SupportsType(leftType))
+                Operator = displayConditionOperator;
+        }
+
         public void CreateExpression()
         {
             if (PredicateType == PredicateType.Dynamic)
@@ -89,6 +126,17 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
         }
 
+        private void ValidateOperator()
+        {
+            if (LeftDataModel == null)
+                return;
+
+            var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            if (!Operator.SupportsType(leftType))
+                Operator = null;
+        }
+
+
         /// <summary>
         ///     Validates the right side, ensuring it is still compatible with the current left side
         /// </summary>
@@ -97,14 +145,19 @@ namespace Artemis.Core.Models.Profile.Conditions
             var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (PredicateType == PredicateType.Dynamic)
             {
+                if (RightDataModel == null)
+                    return;
+
                 var rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
                 if (!leftSideType.IsCastableFrom(rightSideType))
                     UpdateRightSide(null, null);
             }
             else
             {
-                // Just update the value with itself, it'll validate :)
-                UpdateRightSide(RightStaticValue);
+                if (RightStaticValue != null && leftSideType.IsCastableFrom(RightStaticValue.GetType()))
+                    UpdateRightSide(RightStaticValue);
+                else
+                    UpdateRightSide(null);
             }
         }
 
