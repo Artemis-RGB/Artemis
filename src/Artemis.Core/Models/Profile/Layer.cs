@@ -19,8 +19,8 @@ using SkiaSharp;
 namespace Artemis.Core.Models.Profile
 {
     /// <summary>
-    ///     Represents a layer on a profile. To create new layers use the <see cref="LayerService" /> by injecting
-    ///     <see cref="ILayerService" /> into your code
+    ///     Represents a layer on a profile. To create new layers use the <see cref="RenderElementService" /> by injecting
+    ///     <see cref="IRenderElementService" /> into your code
     /// </summary>
     public sealed class Layer : RenderProfileElement
     {
@@ -72,8 +72,7 @@ namespace Artemis.Core.Models.Profile
         }
 
         internal LayerEntity LayerEntity { get; set; }
-        internal override PropertiesEntity PropertiesEntity => LayerEntity;
-        internal override EffectsEntity EffectsEntity => LayerEntity;
+        internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
         /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
@@ -158,6 +157,7 @@ namespace Artemis.Core.Models.Profile
             }
 
             // Conditions
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;
             DisplayConditionGroup?.ApplyToEntity();
         }
 

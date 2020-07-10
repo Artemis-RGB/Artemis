@@ -16,7 +16,7 @@ namespace Artemis.Core.Models.Profile
         #region Properties
 
         private SKPath _path;
-        internal abstract PropertiesEntity PropertiesEntity { get; }
+        internal abstract RenderElementEntity RenderElementEntity { get; }
 
         /// <summary>
         ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
@@ -68,7 +68,6 @@ namespace Artemis.Core.Models.Profile
         #region Effects
 
         protected List<BaseLayerEffect> _layerEffects;
-        internal abstract EffectsEntity EffectsEntity { get; }
 
         /// <summary>
         ///     Gets a read-only collection of the layer effects on this entity
@@ -77,7 +76,7 @@ namespace Artemis.Core.Models.Profile
 
         protected void ApplyLayerEffectsToEntity()
         {
-            EffectsEntity.LayerEffects.Clear();
+            RenderElementEntity.LayerEffects.Clear();
             foreach (var layerEffect in LayerEffects)
             {
                 var layerEffectEntity = new LayerEffectEntity
@@ -90,7 +89,7 @@ namespace Artemis.Core.Models.Profile
                     HasBeenRenamed = layerEffect.HasBeenRenamed,
                     Order = layerEffect.Order
                 };
-                EffectsEntity.LayerEffects.Add(layerEffectEntity);
+                RenderElementEntity.LayerEffects.Add(layerEffectEntity);
                 layerEffect.BaseProperties.ApplyToEntity();
             }
         }

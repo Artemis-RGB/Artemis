@@ -1,4 +1,6 @@
 ﻿using Artemis.Core.Models.Profile.Conditions.Abstract;
+using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
@@ -6,9 +8,17 @@ namespace Artemis.Core.Models.Profile.Conditions
     {
         public ListOperator ListOperator { get; set; }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
-            
+        }
+
+        internal override void Initialize(IDataModelService dataModelService)
+        {
+        }
+
+        public override DisplayConditionPartEntity GetEntity()
+        {
+            return null;
         }
     }
 

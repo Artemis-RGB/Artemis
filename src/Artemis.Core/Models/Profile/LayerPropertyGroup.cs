@@ -129,7 +129,7 @@ namespace Artemis.Core.Models.Profile
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void InitializeProperties(ILayerService layerService, RenderProfileElement profileElement, [NotNull] string path)
+        internal void InitializeProperties(IRenderElementService renderElementService, RenderProfileElement profileElement, [NotNull] string path)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
@@ -177,7 +177,7 @@ namespace Artemis.Core.Models.Profile
                         instance.GroupDescription = (PropertyGroupDescriptionAttribute) propertyGroupDescription;
                         instance.LayerBrush = LayerBrush;
                         instance.LayerEffect = LayerEffect;
-                        instance.InitializeProperties(layerService, profileElement, $"{path}{propertyInfo.Name}.");
+                        instance.InitializeProperties(renderElementService, profileElement, $"{path}{propertyInfo.Name}.");
 
                         propertyInfo.SetValue(this, instance);
                         _layerPropertyGroups.Add(instance);
@@ -246,13 +246,13 @@ namespace Artemis.Core.Models.Profile
             else
                 pluginGuid = instance.Parent.LayerEffect.PluginInfo.Guid;
 
-            var entity = profileElement.PropertiesEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
+            var entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
             var fromStorage = true;
             if (entity == null)
             {
                 fromStorage = false;
                 entity = new PropertyEntity {PluginGuid = pluginGuid, Path = path};
-                profileElement.PropertiesEntity.PropertyEntities.Add(entity);
+                profileElement.RenderElementEntity.PropertyEntities.Add(entity);
             }
 
             instance.ApplyToLayerProperty(entity, this, fromStorage);

@@ -5,7 +5,10 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
+using Artemis.Storage.Entities.Profile.Abstract;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
@@ -22,10 +25,6 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             DisplayConditionPredicateEntity = entity;
-
-            // TODO: This has to be done from somewhere
-            // LeftDataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.LeftDataModelGuid);
-            // RightDataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.RightDataModelGuid);
         }
 
         public DisplayConditionPredicateEntity DisplayConditionPredicateEntity { get; set; }
@@ -122,20 +121,83 @@ namespace Artemis.Core.Models.Profile.Conditions
                 CreateStaticExpression();
         }
 
-        public override void ApplyToEntity()
+        internal override void ApplyToEntity()
         {
+            DisplayConditionPredicateEntity.LeftDataModelGuid = LeftDataModel?.PluginInfo?.Guid;
+            DisplayConditionPredicateEntity.LeftPropertyPath = LeftPropertyPath;
+
+            DisplayConditionPredicateEntity.RightDataModelGuid = RightDataModel?.PluginInfo?.Guid;
+            DisplayConditionPredicateEntity.RightPropertyPath = RightPropertyPath;
+            DisplayConditionPredicateEntity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
+
+            DisplayConditionPredicateEntity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
+            DisplayConditionPredicateEntity.OperatorType = Operator?.GetType().Name;
+        }
+
+        internal override void Initialize(IDataModelService dataModelService)
+        {
+            // Left side
+            if (DisplayConditionPredicateEntity.LeftDataModelGuid != null)
+            {
+                var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.LeftDataModelGuid.Value);
+                if (dataModel != null)
+                    UpdateLeftSide(dataModel, DisplayConditionPredicateEntity.LeftPropertyPath);
+            }
+
+            // Operator
+            if (DisplayConditionPredicateEntity.OperatorPluginGuid != null)
+            {
+                var conditionOperator = dataModelService.GetConditionOperator(DisplayConditionPredicateEntity.OperatorPluginGuid.Value, DisplayConditionPredicateEntity.OperatorType);
+                if (conditionOperator != null)
+                    UpdateOperator(conditionOperator);
+            }
+
+            // Right side dynamic
+            if (DisplayConditionPredicateEntity.RightDataModelGuid != null)
+            {
+                var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.RightDataModelGuid.Value);
+                if (dataModel != null)
+                    UpdateRightSide(dataModel, DisplayConditionPredicateEntity.RightPropertyPath);
+            }
+            // Right side static
+            else if (DisplayConditionPredicateEntity.RightStaticValue != null)
+            {
+                try
+                {
+                    if (LeftDataModel != null)
+                    {
+                        // Use the left side type so JSON.NET has a better idea what to do
+                        var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+                        UpdateRightSide(JsonConvert.DeserializeObject(DisplayConditionPredicateEntity.RightStaticValue, leftSideType));
+                    }
+                    else
+                    {
+                        // Hope for the best...
+                        UpdateRightSide(JsonConvert.DeserializeObject(DisplayConditionPredicateEntity.RightStaticValue));
+                    }
+                }
+                catch (JsonReaderException)
+                {
+                    // ignored
+                    // TODO: Some logging would be nice
+                }
+            }
+        }
+
+        public override DisplayConditionPartEntity GetEntity()
+        {
+            return DisplayConditionPredicateEntity;
         }
 
         private void ValidateOperator()
         {
-            if (LeftDataModel == null)
+            if (LeftDataModel == null || Operator == null)
                 return;
 
             var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (!Operator.SupportsType(leftType))
                 Operator = null;
         }
-
 
         /// <summary>
         ///     Validates the right side, ensuring it is still compatible with the current left side
@@ -217,7 +279,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         private void CreateStaticExpression()
         {
-            if (LeftDataModel == null)
+            if (LeftDataModel == null || Operator == null)
                 return;
 
             var leftSideParameter = Expression.Parameter(typeof(DataModel), "leftDataModel");

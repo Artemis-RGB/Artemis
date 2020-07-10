@@ -13,14 +13,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
     {
         private readonly IDialogService _dialogService;
         private readonly IWindowManager _windowManager;
-        private readonly ILayerService _layerService;
+        private readonly IRenderElementService _renderElementService;
         private readonly IProfileEditorService _profileEditorService;
 
         public TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel,
-            IProfileEditorService profileEditorService, ILayerService layerService, IDialogService dialogService, IWindowManager windowManager)
+            IProfileEditorService profileEditorService, IRenderElementService renderElementService, IDialogService dialogService, IWindowManager windowManager)
         {
             _profileEditorService = profileEditorService;
-            _layerService = layerService;
+            _renderElementService = renderElementService;
             _dialogService = dialogService;
             _windowManager = windowManager;
             LayerPropertyGroupViewModel = (LayerPropertyGroupViewModel) layerPropertyBaseViewModel;
@@ -78,7 +78,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 
         public void DeleteEffect()
         {
-            _layerService.RemoveLayerEffect(LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect);
+            _renderElementService.RemoveLayerEffect(LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect);
             _profileEditorService.UpdateSelectedProfile();
         }
 

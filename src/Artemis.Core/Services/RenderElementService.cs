@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect;
@@ -14,17 +15,19 @@ using Serilog;
 
 namespace Artemis.Core.Services
 {
-    public class LayerService : ILayerService
+    public class RenderElementService : IRenderElementService
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
+        private readonly IDataModelService _dataModelService;
 
-        public LayerService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService)
+        public RenderElementService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService)
         {
             _kernel = kernel;
             _logger = logger;
             _pluginService = pluginService;
+            _dataModelService = dataModelService;
         }
 
         public Layer CreateLayer(Profile profile, ProfileElement parent, string name)
@@ -39,6 +42,7 @@ namespace Artemis.Core.Services
             // With the properties loaded, the layer brush and effect can be instantiated
             InstantiateLayerBrush(layer);
             InstantiateLayerEffects(layer);
+            InstantiateDisplayConditions(layer);
             return layer;
         }
 
@@ -112,7 +116,7 @@ namespace Artemis.Core.Services
         {
             var layerEffectProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
             var descriptors = layerEffectProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
-            var entities = renderElement.EffectsEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
+            var entities = renderElement.RenderElementEntity.LayerEffects.OrderByDescending(e => e.Order).ToList();
 
             foreach (var layerEffectEntity in entities)
             {
@@ -143,10 +147,15 @@ namespace Artemis.Core.Services
                 _logger.Debug("Instantiated layer effect with root path {rootPath}", effect.PropertyRootPath);
             }
         }
-        
+
         public void InstantiateDisplayConditions(RenderProfileElement renderElement)
         {
-            
+            var displayCondition = renderElement.RenderElementEntity.RootDisplayCondition != null
+                ? new DisplayConditionGroup(null, renderElement.RenderElementEntity.RootDisplayCondition)
+                : new DisplayConditionGroup(null);
+
+            displayCondition.Initialize(_dataModelService);
+            renderElement.DisplayConditionGroup = displayCondition;
         }
     }
 }

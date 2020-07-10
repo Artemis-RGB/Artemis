@@ -155,6 +155,11 @@ namespace Artemis.Core.Services
             }
         }
 
+        public DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType)
+        {
+            return RegisteredConditionOperators.FirstOrDefault(o => o.PluginInfo.Guid == operatorPluginGuid && o.GetType().Name == operatorType);
+        }
+
         private void RegisterBuiltInConditionOperators()
         {
             RegisterConditionOperator(Constants.CorePluginInfo, new EqualsConditionOperator());

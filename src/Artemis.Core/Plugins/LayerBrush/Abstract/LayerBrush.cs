@@ -27,9 +27,9 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             Render(canvas, canvasInfo, path, paint);
         }
 
-        internal override void Initialize(ILayerService layerService)
+        internal override void Initialize(IRenderElementService renderElementService)
         {
-            InitializeProperties(layerService);
+            InitializeProperties(renderElementService);
         }
     }
 }

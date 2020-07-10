@@ -19,18 +19,18 @@ namespace Artemis.Core.Services.Storage
     /// </summary>
     public class ProfileService : IProfileService
     {
-        private readonly ILayerService _layerService;
+        private readonly IRenderElementService _renderElementService;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, ILayerService layerService, IProfileRepository profileRepository)
+        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, IRenderElementService renderElementService, IProfileRepository profileRepository)
         {
             _logger = logger;
             _pluginService = pluginService;
             _surfaceService = surfaceService;
-            _layerService = layerService;
+            _renderElementService = renderElementService;
             _profileRepository = profileRepository;
 
             _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
@@ -170,9 +170,9 @@ namespace Artemis.Core.Services.Storage
             foreach (var layer in profile.GetAllLayers())
             {
                 if (!layer.General.PropertiesInitialized)
-                    layer.General.InitializeProperties(_layerService, layer, "General.");
+                    layer.General.InitializeProperties(_renderElementService, layer, "General.");
                 if (!layer.Transform.PropertiesInitialized)
-                    layer.Transform.InitializeProperties(_layerService, layer, "Transform.");
+                    layer.Transform.InitializeProperties(_renderElementService, layer, "Transform.");
             }
         }
 
@@ -181,11 +181,13 @@ namespace Artemis.Core.Services.Storage
             foreach (var folder in profile.GetAllFolders())
             {
                 // Instantiate effects
-                _layerService.InstantiateLayerEffects(folder);
+                _renderElementService.InstantiateLayerEffects(folder);
                 // Remove effects of plugins that are disabled
                 var disabledEffects = new List<BaseLayerEffect>(folder.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
                 foreach (var layerLayerEffect in disabledEffects)
-                    _layerService.RemoveLayerEffect(layerLayerEffect);
+                    _renderElementService.RemoveLayerEffect(layerLayerEffect);
+
+                _renderElementService.InstantiateDisplayConditions(folder);
             }
         }
 
@@ -195,17 +197,19 @@ namespace Artemis.Core.Services.Storage
             {
                 // Instantiate brush
                 if (layer.LayerBrush == null)
-                    _layerService.InstantiateLayerBrush(layer);
+                    _renderElementService.InstantiateLayerBrush(layer);
                 // Remove brush if plugin is disabled
                 else if (!layer.LayerBrush.PluginInfo.Enabled)
-                    _layerService.DeactivateLayerBrush(layer);
+                    _renderElementService.DeactivateLayerBrush(layer);
 
                 // Instantiate effects
-                _layerService.InstantiateLayerEffects(layer);
+                _renderElementService.InstantiateLayerEffects(layer);
                 // Remove effects of plugins that are disabled
                 var disabledEffects = new List<BaseLayerEffect>(layer.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
                 foreach (var layerLayerEffect in disabledEffects)
-                    _layerService.RemoveLayerEffect(layerLayerEffect);
+                    _renderElementService.RemoveLayerEffect(layerLayerEffect);
+
+                _renderElementService.InstantiateDisplayConditions(layer);
             }
         }
 

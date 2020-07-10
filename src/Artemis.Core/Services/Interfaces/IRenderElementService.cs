@@ -6,7 +6,7 @@ using Artemis.Core.Plugins.LayerEffect.Abstract;
 
 namespace Artemis.Core.Services.Interfaces
 {
-    public interface ILayerService : IArtemisService
+    public interface IRenderElementService : IArtemisService
     {
         /// <summary>
         ///     Creates a new layer
@@ -55,5 +55,7 @@ namespace Artemis.Core.Services.Interfaces
         BaseLayerEffect AddLayerEffect(RenderProfileElement renderProfileElement, LayerEffectDescriptor layerEffectDescriptor);
 
         void RemoveLayerEffect(BaseLayerEffect layerEffect);
+
+        void InstantiateDisplayConditions(RenderProfileElement renderElement);
     }
 }

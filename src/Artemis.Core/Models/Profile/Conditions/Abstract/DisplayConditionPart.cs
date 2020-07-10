@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+using Artemis.Core.Services.Interfaces;
+using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core.Models.Profile.Conditions.Abstract
 {
     public abstract class DisplayConditionPart
     {
-        public Guid EntityId { get; internal set; }
-
         private readonly List<DisplayConditionPart> _children;
 
         protected DisplayConditionPart()
@@ -36,6 +34,9 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
             }
         }
 
-        public abstract void ApplyToEntity();
+        public abstract DisplayConditionPartEntity GetEntity();
+
+        internal abstract void ApplyToEntity();
+        internal abstract void Initialize(IDataModelService dataModelService);
     }
 }
