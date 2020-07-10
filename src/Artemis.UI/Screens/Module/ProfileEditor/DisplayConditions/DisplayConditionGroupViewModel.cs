@@ -38,15 +38,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public void AddCondition(string type)
         {
             if (type == "Static")
-                DisplayConditionGroup.AddChild(new DisplayConditionPredicate {PredicateType = PredicateType.Static});
+                DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
             else if (type == "Dynamic")
-                DisplayConditionGroup.AddChild(new DisplayConditionPredicate {PredicateType = PredicateType.Dynamic});
+                DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
             Update();
         }
 
         public void AddGroup()
         {
-            DisplayConditionGroup.AddChild(new DisplayConditionGroup());
+            DisplayConditionGroup.AddChild(new DisplayConditionGroup(DisplayConditionGroup));
             Update();
         }
 

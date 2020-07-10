@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
             // Ensure the layer has a root display condition group
             if (e.RenderProfileElement.DisplayConditionGroup == null)
-                e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup();
+                e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup(null);
 
             RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null);
             RootGroup.IsRootGroup = true;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Extensions;
@@ -18,10 +17,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
     {
         private BindableCollection<DataModelVisualizationViewModel> _children;
         private DataModel _dataModel;
+        private bool _isMatchingFilteredTypes;
         private DataModelVisualizationViewModel _parent;
         private DataModelPropertyAttribute _propertyDescription;
         private PropertyInfo _propertyInfo;
-        private bool _isMatchingFilteredTypes;
 
         internal DataModelVisualizationViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo)
         {
@@ -75,6 +74,36 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _isMatchingFilteredTypes, value);
         }
 
+        public string PropertyPath
+        {
+            get
+            {
+                if (Parent == null)
+                    return PropertyInfo?.Name;
+
+                if (PropertyInfo == null)
+                    return Parent.PropertyPath;
+
+                var parentPath = Parent.PropertyPath;
+                return parentPath != null ? $"{parentPath}.{PropertyInfo.Name}" : PropertyInfo.Name;
+            }
+        }
+
+        public string DisplayPropertyPath
+        {
+            get
+            {
+                if (Parent == null)
+                    return PropertyDescription?.Name;
+
+                if (PropertyDescription == null)
+                    return Parent.DisplayPropertyPath;
+
+                var parentPath = Parent.DisplayPropertyPath;
+                return parentPath != null ? $"{parentPath} › {PropertyDescription.Name}" : PropertyDescription.Name;
+            }
+        }
+
         public abstract void Update(IDataModelVisualizationService dataModelVisualizationService);
 
         public virtual object GetCurrentValue()
@@ -84,6 +113,14 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         public void ApplyTypeFilter(bool looseMatch, params Type[] filteredTypes)
         {
+            if (filteredTypes != null)
+            {
+                if (filteredTypes.All(t => t == null))
+                    filteredTypes = null;
+                else
+                    filteredTypes = filteredTypes.Where(t => t != null).ToArray();
+            }
+
             // If the VM has children, its own type is not relevant
             if (Children.Any())
             {
@@ -114,9 +151,18 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType);
         }
 
-        public DataModelVisualizationViewModel GetChildForCondition(DisplayConditionPredicate predicate)
+        public DataModelVisualizationViewModel GetChildForCondition(DisplayConditionPredicate predicate, DisplayConditionSide side)
         {
+            if (side == DisplayConditionSide.Left)
+            {
+                if (predicate.LeftDataModel == null || predicate.LeftPropertyPath == null)
+                    return null;
+                return GetChildByPath(predicate.LeftDataModel.PluginInfo.Guid, predicate.LeftPropertyPath);
+            }
 
+            if (predicate.RightDataModel == null || predicate.RightPropertyPath == null)
+                return null;
+            return GetChildByPath(predicate.RightDataModel.PluginInfo.Guid, predicate.RightPropertyPath);
         }
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
@@ -139,18 +185,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                     return child.GetChildByPath(dataModelGuid, string.Join(".", path.Skip(1)));
                 return child;
             }
-        }
-
-        public string GetCurrentPath()
-        {
-            if (Parent == null)
-                return PropertyInfo?.Name;
-
-            if (PropertyInfo == null)
-                return Parent.GetCurrentPath();
-
-            var parentPath = Parent.GetCurrentPath();
-            return parentPath != null ? $"{parentPath}.{PropertyInfo.Name}" : PropertyInfo.Name;
         }
 
         protected DataModelVisualizationViewModel CreateChild(IDataModelVisualizationService dataModelVisualizationService, PropertyInfo propertyInfo)
@@ -182,8 +216,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 PropertyDescription = DataModel?.DataModelDescription;
             // Rely on property info for the description
             else if (PropertyInfo != null)
+            {
                 PropertyDescription = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(PropertyInfo, typeof(DataModelPropertyAttribute)) ??
                                       new DataModelPropertyAttribute {Name = PropertyInfo.Name.Humanize()};
+            }
             else
                 throw new ArtemisSharedUIException("Failed to get property description because plugin info is null but the parent has a datamodel");
 
@@ -191,5 +227,11 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             if (PropertyDescription != null && PropertyDescription.Name == null && PropertyInfo != null)
                 PropertyDescription.Name = PropertyInfo.Name.Humanize();
         }
+    }
+
+    public enum DisplayConditionSide
+    {
+        Left,
+        Right
     }
 }

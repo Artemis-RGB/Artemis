@@ -48,7 +48,7 @@
                 Background="#ab47bc"
                 BorderBrush="#ab47bc"
                 Style="{StaticResource DisplayConditionButton}"
-                ToolTip="{Binding DisplayConditionPredicate.LeftPropertyPath}"
+                ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}">
@@ -80,7 +80,7 @@
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
-                Content="{Binding DisplayConditionPredicate.Operator.Description}"
+                Content="{Binding SelectedOperator.Description}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding Operators}">
@@ -109,7 +109,7 @@
                 Background="{DynamicResource PrimaryHueMidBrush}"
                 BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                 Style="{StaticResource DisplayConditionButton}"
-                ToolTip="{Binding DisplayConditionPredicate.RightPropertyPath}"
+                ToolTip="{Binding SelectedRightSideProperty.DisplayPropertyPath}"
                 Click="PropertyButton_OnClick"
                 Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
@@ -147,12 +147,12 @@
                         Command="{s:Action ActivateRightSideInputViewModel}"
                         HorizontalAlignment="Left">
                     <Grid>
-                        <StackPanel Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
+                        <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                             <TextBlock Margin="0 0 3 0"
                                        FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding DisplayConditionPredicate.RightStaticValue}"/>
+                            <TextBlock Text="{Binding RightStaticValue}"/>
                             <TextBlock Margin="3 0 0 0"
                                        FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Affix}"
@@ -161,7 +161,7 @@
 
                         <TextBlock Text="« Enter a value »"
                                    FontStyle="Italic"
-                                   Visibility="{Binding DisplayConditionPredicate.RightStaticValue, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                   Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
                     </Grid>
                 </Button>
                 <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"

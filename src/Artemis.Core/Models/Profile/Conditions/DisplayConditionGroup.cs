@@ -35,7 +35,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         public override void ApplyToEntity()
         {
             DisplayConditionGroupEntity.Id = EntityId;
-            DisplayConditionGroupEntity.ParentId = Parent?.EntityId ?? new Guid();
+            DisplayConditionGroupEntity.ParentId = Parent?.EntityId ?? Guid.Empty;
             DisplayConditionGroupEntity.BooleanOperator = (int) BooleanOperator;
 
             foreach (var child in Children)
