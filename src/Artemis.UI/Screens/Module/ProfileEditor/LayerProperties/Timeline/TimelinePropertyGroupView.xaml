@@ -23,7 +23,7 @@
                       Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
                       ItemsSource="{Binding TimelineKeyframeViewModels}"
                       Background="{DynamicResource MaterialDesignToolBarBackground}"
-                      HorizontalAlignment="Left">
+                      HorizontalAlignment="Stretch">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />
@@ -49,20 +49,22 @@
         <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource MaterialDesignDivider}" Height="1" />
 
         <ItemsControl Grid.Row="2"
+                      ItemsSource="{Binding LayerPropertyGroupViewModel.Children}"
                       Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                      ItemsSource="{Binding LayerPropertyGroupViewModel.Children}">
+                      HorizontalAlignment="Stretch"
+                      HorizontalContentAlignment="Stretch">
+            <ItemsControl.ItemContainerStyle>
+                <Style TargetType="ContentPresenter">
+                    <Setter Property="VerticalAlignment" Value="Stretch" />
+                    <Setter Property="HorizontalAlignment" Value="Stretch" />
+                </Style >
+            </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}">
-                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}"
-                                    VerticalContentAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False" />
+                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}" IsTabStop="False" HorizontalAlignment="Stretch"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
-                    <ContentControl s:View.Model="{Binding TimelinePropertyBaseViewModel}"
-                                    VerticalContentAlignment="Stretch"
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False" />
+                    <ContentControl s:View.Model="{Binding TimelinePropertyBaseViewModel}" IsTabStop="False" HorizontalAlignment="Stretch" />
                 </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>

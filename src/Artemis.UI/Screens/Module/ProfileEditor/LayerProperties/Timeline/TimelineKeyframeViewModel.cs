@@ -27,6 +27,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             var newKeyframe = new LayerPropertyKeyframe<T>(
                 LayerPropertyKeyframe.Value,
                 LayerPropertyKeyframe.Position,
+                LayerPropertyKeyframe.Timeline,
                 LayerPropertyKeyframe.EasingFunction,
                 LayerPropertyKeyframe.LayerProperty
             );

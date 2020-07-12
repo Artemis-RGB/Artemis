@@ -148,13 +148,11 @@
                         HorizontalAlignment="Left">
                     <Grid>
                         <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
-                            <TextBlock Margin="0 0 3 0"
-                                       FontWeight="Light"
+                            <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}"/>
                             <TextBlock Text="{Binding RightStaticValue}"/>
-                            <TextBlock Margin="3 0 0 0"
-                                       FontWeight="Light"
+                            <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Affix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
                         </StackPanel>

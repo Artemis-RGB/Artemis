@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
@@ -24,6 +25,7 @@ namespace Artemis.UI.Shared.Services
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
         private int _pixelsPerSecond;
+        private Timeline _currentTimeline;
 
         public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel, ILogger logger)
         {
@@ -46,11 +48,22 @@ namespace Artemis.UI.Shared.Services
             get => _currentTime;
             set
             {
-                if (_currentTime.Equals(value))
-                    return;
+                if (_currentTime.Equals(value)) return;
                 _currentTime = value;
                 UpdateProfilePreview();
                 OnCurrentTimeChanged();
+            }
+        }
+
+        public Timeline CurrentTimeline
+        {
+            get => _currentTimeline;
+            set
+            {
+                if (_currentTimeline.Equals(value)) return;
+                _currentTimeline = value;
+                UpdateProfilePreview();
+                OnCurrentTimelineChanged();
             }
         }
 
@@ -113,12 +126,14 @@ namespace Artemis.UI.Shared.Services
             var delta = CurrentTime - _lastUpdateTime;
             foreach (var folder in SelectedProfile.GetAllFolders())
             {
+                folder.CurrentTimeline = CurrentTimeline;
                 foreach (var baseLayerEffect in folder.LayerEffects)
                     baseLayerEffect.Update(delta.TotalSeconds);
             }
 
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
+                layer.CurrentTimeline = CurrentTimeline;
                 layer.OverrideProgress(CurrentTime);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
                 foreach (var baseLayerEffect in layer.LayerEffects)
@@ -212,6 +227,7 @@ namespace Artemis.UI.Shared.Services
         public event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
+        public event EventHandler CurrentTimelineChanged;
         public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
 
@@ -248,6 +264,11 @@ namespace Artemis.UI.Shared.Services
         protected virtual void OnCurrentTimeChanged()
         {
             CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnCurrentTimelineChanged()
+        {
+            CurrentTimelineChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnPixelsPerSecondChanged()

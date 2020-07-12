@@ -291,7 +291,7 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="0" Height="20" Margin="5 0 0 0">
+            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="{Binding CurrentTimelineIndex}" Height="20" Margin="5 0 0 0">
                 <ListBoxItem Padding="10 0">
                     <ListBoxItem.ToolTip>
                         <ToolTip Placement="Top" VerticalOffset="-5">

@@ -12,7 +12,8 @@
     <Grid Background="{DynamicResource MaterialDesignToolBarBackground}"
           MouseDown="{s:Action TimelineCanvasMouseDown}"
           MouseUp="{s:Action TimelineCanvasMouseUp}"
-          MouseMove="{s:Action TimelineCanvasMouseMove}">
+          MouseMove="{s:Action TimelineCanvasMouseMove}"
+          HorizontalAlignment="Stretch">
         <Grid.Triggers>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                 <BeginStoryboard>
@@ -31,12 +32,11 @@
         </Grid.Triggers>
 
         <ItemsControl ItemsSource="{Binding LayerPropertyGroups}"
-                      Width="{Binding Width}"
                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"
                       HorizontalAlignment="Left">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" />
+                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}" HorizontalContentAlignment="Left" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

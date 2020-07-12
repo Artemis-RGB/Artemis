@@ -19,10 +19,10 @@ namespace Artemis.Core.Services.Storage
     /// </summary>
     public class ProfileService : IProfileService
     {
-        private readonly IRenderElementService _renderElementService;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IProfileRepository _profileRepository;
+        private readonly IRenderElementService _renderElementService;
         private readonly ISurfaceService _surfaceService;
 
         internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, IRenderElementService renderElementService, IProfileRepository profileRepository)
@@ -38,6 +38,8 @@ namespace Artemis.Core.Services.Storage
             _pluginService.PluginEnabled += OnPluginToggled;
             _pluginService.PluginDisabled += OnPluginToggled;
         }
+
+        public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
 
         public void ActivateDefaultProfiles()
         {
@@ -109,7 +111,7 @@ namespace Artemis.Core.Services.Storage
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
             _logger.Debug("Updating profile " + profile);
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
 
@@ -135,9 +137,9 @@ namespace Artemis.Core.Services.Storage
 
             ActivateProfile(module, null);
             var top = profile.UndoStack.Pop();
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
             profile.RedoStack.Push(memento);
-            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
+            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
             profile.ApplyToProfile();
             ActivateProfile(module, profile);
 
@@ -155,9 +157,9 @@ namespace Artemis.Core.Services.Storage
 
             ActivateProfile(module, null);
             var top = profile.RedoStack.Pop();
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity);
+            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
             profile.UndoStack.Push(memento);
-            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top);
+            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
             profile.ApplyToProfile();
             ActivateProfile(module, profile);
 

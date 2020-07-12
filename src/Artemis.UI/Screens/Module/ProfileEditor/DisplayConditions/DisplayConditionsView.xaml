@@ -9,27 +9,63 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="40" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="10 5 0 -4">
+        <TextBlock Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="10 5 0 -4">
             Display conditions
         </TextBlock>
-        <Separator Grid.Row="1" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
+        <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
 
-        <Grid Grid.Row="2">
-            <ScrollViewer Margin="8" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
+            <ScrollViewer Margin="8 0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                 <ContentControl s:View.Model="{Binding RootGroup}" />
             </ScrollViewer>
         </Grid>
 
-        <StackPanel Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Right" Orientation="Horizontal">
-            <TextBlock Margin="10 0" VerticalAlignment="Center">Disabled</TextBlock>
-            <ToggleButton  Style="{StaticResource MaterialDesignSwitchToggleButton}" ToolTip="Default ToggleButton Style" />
-            <TextBlock Margin="10 0 15 0" VerticalAlignment="Center">Enabled</TextBlock>
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="10" Orientation="Horizontal" VerticalAlignment="Bottom" ToolTip="When conditions are met, only go through the entire timeline once.">
+            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="True" />
+            <TextBlock Margin="5 0 0 0">Play once</TextBlock>
         </StackPanel>
+
+        <StackPanel Grid.Row="3" Grid.Column="1" Margin="10" HorizontalAlignment="Right">
+            <TextBlock>When conditions no longer met</TextBlock>
+            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="{Binding CurrentTimelineIndex}" Height="20" Margin="0 5 0 0">
+                <ListBoxItem Padding="10 0">
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Placement="Top" VerticalOffset="-5">
+                            <StackPanel>
+                                <TextBlock>When conditions are no longer met, finish the timelines and then stop displaying.</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ListBoxItem.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="PlayArrow" Width="20" Height="20" Margin="0 -4" />
+                        <TextBlock Margin="5 0 0 0" FontSize="11">WAIT FOR FINISH</TextBlock>
+                    </StackPanel>
+                </ListBoxItem>
+                <ListBoxItem Padding="10 0">
+                    <ListBoxItem.ToolTip>
+                        <ToolTip Placement="Top" VerticalOffset="-5">
+                            <StackPanel>
+                                <TextBlock>When conditions are no longer met, stop displaying immediately.</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </ListBoxItem.ToolTip>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="SkipNext" Width="20" Height="20" Margin="0 -4" />
+                        <TextBlock Margin="5 0 0 0" FontSize="11">SKIP</TextBlock>
+                    </StackPanel>
+                </ListBoxItem>
+            </ListBox>
+        </StackPanel>
+
     </Grid>
 </UserControl>

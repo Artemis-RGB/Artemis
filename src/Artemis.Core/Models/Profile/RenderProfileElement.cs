@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Annotations;
 using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -17,6 +18,11 @@ namespace Artemis.Core.Models.Profile
 
         private SKPath _path;
         internal abstract RenderElementEntity RenderElementEntity { get; }
+
+        /// <summary>
+        ///     Gets or sets the currently active timeline
+        /// </summary>
+        public Timeline CurrentTimeline { get; set; }
 
         /// <summary>
         ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
@@ -140,6 +146,11 @@ namespace Artemis.Core.Models.Profile
         {
             get => _displayConditionGroup;
             set => SetAndNotify(ref _displayConditionGroup, value);
+        }
+
+        public void UpdateDisplayCondition()
+        {
+            var rootGroupResult = DisplayConditionGroup.Evaluate();
         }
 
         #endregion
