@@ -8,17 +8,23 @@ namespace Artemis.Core.Models.Profile.Conditions
     {
         public ListOperator ListOperator { get; set; }
 
+        public override bool Evaluate()
+        {
+            return true;
+        }
+
+
         internal override void ApplyToEntity()
         {
         }
 
-        internal override void Initialize(IDataModelService dataModelService)
-        {
-        }
-
-        public override DisplayConditionPartEntity GetEntity()
+        internal override DisplayConditionPartEntity GetEntity()
         {
             return null;
+        }
+
+        internal override void Initialize(IDataModelService dataModelService)
+        {
         }
     }
 

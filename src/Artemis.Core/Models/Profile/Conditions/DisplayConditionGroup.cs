@@ -33,6 +33,23 @@ namespace Artemis.Core.Models.Profile.Conditions
         public BooleanOperator BooleanOperator { get; set; }
         public DisplayConditionGroupEntity DisplayConditionGroupEntity { get; set; }
 
+        public override bool Evaluate()
+        {
+            switch (BooleanOperator)
+            {
+                case BooleanOperator.And:
+                    return Children.All(c => c.Evaluate());
+                case BooleanOperator.Or:
+                    return Children.Any(c => c.Evaluate());
+                case BooleanOperator.AndNot:
+                    return Children.All(c => !c.Evaluate());
+                case BooleanOperator.OrNot:
+                    return Children.Any(c => !c.Evaluate());
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         internal override void ApplyToEntity()
         {
             DisplayConditionGroupEntity.BooleanOperator = (int) BooleanOperator;
@@ -49,7 +66,7 @@ namespace Artemis.Core.Models.Profile.Conditions
                 child.Initialize(dataModelService);
         }
 
-        public override DisplayConditionPartEntity GetEntity()
+        internal override DisplayConditionPartEntity GetEntity()
         {
             return DisplayConditionGroupEntity;
         }

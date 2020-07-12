@@ -2,16 +2,19 @@
 using System.ComponentModel;
 using System.Linq;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
     public class TimelinePropertyGroupViewModel : PropertyChangedBase
     {
+        private readonly IProfileEditorService _profileEditorService;
         private BindableCollection<double> _timelineKeyframeViewModels;
 
-        public TimelinePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
+        public TimelinePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, IProfileEditorService profileEditorService)
         {
+            _profileEditorService = profileEditorService;
             LayerPropertyGroupViewModel = (LayerPropertyGroupViewModel) layerPropertyBaseViewModel;
             TimelineKeyframeViewModels = new BindableCollection<double>();
 
@@ -32,6 +35,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             TimelineKeyframeViewModels.Clear();
             TimelineKeyframeViewModels.AddRange(LayerPropertyGroupViewModel.GetKeyframes(false)
+                .Where(k => k.Timeline == _profileEditorService.CurrentTimeline)
                 .Select(k => LayerPropertyGroupViewModel.ProfileEditorService.PixelsPerSecond * k.Position.TotalSeconds));
         }
 

@@ -23,10 +23,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         private T _currentValue;
         private bool _isInitialized;
         private List<LayerPropertyKeyframe<T>> _keyframes;
+        private List<LayerPropertyKeyframe<T>> _startKeyframes;
+        private List<LayerPropertyKeyframe<T>> _mainKeyframes;
+        private List<LayerPropertyKeyframe<T>> _endKeyframes;
 
         protected LayerProperty()
         {
             _keyframes = new List<LayerPropertyKeyframe<T>>();
+            _startKeyframes = new List<LayerPropertyKeyframe<T>>();
+            _mainKeyframes = new List<LayerPropertyKeyframe<T>>();
+            _endKeyframes = new List<LayerPropertyKeyframe<T>>();
         }
 
         /// <summary>
@@ -84,7 +90,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <param name="value">The value to set.</param>
         /// <param name="time">
         ///     An optional time to set the value add, if provided and property is using keyframes the value will be set to an new
-        ///     or existing keyframe.
+        ///     or existing keyframe in the currently active timeline.
         /// </param>
         public void SetCurrentValue(T value, TimeSpan? time)
         {
@@ -93,10 +99,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             else
             {
                 // If on a keyframe, update the keyframe
-                var currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
+                var currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value && k.Timeline == ProfileElement.CurrentTimeline);
                 // Create a new keyframe if none found
                 if (currentKeyframe == null)
-                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this));
+                    AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, ProfileElement.CurrentTimeline, Easings.Functions.Linear, this));
                 else
                     currentKeyframe.Value = value;
 
@@ -132,6 +138,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             var newKeyframe = new LayerPropertyKeyframe<T>(
                 keyframe.Value,
                 keyframe.Position,
+                keyframe.Timeline,
                 keyframe.EasingFunction,
                 keyframe.LayerProperty
             );
@@ -193,22 +200,42 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
 
+            var keyframeSet = _keyframes;
+            if (ProfileElement.CurrentTimeline == Timeline.Start)
+                keyframeSet = _startKeyframes;
+            else if (ProfileElement.CurrentTimeline == Timeline.Main)
+                keyframeSet = _mainKeyframes;
+            else if (ProfileElement.CurrentTimeline == Timeline.End)
+                keyframeSet = _endKeyframes;
+
             // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= TimelineProgress);
+            CurrentKeyframe = keyframeSet.LastOrDefault(k => k.Position <= TimelineProgress);
+
+            // If the current keyframe is null, try to find it in previous timelines
+            if (CurrentKeyframe == null && ProfileElement.CurrentTimeline == Timeline.Main)
+                CurrentKeyframe = _startKeyframes.LastOrDefault();
+            else if (CurrentKeyframe == null && ProfileElement.CurrentTimeline == Timeline.End)
+                CurrentKeyframe = _mainKeyframes.LastOrDefault() ?? _startKeyframes.LastOrDefault();
+
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
-            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
-            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
+            var nextIndex = keyframeSet.IndexOf(CurrentKeyframe) + 1;
+            NextKeyframe = keyframeSet.Count > nextIndex ? keyframeSet[nextIndex] : null;
 
             // No need to update the current value if either of the keyframes are null
             if (CurrentKeyframe == null)
-                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
+                CurrentValue = keyframeSet.Any() ? keyframeSet[0].Value : BaseValue;
             else if (NextKeyframe == null)
                 CurrentValue = CurrentKeyframe.Value;
             // Only determine progress and current value if both keyframes are present
             else
             {
-                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float) ((TimelineProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                // If the current keyframe belongs to a previous timeline, consider it starting at 0
+                var currentKeyframePosition = CurrentKeyframe.Position;
+                if (CurrentKeyframe.Timeline != ProfileElement.CurrentTimeline)
+                    currentKeyframePosition = TimeSpan.Zero;
+
+                var timeDiff = NextKeyframe.Position - currentKeyframePosition;
+                var keyframeProgress = (float) ((TimelineProgress - currentKeyframePosition).TotalMilliseconds / timeDiff.TotalMilliseconds);
                 var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
@@ -227,11 +254,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Sorts the keyframes in ascending order by position
+        ///     Sorts the keyframes in ascending order by position and divides the keyframes into different timelines
         /// </summary>
         internal void SortKeyframes()
         {
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
+
+            _startKeyframes = _keyframes.Where(k => k.Timeline == Timeline.Start).ToList();
+            _mainKeyframes = _keyframes.Where(k => k.Timeline == Timeline.Main).ToList();
+            _endKeyframes = _keyframes.Where(k => k.Timeline == Timeline.End).ToList();
         }
 
         internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage)
@@ -258,6 +289,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 _keyframes.AddRange(entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
                     JsonConvert.DeserializeObject<T>(k.Value),
                     k.Position,
+                    (Timeline) k.Timeline,
                     (Easings.Functions) k.EasingFunction,
                     this
                 )));
@@ -287,6 +319,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             {
                 Value = JsonConvert.SerializeObject(k.Value),
                 Position = k.Position,
+                Timeline = (int) k.Timeline,
                 EasingFunction = (int) k.EasingFunction
             }));
         }

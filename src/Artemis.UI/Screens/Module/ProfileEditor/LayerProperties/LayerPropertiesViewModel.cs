@@ -84,6 +84,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
+        public int CurrentTimelineIndex
+        {
+            get => (int) ProfileEditorService.CurrentTimeline;
+            set
+            {
+                ProfileEditorService.CurrentTimeline = (Core.Models.Profile.LayerProperties.Timeline) value;
+                ProfileEditorService.CurrentTime = TimeSpan.Zero;
+            }
+        }
+
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
         public RenderProfileElement SelectedProfileElement
@@ -130,6 +140,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.CurrentTimelineChanged += ProfileEditorServiceOnCurrentTimelineChanged;
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
             base.OnInitialActivate();
@@ -139,6 +150,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.CurrentTimelineChanged -= ProfileEditorServiceOnCurrentTimelineChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
@@ -166,6 +178,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             NotifyOfPropertyChange(nameof(FormattedCurrentTime));
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
+        }
+
+        private void ProfileEditorServiceOnCurrentTimelineChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CurrentTimelineIndex));
+            TimelineViewModel.UpdateKeyframes();
         }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)

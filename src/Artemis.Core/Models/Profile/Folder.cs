@@ -65,6 +65,8 @@ namespace Artemis.Core.Models.Profile
             if (!Enabled)
                 return;
 
+            UpdateDisplayCondition();
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.Update(deltaTime);
 

@@ -18,7 +18,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
         private readonly IProfileEditorService _profileEditorService;
         private RectangleGeometry _selectionRectangle;
-        private double _width;
 
         public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
             IProfileEditorService profileEditorService)
@@ -32,12 +31,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
-
-        public double Width
-        {
-            get => _width;
-            set => SetAndNotify(ref _width, value);
-        }
 
         public RectangleGeometry SelectionRectangle
         {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq.Expressions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile.Abstract;
 
@@ -34,9 +35,10 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
             }
         }
 
-        public abstract DisplayConditionPartEntity GetEntity();
+        public abstract bool Evaluate();
 
-        internal abstract void ApplyToEntity();
         internal abstract void Initialize(IDataModelService dataModelService);
+        internal abstract void ApplyToEntity();
+        internal abstract DisplayConditionPartEntity GetEntity();
     }
 }

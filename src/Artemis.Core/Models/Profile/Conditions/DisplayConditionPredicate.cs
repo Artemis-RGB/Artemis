@@ -61,6 +61,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             ValidateOperator();
             ValidateRightSide();
+
             CreateExpression();
         }
 
@@ -91,6 +92,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             RightPropertyPath = null;
 
             SetStaticValue(staticValue);
+
             CreateExpression();
         }
 
@@ -111,14 +113,21 @@ namespace Artemis.Core.Models.Profile.Conditions
             var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (displayConditionOperator.SupportsType(leftType))
                 Operator = displayConditionOperator;
+
+            CreateExpression();
         }
 
-        public void CreateExpression()
+        private void CreateExpression()
         {
+            DynamicConditionLambda = null;
+            CompiledDynamicConditionLambda = null;
+            StaticConditionLambda = null;
+            CompiledStaticConditionLambda = null;
+
             if (PredicateType == PredicateType.Dynamic)
                 CreateDynamicExpression();
-            else
-                CreateStaticExpression();
+
+            CreateStaticExpression();
         }
 
         internal override void ApplyToEntity()
@@ -132,6 +141,16 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             DisplayConditionPredicateEntity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
             DisplayConditionPredicateEntity.OperatorType = Operator?.GetType().Name;
+        }
+
+        public override bool Evaluate()
+        {
+            if (CompiledDynamicConditionLambda != null)
+                return CompiledDynamicConditionLambda(LeftDataModel, RightDataModel);
+            if (CompiledStaticConditionLambda != null)
+                return CompiledStaticConditionLambda(LeftDataModel);
+
+            return false;
         }
 
         internal override void Initialize(IDataModelService dataModelService)
@@ -184,7 +203,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
         }
 
-        public override DisplayConditionPartEntity GetEntity()
+        internal override DisplayConditionPartEntity GetEntity()
         {
             return DisplayConditionPredicateEntity;
         }
@@ -199,9 +218,6 @@ namespace Artemis.Core.Models.Profile.Conditions
                 Operator = null;
         }
 
-        /// <summary>
-        ///     Validates the right side, ensuring it is still compatible with the current left side
-        /// </summary>
         private void ValidateRightSide()
         {
             var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
@@ -223,10 +239,6 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
         }
 
-        /// <summary>
-        ///     Updates the current static value, ensuring it is a valid type. This assumes the types are compatible if they
-        ///     differ.
-        /// </summary>
         private void SetStaticValue(object staticValue)
         {
             // If the left side is empty simply apply the value, any validation will wait

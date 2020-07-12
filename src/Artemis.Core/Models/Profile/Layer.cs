@@ -205,6 +205,8 @@ namespace Artemis.Core.Models.Profile
             if (LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
+            UpdateDisplayCondition();
+
             // TODO: Remove, this is slow and stupid
             // For now, reset all keyframe engines after the last keyframe was hit
             // This is a placeholder method of repeating the animation until repeat modes are implemented
