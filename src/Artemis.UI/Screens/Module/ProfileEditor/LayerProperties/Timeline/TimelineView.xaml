@@ -9,11 +9,11 @@
              d:DesignHeight="25"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:TimelineViewModel}">
-    <Grid Background="{DynamicResource MaterialDesignToolBarBackground}"
+    <Grid x:Name="TimelineContainerGrid"
+          Background="{DynamicResource MaterialDesignToolBarBackground}"
           MouseDown="{s:Action TimelineCanvasMouseDown}"
           MouseUp="{s:Action TimelineCanvasMouseUp}"
-          MouseMove="{s:Action TimelineCanvasMouseMove}"
-          HorizontalAlignment="Stretch">
+          MouseMove="{s:Action TimelineCanvasMouseMove}">
         <Grid.Triggers>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                 <BeginStoryboard>
@@ -40,6 +40,29 @@
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+
+        <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
+              Opacity="0.5"
+              StrokeDashArray="4 2"
+              X1="{Binding StartSegmentEndPosition}"
+              X2="{Binding StartSegmentEndPosition}"
+              Y1="0"
+              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
+              HorizontalAlignment="Left" />
+        <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
+              Opacity="0.5"
+              StrokeDashArray="4 2"
+              X1="{Binding MainSegmentEndPosition}"
+              X2="{Binding MainSegmentEndPosition}"
+              Y1="0"
+              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}" />
+        <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
+              Opacity="0.5"
+              StrokeDashArray="4 2"
+              X1="{Binding EndSegmentEndPosition}"
+              X2="{Binding EndSegmentEndPosition}"
+              Y1="0"
+              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}" />
 
         <!-- Multi-selection rectangle -->
         <Path x:Name="MultiSelectionPath"

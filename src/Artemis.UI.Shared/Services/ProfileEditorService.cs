@@ -25,7 +25,6 @@ namespace Artemis.UI.Shared.Services
         private TimeSpan _currentTime;
         private TimeSpan _lastUpdateTime;
         private int _pixelsPerSecond;
-        private Timeline _currentTimeline;
 
         public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel, ILogger logger)
         {
@@ -49,21 +48,12 @@ namespace Artemis.UI.Shared.Services
             set
             {
                 if (_currentTime.Equals(value)) return;
-                _currentTime = value;
+                if (value > SelectedProfileElement.TimelineLength)
+                    _currentTime = SelectedProfileElement.TimelineLength;
+                else
+                    _currentTime = value;
                 UpdateProfilePreview();
                 OnCurrentTimeChanged();
-            }
-        }
-
-        public Timeline CurrentTimeline
-        {
-            get => _currentTimeline;
-            set
-            {
-                if (_currentTimeline.Equals(value)) return;
-                _currentTimeline = value;
-                UpdateProfilePreview();
-                OnCurrentTimelineChanged();
             }
         }
 
@@ -126,14 +116,12 @@ namespace Artemis.UI.Shared.Services
             var delta = CurrentTime - _lastUpdateTime;
             foreach (var folder in SelectedProfile.GetAllFolders())
             {
-                folder.CurrentTimeline = CurrentTimeline;
                 foreach (var baseLayerEffect in folder.LayerEffects)
                     baseLayerEffect.Update(delta.TotalSeconds);
             }
 
             foreach (var layer in SelectedProfile.GetAllLayers())
             {
-                layer.CurrentTimeline = CurrentTimeline;
                 layer.OverrideProgress(CurrentTime);
                 layer.LayerBrush?.Update(delta.TotalSeconds);
                 foreach (var baseLayerEffect in layer.LayerEffects)

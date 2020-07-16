@@ -50,7 +50,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
                 LayerPropertyViewModel.LayerProperty.AddKeyframe(new LayerPropertyKeyframe<T>(
                     LayerPropertyViewModel.LayerProperty.CurrentValue,
                     _profileEditorService.CurrentTime,
-                    _profileEditorService.CurrentTimeline,
                     Easings.Functions.Linear,
                     LayerPropertyViewModel.LayerProperty
                 ));

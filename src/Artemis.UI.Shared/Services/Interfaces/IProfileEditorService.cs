@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.UI.Shared.Events;
@@ -15,7 +14,6 @@ namespace Artemis.UI.Shared.Services.Interfaces
         Profile SelectedProfile { get; }
         RenderProfileElement SelectedProfileElement { get; }
         TimeSpan CurrentTime { get; set; }
-        Timeline CurrentTimeline { get; set; }
         int PixelsPerSecond { get; set; }
         IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
         IKernel Kernel { get; }
@@ -55,12 +53,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         ///     Occurs when the current editor time is changed
         /// </summary>
         event EventHandler CurrentTimeChanged;
-
-        /// <summary>
-        ///     Occurs when the current editor timeline is changed
-        /// </summary>
-        event EventHandler CurrentTimelineChanged;
-
+        
         /// <summary>
         ///     Occurs when the pixels per second (zoom level) is changed
         /// </summary>

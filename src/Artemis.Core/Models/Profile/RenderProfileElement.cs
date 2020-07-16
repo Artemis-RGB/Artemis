@@ -20,11 +20,6 @@ namespace Artemis.Core.Models.Profile
         internal abstract RenderElementEntity RenderElementEntity { get; }
 
         /// <summary>
-        ///     Gets or sets the currently active timeline
-        /// </summary>
-        public Timeline CurrentTimeline { get; set; }
-
-        /// <summary>
         ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
         ///     clipped.
         /// </summary>
@@ -68,6 +63,66 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
+
+        #endregion
+
+        #region Timeline
+
+        private TimeSpan _startSegmentLength;
+        private TimeSpan _mainSegmentLength;
+        private TimeSpan _endSegmentLength;
+        private bool _repeatMainSegment;
+        private bool _alwaysFinishTimeline;
+
+        /// <summary>
+        ///     Gets or sets the length of the start segment
+        /// </summary>
+        public TimeSpan StartSegmentLength
+        {
+            get => _startSegmentLength;
+            set => SetAndNotify(ref _startSegmentLength, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the length of the main segment
+        /// </summary>
+        public TimeSpan MainSegmentLength
+        {
+            get => _mainSegmentLength;
+            set => SetAndNotify(ref _mainSegmentLength, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the length of the end segment
+        /// </summary>
+        public TimeSpan EndSegmentLength
+        {
+            get => _endSegmentLength;
+            set => SetAndNotify(ref _endSegmentLength, value);
+        }
+
+        /// <summary>
+        ///     Gets the total combined length of all three segments
+        /// </summary>
+        public TimeSpan TimelineLength => StartSegmentLength + MainSegmentLength + EndSegmentLength;
+
+        /// <summary>
+        ///     Gets or sets whether main timeline should repeat itself as long as display conditions are met
+        /// </summary>
+        public bool RepeatMainSegment
+        {
+            get => _repeatMainSegment;
+            set => SetAndNotify(ref _repeatMainSegment, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets whether the timeline should finish when conditions are no longer met
+        /// </summary>
+        public bool AlwaysFinishTimeline
+        {
+            get => _alwaysFinishTimeline;
+            set => SetAndNotify(ref _alwaysFinishTimeline, value);
+        }
 
         #endregion
 
@@ -138,7 +193,7 @@ namespace Artemis.Core.Models.Profile
         #region Conditions
 
         private DisplayConditionGroup _displayConditionGroup;
-
+        
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>

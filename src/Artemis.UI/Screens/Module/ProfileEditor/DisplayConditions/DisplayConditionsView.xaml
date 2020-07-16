@@ -30,9 +30,10 @@
             </ScrollViewer>
         </Grid>
 
-        <StackPanel Grid.Row="3" Grid.Column="0" Margin="10" Orientation="Horizontal" VerticalAlignment="Bottom" ToolTip="When conditions are met, only go through the entire timeline once.">
-            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="True" />
-            <TextBlock Margin="5 0 0 0">Play once</TextBlock>
+        <StackPanel Grid.Row="3" Grid.Column="0" Margin="13" Orientation="Horizontal" VerticalAlignment="Bottom" ToolTip="When conditions are met, only go through the entire timeline once.">
+            <CheckBox Style="{StaticResource MaterialDesignCheckBox}">
+                Play once
+            </CheckBox>
         </StackPanel>
 
         <StackPanel Grid.Row="3" Grid.Column="1" Margin="10" HorizontalAlignment="Right">

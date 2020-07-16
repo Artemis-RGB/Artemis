@@ -23,6 +23,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         public static readonly DependencyProperty VisibleWidthProperty = DependencyProperty.Register(nameof(VisibleWidth), typeof(double), typeof(PropertyTimelineHeader),
             new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.AffectsRender));
 
+        public static readonly DependencyProperty OffsetFirstValueProperty = DependencyProperty.Register(nameof(OffsetFirstValue), typeof(bool), typeof(PropertyTimelineHeader),
+            new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender));
+
         private double _subd1;
         private double _subd2;
         private double _subd3;
@@ -57,6 +60,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             set => SetValue(VisibleWidthProperty, value);
         }
 
+        public bool OffsetFirstValue
+        {
+            get => (bool) GetValue(OffsetFirstValueProperty);
+            set => SetValue(OffsetFirstValueProperty, value);
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             base.OnRender(drawingContext);
@@ -73,7 +82,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             var count = (width + offsetUnits) / units;
             for (var i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits + 1;
+                var x = i * units - offsetUnits;
                 // Add a 100px margin to allow the text to partially render when needed
                 if (x < HorizontalOffset - 100 || x > HorizontalOffset + width)
                     continue;
@@ -95,8 +104,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             count = (width + offsetUnits) / units;
             for (var i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits + 1;
-                if (x > HorizontalOffset && x < HorizontalOffset + width)
+                var x = i * units - offsetUnits;
+                if (x == 0 && OffsetFirstValue)
+                    drawingContext.DrawLine(linePen, new Point(1, 20), new Point(1, 30));
+                else if (x > HorizontalOffset && x < HorizontalOffset + width)
                     drawingContext.DrawLine(linePen, new Point(x, 20), new Point(x, 30));
             }
 
@@ -107,7 +118,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             for (var i = 0; i < count; i++)
             {
                 if (Math.Abs(i % mul) < 0.001) continue;
-                var x = i * units - offsetUnits + 1;
+                var x = i * units - offsetUnits;
                 if (x > HorizontalOffset && x < HorizontalOffset + width)
                     drawingContext.DrawLine(linePen, new Point(x, 25), new Point(x, 30));
             }
@@ -117,8 +128,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             var typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
             var formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
-            if (x == 1)
-                drawingContext.DrawText(formattedText, new Point(x, 2));
+            if (x == 0 && OffsetFirstValue)
+                drawingContext.DrawText(formattedText, new Point(2, 2));
             else
                 drawingContext.DrawText(formattedText, new Point(x - formattedText.Width / 2, 2));
         }

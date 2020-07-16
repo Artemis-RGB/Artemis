@@ -35,7 +35,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         {
             TimelineKeyframeViewModels.Clear();
             TimelineKeyframeViewModels.AddRange(LayerPropertyGroupViewModel.GetKeyframes(false)
-                .Where(k => k.Timeline == _profileEditorService.CurrentTimeline)
                 .Select(k => LayerPropertyGroupViewModel.ProfileEditorService.PixelsPerSecond * k.Position.TotalSeconds));
         }
 

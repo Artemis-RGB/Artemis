@@ -28,9 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             // Only show keyframes if they are enabled
             if (LayerPropertyViewModel.LayerProperty.KeyframesEnabled)
             {
-                var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes
-                    .Where(k => k.Timeline == _profileEditorService.CurrentTimeline)
-                    .ToList();
+                var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
                 var toRemove = TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe)).ToList();
                 TimelineKeyframeViewModels.RemoveRange(toRemove);
                 TimelineKeyframeViewModels.AddRange(
