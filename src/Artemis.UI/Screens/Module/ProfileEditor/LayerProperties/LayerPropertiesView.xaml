@@ -79,50 +79,49 @@
             </Grid.RowDefinitions>
 
             <!-- Misc controls & time display -->
-            <DockPanel Grid.Row="0" VerticalAlignment="Center">
-                <StackPanel Orientation="Horizontal">
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                            ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}"
-                            Focusable="False">
-                        <materialDesign:PackIcon Kind="StepForward" />
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                            ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
-                        <StackPanel>
-                            <materialDesign:PackIcon Kind="Play"
-                                                     Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
-                            <materialDesign:PackIcon Kind="Pause"
-                                                     Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
-                        </StackPanel>
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start"
-                            Command="{s:Action GoToStart}" Focusable="False">
-                        <materialDesign:PackIcon Kind="SkipBackward" />
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end"
-                            Command="{s:Action GoToEnd}" Focusable="False">
-                        <materialDesign:PackIcon Kind="SkipForward" />
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame"
-                            Command="{s:Action GoToPreviousFrame}" Focusable="False">
-                        <materialDesign:PackIcon Kind="SkipPrevious" />
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame"
-                            Command="{s:Action GoToNextFrame}" Focusable="False">
-                        <materialDesign:PackIcon Kind="SkipNext" />
-                    </Button>
-                    <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
-                                  ToolTip="Repeat after last keyframe"
-                                  IsChecked="{Binding RepeatAfterLastKeyframe}"
-                                  Focusable="False">
-                        <materialDesign:PackIcon Kind="Repeat" Height="24" Width="24" />
-                    </ToggleButton>
-                </StackPanel>
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                               Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
-                </StackPanel>
-            </DockPanel>
+            <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                <DockPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}"
+                                Focusable="False">
+                            <materialDesign:PackIcon Kind="StepForward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="Play"
+                                                         Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+                                <materialDesign:PackIcon Kind="Pause"
+                                                         Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipBackward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipForward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipPrevious" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipNext" />
+                        </Button>
+                        <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                      ToolTip="Repeat after last keyframe"
+                                      IsChecked="{Binding RepeatAfterLastKeyframe}"
+                                      Focusable="False">
+                            <materialDesign:PackIcon Kind="Repeat" Height="24" Width="24" />
+                        </ToggleButton>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
 
             <!-- Properties tree -->
             <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" DialogTheme="Inherit" CloseOnClickAway="True" Grid.Row="1">
@@ -135,7 +134,6 @@
                             <Grid>
                                 <ContentControl s:View.Model="{Binding TreeViewModel}" />
                             </Grid>
-
                         </Border>
                     </ScrollViewer>
                     <materialDesign:TransitionerSlide>
@@ -169,28 +167,58 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Timeline header -->
-            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden"
-                          VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+            <!-- Timeline headers -->
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
                 <Grid Background="{DynamicResource MaterialDesignCardBackground}">
                     <!-- Caret -->
-                    <Canvas Panel.ZIndex="1"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="{Binding TimelineViewModel.StartSegmentWidth}" />
+                        <ColumnDefinition Width="{Binding TimelineViewModel.MainSegmentWidth}" />
+                        <ColumnDefinition Width="{Binding TimelineViewModel.EndSegmentWidth}" />
+                    </Grid.ColumnDefinitions>
+
+                    <Canvas Grid.ColumnSpan="3"
+                            Panel.ZIndex="2"
                             Margin="{Binding TimeCaretPosition}"
                             Cursor="SizeWE"
                             MouseDown="{s:Action TimelineMouseDown}"
                             MouseUp="{s:Action TimelineMouseUp}"
                             MouseMove="{s:Action TimelineMouseMove}">
-                        <Polygon Points="-10,0 0,20 10,0" Fill="{StaticResource SecondaryAccentBrush}" />
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
-                              StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                        <Polygon Points="-8,0 -8,8 0,20, 8,8 8,0" Fill="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
-                    <!-- Time -->
-                    <timeline:PropertyTimelineHeader Margin="0 25 0 0"
+
+                    <timeline:PropertyTimelineHeader Grid.Column="0"
+                                                     Grid.ColumnSpan="3"
+                                                     Margin="0 25 0 0"
                                                      Fill="{DynamicResource MaterialDesignBody}"
                                                      PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
                                                      HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
                                                      VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
+                                                     OffsetFirstValue="True"
                                                      Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
+
+                    <!-- Start segment -->
+                    <TextBlock Grid.Column="0" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                        Start
+                    </TextBlock>
+
+                    <!-- Main segment -->
+                    <TextBlock Grid.Column="1" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                        Main
+                    </TextBlock>
+
+                    <!-- End segment -->
+                    <TextBlock Grid.Column="2" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                        End
+                    </TextBlock>
+
+                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" />
+                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" />
+                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" />
                 </Grid>
             </ScrollViewer>
 
@@ -201,17 +229,18 @@
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto"
                           ScrollChanged="TimelineScrollChanged">
-                <Grid>
-                    <Canvas Panel.ZIndex="1"
+                <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
+                    <Canvas Grid.Column="0"
+                            Panel.ZIndex="1"
                             Margin="{Binding TimeCaretPosition}"
                             Cursor="SizeWE"
                             MouseDown="{s:Action TimelineMouseDown}"
                             MouseUp="{s:Action TimelineMouseUp}"
                             MouseMove="{s:Action TimelineMouseMove}">
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
-                              StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
-                    <ContentControl x:Name="PropertyTimeLine" s:View.Model="{Binding TimelineViewModel}" />
+
+                    <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" />
                 </Grid>
             </ScrollViewer>
         </Grid>
@@ -291,59 +320,15 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="{Binding CurrentTimelineIndex}" Height="20" Margin="5 0 0 0">
-                <ListBoxItem Padding="10 0">
-                    <ListBoxItem.ToolTip>
-                        <ToolTip Placement="Top" VerticalOffset="-5">
-                            <StackPanel>
-                                <TextBlock>Select the <Run FontWeight="Bold">enter</Run> timeline</TextBlock>
-                                <TextBlock>Played when the folder/layer starts displaying (condition is met)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </ListBoxItem.ToolTip>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="RayStart" Width="20" Height="20" Margin="0 -4" />
-                        <TextBlock Margin="5 0 0 0" FontSize="11">ENTER</TextBlock>
-                    </StackPanel>
-                </ListBoxItem>
-                <ListBoxItem Padding="10 0">
-                    <ListBoxItem.ToolTip>
-                        <ToolTip Placement="Top" VerticalOffset="-5">
-                            <StackPanel>
-                                <TextBlock>Select the <Run FontWeight="Bold">main</Run> timeline</TextBlock>
-                                <TextBlock>Played after the enter timeline finishes, either on repeat or once</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </ListBoxItem.ToolTip>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="RayStartEnd" Width="20" Height="20" Margin="0 -4" />
-                        <TextBlock Margin="5 0 0 0" FontSize="11">MAIN</TextBlock>
-                    </StackPanel>
-                </ListBoxItem>
-                <ListBoxItem Padding="10 0">
-                    <ListBoxItem.ToolTip>
-                        <ToolTip Placement="Top" VerticalOffset="-5">
-                            <StackPanel>
-                                <TextBlock>Select the <Run FontWeight="Bold">exit</Run> timeline</TextBlock>
-                                <TextBlock>Played when the folder/layer stops displaying (conditon no longer met)</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-
-                    </ListBoxItem.ToolTip>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="RayEnd" Width="20" Height="20" Margin="0 -4" />
-                        <TextBlock Margin="5 0 0 0" FontSize="11">EXIT</TextBlock>
-                    </StackPanel>
-                </ListBoxItem>
-            </ListBox>
-
             <!-- Zoom control -->
             <Slider Grid.Column="1"
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10 5"
-                    Minimum="31"
+                    Minimum="100"
                     Maximum="350"
+                    TickFrequency="1"
+                    IsSnapToTickEnabled="True"
                     Value="{Binding ProfileEditorService.PixelsPerSecond}"
                     Width="319" />
 

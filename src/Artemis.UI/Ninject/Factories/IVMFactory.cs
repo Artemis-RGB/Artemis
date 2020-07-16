@@ -1,5 +1,6 @@
 ﻿using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;

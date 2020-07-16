@@ -13,21 +13,23 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineViewModel : Screen
+    public class TimelineViewModel : PropertyChangedBase, IViewAware, IDisposable
     {
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
         private readonly IProfileEditorService _profileEditorService;
         private RectangleGeometry _selectionRectangle;
 
-        public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
-            IProfileEditorService profileEditorService)
+        public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups, IProfileEditorService profileEditorService)
         {
             _layerPropertiesViewModel = layerPropertiesViewModel;
             _profileEditorService = profileEditorService;
+
             LayerPropertyGroups = layerPropertyGroups;
             SelectionRectangle = new RectangleGeometry();
 
-            UpdateKeyframes();
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+
+            Update();
         }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
@@ -38,7 +40,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _selectionRectangle, value);
         }
 
-        public void UpdateKeyframes()
+        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.StartSegmentLength.TotalSeconds ?? 0;
+        public double StartSegmentEndPosition => StartSegmentWidth;
+        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.MainSegmentLength.TotalSeconds ?? 0;
+        public double MainSegmentEndPosition => StartSegmentWidth + MainSegmentWidth;
+        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.EndSegmentLength.TotalSeconds ?? 0;
+        public double EndSegmentEndPosition => StartSegmentWidth + MainSegmentWidth + EndSegmentWidth;
+
+        public void Dispose()
+        {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+        }
+
+        public void Update()
         {
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
             {
@@ -50,6 +64,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                         layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
                 }
             }
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(StartSegmentWidth));
+            NotifyOfPropertyChange(nameof(StartSegmentEndPosition));
+            NotifyOfPropertyChange(nameof(MainSegmentWidth));
+            NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
+            NotifyOfPropertyChange(nameof(EndSegmentWidth));
+            NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
         }
 
         #region Command handlers
@@ -272,6 +296,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
             return keyframes;
         }
+
+        #endregion
+
+        #region IViewAware
+
+        public void AttachView(UIElement view)
+        {
+            if (View != null)
+                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
+
+            View = view;
+        }
+
+        public UIElement View { get; set; }
 
         #endregion
     }

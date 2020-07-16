@@ -6,12 +6,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     public class LayerPropertyKeyframe<T> : BaseLayerPropertyKeyframe
     {
         private TimeSpan _position;
-        private Timeline _timeline;
 
-        public LayerPropertyKeyframe(T value, TimeSpan position, Timeline timeline, Easings.Functions easingFunction, LayerProperty<T> layerProperty) : base(layerProperty)
+        public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction, LayerProperty<T> layerProperty) : base(layerProperty)
         {
             _position = position;
-            _timeline = timeline;
             Value = value;
             LayerProperty = layerProperty;
             EasingFunction = easingFunction;
@@ -26,17 +24,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     The value of this keyframe
         /// </summary>
         public T Value { get; set; }
-
-        /// <inheritdoc />
-        public override Timeline Timeline
-        {
-            get => _timeline;
-            set
-            {
-                _timeline = value;
-                LayerProperty.SortKeyframes();
-            }
-        }
 
         /// <inheritdoc />
         public override TimeSpan Position

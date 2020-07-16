@@ -27,14 +27,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
-        private bool _repeatAfterLastKeyframe;
-        private int _propertyTreeIndex;
-        private RenderProfileElement _selectedProfileElement;
-        private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
-        private TreeViewModel _treeViewModel;
         private EffectsViewModel _effectsViewModel;
-        private TimelineViewModel _timelineViewModel;
+        private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
         private bool _playing;
+        private int _propertyTreeIndex;
+        private bool _repeatAfterLastKeyframe;
+        private RenderProfileElement _selectedProfileElement;
+        private TimelineViewModel _timelineViewModel;
+        private TreeViewModel _treeViewModel;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -84,16 +84,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
         }
 
-        public int CurrentTimelineIndex
-        {
-            get => (int) ProfileEditorService.CurrentTimeline;
-            set
-            {
-                ProfileEditorService.CurrentTimeline = (Core.Models.Profile.LayerProperties.Timeline) value;
-                ProfileEditorService.CurrentTime = TimeSpan.Zero;
-            }
-        }
-
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
         public RenderProfileElement SelectedProfileElement
@@ -133,14 +123,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             get => _timelineViewModel;
             set => SetAndNotify(ref _timelineViewModel, value);
         }
-
+        
         protected override void OnInitialActivate()
         {
             PopulateProperties(ProfileEditorService.SelectedProfileElement);
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
-            ProfileEditorService.CurrentTimelineChanged += ProfileEditorServiceOnCurrentTimelineChanged;
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
             base.OnInitialActivate();
@@ -150,7 +139,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
-            ProfileEditorService.CurrentTimelineChanged -= ProfileEditorServiceOnCurrentTimelineChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
@@ -171,6 +159,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
+            // Placeholder 
+            if (e.RenderProfileElement != null)
+            {
+                e.RenderProfileElement.StartSegmentLength = TimeSpan.FromMilliseconds(1000);
+                e.RenderProfileElement.MainSegmentLength = TimeSpan.FromMilliseconds(5000);
+                e.RenderProfileElement.EndSegmentLength = TimeSpan.FromMilliseconds(1000);
+            }
+
             PopulateProperties(e.RenderProfileElement);
         }
 
@@ -180,11 +176,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
 
-        private void ProfileEditorServiceOnCurrentTimelineChanged(object? sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(CurrentTimelineIndex));
-            TimelineViewModel.UpdateKeyframes();
-        }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
@@ -239,6 +230,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
 
             TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
+
+            TimelineViewModel?.Dispose();
             TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
 
             ApplyLayerBrush();
@@ -287,7 +280,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
 
             SortProperties();
-            TimelineViewModel.UpdateKeyframes();
+            UpdateKeyframes();
         }
 
         private void ApplyEffects()
@@ -322,7 +315,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             }
 
             SortProperties();
-            TimelineViewModel.UpdateKeyframes();
+            UpdateKeyframes();
         }
 
         private void SortProperties()
@@ -345,6 +338,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 var layerPropertyGroupViewModel = effectProperties[index];
                 LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
+        }
+
+        private void UpdateKeyframes()
+        {
+            TimelineViewModel.Update();
         }
 
         #endregion
