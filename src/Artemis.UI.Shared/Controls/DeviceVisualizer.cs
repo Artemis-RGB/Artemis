@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -29,6 +30,7 @@ namespace Artemis.UI.Shared.Controls
         private BitmapImage _deviceImage;
         private bool _subscribed;
         private ArtemisDevice _oldDevice;
+        private Task _lastRenderTask;
 
         public DeviceVisualizer()
         {
@@ -209,11 +211,13 @@ namespace Artemis.UI.Shared.Controls
 
         private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
         {
-            Dispatcher.Invoke(() =>
+            _lastRenderTask?.Wait();
+
+            _lastRenderTask = Dispatcher.InvokeAsync(() =>
             {
                 if (ShowColors && Visibility == Visibility.Visible)
                     Render();
-            });
+            }).Task;
         }
 
         private void Render()
