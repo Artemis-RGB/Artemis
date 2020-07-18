@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared.Services
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
 
             Kernel = kernel;
-            PixelsPerSecond = 31;
+            PixelsPerSecond = 100;
         }
 
         public IKernel Kernel { get; }
@@ -48,7 +48,7 @@ namespace Artemis.UI.Shared.Services
             set
             {
                 if (_currentTime.Equals(value)) return;
-                if (value > SelectedProfileElement.TimelineLength)
+                if (SelectedProfileElement != null && value > SelectedProfileElement.TimelineLength)
                     _currentTime = SelectedProfileElement.TimelineLength;
                 else
                     _currentTime = value;
@@ -203,6 +203,47 @@ namespace Artemis.UI.Shared.Services
                     Kernel.Unbind(registration.ViewModelType);
                 }
             }
+        }
+
+        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes)
+        {
+            if (snapToSegments)
+            {
+                // Snap to the end of the start segment
+                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.StartSegmentLength.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.StartSegmentLength;
+
+                // Snap to the end of the main segment
+                var mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
+                if (Math.Abs(time.TotalMilliseconds - mainSegmentEnd.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return mainSegmentEnd;
+
+                // Snap to the end of the end segment (end of the timeline)
+                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.TimelineLength.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.TimelineLength;
+            }
+
+            if (snapToCurrentTime)
+            {
+                // Snap to the current time
+                if (Math.Abs(time.TotalMilliseconds - CurrentTime.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.StartSegmentLength;
+            }
+
+            if (snapToKeyframes)
+            {
+                // Get all visible keyframes
+                var keyframes = SelectedProfileElement.GetAllKeyframes()
+                    .Where(k => SelectedProfileElement.IsPropertyGroupExpanded(k.BaseLayerProperty.Parent))
+                    .ToList();
+
+                // Find the closest keyframe
+                var closeKeyframe = keyframes.FirstOrDefault(k => Math.Abs(time.TotalMilliseconds - k.Position.TotalMilliseconds) < tolerance.TotalMilliseconds);
+                if (closeKeyframe != null)
+                    return closeKeyframe.Position;
+            }
+
+            return time;
         }
 
         public Module GetCurrentModule()

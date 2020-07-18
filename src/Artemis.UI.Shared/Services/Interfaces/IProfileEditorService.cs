@@ -74,5 +74,13 @@ namespace Artemis.UI.Shared.Services.Interfaces
         PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel;
 
         void RemovePropertyInput(PropertyInputRegistration registration);
+
+        /// <summary>
+        /// Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a segment end.
+        /// </summary>
+        /// <param name="time"></param>
+        /// <param name="tolerance">How close the time must be to snap</param>
+        /// <returns></returns>
+        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes);
     }
 }

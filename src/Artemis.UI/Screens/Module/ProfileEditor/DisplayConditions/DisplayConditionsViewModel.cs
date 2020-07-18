@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Models.Profile.Conditions;
+﻿using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -9,6 +11,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
     {
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private DisplayConditionGroupViewModel _rootGroup;
+        private RenderProfileElement _renderProfileElement;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
@@ -22,8 +25,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _rootGroup, value);
         }
 
+        public RenderProfileElement RenderProfileElement
+        {
+            get => _renderProfileElement;
+            set => SetAndNotify(ref _renderProfileElement, value);
+        }
+
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
+            RenderProfileElement = e.RenderProfileElement;
+
             if (e.RenderProfileElement == null)
             {
                 RootGroup = null;

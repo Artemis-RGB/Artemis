@@ -145,10 +145,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 subds = new object[] {6d, 6d, 30d};
             else if (PixelsPerSecond > 150)
                 subds = new object[] {4d, 4d, 20d};
-            else if (PixelsPerSecond > 100)
-                subds = new object[] {4d, 4d, 8d};
+            else if (PixelsPerSecond > 140)
+                subds = new object[] {4d, 4d, 20d};
             else if (PixelsPerSecond > 90)
-                subds = new object[] {4d, 4d, 8d};
+                subds = new object[] {2d, 4d, 20d};
             else if (PixelsPerSecond > 60)
                 subds = new object[] {2d, 4d, 8d};
             else if (PixelsPerSecond > 40)

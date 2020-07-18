@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Profile.LayerShapes;
@@ -48,6 +47,7 @@ namespace Artemis.Core.Models.Profile
             _expandedPropertyGroups = new List<string>();
 
             General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
+            ApplyRenderElementDefaults();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -69,6 +69,8 @@ namespace Artemis.Core.Models.Profile
             _expandedPropertyGroups.AddRange(layerEntity.ExpandedPropertyGroups);
 
             General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
+            ApplyRenderElementEntity();
+            ApplyRenderElementDefaults();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -115,12 +117,25 @@ namespace Artemis.Core.Models.Profile
             get => _layerBrush;
             internal set => SetAndNotify(ref _layerBrush, value);
         }
-
-  
-
+        
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+        }
+
+        /// <inheritdoc />
+        public override List<BaseLayerPropertyKeyframe> GetAllKeyframes()
+        {
+            var keyframes = base.GetAllKeyframes();
+
+            foreach (var baseLayerProperty in General.GetAllLayerProperties())
+                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            foreach (var baseLayerProperty in Transform.GetAllLayerProperties())
+                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            foreach (var baseLayerProperty in LayerBrush.BaseProperties.GetAllLayerProperties())
+                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+           
+            return keyframes;
         }
 
         #region Storage
@@ -142,7 +157,7 @@ namespace Artemis.Core.Models.Profile
             LayerBrush?.BaseProperties.ApplyToEntity();
 
             // Effects
-            ApplyLayerEffectsToEntity();
+            ApplyRenderElementToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -206,34 +221,18 @@ namespace Artemis.Core.Models.Profile
                 return;
 
             UpdateDisplayCondition();
+            deltaTime = UpdateTimeline(deltaTime);
 
-            // TODO: Remove, this is slow and stupid
-            // For now, reset all keyframe engines after the last keyframe was hit
-            // This is a placeholder method of repeating the animation until repeat modes are implemented
-            var properties = new List<BaseLayerProperty>(General.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
-            properties.AddRange(Transform.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
-            properties.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties().Where(p => p.BaseKeyframes.Any()));
-            var timeLineEnd = properties.Any() ? properties.Max(p => p.BaseKeyframes.Max(k => k.Position)) : TimeSpan.MaxValue;
-            if (properties.Any(p => p.TimelineProgress >= timeLineEnd))
-            {
-                General.Override(TimeSpan.Zero);
-                Transform.Override(TimeSpan.Zero);
-                LayerBrush.BaseProperties.Override(TimeSpan.Zero);
-                foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                    baseLayerEffect.BaseProperties?.Override(TimeSpan.Zero);
-            }
-            else
-            {
-                General.Update(deltaTime);
-                Transform.Update(deltaTime);
-                LayerBrush.BaseProperties.Update(deltaTime);
-                foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                    baseLayerEffect.BaseProperties?.Update(deltaTime);
-            }
-
+            General.Update(deltaTime);
+            Transform.Update(deltaTime);
+            LayerBrush.BaseProperties?.Update(deltaTime);
             LayerBrush.Update(deltaTime);
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
+            }
         }
 
         public void OverrideProgress(TimeSpan timeOverride)

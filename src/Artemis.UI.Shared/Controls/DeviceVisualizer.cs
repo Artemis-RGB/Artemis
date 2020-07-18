@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Artemis.Core.Models.Surface;
 using RGB.NET.Core;
 using Size = System.Windows.Size;
@@ -28,17 +29,20 @@ namespace Artemis.UI.Shared.Controls
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private BitmapImage _deviceImage;
-        private bool _subscribed;
         private ArtemisDevice _oldDevice;
-        private Task _lastRenderTask;
+        private readonly DispatcherTimer _timer;
 
         public DeviceVisualizer()
         {
             _backingStore = new DrawingGroup();
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
-            Loaded += (sender, args) => SubscribeToUpdate(true);
-            Unloaded += (sender, args) => SubscribeToUpdate(false);
+            // Run an update timer at 25 fps
+            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(40)};
+            _timer.Tick += TimerOnTick;
+
+            Loaded += (sender, args) => _timer.Start();
+            Unloaded += (sender, args) => _timer.Stop();
         }
 
         public ArtemisDevice Device
@@ -61,7 +65,7 @@ namespace Artemis.UI.Shared.Controls
 
         public void Dispose()
         {
-            RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
+            _timer.Stop();
         }
 
         protected override void OnRender(DrawingContext drawingContext)
@@ -73,7 +77,7 @@ namespace Artemis.UI.Shared.Controls
             var measureSize = MeasureOverride(Size.Empty);
             var scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
             var scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
-            
+
             // Center and scale the visualization in the desired bounding box
             if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
             {
@@ -95,7 +99,7 @@ namespace Artemis.UI.Shared.Controls
             // Render device and LED images 
             if (_deviceImage != null)
                 drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
-            
+
             foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
                 deviceVisualizerLed.RenderImage(drawingContext);
 
@@ -113,24 +117,16 @@ namespace Artemis.UI.Shared.Controls
             return rotationRect.Size;
         }
 
-
+        private void TimerOnTick(object sender, EventArgs e)
+        {
+            if (ShowColors && Visibility == Visibility.Visible)
+                Render();
+        }
+        
         private void UpdateTransform()
         {
             InvalidateVisual();
             InvalidateMeasure();
-        }
-
-        private void SubscribeToUpdate(bool subscribe)
-        {
-            if (_subscribed == subscribe)
-                return;
-
-            if (subscribe)
-                RGBSurface.Instance.Updated += RgbSurfaceOnUpdated;
-            else
-                RGBSurface.Instance.Updated -= RgbSurfaceOnUpdated;
-
-            _subscribed = subscribe;
         }
 
         private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -208,17 +204,7 @@ namespace Artemis.UI.Shared.Controls
             if (e.PropertyName == nameof(Device.RgbDevice.Scale) || e.PropertyName == nameof(Device.RgbDevice.Rotation))
                 UpdateTransform();
         }
-
-        private void RgbSurfaceOnUpdated(UpdatedEventArgs e)
-        {
-            _lastRenderTask?.Wait();
-
-            _lastRenderTask = Dispatcher.InvokeAsync(() =>
-            {
-                if (ShowColors && Visibility == Visibility.Visible)
-                    Render();
-            }).Task;
-        }
+        
 
         private void Render()
         {

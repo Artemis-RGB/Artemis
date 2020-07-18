@@ -94,11 +94,35 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 if (!SetAndNotify(ref _selectedProfileElement, value)) return;
                 NotifyOfPropertyChange(nameof(SelectedLayer));
                 NotifyOfPropertyChange(nameof(SelectedFolder));
+                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
+                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
             }
         }
 
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
+
+        public bool StartSegmentEnabled
+        {
+            get => SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
+            set
+            {
+                SelectedProfileElement.StartSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
+            }
+        }
+
+        public bool EndSegmentEnabled
+        {
+            get => SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
+            set
+            {
+                SelectedProfileElement.EndSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
+            }
+        }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
         {
@@ -123,7 +147,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             get => _timelineViewModel;
             set => SetAndNotify(ref _timelineViewModel, value);
         }
-        
+
         protected override void OnInitialActivate()
         {
             PopulateProperties(ProfileEditorService.SelectedProfileElement);
@@ -159,14 +183,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
-            // Placeholder 
-            if (e.RenderProfileElement != null)
-            {
-                e.RenderProfileElement.StartSegmentLength = TimeSpan.FromMilliseconds(1000);
-                e.RenderProfileElement.MainSegmentLength = TimeSpan.FromMilliseconds(5000);
-                e.RenderProfileElement.EndSegmentLength = TimeSpan.FromMilliseconds(1000);
-            }
-
             PopulateProperties(e.RenderProfileElement);
         }
 
@@ -175,7 +191,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(FormattedCurrentTime));
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
-
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
@@ -538,18 +553,23 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 else
                     newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
 
-                if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                // If holding down shift, snap to the closest segment or keyframe
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    ProfileEditorService.CurrentTime = newTime;
+                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, true);
+                    ProfileEditorService.CurrentTime = snappedTime;
                     return;
                 }
 
-                var visibleKeyframes = GetKeyframes(true);
+                // If holding down control, round to the closest 50ms
+                if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                {
+                    var roundedTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
+                    ProfileEditorService.CurrentTime = roundedTime;
+                    return;
+                }
 
-                // Take a tolerance of 5 pixels (half a keyframe width)
-                var tolerance = 1000f / ProfileEditorService.PixelsPerSecond * 5;
-                var closeKeyframe = visibleKeyframes.FirstOrDefault(k => Math.Abs(k.Position.TotalMilliseconds - newTime.TotalMilliseconds) < tolerance);
-                ProfileEditorService.CurrentTime = closeKeyframe?.Position ?? newTime;
+                ProfileEditorService.CurrentTime = newTime;
             }
         }
 
@@ -560,6 +580,99 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
 
             return result;
+        }
+
+        #endregion
+
+        #region Segments
+
+        private bool _draggingStartSegment;
+        private bool _draggingMainSegment;
+        private bool _draggingEndSegment;
+
+        public void StartSegmentMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).CaptureMouse();
+            _draggingStartSegment = true;
+        }
+
+        public void StartSegmentMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).ReleaseMouseCapture();
+            _draggingStartSegment = false;
+        }
+
+        public void MainSegmentMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).CaptureMouse();
+            _draggingMainSegment = true;
+        }
+
+        public void MainSegmentMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).ReleaseMouseCapture();
+            _draggingMainSegment = false;
+        }
+
+        public void EndSegmentMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).CaptureMouse();
+            _draggingEndSegment = true;
+        }
+
+        public void EndSegmentMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            ((IInputElement) sender).ReleaseMouseCapture();
+            _draggingEndSegment = false;
+        }
+
+        public void SegmentMouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                // Get the parent grid, need that for our position
+                var parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
+                var x = Math.Max(0, e.GetPosition(parent).X);
+                var newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
+
+                // Round the time to something that fits the current zoom level
+                if (ProfileEditorService.PixelsPerSecond < 200)
+                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
+                else if (ProfileEditorService.PixelsPerSecond < 500)
+                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
+                else
+                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
+
+                // If holding down shift, snap to the closest element on the timeline
+                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                {
+                    newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, true);
+                }
+                // If holding down control, round to the closest 50ms
+                else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+                {
+                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
+                }
+
+                if (_draggingStartSegment)
+                {
+                    if (newTime < TimeSpan.FromMilliseconds(100))
+                        newTime = TimeSpan.FromMilliseconds(100);
+                    SelectedProfileElement.StartSegmentLength = newTime;
+                }
+                else if (_draggingMainSegment)
+                {
+                    if (newTime < SelectedProfileElement.StartSegmentLength + TimeSpan.FromMilliseconds(100))
+                        newTime = SelectedProfileElement.StartSegmentLength + TimeSpan.FromMilliseconds(100);
+                    SelectedProfileElement.MainSegmentLength = newTime - SelectedProfileElement.StartSegmentLength;
+                }
+                else if (_draggingEndSegment)
+                {
+                    if (newTime < SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength + TimeSpan.FromMilliseconds(100))
+                        newTime = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength + TimeSpan.FromMilliseconds(100);
+                    SelectedProfileElement.EndSegmentLength = newTime - SelectedProfileElement.StartSegmentLength - SelectedProfileElement.MainSegmentLength;
+                }
+            }
         }
 
         #endregion

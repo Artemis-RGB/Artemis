@@ -13,7 +13,8 @@
           Background="{DynamicResource MaterialDesignToolBarBackground}"
           MouseDown="{s:Action TimelineCanvasMouseDown}"
           MouseUp="{s:Action TimelineCanvasMouseUp}"
-          MouseMove="{s:Action TimelineCanvasMouseMove}">
+          MouseMove="{s:Action TimelineCanvasMouseMove}"
+          Margin="0 0 -1 0">
         <Grid.Triggers>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                 <BeginStoryboard>
@@ -32,7 +33,7 @@
         </Grid.Triggers>
 
         <ItemsControl ItemsSource="{Binding LayerPropertyGroups}"
-                      MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ScrollViewer}}"
+                      MinWidth="{Binding TotalTimelineWidth}"
                       HorizontalAlignment="Left">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
@@ -48,7 +49,8 @@
               X2="{Binding StartSegmentEndPosition}"
               Y1="0"
               Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
-              HorizontalAlignment="Left" />
+              HorizontalAlignment="Left" 
+              Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"/>
         <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
               Opacity="0.5"
               StrokeDashArray="4 2"
@@ -62,7 +64,8 @@
               X1="{Binding EndSegmentEndPosition}"
               X2="{Binding EndSegmentEndPosition}"
               Y1="0"
-              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}" />
+              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
+              Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"/>
 
         <!-- Multi-selection rectangle -->
         <Path x:Name="MultiSelectionPath"
