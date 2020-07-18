@@ -5,6 +5,7 @@ using System.Linq;
 using Artemis.Core.Annotations;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -14,6 +15,62 @@ namespace Artemis.Core.Models.Profile
 {
     public abstract class RenderProfileElement : ProfileElement
     {
+        protected void ApplyRenderElementDefaults()
+        {
+            if (MainSegmentLength <= TimeSpan.Zero)
+                MainSegmentLength = TimeSpan.FromSeconds(5);
+        }
+
+        protected void ApplyRenderElementEntity()
+        {
+            StartSegmentLength = RenderElementEntity.StartSegmentLength;
+            MainSegmentLength = RenderElementEntity.MainSegmentLength;
+            EndSegmentLength = RenderElementEntity.EndSegmentLength;
+            RepeatMainSegment = RenderElementEntity.RepeatMainSegment;
+            AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
+        }
+
+        protected void ApplyRenderElementToEntity()
+        {
+            RenderElementEntity.StartSegmentLength = StartSegmentLength;
+            RenderElementEntity.MainSegmentLength = MainSegmentLength;
+            RenderElementEntity.EndSegmentLength = EndSegmentLength;
+            RenderElementEntity.RepeatMainSegment = RepeatMainSegment;
+            RenderElementEntity.AlwaysFinishTimeline = AlwaysFinishTimeline;
+
+            RenderElementEntity.LayerEffects.Clear();
+            foreach (var layerEffect in LayerEffects)
+            {
+                var layerEffectEntity = new LayerEffectEntity
+                {
+                    Id = layerEffect.EntityId,
+                    PluginGuid = layerEffect.PluginInfo.Guid,
+                    EffectType = layerEffect.GetType().Name,
+                    Name = layerEffect.Name,
+                    Enabled = layerEffect.Enabled,
+                    HasBeenRenamed = layerEffect.HasBeenRenamed,
+                    Order = layerEffect.Order
+                };
+                RenderElementEntity.LayerEffects.Add(layerEffectEntity);
+                layerEffect.BaseProperties.ApplyToEntity();
+            }
+        }
+
+        /// <summary>
+        ///     Returns a list of all keyframes on all properties and effects of this layer
+        /// </summary>
+        public virtual List<BaseLayerPropertyKeyframe> GetAllKeyframes()
+        {
+            var keyframes = new List<BaseLayerPropertyKeyframe>();
+            foreach (var layerEffect in LayerEffects)
+            {
+                foreach (var baseLayerProperty in layerEffect.BaseProperties.GetAllLayerProperties())
+                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            }
+
+            return keyframes;
+        }
+
         #region Properties
 
         private SKPath _path;
@@ -102,6 +159,15 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
+        ///     Gets the current timeline position
+        /// </summary>
+        public TimeSpan TimelinePosition
+        {
+            get => _timelinePosition;
+            private set => SetAndNotify(ref _timelinePosition, value);
+        }
+
+        /// <summary>
         ///     Gets the total combined length of all three segments
         /// </summary>
         public TimeSpan TimelineLength => StartSegmentLength + MainSegmentLength + EndSegmentLength;
@@ -124,6 +190,35 @@ namespace Artemis.Core.Models.Profile
             set => SetAndNotify(ref _alwaysFinishTimeline, value);
         }
 
+        protected double UpdateTimeline(double deltaTime)
+        {
+            var oldPosition = _timelinePosition;
+            var deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
+            var mainSegmentEnd = StartSegmentLength + MainSegmentLength;
+
+            TimelinePosition += deltaTimeSpan;
+
+            // Manage segments while the condition is met
+            if (DisplayConditionMet)
+            {
+                // If we are at the end of the main timeline, wrap around back to the beginning
+                if (RepeatMainSegment && TimelinePosition >= mainSegmentEnd)
+                    TimelinePosition = StartSegmentLength + (mainSegmentEnd - TimelinePosition);
+                else if (TimelinePosition >= TimelineLength)
+                    TimelinePosition = TimelineLength;
+            }
+            else
+            {
+                // Skip to the last segment if conditions are no longer met
+                if (!AlwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
+                    TimelinePosition = mainSegmentEnd;
+                else if (TimelinePosition >= TimelineLength)
+                    TimelinePosition = TimelineLength;
+            }
+
+            return (TimelinePosition - oldPosition).TotalSeconds;
+        }
+
         #endregion
 
         #region Effects
@@ -134,26 +229,6 @@ namespace Artemis.Core.Models.Profile
         ///     Gets a read-only collection of the layer effects on this entity
         /// </summary>
         public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
-
-        protected void ApplyLayerEffectsToEntity()
-        {
-            RenderElementEntity.LayerEffects.Clear();
-            foreach (var layerEffect in LayerEffects)
-            {
-                var layerEffectEntity = new LayerEffectEntity
-                {
-                    Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.PluginInfo.Guid,
-                    EffectType = layerEffect.GetType().Name,
-                    Name = layerEffect.Name,
-                    Enabled = layerEffect.Enabled,
-                    HasBeenRenamed = layerEffect.HasBeenRenamed,
-                    Order = layerEffect.Order
-                };
-                RenderElementEntity.LayerEffects.Add(layerEffectEntity);
-                layerEffect.BaseProperties.ApplyToEntity();
-            }
-        }
 
         internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
         {
@@ -192,8 +267,20 @@ namespace Artemis.Core.Models.Profile
 
         #region Conditions
 
+        /// <summary>
+        ///     Gets whether the display conditions applied to this layer where met or not during last update
+        ///     <para>Always true if the layer has no display conditions</para>
+        /// </summary>
+        public bool DisplayConditionMet
+        {
+            get => _displayConditionMet;
+            private set => SetAndNotify(ref _displayConditionMet, value);
+        }
+
         private DisplayConditionGroup _displayConditionGroup;
-        
+        private TimeSpan _timelinePosition;
+        private bool _displayConditionMet;
+
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>
@@ -205,7 +292,11 @@ namespace Artemis.Core.Models.Profile
 
         public void UpdateDisplayCondition()
         {
-            var rootGroupResult = DisplayConditionGroup.Evaluate();
+            var conditionMet = DisplayConditionGroup == null || DisplayConditionGroup.Evaluate();
+            if (conditionMet && !DisplayConditionMet)
+                TimelinePosition = TimeSpan.Zero;
+
+            DisplayConditionMet = conditionMet;
         }
 
         #endregion

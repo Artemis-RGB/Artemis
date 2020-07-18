@@ -44,7 +44,7 @@ namespace Artemis.UI.Shared.Controls
             var r = Led.RgbLed.Color.GetR();
             var g = Led.RgbLed.Color.GetG();
             var b = Led.RgbLed.Color.GetB();
-
+            
             drawingContext.DrawRectangle(isDimmed
                 ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
                 : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);

@@ -98,7 +98,7 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         /// <summary>
         ///     Called before rendering every frame, write your update logic here
         /// </summary>
-        /// <param name="deltaTime"></param>
+        /// <param name="deltaTime">Seconds passed since last update</param>
         public abstract void Update(double deltaTime);
 
         /// <summary>

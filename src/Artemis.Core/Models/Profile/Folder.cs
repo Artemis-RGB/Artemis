@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -24,6 +25,7 @@ namespace Artemis.Core.Models.Profile
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
+            ApplyRenderElementDefaults();
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
@@ -42,8 +44,6 @@ namespace Artemis.Core.Models.Profile
             _expandedPropertyGroups = new List<string>();
             _expandedPropertyGroups.AddRange(folderEntity.ExpandedPropertyGroups);
 
-            // TODO: Load conditions
-
             // Load child folders
             foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
                 ChildrenList.Add(new Folder(profile, this, childFolder));
@@ -55,6 +55,8 @@ namespace Artemis.Core.Models.Profile
             ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
             for (var index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index + 1;
+
+            ApplyRenderElementEntity();
         }
 
         internal FolderEntity FolderEntity { get; set; }
@@ -187,7 +189,7 @@ namespace Artemis.Core.Models.Profile
             FolderEntity.ExpandedPropertyGroups.Clear();
             FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
 
-            ApplyLayerEffectsToEntity();
+            ApplyRenderElementToEntity();
 
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;

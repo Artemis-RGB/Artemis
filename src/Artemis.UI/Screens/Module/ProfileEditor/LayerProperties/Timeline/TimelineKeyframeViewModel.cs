@@ -119,29 +119,51 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         #region Movement
 
-        private bool _movementReleased = true;
-        private TimeSpan _startOffset;
+        private TimeSpan? _offset;
 
         public void ApplyMovement(TimeSpan cursorTime)
         {
-            if (_movementReleased)
-            {
-                _movementReleased = false;
-                _startOffset = cursorTime - BaseLayerPropertyKeyframe.Position;
-            }
-            else
-            {
-                BaseLayerPropertyKeyframe.Position = cursorTime - _startOffset;
-                if (BaseLayerPropertyKeyframe.Position < TimeSpan.Zero)
-                    BaseLayerPropertyKeyframe.Position = TimeSpan.Zero;
-
-                Update(_pixelsPerSecond);
-            }
+            UpdatePosition(cursorTime);
+            Update(_pixelsPerSecond);
         }
 
         public void ReleaseMovement()
         {
-            _movementReleased = true;
+            _offset = null;
+        }
+
+        public void SaveOffsetToKeyframe(TimelineKeyframeViewModel keyframeViewModel)
+        {
+            if (keyframeViewModel == this)
+            {
+                _offset = null;
+                return;
+            }
+
+            if (_offset != null)
+                return;
+
+            _offset = BaseLayerPropertyKeyframe.Position - keyframeViewModel.BaseLayerPropertyKeyframe.Position;
+        }
+
+        public void ApplyOffsetToKeyframe(TimelineKeyframeViewModel keyframeViewModel)
+        {
+            if (keyframeViewModel == this || _offset == null)
+                return;
+
+            UpdatePosition(keyframeViewModel.BaseLayerPropertyKeyframe.Position + _offset.Value);
+        }
+
+        private void UpdatePosition(TimeSpan position)
+        {
+            if (position < TimeSpan.Zero)
+                BaseLayerPropertyKeyframe.Position = TimeSpan.Zero;
+            else if (position > _profileEditorService.SelectedProfileElement.TimelineLength)
+                BaseLayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.TimelineLength;
+            else
+                BaseLayerPropertyKeyframe.Position = position;
+
+            Update(_pixelsPerSecond);
         }
 
         #endregion

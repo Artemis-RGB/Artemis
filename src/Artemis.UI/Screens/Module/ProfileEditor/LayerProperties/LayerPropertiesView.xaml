@@ -199,26 +199,58 @@
                                                      Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
 
                     <!-- Start segment -->
-                    <TextBlock Grid.Column="0" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                    <TextBlock Grid.Column="0"
+                               TextAlignment="Center"
+                               VerticalAlignment="Top"
+                               Padding="0 3"
+                               FontSize="11"
+                               Background="{StaticResource MaterialDesignPaper}"
+                               Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                               ToolTip="This segment is played when a layer starts displaying because it's conditions are met">
                         Start
                     </TextBlock>
 
                     <!-- Main segment -->
-                    <TextBlock Grid.Column="1" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                    <TextBlock Grid.Column="1"
+                               TextAlignment="Center"
+                               VerticalAlignment="Top"
+                               Padding="0 3"
+                               FontSize="11"
+                               Background="{StaticResource MaterialDesignPaper}"
+                               ToolTip="This segment is played while a condition is met, either once or on a repeating loop">
                         Main
                     </TextBlock>
 
                     <!-- End segment -->
-                    <TextBlock Grid.Column="2" TextAlignment="Center" VerticalAlignment="Top" Padding="0 3" FontSize="11" Background="{StaticResource MaterialDesignPaper}">
+                    <TextBlock Grid.Column="2"
+                               TextAlignment="Center"
+                               VerticalAlignment="Top"
+                               Padding="0 3"
+                               FontSize="11"
+                               Background="{StaticResource MaterialDesignPaper}"
+                               Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                               ToolTip="This segment is played once a condition is no longer met">
                         End
                     </TextBlock>
 
+                    <!-- Segment movement display -->
                     <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" />
+                               HorizontalAlignment="Right" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
                     <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" />
+                               HorizontalAlignment="Right" />
                     <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" />
+                               HorizontalAlignment="Right" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
+
+                    <!-- Segment movement handles -->
+                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" 
+                               MouseDown="{s:Action StartSegmentMouseDown}" MouseUp="{s:Action StartSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
+                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE"
+                               MouseDown="{s:Action MainSegmentMouseDown}" MouseUp="{s:Action MainSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
+                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" 
+                               MouseDown="{s:Action EndSegmentMouseDown}" MouseUp="{s:Action EndSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
                 </Grid>
             </ScrollViewer>
 
@@ -320,6 +352,16 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding StartSegmentEnabled}">
+                    Enable start segment
+                </CheckBox>
+
+                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0" IsChecked="{Binding EndSegmentEnabled}">
+                    Enable end segment
+                </CheckBox>
+            </StackPanel>
+
             <!-- Zoom control -->
             <Slider Grid.Column="1"
                     Orientation="Horizontal"
@@ -329,6 +371,7 @@
                     Maximum="350"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
+                     AutoToolTipPlacement="TopLeft"
                     Value="{Binding ProfileEditorService.PixelsPerSecond}"
                     Width="319" />
 
