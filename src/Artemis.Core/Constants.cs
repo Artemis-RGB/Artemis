@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Windows.Interop;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core
@@ -67,7 +68,9 @@ namespace Artemis.Core
         {
             typeof(float),
             typeof(double),
-            typeof(decimal)
+            typeof(decimal) 
         };
+
+        public static IntPtr MainWindowHandle { get; internal set; }
     }
 }

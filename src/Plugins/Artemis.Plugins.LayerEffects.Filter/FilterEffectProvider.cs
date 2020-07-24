@@ -12,6 +12,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
                 "BlurOn"
             );
             AddLayerEffectDescriptor<DilateEffect>("Dilate", "A layer effect providing a dilation filter effect", "EyePlus");
+            AddLayerEffectDescriptor<OpacityEffect>("Opacity", "A layer effect letting you change the opacity of all children", "Opacity");
             AddLayerEffectDescriptor<ErodeEffect>("Erode", "A layer effect providing an erode filter effect", "EyeMinus");
             AddLayerEffectDescriptor<GlowEffect>("Glow", "A layer effect providing a glow filter effect", "BoxShadow");
             AddLayerEffectDescriptor<GrayScaleEffect>("Gray-scale", "A layer effect providing a gray-scale filter effect", "InvertColors");

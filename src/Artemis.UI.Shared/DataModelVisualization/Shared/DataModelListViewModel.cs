@@ -35,6 +35,9 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         public override void Update(IDataModelVisualizationService dataModelVisualizationService)
         {
+            if (Parent != null && !Parent.IsVisualizationExpanded)
+                return;
+
             List = GetCurrentValue() as IList;
             if (List == null)
                 return;

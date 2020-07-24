@@ -8,7 +8,9 @@
     xmlns:timeline="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
-    xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerPropertiesView"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+    x:Class="Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerPropertiesView"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800"
@@ -16,6 +18,7 @@
     behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
     <UserControl.Resources>
         <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         <Style x:Key="SvStyle" TargetType="{x:Type ScrollViewer}">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Template">
@@ -199,58 +202,78 @@
                                                      Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
 
                     <!-- Start segment -->
-                    <TextBlock Grid.Column="0"
-                               TextAlignment="Center"
-                               VerticalAlignment="Top"
-                               Padding="0 3"
-                               FontSize="11"
-                               Background="{StaticResource MaterialDesignPaper}"
-                               Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                               ToolTip="This segment is played when a layer starts displaying because it's conditions are met">
-                        Start
-                    </TextBlock>
+                    <Grid Grid.Column="0" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
+                          Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played when a layer starts displaying because it's conditions are met">
+                            Start
+                        </TextBlock>
+                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Disable start segment" Width="20" Height="20" Margin="0 0 6 0"
+                                Command="{s:Action DisableSegment}" CommandParameter="Start">
+                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
+                        </Button>
+                    </Grid>
 
                     <!-- Main segment -->
-                    <TextBlock Grid.Column="1"
-                               TextAlignment="Center"
-                               VerticalAlignment="Top"
-                               Padding="0 3"
-                               FontSize="11"
-                               Background="{StaticResource MaterialDesignPaper}"
-                               ToolTip="This segment is played while a condition is met, either once or on a repeating loop">
-                        Main
-                    </TextBlock>
+                    <Grid Grid.Column="1" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
+                          Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played while a condition is met, either once or on a repeating loop">
+                            Main
+                        </TextBlock>
+
+                        <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="Toggle main segment repeat" Width="16" Height="16"
+                                      IsChecked="{Binding RepeatMainSegment}" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="Repeat" Height="12" Width="12" />
+                        </ToggleButton>
+
+                        <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Remove" Width="20" Height="20" Margin="5 0 8 0"
+                                Command="{s:Action DisableSegment}" CommandParameter="Main">
+                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
+                        </Button>
+                    </Grid>
 
                     <!-- End segment -->
-                    <TextBlock Grid.Column="2"
-                               TextAlignment="Center"
-                               VerticalAlignment="Top"
-                               Padding="0 3"
-                               FontSize="11"
-                               Background="{StaticResource MaterialDesignPaper}"
-                               Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                               ToolTip="This segment is played once a condition is no longer met">
-                        End
-                    </TextBlock>
+                    <Grid Grid.Column="2" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
+                          Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played once a condition is no longer met">
+                            End
+                        </TextBlock>
+                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Disable end segment" Width="20" Height="20" Margin="0 0 6 0"
+                                Command="{s:Action DisableSegment}" CommandParameter="End">
+                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
+                        </Button>
+                    </Grid>
 
                     <!-- Segment movement display -->
-                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
+                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
                                HorizontalAlignment="Right" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
-                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" />
-                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -1 -2 0" Width="5" Height="20" VerticalAlignment="Top"
+                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
+                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
                                HorizontalAlignment="Right" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
 
                     <!-- Segment movement handles -->
-                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" 
-                               MouseDown="{s:Action StartSegmentMouseDown}" MouseUp="{s:Action StartSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
-                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE"
-                               MouseDown="{s:Action MainSegmentMouseDown}" MouseUp="{s:Action MainSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
-                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="20" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" 
-                               MouseDown="{s:Action EndSegmentMouseDown}" MouseUp="{s:Action EndSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}"/>
+                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                               MouseDown="{s:Action StartSegmentMouseDown}" MouseUp="{s:Action StartSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
+                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                               MouseDown="{s:Action MainSegmentMouseDown}" MouseUp="{s:Action MainSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
+                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
+                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                               MouseDown="{s:Action EndSegmentMouseDown}" MouseUp="{s:Action EndSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
                 </Grid>
             </ScrollViewer>
 
@@ -348,19 +371,59 @@
               Background="{DynamicResource MaterialDesignCardBackground}">
 
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding StartSegmentEnabled}">
-                    Enable start segment
-                </CheckBox>
-
-                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0" IsChecked="{Binding EndSegmentEnabled}">
-                    Enable end segment
-                </CheckBox>
-            </StackPanel>
+            <Button Grid.Column="0"
+                    Margin="5 -2 0 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Select an effect to add"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                    IsEnabled="{Binding CanAddSegment}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
+                        <Style.Triggers>
+                            <EventTrigger RoutedEvent="Click">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                            </BooleanAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <ContextMenu.Resources>
+                            <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+                        </ContextMenu.Resources>
+                        <MenuItem Header="Start"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="Start"
+                                  IsEnabled="{Binding Data.StartSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                        <MenuItem Header="Main"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="Main"
+                                  IsEnabled="{Binding Data.MainSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                        <MenuItem Header="End"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="End"
+                                  IsEnabled="{Binding Data.EndSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <TextBlock FontSize="11">
+                    ADD SEGMENT
+                </TextBlock>
+            </Button>
 
             <!-- Zoom control -->
             <Slider Grid.Column="1"
@@ -371,7 +434,7 @@
                     Maximum="350"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"
-                     AutoToolTipPlacement="TopLeft"
+                    AutoToolTipPlacement="TopLeft"
                     Value="{Binding ProfileEditorService.PixelsPerSecond}"
                     Width="319" />
 

@@ -117,7 +117,7 @@ namespace Artemis.Core.Models.Profile
             get => _layerBrush;
             internal set => SetAndNotify(ref _layerBrush, value);
         }
-        
+
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
@@ -134,7 +134,7 @@ namespace Artemis.Core.Models.Profile
                 keyframes.AddRange(baseLayerProperty.BaseKeyframes);
             foreach (var baseLayerProperty in LayerBrush.BaseProperties.GetAllLayerProperties())
                 keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-           
+
             return keyframes;
         }
 
@@ -214,34 +214,66 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            if (!Enabled)
+            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
-            if (LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
-                return;
-
+            // Ensure the layer must still be displayed
             UpdateDisplayCondition();
-            deltaTime = UpdateTimeline(deltaTime);
 
-            General.Update(deltaTime);
-            Transform.Update(deltaTime);
-            LayerBrush.BaseProperties?.Update(deltaTime);
-            LayerBrush.Update(deltaTime);
+            // TODO: No point updating further than this if the layer is not going to be rendered
+
+            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
+            // to it's start
+            var timelineDeltaTime = UpdateTimeline(deltaTime);
+
+            General.Update();
+            Transform.Update();
+            LayerBrush.BaseProperties?.Update();
+            LayerBrush.Update(timelineDeltaTime);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update(deltaTime);
-                baseLayerEffect.Update(deltaTime);
+                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.Update(timelineDeltaTime);
             }
         }
 
-        public void OverrideProgress(TimeSpan timeOverride)
+        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
         {
-            General.Override(timeOverride);
-            Transform.Override(timeOverride);
-            LayerBrush?.BaseProperties?.Override(timeOverride);
-            foreach (var baseLayerEffect in LayerEffects)
-                baseLayerEffect.BaseProperties?.Override(timeOverride);
+            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
+                return;
+
+            var beginTime = TimelinePosition;
+
+            if (stickToMainSegment)
+            {
+                if (!RepeatMainSegment)
+                {
+                    var position = timeOverride + StartSegmentLength;
+                    if (position > StartSegmentLength + EndSegmentLength)
+                        TimelinePosition = StartSegmentLength + EndSegmentLength;
+                }
+                else
+                {
+                    var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
+                    TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
+                }
+            }
+            else
+                TimelinePosition = timeOverride;
+
+            var delta = (TimelinePosition - beginTime).TotalSeconds;
+
+            General.Update();
+            Transform.Update();
+            LayerBrush.BaseProperties?.Update();
+            LayerBrush.Update(delta);
+
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.Update(delta);
+            }
         }
 
         /// <inheritdoc />
@@ -279,6 +311,10 @@ namespace Artemis.Core.Models.Profile
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
+
+            // No point rendering if the alpha was set to zero by one of the effects
+            if (layerPaint.Color.Alpha == 0)
+                return;
 
             layerCanvas.ClipPath(layerPath);
 

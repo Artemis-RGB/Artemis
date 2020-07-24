@@ -49,6 +49,9 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         public override void Update(IDataModelVisualizationService dataModelVisualizationService)
         {
+            if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
+                return;
+
             if (DisplayViewModel == null && dataModelVisualizationService.RegisteredDataModelDisplays.Any(d => d.SupportedType == PropertyInfo.PropertyType))
                 dataModelVisualizationService.GetDataModelDisplayViewModel(PropertyInfo.PropertyType);
 

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -69,8 +68,15 @@ namespace Artemis.Core.Models.Profile
 
             UpdateDisplayCondition();
 
+            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
+            // to it's start
+            var timelineDeltaTime = UpdateTimeline(deltaTime);
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.Update(deltaTime);
+            {
+                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.Update(timelineDeltaTime);
+            }
 
             // Iterate the children in reverse because that's how they must be rendered too
             for (var index = Children.Count - 1; index > -1; index--)
@@ -80,9 +86,49 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
+        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
+        {
+            if (!Enabled)
+                return;
+
+            var beginTime = TimelinePosition;
+
+            if (stickToMainSegment)
+            {
+                if (!RepeatMainSegment)
+                {
+                    var position = timeOverride + StartSegmentLength;
+                    if (position > StartSegmentLength + EndSegmentLength)
+                        TimelinePosition = StartSegmentLength + EndSegmentLength;
+                }
+                else
+                {
+                    var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
+                    if (progress > 0)
+                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
+                    else
+                        TimelinePosition = StartSegmentLength;
+                }
+            }
+            else
+                TimelinePosition = timeOverride;
+
+            var delta = (TimelinePosition - beginTime).TotalSeconds;
+
+            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.Update(delta);
+            }
+        }
+
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (!Enabled || Path == null || !Children.Any(c => c.Enabled))
+            if (Path == null || !Enabled || !Children.Any(c => c.Enabled))
+                return;
+
+            // No need to render if at the end of the timeline
+            if (TimelinePosition > TimelineLength)
                 return;
 
             if (_folderBitmap == null)
@@ -102,6 +148,10 @@ namespace Artemis.Core.Models.Profile
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
+
+            // No point rendering if the alpha was set to zero by one of the effects
+            if (folderPaint.Color.Alpha == 0)
+                return;
 
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
             for (var index = Children.Count - 1; index > -1; index--)
@@ -176,6 +226,7 @@ namespace Artemis.Core.Models.Profile
             OnRenderPropertiesUpdated();
         }
 
+
         internal override void ApplyToEntity()
         {
             FolderEntity.Id = EntityId;
@@ -196,6 +247,16 @@ namespace Artemis.Core.Models.Profile
             DisplayConditionGroup?.ApplyToEntity();
         }
 
+        internal void Deactivate()
+        {
+            _folderBitmap?.Dispose();
+            _folderBitmap = null;
+
+            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
+            foreach (var baseLayerEffect in layerEffects)
+                DeactivateLayerEffect(baseLayerEffect);
+        }
+
         #region Events
 
         public event EventHandler RenderPropertiesUpdated;
@@ -206,15 +267,5 @@ namespace Artemis.Core.Models.Profile
         }
 
         #endregion
-
-        internal void Deactivate()
-        {
-            _folderBitmap?.Dispose();
-            _folderBitmap = null;
-
-            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
-            foreach (var baseLayerEffect in layerEffects)
-                DeactivateLayerEffect(baseLayerEffect);
-        }
     }
 }

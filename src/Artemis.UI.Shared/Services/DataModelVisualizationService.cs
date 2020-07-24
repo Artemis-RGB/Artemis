@@ -42,6 +42,7 @@ namespace Artemis.UI.Shared.Services
 
             // Update to populate children
             viewModel.Update(this);
+            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
 
@@ -56,6 +57,7 @@ namespace Artemis.UI.Shared.Services
 
             // Update to populate children
             viewModel.Update(this);
+            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
 
@@ -185,6 +187,7 @@ namespace Artemis.UI.Shared.Services
                 if (initialValue == null)
                     initialValue = Activator.CreateInstance(registration.SupportedType);
             }
+
             // This assumes the type can be converted, that has been checked when the VM was created
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);

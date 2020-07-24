@@ -10,10 +10,16 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
         {
         }
-        
+
         public override void Update(IDataModelVisualizationService dataModelVisualizationService)
         {
+            // Always populate properties
             PopulateProperties(dataModelVisualizationService);
+
+            // Only update children if the parent is expanded
+            if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
+                return;
+
             foreach (var dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update(dataModelVisualizationService);
         }
@@ -22,7 +28,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
             return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
         }
-        
+
         private void PopulateProperties(IDataModelVisualizationService dataModelVisualizationService)
         {
             if (Children.Any())
@@ -31,10 +37,15 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             var modelType = Parent.IsRootViewModel ? DataModel.GetType() : PropertyInfo.PropertyType;
             foreach (var propertyInfo in modelType.GetProperties())
             {
-                var child = CreateChild(dataModelVisualizationService, propertyInfo);
+                var child = CreateChild(dataModelVisualizationService, propertyInfo, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }
+        }
+
+        protected int GetChildDepth()
+        {
+            return PropertyDescription != null && !PropertyDescription.ResetsDepth ? Depth + 1 : 1;
         }
     }
 }

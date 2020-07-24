@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.UI.Shared.Events;
@@ -53,7 +54,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         ///     Occurs when the current editor time is changed
         /// </summary>
         event EventHandler CurrentTimeChanged;
-        
+
         /// <summary>
         ///     Occurs when the pixels per second (zoom level) is changed
         /// </summary>
@@ -76,11 +77,16 @@ namespace Artemis.UI.Shared.Services.Interfaces
         void RemovePropertyInput(PropertyInputRegistration registration);
 
         /// <summary>
-        /// Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a segment end.
+        ///     Snaps the given time to the closest relevant element in the timeline, this can be the cursor, a keyframe or a
+        ///     segment end.
         /// </summary>
         /// <param name="time"></param>
         /// <param name="tolerance">How close the time must be to snap</param>
+        /// <param name="snapToSegments">Enable snapping to timeline segments</param>
+        /// <param name="snapToCurrentTime">Enable snapping to the current time of the editor</param>
+        /// <param name="snapToKeyframes">Enable snapping to visible keyframes</param>
+        /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
         /// <returns></returns>
-        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes);
+        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
     }
 }

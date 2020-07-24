@@ -159,7 +159,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (DisplayConditionPredicateEntity.LeftDataModelGuid != null)
             {
                 var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.LeftDataModelGuid.Value);
-                if (dataModel != null)
+                if (dataModel != null && dataModel.ContainsPath(DisplayConditionPredicateEntity.LeftPropertyPath))
                     UpdateLeftSide(dataModel, DisplayConditionPredicateEntity.LeftPropertyPath);
             }
 
@@ -175,7 +175,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (DisplayConditionPredicateEntity.RightDataModelGuid != null)
             {
                 var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.RightDataModelGuid.Value);
-                if (dataModel != null)
+                if (dataModel != null && dataModel.ContainsPath(DisplayConditionPredicateEntity.RightPropertyPath))
                     UpdateRightSide(dataModel, DisplayConditionPredicateEntity.RightPropertyPath);
             }
             // Right side static

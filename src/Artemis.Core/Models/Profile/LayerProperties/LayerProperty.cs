@@ -101,7 +101,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                     currentKeyframe.Value = value;
 
                 // Update the property so that the new keyframe is reflected on the current value
-                Update(0);
+                Update();
             }
         }
 
@@ -184,17 +184,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <summary>
-        ///     Updates the property, moving the timeline forwards by the provided <paramref name="deltaTime" />
+        ///     Updates the property, applying keyframes to the current value
         /// </summary>
-        /// <param name="deltaTime">The amount of time to move the timeline forwards</param>
-        internal void Update(double deltaTime)
+        internal void Update()
         {
-            TimelineProgress = TimelineProgress.Add(TimeSpan.FromSeconds(deltaTime));
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
 
             // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= TimelineProgress);
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
             var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
             NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
@@ -208,22 +206,12 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             else
             {
                 var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float)((TimelineProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                var keyframeProgress = (float)((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
                 var keyframeProgressEased = (float)Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
 
             OnUpdated();
-        }
-
-        /// <summary>
-        ///     Overrides the timeline progress to match the provided <paramref name="overrideTime" />
-        /// </summary>
-        /// <param name="overrideTime">The new progress to set the layer property timeline to.</param>
-        internal void OverrideProgress(TimeSpan overrideTime)
-        {
-            TimelineProgress = TimeSpan.Zero;
-            Update(overrideTime.TotalSeconds);
         }
 
         /// <summary>
@@ -242,8 +230,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
 
             PropertyEntity = entity;
             LayerPropertyGroup = layerPropertyGroup;
-            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
-            LayerPropertyGroup.PropertyGroupOverriding += (sender, args) => OverrideProgress(args.OverrideTime);
+            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update();
 
             try
             {

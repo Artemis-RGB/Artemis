@@ -167,7 +167,7 @@ namespace Artemis.UI.Shared.Controls
         private void Input_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var seperator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            var regex = new Regex("^[" + seperator + "][0-9]+$|^[0-9]*[" + seperator + "]{0,1}[0-9]*$");
+            var regex = new Regex("^[" + seperator + "][-|0-9]+$|^-?[0-9]*[" + seperator + "]{0,1}[0-9]*$");
             e.Handled = !regex.IsMatch(e.Text);
         }
 
