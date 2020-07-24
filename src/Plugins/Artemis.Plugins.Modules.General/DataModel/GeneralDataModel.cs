@@ -1,13 +1,27 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using System.Diagnostics;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.Plugins.Modules.General.DataModel.Windows;
 using SkiaSharp;
 
-namespace Artemis.Plugins.Modules.General
+namespace Artemis.Plugins.Modules.General.DataModel
 {
-    public class GeneralDataModel : DataModel
+    public class GeneralDataModel : Core.Plugins.Abstract.DataModels.DataModel
     {
+        public TestDataModel TestDataModel { get; set; }
+        public WindowsDataModel Windows { get; set; }
+
+
         public GeneralDataModel()
+        {
+            TestDataModel = new TestDataModel();
+            Windows = new WindowsDataModel();
+        }
+    }
+
+    public class TestDataModel
+    {
+        public TestDataModel()
         {
             PlayerInfo = new PlayerInfo();
             IntsList = new List<int>();

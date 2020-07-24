@@ -223,19 +223,13 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        internal void Update(double deltaTime)
+        internal void Update()
         {
             // Since at this point we don't know what properties the group has without using reflection,
             // let properties subscribe to the update event and update themselves
-            OnPropertyGroupUpdating(new PropertyGroupUpdatingEventArgs(deltaTime));
+            OnPropertyGroupUpdating();
         }
-
-        internal void Override(TimeSpan overrideTime)
-        {
-            // Same as above, but now the progress is overridden
-            OnPropertyGroupOverriding(new PropertyGroupUpdatingEventArgs(overrideTime));
-        }
-
+        
         private void InitializeProperty(RenderProfileElement profileElement, string path, BaseLayerProperty instance)
         {
             Guid pluginGuid;
@@ -260,8 +254,7 @@ namespace Artemis.Core.Models.Profile
 
         #region Events
 
-        internal event EventHandler<PropertyGroupUpdatingEventArgs> PropertyGroupUpdating;
-        internal event EventHandler<PropertyGroupUpdatingEventArgs> PropertyGroupOverriding;
+        internal event EventHandler PropertyGroupUpdating;
         public event EventHandler PropertyGroupInitialized;
 
         /// <summary>
@@ -269,14 +262,9 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public event EventHandler VisibilityChanged;
 
-        internal virtual void OnPropertyGroupUpdating(PropertyGroupUpdatingEventArgs e)
+        protected virtual void OnPropertyGroupUpdating()
         {
-            PropertyGroupUpdating?.Invoke(this, e);
-        }
-
-        protected virtual void OnPropertyGroupOverriding(PropertyGroupUpdatingEventArgs e)
-        {
-            PropertyGroupOverriding?.Invoke(this, e);
+            PropertyGroupUpdating?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnVisibilityChanged()

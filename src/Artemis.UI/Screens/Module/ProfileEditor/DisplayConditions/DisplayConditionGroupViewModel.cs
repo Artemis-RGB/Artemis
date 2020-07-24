@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
 using Humanizer;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
@@ -11,11 +13,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
     {
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private bool _isRootGroup;
+        private bool _isInitialized;
 
         public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(
             displayConditionGroup, parent)
         {
             _displayConditionsVmFactory = displayConditionsVmFactory;
+            Execute.PostToUIThread(async () =>
+            {
+                await Task.Delay(50);
+                IsInitialized = true;
+            });
         }
 
         public DisplayConditionGroup DisplayConditionGroup => (DisplayConditionGroup) Model;
@@ -24,6 +32,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         {
             get => _isRootGroup;
             set => SetAndNotify(ref _isRootGroup, value);
+        }
+
+        public bool IsInitialized
+        {
+            get => _isInitialized;
+            set => SetAndNotify(ref _isInitialized, value);
         }
 
         public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();

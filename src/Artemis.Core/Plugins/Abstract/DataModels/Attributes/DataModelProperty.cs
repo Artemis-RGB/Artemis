@@ -34,5 +34,10 @@ namespace Artemis.Core.Plugins.Abstract.DataModels.Attributes
         ///     Gets or sets an optional minimum value, this value is not enforced but used for percentage calculations.
         /// </summary>
         public object MinValue { get; set; }
+
+        /// <summary>
+        ///     Gets or sets whether this property resets the max depth of the data model, defaults to true
+        /// </summary>
+        public bool ResetsDepth { get; set; } = true;
     }
 }

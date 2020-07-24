@@ -102,27 +102,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
 
-        public bool StartSegmentEnabled
-        {
-            get => SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
-            set
-            {
-                SelectedProfileElement.StartSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
-            }
-        }
-
-        public bool EndSegmentEnabled
-        {
-            get => SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
-            set
-            {
-                SelectedProfileElement.EndSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
-            }
-        }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
         {
@@ -586,9 +565,78 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         #region Segments
 
+        public bool StartSegmentEnabled
+        {
+            get => SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
+            set
+            {
+                SelectedProfileElement.StartSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
+                NotifyOfPropertyChange(nameof(CanAddSegment));
+            }
+        }
+        
+        public bool MainSegmentEnabled
+        {
+            get => SelectedProfileElement?.MainSegmentLength != TimeSpan.Zero;
+            set
+            {
+                SelectedProfileElement.MainSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(MainSegmentEnabled));
+                NotifyOfPropertyChange(nameof(CanAddSegment));
+            }
+        }
+
+        public bool EndSegmentEnabled
+        {
+            get => SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
+            set
+            {
+                SelectedProfileElement.EndSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
+                NotifyOfPropertyChange(nameof(CanAddSegment));
+            }
+        }
+
+        public bool CanAddSegment => !StartSegmentEnabled || !MainSegmentEnabled || !EndSegmentEnabled;
+
+        public bool RepeatMainSegment
+        {
+            get => SelectedProfileElement?.RepeatMainSegment ?? false;
+            set
+            {
+                SelectedProfileElement.RepeatMainSegment = value;
+                ProfileEditorService.UpdateSelectedProfileElement();
+                NotifyOfPropertyChange(nameof(RepeatMainSegment));
+            }
+        }
+
         private bool _draggingStartSegment;
         private bool _draggingMainSegment;
         private bool _draggingEndSegment;
+
+        public void DisableSegment(string segment)
+        {
+            if (segment == "Start")
+                StartSegmentEnabled = false;
+            else if (segment == "Main")
+                MainSegmentEnabled = false;
+            else if (segment == "End")
+                EndSegmentEnabled = false;
+        }
+
+        public void EnableSegment(string segment)
+        {
+            if (segment == "Start")
+                StartSegmentEnabled = true;
+            else if (segment == "Main")
+                MainSegmentEnabled = true;
+            else if (segment == "End")
+                EndSegmentEnabled = true;
+        }
 
         public void StartSegmentMouseDown(object sender, MouseButtonEventArgs e)
         {

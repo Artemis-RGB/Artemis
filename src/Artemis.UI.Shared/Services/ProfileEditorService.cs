@@ -113,20 +113,11 @@ namespace Artemis.UI.Shared.Services
             if (SelectedProfile == null)
                 return;
 
-            var delta = CurrentTime - _lastUpdateTime;
-            foreach (var folder in SelectedProfile.GetAllFolders())
-            {
-                foreach (var baseLayerEffect in folder.LayerEffects)
-                    baseLayerEffect.Update(delta.TotalSeconds);
-            }
-
-            foreach (var layer in SelectedProfile.GetAllLayers())
-            {
-                layer.OverrideProgress(CurrentTime);
-                layer.LayerBrush?.Update(delta.TotalSeconds);
-                foreach (var baseLayerEffect in layer.LayerEffects)
-                    baseLayerEffect.Update(delta.TotalSeconds);
-            }
+            // Stick to the main segment for any element that is not currently selected
+            foreach (var folder in SelectedProfile.GetAllFolders()) 
+                folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);
+            foreach (var layer in SelectedProfile.GetAllLayers()) 
+                layer.OverrideProgress(CurrentTime, layer != SelectedProfileElement);
 
             _lastUpdateTime = CurrentTime;
             OnProfilePreviewUpdated();
@@ -205,7 +196,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes)
+        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null)
         {
             if (snapToSegments)
             {

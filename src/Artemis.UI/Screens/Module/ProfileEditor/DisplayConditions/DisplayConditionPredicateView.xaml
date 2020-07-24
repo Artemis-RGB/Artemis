@@ -20,11 +20,28 @@
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                    <Style TargetType="Grid" x:Key="InitializingFade">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInitialized}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.25" BeginTime="0:0:0.1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <QuadraticEase EasingMode="EaseInOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="0 3">
+    <Grid Margin="0 3" Style="{StaticResource InitializingFade}" Opacity="0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
@@ -61,6 +78,7 @@
                             <Setter Property="CommandParameter" Value="{Binding}" />
                             <Setter Property="CommandTarget" Value="{Binding}" />
                             <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                            <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>

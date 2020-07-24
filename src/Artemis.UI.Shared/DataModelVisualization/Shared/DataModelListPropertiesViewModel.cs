@@ -58,7 +58,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
             foreach (var propertyInfo in ListType.GetProperties())
             {
-                var child = CreateChild(dataModelVisualizationService, propertyInfo);
+                var child = CreateChild(dataModelVisualizationService, propertyInfo, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }

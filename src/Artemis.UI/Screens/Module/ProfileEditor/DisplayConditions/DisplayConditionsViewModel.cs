@@ -9,12 +9,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
     public class DisplayConditionsViewModel : ProfileEditorPanelViewModel
     {
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private DisplayConditionGroupViewModel _rootGroup;
         private RenderProfileElement _renderProfileElement;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
+            _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
             profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
         }
@@ -31,9 +33,28 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _renderProfileElement, value);
         }
 
+        public int ConditionBehaviourIndex
+        {
+            get => RenderProfileElement != null && RenderProfileElement.AlwaysFinishTimeline ? 0 : 1;
+            set
+            {
+                if (RenderProfileElement == null)
+                    return;
+
+                RenderProfileElement.AlwaysFinishTimeline = value == 0;
+                NotifyOfPropertyChange(nameof(ConditionBehaviourIndex));
+
+                _profileEditorService.UpdateSelectedProfileElement();
+            }
+        }
+
+        public bool ConditionBehaviourEnabled => RenderProfileElement != null;
+
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
             RenderProfileElement = e.RenderProfileElement;
+            NotifyOfPropertyChange(nameof(ConditionBehaviourIndex));
+            NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
 
             if (e.RenderProfileElement == null)
             {

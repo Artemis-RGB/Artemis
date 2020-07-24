@@ -66,11 +66,6 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public bool IsLoadedFromStorage { get; internal set; }
 
         /// <summary>
-        ///     Gets the total progress on the timeline
-        /// </summary>
-        public TimeSpan TimelineProgress { get; internal set; }
-
-        /// <summary>
         ///     Used to declare that this property doesn't belong to a plugin and should use the core plugin GUID
         /// </summary>
         public bool IsCoreProperty { get; internal set; }

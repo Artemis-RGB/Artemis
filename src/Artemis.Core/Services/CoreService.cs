@@ -47,7 +47,7 @@ namespace Artemis.Core.Services
             _profileService = profileService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _frameStopWatch = new Stopwatch();
-            
+
             UpdatePluginCache();
             ConfigureJsonConvert();
 
@@ -96,6 +96,12 @@ namespace Artemis.Core.Services
             OnInitialized();
         }
 
+
+        public void SetMainWindowHandle(IntPtr handle)
+        {
+            Constants.MainWindowHandle = handle;
+        }
+
         protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
         {
             FrameRendering?.Invoke(this, e);
@@ -109,7 +115,7 @@ namespace Artemis.Core.Services
         private void UpdatePluginCache()
         {
             _modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
-            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled).ToList(); 
+            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled).ToList();
         }
 
         private void ConfigureJsonConvert()

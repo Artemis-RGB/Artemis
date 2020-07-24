@@ -164,7 +164,7 @@ namespace Artemis.Core.Models.Profile
         public TimeSpan TimelinePosition
         {
             get => _timelinePosition;
-            private set => SetAndNotify(ref _timelinePosition, value);
+            protected set => SetAndNotify(ref _timelinePosition, value);
         }
 
         /// <summary>
@@ -212,12 +212,18 @@ namespace Artemis.Core.Models.Profile
                 // Skip to the last segment if conditions are no longer met
                 if (!AlwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
                     TimelinePosition = mainSegmentEnd;
-                else if (TimelinePosition >= TimelineLength)
-                    TimelinePosition = TimelineLength;
             }
 
             return (TimelinePosition - oldPosition).TotalSeconds;
         }
+
+
+        /// <summary>
+        /// Overrides the progress of the element
+        /// </summary>
+        /// <param name="timeOverride"></param>
+        /// <param name="stickToMainSegment"></param>
+        public abstract void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment);
 
         #endregion
 
