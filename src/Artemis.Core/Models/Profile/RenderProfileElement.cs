@@ -17,8 +17,7 @@ namespace Artemis.Core.Models.Profile
     {
         protected void ApplyRenderElementDefaults()
         {
-            if (MainSegmentLength <= TimeSpan.Zero)
-                MainSegmentLength = TimeSpan.FromSeconds(5);
+            MainSegmentLength = TimeSpan.FromSeconds(5);
         }
 
         protected void ApplyRenderElementEntity()

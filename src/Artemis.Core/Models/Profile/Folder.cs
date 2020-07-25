@@ -70,12 +70,12 @@ namespace Artemis.Core.Models.Profile
 
             // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
             // to it's start
-            var timelineDeltaTime = UpdateTimeline(deltaTime);
+            UpdateTimeline(deltaTime);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update();
-                baseLayerEffect.Update(timelineDeltaTime);
+                baseLayerEffect.Update(deltaTime);
             }
 
             // Iterate the children in reverse because that's how they must be rendered too

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Artemis.Plugins.Modules.General.Utilities
 {
-    public static class WindowMonitor
+    public static class WindowUtilities
     {
         public static int GetActiveProcessId()
         {

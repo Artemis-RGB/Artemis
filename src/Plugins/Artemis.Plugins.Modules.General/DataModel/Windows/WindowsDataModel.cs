@@ -6,7 +6,6 @@ namespace Artemis.Plugins.Modules.General.DataModel.Windows
 {
     public class WindowsDataModel
     {
-        public WindowDataModel ActiveWindow { get; set; }
-        public List<WindowDataModel> OpenWindows { get; set; }
+        
     }
 }

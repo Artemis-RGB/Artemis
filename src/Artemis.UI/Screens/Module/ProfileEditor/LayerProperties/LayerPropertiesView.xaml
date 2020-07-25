@@ -172,130 +172,62 @@
 
             <!-- Timeline headers -->
             <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
-                <Grid Background="{DynamicResource MaterialDesignCardBackground}">
-                    <!-- Caret -->
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="{Binding TimelineViewModel.StartSegmentWidth}" />
-                        <ColumnDefinition Width="{Binding TimelineViewModel.MainSegmentWidth}" />
-                        <ColumnDefinition Width="{Binding TimelineViewModel.EndSegmentWidth}" />
-                    </Grid.ColumnDefinitions>
+                <Canvas Background="{DynamicResource MaterialDesignCardBackground}" Width="{Binding ActualWidth, ElementName=PropertyTimeLine}">
+                    <!-- Timeline segments -->
+                    <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding EndTimelineSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding MainTimelineSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding StartTimelineSegmentViewModel}" />
 
-                    <Canvas Grid.ColumnSpan="3"
-                            Panel.ZIndex="2"
-                            Margin="{Binding TimeCaretPosition}"
-                            Cursor="SizeWE"
-                            MouseDown="{s:Action TimelineMouseDown}"
-                            MouseUp="{s:Action TimelineMouseUp}"
-                            MouseMove="{s:Action TimelineMouseMove}">
-                        <Polygon Points="-8,0 -8,8 0,20, 8,8 8,0" Fill="{StaticResource SecondaryAccentBrush}" />
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
-                    </Canvas>
+                    <!-- Timeline caret -->
+                    <Polygon Canvas.Left="{Binding TimeCaretPosition}"
+                             Cursor="SizeWE"
+                             MouseDown="{s:Action TimelineMouseDown}"
+                             MouseUp="{s:Action TimelineMouseUp}"
+                             MouseMove="{s:Action TimelineMouseMove}"
+                             Points="-8,0 -8,8 0,20, 8,8 8,0"
+                             Fill="{StaticResource SecondaryAccentBrush}" />
+                    <Line Canvas.Left="{Binding TimeCaretPosition}"
+                          Cursor="SizeWE"
+                          MouseDown="{s:Action TimelineMouseDown}"
+                          MouseUp="{s:Action TimelineMouseUp}"
+                          MouseMove="{s:Action TimelineMouseMove}"
+                          X1="0"
+                          X2="0"
+                          Y1="0"
+                          Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                          StrokeThickness="2"
+                          Stroke="{StaticResource SecondaryAccentBrush}" />
 
-                    <timeline:PropertyTimelineHeader Grid.Column="0"
-                                                     Grid.ColumnSpan="3"
-                                                     Margin="0 25 0 0"
+
+                    <!-- Timeline header body -->
+                    <timeline:PropertyTimelineHeader Margin="0 25 0 0"
                                                      Fill="{DynamicResource MaterialDesignBody}"
                                                      PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
                                                      HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
                                                      VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
                                                      OffsetFirstValue="True"
                                                      Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
-
-                    <!-- Start segment -->
-                    <Grid Grid.Column="0" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
-                          Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played when a layer starts displaying because it's conditions are met">
-                            Start
-                        </TextBlock>
-                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Disable start segment" Width="20" Height="20" Margin="0 0 6 0"
-                                Command="{s:Action DisableSegment}" CommandParameter="Start">
-                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
-                        </Button>
-                    </Grid>
-
-                    <!-- Main segment -->
-                    <Grid Grid.Column="1" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
-                          Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played while a condition is met, either once or on a repeating loop">
-                            Main
-                        </TextBlock>
-
-                        <ToggleButton Grid.Column="1" Style="{StaticResource MaterialDesignFlatToggleButton}" ToolTip="Toggle main segment repeat" Width="16" Height="16"
-                                      IsChecked="{Binding RepeatMainSegment}" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="Repeat" Height="12" Width="12" />
-                        </ToggleButton>
-
-                        <Button Grid.Column="2" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Remove" Width="20" Height="20" Margin="5 0 8 0"
-                                Command="{s:Action DisableSegment}" CommandParameter="Main">
-                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
-                        </Button>
-                    </Grid>
-
-                    <!-- End segment -->
-                    <Grid Grid.Column="2" VerticalAlignment="Top" Background="{StaticResource MaterialDesignPaper}"
-                          Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock TextAlignment="Center" Padding="0 3" FontSize="12" ToolTip="This segment is played once a condition is no longer met">
-                            End
-                        </TextBlock>
-                        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconButton}" ToolTip="Disable end segment" Width="20" Height="20" Margin="0 0 6 0"
-                                Command="{s:Action DisableSegment}" CommandParameter="End">
-                            <materialDesign:PackIcon Kind="Close" Height="18" Width="18" />
-                        </Button>
-                    </Grid>
-
-                    <!-- Segment movement display -->
-                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
-                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
-                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="{DynamicResource PrimaryHueDarkBrush}" Margin="0 -2 -2 0" Width="5" Height="24" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
-
-                    <!-- Segment movement handles -->
-                    <Rectangle Grid.Column="0" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                               MouseDown="{s:Action StartSegmentMouseDown}" MouseUp="{s:Action StartSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
-                    <Rectangle Grid.Column="1" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding MainSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                               MouseDown="{s:Action MainSegmentMouseDown}" MouseUp="{s:Action MainSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
-                    <Rectangle Grid.Column="2" RadiusX="2" RadiusY="2" Fill="Transparent" Margin="0 -1 -6 0" Width="16" Height="25" VerticalAlignment="Top"
-                               HorizontalAlignment="Right" Cursor="SizeWE" Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                               MouseDown="{s:Action EndSegmentMouseDown}" MouseUp="{s:Action EndSegmentMouseUp}" MouseMove="{s:Action SegmentMouseMove}" />
-                </Grid>
+                </Canvas>
             </ScrollViewer>
 
             <!-- Timeline rails -->
-            <ScrollViewer x:Name="TimelineRailsScrollViewer"
-                          Grid.Row="1"
-                          Style="{StaticResource SvStyle}"
-                          HorizontalScrollBarVisibility="Auto"
-                          VerticalScrollBarVisibility="Auto"
-                          ScrollChanged="TimelineScrollChanged">
+            <ScrollViewer x:Name="TimelineRailsScrollViewer" Grid.Row="1" Style="{StaticResource SvStyle}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ScrollChanged="TimelineScrollChanged">
                 <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
-                    <Canvas Grid.Column="0"
-                            Panel.ZIndex="1"
-                            Margin="{Binding TimeCaretPosition}"
-                            Cursor="SizeWE"
-                            MouseDown="{s:Action TimelineMouseDown}"
-                            MouseUp="{s:Action TimelineMouseUp}"
-                            MouseMove="{s:Action TimelineMouseMove}">
-                        <Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=ContainerGrid}" StrokeThickness="2" Stroke="{StaticResource SecondaryAccentBrush}" />
+                    <Canvas Grid.Column="0" Panel.ZIndex="1">
+                        <Line Canvas.Left="{Binding TimeCaretPosition}"
+                              Cursor="SizeWE"
+                              MouseDown="{s:Action TimelineMouseDown}"
+                              MouseUp="{s:Action TimelineMouseUp}"
+                              MouseMove="{s:Action TimelineMouseMove}"
+                              X1="0"
+                              X2="0"
+                              Y1="0"
+                              Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                              StrokeThickness="2"
+                              Stroke="{StaticResource SecondaryAccentBrush}" />
                     </Canvas>
 
-                    <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" />
+                    <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" x:Name="PropertyTimeLine" />
                 </Grid>
             </ScrollViewer>
         </Grid>
@@ -303,8 +235,8 @@
         <!-- Bottom row, a bit hacky but has a ZIndex of 2 to cut off the time caret that overlaps the entire timeline -->
         <Grid Grid.Row="1"
               Grid.Column="0"
-              HorizontalAlignment="Stretch"
               Panel.ZIndex="2"
+              HorizontalAlignment="Stretch"
               Background="{DynamicResource MaterialDesignCardBackground}">
             <!-- Selected layer controls -->
             <Grid.ColumnDefinitions>
@@ -409,15 +341,15 @@
                         <MenuItem Header="Start"
                                   Command="{s:Action EnableSegment}"
                                   CommandParameter="Start"
-                                  IsEnabled="{Binding Data.StartSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                                  IsEnabled="{Binding Data.StartTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
                         <MenuItem Header="Main"
                                   Command="{s:Action EnableSegment}"
                                   CommandParameter="Main"
-                                  IsEnabled="{Binding Data.MainSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                                  IsEnabled="{Binding Data.MainTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
                         <MenuItem Header="End"
                                   Command="{s:Action EnableSegment}"
                                   CommandParameter="End"
-                                  IsEnabled="{Binding Data.EndSegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                                  IsEnabled="{Binding Data.EndTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
                     </ContextMenu>
                 </Button.ContextMenu>
                 <TextBlock FontSize="11">
