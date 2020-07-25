@@ -70,7 +70,6 @@ namespace Artemis.Core.Models.Profile
 
             General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
             ApplyRenderElementEntity();
-            ApplyRenderElementDefaults();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -224,17 +223,17 @@ namespace Artemis.Core.Models.Profile
 
             // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
             // to it's start
-            var timelineDeltaTime = UpdateTimeline(deltaTime);
+            UpdateTimeline(deltaTime);
 
             General.Update();
             Transform.Update();
             LayerBrush.BaseProperties?.Update();
-            LayerBrush.Update(timelineDeltaTime);
+            LayerBrush.Update(deltaTime);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update();
-                baseLayerEffect.Update(timelineDeltaTime);
+                baseLayerEffect.Update(deltaTime);
             }
         }
 
@@ -256,7 +255,10 @@ namespace Artemis.Core.Models.Profile
                 else
                 {
                     var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
-                    TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
+                    if (progress > 0)
+                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
+                    else
+                        TimelinePosition = StartSegmentLength;
                 }
             }
             else
@@ -435,6 +437,39 @@ namespace Artemis.Core.Models.Profile
             position.Y += positionProperty.Y * layerPath.Bounds.Height;
 
             return position;
+        }
+
+        /// <summary>
+        ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
+        ///     layer translations out
+        /// </summary>
+        /// <param name="path"></param>
+        public void ExcludePathFromTranslation(SKPath path)
+        {
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition(Path);
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+
+            var reversedXScale = 1f / (sizeProperty.Width / 100f);
+            var reversedYScale = 1f / (sizeProperty.Height / 100f);
+
+            if (General.FillType == LayerFillType.Stretch)
+            {
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeScale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
+            }
+            else
+            {
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
+            }
         }
 
         #endregion

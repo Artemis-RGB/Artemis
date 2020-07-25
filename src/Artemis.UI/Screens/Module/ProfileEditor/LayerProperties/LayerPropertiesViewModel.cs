@@ -35,6 +35,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         private RenderProfileElement _selectedProfileElement;
         private TimelineViewModel _timelineViewModel;
         private TreeViewModel _treeViewModel;
+        private TimelineSegmentViewModel _startTimelineSegmentViewModel;
+        private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
+        private TimelineSegmentViewModel _endTimelineSegmentViewModel;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -68,10 +71,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public string FormattedCurrentTime => $"{Math.Floor(ProfileEditorService.CurrentTime.TotalSeconds):00}.{ProfileEditorService.CurrentTime.Milliseconds:000}";
 
-        public Thickness TimeCaretPosition
+        public double TimeCaretPosition
         {
-            get => new Thickness(ProfileEditorService.CurrentTime.TotalSeconds * ProfileEditorService.PixelsPerSecond, 0, 0, 0);
-            set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value.Left / ProfileEditorService.PixelsPerSecond);
+            get => ProfileEditorService.CurrentTime.TotalSeconds * ProfileEditorService.PixelsPerSecond;
+            set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value / ProfileEditorService.PixelsPerSecond);
         }
 
         public int PropertyTreeIndex
@@ -94,8 +97,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
                 if (!SetAndNotify(ref _selectedProfileElement, value)) return;
                 NotifyOfPropertyChange(nameof(SelectedLayer));
                 NotifyOfPropertyChange(nameof(SelectedFolder));
-                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
-                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
             }
         }
 
@@ -125,6 +126,24 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         {
             get => _timelineViewModel;
             set => SetAndNotify(ref _timelineViewModel, value);
+        }
+
+        public TimelineSegmentViewModel StartTimelineSegmentViewModel
+        {
+            get => _startTimelineSegmentViewModel;
+            set => SetAndNotify(ref _startTimelineSegmentViewModel, value);
+        }
+
+        public TimelineSegmentViewModel MainTimelineSegmentViewModel
+        {
+            get => _mainTimelineSegmentViewModel;
+            set => SetAndNotify(ref _mainTimelineSegmentViewModel, value);
+        }
+
+        public TimelineSegmentViewModel EndTimelineSegmentViewModel
+        {
+            get => _endTimelineSegmentViewModel;
+            set => SetAndNotify(ref _endTimelineSegmentViewModel, value);
         }
 
         protected override void OnInitialActivate()
@@ -227,10 +246,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             TimelineViewModel?.Dispose();
             TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
+            StartTimelineSegmentViewModel?.Dispose();
+            StartTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.Start);
+            MainTimelineSegmentViewModel?.Dispose();
+            MainTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.Main);
+            EndTimelineSegmentViewModel?.Dispose();
+            EndTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.End);
 
             ApplyLayerBrush();
             ApplyEffects();
         }
+
+
 
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
         {
@@ -564,163 +591,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         #endregion
 
         #region Segments
-
-        public bool StartSegmentEnabled
-        {
-            get => SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
-            set
-            {
-                SelectedProfileElement.StartSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
-                NotifyOfPropertyChange(nameof(CanAddSegment));
-            }
-        }
         
-        public bool MainSegmentEnabled
-        {
-            get => SelectedProfileElement?.MainSegmentLength != TimeSpan.Zero;
-            set
-            {
-                SelectedProfileElement.MainSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(MainSegmentEnabled));
-                NotifyOfPropertyChange(nameof(CanAddSegment));
-            }
-        }
-
-        public bool EndSegmentEnabled
-        {
-            get => SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
-            set
-            {
-                SelectedProfileElement.EndSegmentLength = value ? TimeSpan.FromSeconds(1) : TimeSpan.Zero;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
-                NotifyOfPropertyChange(nameof(CanAddSegment));
-            }
-        }
-
-        public bool CanAddSegment => !StartSegmentEnabled || !MainSegmentEnabled || !EndSegmentEnabled;
-
-        public bool RepeatMainSegment
-        {
-            get => SelectedProfileElement?.RepeatMainSegment ?? false;
-            set
-            {
-                SelectedProfileElement.RepeatMainSegment = value;
-                ProfileEditorService.UpdateSelectedProfileElement();
-                NotifyOfPropertyChange(nameof(RepeatMainSegment));
-            }
-        }
-
-        private bool _draggingStartSegment;
-        private bool _draggingMainSegment;
-        private bool _draggingEndSegment;
-
-        public void DisableSegment(string segment)
-        {
-            if (segment == "Start")
-                StartSegmentEnabled = false;
-            else if (segment == "Main")
-                MainSegmentEnabled = false;
-            else if (segment == "End")
-                EndSegmentEnabled = false;
-        }
-
         public void EnableSegment(string segment)
         {
             if (segment == "Start")
-                StartSegmentEnabled = true;
+                StartTimelineSegmentViewModel.EnableSegment();
             else if (segment == "Main")
-                MainSegmentEnabled = true;
+                MainTimelineSegmentViewModel.EnableSegment();
             else if (segment == "End")
-                EndSegmentEnabled = true;
-        }
-
-        public void StartSegmentMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).CaptureMouse();
-            _draggingStartSegment = true;
-        }
-
-        public void StartSegmentMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).ReleaseMouseCapture();
-            _draggingStartSegment = false;
-        }
-
-        public void MainSegmentMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).CaptureMouse();
-            _draggingMainSegment = true;
-        }
-
-        public void MainSegmentMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).ReleaseMouseCapture();
-            _draggingMainSegment = false;
-        }
-
-        public void EndSegmentMouseDown(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).CaptureMouse();
-            _draggingEndSegment = true;
-        }
-
-        public void EndSegmentMouseUp(object sender, MouseButtonEventArgs e)
-        {
-            ((IInputElement) sender).ReleaseMouseCapture();
-            _draggingEndSegment = false;
-        }
-
-        public void SegmentMouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                // Get the parent grid, need that for our position
-                var parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
-                var x = Math.Max(0, e.GetPosition(parent).X);
-                var newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
-
-                // Round the time to something that fits the current zoom level
-                if (ProfileEditorService.PixelsPerSecond < 200)
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
-                else if (ProfileEditorService.PixelsPerSecond < 500)
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
-                else
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
-
-                // If holding down shift, snap to the closest element on the timeline
-                if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                {
-                    newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, true);
-                }
-                // If holding down control, round to the closest 50ms
-                else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
-                {
-                    newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
-                }
-
-                if (_draggingStartSegment)
-                {
-                    if (newTime < TimeSpan.FromMilliseconds(100))
-                        newTime = TimeSpan.FromMilliseconds(100);
-                    SelectedProfileElement.StartSegmentLength = newTime;
-                }
-                else if (_draggingMainSegment)
-                {
-                    if (newTime < SelectedProfileElement.StartSegmentLength + TimeSpan.FromMilliseconds(100))
-                        newTime = SelectedProfileElement.StartSegmentLength + TimeSpan.FromMilliseconds(100);
-                    SelectedProfileElement.MainSegmentLength = newTime - SelectedProfileElement.StartSegmentLength;
-                }
-                else if (_draggingEndSegment)
-                {
-                    if (newTime < SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength + TimeSpan.FromMilliseconds(100))
-                        newTime = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength + TimeSpan.FromMilliseconds(100);
-                    SelectedProfileElement.EndSegmentLength = newTime - SelectedProfileElement.StartSegmentLength - SelectedProfileElement.MainSegmentLength;
-                }
-            }
+                EndTimelineSegmentViewModel.EnableSegment();
         }
 
         #endregion

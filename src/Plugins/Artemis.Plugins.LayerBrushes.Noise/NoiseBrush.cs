@@ -73,6 +73,19 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             var height = (int) Math.Floor(path.Bounds.Height * _renderScale);
 
             CreateBitmap(width, height);
+
+            var clipPath = new SKPath(Layer.Path);
+            Layer.ExcludePathFromTranslation(clipPath);
+            clipPath = new SKPath(clipPath);
+            clipPath.Transform(SKMatrix.MakeTranslation(Layer.Path.Bounds.Left * -1, Layer.Path.Bounds.Top * -1));
+
+            // Fill a canvas matching the final area that will be rendered
+            using var bitmapCanvas = new SKCanvas(_bitmap);
+            using var clipPaint = new SKPaint {Color = new SKColor(0, 0, 0, 255)};
+            bitmapCanvas.Clear();
+            bitmapCanvas.Scale(_renderScale);
+            bitmapCanvas.DrawPath(clipPath, clipPaint);
+
             for (var y = 0; y < height; y++)
             {
                 for (var x = 0; x < width; x++)
@@ -82,6 +95,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                     var evalX = 0.1 * scale.Width * scrolledX / width;
                     var evalY = 0.1 * scale.Height * scrolledY / height;
                     if (double.IsInfinity(evalX) || double.IsNaN(evalX) || double.IsNaN(evalY) || double.IsInfinity(evalY))
+                        continue;
+
+                    var pixel = _bitmap.GetPixel(x, y);
+                    if (pixel.Alpha != 255)
                         continue;
 
                     var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
