@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Utilities;
@@ -43,7 +44,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         #endregion
     }
 
-    public abstract class TimelineKeyframeViewModel : PropertyChangedBase
+    public abstract class TimelineKeyframeViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
         private BindableCollection<TimelineEasingViewModel> _easingViewModels;
@@ -57,6 +58,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             _profileEditorService = profileEditorService;
             BaseLayerPropertyKeyframe = baseLayerPropertyKeyframe;
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
+
+            BaseLayerPropertyKeyframe.PropertyChanged += BaseLayerPropertyKeyframeOnPropertyChanged;
         }
 
         public BaseLayerPropertyKeyframe BaseLayerPropertyKeyframe { get; }
@@ -97,6 +100,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public abstract void Delete();
 
+        private void BaseLayerPropertyKeyframeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(BaseLayerPropertyKeyframe.Position))
+                Update(_pixelsPerSecond);
+        }
+
         #region Easing
 
         public void CreateEasingViewModels()
@@ -120,12 +129,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         #region Movement
 
         private TimeSpan? _offset;
-
-        public void ApplyMovement(TimeSpan cursorTime)
-        {
-            UpdatePosition(cursorTime);
-            Update(_pixelsPerSecond);
-        }
 
         public void ReleaseMovement()
         {
@@ -154,7 +157,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             UpdatePosition(keyframeViewModel.BaseLayerPropertyKeyframe.Position + _offset.Value);
         }
 
-        private void UpdatePosition(TimeSpan position)
+        public void UpdatePosition(TimeSpan position)
         {
             if (position < TimeSpan.Zero)
                 BaseLayerPropertyKeyframe.Position = TimeSpan.Zero;
@@ -167,5 +170,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            BaseLayerPropertyKeyframe.PropertyChanged -= BaseLayerPropertyKeyframeOnPropertyChanged;
+        }
     }
 }

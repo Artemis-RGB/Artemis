@@ -30,14 +30,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             {
                 var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
                 var toRemove = TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe)).ToList();
+                foreach (var timelineKeyframeViewModel in toRemove) 
+                    timelineKeyframeViewModel.Dispose();
+
                 TimelineKeyframeViewModels.RemoveRange(toRemove);
-                TimelineKeyframeViewModels.AddRange(
-                    keyframes.Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
-                        .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, k))
+                TimelineKeyframeViewModels.AddRange(keyframes
+                    .Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
+                    .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, k))
                 );
             }
             else
-                TimelineKeyframeViewModels.Clear();
+                DisposeKeyframeViewModels();
 
             foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
                 timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);
@@ -49,6 +52,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             LayerPropertyViewModel.LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeModified;
             LayerPropertyViewModel.LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframeModified;
+            DisposeKeyframeViewModels();
+        }
+
+        private void DisposeKeyframeViewModels()
+        {
+            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels) 
+                timelineKeyframeViewModel.Dispose();
+            TimelineKeyframeViewModels.Clear();
         }
 
         private void LayerPropertyOnKeyframeModified(object sender, EventArgs e)

@@ -6,6 +6,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
     public class LayerPropertyKeyframe<T> : BaseLayerPropertyKeyframe
     {
         private TimeSpan _position;
+        private T _value;
+        private LayerProperty<T> _layerProperty;
 
         public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction, LayerProperty<T> layerProperty) : base(layerProperty)
         {
@@ -18,12 +20,20 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     The layer property this keyframe is applied to
         /// </summary>
-        public LayerProperty<T> LayerProperty { get; internal set; }
+        public LayerProperty<T> LayerProperty
+        {
+            get => _layerProperty;
+            internal set => SetAndNotify(ref _layerProperty, value);
+        }
 
         /// <summary>
         ///     The value of this keyframe
         /// </summary>
-        public T Value { get; set; }
+        public T Value
+        {
+            get => _value;
+            set => SetAndNotify(ref _value, value);
+        }
 
         /// <inheritdoc />
         public override TimeSpan Position
@@ -31,9 +41,15 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             get => _position;
             set
             {
-                _position = value;
+                SetAndNotify(ref _position, value);
                 LayerProperty.SortKeyframes();
             }
+        }
+
+        /// <inheritdoc />
+        public override void Remove()
+        {
+            LayerProperty.RemoveKeyframe(this);
         }
     }
 }
