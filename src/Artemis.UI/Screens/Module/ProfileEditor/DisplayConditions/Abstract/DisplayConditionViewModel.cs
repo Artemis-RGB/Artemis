@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract
 
         public abstract void Update();
 
-        public void Delete()
+        public virtual void Delete()
         {
             Model.Parent.RemoveChild(Model);
             Parent.Update();

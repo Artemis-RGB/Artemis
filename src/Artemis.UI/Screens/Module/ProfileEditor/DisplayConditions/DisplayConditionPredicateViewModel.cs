@@ -23,6 +23,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IDataModelVisualizationService _dataModelVisualizationService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
+        private bool _isInitialized;
         private DataModelPropertiesViewModel _leftSideDataModel;
         private List<DisplayConditionOperator> _operators;
         private DataModelPropertiesViewModel _rightSideDataModel;
@@ -34,7 +35,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private DataModelVisualizationViewModel _selectedRightSideProperty;
 
         private List<Type> _supportedInputTypes;
-        private bool _isInitialized;
 
         public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent, IProfileEditorService profileEditorService,
             IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService, IEventAggregator eventAggregator)
@@ -143,6 +143,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
             if (message.Sender is FrameworkElement frameworkElement && !frameworkElement.IsDescendantOf(RightSideInputViewModel.View))
                 RightSideInputViewModel.Submit();
+        }
+
+        public override void Delete()
+        {
+            base.Delete();
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void Initialize()

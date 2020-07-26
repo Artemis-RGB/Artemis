@@ -1,12 +1,13 @@
 ﻿using System;
 using Artemis.Core.Utilities;
+using Stylet;
 
 namespace Artemis.Core.Models.Profile.LayerProperties
 {
     /// <summary>
     ///     For internal use only, use <see cref="LayerPropertyKeyframe{T}" /> instead.
     /// </summary>
-    public abstract class BaseLayerPropertyKeyframe
+    public abstract class BaseLayerPropertyKeyframe : PropertyChangedBase
     {
         internal BaseLayerPropertyKeyframe(BaseLayerProperty baseLayerProperty)
         {
@@ -27,5 +28,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         ///     The easing function applied on the value of the keyframe
         /// </summary>
         public Easings.Functions EasingFunction { get; set; }
+
+        /// <summary>
+        ///     Removes the keyframe from the layer property
+        /// </summary>
+        public abstract void Remove();
     }
 }

@@ -220,7 +220,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.SaveOffsetToKeyframe(sourceKeyframeViewModel);
 
-            sourceKeyframeViewModel.ApplyMovement(cursorTime);
+            sourceKeyframeViewModel.UpdatePosition(cursorTime);
 
             foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.ApplyOffsetToKeyframe(sourceKeyframeViewModel);
