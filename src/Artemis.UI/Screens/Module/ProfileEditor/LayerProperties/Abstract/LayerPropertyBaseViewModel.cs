@@ -8,11 +8,11 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract
     public abstract class LayerPropertyBaseViewModel : PropertyChangedBase, IDisposable
     {
         private bool _isExpanded;
-        private List<LayerPropertyBaseViewModel> _children;
+        private BindableCollection<LayerPropertyBaseViewModel> _children;
 
         protected LayerPropertyBaseViewModel()
         {
-            Children = new List<LayerPropertyBaseViewModel>();
+            Children = new BindableCollection<LayerPropertyBaseViewModel>();
         }
 
         public abstract bool IsVisible { get; }
@@ -23,7 +23,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract
             set => SetAndNotify(ref _isExpanded, value);
         }
 
-        public List<LayerPropertyBaseViewModel> Children
+        public BindableCollection<LayerPropertyBaseViewModel> Children
         {
             get => _children;
             set => SetAndNotify(ref _children, value);

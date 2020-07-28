@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Artemis.Core.Models.Surface;
-using RGB.NET.Core;
-using Size = System.Windows.Size;
 
 namespace Artemis.UI.Shared.Controls
 {
@@ -28,9 +25,9 @@ namespace Artemis.UI.Shared.Controls
 
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
+        private readonly DispatcherTimer _timer;
         private BitmapImage _deviceImage;
         private ArtemisDevice _oldDevice;
-        private readonly DispatcherTimer _timer;
 
         public DeviceVisualizer()
         {
@@ -41,8 +38,8 @@ namespace Artemis.UI.Shared.Controls
             _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(40)};
             _timer.Tick += TimerOnTick;
 
-            Loaded += (sender, args) => _timer.Start();
-            Unloaded += (sender, args) => _timer.Stop();
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
         }
 
         public ArtemisDevice Device
@@ -117,12 +114,28 @@ namespace Artemis.UI.Shared.Controls
             return rotationRect.Size;
         }
 
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _timer.Stop();
+
+            if (_oldDevice != null)
+            {
+                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                _oldDevice = null;
+            }
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            _timer.Start();
+        }
+
         private void TimerOnTick(object sender, EventArgs e)
         {
             if (ShowColors && Visibility == Visibility.Visible)
                 Render();
         }
-        
+
         private void UpdateTransform()
         {
             InvalidateVisual();
@@ -204,7 +217,7 @@ namespace Artemis.UI.Shared.Controls
             if (e.PropertyName == nameof(Device.RgbDevice.Scale) || e.PropertyName == nameof(Device.RgbDevice.Rotation))
                 UpdateTransform();
         }
-        
+
 
         private void Render()
         {

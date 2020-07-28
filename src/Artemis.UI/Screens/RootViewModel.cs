@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
@@ -21,45 +22,50 @@ namespace Artemis.UI.Screens
 {
     public class RootViewModel : Conductor<IScreen>
     {
+        private readonly IRegistrationService _builtInRegistrationService;
+        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
-        private readonly IRegistrationService _builtInRegistrationService;
         private readonly IEventAggregator _eventAggregator;
         private readonly ThemeWatcher _themeWatcher;
         private readonly Timer _titleUpdateTimer;
         private readonly PluginSetting<WindowSize> _windowSize;
-        private bool _lostFocus;
-        private bool _isSidebarVisible;
         private bool _activeItemReady;
+        private bool _isSidebarVisible;
+        private bool _lostFocus;
         private string _windowTitle;
+        private ISnackbarMessageQueue _mainMessageQueue;
 
         public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
             IDebugService debugService, IRegistrationService builtInRegistrationService, ISnackbarMessageQueue snackbarMessageQueue)
         {
             SidebarViewModel = sidebarViewModel;
-            MainMessageQueue = snackbarMessageQueue;
             _eventAggregator = eventAggregator;
             _coreService = coreService;
             _debugService = debugService;
             _builtInRegistrationService = builtInRegistrationService;
+            _snackbarMessageQueue = snackbarMessageQueue;
 
             _titleUpdateTimer = new Timer(500);
-            _titleUpdateTimer.Elapsed += (sender, args) => UpdateWindowTitle();
+
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _windowSize = settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
-            _colorScheme.SettingChanged += (sender, args) => ApplyColorSchemeSetting();
+
             _themeWatcher = new ThemeWatcher();
-            _themeWatcher.ThemeChanged += (sender, args) => ApplyWindowsTheme(args.Theme);
             ApplyColorSchemeSetting();
 
             ActiveItem = SidebarViewModel.SelectedItem;
             ActiveItemReady = true;
-            SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
         }
 
         public SidebarViewModel SidebarViewModel { get; }
-        public ISnackbarMessageQueue MainMessageQueue { get; }
+
+        public ISnackbarMessageQueue MainMessageQueue
+        {
+            get => _mainMessageQueue;
+            set => SetAndNotify(ref _mainMessageQueue, value);
+        }
 
         public bool IsSidebarVisible
         {
@@ -112,6 +118,7 @@ namespace Artemis.UI.Screens
         {
             _eventAggregator.Publish(new MainWindowKeyEvent(sender, false, e));
         }
+
         public void WindowMouseDown(object sender, MouseButtonEventArgs e)
         {
             _eventAggregator.Publish(new MainWindowMouseEvent(sender, true, e));
@@ -176,6 +183,21 @@ namespace Artemis.UI.Screens
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
 
+        private void OnTitleUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
+        {
+            UpdateWindowTitle();
+        }
+
+        private void ThemeWatcherOnThemeChanged(object sender, WindowsThemeEventArgs e)
+        {
+            ApplyWindowsTheme(e.Theme);
+        }
+
+        private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
+        {
+            ApplyColorSchemeSetting();
+        }
+
         #region Overrides of Screen
 
         protected override void OnViewLoaded()
@@ -194,22 +216,54 @@ namespace Artemis.UI.Screens
 
         protected override void OnActivate()
         {
+            MainMessageQueue = _snackbarMessageQueue;
             UpdateWindowTitle();
-            _titleUpdateTimer.Start();
 
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
             _builtInRegistrationService.RegisterBuiltInDataModelInputs();
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
+
+            _titleUpdateTimer.Elapsed += OnTitleUpdateTimerOnElapsed;
+            _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
+            _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
+            SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
+
+            _titleUpdateTimer.Start();
         }
 
         protected override void OnDeactivate()
         {
+            // Ensure no element with focus can leak, if we don't do this the root VM is retained by Window.EffectiveValues
+            // https://stackoverflow.com/a/30864434
+            Keyboard.ClearFocus();
+
+            MainMessageQueue = null;
             _titleUpdateTimer.Stop();
 
             var window = (MaterialWindow) View;
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(window);
             _windowSize.Save();
+
+            _titleUpdateTimer.Elapsed -= OnTitleUpdateTimerOnElapsed;
+            _colorScheme.SettingChanged -= ColorSchemeOnSettingChanged;
+            _themeWatcher.ThemeChanged -= ThemeWatcherOnThemeChanged;
+            SidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;
+        }
+
+        protected override void OnClose()
+        {
+            SidebarViewModel.Dispose();
+
+            // Lets force the GC to run after closing the window so it is obvious to users watching task manager
+            // that closing the UI will decrease the memory footprint of the application.
+            Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromSeconds(15));
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                GC.Collect();
+            });
         }
 
         #endregion

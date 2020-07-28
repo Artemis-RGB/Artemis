@@ -164,6 +164,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
+
+            TimelineViewModel?.Dispose();
+            TimelineViewModel = null;
+            StartTimelineSegmentViewModel?.Dispose();
+            StartTimelineSegmentViewModel = null;
+            MainTimelineSegmentViewModel?.Dispose();
+            MainTimelineSegmentViewModel = null;
+            EndTimelineSegmentViewModel?.Dispose();
+            EndTimelineSegmentViewModel = null;
+
             base.OnClose();
         }
 
@@ -256,9 +266,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             ApplyLayerBrush();
             ApplyEffects();
         }
-
-
-
+        
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
         {
             ApplyLayerBrush();

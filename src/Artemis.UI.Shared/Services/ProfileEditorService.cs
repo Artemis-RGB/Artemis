@@ -23,8 +23,9 @@ namespace Artemis.UI.Shared.Services
         private readonly ILogger _logger;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private TimeSpan _currentTime;
-        private TimeSpan _lastUpdateTime;
         private int _pixelsPerSecond;
+        private object _selectedProfileLock = new object();
+        private object _selectedProfileElementLock = new object();
 
         public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel, ILogger logger)
         {
@@ -69,43 +70,55 @@ namespace Artemis.UI.Shared.Services
 
         public void ChangeSelectedProfile(Profile profile)
         {
-            if (SelectedProfile == profile)
-                return;
+            lock (_selectedProfileLock)
+            {
+                if (SelectedProfile == profile)
+                    return;
 
-            _logger.Verbose("ChangeSelectedProfile {profile}", profile);
-            ChangeSelectedProfileElement(null);
+                _logger.Verbose("ChangeSelectedProfile {profile}", profile);
+                ChangeSelectedProfileElement(null);
 
-            var profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
-            SelectedProfile = profile;
-            UpdateProfilePreview();
-            OnSelectedProfileChanged(profileElementEvent);
+                var profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
+                SelectedProfile = profile;
+                UpdateProfilePreview();
+                OnSelectedProfileChanged(profileElementEvent);
+            }
         }
 
         public void UpdateSelectedProfile()
         {
-            _logger.Verbose("UpdateSelectedProfile {profile}", SelectedProfile);
-            _profileService.UpdateProfile(SelectedProfile, true);
-            UpdateProfilePreview();
-            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile));
+            lock (_selectedProfileLock)
+            {
+                _logger.Verbose("UpdateSelectedProfile {profile}", SelectedProfile);
+                _profileService.UpdateProfile(SelectedProfile, true);
+                UpdateProfilePreview();
+                OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile));
+            }
         }
 
         public void ChangeSelectedProfileElement(RenderProfileElement profileElement)
         {
-            if (SelectedProfileElement == profileElement)
-                return;
+            lock (_selectedProfileElementLock)
+            {
+                if (SelectedProfileElement == profileElement)
+                    return;
 
-            _logger.Verbose("ChangeSelectedProfileElement {profile}", profileElement);
-            var profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
-            SelectedProfileElement = profileElement;
-            OnSelectedProfileElementChanged(profileElementEvent);
+                _logger.Verbose("ChangeSelectedProfileElement {profile}", profileElement);
+                var profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
+                SelectedProfileElement = profileElement;
+                OnSelectedProfileElementChanged(profileElementEvent);
+            }
         }
 
         public void UpdateSelectedProfileElement()
         {
-            _logger.Verbose("UpdateSelectedProfileElement {profile}", SelectedProfileElement);
-            _profileService.UpdateProfile(SelectedProfile, true);
-            UpdateProfilePreview();
-            OnSelectedProfileElementUpdated(new RenderProfileElementEventArgs(SelectedProfileElement));
+            lock (_selectedProfileElementLock)
+            {
+                _logger.Verbose("UpdateSelectedProfileElement {profile}", SelectedProfileElement);
+                _profileService.UpdateProfile(SelectedProfile, true);
+                UpdateProfilePreview();
+                OnSelectedProfileElementUpdated(new RenderProfileElementEventArgs(SelectedProfileElement));
+            }
         }
 
         public void UpdateProfilePreview()
@@ -114,12 +127,11 @@ namespace Artemis.UI.Shared.Services
                 return;
 
             // Stick to the main segment for any element that is not currently selected
-            foreach (var folder in SelectedProfile.GetAllFolders()) 
+            foreach (var folder in SelectedProfile.GetAllFolders())
                 folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);
-            foreach (var layer in SelectedProfile.GetAllLayers()) 
+            foreach (var layer in SelectedProfile.GetAllLayers())
                 layer.OverrideProgress(CurrentTime, layer != SelectedProfileElement);
 
-            _lastUpdateTime = CurrentTime;
             OnProfilePreviewUpdated();
         }
 
@@ -225,7 +237,7 @@ namespace Artemis.UI.Shared.Services
             {
                 // Get all visible keyframes
                 var keyframes = SelectedProfileElement.GetAllKeyframes()
-                    .Where(k => SelectedProfileElement.IsPropertyGroupExpanded(k.BaseLayerProperty.Parent))
+                    .Where(k => k != excludedKeyframe && SelectedProfileElement.IsPropertyGroupExpanded(k.BaseLayerProperty.Parent))
                     .ToList();
 
                 // Find the closest keyframe

@@ -70,7 +70,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
             // Remove VMs of effects no longer applied on the layer
             var toRemove = Children.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
-            Children.RemoveRange(toRemove);
+            // Using RemoveRange breaks our lovely animations
+            foreach (var displayConditionViewModel in toRemove)
+                Children.Remove(displayConditionViewModel);
 
             foreach (var childModel in Model.Children)
             {

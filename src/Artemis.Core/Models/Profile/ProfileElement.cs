@@ -146,6 +146,8 @@ namespace Artemis.Core.Models.Profile
 
                 child.Parent = this;
             }
+
+            OnChildAdded();
         }
 
         /// <summary>
@@ -164,6 +166,8 @@ namespace Artemis.Core.Models.Profile
 
                 child.Parent = null;
             }
+
+            OnChildRemoved();
         }
 
         public override string ToString()
@@ -175,5 +179,22 @@ namespace Artemis.Core.Models.Profile
         ///     Applies the profile element's properties to the underlying storage entity
         /// </summary>
         internal abstract void ApplyToEntity();
+
+        #region Events
+
+        public event EventHandler ChildAdded;
+        public event EventHandler ChildRemoved;
+
+        protected virtual void OnChildAdded()
+        {
+            ChildAdded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnChildRemoved()
+        {
+            ChildRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

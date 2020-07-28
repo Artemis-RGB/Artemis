@@ -19,7 +19,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>
+    public class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>, IDisposable
     {
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
@@ -37,10 +37,10 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarModules = new Dictionary<INavigationItem, Core.Plugins.Abstract.Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
 
-            SetupSidebar();
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
 
+            SetupSidebar();
             eventAggregator.Subscribe(this);
         }
 
@@ -64,7 +64,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void SetupSidebar()
         {
-            SidebarItems.Clear();
+           SidebarItems.Clear();
             SidebarModules.Clear();
 
             // Add all default sidebar items
@@ -194,5 +194,11 @@ namespace Artemis.UI.Screens.Sidebar
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
+            _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
+        }
     }
 }

@@ -74,9 +74,13 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
             CreateBitmap(width, height);
 
-            var clipPath = new SKPath(Layer.Path);
-            Layer.ExcludePathFromTranslation(clipPath);
-            clipPath = new SKPath(clipPath);
+            // Copy the layer path to use for the clip path
+            using var layerPath = new SKPath(Layer.Path);
+            // Undo any transformations
+            Layer.ExcludePathFromTranslation(layerPath);
+            // Apply the transformations so new ones may be applied, not sure if there is a better way to do this
+            using var clipPath = new SKPath(layerPath);
+            // Zero out the position of the clip path
             clipPath.Transform(SKMatrix.MakeTranslation(Layer.Path.Bounds.Left * -1, Layer.Path.Bounds.Top * -1));
 
             // Fill a canvas matching the final area that will be rendered

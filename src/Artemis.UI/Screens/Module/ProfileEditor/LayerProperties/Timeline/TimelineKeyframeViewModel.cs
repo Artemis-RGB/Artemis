@@ -31,6 +31,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 LayerPropertyKeyframe.EasingFunction,
                 LayerPropertyKeyframe.LayerProperty
             );
+            // If possible, shift the keyframe to the right by 11 pixels
+            var desiredPosition = newKeyframe.Position + TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
+            if (desiredPosition <= newKeyframe.LayerProperty.ProfileElement.TimelineLength)
+                newKeyframe.Position = desiredPosition;
+            // Otherwise if possible shift it to the left by 11 pixels
+            else
+            {
+                desiredPosition = newKeyframe.Position - TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
+                if (desiredPosition > TimeSpan.Zero)
+                    newKeyframe.Position = desiredPosition;
+            }
+            
             LayerPropertyKeyframe.LayerProperty.AddKeyframe(newKeyframe);
             _profileEditorService.UpdateSelectedProfileElement();
         }

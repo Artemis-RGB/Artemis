@@ -5,6 +5,7 @@ using System.Windows;
 using Artemis.Core.Models.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree.TreeItem;
+using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
@@ -109,6 +110,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
                 return;
             }
 
+            RootFolder?.Dispose();
             RootFolder = _folderVmFactory.Create(folder);
             _updatingTree = false;
 
@@ -168,9 +170,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
 
         #region Event handlers
 
-        private void OnProfileElementSelected(object sender, EventArgs e)
+        private void OnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
-            if (_profileEditorService.SelectedProfileElement == SelectedTreeItem?.ProfileElement)
+            if (e.RenderProfileElement == SelectedTreeItem?.ProfileElement)
                 return;
 
             if (RootFolder == null)
@@ -182,13 +184,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.ProfileTree
             _updatingTree = true;
             RootFolder.UpdateProfileElements();
             _updatingTree = false;
-            if (_profileEditorService.SelectedProfileElement == null)
+            if (e.RenderProfileElement == null)
                 SelectedTreeItem = null;
             else
             {
-                var vms = RootFolder.GetAllChildren();
-                vms.Add(RootFolder);
-                SelectedTreeItem = vms.FirstOrDefault(vm => vm.ProfileElement == _profileEditorService.SelectedProfileElement);
+                var match = RootFolder.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);
+                if (match != null)
+                    SelectedTreeItem = match;
             }
         }
 
