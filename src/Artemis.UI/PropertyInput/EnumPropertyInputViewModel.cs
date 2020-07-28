@@ -4,6 +4,7 @@ using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
+using Stylet;
 
 namespace Artemis.UI.PropertyInput
 {
@@ -11,9 +12,9 @@ namespace Artemis.UI.PropertyInput
     {
         public EnumPropertyInputViewModel(LayerProperty<T> layerProperty, IProfileEditorService profileEditorService) : base(layerProperty, profileEditorService)
         {
-            EnumValues = EnumUtilities.GetAllValuesAndDescriptions(typeof(T));
+            EnumValues = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(T)));
         }
 
-        public IEnumerable<ValueDescription> EnumValues { get; }
+        public BindableCollection<ValueDescription> EnumValues { get; }
     }
 }

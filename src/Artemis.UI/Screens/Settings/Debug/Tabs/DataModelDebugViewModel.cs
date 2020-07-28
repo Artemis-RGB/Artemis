@@ -3,7 +3,6 @@ using System.Linq;
 using System.Timers;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Services;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -16,17 +15,16 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private readonly IPluginService _pluginService;
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
-        private Core.Plugins.Abstract.Module _selectedModule;
         private DataModelPropertiesViewModel _mainDataModel;
-        private string _propertySearch;
         private List<Core.Plugins.Abstract.Module> _modules;
+        private string _propertySearch;
+        private Core.Plugins.Abstract.Module _selectedModule;
 
         public DataModelDebugViewModel(IDataModelVisualizationService dataModelVisualizationService, IPluginService pluginService)
         {
             _dataModelVisualizationService = dataModelVisualizationService;
             _pluginService = pluginService;
             _updateTimer = new Timer(500);
-            _updateTimer.Elapsed += (sender, args) => MainDataModel.Update(_dataModelVisualizationService);
 
             DisplayName = "Data model";
         }
@@ -77,6 +75,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             GetDataModel();
             _updateTimer.Start();
+            _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
             _pluginService.PluginEnabled += PluginServiceOnPluginToggled;
             _pluginService.PluginDisabled += PluginServiceOnPluginToggled;
 
@@ -86,8 +85,14 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         protected override void OnDeactivate()
         {
             _updateTimer.Stop();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
             _pluginService.PluginEnabled -= PluginServiceOnPluginToggled;
             _pluginService.PluginDisabled -= PluginServiceOnPluginToggled;
+        }
+
+        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
+        {
+            MainDataModel.Update(_dataModelVisualizationService);
         }
 
         private void GetDataModel()

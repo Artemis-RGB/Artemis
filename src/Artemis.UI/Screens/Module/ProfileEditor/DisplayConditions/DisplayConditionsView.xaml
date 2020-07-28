@@ -6,10 +6,14 @@
     xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:converters="clr-namespace:Artemis.UI.Converters"
     x:Class="Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.DisplayConditionsView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
     d:DataContext="{d:DesignInstance {x:Type local:DisplayConditionsViewModel}}">
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -29,10 +33,13 @@
         </Grid>
 
         <StackPanel Grid.Row="3" Margin="10" HorizontalAlignment="Right" Orientation="Horizontal">
-            <TextBlock VerticalAlignment="Center" Margin="0 0 10 0">When conditions no longer met</TextBlock>
-            <ListBox Style="{StaticResource MaterialDesignToolToggleListBox}" SelectedIndex="{Binding ConditionBehaviourIndex}" IsEnabled="{Binding ConditionBehaviourEnabled}" Height="22">
-                <ListBoxItem Padding="10 0">
-                    <ListBoxItem.ToolTip>
+            <TextBlock VerticalAlignment="Center" Margin="0 0 5 0">On end: </TextBlock>
+
+            <StackPanel Orientation="Horizontal">
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}"  
+                             IsChecked="{Binding RenderProfileElement.AlwaysFinishTimeline}" 
+                             Padding="5 0">
+                    <RadioButton.ToolTip>
                         <ToolTip Placement="Top" VerticalOffset="-5">
                             <StackPanel>
                                 <TextBlock>
@@ -40,16 +47,18 @@
                                 </TextBlock>
                             </StackPanel>
                         </ToolTip>
-                    </ListBoxItem.ToolTip>
+                    </RadioButton.ToolTip>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="PlayArrow" Width="20" Height="20" Margin="0 -4" />
-                        <TextBlock Margin="5 0 0 0" FontSize="11">
+                        <materialDesign:PackIcon Kind="PlayArrow" Width="20" Height="20" VerticalAlignment="Center" />
+                        <TextBlock Margin="5 0 0 0" FontSize="12" VerticalAlignment="Center">
                             WAIT FOR FINISH
                         </TextBlock>
                     </StackPanel>
-                </ListBoxItem>
-                <ListBoxItem Padding="10 0">
-                    <ListBoxItem.ToolTip>
+                </RadioButton>
+                <RadioButton Style="{StaticResource MaterialDesignTabRadioButton}" 
+                             IsChecked="{Binding RenderProfileElement.AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}" 
+                             Padding="0">
+                    <RadioButton.ToolTip>
                         <ToolTip Placement="Top" VerticalOffset="-5">
                             <StackPanel>
                                 <TextBlock>
@@ -57,15 +66,15 @@
                                 </TextBlock>
                             </StackPanel>
                         </ToolTip>
-                    </ListBoxItem.ToolTip>
+                    </RadioButton.ToolTip>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="SkipNext" Width="20" Height="20" Margin="0 -4" />
-                        <TextBlock Margin="5 0 0 0" FontSize="11">
+                        <materialDesign:PackIcon Kind="SkipNext" Width="20" Height="20" VerticalAlignment="Center" Margin="-5 0 0 0"/>
+                        <TextBlock Margin="5 0 0 0" FontSize="12" VerticalAlignment="Center">
                             SKIP
                         </TextBlock>
                     </StackPanel>
-                </ListBoxItem>
-            </ListBox>
+                </RadioButton>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </UserControl>

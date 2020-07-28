@@ -140,14 +140,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             if (Segment == SegmentViewModelType.Start)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position < startSegmentEnd))
+                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position <= startSegmentEnd))
                     baseLayerPropertyKeyframe.Remove();
                 SelectedProfileElement.StartSegmentLength = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.Main)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > startSegmentEnd && k.Position < mainSegmentEnd))
+                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > startSegmentEnd && k.Position <= mainSegmentEnd))
                     baseLayerPropertyKeyframe.Remove();
                 SelectedProfileElement.MainSegmentLength = TimeSpan.Zero;
             }
@@ -189,7 +189,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             else if (Segment == SegmentViewModelType.End)
                 segmentEnd = SelectedProfileElement.TimelineLength;
 
-            foreach (var baseLayerPropertyKeyframe in SelectedProfileElement.GetAllKeyframes().Where(k => k.Position >= segmentEnd))
+            foreach (var baseLayerPropertyKeyframe in SelectedProfileElement.GetAllKeyframes().Where(k => k.Position > segmentEnd))
                 baseLayerPropertyKeyframe.Position += amount;
         }
 

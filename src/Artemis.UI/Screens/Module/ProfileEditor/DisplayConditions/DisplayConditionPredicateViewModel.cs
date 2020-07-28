@@ -171,13 +171,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             LeftSideDataModel.UpdateRequested += LeftDataModelUpdateRequested;
             RightSideDataModel.UpdateRequested += RightDataModelUpdateRequested;
 
-            IsInitialized = true;
             Update();
+            IsInitialized = true;
         }
 
         public override void Update()
         {
-            if (!IsInitialized)
+            if (LeftSideDataModel == null || (DisplayConditionPredicate.PredicateType == PredicateType.Dynamic && RightSideDataModel == null))
                 return;
 
             // If static, only allow selecting properties also supported by input

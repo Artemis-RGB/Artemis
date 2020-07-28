@@ -51,6 +51,8 @@ namespace Artemis.UI.Screens.Splash
             _pluginService.CopyingBuildInPlugins -= OnPluginServiceOnCopyingBuildInPlugins;
             _pluginService.PluginLoading -= OnPluginServiceOnPluginLoading;
             _pluginService.PluginLoaded -= OnPluginServiceOnPluginLoaded;
+            _pluginService.PluginEnabling -= PluginServiceOnPluginEnabling;
+            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
             base.OnClose();
         }
 

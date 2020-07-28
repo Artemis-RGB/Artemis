@@ -7,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Artemis.Core.Models.Profile;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Shared.Utilities;
@@ -27,12 +28,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
             LayerPropertyGroups = layerPropertyGroups;
             SelectionRectangle = new RectangleGeometry();
+            SelectedProfileElement = layerPropertiesViewModel.SelectedProfileElement;
 
-            _profileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+            SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
             Update();
         }
+
+        public RenderProfileElement SelectedProfileElement { get; set; }
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
@@ -42,21 +46,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _selectionRectangle, value);
         }
 
-        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.StartSegmentLength.TotalSeconds ?? 0;
+        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds;
         public double StartSegmentEndPosition => StartSegmentWidth;
-        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.MainSegmentLength.TotalSeconds ?? 0;
+        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.MainSegmentLength.TotalSeconds;
         public double MainSegmentEndPosition => StartSegmentWidth + MainSegmentWidth;
-        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.EndSegmentLength.TotalSeconds ?? 0;
+        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.EndSegmentLength.TotalSeconds;
         public double EndSegmentEndPosition => StartSegmentWidth + MainSegmentWidth + EndSegmentWidth;
-        public double TotalTimelineWidth => _profileEditorService.PixelsPerSecond * _profileEditorService.SelectedProfileElement?.TimelineLength.TotalSeconds ?? 0;
+        public double TotalTimelineWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.TimelineLength.TotalSeconds;
 
-        public bool StartSegmentEnabled => _profileEditorService.SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
-        public bool EndSegmentEnabled => _profileEditorService.SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
+        public bool StartSegmentEnabled => SelectedProfileElement.StartSegmentLength != TimeSpan.Zero;
+        public bool EndSegmentEnabled => SelectedProfileElement.EndSegmentLength != TimeSpan.Zero;
 
         public void Dispose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            _profileEditorService.SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
 
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -115,8 +119,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
 
         public void KeyframeMouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Released)
-                return;
+            // if (e.LeftButton == MouseButtonState.Released)
+            //     return;
 
             var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
             if (viewModel == null)
@@ -219,6 +223,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
             var keyframeViewModels = GetAllKeyframeViewModels();
             foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.SaveOffsetToKeyframe(sourceKeyframeViewModel);
+
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                cursorTime = _profileEditorService.SnapToTimeline(
+                    cursorTime,
+                    TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 5),
+                    true,
+                    false,
+                    true,
+                    sourceKeyframeViewModel.BaseLayerPropertyKeyframe
+                );
+            }
 
             sourceKeyframeViewModel.UpdatePosition(cursorTime);
 

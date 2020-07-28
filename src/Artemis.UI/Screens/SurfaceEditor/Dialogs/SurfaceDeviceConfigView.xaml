@@ -12,13 +12,23 @@
     <StackPanel Margin="16">
         <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
         <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
-        <TextBox materialDesign:HintAssist.Hint="X-coordinate" Text="{Binding X}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
 
-        <TextBox materialDesign:HintAssist.Hint="Y-coordinate" Text="{Binding Y}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
+        <TextBox materialDesign:HintAssist.Hint="X-coordinate" 
+                 Text="{Binding X, UpdateSourceTrigger=PropertyChanged}" 
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 10" />
+        <TextBox materialDesign:HintAssist.Hint="Y-coordinate" 
+                 Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 10" />
+        <TextBox materialDesign:HintAssist.Hint="Scale" 
+                 Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
+                 Margin="0 10"  />
+        <TextBox materialDesign:HintAssist.Hint="Rotation" 
+                 Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}" 
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 10" />
 
-        <TextBox materialDesign:HintAssist.Hint="Scale" Text="{Binding Scale}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
-
-        <TextBox materialDesign:HintAssist.Hint="Rotation" Text="{Binding Rotation}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Margin="0 10" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
                     Command="{s:Action Cancel}">

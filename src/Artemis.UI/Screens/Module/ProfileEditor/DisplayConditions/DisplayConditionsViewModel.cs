@@ -1,9 +1,11 @@
-﻿using Artemis.Core.Models.Profile;
+﻿using System.Threading.Tasks;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.Services.Interfaces;
+using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
@@ -18,7 +20,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         {
             _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
-            profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+           
         }
 
         public DisplayConditionGroupViewModel RootGroup
@@ -42,8 +44,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                     return;
 
                 RenderProfileElement.AlwaysFinishTimeline = value == 0;
-                NotifyOfPropertyChange(nameof(ConditionBehaviourIndex));
-
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
@@ -69,6 +69,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null);
             RootGroup.IsRootGroup = true;
             RootGroup.Update();
+        }
+
+        protected override void OnActivate()
+        {
+            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+        }
+
+        protected override void OnDeactivate()
+        {
+            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
         }
     }
 }
