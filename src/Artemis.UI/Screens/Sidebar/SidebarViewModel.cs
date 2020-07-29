@@ -197,6 +197,9 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void Dispose()
         {
+            var closeTask = CloseCurrentItem();
+            closeTask.Wait();
+
             _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
         }

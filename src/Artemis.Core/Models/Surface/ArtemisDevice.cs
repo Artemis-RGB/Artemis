@@ -134,9 +134,13 @@ namespace Artemis.Core.Models.Surface
 
         internal void ApplyToRgbDevice()
         {
-            RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
             RgbDevice.Rotation = DeviceEntity.Rotation;
             RgbDevice.Scale = DeviceEntity.Scale;
+
+            // Workaround for device rotation not applying
+            if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
+                RgbDevice.Location = new Point(1, 1);
+            RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
 
             CalculateRenderProperties();
             OnDeviceUpdated();

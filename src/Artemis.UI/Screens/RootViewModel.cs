@@ -254,6 +254,7 @@ namespace Artemis.UI.Screens
         protected override void OnClose()
         {
             SidebarViewModel.Dispose();
+            
 
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.

@@ -12,7 +12,7 @@ namespace Artemis.Storage.Repositories
         internal PluginRepository(LiteRepository repository)
         {
             _repository = repository;
-
+            
             _repository.Database.GetCollection<PluginSettingEntity>().EnsureIndex(s => new {s.Name, s.PluginGuid}, true);
         }
 

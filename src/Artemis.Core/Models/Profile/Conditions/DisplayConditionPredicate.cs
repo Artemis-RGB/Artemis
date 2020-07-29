@@ -304,7 +304,11 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
                 return;
 
-            var rightSideConstant = Expression.Constant(RightStaticValue);
+            // If the right side value is null, the constant type cannot be inferred and must be provided manually
+            var rightSideConstant = RightStaticValue != null 
+                ? Expression.Constant(RightStaticValue) 
+                : Expression.Constant(null, leftSideAccessor.Type);
+
             var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
 
             StaticConditionLambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);

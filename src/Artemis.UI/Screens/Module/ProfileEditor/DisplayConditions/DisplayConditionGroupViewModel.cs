@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
+using Artemis.UI.Shared.Services.Interfaces;
 using Humanizer;
 using Stylet;
 
@@ -11,13 +12,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
     public class DisplayConditionGroupViewModel : DisplayConditionViewModel
     {
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private bool _isRootGroup;
         private bool _isInitialized;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(
-            displayConditionGroup, parent)
+        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, 
+            IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
         {
+            _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
             Execute.PostToUIThread(async () =>
             {
@@ -55,13 +58,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
             else if (type == "Dynamic")
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+            
             Update();
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void AddGroup()
         {
             DisplayConditionGroup.AddChild(new DisplayConditionGroup(DisplayConditionGroup));
+            
             Update();
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public override void Update()
