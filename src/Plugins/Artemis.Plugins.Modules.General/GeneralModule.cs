@@ -38,8 +38,10 @@ namespace Artemis.Plugins.Modules.General
         public void UpdateCurrentWindow()
         {
             var processId = WindowUtilities.GetActiveProcessId();
-            if (DataModel.ActiveWindow == null || DataModel.ActiveWindow.Process.Id != processId)
+            if (DataModel.ActiveWindow == null || DataModel.ActiveWindow.Process.Id != processId) 
                 DataModel.ActiveWindow = new WindowDataModel(Process.GetProcessById(processId));
+            if (DataModel.ActiveWindow != null && string.IsNullOrWhiteSpace(DataModel.ActiveWindow.WindowTitle))
+                DataModel.ActiveWindow.WindowTitle = Process.GetProcessById(WindowUtilities.GetActiveProcessId()).MainWindowTitle;
         }
 
         #endregion

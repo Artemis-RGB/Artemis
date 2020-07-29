@@ -34,6 +34,36 @@ namespace Artemis.Core.Models.Profile.Conditions
         /// </summary>
         public abstract string Icon { get; }
 
+        /// <summary>
+        ///     Gets or sets whether this condition operator supports a right side, defaults to true
+        /// </summary>
+        public bool SupportsRightSide { get; protected set; } = true;
+
+        public bool SupportsType(Type type)
+        {
+            if (type == null)
+                return true;
+            return CompatibleTypes.Any(t => t.IsCastableFrom(type));
+        }
+
+        /// <summary>
+        ///     Creates a binary expression comparing two types
+        /// </summary>
+        /// <param name="leftSide">The parameter on the left side of the expression</param>
+        /// <param name="rightSide">The parameter on the right side of the expression</param>
+        /// <returns></returns>
+        public abstract BinaryExpression CreateExpression(Expression leftSide, Expression rightSide);
+
+        /// <summary>
+        ///     Returns an expression that checks the given expression for null
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        protected Expression CreateNullCheckExpression(Expression expression)
+        {
+            return Expression.NotEqual(expression, Expression.Constant(null));
+        }
+
         internal void Register(PluginInfo pluginInfo, IDataModelService dataModelService)
         {
             if (_registered)
@@ -63,20 +93,5 @@ namespace Artemis.Core.Models.Profile.Conditions
             // Profile editor service will call Unsubscribe
             _dataModelService.RemoveConditionOperator(this);
         }
-
-        public bool SupportsType(Type type)
-        {
-            if (type == null)
-                return true;
-            return CompatibleTypes.Any(t => t.IsCastableFrom(type));
-        }
-
-        /// <summary>
-        ///     Creates a binary expression comparing two types
-        /// </summary>
-        /// <param name="leftSide">The parameter on the left side of the expression</param>
-        /// <param name="rightSide">The parameter on the right side of the expression</param>
-        /// <returns></returns>
-        public abstract BinaryExpression CreateExpression(Expression leftSide, Expression rightSide);
     }
 }

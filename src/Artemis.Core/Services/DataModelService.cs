@@ -151,7 +151,21 @@ namespace Artemis.Core.Services
             {
                 if (type == null)
                     return new List<DisplayConditionOperator>(_registeredConditionOperators);
-                return _registeredConditionOperators.Where(c => c.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
+
+                var candidates = _registeredConditionOperators.Where(c => c.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
+
+                // If there are multiple operators with the same description, use the closest match
+                foreach (var displayConditionOperators in candidates.GroupBy(c => c.Description).Where(g => g.Count() > 1).ToList())
+                {
+                    var bestCandidate = displayConditionOperators.OrderByDescending(c => c.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    foreach (var displayConditionOperator in displayConditionOperators)
+                    {
+                        if (displayConditionOperator != bestCandidate)
+                            candidates.Remove(displayConditionOperator);
+                    }
+                }
+
+                return candidates;
             }
         }
 
@@ -162,12 +176,24 @@ namespace Artemis.Core.Services
 
         private void RegisterBuiltInConditionOperators()
         {
+            // General usage for any type
             RegisterConditionOperator(Constants.CorePluginInfo, new EqualsConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new NotEqualConditionOperator());
+
+            // Numeric operators
             RegisterConditionOperator(Constants.CorePluginInfo, new LessThanConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new LessThanOrEqualConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanOrEqualConditionOperator());
+
+            // String operators
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringEqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringNotEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringContainsConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringNotContainsConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringStartsWithConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringEndsWithConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new StringNullConditionOperator());
         }
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
