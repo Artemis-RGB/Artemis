@@ -13,8 +13,6 @@ namespace Artemis.UI.Shared.Controls
     {
         public DeviceVisualizerLed(ArtemisLed led)
         {
-            if (led.Device.Scale != 1)
-                Console.WriteLine();
             Led = led;
             LedRect = new Rect(
                 Led.RgbLed.Location.X,
@@ -44,7 +42,7 @@ namespace Artemis.UI.Shared.Controls
             var r = Led.RgbLed.Color.GetR();
             var g = Led.RgbLed.Color.GetG();
             var b = Led.RgbLed.Color.GetB();
-            
+
             drawingContext.DrawRectangle(isDimmed
                 ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
                 : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
@@ -68,7 +66,14 @@ namespace Artemis.UI.Shared.Controls
             var penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             penBrush.Freeze();
 
-            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1), DisplayGeometry);
+            // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size
+            drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), null, LedRect);
+            // Translate to the top-left of the LedRect
+            drawingContext.PushTransform(new TranslateTransform(LedRect.X, LedRect.Y));
+            // Render the LED geometry
+            drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1) {LineJoin = PenLineJoin.Round}, DisplayGeometry.GetOutlinedPathGeometry());
+            // Restore the drawing context
+            drawingContext.Pop();
         }
 
         private void CreateLedGeometry()
@@ -83,7 +88,7 @@ namespace Artemis.UI.Shared.Controls
                     if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
                         CreateCustomGeometry(2.0);
                     else
-                        CreateCustomGeometry(1.0);
+                        CreateCustomGeometry(0);
                     break;
                 case Shape.Rectangle:
                     if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
@@ -97,11 +102,6 @@ namespace Artemis.UI.Shared.Controls
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-
-            // Stroke geometry is the display geometry excluding the inner geometry
-            DisplayGeometry.Transform = new TranslateTransform(Led.RgbLed.Location.X, Led.RgbLed.Location.Y);
-            // Try to gain some performance
-            DisplayGeometry.Freeze();
         }
 
         private void CreateRectangleGeometry()
@@ -123,6 +123,7 @@ namespace Artemis.UI.Shared.Controls
         {
             try
             {
+                // DisplayGeometry = Geometry.Parse(Led.RgbLed.ShapeData);
                 DisplayGeometry = Geometry.Combine(
                     Geometry.Empty,
                     Geometry.Parse(Led.RgbLed.ShapeData),

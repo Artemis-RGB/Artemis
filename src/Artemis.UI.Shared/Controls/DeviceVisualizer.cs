@@ -107,10 +107,11 @@ namespace Artemis.UI.Shared.Controls
         {
             if (Device == null)
                 return Size.Empty;
-
+            
             var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
+            // TODO: If availableSize exceeds what we need, scale up
             return rotationRect.Size;
         }
 
