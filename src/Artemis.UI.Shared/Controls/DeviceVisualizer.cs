@@ -65,13 +65,28 @@ namespace Artemis.UI.Shared.Controls
             _timer.Stop();
         }
 
+        public static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
+        {
+            double scale;
+            if (maxWidth == double.PositiveInfinity && maxHeight != double.PositiveInfinity)
+                scale = maxHeight / src.Height;
+            else if (maxWidth != double.PositiveInfinity && maxHeight == double.PositiveInfinity)
+                scale = maxWidth / src.Width;
+            else if (maxWidth == double.PositiveInfinity && maxHeight == double.PositiveInfinity)
+                return src;
+
+            scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
+
+            return new Size(src.Width * scale, src.Height * scale);
+        }
+
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (Device == null)
                 return;
 
             // Determine the scale required to fit the desired size of the control
-            var measureSize = MeasureOverride(Size.Empty);
+            var measureSize = MeasureDevice();
             var scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
             var scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
 
@@ -103,16 +118,24 @@ namespace Artemis.UI.Shared.Controls
             drawingContext.DrawDrawing(_backingStore);
         }
 
+        private Size MeasureDevice()
+        {
+            if (Device == null)
+                return Size.Empty;
+
+            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
+
+            return rotationRect.Size;
+        }
+
         protected override Size MeasureOverride(Size availableSize)
         {
             if (Device == null)
                 return Size.Empty;
-            
-            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
-            rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
-            // TODO: If availableSize exceeds what we need, scale up
-            return rotationRect.Size;
+            var deviceSize = MeasureDevice();
+            return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)

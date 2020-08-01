@@ -16,8 +16,7 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="Gray" Duration="0:0:0.5" />
-                                <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="0.5" Duration="0:0:0.5" />
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="#99808080" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
@@ -25,7 +24,6 @@
                         <BeginStoryboard>
                             <Storyboard>
                                 <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="{StaticResource Accent700}" Duration="0:0:0.5" />
-                                <DoubleAnimation Storyboard.TargetProperty="(Path.StrokeThickness)" To="1" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -38,14 +36,14 @@
                     <DataTrigger.EnterActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(Path.Opacity)" To="0" Duration="0:0:0.5" />
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="#A7A7A7" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.EnterActions>
                     <DataTrigger.ExitActions>
                         <BeginStoryboard>
                             <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="(Path.Opacity)" To="1" Duration="0:0:0.5" />
+                                <ColorAnimation Storyboard.TargetProperty="(Path.Stroke).(SolidColorBrush.Color)" To="#00A7A7A7" Duration="0:0:0.5" />
                             </Storyboard>
                         </BeginStoryboard>
                     </DataTrigger.ExitActions>
@@ -54,21 +52,10 @@
         </Style>
     </UserControl.Resources>
     <Canvas>
-        <!-- The part of the layer's shape that falls outside the layer -->
-        <Path Data="{Binding ShapeGeometry, Mode=OneWay}"
-              StrokeThickness="0.5"
-              Style="{StaticResource SelectedShapeStyle}">
+        <Path Data="{Binding ShapeGeometry, Mode=OneWay}" StrokeThickness="{Binding StrokeThickness}" Style="{StaticResource SelectedShapeStyle}">
             <Path.Stroke>
                 <SolidColorBrush Color="{StaticResource Primary700}" />
             </Path.Stroke>
         </Path>
-
-        <Path Data="{Binding LayerGeometry, Mode=OneWay}"
-              ClipToBounds="False"
-              Stroke="#A7A7A7"
-              StrokeThickness="1"
-              StrokeLineJoin="Round"
-              x:Name="LayerPath"
-              Style="{StaticResource SelectedLayerStyle}" />
     </Canvas>
 </UserControl>

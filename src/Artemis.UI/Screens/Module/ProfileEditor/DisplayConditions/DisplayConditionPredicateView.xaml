@@ -104,43 +104,45 @@
             </Button.ContextMenu>
         </Button>
 
-        <!-- Right side property if type is dynamic -->
-        <Button Grid.Row="0"
-                Grid.Column="3"
-                Background="{DynamicResource PrimaryHueMidBrush}"
-                BorderBrush="{DynamicResource PrimaryHueMidBrush}"
-                Style="{StaticResource DisplayConditionButton}"
-                ToolTip="{Binding SelectedRightSideProperty.DisplayPropertyPath}"
-                Click="PropertyButton_OnClick"
-                Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-            <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding RightSideDataModel.Children}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                            <Setter Property="ItemsSource" Value="{Binding Children}" />
-                            <Setter Property="Header" Value="{Binding PropertyDescription.Name}" />
-                            <Setter Property="ToolTip" Value="{Binding PropertyDescription.Description}" />
-                            <Setter Property="Command" Value="{Binding Data.SelectRightPropertyCommand, Source={StaticResource DataContextProxy}}" />
-                            <Setter Property="CommandParameter" Value="{Binding}" />
-                            <Setter Property="CommandTarget" Value="{Binding}" />
-                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
-                </ContextMenu>
-            </Button.ContextMenu>
-            <Grid>
-                <TextBlock Text="{Binding SelectedRightSideProperty.PropertyDescription.Name}"
-                           Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
-                <TextBlock Text="« Select a property »"
-                           FontStyle="Italic"
-                           Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
-            </Grid>
-        </Button>
-
         <Grid Grid.Row="0"
               Grid.Column="3"
-              Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}" DefaultTransitionOrigin="0.5, 0.5" Margin="3 -4">
+              Visibility="{Binding SelectedOperator.SupportsRightSide, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <!-- Right side property if type is dynamic -->
+            <Button Background="{DynamicResource PrimaryHueMidBrush}"
+                    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                    Style="{StaticResource DisplayConditionButton}"
+                    ToolTip="{Binding SelectedRightSideProperty.DisplayPropertyPath}"
+                    Click="PropertyButton_OnClick"
+                    Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                <Button.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding RightSideDataModel.Children}">
+                        <ContextMenu.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                <Setter Property="ItemsSource" Value="{Binding Children}" />
+                                <Setter Property="Header" Value="{Binding PropertyDescription.Name}" />
+                                <Setter Property="ToolTip" Value="{Binding PropertyDescription.Description}" />
+                                <Setter Property="Command" Value="{Binding Data.SelectRightPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                                <Setter Property="CommandParameter" Value="{Binding}" />
+                                <Setter Property="CommandTarget" Value="{Binding}" />
+                                <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                            </Style>
+                        </ContextMenu.ItemContainerStyle>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <Grid>
+                    <TextBlock Text="{Binding SelectedRightSideProperty.PropertyDescription.Name}"
+                               Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
+                    <TextBlock Text="« Select a property »"
+                               FontStyle="Italic"
+                               Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                </Grid>
+            </Button>
+
+            <!-- Right side property if type is static -->
+            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}" 
+                                         DefaultTransitionOrigin="0.5, 0.5" 
+                                         Margin="3 -4"
+                                         Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
                 <Button Style="{StaticResource DisplayConditionButton}"
                         Background="{DynamicResource PrimaryHueMidBrush}"
                         BorderBrush="{DynamicResource PrimaryHueMidBrush}"
@@ -151,8 +153,8 @@
                         <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                             <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
-                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}"/>
-                            <TextBlock Text="{Binding RightStaticValue}"/>
+                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
+                            <TextBlock Text="{Binding RightStaticValue}" />
                             <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Affix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />

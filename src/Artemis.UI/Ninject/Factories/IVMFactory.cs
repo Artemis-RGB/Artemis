@@ -65,7 +65,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IProfileLayerVmFactory : IVmFactory
     {
-        ProfileLayerViewModel Create(Layer layer);
+        ProfileLayerViewModel Create(Layer layer, ProfileViewModel profileViewModel);
     }
 
     public interface IVisualizationToolVmFactory : IVmFactory

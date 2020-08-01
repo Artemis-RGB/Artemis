@@ -102,8 +102,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
-
-
+        
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
         {
             get => _layerPropertyGroups;
