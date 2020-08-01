@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Abstract;
@@ -125,7 +126,7 @@ namespace Artemis.UI.Shared.Services
         {
             if (SelectedProfile == null)
                 return;
-
+            
             // Stick to the main segment for any element that is not currently selected
             foreach (var folder in SelectedProfile.GetAllFolders())
                 folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);

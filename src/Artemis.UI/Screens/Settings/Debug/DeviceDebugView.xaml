@@ -49,7 +49,7 @@
 
         <Grid Margin="10, 10, 10, 10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -59,8 +59,7 @@
                 Please note that having this window open can have a performance impact on your system.
             </TextBlock>
 
-            <controls:DeviceVisualizer Grid.Row="1" Device="{Binding Device}" HighlightedLeds="{Binding SelectedLeds}" HorizontalAlignment="Center"
-                                       Height="320" Width="800" ShowColors="True" />
+            <controls:DeviceVisualizer Grid.Row="1" Device="{Binding Device}" HighlightedLeds="{Binding SelectedLeds}" HorizontalAlignment="Center" MaxHeight="500" ShowColors="True" />
 
             <Expander Grid.Row="2" Width="800" VerticalAlignment="Center" Header="Device properties">
                 <StackPanel Orientation="Horizontal">

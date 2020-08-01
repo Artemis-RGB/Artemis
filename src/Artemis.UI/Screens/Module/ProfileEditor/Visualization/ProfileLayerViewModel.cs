@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -10,7 +11,6 @@ using Artemis.Core.Models.Surface;
 using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
-using RGB.NET.Core;
 using Stylet;
 using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
@@ -20,52 +20,35 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
     {
         private readonly ILayerEditorService _layerEditorService;
         private readonly IProfileEditorService _profileEditorService;
-        private Geometry _layerGeometry;
-        private Geometry _opacityGeometry;
-        private Geometry _shapeGeometry;
-        private RenderTargetBitmap _layerGeometryBitmap;
-        private Rect _viewportRectangle;
+        private readonly ProfileViewModel _profileViewModel;
         private bool _isSelected;
+        private Geometry _shapeGeometry;
+        private Rect _viewportRectangle;
 
-        public ProfileLayerViewModel(Layer layer, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+        public ProfileLayerViewModel(Layer layer, ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
         {
+            _profileViewModel = profileViewModel;
             _profileEditorService = profileEditorService;
             _layerEditorService = layerEditorService;
             Layer = layer;
+
 
             Update();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
             _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
             _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
+            _profileViewModel.PanZoomViewModel.PropertyChanged += PanZoomViewModelOnPropertyChanged;
         }
 
         public Layer Layer { get; }
-
-        public Geometry LayerGeometry
-        {
-            get => _layerGeometry;
-            set => SetAndNotify(ref _layerGeometry, value);
-        }
-
-        public Geometry OpacityGeometry
-        {
-            get => _opacityGeometry;
-            set => SetAndNotify(ref _opacityGeometry, value);
-        }
 
         public Geometry ShapeGeometry
         {
             get => _shapeGeometry;
             set => SetAndNotify(ref _shapeGeometry, value);
         }
-
-        public RenderTargetBitmap LayerGeometryBitmap
-        {
-            get => _layerGeometryBitmap;
-            set => SetAndNotify(ref _layerGeometryBitmap, value);
-        }
-
+        
         public Rect ViewportRectangle
         {
             get => _viewportRectangle;
@@ -76,12 +59,36 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             }
         }
 
+        public double StrokeThickness
+        {
+            get
+            {
+                if (IsSelected)
+                    return Math.Max(2 / _profileViewModel.PanZoomViewModel.Zoom, 1);
+                return Math.Max(2 / _profileViewModel.PanZoomViewModel.Zoom, 1) / 2;
+            }
+        }
+
+        public double LayerStrokeThickness
+        {
+            get
+            {
+                if (IsSelected)
+                    return StrokeThickness / 2;
+                return StrokeThickness;
+            }
+        }
+
         public Thickness LayerPosition => new Thickness(ViewportRectangle.Left, ViewportRectangle.Top, 0, 0);
 
         public bool IsSelected
         {
             get => _isSelected;
-            set => SetAndNotify(ref _isSelected, value);
+            set
+            {
+                if (!SetAndNotify(ref _isSelected, value)) return;
+                NotifyOfPropertyChange(nameof(StrokeThickness));
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -92,82 +99,27 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
                 _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
                 _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
                 _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
+                _profileViewModel.PanZoomViewModel.PropertyChanged -= PanZoomViewModelOnPropertyChanged;
             }
 
             base.Dispose(disposing);
         }
 
+        private void PanZoomViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(_profileViewModel.PanZoomViewModel.Zoom))
+            {
+                NotifyOfPropertyChange(nameof(StrokeThickness));
+                NotifyOfPropertyChange(nameof(LayerStrokeThickness));
+            }
+        }
+
         private void Update()
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
-
-            CreateLayerGeometry();
+            
             CreateShapeGeometry();
             CreateViewportRectangle();
-        }
-
-        private void CreateLayerGeometry()
-        {
-            Execute.OnUIThread(() =>
-            {
-                if (!Layer.Leds.Any())
-                {
-                    LayerGeometry = Geometry.Empty;
-                    OpacityGeometry = Geometry.Empty;
-                    ViewportRectangle = Rect.Empty;
-                    return;
-                }
-
-                var group = new GeometryGroup();
-                group.FillRule = FillRule.Nonzero;
-
-                foreach (var led in Layer.Leds)
-                {
-                    Geometry geometry;
-                    switch (led.RgbLed.Shape)
-                    {
-                        case Shape.Custom:
-                            if (led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
-                                geometry = CreateCustomGeometry(led, 2);
-                            else
-                                geometry = CreateCustomGeometry(led, 1);
-                            break;
-                        case Shape.Rectangle:
-                            geometry = CreateRectangleGeometry(led);
-                            break;
-                        case Shape.Circle:
-                            geometry = CreateCircleGeometry(led);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    group.Children.Add(geometry);
-                }
-
-
-                var layerGeometry = group.GetOutlinedPathGeometry();
-                var opacityGeometry = Geometry.Combine(Geometry.Empty, layerGeometry, GeometryCombineMode.Exclude, new TranslateTransform());
-
-                LayerGeometry = layerGeometry;
-                OpacityGeometry = opacityGeometry;
-
-                // Render the store as a bitmap 
-
-                var drawingImage = new DrawingImage(new GeometryDrawing(new SolidColorBrush(Colors.Black), null, LayerGeometry));
-                var image = new Image {Source = drawingImage};
-                var bitmap = new RenderTargetBitmap(
-                    (int) (LayerGeometry.Bounds.Width * 2.5),
-                    (int) (LayerGeometry.Bounds.Height * 2.5),
-                    96,
-                    96,
-                    PixelFormats.Pbgra32
-                );
-                image.Arrange(new Rect(0, 0, bitmap.Width, bitmap.Height));
-                bitmap.Render(image);
-                bitmap.Freeze();
-                LayerGeometryBitmap = bitmap;
-            });
         }
 
         private void CreateShapeGeometry()
@@ -213,21 +165,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private Geometry CreateRectangleGeometry(ArtemisLed led)
         {
             var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
-            rect.Inflate(1, 1);
             return new RectangleGeometry(rect);
         }
 
         private Geometry CreateCircleGeometry(ArtemisLed led)
         {
             var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
-            rect.Inflate(1, 1);
             return new EllipseGeometry(rect);
         }
 
         private Geometry CreateCustomGeometry(ArtemisLed led, double deflateAmount)
         {
             var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
-            rect.Inflate(1, 1);
             try
             {
                 var geometry = Geometry.Combine(

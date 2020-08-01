@@ -156,8 +156,10 @@ namespace Artemis.Core.Models.Profile
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
             for (var index = Children.Count - 1; index > -1; index--)
             {
+                folderCanvas.Save();
                 var profileElement = Children[index];
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
+                folderCanvas.Restore();
             }
 
             var targetLocation = Path.Bounds.Location;

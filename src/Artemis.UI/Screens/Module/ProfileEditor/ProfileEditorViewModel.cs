@@ -197,7 +197,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             LoadWorkspaceSettings();
             _profileEditorService.StopRegularRender();
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
-            Task.Run(LoadProfiles);
+            Execute.PostToUIThread(LoadProfiles);
             base.OnInitialActivate();
         }
 
@@ -262,23 +262,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             profiles.Add(activeProfile);
 
             // Populate the UI collection
-            Execute.PostToUIThread(() =>
+            Profiles.AddRange(profiles.Except(Profiles).ToList());
+            Profiles.RemoveRange(Profiles.Except(profiles).ToList());
+            var index = 0;
+            foreach (var profile in Profiles.OrderBy(p => p.Name).ToList())
             {
-                Profiles.AddRange(profiles.Except(Profiles).ToList());
-                Profiles.RemoveRange(Profiles.Except(profiles).ToList());
-                var index = 0;
-                foreach (var profile in Profiles.OrderBy(p => p.Name).ToList())
-                {
-                    Profiles.Move(Profiles.IndexOf(profile), index);
-                    index++;
-                }
+                Profiles.Move(Profiles.IndexOf(profile), index);
+                index++;
+            }
 
-                SelectedProfile = activeProfile;
-                if (_profileEditorService.SelectedProfile != activeProfile)
-                    _profileEditorService.ChangeSelectedProfile(activeProfile);
-                if (!activeProfile.IsActivated)
-                    _profileService.ActivateProfile(Module, activeProfile);
-            });
+            SelectedProfile = activeProfile;
+            if (_profileEditorService.SelectedProfile != activeProfile)
+                _profileEditorService.ChangeSelectedProfile(activeProfile);
+            if (!activeProfile.IsActivated)
+                _profileService.ActivateProfile(Module, activeProfile);
         }
     }
 }

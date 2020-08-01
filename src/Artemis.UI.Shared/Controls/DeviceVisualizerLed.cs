@@ -69,7 +69,7 @@ namespace Artemis.UI.Shared.Controls
             // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size
             drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), null, LedRect);
             // Translate to the top-left of the LedRect
-            drawingContext.PushTransform(new TranslateTransform(LedRect.X, LedRect.Y));
+            drawingContext.PushTransform(new TranslateTransform(LedRect.X , LedRect.Y));
             // Render the LED geometry
             drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1) {LineJoin = PenLineJoin.Round}, DisplayGeometry.GetOutlinedPathGeometry());
             // Restore the drawing context
@@ -88,7 +88,7 @@ namespace Artemis.UI.Shared.Controls
                     if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)
                         CreateCustomGeometry(2.0);
                     else
-                        CreateCustomGeometry(0);
+                        CreateCustomGeometry(1.0);
                     break;
                 case Shape.Rectangle:
                     if (Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keyboard || Led.RgbLed.Device.DeviceInfo.DeviceType == RGBDeviceType.Keypad)

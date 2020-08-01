@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Asus Maximus X Hero</Name>
+  <Description>Asus Maximus X Hero</Description>
+  <Type>None</Type>
+  <Lighting>Device</Lighting>
+  <Vendor>Asus</Vendor>
+  <Model>Maximus X Hero</Model>
+  <Width>555</Width>
+  <Height>690</Height>
+  <LedUnitWidth>150</LedUnitWidth>
+  <LedUnitHeight>150</LedUnitHeight>
+  <ImageBasePath>Images\Asus\Mainboards</ImageBasePath>
+  <DeviceImage>MAXIMUS-X-HERO.png</DeviceImage>
+  <Leds>
+    <Led Id="Logo">
+      <Shape> M0.241,0.804 L0.276,0.871 L0.285,0.861 L0.264,0.824 L0.273,0.812 L0.269,0.797 L0.273,0.788 L0.29,0.818 L0.295,0.802 L0.258,0.734 L0.264,0.796z M0.312,0.736 L0.272,0.668 L0.258,0.718 L0.298,0.798 L0.301,0.778 L0.283,0.747 L0.293,0.723 L0.307,0.748z M0.328,0.66 L0.303,0.648 L0.288,0.589 L0.287,0.613 L0.294,0.641 L0.278,0.636 L0.275,0.652 L0.3,0.668 L0.313,0.723 L0.318,0.709 L0.31,0.673 L0.317,0.672 L0.324,0.679z M0.296,0.564 L0.292,0.584 L0.33,0.651 L0.334,0.633z M0.318,0.494 L0.321,0.545 L0.3,0.553 L0.336,0.623 L0.339,0.607 L0.319,0.57 L0.331,0.563 L0.327,0.534 L0.347,0.569 L0.351,0.555z  M0.331,0.416 L0.367,0.481 L0.358,0.535 L0.351,0.542 L0.315,0.472 L0.318,0.462 L0.354,0.521 L0.362,0.493 L0.327,0.427z M0.347,0.349 L0.334,0.394 L0.334,0.405 L0.354,0.446 L0.366,0.401 L0.378,0.42 L0.367,0.466 L0.372,0.467 L0.383,0.423 L0.382,0.409 L0.364,0.376 L0.351,0.419 L0.34,0.397 L0.347,0.364z M0.398,0.354 L0.4,0.322 L0.395,0.307 L0.409,0.311 L0.415,0.296 L0.39,0.282 L0.381,0.249 L0.374,0.237 L0.378,0.275 L0.363,0.27 L0.361,0.289 L0.385,0.301 L0.387,0.303z   </Shape>
+      <X>16.6</X>
+      <Y>94</Y>
+      <Height>1</Height>
+    </Led>
+    <Led Id="Mainboard1">
+      <Shape> M0.56,0.404 L0.269,0.854 L0.283,0.857 L0.573,0.407z</Shape>
+      <X>7.5</X>
+      <Y>44</Y>
+      <Height>2</Height>
+    </Led>
+    <Led Id="Mainboard2">
+      <Shape> M0.166,0.341 L0.144,0.459 L0.145,0.657 L0.712,0.657 L0.809,0.502 L0.81,0.391 L0.775,0.337 L0.167,0.334z</Shape>
+      <X>133.8</X>
+      <Y>273.6</Y>
+      <Width>2</Width>
+    </Led>
+    <Led Id="Mainboard3">
+      <Shape> M0.305,0.581 L0.321,0.621 L0.342,0.632 L0.369,0.642 L0.372,0.635 L0.324,0.594z M0.358,0.595 L0.398,0.658 L0.418,0.675 L0.435,0.683 L0.436,0.679 L0.409,0.645 L0.423,0.629 L0.438,0.614 L0.461,0.597 L0.502,0.567 L0.552,0.534 L0.573,0.521 L0.61,0.504 L0.647,0.491 L0.648,0.486 L0.615,0.487 L0.608,0.49 L0.577,0.492 L0.564,0.498 L0.552,0.498 L0.544,0.503 L0.535,0.505 L0.52,0.514 L0.493,0.535 L0.415,0.61 L0.409,0.612 L0.361,0.592z M0.517,0.624 L0.65,0.559 L0.656,0.562 L0.639,0.6 L0.619,0.634 L0.607,0.651 L0.584,0.674 L0.564,0.684 L0.525,0.682 L0.488,0.671 L0.448,0.658 L0.429,0.647 L0.433,0.64 L0.53,0.576 L0.585,0.547 L0.617,0.534 L0.658,0.523 L0.67,0.522 L0.67,0.53 L0.667,0.535 L0.603,0.565 L0.526,0.601 L0.458,0.643 L0.49,0.654 L0.53,0.662 L0.543,0.662 L0.571,0.652 L0.604,0.597z</Shape>
+      <X>334.3</X>
+      <Y>423.4</Y>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages />
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Logo" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Logo" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mainboard2" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mainboard3" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout>
+      <LedImages>
+        <LedImage Id="Mainboard1" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>

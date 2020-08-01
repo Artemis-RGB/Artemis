@@ -425,12 +425,14 @@ namespace Artemis.Core.Models.Profile
             OnRenderPropertiesUpdated();
         }
 
-        internal SKPoint GetLayerAnchorPosition(SKPath layerPath)
+        internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool zeroBased = false)
         {
             var positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
-            var position = new SKPoint(layerPath.Bounds.MidX, layerPath.Bounds.MidY);
+            var position = zeroBased
+                ? new SKPoint(layerPath.Bounds.MidX - layerPath.Bounds.Left, layerPath.Bounds.MidY - layerPath.Bounds.Top)
+                : new SKPoint(layerPath.Bounds.MidX, layerPath.Bounds.MidY);
 
             // Apply translation
             position.X += positionProperty.X * layerPath.Bounds.Width;
@@ -444,17 +446,46 @@ namespace Artemis.Core.Models.Profile
         ///     layer translations out
         /// </summary>
         /// <param name="path"></param>
-        public void ExcludePathFromTranslation(SKPath path)
+        public void IncludePathInTranslation(SKPath path, bool zeroBased)
         {
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(Path);
+            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
             var anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - Bounds.MidX - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - Bounds.MidY - anchorProperty.Y * Bounds.Height;
+            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+
+            if (General.FillType == LayerFillType.Stretch)
+            {
+                path.Transform(SKMatrix.MakeTranslation(x, y));
+                path.Transform(SKMatrix.MakeScale((sizeProperty.Width / 100f), (sizeProperty.Height / 100f), anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
+            }
+            else
+            {
+                path.Transform(SKMatrix.MakeTranslation(x, y));
+                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+            }
+        }
+
+        /// <summary>
+        ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
+        ///     layer translations out
+        /// </summary>
+        public void ExcludePathFromTranslation(SKPath path, bool zeroBased)
+        {
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
             var reversedXScale = 1f / (sizeProperty.Width / 100f);
             var reversedYScale = 1f / (sizeProperty.Height / 100f);
@@ -470,6 +501,40 @@ namespace Artemis.Core.Models.Profile
                 path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
                 path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
             }
+        }
+
+        /// <summary>
+        ///     Excludes the provided canvas from the translations applied to the layer by applying translations that cancel the
+        ///     layer translations out
+        /// </summary>
+        /// <returns>The number of transformations applied</returns>
+        public int ExcludeCanvasFromTranslation(SKCanvas canvas, bool zeroBased)
+        {
+            var sizeProperty = Transform.Scale.CurrentValue;
+            var rotationProperty = Transform.Rotation.CurrentValue;
+
+            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+
+            var reversedXScale = 1f / (sizeProperty.Width / 100f);
+            var reversedYScale = 1f / (sizeProperty.Height / 100f);
+
+            if (General.FillType == LayerFillType.Stretch)
+            {
+                canvas.Translate(x * -1, y * -1);
+                canvas.Scale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y);
+                canvas.RotateDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y);
+
+                return 3;
+            }
+
+            canvas.RotateDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y);
+            canvas.Translate(x * -1, y * -1);
+            return 2;
         }
 
         #endregion

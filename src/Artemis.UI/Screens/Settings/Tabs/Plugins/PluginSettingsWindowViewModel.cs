@@ -12,6 +12,14 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             Icon = icon;
             ActiveItem = configurationViewModel;
+
+            ActiveItem.Closed += ActiveItemOnClosed;
+        }
+
+        private void ActiveItemOnClosed(object? sender, CloseEventArgs e)
+        {
+            ActiveItem.Closed -= ActiveItemOnClosed;
+            RequestClose();
         }
     }
 }

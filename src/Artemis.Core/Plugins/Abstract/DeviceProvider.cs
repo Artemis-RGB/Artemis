@@ -30,7 +30,7 @@ namespace Artemis.Core.Plugins.Abstract
 
         protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)
         {
-            if (sender.GetType().IsGenericType(type))
+            if (sender.GetType() == type || sender.GetType().IsGenericType(type))
             {
                 // Start from the plugin directory
                 if (e.RelativePart != null && e.FileName != null)

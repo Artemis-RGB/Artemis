@@ -124,7 +124,8 @@ namespace Artemis.Core.Models.Profile.Conditions
             StaticConditionLambda = null;
             CompiledStaticConditionLambda = null;
 
-            if (PredicateType == PredicateType.Dynamic)
+            // If the operator does not support a right side, create a static expression because the right side will simply be null
+            if (PredicateType == PredicateType.Dynamic && Operator.SupportsRightSide)
                 CreateDynamicExpression();
 
             CreateStaticExpression();

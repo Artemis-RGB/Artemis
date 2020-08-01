@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Artemis.Core.Extensions;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.LayerBrushes.Noise.Utilities;
@@ -8,7 +9,7 @@ using SkiaSharp;
 
 namespace Artemis.Plugins.LayerBrushes.Noise
 {
-    public class NoiseBrush : LayerBrush<NoiseBrushProperties>
+    public class NoiseBrush : PerLedLayerBrush<NoiseBrushProperties>
     {
         private static readonly Random Rand = new Random();
         private readonly IRgbService _rgbService;
@@ -60,75 +61,69 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             DetermineRenderScale();
         }
 
-        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
-        {
-            var mainColor = Properties.MainColor.CurrentValue;
-            var secondColor = Properties.SecondaryColor.CurrentValue;
-            var gradientColor = Properties.GradientColor.CurrentValue;
-            var scale = Properties.Scale.CurrentValue;
-            var hardness = Properties.Hardness.CurrentValue / 100f;
-
-            // Scale down the render path to avoid computing a value for every pixel
-            var width = (int) Math.Floor(path.Bounds.Width * _renderScale);
-            var height = (int) Math.Floor(path.Bounds.Height * _renderScale);
-
-            CreateBitmap(width, height);
-
-            // Copy the layer path to use for the clip path
-            using var layerPath = new SKPath(Layer.Path);
-            // Undo any transformations
-            Layer.ExcludePathFromTranslation(layerPath);
-            // Apply the transformations so new ones may be applied, not sure if there is a better way to do this
-            using var clipPath = new SKPath(layerPath);
-            // Zero out the position of the clip path
-            clipPath.Transform(SKMatrix.MakeTranslation(Layer.Path.Bounds.Left * -1, Layer.Path.Bounds.Top * -1));
-
-            // Fill a canvas matching the final area that will be rendered
-            using var bitmapCanvas = new SKCanvas(_bitmap);
-            using var clipPaint = new SKPaint {Color = new SKColor(0, 0, 0, 255)};
-            bitmapCanvas.Clear();
-            bitmapCanvas.Scale(_renderScale);
-            bitmapCanvas.DrawPath(clipPath, clipPaint);
-
-            for (var y = 0; y < height; y++)
-            {
-                for (var x = 0; x < width; x++)
-                {
-                    var scrolledX = x + _x;
-                    var scrolledY = y + _y;
-                    var evalX = 0.1 * scale.Width * scrolledX / width;
-                    var evalY = 0.1 * scale.Height * scrolledY / height;
-                    if (double.IsInfinity(evalX) || double.IsNaN(evalX) || double.IsNaN(evalY) || double.IsInfinity(evalY))
-                        continue;
-
-                    var pixel = _bitmap.GetPixel(x, y);
-                    if (pixel.Alpha != 255)
-                        continue;
-
-                    var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
-                    var amount = Math.Max(0f, Math.Min(1f, v));
-                    if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
-                        _bitmap.SetPixel(x, y, mainColor.Interpolate(secondColor, amount));
-                    else if (gradientColor != null && _colorMap.Length == 101)
-                    {
-                        var color = _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
-                        _bitmap.SetPixel(x, y, color);
-                    }
-                }
-            }
-
-            var bitmapTransform = SKMatrix.Concat(
-                SKMatrix.MakeTranslation(path.Bounds.Left, path.Bounds.Top),
-                SKMatrix.MakeScale(1f / _renderScale, 1f / _renderScale)
-            );
-
-            if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
-                paint.Color = Properties.SecondaryColor.CurrentValue;
-
-            using var foregroundShader = SKShader.CreateBitmap(_bitmap, SKShaderTileMode.Clamp, SKShaderTileMode.Clamp, bitmapTransform);
-            paint.Shader = foregroundShader;
-            canvas.DrawPath(path, paint);
-        }
+        // public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        // {
+        //     var mainColor = Properties.MainColor.CurrentValue;
+        //     var secondColor = Properties.SecondaryColor.CurrentValue;
+        //     var gradientColor = Properties.GradientColor.CurrentValue;
+        //     var scale = Properties.Scale.CurrentValue;
+        //     var hardness = Properties.Hardness.CurrentValue / 100f;
+        //
+        //     // Scale down the render path to avoid computing a value for every pixel
+        //     var width = (int) Math.Floor(path.Bounds.Width * _renderScale);
+        //     var height = (int) Math.Floor(path.Bounds.Height * _renderScale);
+        //
+        //     // This lil' snippet renders per LED, it's neater but doesn't support translations
+        //     Layer.ExcludeCanvasFromTranslation(canvas);
+        //
+        //     var shapePath = new SKPath(Layer.LayerShape.Path);
+        //     Layer.IncludePathInTranslation(shapePath);
+        //     canvas.ClipPath(shapePath);
+        //
+        //     using var ledPaint = new SKPaint();
+        //     foreach (var artemisLed in Layer.Leds)
+        //     {
+        //         var ledRectangle = SKRect.Create(
+        //             artemisLed.AbsoluteRenderRectangle.Left - Layer.Bounds.Left,
+        //             artemisLed.AbsoluteRenderRectangle.Top - Layer.Bounds.Top,
+        //             artemisLed.AbsoluteRenderRectangle.Width,
+        //             artemisLed.AbsoluteRenderRectangle.Height
+        //         );
+        //
+        //         var scrolledX = ledRectangle.MidX + _x;
+        //         if (float.IsNaN(scrolledX))
+        //             scrolledX = 0;
+        //         var scrolledY = ledRectangle.MidY + _y;
+        //         if (float.IsNaN(scrolledY))
+        //             scrolledY = 0;
+        //
+        //
+        //         var evalPath = new SKPath();
+        //         evalPath.AddPoly(new[] {new SKPoint(0, 0), new SKPoint(scrolledX, scrolledY)});
+        //         Layer.ExcludePathFromTranslation(evalPath);
+        //
+        //         if (evalPath.Bounds.IsEmpty)
+        //             continue;
+        //
+        //         scrolledX = evalPath.Points[1].X;
+        //         scrolledY = evalPath.Points[1].Y;
+        //
+        //         var evalX = 0.1 * scale.Width * scrolledX / width;
+        //         var evalY = 0.1 * scale.Height * scrolledY / height;
+        //
+        //         var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
+        //         var amount = Math.Max(0f, Math.Min(1f, v));
+        //
+        //         if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
+        //             ledPaint.Color = mainColor.Interpolate(secondColor, amount);
+        //         else if (gradientColor != null && _colorMap.Length == 101)
+        //             ledPaint.Color = _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
+        //         else
+        //             ledPaint.Color = SKColor.Empty;
+        //
+        //         canvas.DrawRect(ledRectangle, ledPaint);
+        //     }
+        // }
 
         private void GradientColorChanged(object sender, PropertyChangedEventArgs e)
         {
@@ -138,7 +133,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         private void DetermineRenderScale()
         {
-            _renderScale = (float) (0.125f / _rgbService.RenderScale);
+            _renderScale = (float) (0.25f / _rgbService.RenderScale);
         }
 
         private void CreateBitmap(int width, int height)
@@ -159,6 +154,36 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 colorMap[i] = Properties.GradientColor.BaseValue.GetColor(i / 100f);
 
             _colorMap = colorMap;
+        }
+
+        public override SKColor GetColor(ArtemisLed led, SKPoint renderPoint)
+        {
+            var mainColor = Properties.MainColor.CurrentValue;
+            var secondColor = Properties.SecondaryColor.CurrentValue;
+            var gradientColor = Properties.GradientColor.CurrentValue;
+            var scale = Properties.Scale.CurrentValue;
+            var hardness = Properties.Hardness.CurrentValue / 100f;
+
+            var scrolledX = renderPoint.X + _x;
+            if (float.IsNaN(scrolledX))
+                scrolledX = 0;
+            var scrolledY = renderPoint.Y + _y;
+            if (float.IsNaN(scrolledY))
+                scrolledY = 0;
+
+
+            var evalX = scrolledX * (scale.Width *-1) / 1000f;
+            var evalY = scrolledY * (scale.Height*-1) / 1000f;
+
+            var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
+            var amount = Math.Max(0f, Math.Min(1f, v));
+
+            if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
+                return mainColor.Interpolate(secondColor, amount);
+            else if (gradientColor != null && _colorMap.Length == 101)
+                return _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
+            else
+                return SKColor.Empty;
         }
     }
 
