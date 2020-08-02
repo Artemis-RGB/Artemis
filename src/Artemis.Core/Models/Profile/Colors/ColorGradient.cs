@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows.Documents;
 using Artemis.Core.Annotations;
 using SkiaSharp;
 using Stylet;
@@ -30,14 +32,37 @@ namespace Artemis.Core.Models.Profile.Colors
             }
         }
 
-        public SKColor[] GetColorsArray()
+        public SKColor[] GetColorsArray(int timesToRepeat = 0)
         {
-            return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
+            if (timesToRepeat == 0)
+                return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
+
+            var colors = Stops.OrderBy(c => c.Position).Select(c => c.Color).ToList();
+            var result = new List<SKColor>();
+
+            for (var i = 0; i <= timesToRepeat; i++)
+                result.AddRange(colors);
+
+            return result.ToArray();
         }
 
-        public float[] GetPositionsArray()
+        public float[] GetPositionsArray(int timesToRepeat = 0)
         {
-            return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
+            if (timesToRepeat == 0)
+                return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
+
+            // Create stops and a list of divided stops
+            var stops = Stops.OrderBy(c => c.Position).Select(c => c.Position / (timesToRepeat + 1)).ToList();
+            var result = new List<float>();
+
+            // For each repeat cycle, add the base stops to the end result
+            for (var i = 0; i <= timesToRepeat; i++)
+            {
+                var localStops = stops.Select(s => s + result.LastOrDefault()).ToList();
+                result.AddRange(localStops);
+            }
+
+            return result.ToArray();
         }
 
         public void OnColorValuesUpdated()

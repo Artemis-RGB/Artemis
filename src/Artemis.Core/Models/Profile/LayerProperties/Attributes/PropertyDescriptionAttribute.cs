@@ -38,5 +38,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Attributes
         ///     Maximum input value, only enforced in the UI
         /// </summary>
         public object MaxInputValue { get; set; }
+
+        /// <summary>
+        ///     Whether or not keyframes are supported, true by default and cannot be changed at runtime
+        /// </summary>
+        public bool KeyframesSupported { get; set; } = true;
     }
 }

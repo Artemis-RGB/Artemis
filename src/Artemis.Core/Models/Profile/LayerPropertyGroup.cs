@@ -156,6 +156,7 @@ namespace Artemis.Core.Models.Profile
                     instance.ProfileElement = profileElement;
                     instance.Parent = this;
                     instance.PropertyDescription = (PropertyDescriptionAttribute) propertyDescription;
+                    instance.KeyframesSupported = instance.PropertyDescription.KeyframesSupported;
                     InitializeProperty(profileElement, path + propertyInfo.Name, instance);
 
                     propertyInfo.SetValue(this, instance);

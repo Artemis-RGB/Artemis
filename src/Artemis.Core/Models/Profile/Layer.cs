@@ -334,6 +334,7 @@ namespace Artemis.Core.Models.Profile
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
+            
             canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
         }
 

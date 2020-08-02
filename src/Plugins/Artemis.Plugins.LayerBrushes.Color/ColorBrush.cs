@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
 using SkiaSharp;
 
@@ -17,6 +18,8 @@ namespace Artemis.Plugins.LayerBrushes.Color
             Layer.RenderPropertiesUpdated += HandleShaderChange;
             Properties.GradientType.BaseValueChanged += HandleShaderChange;
             Properties.Color.BaseValueChanged += HandleShaderChange;
+            Properties.GradientTileMode.BaseValueChanged += HandleShaderChange;
+            Properties.GradientRepeat.BaseValueChanged += HandleShaderChange;
             Properties.Gradient.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
         }
 
@@ -25,6 +28,8 @@ namespace Artemis.Plugins.LayerBrushes.Color
             Layer.RenderPropertiesUpdated -= HandleShaderChange;
             Properties.GradientType.BaseValueChanged -= HandleShaderChange;
             Properties.Color.BaseValueChanged -= HandleShaderChange;
+            Properties.GradientTileMode.BaseValueChanged -= HandleShaderChange;
+            Properties.GradientRepeat.BaseValueChanged -= HandleShaderChange;
             Properties.Gradient.BaseValue.PropertyChanged -= BaseValueOnPropertyChanged;
 
             _paint?.Dispose();
@@ -46,10 +51,22 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            if (path.Bounds != _shaderBounds)
+            if (Layer.General.FillType.CurrentValue == LayerFillType.Clip)
             {
-                _shaderBounds = path.Bounds;
-                CreateShader();
+                var layerBounds = new SKRect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height);
+                if (layerBounds != _shaderBounds)
+                {
+                    _shaderBounds = layerBounds;
+                    CreateShader();
+                }
+            }
+            else
+            {
+                if (path.Bounds != _shaderBounds)
+                {
+                    _shaderBounds = path.Bounds;
+                    CreateShader();
+                }
             }
 
             paint.Shader = _shader;
@@ -69,26 +86,27 @@ namespace Artemis.Plugins.LayerBrushes.Color
         private void CreateShader()
         {
             var center = new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY);
+            var repeat = Properties.GradientRepeat.CurrentValue;
             var shader = Properties.GradientType.CurrentValue switch
             {
                 GradientType.Solid => SKShader.CreateColor(_color),
                 GradientType.LinearGradient => SKShader.CreateLinearGradient(
                     new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
                     new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
-                    Properties.Gradient.BaseValue.GetColorsArray(),
-                    Properties.Gradient.BaseValue.GetPositionsArray(),
-                    SKShaderTileMode.Clamp),
+                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                    Properties.GradientTileMode.CurrentValue),
                 GradientType.RadialGradient => SKShader.CreateRadialGradient(
                     center,
                     Math.Max(_shaderBounds.Width, _shaderBounds.Height) / 2f,
-                    Properties.Gradient.BaseValue.GetColorsArray(),
-                    Properties.Gradient.BaseValue.GetPositionsArray(),
-                    SKShaderTileMode.Clamp),
+                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                    Properties.GradientTileMode.CurrentValue),
                 GradientType.SweepGradient => SKShader.CreateSweepGradient(
                     center,
-                    Properties.Gradient.BaseValue.GetColorsArray(),
-                    Properties.Gradient.BaseValue.GetPositionsArray(),
-                    SKShaderTileMode.Clamp,
+                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                    Properties.GradientTileMode.CurrentValue,
                     0,
                     360),
                 _ => throw new ArgumentOutOfRangeException()
