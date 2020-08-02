@@ -28,9 +28,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         public LayerPropertyGroup Parent { get; internal set; }
 
         /// <summary>
-        ///     Gets whether keyframes are supported on this property
+        ///     Gets whether keyframes are supported on this type of property
         /// </summary>
-        public bool KeyframesSupported { get; protected set; } = true;
+        public bool KeyframesSupported { get; protected internal set; } = true;
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is

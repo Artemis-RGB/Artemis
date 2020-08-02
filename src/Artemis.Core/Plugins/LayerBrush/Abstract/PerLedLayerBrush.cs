@@ -27,9 +27,10 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
 
         internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            // This lil' snippet renders per LED, it's neater but doesn't support translations
+            // We don't want translations on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
             Layer.ExcludeCanvasFromTranslation(canvas, true);
 
+            // Apply a translated version of the shape as the clipping mask
             var shapePath = new SKPath(Layer.LayerShape.Path);
             Layer.IncludePathInTranslation(shapePath, true);
             canvas.ClipPath(shapePath);
