@@ -16,6 +16,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private bool _isRootGroup;
         private bool _isInitialized;
+        private bool _isSelectedBooleanOperatorOpen;
 
         public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, 
             IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
@@ -41,6 +42,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         {
             get => _isInitialized;
             set => SetAndNotify(ref _isInitialized, value);
+        }
+
+        public bool IsSelectedBooleanOperatorOpen
+        {
+            get => _isSelectedBooleanOperatorOpen;
+            set => SetAndNotify(ref _isSelectedBooleanOperatorOpen, value);
         }
 
         public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();

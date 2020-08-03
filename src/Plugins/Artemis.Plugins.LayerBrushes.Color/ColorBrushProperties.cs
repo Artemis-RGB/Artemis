@@ -24,6 +24,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
         [PropertyDescription(DisableKeyframes = true, Description = "How many times to repeat the colors in the selected gradient", MinInputValue = 0, MaxInputValue = 10)]
         public IntLayerProperty GradientRepeat { get; set; }
 
+        [PropertyDescription(Name = "Rotation", Description = "Change the rotation of the linear gradient without affecting the rotation of the shape", InputAffix = "°")]
+        public FloatLayerProperty LinearGradientRotation { get; set; }
+
         protected override void PopulateDefaults()
         {
             GradientType.DefaultValue = LayerBrushes.Color.GradientType.Solid;

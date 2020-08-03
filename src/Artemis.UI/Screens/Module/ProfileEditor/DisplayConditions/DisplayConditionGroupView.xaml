@@ -38,7 +38,8 @@
                 Command="{s:Action Delete}">
             <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
         </Button>
-        <Button Grid.Row="0"
+        <Button x:Name="BooleanOperatorButton"
+            Grid.Row="0"
                 Grid.Column="1"
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#E74C4C"

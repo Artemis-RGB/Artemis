@@ -253,12 +253,28 @@ namespace Artemis.Core.Models.Profile
             }
 
             instance.ApplyToLayerProperty(entity, this, fromStorage);
+            instance.BaseValueChanged += InstanceOnBaseValueChanged;
+        }
+
+        private void InstanceOnBaseValueChanged(object sender, EventArgs e)
+        {
+            OnLayerPropertyBaseValueChanged(new LayerPropertyEventArgs((BaseLayerProperty) sender));
         }
 
         #region Events
 
         internal event EventHandler PropertyGroupUpdating;
+
+        /// <summary>
+        ///     Occurs when the property group has initialized all its children
+        /// </summary>
         public event EventHandler PropertyGroupInitialized;
+
+        /// <summary>
+        ///     Occurs when one of the base value of one of the layer properties in this group changes
+        ///     <para>Note: Will not trigger on properties in child groups</para>
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs> LayerPropertyBaseValueChanged;
 
         /// <summary>
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
@@ -273,6 +289,11 @@ namespace Artemis.Core.Models.Profile
         protected virtual void OnVisibilityChanged()
         {
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnLayerPropertyBaseValueChanged(LayerPropertyEventArgs e)
+        {
+            LayerPropertyBaseValueChanged?.Invoke(this, e);
         }
 
         #endregion

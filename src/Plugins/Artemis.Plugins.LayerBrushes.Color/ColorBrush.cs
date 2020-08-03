@@ -12,14 +12,12 @@ namespace Artemis.Plugins.LayerBrushes.Color
         private SKPaint _paint;
         private SKShader _shader;
         private SKRect _shaderBounds;
+        private float _linearGradientRotation;
 
         public override void EnableLayerBrush()
         {
             Layer.RenderPropertiesUpdated += HandleShaderChange;
-            Properties.GradientType.BaseValueChanged += HandleShaderChange;
-            Properties.Color.BaseValueChanged += HandleShaderChange;
-            Properties.GradientTileMode.BaseValueChanged += HandleShaderChange;
-            Properties.GradientRepeat.BaseValueChanged += HandleShaderChange;
+            Properties.LayerPropertyBaseValueChanged += HandleShaderChange;
             Properties.Gradient.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
         }
 
@@ -40,13 +38,12 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void Update(double deltaTime)
         {
-            // Only check if a solid is being drawn, because that can be changed by keyframes
+            // While rendering a solid, if the color was changed since the last frame, recreate the shader
             if (Properties.GradientType.BaseValue == GradientType.Solid && _color != Properties.Color.CurrentValue)
-            {
-                // If the color was changed since the last frame, recreate the shader
-                _color = Properties.Color.CurrentValue;
-                CreateShader();
-            }
+                CreateSolid();
+            // While rendering a linear gradient, if the rotation was changed since the last frame, recreate the shader
+            else if (Properties.GradientType.BaseValue == GradientType.LinearGradient && Math.Abs(_linearGradientRotation - Properties.LinearGradientRotation.CurrentValue) > 0.01) 
+                CreateLinearGradient();
         }
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
@@ -78,46 +75,95 @@ namespace Artemis.Plugins.LayerBrushes.Color
             CreateShader();
         }
 
-        private void HandleShaderChange(object? sender, EventArgs e)
+        private void HandleShaderChange(object sender, EventArgs e)
         {
             CreateShader();
         }
 
         private void CreateShader()
         {
-            var center = new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY);
-            var repeat = Properties.GradientRepeat.CurrentValue;
-            var shader = Properties.GradientType.CurrentValue switch
+            switch (Properties.GradientType.CurrentValue)
             {
-                GradientType.Solid => SKShader.CreateColor(_color),
-                GradientType.LinearGradient => SKShader.CreateLinearGradient(
-                    new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
-                    new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
-                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                    Properties.GradientTileMode.CurrentValue),
-                GradientType.RadialGradient => SKShader.CreateRadialGradient(
-                    center,
-                    Math.Max(_shaderBounds.Width, _shaderBounds.Height) / 2f,
-                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                    Properties.GradientTileMode.CurrentValue),
-                GradientType.SweepGradient => SKShader.CreateSweepGradient(
-                    center,
-                    Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                    Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                    Properties.GradientTileMode.CurrentValue,
-                    0,
-                    360),
-                _ => throw new ArgumentOutOfRangeException()
-            };
+                case GradientType.Solid:
+                    CreateSolid();
+                    break;
+                case GradientType.LinearGradient:
+                    CreateLinearGradient();
+                    break;
+                case GradientType.RadialGradient:
+                    CreateRadialGradient();
+                    break;
+                case GradientType.SweepGradient:
+                    CreateSweepGradient();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
 
-            var oldShader = _shader;
-            var oldPaint = _paint;
-            _shader = shader;
-            _paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low};
-            oldShader?.Dispose();
-            oldPaint?.Dispose();
+        private void UpdatePaint()
+        {
+            if (_paint == null)
+                _paint = new SKPaint {Shader = _shader, FilterQuality = SKFilterQuality.Low};
+            else
+                _paint.Shader = _shader;
+        }
+
+        private void CreateSolid()
+        {
+            _color = Properties.Color.CurrentValue;
+
+            _shader?.Dispose();
+            _shader = SKShader.CreateColor(_color);
+            UpdatePaint();
+        }
+
+        private void CreateLinearGradient()
+        {
+            var repeat = Properties.GradientRepeat.CurrentValue;
+            _linearGradientRotation = Properties.LinearGradientRotation.CurrentValue;
+
+            _shader?.Dispose();
+            _shader = SKShader.CreateLinearGradient(
+                new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
+                new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
+                Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                Properties.GradientTileMode.CurrentValue,
+                SKMatrix.MakeRotationDegrees(_linearGradientRotation, _shaderBounds.Left, _shaderBounds.MidY)
+            );
+            UpdatePaint();
+        }
+
+        private void CreateRadialGradient()
+        {
+            var repeat = Properties.GradientRepeat.CurrentValue;
+
+            _shader?.Dispose();
+            _shader = SKShader.CreateRadialGradient(
+                new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY),
+                Math.Max(_shaderBounds.Width, _shaderBounds.Height) / 2f,
+                Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                Properties.GradientTileMode.CurrentValue
+            );
+            UpdatePaint();
+        }
+
+        private void CreateSweepGradient()
+        {
+            var repeat = Properties.GradientRepeat.CurrentValue;
+
+            _shader?.Dispose();
+            _shader = SKShader.CreateSweepGradient(
+                new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY),
+                Properties.Gradient.BaseValue.GetColorsArray(repeat),
+                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
+                Properties.GradientTileMode.CurrentValue,
+                0,
+                360
+            );
+            UpdatePaint();
         }
     }
 }

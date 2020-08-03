@@ -78,14 +78,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 if (Segment != SegmentViewModelType.Main)
                     return false;
 
-                return SelectedProfileElement?.RepeatMainSegment ?? false;
+                return SelectedProfileElement?.DisplayContinuously ?? false;
             }
             set
             {
                 if (Segment != SegmentViewModelType.Main)
                     return;
 
-                SelectedProfileElement.RepeatMainSegment = value;
+                SelectedProfileElement.DisplayContinuously = value;
                 ProfileEditorService.UpdateSelectedProfileElement();
                 NotifyOfPropertyChange(nameof(RepeatSegment));
             }
@@ -171,7 +171,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 SelectedProfileElement.StartSegmentLength = TimeSpan.FromSeconds(1);
             else if (Segment == SegmentViewModelType.Main)
                 SelectedProfileElement.MainSegmentLength = TimeSpan.FromSeconds(1);
-            else if (Segment == SegmentViewModelType.End) 
+            else if (Segment == SegmentViewModelType.End)
                 SelectedProfileElement.EndSegmentLength = TimeSpan.FromSeconds(1);
 
             NotifyOfPropertyChange(nameof(SegmentEnabled));
@@ -269,6 +269,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline
                 NotifyOfPropertyChange(nameof(SegmentStartPosition));
                 NotifyOfPropertyChange(nameof(SegmentWidth));
             }
+            else if (e.PropertyName == nameof(RenderProfileElement.DisplayContinuously))
+                NotifyOfPropertyChange(nameof(RepeatSegment));
         }
 
 

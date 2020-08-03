@@ -25,7 +25,7 @@ namespace Artemis.Core.Models.Profile
             StartSegmentLength = RenderElementEntity.StartSegmentLength;
             MainSegmentLength = RenderElementEntity.MainSegmentLength;
             EndSegmentLength = RenderElementEntity.EndSegmentLength;
-            RepeatMainSegment = RenderElementEntity.RepeatMainSegment;
+            DisplayContinuously = RenderElementEntity.DisplayContinuously;
             AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
         }
 
@@ -34,7 +34,7 @@ namespace Artemis.Core.Models.Profile
             RenderElementEntity.StartSegmentLength = StartSegmentLength;
             RenderElementEntity.MainSegmentLength = MainSegmentLength;
             RenderElementEntity.EndSegmentLength = EndSegmentLength;
-            RenderElementEntity.RepeatMainSegment = RepeatMainSegment;
+            RenderElementEntity.DisplayContinuously = DisplayContinuously;
             RenderElementEntity.AlwaysFinishTimeline = AlwaysFinishTimeline;
 
             RenderElementEntity.LayerEffects.Clear();
@@ -127,7 +127,7 @@ namespace Artemis.Core.Models.Profile
         private TimeSpan _startSegmentLength;
         private TimeSpan _mainSegmentLength;
         private TimeSpan _endSegmentLength;
-        private bool _repeatMainSegment;
+        private bool _displayContinuously;
         private bool _alwaysFinishTimeline;
 
         /// <summary>
@@ -174,10 +174,10 @@ namespace Artemis.Core.Models.Profile
         /// <summary>
         ///     Gets or sets whether main timeline should repeat itself as long as display conditions are met
         /// </summary>
-        public bool RepeatMainSegment
+        public bool DisplayContinuously
         {
-            get => _repeatMainSegment;
-            set => SetAndNotify(ref _repeatMainSegment, value);
+            get => _displayContinuously;
+            set => SetAndNotify(ref _displayContinuously, value);
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Artemis.Core.Models.Profile
             if (DisplayConditionMet)
             {
                 // If we are at the end of the main timeline, wrap around back to the beginning
-                if (RepeatMainSegment && TimelinePosition >= mainSegmentEnd)
+                if (DisplayContinuously && TimelinePosition >= mainSegmentEnd)
                     TimelinePosition = StartSegmentLength + (mainSegmentEnd - TimelinePosition);
                 else if (TimelinePosition >= TimelineLength)
                     TimelinePosition = TimelineLength;
