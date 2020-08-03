@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -15,12 +16,18 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private DisplayConditionGroupViewModel _rootGroup;
         private RenderProfileElement _renderProfileElement;
+        private int _transitionerIndex;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
-           
+        }
+
+        public int TransitionerIndex
+        {
+            get => _transitionerIndex;
+            set => SetAndNotify(ref _transitionerIndex, value);
         }
 
         public DisplayConditionGroupViewModel RootGroup
@@ -69,6 +76,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null);
             RootGroup.IsRootGroup = true;
             RootGroup.Update();
+
+            // Only show the intro to conditions once, and only if the layer has no conditions
+            if (TransitionerIndex != 1)
+                TransitionerIndex = RootGroup.Children.Any() ? 1 : 0;
         }
 
         protected override void OnActivate()

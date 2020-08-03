@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Core.Events;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Storage.Entities.Profile;
 
@@ -102,61 +103,61 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// <summary>
         ///     Occurs once every frame when the layer property is updated
         /// </summary>
-        public event EventHandler Updated;
+        public event EventHandler<LayerPropertyEventArgs> Updated;
 
         /// <summary>
         ///     Occurs when the base value of the layer property was updated
         /// </summary>
-        public event EventHandler BaseValueChanged;
+        public event EventHandler<LayerPropertyEventArgs> BaseValueChanged;
 
         /// <summary>
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
         /// </summary>
-        public event EventHandler VisibilityChanged;
+        public event EventHandler<LayerPropertyEventArgs> VisibilityChanged;
 
         /// <summary>
         ///     Occurs when keyframes are enabled/disabled
         /// </summary>
-        public event EventHandler KeyframesToggled;
+        public event EventHandler<LayerPropertyEventArgs> KeyframesToggled;
 
         /// <summary>
         ///     Occurs when a new keyframe was added to the layer property
         /// </summary>
-        public event EventHandler KeyframeAdded;
+        public event EventHandler<LayerPropertyEventArgs> KeyframeAdded;
 
         /// <summary>
         ///     Occurs when a keyframe was removed from the layer property
         /// </summary>
-        public event EventHandler KeyframeRemoved;
+        public event EventHandler<LayerPropertyEventArgs> KeyframeRemoved;
 
         protected virtual void OnUpdated()
         {
-            Updated?.Invoke(this, EventArgs.Empty);
+            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnBaseValueChanged()
         {
-            BaseValueChanged?.Invoke(this, EventArgs.Empty);
+            BaseValueChanged?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnVisibilityChanged()
         {
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnKeyframesToggled()
         {
-            KeyframesToggled?.Invoke(this, EventArgs.Empty);
+            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnKeyframeAdded()
         {
-            KeyframeAdded?.Invoke(this, EventArgs.Empty);
+            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnKeyframeRemoved()
         {
-            KeyframeRemoved?.Invoke(this, EventArgs.Empty);
+            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         #endregion

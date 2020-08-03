@@ -39,6 +39,7 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = name;
             Enabled = true;
+            DisplayContinuously = true;
             General = new LayerGeneralProperties {IsCorePropertyGroup = true};
             Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
 
@@ -131,8 +132,11 @@ namespace Artemis.Core.Models.Profile
                 keyframes.AddRange(baseLayerProperty.BaseKeyframes);
             foreach (var baseLayerProperty in Transform.GetAllLayerProperties())
                 keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            foreach (var baseLayerProperty in LayerBrush.BaseProperties.GetAllLayerProperties())
-                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            if (LayerBrush?.BaseProperties != null)
+            {
+                foreach (var baseLayerProperty in LayerBrush.BaseProperties.GetAllLayerProperties())
+                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            }
 
             return keyframes;
         }
@@ -246,7 +250,7 @@ namespace Artemis.Core.Models.Profile
 
             if (stickToMainSegment)
             {
-                if (!RepeatMainSegment)
+                if (!DisplayContinuously)
                 {
                     var position = timeOverride + StartSegmentLength;
                     if (position > StartSegmentLength + EndSegmentLength)

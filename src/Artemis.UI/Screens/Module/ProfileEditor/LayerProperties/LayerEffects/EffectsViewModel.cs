@@ -50,6 +50,15 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.LayerEffects
             LayerEffectDescriptors.AddRange(descriptors.Except(LayerEffectDescriptors));
             LayerEffectDescriptors.RemoveRange(LayerEffectDescriptors.Except(descriptors));
 
+            // Sort by display name
+            var index = 0;
+            foreach (var layerEffectDescriptor in LayerEffectDescriptors.OrderBy(d => d.DisplayName).ToList())
+            {
+                if (LayerEffectDescriptors.IndexOf(layerEffectDescriptor) != index)
+                    LayerEffectDescriptors.Move(LayerEffectDescriptors.IndexOf(layerEffectDescriptor), index);
+                index++;
+            }
+
             SelectedLayerEffectDescriptor = null;
             NotifyOfPropertyChange(nameof(HasLayerEffectDescriptors));
         }

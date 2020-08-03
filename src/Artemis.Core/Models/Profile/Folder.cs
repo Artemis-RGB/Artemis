@@ -21,6 +21,7 @@ namespace Artemis.Core.Models.Profile
             Parent = parent;
             Name = name;
             Enabled = true;
+            DisplayContinuously = true;
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -95,7 +96,7 @@ namespace Artemis.Core.Models.Profile
 
             if (stickToMainSegment)
             {
-                if (!RepeatMainSegment)
+                if (!DisplayContinuously)
                 {
                     var position = timeOverride + StartSegmentLength;
                     if (position > StartSegmentLength + EndSegmentLength)
@@ -146,6 +147,16 @@ namespace Artemis.Core.Models.Profile
 
             folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
 
+            var targetLocation = Path.Bounds.Location;
+            if (Parent is Folder parentFolder)
+                targetLocation -= parentFolder.Path.Bounds.Location;
+
+            canvas.Save();
+
+            using var clipPath = new SKPath(folderPath);
+            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
+            canvas.ClipPath(clipPath);
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
 
@@ -161,17 +172,7 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
-
-            var targetLocation = Path.Bounds.Location;
-            if (Parent is Folder parentFolder)
-                targetLocation -= parentFolder.Path.Bounds.Location;
-
-            canvas.Save();
-
-            using var clipPath = new SKPath(folderPath);
-            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
-            canvas.ClipPath(clipPath);
-
+            
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
             canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);

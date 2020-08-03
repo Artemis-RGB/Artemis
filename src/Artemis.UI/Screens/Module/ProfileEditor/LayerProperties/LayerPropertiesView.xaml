@@ -18,6 +18,7 @@
     behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
     <UserControl.Resources>
         <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <Converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         <Style x:Key="SvStyle" TargetType="{x:Type ScrollViewer}">
             <Setter Property="OverridesDefaultStyle" Value="True" />
@@ -273,6 +274,7 @@
                     ToolTip="Select an effect to add"
                     VerticalAlignment="Center"
                     Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}"
                     Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
                     CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
                 <TextBlock FontSize="11">
@@ -315,7 +317,7 @@
                     ToolTip="Select an effect to add"
                     VerticalAlignment="Center"
                     Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                    IsEnabled="{Binding CanAddSegment}">
+                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
                         <Style.Triggers>
@@ -362,7 +364,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="10 5"
-                    Minimum="100"
+                    Minimum="31"
                     Maximum="350"
                     TickFrequency="1"
                     IsSnapToTickEnabled="True"

@@ -20,8 +20,10 @@ namespace Artemis.Storage.Migrations
                 {
                     if (folder.PropertyEntities.Any(p => p.KeyframeEntities.Any()))
                         folder.MainSegmentLength = folder.PropertyEntities.Where(p => p.KeyframeEntities.Any()).Max(p => p.KeyframeEntities.Max(k => k.Position));
-                    if (folder.MainSegmentLength == TimeSpan.Zero)
+                    if (folder.MainSegmentLength == TimeSpan.Zero) 
                         folder.MainSegmentLength = TimeSpan.FromSeconds(5);
+
+                    folder.DisplayContinuously = true;
                 }
 
                 foreach (var layer in profileEntity.Layers.Where(l => l.MainSegmentLength == TimeSpan.Zero))
@@ -30,6 +32,8 @@ namespace Artemis.Storage.Migrations
                         layer.MainSegmentLength = layer.PropertyEntities.Where(p => p.KeyframeEntities.Any()).Max(p => p.KeyframeEntities.Max(k => k.Position));
                     if (layer.MainSegmentLength == TimeSpan.Zero)
                         layer.MainSegmentLength = TimeSpan.FromSeconds(5);
+
+                    layer.DisplayContinuously = true;
                 }
 
                 repository.Update(profileEntity);

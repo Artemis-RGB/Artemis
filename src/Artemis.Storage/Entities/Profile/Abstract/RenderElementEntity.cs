@@ -8,7 +8,7 @@ namespace Artemis.Storage.Entities.Profile.Abstract
         public TimeSpan StartSegmentLength { get; set; }
         public TimeSpan MainSegmentLength { get; set; }
         public TimeSpan EndSegmentLength { get; set; }
-        public bool RepeatMainSegment { get; set; }
+        public bool DisplayContinuously { get; set; }
         public bool AlwaysFinishTimeline { get; set; }
 
         public List<LayerEffectEntity> LayerEffects { get; set; }
