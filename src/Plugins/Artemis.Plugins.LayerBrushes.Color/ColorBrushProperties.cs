@@ -21,7 +21,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
         [PropertyDescription(Description = "The gradient of the brush")]
         public ColorGradientLayerProperty Gradient { get; set; }
 
-        [PropertyDescription(KeyframesSupported = false, Description = "How many times to repeat the colors in the selected gradient", MinInputValue = 0, MaxInputValue = 10)]
+        [PropertyDescription(DisableKeyframes = true, Description = "How many times to repeat the colors in the selected gradient", MinInputValue = 0, MaxInputValue = 10)]
         public IntLayerProperty GradientRepeat { get; set; }
 
         protected override void PopulateDefaults()
