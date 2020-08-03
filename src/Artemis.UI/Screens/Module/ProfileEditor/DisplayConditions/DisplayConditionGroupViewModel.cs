@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
@@ -10,15 +11,14 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionGroupViewModel : DisplayConditionViewModel
+    public class DisplayConditionGroupViewModel : DisplayConditionViewModel, IViewAware
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
-        private bool _isRootGroup;
+        private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
-        private bool _isSelectedBooleanOperatorOpen;
+        private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, 
+        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
         {
             _profileEditorService = profileEditorService;
@@ -44,13 +44,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _isInitialized, value);
         }
 
-        public bool IsSelectedBooleanOperatorOpen
+        public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();
+
+        public void AttachView(UIElement view)
         {
-            get => _isSelectedBooleanOperatorOpen;
-            set => SetAndNotify(ref _isSelectedBooleanOperatorOpen, value);
+            View = view;
         }
 
-        public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();
+        public UIElement View { get; set; }
 
         public void SelectBooleanOperator(string type)
         {
@@ -65,7 +66,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
             else if (type == "Dynamic")
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
-            
+
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
         }
@@ -73,7 +74,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public void AddGroup()
         {
             DisplayConditionGroup.AddChild(new DisplayConditionGroup(DisplayConditionGroup));
-            
+
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
         }

@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _displayConditionsVmFactory = displayConditionsVmFactory;
+            _displayConditionsVmFactory = displayConditionsVmFactory;           
         }
 
         public int TransitionerIndex
