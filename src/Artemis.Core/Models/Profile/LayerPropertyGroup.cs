@@ -156,14 +156,9 @@ namespace Artemis.Core.Models.Profile
                     instance.ProfileElement = profileElement;
                     instance.Parent = this;
                     instance.PropertyDescription = (PropertyDescriptionAttribute) propertyDescription;
-                    if (!instance.KeyframesSupported && instance.PropertyDescription.KeyframesSupported)
-                    {
-                        throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}. " +
-                                                         $"In the description attribute {nameof(instance.KeyframesSupported)} is set to true but this layer property type " +
-                                                         "does not support keyframes.");
-                    }
+                    if (instance.PropertyDescription.DisableKeyframes)
+                        instance.KeyframesSupported = false;
 
-                    instance.KeyframesSupported = instance.PropertyDescription.KeyframesSupported;
                     InitializeProperty(profileElement, path + propertyInfo.Name, instance);
 
                     propertyInfo.SetValue(this, instance);

@@ -40,8 +40,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Attributes
         public object MaxInputValue { get; set; }
 
         /// <summary>
-        ///     Whether or not keyframes are supported, true by default and cannot be changed at runtime
+        ///     Whether or not keyframes are always disabled
         /// </summary>
-        public bool KeyframesSupported { get; set; } = true;
+        public bool DisableKeyframes { get; set; }
     }
 }
