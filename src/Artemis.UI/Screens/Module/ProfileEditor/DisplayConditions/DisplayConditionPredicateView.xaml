@@ -150,7 +150,7 @@
                         Command="{s:Action ActivateRightSideInputViewModel}"
                         HorizontalAlignment="Left">
                     <Grid>
-                        <StackPanel x:Name="StaticValueDisplay" Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" >
+                        <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" >
                             <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
@@ -168,7 +168,7 @@
                 <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                         Background="{DynamicResource MaterialDesignPaper}"
                         CornerRadius="3"
-                        Padding="3"
+                        Padding="3"                        
                         HorizontalAlignment="Left">
                     <ContentControl s:View.Model="{Binding RightSideInputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Border>
