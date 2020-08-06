@@ -60,7 +60,6 @@ namespace Artemis.Core.Services
         }
 
         public TimeSpan FrameTime { get; private set; }
-        public bool PluginUpdatingDisabled { get; set; }
         public bool ModuleRenderingDisabled { get; set; }
         public List<string> StartupArguments { get; set; }
 
@@ -140,21 +139,18 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
-                if (!PluginUpdatingDisabled)
+                lock (_dataModelExpansions)
                 {
-                    lock (_dataModelExpansions)
-                    {
-                        // Update all active modules
-                        foreach (var dataModelExpansion in _dataModelExpansions)
-                            dataModelExpansion.Update(args.DeltaTime);
-                    }
+                    // Update all active modules
+                    foreach (var dataModelExpansion in _dataModelExpansions)
+                        dataModelExpansion.Update(args.DeltaTime);
+                }
 
-                    lock (_modules)
-                    {
-                        // Update all active modules
-                        foreach (var module in _modules)
-                            module.Update(args.DeltaTime);
-                    }
+                lock (_modules)
+                {
+                    // Update all active modules
+                    foreach (var module in _modules)
+                        module.Update(args.DeltaTime);
                 }
 
                 // If there is no ready bitmap brush, skip the frame

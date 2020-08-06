@@ -195,7 +195,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnInitialActivate()
         {
             LoadWorkspaceSettings();
-            _profileEditorService.StopRegularRender();
+            Module.IsProfileUpdatingDisabled = true;
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
             Execute.PostToUIThread(LoadProfiles);
             base.OnInitialActivate();
@@ -204,7 +204,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         protected override void OnClose()
         {
             SaveWorkspaceSettings();
-            _profileEditorService.ResumeRegularRender();
+            Module.IsProfileUpdatingDisabled = false;
             Module.ActiveProfileChanged -= ModuleOnActiveProfileChanged;
             base.OnClose();
         }

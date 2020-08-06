@@ -223,11 +223,13 @@ namespace Artemis.Core.Models.Profile
             // Ensure the layer must still be displayed
             UpdateDisplayCondition();
 
-            // TODO: No point updating further than this if the layer is not going to be rendered
-
             // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
             // to it's start
             UpdateTimeline(deltaTime);
+
+            // No point updating further than this if the layer is not going to be rendered
+            if (TimelinePosition > TimelineLength)
+                return;
 
             General.Update();
             Transform.Update();
@@ -285,7 +287,7 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (!Enabled)
+            if (!Enabled || TimelinePosition > TimelineLength)
                 return;
 
             // Ensure the layer is ready

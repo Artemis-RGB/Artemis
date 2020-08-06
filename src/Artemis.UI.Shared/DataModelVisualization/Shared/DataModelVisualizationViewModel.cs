@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.Exceptions;
@@ -23,6 +26,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         private DataModelVisualizationViewModel _parent;
         private DataModelPropertyAttribute _propertyDescription;
         private PropertyInfo _propertyInfo;
+        private bool _isIgnored;
 
         internal DataModelVisualizationViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo)
         {
@@ -31,7 +35,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             Parent = parent;
             Children = new BindableCollection<DataModelVisualizationViewModel>();
             IsMatchingFilteredTypes = true;
-
+            
             if (dataModel == null && parent == null && propertyInfo == null)
                 IsRootViewModel = true;
             else
@@ -118,7 +122,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         }
 
         /// <summary>
-        /// Updates the datamodel and if in an parent, any children
+        ///     Updates the datamodel and if in an parent, any children
         /// </summary>
         /// <param name="dataModelVisualizationService"></param>
         public abstract void Update(IDataModelVisualizationService dataModelVisualizationService);
@@ -231,6 +235,9 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             // Skip properties decorated with DataModelIgnore
             if (Attribute.IsDefined(propertyInfo, typeof(DataModelIgnoreAttribute)))
                 return null;
+            // Skip properties that are in the ignored properties list of the respective profile module/data model expansion
+            if (DataModel.GetHiddenProperties().Any(p => p.Equals(propertyInfo)))
+                return null;
 
             // If a display VM was found, prefer to use that in any case
             var typeViewModel = dataModelVisualizationService.GetDataModelDisplayViewModel(propertyInfo.PropertyType);
@@ -247,17 +254,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
             return null;
         }
-
-        #region Events
-
-        public event EventHandler UpdateRequested;
-
-        protected virtual void OnUpdateRequested()
-        {
-            UpdateRequested?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
 
         private void RequestUpdate()
         {
@@ -283,6 +279,17 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             if (PropertyDescription != null && PropertyDescription.Name == null && PropertyInfo != null)
                 PropertyDescription.Name = PropertyInfo.Name.Humanize();
         }
+
+        #region Events
+
+        public event EventHandler UpdateRequested;
+
+        protected virtual void OnUpdateRequested()
+        {
+            UpdateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 
     public enum DisplayConditionSide

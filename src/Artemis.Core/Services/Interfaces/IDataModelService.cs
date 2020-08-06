@@ -5,6 +5,7 @@ using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Models;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Services.Interfaces
 {
@@ -59,5 +60,6 @@ namespace Artemis.Core.Services.Interfaces
 
         List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type);
         DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
+        void LogDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonSerializationException exception);
     }
 }

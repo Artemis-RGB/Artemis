@@ -12,6 +12,8 @@ using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
+using Newtonsoft.Json;
+using Serilog;
 
 namespace Artemis.Core.Services
 {
@@ -22,11 +24,13 @@ namespace Artemis.Core.Services
     {
         private readonly List<DataModel> _dataModelExpansions;
         private readonly IPluginService _pluginService;
+        private readonly ILogger _logger;
         private readonly List<DisplayConditionOperator> _registeredConditionOperators;
 
-        internal DataModelService(IPluginService pluginService)
+        internal DataModelService(IPluginService pluginService, ILogger logger)
         {
             _pluginService = pluginService;
+            _logger = logger;
             _dataModelExpansions = new List<DataModel>();
             _registeredConditionOperators = new List<DisplayConditionOperator>();
 
@@ -172,6 +176,11 @@ namespace Artemis.Core.Services
         public DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType)
         {
             return RegisteredConditionOperators.FirstOrDefault(o => o.PluginInfo.Guid == operatorPluginGuid && o.GetType().Name == operatorType);
+        }
+
+        public void LogDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonSerializationException exception)
+        {
+            _logger.Warning(exception, "Failed to deserialize display condition predicate {predicate}", displayConditionPredicate);
         }
 
         private void RegisterBuiltInConditionOperators()

@@ -5,6 +5,7 @@ namespace Artemis.Storage.Entities.Profile
 {
     public class DisplayConditionPredicateEntity : DisplayConditionPartEntity
     {
+        public int PredicateType { get; set; }
         public Guid? LeftDataModelGuid { get; set; }
         public string LeftPropertyPath { get; set; }
 

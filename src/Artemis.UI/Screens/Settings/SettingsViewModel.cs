@@ -119,6 +119,16 @@ namespace Artemis.UI.Screens.Settings
             }
         }
 
+        public bool ShowDataModelValues
+        {
+            get => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Value;
+            set
+            {
+                _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Value = value;
+                _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Save();
+            }
+        }
+
         public Tuple<string, double> SelectedRenderScale
         {
             get => RenderScales.FirstOrDefault(s => Math.Abs(s.Item2 - RenderScale) < 0.01);

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.PropertyInput;
@@ -19,18 +17,16 @@ namespace Artemis.UI.Shared.Services
 {
     public class ProfileEditorService : IProfileEditorService
     {
-        private readonly ICoreService _coreService;
-        private readonly IProfileService _profileService;
         private readonly ILogger _logger;
+        private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
-        private object _selectedProfileLock = new object();
-        private object _selectedProfileElementLock = new object();
+        private readonly object _selectedProfileElementLock = new object();
+        private readonly object _selectedProfileLock = new object();
 
-        public ProfileEditorService(ICoreService coreService, IProfileService profileService, IKernel kernel, ILogger logger)
+        public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger)
         {
-            _coreService = coreService;
             _profileService = profileService;
             _logger = logger;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
@@ -126,7 +122,7 @@ namespace Artemis.UI.Shared.Services
         {
             if (SelectedProfile == null)
                 return;
-            
+
             // Stick to the main segment for any element that is not currently selected
             foreach (var folder in SelectedProfile.GetAllFolders())
                 folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);
@@ -260,19 +256,9 @@ namespace Artemis.UI.Shared.Services
         public event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
         public event EventHandler CurrentTimeChanged;
-        public event EventHandler CurrentTimelineChanged;
         public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
-
-        public void StopRegularRender()
-        {
-            _coreService.PluginUpdatingDisabled = true;
-        }
-
-        public void ResumeRegularRender()
-        {
-            _coreService.PluginUpdatingDisabled = false;
-        }
+        public event EventHandler CurrentTimelineChanged;
 
         protected virtual void OnSelectedProfileChanged(ProfileEventArgs e)
         {
