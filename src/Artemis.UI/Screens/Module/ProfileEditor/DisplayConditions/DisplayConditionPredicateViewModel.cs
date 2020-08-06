@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core.Plugins.Models;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract;
@@ -37,7 +39,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private List<Type> _supportedInputTypes;
 
         public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent, IProfileEditorService profileEditorService,
-            IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService, IEventAggregator eventAggregator)
+            IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService, ISettingsService settingsService, IEventAggregator eventAggregator)
             : base(displayConditionPredicate, parent)
         {
             _profileEditorService = profileEditorService;
@@ -49,6 +51,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);
             SelectOperatorCommand = new DelegateCommand(ExecuteSelectOperatorCommand);
 
+            ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
+
             // Initialize async, no need to wait for it
             Task.Run(Initialize);
         }
@@ -56,6 +60,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public DisplayConditionPredicate DisplayConditionPredicate => (DisplayConditionPredicate) Model;
         public bool ShowRightSidePropertySelection => DisplayConditionPredicate.PredicateType == PredicateType.Dynamic;
         public bool CanActivateRightSideInputViewModel => SelectedLeftSideProperty?.PropertyInfo != null;
+        public PluginSetting<bool> ShowDataModelValues { get; }
 
         public bool IsInitialized
         {
@@ -262,8 +267,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         private void RightDataModelUpdateRequested(object sender, EventArgs e)
         {
+            var leftSideType = SelectedLeftSideProperty?.PropertyInfo?.PropertyType;
             if (DisplayConditionPredicate.PredicateType == PredicateType.Dynamic)
                 SelectedRightSideProperty = LeftSideDataModel.GetChildForCondition(DisplayConditionPredicate, DisplayConditionSide.Right);
+
+            // With the data model updated, also reapply the filter
+            RightSideDataModel.ApplyTypeFilter(true, leftSideType);
         }
 
         private void LeftDataModelUpdateRequested(object sender, EventArgs e)

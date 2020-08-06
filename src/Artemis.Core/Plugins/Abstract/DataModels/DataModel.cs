@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reflection;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Models;
 
@@ -50,6 +53,20 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
             }
 
             return result;
+        }
+
+        /// <summary>
+        ///     Returns a read-only list of all properties in this datamodel that are to be ignored
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
+        {
+            if (PluginInfo.Instance is ProfileModule profileModule)
+                return profileModule.HiddenProperties;
+            if (PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
+                return dataModelExpansion.HiddenProperties;
+
+            return new List<PropertyInfo>().AsReadOnly();
         }
     }
 }

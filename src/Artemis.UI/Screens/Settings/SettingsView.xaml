@@ -175,6 +175,32 @@
                         </StackPanel>
                     </materialDesign:Card>
 
+                    <!-- Profile editor settings -->
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Profile editor</TextBlock>
+                    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                        <StackPanel Margin="15">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition />
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Show condition data model values</TextBlock>
+                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                        While selecting a condition target, show the current values of the data model
+                                    </TextBlock>
+                                </StackPanel>
+                                <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                                    <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding ShowDataModelValues}" />
+                                </StackPanel>
+                            </Grid>
+                        </StackPanel>
+                    </materialDesign:Card>
+
                     <!-- Rendering settings -->
                     <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Rendering</TextBlock>
                     <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">

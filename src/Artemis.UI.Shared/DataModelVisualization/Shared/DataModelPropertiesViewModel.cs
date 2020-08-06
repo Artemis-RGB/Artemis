@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.UI.Shared.Services;
@@ -31,15 +32,28 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         private void PopulateProperties(IDataModelVisualizationService dataModelVisualizationService)
         {
-            if (Children.Any())
+            if (IsRootViewModel)
                 return;
 
+            // Add missing children
             var modelType = Parent.IsRootViewModel ? DataModel.GetType() : PropertyInfo.PropertyType;
-            foreach (var propertyInfo in modelType.GetProperties())
+            foreach (var propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
+                if (Children.Any(c => c.PropertyInfo.Equals(propertyInfo)))
+                    continue;
+
                 var child = CreateChild(dataModelVisualizationService, propertyInfo, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
+            }
+
+            // Remove children that should be hidden
+            var childList = new List<DataModelVisualizationViewModel>(Children);
+            var hiddenProperties = DataModel.GetHiddenProperties();
+            foreach (var dataModelVisualizationViewModel in childList)
+            {
+                if (hiddenProperties.Contains(dataModelVisualizationViewModel.PropertyInfo))
+                    Children.Remove(dataModelVisualizationViewModel);
             }
         }
 

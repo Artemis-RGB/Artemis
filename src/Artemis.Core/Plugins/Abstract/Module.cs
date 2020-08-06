@@ -84,7 +84,7 @@ namespace Artemis.Core.Plugins.Abstract
         /// <summary>
         ///     Called each frame when the module must update
         /// </summary>
-        /// <param name="deltaTime">Time since the last update</param>
+        /// <param name="deltaTime">Time in seconds since the last update</param>
         public abstract void Update(double deltaTime);
 
         /// <summary>

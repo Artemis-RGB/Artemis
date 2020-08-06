@@ -1,16 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Utilities;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
 {
     /// <summary>
-    ///     Allows you to add support for new games/applications while utilizing Artemis' profile engine and your own data model
+    ///     Allows you to add support for new games/applications while utilizing Artemis' profile engine and your own data
+    ///     model
     /// </summary>
     public abstract class ProfileModule<T> : ProfileModule where T : DataModel
     {
@@ -45,7 +51,29 @@ namespace Artemis.Core.Plugins.Abstract
         {
             return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
         }
-        
+
+        /// <summary>
+        ///     Hide the provided property using a lambda expression, e.g. HideProperty(dm => dm.TimeDataModel.CurrentTimeUTC)
+        /// </summary>
+        /// <param name="propertyLambda">A lambda expression pointing to the property to ignore</param>
+        public void HideProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
+        {
+            var propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            if (!HiddenPropertiesList.Any(p => p.Equals(propertyInfo)))
+                HiddenPropertiesList.Add(propertyInfo);
+        }
+
+        /// <summary>
+        ///     Stop hiding the provided property using a lambda expression, e.g. ShowProperty(dm =>
+        ///     dm.TimeDataModel.CurrentTimeUTC)
+        /// </summary>
+        /// <param name="propertyLambda">A lambda expression pointing to the property to stop ignoring</param>
+        public void ShowProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
+        {
+            var propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
+        }
+
         internal override void InternalEnablePlugin()
         {
             DataModel = Activator.CreateInstance<T>();
@@ -66,7 +94,19 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class ProfileModule : Module
     {
+        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using IgnoreProperty(x => x.y)
+        /// </summary>
+        public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
+
         public Profile ActiveProfile { get; private set; }
+
+        /// <summary>
+        ///     Disables updating the profile, rendering does continue
+        /// </summary>
+        public bool IsProfileUpdatingDisabled { get; set; }
 
         /// <inheritdoc />
         public override void Update(double deltaTime)
@@ -74,7 +114,8 @@ namespace Artemis.Core.Plugins.Abstract
             lock (this)
             {
                 // Update the profile
-                ActiveProfile?.Update(deltaTime);
+                if (!IsProfileUpdatingDisabled)
+                    ActiveProfile?.Update(deltaTime);
             }
         }
 

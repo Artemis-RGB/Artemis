@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.ViewModels;
@@ -18,6 +19,9 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Update(double deltaTime)
         {
+            DataModel.TimeDataModel.CurrentTime = DateTime.Now;
+            DataModel.TimeDataModel.CurrentTimeUTC = DateTime.UtcNow;
+
             UpdateCurrentWindow();
             base.Update(deltaTime);
         }
@@ -38,7 +42,7 @@ namespace Artemis.Plugins.Modules.General
         public void UpdateCurrentWindow()
         {
             var processId = WindowUtilities.GetActiveProcessId();
-            if (DataModel.ActiveWindow == null || DataModel.ActiveWindow.Process.Id != processId) 
+            if (DataModel.ActiveWindow == null || DataModel.ActiveWindow.Process.Id != processId)
                 DataModel.ActiveWindow = new WindowDataModel(Process.GetProcessById(processId));
             if (DataModel.ActiveWindow != null && string.IsNullOrWhiteSpace(DataModel.ActiveWindow.WindowTitle))
                 DataModel.ActiveWindow.WindowTitle = Process.GetProcessById(WindowUtilities.GetActiveProcessId()).MainWindowTitle;

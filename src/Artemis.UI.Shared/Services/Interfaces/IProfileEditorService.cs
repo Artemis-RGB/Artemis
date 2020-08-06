@@ -26,8 +26,6 @@ namespace Artemis.UI.Shared.Services.Interfaces
         void UpdateProfilePreview();
         void UndoUpdateProfile(ProfileModule module);
         void RedoUpdateProfile(ProfileModule module);
-        void StopRegularRender();
-        void ResumeRegularRender();
         Module GetCurrentModule();
 
         /// <summary>

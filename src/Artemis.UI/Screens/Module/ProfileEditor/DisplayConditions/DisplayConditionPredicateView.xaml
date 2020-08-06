@@ -8,6 +8,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:converters="clr-namespace:Artemis.UI.Converters"
     xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+    xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
     x:Class="Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.DisplayConditionPredicateView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
@@ -20,6 +21,47 @@
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                    <DataTemplate x:Key="DataModelSelectionTemplate">
+                        <StackPanel>
+                            <StackPanel.Resources>
+                                <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
+                                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                                </DataTemplate>
+                                <DataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
+                                    <Grid ToolTip="{Binding PropertyDescription.Description}">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- Value description -->
+                                        <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+
+                                        <!-- Value display -->
+                                        <StackPanel Grid.Column="1" Visibility="{Binding Data.ShowDataModelValues.Value, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay, Source={StaticResource DataContextProxy}}">
+                                            <TextBlock Text="{Binding DisplayValue, Mode=OneWay}"
+                                                       FontFamily="Consolas"
+                                                       HorizontalAlignment="Right"
+                                                       Visibility="{Binding ShowToString, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                                                       Margin="15 0.5 0 0" />
+                                            <TextBlock Text="null"
+                                                       FontFamily="Consolas"
+                                                       HorizontalAlignment="Right"
+                                                       Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
+                                                       Margin="15 0.5 0 0"
+                                                       Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                                            <ContentControl s:View.Model="{Binding DisplayViewModel}"
+                                                            FontFamily="Consolas"
+                                                            Margin="15 0.5 0 0"
+                                                            Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                                        </StackPanel>
+
+                                    </Grid>
+                                </DataTemplate>
+                            </StackPanel.Resources>
+                            <ContentPresenter Content="{Binding}" />
+                        </StackPanel>
+                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -55,13 +97,12 @@
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                             <Setter Property="ItemsSource" Value="{Binding Children}" />
-                            <Setter Property="Header" Value="{Binding PropertyDescription.Name}" />
-                            <Setter Property="ToolTip" Value="{Binding PropertyDescription.Description}" />
                             <Setter Property="Command" Value="{Binding Data.SelectLeftPropertyCommand, Source={StaticResource DataContextProxy}}" />
                             <Setter Property="CommandParameter" Value="{Binding}" />
                             <Setter Property="CommandTarget" Value="{Binding}" />
                             <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                             <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
@@ -119,12 +160,12 @@
                         <ContextMenu.ItemContainerStyle>
                             <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                                 <Setter Property="ItemsSource" Value="{Binding Children}" />
-                                <Setter Property="Header" Value="{Binding PropertyDescription.Name}" />
-                                <Setter Property="ToolTip" Value="{Binding PropertyDescription.Description}" />
                                 <Setter Property="Command" Value="{Binding Data.SelectRightPropertyCommand, Source={StaticResource DataContextProxy}}" />
                                 <Setter Property="CommandParameter" Value="{Binding}" />
                                 <Setter Property="CommandTarget" Value="{Binding}" />
                                 <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                                <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                                <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
                             </Style>
                         </ContextMenu.ItemContainerStyle>
                     </ContextMenu>
@@ -139,8 +180,8 @@
             </Button>
 
             <!-- Right side property if type is static -->
-            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}" 
-                                         DefaultTransitionOrigin="0.5, 0.5" 
+            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}"
+                                         DefaultTransitionOrigin="0.5, 0.5"
                                          Margin="3 -4"
                                          Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
                 <Button Style="{StaticResource DisplayConditionButton}"
@@ -150,7 +191,7 @@
                         Command="{s:Action ActivateRightSideInputViewModel}"
                         HorizontalAlignment="Left">
                     <Grid>
-                        <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal" >
+                        <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                             <TextBlock FontWeight="Light"
                                        Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
                                        Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
@@ -168,8 +209,9 @@
                 <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"
                         Background="{DynamicResource MaterialDesignPaper}"
                         CornerRadius="3"
-                        Padding="3"                        
-                        HorizontalAlignment="Left">
+                        Padding="3"
+                        HorizontalAlignment="Left"
+                        MinWidth="140">
                     <ContentControl s:View.Model="{Binding RightSideInputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                 </Border>
             </materialDesign:Transitioner>
