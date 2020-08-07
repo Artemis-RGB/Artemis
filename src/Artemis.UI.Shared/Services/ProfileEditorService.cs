@@ -132,11 +132,11 @@ namespace Artemis.UI.Shared.Services
             OnProfilePreviewUpdated();
         }
 
-        public void UndoUpdateProfile(ProfileModule module)
+        public bool UndoUpdateProfile(ProfileModule module)
         {
             var undid = _profileService.UndoUpdateProfile(SelectedProfile, module);
             if (!undid)
-                return;
+                return false;
 
             OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
 
@@ -149,13 +149,14 @@ namespace Artemis.UI.Shared.Services
             }
 
             UpdateProfilePreview();
+            return true;
         }
 
-        public void RedoUpdateProfile(ProfileModule module)
+        public bool RedoUpdateProfile(ProfileModule module)
         {
             var redid = _profileService.RedoUpdateProfile(SelectedProfile, module);
             if (!redid)
-                return;
+                return false;
 
             OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
 
@@ -168,6 +169,7 @@ namespace Artemis.UI.Shared.Services
             }
 
             UpdateProfilePreview();
+            return true;
         }
 
         public PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel

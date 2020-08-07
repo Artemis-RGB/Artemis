@@ -87,7 +87,10 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             var toRemove = Children.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
+            {
                 Children.Remove(displayConditionViewModel);
+                displayConditionViewModel.Dispose();
+            }
 
             foreach (var childModel in Model.Children)
             {

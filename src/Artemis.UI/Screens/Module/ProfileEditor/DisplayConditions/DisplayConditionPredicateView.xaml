@@ -93,7 +93,7 @@
                 ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}">
+                <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}" IsOpen="{Binding LeftSideDataModelOpen, Mode=OneWayToSource}">
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                             <Setter Property="ItemsSource" Value="{Binding Children}" />
