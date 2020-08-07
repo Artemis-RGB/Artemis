@@ -14,6 +14,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.Module.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.Module.ProfileEditor.Visualization;
 using Artemis.UI.Shared.Services.Interfaces;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor
@@ -23,6 +24,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
+        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private BindableCollection<Profile> _profiles;
         private PluginSetting<GridLength> _sidePanelsWidth;
         private PluginSetting<GridLength> _displayConditionsHeight;
@@ -38,11 +40,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             IProfileEditorService profileEditorService,
             IProfileService profileService,
             IDialogService dialogService,
-            ISettingsService settingsService)
+            ISettingsService settingsService,
+            ISnackbarMessageQueue snackbarMessageQueue)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
+            _snackbarMessageQueue = snackbarMessageQueue;
 
             DisplayName = "Profile editor";
             Module = module;
@@ -172,11 +176,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
-            _profileEditorService.UndoUpdateProfile(Module);
+            if (!_profileEditorService.UndoUpdateProfile(Module))
+            {
+                _snackbarMessageQueue.Enqueue("Nothing to undo");
+                return;
+            }
 
             // Restore the expanded status
             foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
+
+            _snackbarMessageQueue.Enqueue("Undid profile update", "REDO", Redo);
         }
 
         public void Redo()
@@ -185,11 +195,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
-            _profileEditorService.RedoUpdateProfile(Module);
+            if (!_profileEditorService.RedoUpdateProfile(Module))
+            {
+                _snackbarMessageQueue.Enqueue("Nothing to redo");
+                return;
+            }
 
             // Restore the expanded status
             foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
+
+            _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
         }
 
         protected override void OnInitialActivate()

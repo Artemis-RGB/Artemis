@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core.Models.Profile.Conditions;
@@ -27,7 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
         private DataModelPropertiesViewModel _leftSideDataModel;
-        private List<DisplayConditionOperator> _operators;
+        private BindableCollection<DisplayConditionOperator> _operators;
         private DataModelPropertiesViewModel _rightSideDataModel;
         private DataModelInputViewModel _rightSideInputViewModel;
         private int _rightSideTransitionIndex;
@@ -37,6 +38,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private DataModelVisualizationViewModel _selectedRightSideProperty;
 
         private List<Type> _supportedInputTypes;
+        private readonly Timer _updateTimer;
 
         public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent, IProfileEditorService profileEditorService,
             IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService, ISettingsService settingsService, IEventAggregator eventAggregator)
@@ -46,10 +48,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             _dataModelVisualizationService = dataModelVisualizationService;
             _dataModelService = dataModelService;
             _eventAggregator = eventAggregator;
+            _updateTimer = new Timer(500);
 
             SelectLeftPropertyCommand = new DelegateCommand(ExecuteSelectLeftProperty);
             SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);
             SelectOperatorCommand = new DelegateCommand(ExecuteSelectOperatorCommand);
+            Operators = new BindableCollection<DisplayConditionOperator>();
 
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
 
@@ -68,6 +72,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             private set => SetAndNotify(ref _isInitialized, value);
         }
 
+        public bool LeftSideDataModelOpen { get; set; }
+
         public DataModelPropertiesViewModel LeftSideDataModel
         {
             get => _leftSideDataModel;
@@ -79,6 +85,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             get => _rightSideDataModel;
             set => SetAndNotify(ref _rightSideDataModel, value);
         }
+
+        public bool RightSideDataModelOpen { get; set; }
 
         public DataModelVisualizationViewModel SelectedLeftSideProperty
         {
@@ -114,7 +122,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _rightSideInputViewModel, value);
         }
 
-        public List<DisplayConditionOperator> Operators
+        public BindableCollection<DisplayConditionOperator> Operators
         {
             get => _operators;
             set => SetAndNotify(ref _operators, value);
@@ -172,17 +180,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
 
-
             LeftSideDataModel.UpdateRequested += LeftDataModelUpdateRequested;
             RightSideDataModel.UpdateRequested += RightDataModelUpdateRequested;
 
             Update();
+
+            _updateTimer.Start();
+            _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
+
             IsInitialized = true;
         }
 
         public override void Update()
         {
-            if (LeftSideDataModel == null || (DisplayConditionPredicate.PredicateType == PredicateType.Dynamic && RightSideDataModel == null))
+            if (LeftSideDataModel == null || DisplayConditionPredicate.PredicateType == PredicateType.Dynamic && RightSideDataModel == null)
                 return;
 
             // If static, only allow selecting properties also supported by input
@@ -194,7 +205,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             var leftSideType = SelectedLeftSideProperty?.PropertyInfo?.PropertyType;
 
             // Get the supported operators
-            Operators = _dataModelService.GetCompatibleConditionOperators(leftSideType);
+            Operators.Clear();
+            Operators.AddRange(_dataModelService.GetCompatibleConditionOperators(leftSideType));
             if (DisplayConditionPredicate.Operator == null)
                 DisplayConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType)));
             SelectedOperator = DisplayConditionPredicate.Operator;
@@ -263,6 +275,20 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 ApplyRightSideStatic
             );
             _eventAggregator.Subscribe(this);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _updateTimer.Stop();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+        }
+
+        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (LeftSideDataModelOpen)
+                LeftSideDataModel.Update(_dataModelVisualizationService);
+            else if (RightSideDataModelOpen)
+                RightSideDataModel.Update(_dataModelVisualizationService);
         }
 
         private void RightDataModelUpdateRequested(object sender, EventArgs e)
