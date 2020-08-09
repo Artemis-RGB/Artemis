@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
@@ -13,12 +14,12 @@ namespace Artemis.Core.Models.Profile
     {
         private bool _isActivated;
 
-        internal Profile(PluginInfo pluginInfo, string name)
+        internal Profile(ProfileModule module, string name)
         {
             ProfileEntity = new ProfileEntity();
             EntityId = Guid.NewGuid();
 
-            PluginInfo = pluginInfo;
+            Module = module;
             Name = name;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
@@ -27,19 +28,19 @@ namespace Artemis.Core.Models.Profile
             ApplyToEntity();
         }
 
-        internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity)
+        internal Profile(ProfileModule module, ProfileEntity profileEntity)
         {
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
 
-            PluginInfo = pluginInfo;
+            Module = module;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
             ApplyToProfile();
         }
 
-        public PluginInfo PluginInfo { get; }
+        public ProfileModule Module { get; }
 
         public bool IsActivated
         {
@@ -104,13 +105,23 @@ namespace Artemis.Core.Models.Profile
 
         public override string ToString()
         {
-            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(PluginInfo)}: {PluginInfo}";
+            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(Module)}: {Module}";
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            Deactivate();
+            foreach (var profileElement in Children)
+                profileElement.Dispose();
         }
 
         internal override void ApplyToEntity()
         {
             ProfileEntity.Id = EntityId;
-            ProfileEntity.PluginGuid = PluginInfo.Guid;
+            ProfileEntity.PluginGuid = Module.PluginInfo.Guid;
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
 
@@ -144,7 +155,7 @@ namespace Artemis.Core.Models.Profile
                 if (!IsActivated)
                     return;
 
-                foreach (var folder in GetAllFolders()) 
+                foreach (var folder in GetAllFolders())
                     folder.Deactivate();
                 foreach (var layer in GetAllLayers())
                     layer.Deactivate();

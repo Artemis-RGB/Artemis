@@ -7,8 +7,21 @@ using Stylet;
 
 namespace Artemis.Core.Models.Profile
 {
-    public abstract class ProfileElement : PropertyChangedBase
+    public abstract class ProfileElement : PropertyChangedBase, IDisposable
     {
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         private bool _enabled;
         private Guid _entityId;
         private string _name;

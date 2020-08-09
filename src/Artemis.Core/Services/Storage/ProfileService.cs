@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
@@ -41,70 +42,58 @@ namespace Artemis.Core.Services.Storage
 
         public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
 
-        public void ActivateDefaultProfiles()
+        public void ActivateLastActiveProfiles()
         {
             foreach (var profileModule in _pluginService.GetPluginsOfType<ProfileModule>())
             {
-                var activeProfile = GetActiveProfile(profileModule);
-                ActivateProfile(profileModule, activeProfile);
+                var activeProfile = GetLastActiveProfile(profileModule);
+                ActivateProfile(activeProfile);
             }
         }
 
-        public List<Profile> GetProfiles(ProfileModule module)
+        public List<ProfileDescriptor> GetProfiles(ProfileModule module)
         {
             var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            var profiles = new List<Profile>();
-            foreach (var profileEntity in profileEntities)
-            {
-                // If the profile entity matches the module's currently active profile, use that instead
-                if (module.ActiveProfile != null && module.ActiveProfile.EntityId == profileEntity.Id)
-                    profiles.Add(module.ActiveProfile);
-                else
-                    profiles.Add(new Profile(module.PluginInfo, profileEntity));
-            }
-
-            return profiles;
+            return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
         }
 
-        public Profile GetActiveProfile(ProfileModule module)
+        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
         {
-            if (module.ActiveProfile != null)
-                return module.ActiveProfile;
-
             var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            if (profileEntity == null)
-                return null;
-
-            return new Profile(module.PluginInfo, profileEntity);
+            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
         }
 
-        public Profile CreateProfile(ProfileModule module, string name)
+        public ProfileDescriptor CreateProfile(ProfileModule module, string name)
         {
-            var profile = new Profile(module.PluginInfo, name);
-            _profileRepository.Add(profile.ProfileEntity);
+            var profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
+            return new ProfileDescriptor(module, profileEntity);
+        }
 
-            if (_surfaceService.ActiveSurface != null)
-                profile.PopulateLeds(_surfaceService.ActiveSurface);
+        public Profile ActivateProfile(ProfileDescriptor profileDescriptor)
+        {
+            if (profileDescriptor.ProfileModule.ActiveProfile.EntityId == profileDescriptor.Id)
+                return profileDescriptor.ProfileModule.ActiveProfile;
 
+            var profile = new Profile(profileDescriptor.ProfileModule, profileDescriptor.ProfileEntity);
+            InitializeLayerProperties(profile);
+            InstantiateLayers(profile);
+            InstantiateFolders(profile);
+
+            profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
             return profile;
         }
 
-
-        public void ActivateProfile(ProfileModule module, Profile profile)
+        public void ClearActiveProfile(ProfileModule module)
         {
-            module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
-            if (profile != null)
-            {
-                InitializeLayerProperties(profile);
-                InstantiateLayers(profile);
-                InstantiateFolders(profile);
-            }
+            module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
         }
 
         public void DeleteProfile(Profile profile)
         {
             _logger.Debug("Removing profile " + profile);
+
+            
             _profileRepository.Remove(profile.ProfileEntity);
         }
 

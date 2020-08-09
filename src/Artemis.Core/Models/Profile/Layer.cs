@@ -141,6 +141,20 @@ namespace Artemis.Core.Models.Profile
             return keyframes;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing) 
+                return;
+
+            _general?.Dispose();
+            _layerBitmap?.Dispose();
+            _layerBrush?.Dispose();
+            _transform?.Dispose();
+
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+        }
+
         #region Storage
 
         internal override void ApplyToEntity()
@@ -328,9 +342,9 @@ namespace Artemis.Core.Models.Profile
 
             if (!LayerBrush.SupportsTransformation)
                 SimpleRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
-            else if (General.FillType.CurrentValue == LayerFillType.Stretch)
+            else if (General.ResizeMode.CurrentValue == LayerResizeMode.Normal)
                 StretchRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
-            else if (General.FillType.CurrentValue == LayerFillType.Clip)
+            else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
@@ -340,7 +354,7 @@ namespace Artemis.Core.Models.Profile
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
-            
+
             canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
         }
 
@@ -465,10 +479,10 @@ namespace Artemis.Core.Models.Profile
             var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
             var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
-            if (General.FillType == LayerFillType.Stretch)
+            if (General.ResizeMode == LayerResizeMode.Normal)
             {
                 path.Transform(SKMatrix.MakeTranslation(x, y));
-                path.Transform(SKMatrix.MakeScale((sizeProperty.Width / 100f), (sizeProperty.Height / 100f), anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
                 path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
             }
             else
@@ -497,7 +511,7 @@ namespace Artemis.Core.Models.Profile
             var reversedXScale = 1f / (sizeProperty.Width / 100f);
             var reversedYScale = 1f / (sizeProperty.Height / 100f);
 
-            if (General.FillType == LayerFillType.Stretch)
+            if (General.ResizeMode == LayerResizeMode.Normal)
             {
                 path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
                 path.Transform(SKMatrix.MakeScale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y));
@@ -530,7 +544,7 @@ namespace Artemis.Core.Models.Profile
             var reversedXScale = 1f / (sizeProperty.Width / 100f);
             var reversedYScale = 1f / (sizeProperty.Height / 100f);
 
-            if (General.FillType == LayerFillType.Stretch)
+            if (General.ResizeMode == LayerResizeMode.Normal)
             {
                 canvas.Translate(x * -1, y * -1);
                 canvas.Scale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y);
@@ -666,9 +680,9 @@ namespace Artemis.Core.Models.Profile
         Rectangle
     }
 
-    public enum LayerFillType
+    public enum LayerResizeMode
     {
-        Stretch,
+        Normal,
         Clip
     }
 }
