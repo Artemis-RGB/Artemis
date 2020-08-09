@@ -80,8 +80,9 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         public void Dispose()
         {
             DisableLayerBrush();
+            BaseProperties.Dispose();
+            
             Dispose(true);
-
             GC.SuppressFinalize(this);
         }
 

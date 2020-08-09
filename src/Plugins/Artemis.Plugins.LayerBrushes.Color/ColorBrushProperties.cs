@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Colors;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
@@ -24,8 +25,12 @@ namespace Artemis.Plugins.LayerBrushes.Color
         [PropertyDescription(DisableKeyframes = true, Description = "How many times to repeat the colors in the selected gradient", MinInputValue = 0, MaxInputValue = 10)]
         public IntLayerProperty GradientRepeat { get; set; }
 
+        #region Linear greadient properties
+
         [PropertyDescription(Name = "Rotation", Description = "Change the rotation of the linear gradient without affecting the rotation of the shape", InputAffix = "°")]
         public FloatLayerProperty LinearGradientRotation { get; set; }
+
+        #endregion
 
         protected override void PopulateDefaults()
         {
@@ -35,26 +40,53 @@ namespace Artemis.Plugins.LayerBrushes.Color
             GradientRepeat.DefaultValue = 0;
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
         {
-            GradientType.BaseValueChanged += (sender, args) => UpdateVisibility();
+            GradientType.BaseValueChanged += OnBaseValueChanged;
             if (ProfileElement is Layer layer)
-                layer.General.FillType.BaseValueChanged += (sender, args) => UpdateVisibility();
+                layer.General.ResizeMode.BaseValueChanged += OnBaseValueChanged;
 
+            UpdateVisibility();
+        }
+
+        protected override void DisableProperties()
+        {
+            GradientType.BaseValueChanged -= OnBaseValueChanged;
+            if (ProfileElement is Layer layer)
+                layer.General.ResizeMode.BaseValueChanged -= OnBaseValueChanged;
+        }
+
+        private void OnBaseValueChanged(object sender, LayerPropertyEventArgs e)
+        {
             UpdateVisibility();
         }
 
         private void UpdateVisibility()
         {
+            var normalRender = false;
+            if (ProfileElement is Layer layer)
+                normalRender = layer.General.ResizeMode.CurrentValue == LayerResizeMode.Normal;
+
             Color.IsHidden = GradientType.BaseValue != LayerBrushes.Color.GradientType.Solid;
             Gradient.IsHidden = GradientType.BaseValue == LayerBrushes.Color.GradientType.Solid;
             GradientRepeat.IsHidden = GradientType.BaseValue == LayerBrushes.Color.GradientType.Solid;
 
-            if (ProfileElement is Layer layer)
-                GradientTileMode.IsHidden = layer.General.FillType.CurrentValue != LayerFillType.Clip;
-            else
-                GradientTileMode.IsHidden = true;
+            RadialGradientCenterOffset.IsHidden = GradientType.BaseValue != LayerBrushes.Color.GradientType.RadialGradient;
+            RadialGradientResizeMode.IsHidden = GradientType.BaseValue != LayerBrushes.Color.GradientType.RadialGradient;
+
+            GradientTileMode.IsHidden = normalRender;
+            RadialGradientResizeMode.IsHidden = !normalRender || GradientType.BaseValue != LayerBrushes.Color.GradientType.RadialGradient;
         }
+
+        #region Radial gradient properties
+
+        [PropertyDescription(Name = "Center offset", Description = "Change the position of the gradient by offsetting it from the center of the layer", InputAffix = "%")]
+        public SKPointLayerProperty RadialGradientCenterOffset { get; set; }
+
+        [PropertyDescription(Name = "Resize mode", Description = "How to make the gradient adjust to scale changes")]
+        public EnumLayerProperty<RadialGradientResizeMode> RadialGradientResizeMode { get; set; }
+
+        #endregion
     }
 
     public enum GradientType
@@ -70,5 +102,14 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         [Description("Sweep Gradient")]
         SweepGradient
+    }
+
+    public enum RadialGradientResizeMode
+    {
+        [Description("Stretch or shrink")]
+        Stretch,
+
+        [Description("Maintain a circle")]
+        MaintainCircle
     }
 }

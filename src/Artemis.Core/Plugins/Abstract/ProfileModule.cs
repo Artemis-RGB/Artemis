@@ -131,14 +131,14 @@ namespace Artemis.Core.Plugins.Abstract
 
         internal void ChangeActiveProfile(Profile profile, ArtemisSurface surface)
         {
-            if (profile != null && profile.PluginInfo != PluginInfo)
-                throw new ArtemisCoreException($"Cannot activate a profile of plugin {profile.PluginInfo} on a module of plugin {PluginInfo}.");
+            if (profile != null && profile.Module != this)
+                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
             lock (this)
             {
                 if (profile == ActiveProfile)
                     return;
 
-                ActiveProfile?.Deactivate();
+                ActiveProfile?.Dispose();
 
                 ActiveProfile = profile;
                 ActiveProfile?.Activate(surface);

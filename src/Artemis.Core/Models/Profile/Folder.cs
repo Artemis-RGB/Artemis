@@ -172,7 +172,7 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
-            
+
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
             canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
@@ -227,6 +227,18 @@ namespace Artemis.Core.Models.Profile
                 folder.CalculateRenderProperties();
 
             OnRenderPropertiesUpdated();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            _folderBitmap?.Dispose();
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+            foreach (var profileElement in Children)
+                profileElement.Dispose();
         }
 
 

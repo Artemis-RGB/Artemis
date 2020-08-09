@@ -48,7 +48,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            if (Layer.General.FillType.CurrentValue == LayerFillType.Clip)
+            if (Layer.General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
             {
                 var layerBounds = new SKRect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height);
                 if (layerBounds != _shaderBounds)

@@ -90,7 +90,7 @@ namespace Artemis.Core.Services
             else
                 _logger.Information("Initialized without an active surface entity");
 
-            _profileService.ActivateDefaultProfiles();
+            _profileService.ActivateLastActiveProfiles();
 
             OnInitialized();
         }
