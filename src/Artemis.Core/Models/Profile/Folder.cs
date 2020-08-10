@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
+using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
@@ -61,9 +62,13 @@ namespace Artemis.Core.Models.Profile
 
         internal FolderEntity FolderEntity { get; set; }
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
+        public bool IsRootFolder => Parent == Profile;
 
         public override void Update(double deltaTime)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             if (!Enabled)
                 return;
 
@@ -89,6 +94,9 @@ namespace Artemis.Core.Models.Profile
 
         public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             if (!Enabled)
                 return;
 
@@ -125,6 +133,9 @@ namespace Artemis.Core.Models.Profile
 
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             if (Path == null || !Enabled || !Children.Any(c => c.Enabled))
                 return;
 
@@ -172,6 +183,13 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
+            
+            // If required, apply the opacity override of the module to the root folder
+            if (IsRootFolder && Profile.Module.OpacityOverride < 1)
+            {
+                var multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
+                folderPaint.Color = folderPaint.Color.WithAlpha((byte) (folderPaint.Color.Alpha * multiplier));
+            }
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
@@ -187,6 +205,9 @@ namespace Artemis.Core.Models.Profile
         /// <returns></returns>
         public Folder AddFolder(string name)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             var folder = new Folder(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
             AddChild(folder);
             return folder;
@@ -195,6 +216,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void AddChild(ProfileElement child, int? order = null)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             base.AddChild(child, order);
             CalculateRenderProperties();
         }
@@ -202,6 +226,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void RemoveChild(ProfileElement child)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             base.RemoveChild(child);
             CalculateRenderProperties();
         }
@@ -213,6 +240,9 @@ namespace Artemis.Core.Models.Profile
 
         public void CalculateRenderProperties()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             var path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (var child in Children)
             {
@@ -234,16 +264,27 @@ namespace Artemis.Core.Models.Profile
             if (!disposing)
                 return;
 
-            _folderBitmap?.Dispose();
             foreach (var baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
+            _layerEffects.Clear();
+
             foreach (var profileElement in Children)
                 profileElement.Dispose();
+            ChildrenList.Clear();
+
+            _folderBitmap?.Dispose();
+            _folderBitmap = null;
+
+            Profile = null;
+            _disposed = true;
         }
 
 
         internal override void ApplyToEntity()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
             FolderEntity.Id = EntityId;
             FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
 
@@ -260,16 +301,6 @@ namespace Artemis.Core.Models.Profile
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;
             DisplayConditionGroup?.ApplyToEntity();
-        }
-
-        internal void Deactivate()
-        {
-            _folderBitmap?.Dispose();
-            _folderBitmap = null;
-
-            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
-            foreach (var baseLayerEffect in layerEffects)
-                DeactivateLayerEffect(baseLayerEffect);
         }
 
         #region Events

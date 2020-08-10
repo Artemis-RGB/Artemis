@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
@@ -94,6 +95,11 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class ProfileModule : Module
     {
+        protected ProfileModule()
+        {
+            OpacityOverride = 1;
+        }
+
         protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
 
         /// <summary>
@@ -113,6 +119,10 @@ namespace Artemis.Core.Plugins.Abstract
         {
             lock (this)
             {
+                OpacityOverride = AnimatingProfileChange
+                    ? Math.Max(0, OpacityOverride - 0.1)
+                    : Math.Min(1, OpacityOverride + 0.1);
+
                 // Update the profile
                 if (!IsProfileUpdatingDisabled)
                     ActiveProfile?.Update(deltaTime);
@@ -127,6 +137,27 @@ namespace Artemis.Core.Plugins.Abstract
                 // Render the profile
                 ActiveProfile?.Render(deltaTime, canvas, canvasInfo);
             }
+        }
+
+        internal async Task ChangeActiveProfileAnimated(Profile profile, ArtemisSurface surface)
+        {
+            if (profile != null && profile.Module != this)
+                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
+
+
+            if (profile == ActiveProfile || AnimatingProfileChange)
+                return;
+
+            AnimatingProfileChange = true;
+
+            while (OpacityOverride > 0)
+                await Task.Delay(50);
+
+            ChangeActiveProfile(profile, surface);
+            AnimatingProfileChange = false;
+
+            while (OpacityOverride < 1)
+                await Task.Delay(50);
         }
 
         internal void ChangeActiveProfile(Profile profile, ArtemisSurface surface)
@@ -146,6 +177,16 @@ namespace Artemis.Core.Plugins.Abstract
 
             OnActiveProfileChanged();
         }
+
+        /// <summary>
+        /// Overrides the opacity of the root folder
+        /// </summary>
+        public double OpacityOverride { get; set; }
+
+        /// <summary>
+        /// Indicates whether or not a profile change is being animated
+        /// </summary>
+        public bool AnimatingProfileChange { get; private set; }
 
         #region Events
 

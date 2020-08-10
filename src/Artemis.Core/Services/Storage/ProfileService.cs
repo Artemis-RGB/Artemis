@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
@@ -15,9 +16,6 @@ using Serilog;
 
 namespace Artemis.Core.Services.Storage
 {
-    /// <summary>
-    ///     Provides access to profile storage and is responsible for activating default profiles
-    /// </summary>
     public class ProfileService : IProfileService
     {
         private readonly ILogger _logger;
@@ -51,20 +49,13 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
-        public List<ProfileDescriptor> GetProfiles(ProfileModule module)
+        public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
             var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
         }
 
-        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
-        {
-            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
-        }
-
-        public ProfileDescriptor CreateProfile(ProfileModule module, string name)
+        public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
             var profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
             return new ProfileDescriptor(module, profileEntity);
@@ -72,15 +63,27 @@ namespace Artemis.Core.Services.Storage
 
         public Profile ActivateProfile(ProfileDescriptor profileDescriptor)
         {
-            if (profileDescriptor.ProfileModule.ActiveProfile.EntityId == profileDescriptor.Id)
+            if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
                 return profileDescriptor.ProfileModule.ActiveProfile;
 
-            var profile = new Profile(profileDescriptor.ProfileModule, profileDescriptor.ProfileEntity);
-            InitializeLayerProperties(profile);
-            InstantiateLayers(profile);
-            InstantiateFolders(profile);
+            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            InstantiateProfile(profile);
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+            return profile;
+        }
+
+        public async Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor)
+        {
+            if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
+                return profileDescriptor.ProfileModule.ActiveProfile;
+
+            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            InstantiateProfile(profile);
+
+            await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _surfaceService.ActiveSurface);
             return profile;
         }
 
@@ -89,12 +92,28 @@ namespace Artemis.Core.Services.Storage
             module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
         }
 
+        public async Task ClearActiveProfileAnimated(ProfileModule module)
+        {
+            await module.ChangeActiveProfileAnimated(null, _surfaceService.ActiveSurface);
+        }
+
         public void DeleteProfile(Profile profile)
         {
             _logger.Debug("Removing profile " + profile);
 
-            
+            // If the given profile is currently active, disable it first (this also disposes it)
+            if (profile.Module.ActiveProfile == profile)
+                profile.Module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
+            else
+                profile.Dispose();
+
             _profileRepository.Remove(profile.ProfileEntity);
+        }
+
+        public void DeleteProfile(ProfileDescriptor profileDescriptor)
+        {
+            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            _profileRepository.Remove(profileEntity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
@@ -116,46 +135,73 @@ namespace Artemis.Core.Services.Storage
             _profileRepository.Save(profile.ProfileEntity);
         }
 
-        public bool UndoUpdateProfile(Profile profile, ProfileModule module)
+        public bool UndoUpdateProfile(Profile profile)
         {
-            if (!profile.UndoStack.Any())
+            // Keep the profile from being rendered by locking it
+            lock (profile)
             {
-                _logger.Debug("Undo profile update - Failed, undo stack empty");
-                return false;
-            }
+                if (!profile.UndoStack.Any())
+                {
+                    _logger.Debug("Undo profile update - Failed, undo stack empty");
+                    return false;
+                }
 
-            ActivateProfile(module, null);
-            var top = profile.UndoStack.Pop();
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
-            profile.RedoStack.Push(memento);
-            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
-            profile.ApplyToProfile();
-            ActivateProfile(module, profile);
+                var top = profile.UndoStack.Pop();
+                var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                profile.RedoStack.Push(memento);
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
+
+                profile.ApplyToProfile();
+                InstantiateProfile(profile);
+            }
 
             _logger.Debug("Undo profile update - Success");
             return true;
         }
 
-        public bool RedoUpdateProfile(Profile profile, ProfileModule module)
+        public bool RedoUpdateProfile(Profile profile)
         {
-            if (!profile.RedoStack.Any())
+            // Keep the profile from being rendered by locking it
+            lock (profile)
             {
-                _logger.Debug("Redo profile update - Failed, redo empty");
-                return false;
+                if (!profile.RedoStack.Any())
+                {
+                    _logger.Debug("Redo profile update - Failed, redo empty");
+                    return false;
+                }
+
+                var top = profile.RedoStack.Pop();
+                var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                profile.UndoStack.Push(memento);
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
+
+                profile.ApplyToProfile();
+                InstantiateProfile(profile);
+
+                _logger.Debug("Redo profile update - Success");
+                return true;
             }
-
-            ActivateProfile(module, null);
-            var top = profile.RedoStack.Pop();
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
-            profile.UndoStack.Push(memento);
-            profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
-            profile.ApplyToProfile();
-            ActivateProfile(module, profile);
-
-            _logger.Debug("Redo profile update - Success");
-            return true;
         }
 
+        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
+        {
+            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
+            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
+        }
+
+        public void InstantiateProfile(Profile profile)
+        {
+            profile.PopulateLeds(_surfaceService.ActiveSurface);
+            InitializeLayerProperties(profile);
+            InstantiateLayers(profile);
+            InstantiateFolders(profile);
+        }
+
+        /// <summary>
+        ///     Initializes the properties on the layers of the given profile
+        /// </summary>
+        /// <param name="profile"></param>
         private void InitializeLayerProperties(Profile profile)
         {
             foreach (var layer in profile.GetAllLayers())
@@ -167,6 +213,9 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
+        /// <summary>
+        ///     Instantiates all plugin-related classes on the folders of the given profile
+        /// </summary>
         private void InstantiateFolders(Profile profile)
         {
             foreach (var folder in profile.GetAllFolders())
@@ -182,6 +231,9 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
+        /// <summary>
+        ///     Instantiates all plugin-related classes on the layers of the given profile
+        /// </summary>
         private void InstantiateLayers(Profile profile)
         {
             foreach (var layer in profile.GetAllLayers())
@@ -204,6 +256,10 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
+        /// <summary>
+        ///     Populates all missing LEDs on all currently active profiles
+        /// </summary>
+        /// <param name="surface"></param>
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
@@ -211,6 +267,10 @@ namespace Artemis.Core.Services.Storage
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
 
+
+        /// <summary>
+        ///     Instantiates all missing plugin-related classes on the profile trees of all currently active profiles
+        /// </summary>
         private void ActiveProfilesInstantiatePlugins()
         {
             var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
@@ -242,8 +302,8 @@ namespace Artemis.Core.Services.Storage
                 ActiveProfilesInstantiatePlugins();
             else if (e.PluginInfo.Instance is ProfileModule profileModule)
             {
-                var activeProfile = GetActiveProfile(profileModule);
-                ActivateProfile(profileModule, activeProfile);
+                var activeProfile = GetLastActiveProfile(profileModule);
+                ActivateProfile(activeProfile);
             }
         }
 

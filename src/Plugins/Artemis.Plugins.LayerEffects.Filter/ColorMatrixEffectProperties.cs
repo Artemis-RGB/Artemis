@@ -25,5 +25,9 @@ namespace Artemis.Plugins.LayerEffects.Filter
         {
             ColorMatrix.IsHidden = true;
         }
+
+        protected override void DisableProperties()
+        {
+        }
     }
 }

@@ -70,4 +70,9 @@
       <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Groups.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Resources\intro-profile.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>

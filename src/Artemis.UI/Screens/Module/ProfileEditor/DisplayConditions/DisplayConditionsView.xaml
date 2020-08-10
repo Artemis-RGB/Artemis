@@ -79,7 +79,7 @@
                         </Grid.ColumnDefinitions>
                         <RadioButton Grid.Column="0"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding RenderProfileElement.DisplayContinuously}"
+                                 IsChecked="{Binding DisplayContinuously}"
                                  MinWidth="0"
                                  Padding="5 0">
                             <RadioButton.ToolTip>
@@ -96,7 +96,7 @@
                         </RadioButton>
                         <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding RenderProfileElement.DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
+                                 IsChecked="{Binding DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
                                  MinWidth="0"
                                  Padding="5 0">
                             <RadioButton.ToolTip>
@@ -135,7 +135,7 @@
                         </Grid.ColumnDefinitions>
                         <RadioButton Grid.Column="0"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding RenderProfileElement.AlwaysFinishTimeline}"
+                                 IsChecked="{Binding AlwaysFinishTimeline}"
                                  MinWidth="0"
                                  Padding="5 0">
                             <RadioButton.ToolTip>
@@ -152,7 +152,7 @@
                         </RadioButton>
                         <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding RenderProfileElement.AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
+                                 IsChecked="{Binding AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
                                  MinWidth="0"
                                  Padding="5 0">
                             <RadioButton.ToolTip>

@@ -3,14 +3,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Ninject;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Core.Utilities;
 using Artemis.Storage;
 using Newtonsoft.Json;
 using RGB.NET.Core;
@@ -35,6 +38,7 @@ namespace Artemis.Core.Services
         private readonly ISurfaceService _surfaceService;
         private List<BaseDataModelExpansion> _dataModelExpansions;
         private List<Module> _modules;
+        private IntroAnimation _introAnimation;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
         internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
@@ -90,11 +94,38 @@ namespace Artemis.Core.Services
             else
                 _logger.Information("Initialized without an active surface entity");
 
+            PlayIntroAnimation();
             _profileService.ActivateLastActiveProfiles();
 
             OnInitialized();
         }
 
+        private void PlayIntroAnimation()
+        {
+            FrameRendering += DrawOverlay;
+            _introAnimation = new IntroAnimation(_logger, _profileService, _surfaceService);
+
+            // Draw a white overlay over the device
+            void DrawOverlay(object sender, FrameRenderingEventArgs args)
+            {
+                if (_introAnimation == null)
+                    args.Canvas.Clear(new SKColor(0, 0, 0));
+                else
+                    _introAnimation.Render(args.DeltaTime, args.Canvas, _rgbService.BitmapBrush.Bitmap.Info);
+            }
+
+            var introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.TimelineLength);
+
+            // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
+            Task.Run(async () =>
+            {
+                await Task.Delay(introLength.Add(TimeSpan.FromSeconds(1)));
+                FrameRendering -= DrawOverlay;
+
+                _introAnimation.AnimationProfile?.Dispose();
+                _introAnimation = null;
+            });
+        }
 
         public void SetMainWindowHandle(IntPtr handle)
         {

@@ -49,6 +49,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             UpdateVisibility();
         }
 
+        protected override void DisableProperties()
+        {
+        }
+
         private void UpdateVisibility()
         {
             GradientColor.IsHidden = ColorType.BaseValue != ColorMappingType.Gradient;

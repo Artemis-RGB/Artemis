@@ -30,5 +30,9 @@ namespace Artemis.Core.Models.Profile
         protected override void EnableProperties()
         {
         }
+
+        protected override void DisableProperties()
+        {
+        }
     }
 }
