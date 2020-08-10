@@ -25,7 +25,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
-        private BindableCollection<Profile> _profiles;
+        private BindableCollection<ProfileDescriptor> _profiles;
         private PluginSetting<GridLength> _sidePanelsWidth;
         private PluginSetting<GridLength> _displayConditionsHeight;
         private PluginSetting<GridLength> _bottomPanelsHeight;
@@ -34,6 +34,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private ProfileTreeViewModel _profileTreeViewModel;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private DisplayConditionsViewModel _displayConditionsViewModel;
+        private ProfileDescriptor _selectedProfile;
 
         public ProfileEditorViewModel(ProfileModule module,
             ICollection<ProfileEditorPanelViewModel> viewModels,
@@ -52,7 +53,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Module = module;
             DialogService = dialogService;
 
-            Profiles = new BindableCollection<Profile>();
+            Profiles = new BindableCollection<ProfileDescriptor>();
 
             // Run this first to let VMs activate without causing constant UI updates
             Items.AddRange(viewModels);
@@ -91,7 +92,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             set => SetAndNotify(ref _profileViewModel, value);
         }
 
-        public BindableCollection<Profile> Profiles
+        public BindableCollection<ProfileDescriptor> Profiles
         {
             get => _profiles;
             set => SetAndNotify(ref _profiles, value);
@@ -121,17 +122,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             set => SetAndNotify(ref _elementPropertiesWidth, value);
         }
 
-        public Profile SelectedProfile
+        public ProfileDescriptor SelectedProfile
         {
-            get => Module.ActiveProfile;
-            set => ChangeSelectedProfile(value);
+            get => _selectedProfile;
+            set
+            {
+                if (!SetAndNotify(ref _selectedProfile, value)) return;
+                NotifyOfPropertyChange(nameof(CanDeleteActiveProfile));
+                ActivateSelectedProfile();
+            }
         }
 
         public bool CanDeleteActiveProfile => SelectedProfile != null && Profiles.Count > 1;
 
-        public Profile CreateProfile(string name)
+        public ProfileDescriptor CreateProfile(string name)
         {
-            var profile = _profileService.CreateProfile(Module, name);
+            var profile = _profileService.CreateProfileDescriptor(Module, name);
             Profiles.Add(profile);
             return profile;
         }
@@ -146,6 +152,17 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             }
         }
 
+        public async Task DeleteProfile(ProfileDescriptor profileDescriptor)
+        {
+            var result = await DialogService.ShowConfirmDialog(
+                "Delete profile",
+                $"Are you sure you want to delete '{profileDescriptor.Name}'? This cannot be undone."
+            );
+
+            if (result)
+                RemoveProfile(profileDescriptor);
+        }
+
         public async Task DeleteActiveProfile()
         {
             var result = await DialogService.ShowConfirmDialog(
@@ -153,21 +170,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 "Are you sure you want to delete your currently active profile? This cannot be undone."
             );
 
-            if (!result || !CanDeleteActiveProfile)
-                return;
-
-            var profile = SelectedProfile;
-            var index = Profiles.IndexOf(profile);
-
-            // Get a new active profile
-            var newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
-
-            // Activate the new active profile
-            SelectedProfile = newActiveProfile;
-
-            // Remove the old one
-            Profiles.Remove(profile);
-            _profileService.DeleteProfile(profile);
+            if (result)
+                RemoveProfile(SelectedProfile);
         }
 
         public void Undo()
@@ -176,7 +180,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
-            if (!_profileEditorService.UndoUpdateProfile(Module))
+            if (!_profileEditorService.UndoUpdateProfile())
             {
                 _snackbarMessageQueue.Enqueue("Nothing to undo");
                 return;
@@ -195,7 +199,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
-            if (!_profileEditorService.RedoUpdateProfile(Module))
+            if (!_profileEditorService.RedoUpdateProfile())
             {
                 _snackbarMessageQueue.Enqueue("Nothing to redo");
                 return;
@@ -225,29 +229,38 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             base.OnClose();
         }
 
-        private void ChangeSelectedProfile(Profile profile)
+        private void RemoveProfile(ProfileDescriptor profileDescriptor)
         {
-            var oldProfile = Module.ActiveProfile;
-            _profileService.ActivateProfile(Module, profile);
+            if (SelectedProfile == profileDescriptor && !CanDeleteActiveProfile)
+                return;
 
-            if (oldProfile != null)
-                _profileService.UpdateProfile(oldProfile, false);
-            if (profile != null)
-                _profileService.UpdateProfile(profile, false);
+            var index = Profiles.IndexOf(profileDescriptor);
 
-            if (_profileEditorService.SelectedProfile != profile)
+            // Get a new active profile
+            var newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
+
+            // Activate the new active profile
+            SelectedProfile = newActiveProfile;
+
+            // Remove the old one
+            Profiles.Remove(profileDescriptor);
+            _profileService.DeleteProfile(profileDescriptor);
+        }
+
+        private void ActivateSelectedProfile()
+        {
+            Execute.PostToUIThread(async () =>
+            {
+                var changeTask = _profileService.ActivateProfileAnimated(SelectedProfile);
+                _profileEditorService.ChangeSelectedProfile(null);
+                var profile = await changeTask;
                 _profileEditorService.ChangeSelectedProfile(profile);
-
-            NotifyOfPropertyChange(nameof(SelectedProfile));
-            NotifyOfPropertyChange(nameof(CanDeleteActiveProfile));
+            });
         }
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
         {
-            if (SelectedProfile == Module.ActiveProfile)
-                return;
-
-            SelectedProfile = Profiles.FirstOrDefault(p => p == Module.ActiveProfile);
+            SelectedProfile = Profiles.FirstOrDefault(d => d.Id == Module.ActiveProfile.EntityId);
         }
 
         private void LoadWorkspaceSettings()
@@ -269,29 +282,19 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
         private void LoadProfiles()
         {
             // Get all profiles from the database
-            var profiles = _profileService.GetProfiles(Module);
-            // Get the latest active profile, this falls back to just any profile so if null, create a default profile
-            var activeProfile = _profileService.GetActiveProfile(Module) ?? _profileService.CreateProfile(Module, "Default");
+            Profiles.Clear();
+            Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(d => d.Name));
 
-            // GetActiveProfile can return a duplicate because inactive profiles aren't kept in memory, make sure it's unique in the profiles list
-            profiles = profiles.Where(p => p.EntityId != activeProfile.EntityId).ToList();
-            profiles.Add(activeProfile);
+            // Populate the selected profile
+            SelectedProfile = Profiles.FirstOrDefault(p => p.IsLastActiveProfile);
 
-            // Populate the UI collection
-            Profiles.AddRange(profiles.Except(Profiles).ToList());
-            Profiles.RemoveRange(Profiles.Except(profiles).ToList());
-            var index = 0;
-            foreach (var profile in Profiles.OrderBy(p => p.Name).ToList())
-            {
-                Profiles.Move(Profiles.IndexOf(profile), index);
-                index++;
-            }
+            if (SelectedProfile != null)
+                return;
 
-            SelectedProfile = activeProfile;
-            if (_profileEditorService.SelectedProfile != activeProfile)
-                _profileEditorService.ChangeSelectedProfile(activeProfile);
-            if (!activeProfile.IsActivated)
-                _profileService.ActivateProfile(Module, activeProfile);
+            // Create a default profile if there is none
+            var defaultProfile = _profileService.CreateProfileDescriptor(Module, "Default");
+            Profiles.Add(defaultProfile);
+            SelectedProfile = defaultProfile;
         }
     }
 }

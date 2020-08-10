@@ -209,7 +209,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public List<LayerPropertyGroupViewModel> GetAllLayerPropertyGroupViewModels()
         {
             var groups = LayerPropertyGroups.ToList();
-            groups.AddRange(groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>());
+            var toAdd = groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
+            groups.AddRange(toAdd);
             return groups;
         }
 

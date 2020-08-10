@@ -2,9 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerShapes;
 using Artemis.Core.Models.Surface;
@@ -12,7 +10,6 @@ using Artemis.UI.Extensions;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
-using Rectangle = Artemis.Core.Models.Profile.LayerShapes.Rectangle;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
 {
@@ -48,7 +45,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
             get => _shapeGeometry;
             set => SetAndNotify(ref _shapeGeometry, value);
         }
-        
+
         public Rect ViewportRectangle
         {
             get => _viewportRectangle;
@@ -117,7 +114,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.Visualization
         private void Update()
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
-            
+
             CreateShapeGeometry();
             CreateViewportRectangle();
         }

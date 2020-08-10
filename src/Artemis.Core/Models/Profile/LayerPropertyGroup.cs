@@ -110,6 +110,8 @@ namespace Artemis.Core.Models.Profile
         public void Dispose()
         {
             DisableProperties();
+            foreach (var layerPropertyGroup in _layerPropertyGroups)
+                layerPropertyGroup.Dispose();
         }
 
         /// <summary>

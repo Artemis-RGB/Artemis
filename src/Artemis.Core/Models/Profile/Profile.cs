@@ -57,6 +57,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot update inactive profile: {this}");
 
@@ -69,6 +71,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
@@ -79,21 +83,26 @@ namespace Artemis.Core.Models.Profile
 
         public Folder GetRootFolder()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             return (Folder) Children.Single();
         }
 
         public void ApplyToProfile()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             Name = ProfileEntity.Name;
 
             lock (ChildrenList)
             {
-                foreach (var folder in GetAllFolders())
-                    folder.Deactivate();
-                foreach (var layer in GetAllLayers())
-                    layer.Deactivate();
-
+                // Remove the old profile tree
+                foreach (var profileElement in Children)
+                    profileElement.Dispose();
                 ChildrenList.Clear();
+
                 // Populate the profile starting at the root, the rest is populated recursively
                 var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
@@ -113,13 +122,21 @@ namespace Artemis.Core.Models.Profile
             if (!disposing)
                 return;
 
-            Deactivate();
+            OnDeactivating();
+
             foreach (var profileElement in Children)
                 profileElement.Dispose();
+            ChildrenList.Clear();
+
+            IsActivated = false;
+            _disposed = true;
         }
 
         internal override void ApplyToEntity()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             ProfileEntity.Id = EntityId;
             ProfileEntity.PluginGuid = Module.PluginInfo.Guid;
             ProfileEntity.Name = Name;
@@ -139,6 +156,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (IsActivated)
                     return;
 
@@ -148,25 +167,11 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        internal void Deactivate()
-        {
-            lock (this)
-            {
-                if (!IsActivated)
-                    return;
-
-                foreach (var folder in GetAllFolders())
-                    folder.Deactivate();
-                foreach (var layer in GetAllLayers())
-                    layer.Deactivate();
-
-                IsActivated = false;
-                OnDeactivated();
-            }
-        }
-
         internal void PopulateLeds(ArtemisSurface surface)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             foreach (var layer in GetAllLayers())
                 layer.PopulateLeds(surface);
         }
@@ -174,7 +179,7 @@ namespace Artemis.Core.Models.Profile
         #region Events
 
         /// <summary>
-        ///     Occurs when the profile is being activated.
+        ///     Occurs when the profile has been activated.
         /// </summary>
         public event EventHandler Activated;
 
@@ -188,7 +193,7 @@ namespace Artemis.Core.Models.Profile
             Activated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnDeactivated()
+        private void OnDeactivating()
         {
             Deactivated?.Invoke(this, EventArgs.Empty);
         }

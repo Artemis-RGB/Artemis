@@ -9,16 +9,16 @@ namespace Artemis.Core.Models.Profile
         internal ProfileDescriptor(ProfileModule profileModule, ProfileEntity profileEntity)
         {
             ProfileModule = profileModule;
-            ProfileEntity = profileEntity;
 
             Id = profileEntity.Id;
             Name = profileEntity.Name;
+            IsLastActiveProfile = profileEntity.IsActive;
         }
-        
+
+        public bool IsLastActiveProfile { get; set; }
+
         public Guid Id { get; }
         public ProfileModule ProfileModule { get; }
         public string Name { get; }
-
-        internal ProfileEntity ProfileEntity { get; }
     }
 }

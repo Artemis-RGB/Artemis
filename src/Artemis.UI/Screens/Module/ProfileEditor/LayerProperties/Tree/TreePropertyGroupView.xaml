@@ -21,7 +21,8 @@
             Text="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Name}"
             ToolTip="{Binding LayerPropertyGroupViewModel.PropertyGroupDescription.Description}"
             VerticalAlignment="Center"
-            Margin="0 5">
+            HorizontalAlignment="Left"
+            Margin="3 5 0 5">
             <TextBlock.Style>
                 <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="Visibility" Value="Collapsed" />

@@ -23,5 +23,9 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
         protected override void EnableProperties()
         {
         }
+
+        protected override void DisableProperties()
+        {
+        }
     }
 }

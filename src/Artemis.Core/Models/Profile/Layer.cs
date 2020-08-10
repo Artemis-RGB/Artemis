@@ -126,6 +126,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override List<BaseLayerPropertyKeyframe> GetAllKeyframes()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var keyframes = base.GetAllKeyframes();
 
             foreach (var baseLayerProperty in General.GetAllLayerProperties())
@@ -143,22 +146,36 @@ namespace Artemis.Core.Models.Profile
 
         protected override void Dispose(bool disposing)
         {
-            if (!disposing) 
+            if (!disposing)
                 return;
 
-            _general?.Dispose();
-            _layerBitmap?.Dispose();
+            _disposed = true;
+
+            // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
-            _transform?.Dispose();
+            _layerBrush = null;
 
             foreach (var baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
+            _layerEffects.Clear();
+
+            _general?.Dispose();
+            _general = null;
+            _layerBitmap?.Dispose();
+            _layerBitmap = null;
+            _transform?.Dispose();
+            _transform = null;
+
+            Profile = null;
         }
 
         #region Storage
 
         internal override void ApplyToEntity()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             // Properties
             LayerEntity.Id = EntityId;
             LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
@@ -231,6 +248,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
@@ -259,6 +279,9 @@ namespace Artemis.Core.Models.Profile
 
         public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
@@ -268,9 +291,7 @@ namespace Artemis.Core.Models.Profile
             {
                 if (!DisplayContinuously)
                 {
-                    var position = timeOverride + StartSegmentLength;
-                    if (position > StartSegmentLength + EndSegmentLength)
-                        TimelinePosition = StartSegmentLength + EndSegmentLength;
+                    TimelinePosition = StartSegmentLength + timeOverride;
                 }
                 else
                 {
@@ -301,6 +322,9 @@ namespace Artemis.Core.Models.Profile
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             if (!Enabled || TimelinePosition > TimelineLength)
                 return;
 
@@ -424,6 +448,9 @@ namespace Artemis.Core.Models.Profile
 
         internal void CalculateRenderProperties()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             if (!Leds.Any())
                 Path = new SKPath();
             else
@@ -448,6 +475,9 @@ namespace Artemis.Core.Models.Profile
 
         internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool zeroBased = false)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
@@ -469,6 +499,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="path"></param>
         public void IncludePathInTranslation(SKPath path, bool zeroBased)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
 
@@ -498,6 +531,9 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public void ExcludePathFromTranslation(SKPath path, bool zeroBased)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
 
@@ -531,6 +567,9 @@ namespace Artemis.Core.Models.Profile
         /// <returns>The number of transformations applied</returns>
         public int ExcludeCanvasFromTranslation(SKCanvas canvas, bool zeroBased)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var sizeProperty = Transform.Scale.CurrentValue;
             var rotationProperty = Transform.Rotation.CurrentValue;
 
@@ -568,6 +607,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="led">The LED to add</param>
         public void AddLed(ArtemisLed led)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             _leds.Add(led);
             CalculateRenderProperties();
         }
@@ -578,6 +620,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="leds">The LEDs to add</param>
         public void AddLeds(IEnumerable<ArtemisLed> leds)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             _leds.AddRange(leds);
             CalculateRenderProperties();
         }
@@ -588,6 +633,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="led">The LED to remove</param>
         public void RemoveLed(ArtemisLed led)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             _leds.Remove(led);
             CalculateRenderProperties();
         }
@@ -597,12 +645,18 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public void ClearLeds()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             _leds.Clear();
             CalculateRenderProperties();
         }
 
         internal void PopulateLeds(ArtemisSurface surface)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Layer");
+
             var leds = new List<ArtemisLed>();
 
             // Get the surface LEDs for this layer
@@ -622,17 +676,6 @@ namespace Artemis.Core.Models.Profile
         #endregion
 
         #region Activation
-
-        internal void Deactivate()
-        {
-            _layerBitmap?.Dispose();
-            _layerBitmap = null;
-
-            DeactivateLayerBrush();
-            var layerEffects = new List<BaseLayerEffect>(LayerEffects);
-            foreach (var baseLayerEffect in layerEffects)
-                DeactivateLayerEffect(baseLayerEffect);
-        }
 
         internal void DeactivateLayerBrush()
         {

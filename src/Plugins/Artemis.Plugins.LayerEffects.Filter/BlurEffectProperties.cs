@@ -18,7 +18,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
         {
         }
 
-        private void UpdateVisibility()
+        protected override void DisableProperties()
         {
         }
     }
