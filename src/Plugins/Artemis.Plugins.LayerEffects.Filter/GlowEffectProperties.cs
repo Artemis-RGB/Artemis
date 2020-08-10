@@ -22,7 +22,11 @@ namespace Artemis.Plugins.LayerEffects.Filter
             GlowColor.DefaultValue = new SKColor(255, 255, 255);
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
+        {
+        }
+
+        protected override void DisableProperties()
         {
         }
     }

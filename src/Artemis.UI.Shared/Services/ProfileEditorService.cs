@@ -77,8 +77,9 @@ namespace Artemis.UI.Shared.Services
 
                 var profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
                 SelectedProfile = profile;
-                UpdateProfilePreview();
+
                 OnSelectedProfileChanged(profileElementEvent);
+                UpdateProfilePreview();
             }
         }
 
@@ -88,8 +89,9 @@ namespace Artemis.UI.Shared.Services
             {
                 _logger.Verbose("UpdateSelectedProfile {profile}", SelectedProfile);
                 _profileService.UpdateProfile(SelectedProfile, true);
-                UpdateProfilePreview();
+
                 OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile));
+                UpdateProfilePreview();
             }
         }
 
@@ -132,13 +134,19 @@ namespace Artemis.UI.Shared.Services
             OnProfilePreviewUpdated();
         }
 
-        public bool UndoUpdateProfile(ProfileModule module)
+        public bool UndoUpdateProfile()
         {
-            var undid = _profileService.UndoUpdateProfile(SelectedProfile, module);
+            var undid = _profileService.UndoUpdateProfile(SelectedProfile);
             if (!undid)
                 return false;
 
+            if (SelectedProfileElement is Folder folder)
+                SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
+            else if (SelectedProfileElement is Layer layer)
+                SelectedProfileElement = SelectedProfile.GetAllLayers().FirstOrDefault(l => l.EntityId == layer.EntityId);
+
             OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
+            OnSelectedProfileElementChanged(new RenderProfileElementEventArgs(SelectedProfileElement));
 
             if (SelectedProfileElement != null)
             {
@@ -152,9 +160,9 @@ namespace Artemis.UI.Shared.Services
             return true;
         }
 
-        public bool RedoUpdateProfile(ProfileModule module)
+        public bool RedoUpdateProfile()
         {
-            var redid = _profileService.RedoUpdateProfile(SelectedProfile, module);
+            var redid = _profileService.RedoUpdateProfile(SelectedProfile);
             if (!redid)
                 return false;
 
@@ -248,9 +256,9 @@ namespace Artemis.UI.Shared.Services
             return time;
         }
 
-        public Module GetCurrentModule()
+        public ProfileModule GetCurrentModule()
         {
-            return (Module) SelectedProfile?.PluginInfo.Instance;
+            return SelectedProfile?.Module;
         }
 
         public event EventHandler<ProfileEventArgs> ProfileSelected;

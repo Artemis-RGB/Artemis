@@ -9,6 +9,7 @@ using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree;
 using Artemis.UI.Shared.Services.Interfaces;
+using Humanizer;
 using Ninject;
 using Ninject.Parameters;
 
@@ -41,6 +42,16 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
 
             TreePropertyGroupViewModel = _layerPropertyVmFactory.TreePropertyGroupViewModel(this);
             TimelinePropertyGroupViewModel = _layerPropertyVmFactory.TimelinePropertyGroupViewModel(this);
+
+            // Generate a fallback name if the description does not contain one
+            if (PropertyGroupDescription.Name == null)
+            {
+                var propertyInfo = LayerPropertyGroup.Parent?.GetType().GetProperties().FirstOrDefault(p => ReferenceEquals(p.GetValue(LayerPropertyGroup.Parent), LayerPropertyGroup));
+                if (propertyInfo != null)
+                    PropertyGroupDescription.Name = propertyInfo.Name.Humanize();
+                else
+                    PropertyGroupDescription.Name = "Unknown group";
+            }
 
             LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
             PopulateChildren();

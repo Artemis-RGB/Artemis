@@ -20,7 +20,11 @@ namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
             TestProperty.DefaultValue = "I was empty before!";
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
+        {
+        }
+
+        protected override void DisableProperties()
         {
         }
     }

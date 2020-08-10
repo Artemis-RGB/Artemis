@@ -106,6 +106,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         public void Dispose()
         {
             DisableLayerEffect();
+            BaseProperties.Dispose();
         }
 
         /// <summary>

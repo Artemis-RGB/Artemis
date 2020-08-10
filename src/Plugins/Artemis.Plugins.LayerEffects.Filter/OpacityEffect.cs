@@ -40,7 +40,11 @@ namespace Artemis.Plugins.LayerEffects.Filter
             Opacity.DefaultValue = 100f;
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
+        {
+        }
+
+        protected override void DisableProperties()
         {
         }
     }
