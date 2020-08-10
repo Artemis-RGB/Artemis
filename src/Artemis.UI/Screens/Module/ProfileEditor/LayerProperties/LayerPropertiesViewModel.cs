@@ -209,7 +209,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
         public List<LayerPropertyGroupViewModel> GetAllLayerPropertyGroupViewModels()
         {
             var groups = LayerPropertyGroups.ToList();
-            groups.AddRange(groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>());
+            var toAdd = groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
+            groups.AddRange(toAdd);
             return groups;
         }
 
@@ -284,7 +285,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties
             var hideRenderRelatedProperties = SelectedLayer?.LayerBrush != null && !SelectedLayer.LayerBrush.SupportsTransformation;
 
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
-            SelectedLayer.General.FillType.IsHidden = hideRenderRelatedProperties;
+            SelectedLayer.General.ResizeMode.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.BlendMode.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.Transform.IsHidden = hideRenderRelatedProperties;
 

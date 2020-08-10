@@ -14,6 +14,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private RenderProfileElement _renderProfileElement;
         private DisplayConditionGroupViewModel _rootGroup;
         private int _transitionerIndex;
+        private bool _displayContinuously;
+        private bool _alwaysFinishTimeline;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
@@ -39,15 +41,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _renderProfileElement, value);
         }
 
-        public int ConditionBehaviourIndex
+        public bool DisplayContinuously
         {
-            get => RenderProfileElement != null && RenderProfileElement.AlwaysFinishTimeline ? 0 : 1;
+            get => _displayContinuously;
             set
             {
-                if (RenderProfileElement == null)
-                    return;
+                if (!SetAndNotify(ref _displayContinuously, value)) return;
+                _profileEditorService.UpdateSelectedProfileElement();
+            }
+        }
 
-                RenderProfileElement.AlwaysFinishTimeline = value == 0;
+        public bool AlwaysFinishTimeline
+        {
+            get => _alwaysFinishTimeline;
+            set
+            {
+                if (!SetAndNotify(ref _alwaysFinishTimeline, value)) return;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
@@ -70,9 +79,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
             RenderProfileElement = e.RenderProfileElement;
-            NotifyOfPropertyChange(nameof(ConditionBehaviourIndex));
             NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
 
+            _displayContinuously = RenderProfileElement?.DisplayContinuously ?? false;
+            NotifyOfPropertyChange(nameof(DisplayContinuously));
+            _alwaysFinishTimeline = RenderProfileElement?.AlwaysFinishTimeline ?? false;
+            NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
+            
             if (e.RenderProfileElement == null)
             {
                 RootGroup?.Dispose();

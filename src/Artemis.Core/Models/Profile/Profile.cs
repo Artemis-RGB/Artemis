@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Surface;
+using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
@@ -13,12 +14,12 @@ namespace Artemis.Core.Models.Profile
     {
         private bool _isActivated;
 
-        internal Profile(PluginInfo pluginInfo, string name)
+        internal Profile(ProfileModule module, string name)
         {
             ProfileEntity = new ProfileEntity();
             EntityId = Guid.NewGuid();
 
-            PluginInfo = pluginInfo;
+            Module = module;
             Name = name;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
@@ -27,19 +28,19 @@ namespace Artemis.Core.Models.Profile
             ApplyToEntity();
         }
 
-        internal Profile(PluginInfo pluginInfo, ProfileEntity profileEntity)
+        internal Profile(ProfileModule module, ProfileEntity profileEntity)
         {
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
 
-            PluginInfo = pluginInfo;
+            Module = module;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
             ApplyToProfile();
         }
 
-        public PluginInfo PluginInfo { get; }
+        public ProfileModule Module { get; }
 
         public bool IsActivated
         {
@@ -56,6 +57,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot update inactive profile: {this}");
 
@@ -68,6 +71,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
@@ -78,21 +83,26 @@ namespace Artemis.Core.Models.Profile
 
         public Folder GetRootFolder()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             return (Folder) Children.Single();
         }
 
         public void ApplyToProfile()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             Name = ProfileEntity.Name;
 
             lock (ChildrenList)
             {
-                foreach (var folder in GetAllFolders())
-                    folder.Deactivate();
-                foreach (var layer in GetAllLayers())
-                    layer.Deactivate();
-
+                // Remove the old profile tree
+                foreach (var profileElement in Children)
+                    profileElement.Dispose();
                 ChildrenList.Clear();
+
                 // Populate the profile starting at the root, the rest is populated recursively
                 var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
@@ -104,13 +114,31 @@ namespace Artemis.Core.Models.Profile
 
         public override string ToString()
         {
-            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(PluginInfo)}: {PluginInfo}";
+            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(Module)}: {Module}";
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            OnDeactivating();
+
+            foreach (var profileElement in Children)
+                profileElement.Dispose();
+            ChildrenList.Clear();
+
+            IsActivated = false;
+            _disposed = true;
         }
 
         internal override void ApplyToEntity()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             ProfileEntity.Id = EntityId;
-            ProfileEntity.PluginGuid = PluginInfo.Guid;
+            ProfileEntity.PluginGuid = Module.PluginInfo.Guid;
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
 
@@ -128,6 +156,8 @@ namespace Artemis.Core.Models.Profile
         {
             lock (this)
             {
+                if (_disposed)
+                    throw new ObjectDisposedException("Profile");
                 if (IsActivated)
                     return;
 
@@ -137,25 +167,11 @@ namespace Artemis.Core.Models.Profile
             }
         }
 
-        internal void Deactivate()
-        {
-            lock (this)
-            {
-                if (!IsActivated)
-                    return;
-
-                foreach (var folder in GetAllFolders()) 
-                    folder.Deactivate();
-                foreach (var layer in GetAllLayers())
-                    layer.Deactivate();
-
-                IsActivated = false;
-                OnDeactivated();
-            }
-        }
-
         internal void PopulateLeds(ArtemisSurface surface)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("Profile");
+
             foreach (var layer in GetAllLayers())
                 layer.PopulateLeds(surface);
         }
@@ -163,7 +179,7 @@ namespace Artemis.Core.Models.Profile
         #region Events
 
         /// <summary>
-        ///     Occurs when the profile is being activated.
+        ///     Occurs when the profile has been activated.
         /// </summary>
         public event EventHandler Activated;
 
@@ -177,7 +193,7 @@ namespace Artemis.Core.Models.Profile
             Activated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void OnDeactivated()
+        private void OnDeactivating()
         {
             Deactivated?.Invoke(this, EventArgs.Empty);
         }

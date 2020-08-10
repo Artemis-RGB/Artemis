@@ -2,7 +2,9 @@
 using System.ComponentModel;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.LayerBrush.Abstract;
+using Artemis.Plugins.LayerBrushes.Color.PropertyGroups;
 using SkiaSharp;
+using static Artemis.Plugins.LayerBrushes.Color.PropertyGroups.ColorBrushProperties;
 
 namespace Artemis.Plugins.LayerBrushes.Color
 {
@@ -18,7 +20,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
         {
             Layer.RenderPropertiesUpdated += HandleShaderChange;
             Properties.LayerPropertyBaseValueChanged += HandleShaderChange;
-            Properties.Gradient.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
+            Properties.Colors.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
         }
 
         public override void DisableLayerBrush()
@@ -26,9 +28,9 @@ namespace Artemis.Plugins.LayerBrushes.Color
             Layer.RenderPropertiesUpdated -= HandleShaderChange;
             Properties.GradientType.BaseValueChanged -= HandleShaderChange;
             Properties.Color.BaseValueChanged -= HandleShaderChange;
-            Properties.GradientTileMode.BaseValueChanged -= HandleShaderChange;
-            Properties.GradientRepeat.BaseValueChanged -= HandleShaderChange;
-            Properties.Gradient.BaseValue.PropertyChanged -= BaseValueOnPropertyChanged;
+            Properties.TileMode.BaseValueChanged -= HandleShaderChange;
+            Properties.ColorsMultiplier.BaseValueChanged -= HandleShaderChange;
+            Properties.Colors.BaseValue.PropertyChanged -= BaseValueOnPropertyChanged;
 
             _paint?.Dispose();
             _shader?.Dispose();
@@ -39,16 +41,16 @@ namespace Artemis.Plugins.LayerBrushes.Color
         public override void Update(double deltaTime)
         {
             // While rendering a solid, if the color was changed since the last frame, recreate the shader
-            if (Properties.GradientType.BaseValue == GradientType.Solid && _color != Properties.Color.CurrentValue)
+            if (Properties.GradientType.BaseValue == ColorType.Solid && _color != Properties.Color.CurrentValue)
                 CreateSolid();
             // While rendering a linear gradient, if the rotation was changed since the last frame, recreate the shader
-            else if (Properties.GradientType.BaseValue == GradientType.LinearGradient && Math.Abs(_linearGradientRotation - Properties.LinearGradientRotation.CurrentValue) > 0.01) 
+            else if (Properties.GradientType.BaseValue == ColorType.LinearGradient && Math.Abs(_linearGradientRotation - Properties.LinearGradientRotation.CurrentValue) > 0.01) 
                 CreateLinearGradient();
         }
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
         {
-            if (Layer.General.FillType.CurrentValue == LayerFillType.Clip)
+            if (Layer.General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
             {
                 var layerBounds = new SKRect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height);
                 if (layerBounds != _shaderBounds)
@@ -84,16 +86,16 @@ namespace Artemis.Plugins.LayerBrushes.Color
         {
             switch (Properties.GradientType.CurrentValue)
             {
-                case GradientType.Solid:
+                case ColorType.Solid:
                     CreateSolid();
                     break;
-                case GradientType.LinearGradient:
+                case ColorType.LinearGradient:
                     CreateLinearGradient();
                     break;
-                case GradientType.RadialGradient:
+                case ColorType.RadialGradient:
                     CreateRadialGradient();
                     break;
-                case GradientType.SweepGradient:
+                case ColorType.SweepGradient:
                     CreateSweepGradient();
                     break;
                 default:
@@ -120,16 +122,16 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateLinearGradient()
         {
-            var repeat = Properties.GradientRepeat.CurrentValue;
+            var repeat = Properties.ColorsMultiplier.CurrentValue;
             _linearGradientRotation = Properties.LinearGradientRotation.CurrentValue;
 
             _shader?.Dispose();
             _shader = SKShader.CreateLinearGradient(
                 new SKPoint(_shaderBounds.Left, _shaderBounds.Top),
                 new SKPoint(_shaderBounds.Right, _shaderBounds.Top),
-                Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                Properties.GradientTileMode.CurrentValue,
+                Properties.Colors.BaseValue.GetColorsArray(repeat),
+                Properties.Colors.BaseValue.GetPositionsArray(repeat),
+                Properties.TileMode.CurrentValue,
                 SKMatrix.MakeRotationDegrees(_linearGradientRotation, _shaderBounds.Left, _shaderBounds.MidY)
             );
             UpdatePaint();
@@ -137,29 +139,29 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateRadialGradient()
         {
-            var repeat = Properties.GradientRepeat.CurrentValue;
+            var repeat = Properties.ColorsMultiplier.CurrentValue;
 
             _shader?.Dispose();
             _shader = SKShader.CreateRadialGradient(
                 new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY),
                 Math.Max(_shaderBounds.Width, _shaderBounds.Height) / 2f,
-                Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                Properties.GradientTileMode.CurrentValue
+                Properties.Colors.BaseValue.GetColorsArray(repeat),
+                Properties.Colors.BaseValue.GetPositionsArray(repeat),
+                Properties.TileMode.CurrentValue
             );
             UpdatePaint();
         }
 
         private void CreateSweepGradient()
         {
-            var repeat = Properties.GradientRepeat.CurrentValue;
+            var repeat = Properties.ColorsMultiplier.CurrentValue;
 
             _shader?.Dispose();
             _shader = SKShader.CreateSweepGradient(
                 new SKPoint(_shaderBounds.MidX, _shaderBounds.MidY),
-                Properties.Gradient.BaseValue.GetColorsArray(repeat),
-                Properties.Gradient.BaseValue.GetPositionsArray(repeat),
-                Properties.GradientTileMode.CurrentValue,
+                Properties.Colors.BaseValue.GetColorsArray(repeat),
+                Properties.Colors.BaseValue.GetPositionsArray(repeat),
+                Properties.TileMode.CurrentValue,
                 0,
                 360
             );

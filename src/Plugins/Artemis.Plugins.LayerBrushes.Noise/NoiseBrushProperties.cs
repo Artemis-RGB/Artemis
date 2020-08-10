@@ -43,10 +43,14 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             AnimationSpeed.DefaultValue = 25f;
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
         {
             ColorType.BaseValueChanged += (sender, args) => UpdateVisibility();
             UpdateVisibility();
+        }
+
+        protected override void DisableProperties()
+        {
         }
 
         private void UpdateVisibility()

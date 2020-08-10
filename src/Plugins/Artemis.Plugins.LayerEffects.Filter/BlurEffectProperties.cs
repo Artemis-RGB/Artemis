@@ -14,11 +14,11 @@ namespace Artemis.Plugins.LayerEffects.Filter
         {
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
         {
         }
 
-        private void UpdateVisibility()
+        protected override void DisableProperties()
         {
         }
     }

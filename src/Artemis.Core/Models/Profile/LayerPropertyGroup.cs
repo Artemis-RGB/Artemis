@@ -15,7 +15,7 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile
 {
-    public abstract class LayerPropertyGroup
+    public abstract class LayerPropertyGroup : IDisposable
     {
         private readonly List<BaseLayerProperty> _layerProperties;
         private readonly List<LayerPropertyGroup> _layerPropertyGroups;
@@ -79,11 +79,6 @@ namespace Artemis.Core.Models.Profile
         }
 
         /// <summary>
-        ///     Gets or sets whether the group is expanded in the UI
-        /// </summary>
-        public bool IsExpanded { get; set; }
-
-        /// <summary>
         ///     A list of all layer properties in this group
         /// </summary>
         public ReadOnlyCollection<BaseLayerProperty> LayerProperties => _layerProperties.AsReadOnly();
@@ -112,17 +107,28 @@ namespace Artemis.Core.Models.Profile
             return _allLayerProperties;
         }
 
+        public void Dispose()
+        {
+            DisableProperties();
+            foreach (var layerPropertyGroup in _layerPropertyGroups)
+                layerPropertyGroup.Dispose();
+        }
+
         /// <summary>
-        ///     Called before properties are fully initialized to allow you to populate
-        ///     <see cref="LayerProperty{T}.DefaultValue" /> on the properties you want
+        ///     Called before property group is activated to allow you to populate <see cref="LayerProperty{T}.DefaultValue" /> on
+        ///     the properties you want
         /// </summary>
         protected abstract void PopulateDefaults();
 
         /// <summary>
-        ///     Called when all layer properties in this property group have been initialized, you may access all properties on the
-        ///     group here
+        ///     Called when the property group is deactivated
         /// </summary>
-        protected abstract void OnPropertiesInitialized();
+        protected abstract void EnableProperties();
+
+        /// <summary>
+        ///     Called when the property group is deactivated (either the profile unloaded or the related brush/effect was removed)
+        /// </summary>
+        protected abstract void DisableProperties();
 
         protected virtual void OnPropertyGroupInitialized()
         {
@@ -195,7 +201,7 @@ namespace Artemis.Core.Models.Profile
             foreach (var layerProperty in _layerProperties.Where(p => !p.IsLoadedFromStorage))
                 layerProperty.ApplyDefaultValue();
 
-            OnPropertiesInitialized();
+            EnableProperties();
             PropertiesInitialized = true;
             OnPropertyGroupInitialized();
         }

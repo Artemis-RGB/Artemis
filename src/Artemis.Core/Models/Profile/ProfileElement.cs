@@ -7,8 +7,22 @@ using Stylet;
 
 namespace Artemis.Core.Models.Profile
 {
-    public abstract class ProfileElement : PropertyChangedBase
+    public abstract class ProfileElement : PropertyChangedBase, IDisposable
     {
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected bool _disposed;
         private bool _enabled;
         private Guid _entityId;
         private string _name;
@@ -85,6 +99,9 @@ namespace Artemis.Core.Models.Profile
 
         public List<Folder> GetAllFolders()
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             var folders = new List<Folder>();
             foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
             {
@@ -99,6 +116,9 @@ namespace Artemis.Core.Models.Profile
 
         public List<Layer> GetAllLayers()
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             var layers = new List<Layer>();
 
             // Add all layers in this element
@@ -118,6 +138,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="order">The order where to place the child (1-based), defaults to the end of the collection</param>
         public virtual void AddChild(ProfileElement child, int? order = null)
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             lock (ChildrenList)
             {
                 // Add to the end of the list
@@ -156,6 +179,9 @@ namespace Artemis.Core.Models.Profile
         /// <param name="child">The profile element to remove</param>
         public virtual void RemoveChild(ProfileElement child)
         {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
             lock (ChildrenList)
             {
                 ChildrenList.Remove(child);

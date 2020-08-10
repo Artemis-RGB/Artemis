@@ -52,6 +52,8 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             {
                 var artemisLed = Layer.Leds[index];
                 var renderPoint = points[index * 2 + 1];
+                if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
+                    continue;
 
                 // Let the brush determine the color
                 ledPaint.Color = GetColor(artemisLed, renderPoint);

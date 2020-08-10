@@ -24,9 +24,9 @@ namespace Artemis.UI.Shared.Services.Interfaces
         void ChangeSelectedProfileElement(RenderProfileElement profileElement);
         void UpdateSelectedProfileElement();
         void UpdateProfilePreview();
-        bool UndoUpdateProfile(ProfileModule module);
-        bool RedoUpdateProfile(ProfileModule module);
-        Module GetCurrentModule();
+        bool UndoUpdateProfile();
+        bool RedoUpdateProfile();
+        ProfileModule GetCurrentModule();
 
         /// <summary>
         ///     Occurs when a new profile is selected

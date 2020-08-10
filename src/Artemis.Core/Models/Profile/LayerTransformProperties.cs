@@ -27,7 +27,11 @@ namespace Artemis.Core.Models.Profile
             Opacity.DefaultValue = 100;
         }
 
-        protected override void OnPropertiesInitialized()
+        protected override void EnableProperties()
+        {
+        }
+
+        protected override void DisableProperties()
         {
         }
     }
