@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract;
@@ -58,6 +59,8 @@ namespace Artemis.Core.Services.Storage
         public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
             var profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
+            _profileRepository.Add(profileEntity);
+
             return new ProfileDescriptor(module, profileEntity);
         }
 
@@ -67,10 +70,15 @@ namespace Artemis.Core.Services.Storage
                 return profileDescriptor.ProfileModule.ActiveProfile;
 
             var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            if (profileEntity == null)
+                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
+
             var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+            SaveActiveProfile(profileDescriptor.ProfileModule);
+
             return profile;
         }
 
@@ -80,16 +88,32 @@ namespace Artemis.Core.Services.Storage
                 return profileDescriptor.ProfileModule.ActiveProfile;
 
             var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            if (profileEntity == null)
+                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
+
             var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _surfaceService.ActiveSurface);
+            SaveActiveProfile(profileDescriptor.ProfileModule);
+
             return profile;
         }
 
         public void ClearActiveProfile(ProfileModule module)
         {
             module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
+            SaveActiveProfile(module);
+        }
+
+        private void SaveActiveProfile(ProfileModule module)
+        {
+            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            foreach (var profileEntity in profileEntities)
+            {
+                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
+                _profileRepository.Save(profileEntity);
+            }
         }
 
         public async Task ClearActiveProfileAnimated(ProfileModule module)
@@ -103,7 +127,7 @@ namespace Artemis.Core.Services.Storage
 
             // If the given profile is currently active, disable it first (this also disposes it)
             if (profile.Module.ActiveProfile == profile)
-                profile.Module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
+                ClearActiveProfile(profile.Module);
             else
                 profile.Dispose();
 

@@ -286,11 +286,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
             Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(d => d.Name));
 
             // Populate the selected profile
-            SelectedProfile = Profiles.FirstOrDefault(p => p.IsLastActiveProfile);
-
-            if (SelectedProfile != null)
+            var lastActiveProfile = Profiles.FirstOrDefault(p => p.IsLastActiveProfile) ?? Profiles.FirstOrDefault();
+            if (lastActiveProfile != null)
+            {
+                SelectedProfile = lastActiveProfile;
                 return;
-
+            }
+            
             // Create a default profile if there is none
             var defaultProfile = _profileService.CreateProfileDescriptor(Module, "Default");
             Profiles.Add(defaultProfile);

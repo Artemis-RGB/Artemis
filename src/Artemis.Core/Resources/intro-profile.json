@@ -87,7 +87,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "PluginGuid": "ffffffff-ffff-ffff-ffff-ffffffffffff",
               "Path": "General.ResizeMode",
-              "Value": "0",
+              "Value": "1",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
