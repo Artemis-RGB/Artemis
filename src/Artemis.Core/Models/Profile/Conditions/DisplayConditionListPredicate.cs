@@ -14,6 +14,9 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             DisplayConditionListPredicateEntity = new DisplayConditionListPredicateEntity();
+
+            // There is always a child root group, add it
+            AddChild(new DisplayConditionGroup(this));
         }
 
         public DisplayConditionListPredicate(DisplayConditionPart parent, DisplayConditionListPredicateEntity entity)
@@ -22,15 +25,15 @@ namespace Artemis.Core.Models.Profile.Conditions
             DisplayConditionListPredicateEntity = entity;
             ListOperator = (ListOperator) entity.ListOperator;
 
-            foreach (var childEntity in DisplayConditionListPredicateEntity.Children)
+            // There should only be one child and it should be a group
+            var rootGroup = DisplayConditionListPredicateEntity.Children.SingleOrDefault() as DisplayConditionGroupEntity;
+            if (rootGroup == null)
             {
-                if (childEntity is DisplayConditionGroupEntity groupEntity)
-                    AddChild(new DisplayConditionGroup(this, groupEntity));
-                else if (childEntity is DisplayConditionPredicateEntity predicateEntity)
-                    AddChild(new DisplayConditionPredicate(this, predicateEntity));
-                else if (childEntity is DisplayConditionListPredicateEntity listPredicateEntity)
-                    AddChild(new DisplayConditionListPredicate(this, listPredicateEntity));
+                DisplayConditionListPredicateEntity.Children.Clear();
+                AddChild(new DisplayConditionGroup(this));
             }
+            else
+                AddChild(new DisplayConditionGroup(this, rootGroup));
         }
 
         public DisplayConditionListPredicateEntity DisplayConditionListPredicateEntity { get; set; }
@@ -76,8 +79,8 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
 
             // Children
-            foreach (var child in Children)
-                child.Initialize(dataModelService);
+            var rootGroup = (DisplayConditionGroup) Children.Single();
+            rootGroup.Initialize(dataModelService);
         }
 
         public void UpdateList(DataModel dataModel, string path)

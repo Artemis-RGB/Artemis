@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Extensions;
@@ -9,6 +10,7 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
+using Artemis.UI.Shared.Services.DataModelVisualization;
 using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
@@ -60,6 +62,17 @@ namespace Artemis.UI.Shared.Services
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
+
+        // public DataModelPropertiesViewModel GetListDataModelVisualization(IList list)
+        // {
+        //     var viewModel = new DataModelPropertiesViewModel(null, null, null);
+        //     viewModel.Children.Add(new DataModelListPropertiesViewModel(null, viewModel, null) {DisplayValue = list});
+        //
+        //     // Update to populate children
+        //     viewModel.Update(this);
+        //     viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
+        //     return viewModel;
+        // }
 
         public bool GetPluginExtendsDataModel(Plugin plugin)
         {

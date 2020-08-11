@@ -37,6 +37,10 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public override bool Evaluate()
         {
+            // If there are less than two children, ignore the boolean operator
+            if (Children.Count <= 2)
+                return Children.All(c => c.Evaluate());
+
             switch (BooleanOperator)
             {
                 case BooleanOperator.And:

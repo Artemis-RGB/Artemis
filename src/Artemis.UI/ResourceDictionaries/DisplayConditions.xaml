@@ -27,7 +27,7 @@
         </Style.Triggers>
     </Style>
 
-    <DataTemplate x:Key="DataModelSelectionTemplate">
+    <ControlTemplate x:Key="DataModelSelectionTemplate">
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
@@ -48,9 +48,9 @@
             </StackPanel.Resources>
             <ContentPresenter Content="{Binding}" />
         </StackPanel>
-    </DataTemplate>
+    </ControlTemplate>
 
-    <DataTemplate x:Key="DataModelSelectionTemplateWithValues">
+    <ControlTemplate x:Key="DataModelSelectionTemplateWithValues">
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
@@ -96,5 +96,5 @@
             </StackPanel.Resources>
             <ContentPresenter Content="{Binding}" />
         </StackPanel>
-    </DataTemplate>
+    </ControlTemplate>
 </ResourceDictionary>

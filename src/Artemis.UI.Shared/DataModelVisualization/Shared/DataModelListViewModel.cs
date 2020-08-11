@@ -13,6 +13,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
     {
         private string _count;
         private IList _list;
+        private DataModelVisualizationViewModel _listTypePropertyViewModel;
 
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
         {
@@ -23,6 +24,12 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
             get => _list;
             set => SetAndNotify(ref _list, value);
+        }
+
+        public DataModelVisualizationViewModel ListTypePropertyViewModel
+        {
+            get => _listTypePropertyViewModel;
+            set => SetAndNotify(ref _listTypePropertyViewModel, value);
         }
 
         public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
@@ -41,6 +48,20 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             List = GetCurrentValue() as IList;
             if (List == null)
                 return;
+
+            if (ListTypePropertyViewModel == null)
+            {
+                // Create a property VM describing the type of the list
+                ListTypePropertyViewModel = CreateListChild(dataModelVisualizationService, List.GetType().GenericTypeArguments[0]);
+
+                // Put an empty value into the list type property view model
+                if (ListTypePropertyViewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
+                    dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
+                else if (ListTypePropertyViewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
+                    dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
+
+                ListTypePropertyViewModel.Update(dataModelVisualizationService);
+            }
 
             var index = 0;
             foreach (var item in List)
@@ -83,10 +104,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine
             if (listType.IsPrimitive || listType == typeof(string))
-                return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo);
+                return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {ListType = listType};
             // For other value types create a child view model
             if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(DataModel, this, PropertyInfo);
+                return new DataModelListPropertiesViewModel(DataModel, this, PropertyInfo) {ListType = listType};
 
             return null;
         }
