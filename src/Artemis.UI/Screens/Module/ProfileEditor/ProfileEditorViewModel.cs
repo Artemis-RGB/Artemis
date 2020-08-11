@@ -174,6 +174,22 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 RemoveProfile(SelectedProfile);
         }
 
+        public async Task ExportActiveProfile()
+        {
+            await DialogService.ShowDialog<ProfileExportViewModel>(new Dictionary<string, object>
+            {
+                {"profileDescriptor", SelectedProfile}
+            });
+        }
+
+        public async Task ImportProfile()
+        {
+            await DialogService.ShowDialog<ProfileImportViewModel>(new Dictionary<string, object>
+            {
+                {"profileModule", Module}
+            });
+        }
+
         public void Undo()
         {
             // Expanded status is also undone because undoing works a bit crude, that's annoying
@@ -292,7 +308,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor
                 SelectedProfile = lastActiveProfile;
                 return;
             }
-            
+
             // Create a default profile if there is none
             var defaultProfile = _profileService.CreateProfileDescriptor(Module, "Default");
             Profiles.Add(defaultProfile);

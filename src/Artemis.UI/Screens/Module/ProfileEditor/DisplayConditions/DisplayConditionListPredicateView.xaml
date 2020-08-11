@@ -4,10 +4,146 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance Type=local:DisplayConditionListPredicateViewModel, IsDesignTimeCreatable=False}">
-    <Grid>
-            
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary>
+                    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                </ResourceDictionary>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="0 3" Visibility="{Binding IsInitialized, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0"
+                Grid.Column="0"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                HorizontalAlignment="Left"
+                Foreground="#E74C4C"
+                Width="25"
+                Height="25"
+                Command="{s:Action Delete}">
+            <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
+        </Button>
+
+        <!-- Left side, the list this predicate is targeting -->
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Background="#ab47bc"
+                BorderBrush="#ab47bc"
+                Style="{StaticResource DisplayConditionButton}"
+                ToolTip="{Binding SelectedListProperty.DisplayPropertyPath}"
+                Click="PropertyButton_OnClick">
+            <Button.ContextMenu>
+                <ContextMenu ItemsSource="{Binding TargetDataModel.Children}" IsOpen="{Binding TargetDataModelOpen, Mode=OneWayToSource}">
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                            <Setter Property="ItemsSource" Value="{Binding Children}" />
+                            <Setter Property="Command" Value="{Binding Data.SelectListPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="CommandTarget" Value="{Binding}" />
+                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                            <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
+                </ContextMenu>
+            </Button.ContextMenu>
+            <Grid>
+                <TextBlock Text="{Binding SelectedListProperty.PropertyDescription.Name}"
+                           Visibility="{Binding SelectedListProperty, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock Text="« Select a list »"
+                           FontStyle="Italic"
+                           Visibility="{Binding SelectedListProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+            </Grid>
+        </Button>
+
+        <!-- Operator -->
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
+                Background="#7B7B7B"
+                BorderBrush="#7B7B7B"
+                Content="{Binding SelectedListOperator}"
+                Click="PropertyButton_OnClick">
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Any" Command="{s:Action SelectListOperator}" CommandParameter="Any" />
+                    <MenuItem Header="All" Command="{s:Action SelectListOperator}" CommandParameter="All" />
+                    <MenuItem Header="None" Command="{s:Action SelectListOperator}" CommandParameter="None" />
+                    <MenuItem Header="Count (NYI)" Command="{s:Action SelectListOperator}" CommandParameter="Count" IsEnabled="False"/>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+
+        <Button x:Name="AddChildButton"
+                Grid.Row="0"
+                Grid.Column="3"
+                HorizontalAlignment="Left"
+                Foreground="#4CE758"
+                Width="25"
+                Height="25">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                    <Style.Triggers>
+                        <EventTrigger RoutedEvent="Click">
+                            <EventTrigger.Actions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                        </BooleanAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger.Actions>
+                        </EventTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add static condition"
+                              ToolTip="A condition that compares a data model property to a static input"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Static">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="FormTextarea" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add dynamic condition"
+                              ToolTip="A condition that compares two data model properties"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Dynamic">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="InsertLink" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add group" ToolTip="A group can contain conditions and other groups" Command="{s:Action AddGroup}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="CodeParentheses" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
     </Grid>
 </UserControl>

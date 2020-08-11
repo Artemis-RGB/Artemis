@@ -19,19 +19,9 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
-                <Button.CommandParameter>
-                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                        False
-                    </system:Boolean>
-                </Button.CommandParameter>
                 CANCEL
             </Button>
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Accept}">
-                <Button.CommandParameter>
-                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                        True
-                    </system:Boolean>
-                </Button.CommandParameter>
                 ACCEPT
             </Button>
         </StackPanel>

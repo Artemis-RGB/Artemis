@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             set => Task.Run(() => UpdateEnabled(value));
         }
 
-        public async Task OpenSettings()
+        public void OpenSettings()
         {
             try
             {
@@ -72,12 +72,12 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
+                _dialogService.ShowExceptionDialog("An exception occured while trying to show the plugin's settings window", e);
                 throw;
             }
         }
 
-        public async Task ShowLogsFolder()
+        public void ShowLogsFolder()
         {
             try
             {
@@ -85,16 +85,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
         }
 
-        public async Task ShowLoadException()
+        public void ShowLoadException()
         {
             if (PluginInfo.LoadException == null)
                 return;
 
-            await _dialogService.ShowExceptionDialog("The plugin failed to load: " + PluginInfo.LoadException.Message, PluginInfo.LoadException);
+            _dialogService.ShowExceptionDialog("The plugin failed to load: " + PluginInfo.LoadException.Message, PluginInfo.LoadException);
         }
 
         private PackIconKind GetIconKind()
@@ -157,7 +157,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
                 catch (Exception e)
                 {
-                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}\r\n{e.Message}", "VIEW LOGS", async () => await ShowLogsFolder());
+                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {

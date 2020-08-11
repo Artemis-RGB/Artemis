@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Screens.Dialogs;
+using Artemis.UI.Shared.Screens.Exceptions;
 using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
 using Ninject;
@@ -15,15 +16,15 @@ namespace Artemis.UI.Shared.Services.Dialog
     {
         private readonly IKernel _kernel;
         private readonly IViewManager _viewManager;
+        private readonly IWindowManager _windowManager;
 
-        public DialogService(IKernel kernel, IViewManager viewManager)
+        public DialogService(IKernel kernel, IViewManager viewManager, IWindowManager windowManager)
         {
             _kernel = kernel;
             _viewManager = viewManager;
+            _windowManager = windowManager;
         }
-
-        public bool IsExceptionDialogOpen { get; private set; }
-
+        
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
             var arguments = new IParameter[]
@@ -90,30 +91,9 @@ namespace Artemis.UI.Shared.Services.Dialog
             return await ShowDialog(identifier, _kernel.Get<T>(parameters));
         }
 
-        public async Task ShowExceptionDialog(string message, Exception exception)
+        public void ShowExceptionDialog(string message, Exception exception)
         {
-            if (IsExceptionDialogOpen)
-                return;
-
-            IsExceptionDialogOpen = true;
-            var arguments = new IParameter[]
-            {
-                new ConstructorArgument("message", message),
-                new ConstructorArgument("exception", exception)
-            };
-            
-            await Execute.OnUIThreadAsync(async () =>
-            {
-                try
-                {
-                    DialogHost.CloseDialogCommand.Execute(new object(), null);
-                    await ShowDialog<ExceptionDialogViewModel>(arguments);
-                }
-                finally
-                {
-                    IsExceptionDialogOpen = false;
-                }
-            });
+            _windowManager.ShowDialog(new ExceptionViewModel(message, exception));
         }
 
         private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)

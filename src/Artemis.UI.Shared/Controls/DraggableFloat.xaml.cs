@@ -140,7 +140,7 @@ namespace Artemis.UI.Shared.Controls
                 DisplayDragHandle();
             else if (e.Key == Key.Escape)
             {
-                Input.Text = _startValue.ToString();
+                DraggableFloatInputTextBox.Text = _startValue.ToString();
                 DisplayDragHandle();
             }
         }
@@ -148,14 +148,14 @@ namespace Artemis.UI.Shared.Controls
         private void DisplayInput()
         {
             DragHandle.Visibility = Visibility.Collapsed;
-            Input.Visibility = Visibility.Visible;
-            Input.Focus();
-            Input.SelectAll();
+            DraggableFloatInputTextBox.Visibility = Visibility.Visible;
+            DraggableFloatInputTextBox.Focus();
+            DraggableFloatInputTextBox.SelectAll();
         }
 
         private void DisplayDragHandle()
         {
-            Input.Visibility = Visibility.Collapsed;
+            DraggableFloatInputTextBox.Visibility = Visibility.Collapsed;
             DragHandle.Visibility = Visibility.Visible;
         }
 

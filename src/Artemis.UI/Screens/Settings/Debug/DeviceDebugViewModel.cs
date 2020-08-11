@@ -52,7 +52,7 @@ namespace Artemis.UI.Screens.Settings.Debug
             _deviceService.IdentifyDevice(Device);
         }
 
-        public async void OpenPluginDirectory()
+        public void OpenPluginDirectory()
         {
             try
             {
@@ -60,11 +60,11 @@ namespace Artemis.UI.Screens.Settings.Debug
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
             }
         }
 
-        public async void OpenImageDirectory()
+        public void OpenImageDirectory()
         {
             if (!CanOpenImageDirectory)
                 return;
@@ -75,7 +75,7 @@ namespace Artemis.UI.Screens.Settings.Debug
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's image folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's image folder for you", e);
             }
         }
 

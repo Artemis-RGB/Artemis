@@ -66,6 +66,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
             else if (type == "Dynamic")
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+            else if (type == "List")
+                DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();

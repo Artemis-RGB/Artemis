@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
@@ -10,6 +11,7 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -40,6 +42,7 @@ namespace Artemis.Core.Services.Storage
         }
 
         public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+        public JsonSerializerSettings ExportSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
         public void ActivateLastActiveProfiles()
         {
@@ -220,6 +223,26 @@ namespace Artemis.Core.Services.Storage
             InitializeLayerProperties(profile);
             InstantiateLayers(profile);
             InstantiateFolders(profile);
+        }
+
+        public string ExportProfile(ProfileDescriptor profileDescriptor)
+        {
+            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            if (profileEntity == null)
+                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
+
+            return JsonConvert.SerializeObject(profileEntity, ExportSettings);
+        }
+
+        public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule)
+        {
+            var profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
+
+            // Assign a new GUID to make sure it is unique in case of a previous import of the same content
+            profileEntity.Id = Guid.NewGuid();
+
+            _profileRepository.Add(profileEntity);
+            return new ProfileDescriptor(profileModule, profileEntity);
         }
 
         /// <summary>

@@ -88,9 +88,26 @@ namespace Artemis.Core.Services.Storage.Interfaces
         bool RedoUpdateProfile(Profile profile);
 
         /// <summary>
-        /// Prepares the profile for rendering. You should not need to call this, it is exposed for some niche usage in the core
+        ///     Prepares the profile for rendering. You should not need to call this, it is exposed for some niche usage in the
+        ///     core
         /// </summary>
         /// <param name="profile"></param>
         void InstantiateProfile(Profile profile);
+
+        /// <summary>
+        ///     [Placeholder] Exports the profile described in the given <see cref="ProfileDescriptor" /> in a JSON format
+        /// </summary>
+        /// <param name="profileDescriptor">The descriptor of the profile to export</param>
+        /// <returns>The resulting JSON</returns>
+        string ExportProfile(ProfileDescriptor profileDescriptor);
+
+        /// <summary>
+        ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile for the given
+        ///     <see cref="ProfileModule" />
+        /// </summary>
+        /// <param name="json">The content of the profile as JSON</param>
+        /// <param name="profileModule">The module to import the profile in to</param>
+        /// <returns></returns>
+        ProfileDescriptor ImportProfile(string json, ProfileModule profileModule);
     }
 }

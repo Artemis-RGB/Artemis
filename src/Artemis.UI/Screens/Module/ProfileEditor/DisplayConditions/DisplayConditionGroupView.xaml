@@ -97,6 +97,14 @@
                             <materialDesign:PackIcon Kind="InsertLink" />
                         </MenuItem.Icon>
                     </MenuItem>
+                    <MenuItem Header="Add list condition"
+                              ToolTip="A condition that evaluates on items in a list"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="List">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="FormatListBulleted" />
+                        </MenuItem.Icon>
+                    </MenuItem>
                     <MenuItem Header="Add group" ToolTip="A group can contain conditions and other groups" Command="{s:Action AddGroup}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="CodeParentheses" />

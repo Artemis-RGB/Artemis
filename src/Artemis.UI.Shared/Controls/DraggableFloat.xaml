@@ -40,7 +40,7 @@
         </Border>
 
         <!-- Input -->
-        <TextBox x:Name="Input"
+        <TextBox x:Name="DraggableFloatInputTextBox"
                  Width="60"
                  Height="21"
                  Padding="0 0 -2 0"

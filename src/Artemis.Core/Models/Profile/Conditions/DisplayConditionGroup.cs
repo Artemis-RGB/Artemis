@@ -25,8 +25,10 @@ namespace Artemis.Core.Models.Profile.Conditions
             {
                 if (childEntity is DisplayConditionGroupEntity groupEntity)
                     AddChild(new DisplayConditionGroup(this, groupEntity));
-                if (childEntity is DisplayConditionPredicateEntity predicateEntity)
+                else if (childEntity is DisplayConditionPredicateEntity predicateEntity)
                     AddChild(new DisplayConditionPredicate(this, predicateEntity));
+                else if (childEntity is DisplayConditionListPredicateEntity listPredicateEntity)
+                    AddChild(new DisplayConditionListPredicate(this, listPredicateEntity));
             }
         }
 
