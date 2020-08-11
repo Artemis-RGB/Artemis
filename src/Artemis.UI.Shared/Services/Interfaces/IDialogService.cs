@@ -99,10 +99,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         ///     Shows a dialog displaying the provided message and exception. Does not handle, log or throw the exception.
         /// </summary>
         /// <param name="message">The message to display in the dialog title</param>
-        /// <param name="exception">The exception to display. The exception message and stacktrace will be shown.</param>
         /// <returns>A task resolving when the dialog is closed</returns>
-        Task ShowExceptionDialog(string message, Exception exception);
-
-        bool IsExceptionDialogOpen { get; }
+        void ShowExceptionDialog(string message, Exception exception);
     }
 }

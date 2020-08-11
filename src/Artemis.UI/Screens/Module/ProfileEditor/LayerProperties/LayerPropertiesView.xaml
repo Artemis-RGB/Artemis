@@ -135,9 +135,7 @@
                                   VerticalScrollBarVisibility="Hidden"
                                   ScrollChanged="TimelineScrollChanged">
                         <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
-                            <Grid>
-                                <ContentControl s:View.Model="{Binding TreeViewModel}" />
-                            </Grid>
+                            <ContentControl s:View.Model="{Binding TreeViewModel}" />
                         </Border>
                     </ScrollViewer>
                     <materialDesign:TransitionerSlide>
@@ -212,7 +210,8 @@
             </ScrollViewer>
 
             <!-- Timeline rails -->
-            <ScrollViewer x:Name="TimelineRailsScrollViewer" Grid.Row="1" Style="{StaticResource SvStyle}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" ScrollChanged="TimelineScrollChanged">
+            <ScrollViewer x:Name="TimelineRailsScrollViewer" Grid.Row="1" Style="{StaticResource SvStyle}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          ScrollChanged="TimelineScrollChanged">
                 <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
                     <Canvas Grid.Column="0" Panel.ZIndex="1">
                         <Line Canvas.Left="{Binding TimeCaretPosition}"

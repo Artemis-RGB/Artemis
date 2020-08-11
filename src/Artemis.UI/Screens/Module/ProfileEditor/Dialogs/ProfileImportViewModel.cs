@@ -1,0 +1,47 @@
+﻿using System.Windows;
+using Artemis.Core.Models.Profile;
+using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.UI.Shared.Services.Dialog;
+using ICSharpCode.AvalonEdit.Document;
+using MaterialDesignThemes.Wpf;
+
+namespace Artemis.UI.Screens.Module.ProfileEditor.Dialogs
+{
+    public class ProfileImportViewModel : DialogViewModelBase
+    {
+        private readonly ISnackbarMessageQueue _mainMessageQueue;
+        private readonly IProfileService _profileService;
+        private string _profileJson;
+
+        public ProfileImportViewModel(ProfileModule profileModule, IProfileService profileService, ISnackbarMessageQueue mainMessageQueue)
+        {
+            ProfileModule = profileModule;
+            Document = new TextDocument();
+
+            _profileService = profileService;
+            _mainMessageQueue = mainMessageQueue;
+        }
+
+        public ProfileModule ProfileModule { get; }
+        public TextDocument Document { get; set; }
+
+        public string ProfileJson
+        {
+            get => _profileJson;
+            set => SetAndNotify(ref _profileJson, value);
+        }
+
+        public void Accept()
+        {
+            _profileService.ImportProfile(Document.Text, ProfileModule);
+            _mainMessageQueue.Enqueue("Profile imported.");
+            Session.Close();
+        }
+
+        public void Cancel()
+        {
+            Session.Close();
+        }
+    }
+}

@@ -28,7 +28,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
 
-        public async void OpenBrushSettings()
+        public void OpenBrushSettings()
         {
             try
             {
@@ -38,12 +38,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
+                _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
                 throw;
             }
         }
 
-        public async void OpenEffectSettings()
+        public void OpenEffectSettings()
         {
             try
             {
@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.LayerProperties.Tree
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("An exception occured while trying to show the effect's settings window", e);
+                _dialogService.ShowExceptionDialog("An exception occured while trying to show the effect's settings window", e);
                 throw;
             }
         }

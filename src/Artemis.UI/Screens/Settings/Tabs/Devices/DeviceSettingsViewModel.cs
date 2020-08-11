@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             _windowManager.ShowWindow(_deviceDebugVmFactory.Create(Device));
         }
 
-        public async void OpenPluginDirectory()
+        public void OpenPluginDirectory()
         {
             try
             {
@@ -65,7 +65,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
             }
         }
     }

@@ -21,47 +21,6 @@
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
-                    <DataTemplate x:Key="DataModelSelectionTemplate">
-                        <StackPanel>
-                            <StackPanel.Resources>
-                                <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
-                                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
-                                </DataTemplate>
-                                <DataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
-                                    <Grid ToolTip="{Binding PropertyDescription.Description}">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-
-                                        <!-- Value description -->
-                                        <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
-
-                                        <!-- Value display -->
-                                        <StackPanel Grid.Column="1" Visibility="{Binding Data.ShowDataModelValues.Value, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay, Source={StaticResource DataContextProxy}}">
-                                            <TextBlock Text="{Binding DisplayValue, Mode=OneWay}"
-                                                       FontFamily="Consolas"
-                                                       HorizontalAlignment="Right"
-                                                       Visibility="{Binding ShowToString, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                                                       Margin="15 0.5 0 0" />
-                                            <TextBlock Text="null"
-                                                       FontFamily="Consolas"
-                                                       HorizontalAlignment="Right"
-                                                       Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                                       Margin="15 0.5 0 0"
-                                                       Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                                            <ContentControl s:View.Model="{Binding DisplayViewModel}"
-                                                            FontFamily="Consolas"
-                                                            Margin="15 0.5 0 0"
-                                                            Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                                        </StackPanel>
-
-                                    </Grid>
-                                </DataTemplate>
-                            </StackPanel.Resources>
-                            <ContentPresenter Content="{Binding}" />
-                        </StackPanel>
-                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

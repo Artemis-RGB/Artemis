@@ -40,9 +40,14 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private List<Type> _supportedInputTypes;
         private readonly Timer _updateTimer;
 
-        public DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent, IProfileEditorService profileEditorService,
-            IDataModelVisualizationService dataModelVisualizationService, IDataModelService dataModelService, ISettingsService settingsService, IEventAggregator eventAggregator)
-            : base(displayConditionPredicate, parent)
+        public DisplayConditionPredicateViewModel(
+            DisplayConditionPredicate displayConditionPredicate,
+            DisplayConditionViewModel parent,
+            IProfileEditorService profileEditorService,
+            IDataModelVisualizationService dataModelVisualizationService,
+            IDataModelService dataModelService,
+            ISettingsService settingsService,
+            IEventAggregator eventAggregator) : base(displayConditionPredicate, parent)
         {
             _profileEditorService = profileEditorService;
             _dataModelVisualizationService = dataModelVisualizationService;

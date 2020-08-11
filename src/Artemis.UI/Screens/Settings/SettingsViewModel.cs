@@ -196,7 +196,7 @@ namespace Artemis.UI.Screens.Settings
             _debugService.ShowDebugger();
         }
 
-        public async Task ShowLogsFolder()
+        public void ShowLogsFolder()
         {
             try
             {
@@ -204,11 +204,11 @@ namespace Artemis.UI.Screens.Settings
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
         }
 
-        public async Task ShowDataFolder()
+        public void ShowDataFolder()
         {
             try
             {
@@ -216,7 +216,7 @@ namespace Artemis.UI.Screens.Settings
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the data folder for you", e);
+                _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the data folder for you", e);
             }
         }
 
@@ -240,7 +240,7 @@ namespace Artemis.UI.Screens.Settings
             base.OnClose();
         }
 
-        private async Task ApplyAutorun()
+        private void ApplyAutorun()
         {
             try
             {
@@ -254,7 +254,7 @@ namespace Artemis.UI.Screens.Settings
             }
             catch (Exception e)
             {
-                await _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e);
+                _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e);
                 throw;
             }
         }

@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using Artemis.UI.Shared.Services.Dialog;
 using ICSharpCode.AvalonEdit.Document;
+using Stylet;
 
-namespace Artemis.UI.Shared.Screens.Dialogs
+namespace Artemis.UI.Shared.Screens.Exceptions
 {
-    public class ExceptionDialogViewModel : DialogViewModelBase
+    public class ExceptionViewModel : Screen
     {
         private List<DialogException> _exceptions;
 
-        public ExceptionDialogViewModel(string message, Exception exception)
+        public ExceptionViewModel(string message, Exception exception)
         {
             Header = message;
             Exceptions = new List<DialogException>();
@@ -28,11 +29,6 @@ namespace Artemis.UI.Shared.Screens.Dialogs
         {
             get => _exceptions;
             set => SetAndNotify(ref _exceptions, value);
-        }
-
-        public void Close()
-        {
-            Session.Close();
         }
     }
 
