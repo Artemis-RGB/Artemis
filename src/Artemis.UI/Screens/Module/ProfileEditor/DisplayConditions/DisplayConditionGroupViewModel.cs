@@ -23,6 +23,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         {
             _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
+
+            Children.CollectionChanged += (sender, args) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
+
             Execute.PostToUIThread(async () =>
             {
                 await Task.Delay(50);
@@ -44,6 +47,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _isInitialized, value);
         }
 
+        public bool DisplayBooleanOperator => Children.Count > 1;
         public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();
 
         public void AttachView(UIElement view)

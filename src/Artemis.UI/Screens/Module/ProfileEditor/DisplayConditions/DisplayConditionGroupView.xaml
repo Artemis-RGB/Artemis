@@ -29,6 +29,7 @@
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0"
                 Grid.Column="0"
+                ToolTip="Delete the group and all its children"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
                 HorizontalAlignment="Left"
                 Visibility="{Binding IsRootGroup, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
@@ -40,11 +41,13 @@
         </Button>
         <Button Grid.Row="0"
                 Grid.Column="1"
+                ToolTip="Change the operator of the group"
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#E74C4C"
                 BorderBrush="#E74C4C"
                 Margin="3 1"
-                Content="{Binding SelectedBooleanOperator}">
+                Content="{Binding SelectedBooleanOperator}"
+                Visibility="{Binding DisplayBooleanOperator, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="And" Command="{s:Action SelectBooleanOperator}" CommandParameter="And" />
@@ -57,6 +60,7 @@
         <Button x:Name="AddChildButton"
                 Grid.Row="0"
                 Grid.Column="2"
+                ToolTip="Add another condition to the current group"
                 HorizontalAlignment="Left"
                 Foreground="#4CE758"
                 Width="25"

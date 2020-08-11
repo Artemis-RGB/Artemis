@@ -54,6 +54,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             _dataModelService = dataModelService;
             _eventAggregator = eventAggregator;
             _updateTimer = new Timer(500);
+            _supportedInputTypes = new List<Type>();
 
             SelectLeftPropertyCommand = new DelegateCommand(ExecuteSelectLeftProperty);
             SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);

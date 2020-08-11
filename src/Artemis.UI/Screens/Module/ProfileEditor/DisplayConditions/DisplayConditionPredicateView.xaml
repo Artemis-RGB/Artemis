@@ -21,6 +21,14 @@
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                    <DataTemplate x:Key="DataModelDataTemplate">
+                        <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
+                                <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -34,6 +42,7 @@
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0"
                 Grid.Column="0"
+                ToolTip="Delete the predicate"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
                 HorizontalAlignment="Left"
                 Foreground="#E74C4C"
@@ -61,7 +70,7 @@
                             <Setter Property="CommandTarget" Value="{Binding}" />
                             <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                             <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
@@ -124,7 +133,7 @@
                                 <Setter Property="CommandTarget" Value="{Binding}" />
                                 <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                                 <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                                <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
+                                <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
                             </Style>
                         </ContextMenu.ItemContainerStyle>
                     </ContextMenu>

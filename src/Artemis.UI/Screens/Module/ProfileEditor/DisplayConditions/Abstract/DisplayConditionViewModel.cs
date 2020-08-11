@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
+using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract
@@ -27,6 +29,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract
         }
 
         public abstract void Update();
+
+        public virtual List<DataModelVisualizationViewModel> GetExtraDataModels()
+        {
+            if (Parent != null)
+                return Parent.GetExtraDataModels();
+            return new List<DataModelVisualizationViewModel>();
+        }
 
         public virtual void Delete()
         {

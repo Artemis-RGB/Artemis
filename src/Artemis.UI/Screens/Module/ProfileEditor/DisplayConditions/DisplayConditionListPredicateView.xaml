@@ -14,11 +14,19 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                    <DataTemplate x:Key="DataModelDataTemplate">
+                        <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
+                                <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
                 </ResourceDictionary>
-                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -30,11 +38,11 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0"
                 Grid.Column="0"
+                ToolTip="Delete the list predicate and all its children"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
                 HorizontalAlignment="Left"
                 Foreground="#E74C4C"
@@ -62,7 +70,7 @@
                             <Setter Property="CommandTarget" Value="{Binding}" />
                             <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
                             <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelSelectionTemplate}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
                         </Style>
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
@@ -83,7 +91,8 @@
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
                 Content="{Binding SelectedListOperator}"
-                Click="PropertyButton_OnClick">
+                Click="PropertyButton_OnClick"
+                HorizontalAlignment="Left">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Any" Command="{s:Action SelectListOperator}" CommandParameter="Any" />
@@ -94,56 +103,18 @@
             </Button.ContextMenu>
         </Button>
 
-        <Button x:Name="AddChildButton"
-                Grid.Row="0"
-                Grid.Column="3"
-                HorizontalAlignment="Left"
-                Foreground="#4CE758"
-                Width="25"
-                Height="25">
-            <Button.Style>
-                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
-                    <Style.Triggers>
-                        <EventTrigger RoutedEvent="Click">
-                            <EventTrigger.Actions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
-                                        </BooleanAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger.Actions>
-                        </EventTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Button.Style>
-            <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
-            <Button.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Add static condition"
-                              ToolTip="A condition that compares a data model property to a static input"
-                              Command="{s:Action AddCondition}"
-                              CommandParameter="Static">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="FormTextarea" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Add dynamic condition"
-                              ToolTip="A condition that compares two data model properties"
-                              Command="{s:Action AddCondition}"
-                              CommandParameter="Dynamic">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="InsertLink" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Add group" ToolTip="A group can contain conditions and other groups" Command="{s:Action AddGroup}">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="CodeParentheses" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
-            </Button.ContextMenu>
-        </Button>
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Children}" Margin="0 4 0 0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <materialDesign:TransitioningContent>
+                        <materialDesign:TransitioningContent.OpeningEffects>
+                            <materialDesign:TransitionEffect Kind="FadeIn" />
+                            <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
+                        </materialDesign:TransitioningContent.OpeningEffects>
+                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    </materialDesign:TransitioningContent>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </UserControl>

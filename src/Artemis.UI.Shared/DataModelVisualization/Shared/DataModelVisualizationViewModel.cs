@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             Parent = parent;
             Children = new BindableCollection<DataModelVisualizationViewModel>();
             IsMatchingFilteredTypes = true;
-            
+
             if (dataModel == null && parent == null && propertyInfo == null)
                 IsRootViewModel = true;
             else
@@ -176,7 +176,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 IsMatchingFilteredTypes = false;
                 return;
             }
-
+            
             if (looseMatch)
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType));
             else
