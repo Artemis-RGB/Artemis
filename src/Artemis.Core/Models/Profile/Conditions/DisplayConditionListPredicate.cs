@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections;
+using System.Linq;
+using System.Linq.Expressions;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
@@ -44,7 +47,23 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public override bool Evaluate()
         {
-            return true;
+            return EvaluateObject(CompiledListAccessor(ListDataModel));
+        }
+
+        public override bool EvaluateObject(object target)
+        {
+            if (!(target is IList list))
+                return false;
+
+            var objectList = list.Cast<object>();
+            return ListOperator switch
+            {
+                ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
+                ListOperator.All => objectList.All(o => Children[0].EvaluateObject(o)),
+                ListOperator.None => objectList.Any(o => !Children[0].EvaluateObject(o)),
+                ListOperator.Count => false,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         internal override void ApplyToEntity()
@@ -94,11 +113,26 @@ namespace Artemis.Core.Models.Profile.Conditions
             {
                 if (!dataModel.ContainsPath(path))
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+                if (dataModel.GetListTypeAtPath(path) == null)
+                    throw new ArtemisCoreException($"The path '{path}' does not contain a list");
             }
 
             ListDataModel = dataModel;
             ListPropertyPath = path;
+
+            if (dataModel != null)
+            {
+                var parameter = Expression.Parameter(typeof(object), "listDataModel");
+                var accessor = path.Split('.').Aggregate<string, Expression>(
+                    Expression.Convert(parameter, dataModel.GetType()),
+                    (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+
+                var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
+                CompiledListAccessor = lambda.Compile();
+            }
         }
+
+        public Func<object, IList> CompiledListAccessor { get; set; }
     }
 
     public enum ListOperator

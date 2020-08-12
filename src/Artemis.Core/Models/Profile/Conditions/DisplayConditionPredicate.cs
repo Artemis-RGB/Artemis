@@ -39,10 +39,9 @@ namespace Artemis.Core.Models.Profile.Conditions
         public string RightPropertyPath { get; private set; }
         public object RightStaticValue { get; private set; }
 
-        public Expression<Func<DataModel, DataModel, bool>> DynamicConditionLambda { get; private set; }
-        public Func<DataModel, DataModel, bool> CompiledDynamicConditionLambda { get; private set; }
-        public Expression<Func<DataModel, bool>> StaticConditionLambda { get; private set; }
-        public Func<DataModel, bool> CompiledStaticConditionLambda { get; private set; }
+        public Func<DataModel, DataModel, bool> CompiledDynamicPredicate { get; private set; }
+        public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
+        public Func<object, bool> CompiledListPredicate { get; private set; }
 
         public void UpdateLeftSide(DataModel dataModel, string path)
         {
@@ -120,10 +119,9 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         private void CreateExpression()
         {
-            DynamicConditionLambda = null;
-            CompiledDynamicConditionLambda = null;
-            StaticConditionLambda = null;
-            CompiledStaticConditionLambda = null;
+            CompiledDynamicPredicate = null;
+            CompiledStaticPredicate = null;
+            CompiledListPredicate = null;
 
             if (Operator == null)
                 return;
@@ -137,7 +135,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override void ApplyToEntity()
         {
-            DisplayConditionPredicateEntity.PredicateType = (int)PredicateType;
+            DisplayConditionPredicateEntity.PredicateType = (int) PredicateType;
             DisplayConditionPredicateEntity.LeftDataModelGuid = LeftDataModel?.PluginInfo?.Guid;
             DisplayConditionPredicateEntity.LeftPropertyPath = LeftPropertyPath;
 
@@ -151,10 +149,18 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public override bool Evaluate()
         {
-            if (CompiledDynamicConditionLambda != null)
-                return CompiledDynamicConditionLambda(LeftDataModel, RightDataModel);
-            if (CompiledStaticConditionLambda != null)
-                return CompiledStaticConditionLambda(LeftDataModel);
+            if (CompiledDynamicPredicate != null)
+                return CompiledDynamicPredicate(LeftDataModel, RightDataModel);
+            if (CompiledStaticPredicate != null)
+                return CompiledStaticPredicate(LeftDataModel);
+
+            return false;
+        }
+
+        public override bool EvaluateObject(object target)
+        {
+            if (CompiledListPredicate != null)
+                return CompiledListPredicate(target);
 
             return false;
         }
@@ -194,7 +200,7 @@ namespace Artemis.Core.Models.Profile.Conditions
                         // Use the left side type so JSON.NET has a better idea what to do
                         var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
                         object rightSideValue;
-                        
+
                         try
                         {
                             rightSideValue = JsonConvert.DeserializeObject(DisplayConditionPredicateEntity.RightStaticValue, leftSideType);
@@ -286,26 +292,42 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (LeftDataModel == null || RightDataModel == null || Operator == null)
                 return;
 
-            var leftSideParameter = Expression.Parameter(typeof(DataModel), "leftDataModel");
-            var leftSideAccessor = LeftPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(leftSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
-            var rightSideParameter = Expression.Parameter(typeof(DataModel), "rightDataModel");
-            var rightSideAccessor = RightPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(rightSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
+            var isListExpression = LeftDataModel.GetListTypeAtPath(LeftPropertyPath) != null;
 
+            Expression leftSideAccessor;
+            Expression rightSideAccessor;
+            ParameterExpression leftSideParameter;
+            ParameterExpression rightSideParameter = null;
+            if (isListExpression)
+            {
+                // List accessors share the same parameter because a list always contains one item per entry
+                leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+                leftSideAccessor = CreateListAccessor(LeftDataModel, LeftPropertyPath, leftSideParameter);
+                rightSideAccessor = CreateListAccessor(RightDataModel, RightPropertyPath, leftSideParameter);
+            }
+            else
+            {
+                leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out leftSideParameter);
+                rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out rightSideParameter);
+            }
+            
             // A conversion may be required if the types differ
             // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
-            var dynamicConditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
+            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
 
-            DynamicConditionLambda = Expression.Lambda<Func<DataModel, DataModel, bool>>(dynamicConditionExpression, leftSideParameter, rightSideParameter);
-            CompiledDynamicConditionLambda = DynamicConditionLambda.Compile();
+            if (isListExpression)
+            {
+                var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
+                CompiledListPredicate = lambda.Compile();
+            }
+            else
+            {
+                var lambda = Expression.Lambda<Func<DataModel, DataModel, bool>>(conditionExpression, leftSideParameter, rightSideParameter);
+                CompiledDynamicPredicate = lambda.Compile();
+            }
         }
 
         private void CreateStaticExpression()
@@ -313,11 +335,18 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var leftSideParameter = Expression.Parameter(typeof(DataModel), "leftDataModel");
-            var leftSideAccessor = LeftPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(leftSideParameter, LeftDataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
+            var isListExpression = LeftDataModel.GetListTypeAtPath(LeftPropertyPath) != null;
+
+            Expression leftSideAccessor;
+            ParameterExpression leftSideParameter;
+            if (isListExpression)
+            {
+                // List accessors share the same parameter because a list always contains one item per entry
+                leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+                leftSideAccessor = CreateListAccessor(LeftDataModel, LeftPropertyPath, leftSideParameter);
+            }
+            else
+                leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out leftSideParameter);
 
             // If the left side is a value type but the input is empty, this isn't a valid expression
             if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
@@ -330,8 +359,42 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
 
-            StaticConditionLambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
-            CompiledStaticConditionLambda = StaticConditionLambda.Compile();
+            if (isListExpression)
+            {
+                var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
+                CompiledListPredicate = lambda.Compile();
+            }
+            else
+            {
+                var lambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
+                CompiledStaticPredicate = lambda.Compile();
+            }
+        }
+        
+        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
+        {
+            var listType = dataModel.GetListTypeAtPath(path);
+            if (listType != null)
+                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
+
+            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
+            return path.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
+                Expression.Property
+            );
+        }
+
+        private Expression CreateListAccessor(DataModel dataModel, string path, ParameterExpression listParameter)
+        {
+            var listType = dataModel.GetListTypeAtPath(path);
+            if (listType == null)
+                throw new ArtemisCoreException($"Cannot create a list accessor at path {path} because the path does not contain a list");
+
+            path = dataModel.GetListInnerPath(path);
+            return path.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(listParameter, listType), // Cast to the appropriate type
+                Expression.Property
+            );
         }
 
         public override string ToString()

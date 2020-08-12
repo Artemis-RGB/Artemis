@@ -202,6 +202,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             if (LeftSideDataModel == null || DisplayConditionPredicate.PredicateType == PredicateType.Dynamic && RightSideDataModel == null)
                 return;
 
+            if (GetDataModelOverride() != null)
+                LeftSideDataModel = GetDataModelOverride();
+
             // If static, only allow selecting properties also supported by input
             if (DisplayConditionPredicate.PredicateType == PredicateType.Static)
                 LeftSideDataModel.ApplyTypeFilter(false, _supportedInputTypes.ToArray());
@@ -221,6 +224,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             if (DisplayConditionPredicate.PredicateType == PredicateType.Dynamic)
             {
                 SelectedRightSideProperty = LeftSideDataModel.GetChildForCondition(DisplayConditionPredicate, DisplayConditionSide.Right);
+                if (GetDataModelOverride() != null)
+                    RightSideDataModel = GetDataModelOverride();
+
                 RightSideDataModel.ApplyTypeFilter(true, leftSideType);
             }
             else

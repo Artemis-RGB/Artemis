@@ -152,13 +152,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             Update();
         }
 
-        public override List<DataModelVisualizationViewModel> GetExtraDataModels()
+        public override DataModelPropertiesViewModel GetDataModelOverride()
         {
-            var list = base.GetExtraDataModels();
             if (SelectedListProperty != null)
-                list.Add(SelectedListProperty.ListTypePropertyViewModel);
+                 return (DataModelPropertiesViewModel) SelectedListProperty.GetListTypeViewModel(_dataModelVisualizationService);
 
-            return list;
+            return base.GetDataModelOverride();
         }
 
         public override void Update()
@@ -210,9 +209,6 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                 return;
 
             SelectedListProperty = dataModelListViewModel;
-            if (SelectedListProperty.ListTypePropertyViewModel == null)
-                SelectedListProperty.Update(_dataModelVisualizationService);
-
             ApplyList();
         }
     }
