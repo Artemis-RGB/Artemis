@@ -34,6 +34,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _displayValue, value);
         }
 
+        public override string PropertyPath => Parent?.PropertyPath;
+
+        public override string DisplayPropertyPath => Parent?.DisplayPropertyPath;
+
         public override void Update(IDataModelVisualizationService dataModelVisualizationService)
         {
             // Display value gets updated by parent, don't do anything if it is null

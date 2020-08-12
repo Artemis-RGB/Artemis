@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Plugins.Modules.General.DataModel.Windows;
 
 namespace Artemis.Plugins.Modules.General.DataModel
@@ -10,6 +11,12 @@ namespace Artemis.Plugins.Modules.General.DataModel
         {
             TimeDataModel = new TimeDataModel();
             TestTimeList = new List<TimeDataModel>();
+
+            var testExpression = new Func<object, object, bool>((leftItem, rightDataModel) =>
+                ((TimeDataModel) leftItem).CurrentTime.Month == ((GeneralDataModel) rightDataModel).TimeDataModel.CurrentTime.Day);
+
+
+            var test = TestTimeList.Any(model => testExpression(model, this));
         }
 
         public WindowDataModel ActiveWindow { get; set; }

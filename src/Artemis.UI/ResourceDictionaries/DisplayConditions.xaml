@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-                    xmlns:s="https://github.com/canton7/Stylet">
+                    xmlns:s="https://github.com/canton7/Stylet"
+                    xmlns:converters="clr-namespace:Artemis.UI.Converters">
     <Style x:Key="DisplayConditionButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
         <Setter Property="Margin" Value="3 0" />
         <Setter Property="Padding" Value="6 4" />
@@ -90,7 +91,6 @@
                                             Margin="15 0.5 0 0"
                                             Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
                         </StackPanel>
-
                     </Grid>
                 </DataTemplate>
             </StackPanel.Resources>

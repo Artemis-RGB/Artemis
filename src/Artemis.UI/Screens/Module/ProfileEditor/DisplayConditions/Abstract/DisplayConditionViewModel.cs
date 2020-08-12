@@ -30,11 +30,9 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions.Abstract
 
         public abstract void Update();
 
-        public virtual List<DataModelVisualizationViewModel> GetExtraDataModels()
+        public virtual DataModelPropertiesViewModel GetDataModelOverride()
         {
-            if (Parent != null)
-                return Parent.GetExtraDataModels();
-            return new List<DataModelVisualizationViewModel>();
+            return Parent?.GetDataModelOverride();
         }
 
         public virtual void Delete()

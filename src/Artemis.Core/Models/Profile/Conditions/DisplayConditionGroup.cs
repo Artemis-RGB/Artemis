@@ -37,9 +37,12 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public override bool Evaluate()
         {
-            // If there are less than two children, ignore the boolean operator
-            if (Children.Count <= 2)
-                return Children.All(c => c.Evaluate());
+            // Empty groups are always true
+            if (Children.Count == 0)
+                return true;
+            // Groups with only one child ignore the boolean operator
+            if (Children.Count == 1)
+                return Children[0].Evaluate();
 
             switch (BooleanOperator)
             {
@@ -54,6 +57,25 @@ namespace Artemis.Core.Models.Profile.Conditions
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public override bool EvaluateObject(object target)
+        {
+            // Empty groups are always true
+            if (Children.Count == 0)
+                return true;
+            // Groups with only one child ignore the boolean operator
+            if (Children.Count == 1)
+                return Children[0].EvaluateObject(target);
+
+            return BooleanOperator switch
+            {
+                BooleanOperator.And => Children.All(c => c.EvaluateObject(target)),
+                BooleanOperator.Or => Children.Any(c => c.EvaluateObject(target)),
+                BooleanOperator.AndNot => Children.All(c => !c.EvaluateObject(target)),
+                BooleanOperator.OrNot => Children.Any(c => !c.EvaluateObject(target)),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         internal override void ApplyToEntity()

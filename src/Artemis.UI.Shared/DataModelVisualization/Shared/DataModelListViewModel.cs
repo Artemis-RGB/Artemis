@@ -3,7 +3,6 @@ using System.Collections;
 using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels;
-using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -26,18 +25,36 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _list, value);
         }
 
-        public DataModelVisualizationViewModel ListTypePropertyViewModel
-        {
-            get => _listTypePropertyViewModel;
-            set => SetAndNotify(ref _listTypePropertyViewModel, value);
-        }
-
         public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
 
         public string Count
         {
             get => _count;
             set => SetAndNotify(ref _count, value);
+        }
+
+        public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelVisualizationService dataModelVisualizationService)
+        {
+            // Create a property VM describing the type of the list
+            var viewModel = CreateListChild(dataModelVisualizationService, List.GetType().GenericTypeArguments[0]);
+
+            // Put an empty value into the list type property view model
+            if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
+            {
+                dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
+                dataModelListClassViewModel.Update(dataModelVisualizationService);
+                return dataModelListClassViewModel;
+            }
+
+            if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
+            {
+                dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
+                var wrapper = new DataModelPropertiesViewModel(null,null,null);
+                wrapper.Children.Add(dataModelListPropertyViewModel);
+                return wrapper;
+            }
+
+            return null;
         }
 
         public override void Update(IDataModelVisualizationService dataModelVisualizationService)
@@ -48,20 +65,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             List = GetCurrentValue() as IList;
             if (List == null)
                 return;
-
-            if (ListTypePropertyViewModel == null)
-            {
-                // Create a property VM describing the type of the list
-                ListTypePropertyViewModel = CreateListChild(dataModelVisualizationService, List.GetType().GenericTypeArguments[0]);
-
-                // Put an empty value into the list type property view model
-                if (ListTypePropertyViewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
-                    dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
-                else if (ListTypePropertyViewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
-                    dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
-
-                ListTypePropertyViewModel.Update(dataModelVisualizationService);
-            }
 
             var index = 0;
             foreach (var item in List)

@@ -35,7 +35,18 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
             }
         }
 
+        /// <summary>
+        /// Evaluates the condition part on the data model
+        /// </summary>
+        /// <returns></returns>
         public abstract bool Evaluate();
+
+        /// <summary>
+        /// Evaluates the condition part on the given target (currently only for lists)
+        /// </summary>
+        /// <param name="target"></param>
+        /// <returns></returns>
+        public abstract bool EvaluateObject(object target);
 
         internal abstract void Initialize(IDataModelService dataModelService);
         internal abstract void ApplyToEntity();

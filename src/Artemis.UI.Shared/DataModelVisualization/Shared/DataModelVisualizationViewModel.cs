@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Documents;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.UI.Shared.Exceptions;
@@ -26,7 +25,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         private DataModelVisualizationViewModel _parent;
         private DataModelPropertyAttribute _propertyDescription;
         private PropertyInfo _propertyInfo;
-        private bool _isIgnored;
 
         internal DataModelVisualizationViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo)
         {
@@ -91,7 +89,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             }
         }
 
-        public string PropertyPath
+        public virtual string PropertyPath
         {
             get
             {
@@ -106,7 +104,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             }
         }
 
-        public string DisplayPropertyPath
+        public virtual string DisplayPropertyPath
         {
             get
             {
@@ -176,7 +174,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 IsMatchingFilteredTypes = false;
                 return;
             }
-            
+
             if (looseMatch)
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType));
             else
@@ -213,12 +211,14 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
             if (IsRootViewModel)
             {
-                var child = Children.FirstOrDefault(c => c.DataModel.PluginInfo.Guid == dataModelGuid);
+                var child = Children.FirstOrDefault(c => c.DataModel != null && 
+                                                         c.DataModel.PluginInfo.Guid == dataModelGuid);
                 return child?.GetChildByPath(dataModelGuid, propertyPath);
             }
             else
             {
-                var child = Children.FirstOrDefault(c => c.DataModel.PluginInfo.Guid == dataModelGuid && c.PropertyInfo?.Name == currentPart);
+                var child = Children.FirstOrDefault(c => c.DataModel != null && 
+                                                         c.DataModel.PluginInfo.Guid == dataModelGuid && c.PropertyInfo?.Name == currentPart);
                 if (child == null)
                     return null;
 
