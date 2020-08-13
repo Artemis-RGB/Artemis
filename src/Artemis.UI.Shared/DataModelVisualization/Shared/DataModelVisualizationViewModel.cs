@@ -208,16 +208,15 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
             var path = propertyPath.Split(".");
             var currentPart = path.First();
-
             if (IsRootViewModel)
             {
-                var child = Children.FirstOrDefault(c => c.DataModel != null && 
+                var child = Children.FirstOrDefault(c => c.DataModel != null &&
                                                          c.DataModel.PluginInfo.Guid == dataModelGuid);
                 return child?.GetChildByPath(dataModelGuid, propertyPath);
             }
             else
             {
-                var child = Children.FirstOrDefault(c => c.DataModel != null && 
+                var child = Children.FirstOrDefault(c => c.DataModel != null &&
                                                          c.DataModel.PluginInfo.Guid == dataModelGuid && c.PropertyInfo?.Name == currentPart);
                 if (child == null)
                     return null;

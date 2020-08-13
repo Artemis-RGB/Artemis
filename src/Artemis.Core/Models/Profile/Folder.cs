@@ -299,7 +299,7 @@ namespace Artemis.Core.Models.Profile
             ApplyRenderElementToEntity();
 
             // Conditions
-            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
             DisplayConditionGroup?.ApplyToEntity();
         }
 

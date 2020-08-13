@@ -60,6 +60,7 @@ namespace Artemis.Core.Services.Interfaces
 
         List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type);
         DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
-        void LogDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonSerializationException exception);
+        void LogPredicateDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonException exception);
+        void LogListPredicateDeserializationFailure(DisplayConditionListPredicate displayConditionListPredicate, JsonException exception);
     }
 }

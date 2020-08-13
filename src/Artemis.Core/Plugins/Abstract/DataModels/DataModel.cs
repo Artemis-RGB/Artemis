@@ -31,14 +31,8 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
             var current = GetType();
             foreach (var part in parts)
             {
-                var property = current.GetProperty(part);
-
-                // For lists, look into the list type instead of the list itself
-                if (property != null && typeof(IList).IsAssignableFrom(property.PropertyType))
-                    current = property.PropertyType.GetGenericArguments()[0];
-                else
-                    current = property?.PropertyType;
-
+                var property = current?.GetProperty(part);
+                current = property?.PropertyType;
                 if (property == null)
                     return false;
             }
@@ -58,20 +52,14 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
             foreach (var part in parts)
             {
                 var property = current.GetProperty(part);
-
-                // For lists, look into the list type instead of the list itself
-                if (typeof(IList).IsAssignableFrom(property.PropertyType))
-                    current = property.PropertyType.GetGenericArguments()[0];
-                else
-                    current = property.PropertyType;
-
+                current = property.PropertyType;
                 result = property.PropertyType;
             }
 
             return result;
         }
 
-        public Type GetListTypeAtPath(string path)
+        public Type GetListTypeInPath(string path)
         {
             if (!ContainsPath(path))
                 return null;
@@ -79,8 +67,13 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
             var parts = path.Split('.');
             var current = GetType();
 
+            var index = 0;
             foreach (var part in parts)
             {
+                // Only return a type if the path CONTAINS a list, not if it points TO a list
+                if (index == parts.Length - 1)
+                    return null;
+
                 var property = current.GetProperty(part);
 
                 // For lists, look into the list type instead of the list itself
@@ -88,14 +81,24 @@ namespace Artemis.Core.Plugins.Abstract.DataModels
                     return property.PropertyType.GetGenericArguments()[0];
 
                 current = property.PropertyType;
+                index++;
             }
 
             return null;
         }
 
+        public Type GetListTypeAtPath(string path)
+        {
+            if (!ContainsPath(path))
+                return null;
+
+            var child = GetTypeAtPath(path);
+            return child.GenericTypeArguments.Length > 0 ? child.GenericTypeArguments[0] : null;
+        }
+
         public string GetListInnerPath(string path)
         {
-            if (GetListTypeAtPath(path) == null)
+            if (GetListTypeInPath(path) == null)
                 throw new ArtemisCoreException($"Cannot determine inner list path at {path} because it does not contain a list");
 
             var parts = path.Split('.');

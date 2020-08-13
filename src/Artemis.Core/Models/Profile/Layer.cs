@@ -206,7 +206,7 @@ namespace Artemis.Core.Models.Profile
             }
 
             // Conditions
-            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.DisplayConditionGroupEntity;
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
             DisplayConditionGroup?.ApplyToEntity();
         }
 

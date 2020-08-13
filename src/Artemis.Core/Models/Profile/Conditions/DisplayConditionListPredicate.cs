@@ -1,106 +1,47 @@
 ﻿using System;
-using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
     public class DisplayConditionListPredicate : DisplayConditionPart
     {
-        public DisplayConditionListPredicate(DisplayConditionPart parent)
+        public DisplayConditionListPredicate(DisplayConditionPart parent, PredicateType predicateType)
         {
             Parent = parent;
-            DisplayConditionListPredicateEntity = new DisplayConditionListPredicateEntity();
-
-            // There is always a child root group, add it
-            AddChild(new DisplayConditionGroup(this));
+            PredicateType = predicateType;
+            Entity = new DisplayConditionListPredicateEntity();
         }
 
         public DisplayConditionListPredicate(DisplayConditionPart parent, DisplayConditionListPredicateEntity entity)
         {
             Parent = parent;
-            DisplayConditionListPredicateEntity = entity;
-            ListOperator = (ListOperator) entity.ListOperator;
-
-            // There should only be one child and it should be a group
-            var rootGroup = DisplayConditionListPredicateEntity.Children.SingleOrDefault() as DisplayConditionGroupEntity;
-            if (rootGroup == null)
-            {
-                DisplayConditionListPredicateEntity.Children.Clear();
-                AddChild(new DisplayConditionGroup(this));
-            }
-            else
-                AddChild(new DisplayConditionGroup(this, rootGroup));
+            Entity = entity;
+            PredicateType = (PredicateType) entity.PredicateType;
         }
 
-        public DisplayConditionListPredicateEntity DisplayConditionListPredicateEntity { get; set; }
+        public DisplayConditionListPredicateEntity Entity { get; set; }
 
-        public ListOperator ListOperator { get; set; }
+        public PredicateType PredicateType { get; set; }
+        public DisplayConditionOperator Operator { get; private set; }
+
+        public Type ListType { get; private set; }
         public DataModel ListDataModel { get; private set; }
         public string ListPropertyPath { get; private set; }
 
-        public override bool Evaluate()
-        {
-            return EvaluateObject(CompiledListAccessor(ListDataModel));
-        }
+        public string LeftPropertyPath { get; private set; }
+        public string RightPropertyPath { get; private set; }
+        public object RightStaticValue { get; private set; }
 
-        public override bool EvaluateObject(object target)
-        {
-            if (!(target is IList list))
-                return false;
-
-            var objectList = list.Cast<object>();
-            return ListOperator switch
-            {
-                ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
-                ListOperator.All => objectList.All(o => Children[0].EvaluateObject(o)),
-                ListOperator.None => objectList.Any(o => !Children[0].EvaluateObject(o)),
-                ListOperator.Count => false,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-
-        internal override void ApplyToEntity()
-        {
-            // Target list
-            DisplayConditionListPredicateEntity.ListDataModelGuid = ListDataModel?.PluginInfo?.Guid;
-            DisplayConditionListPredicateEntity.ListPropertyPath = ListPropertyPath;
-
-            // Operator
-            DisplayConditionListPredicateEntity.ListOperator = (int) ListOperator;
-
-            // Children
-            DisplayConditionListPredicateEntity.Children.Clear();
-            DisplayConditionListPredicateEntity.Children.AddRange(Children.Select(c => c.GetEntity()));
-            foreach (var child in Children)
-                child.ApplyToEntity();
-        }
-
-        internal override DisplayConditionPartEntity GetEntity()
-        {
-            return DisplayConditionListPredicateEntity;
-        }
-
-        internal override void Initialize(IDataModelService dataModelService)
-        {
-            // Target list
-            if (DisplayConditionListPredicateEntity.ListDataModelGuid != null)
-            {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionListPredicateEntity.ListDataModelGuid.Value);
-                if (dataModel != null && dataModel.ContainsPath(DisplayConditionListPredicateEntity.ListPropertyPath))
-                    UpdateList(dataModel, DisplayConditionListPredicateEntity.ListPropertyPath);
-            }
-
-            // Children
-            var rootGroup = (DisplayConditionGroup) Children.Single();
-            rootGroup.Initialize(dataModelService);
-        }
+        public Func<object, bool> CompiledListPredicate { get; private set; }
 
         public void UpdateList(DataModel dataModel, string path)
         {
@@ -111,35 +52,322 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             if (dataModel != null)
             {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-                if (dataModel.GetListTypeAtPath(path) == null)
-                    throw new ArtemisCoreException($"The path '{path}' does not contain a list");
+                var listType = dataModel.GetListTypeAtPath(path);
+                if (listType == null)
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{path}'");
+
+                ListType = listType;
+            }
+            else
+            {
+                ListType = null;
             }
 
             ListDataModel = dataModel;
             ListPropertyPath = path;
 
-            if (dataModel != null)
-            {
-                var parameter = Expression.Parameter(typeof(object), "listDataModel");
-                var accessor = path.Split('.').Aggregate<string, Expression>(
-                    Expression.Convert(parameter, dataModel.GetType()),
-                    (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+            if (!ListContainsInnerPath(LeftPropertyPath))
+                LeftPropertyPath = null;
+            if (!ListContainsInnerPath(RightPropertyPath))
+                RightPropertyPath = null;
 
-                var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
-                CompiledListAccessor = lambda.Compile();
+            CreateExpression();
+        }
+
+        public void UpdateLeftSide(string path)
+        {
+            if (!ListContainsInnerPath(path))
+                throw new ArtemisCoreException($"List type {ListType.Name} does not contain path {path}");
+
+            LeftPropertyPath = path;
+
+            ValidateOperator();
+            ValidateRightSide();
+            CreateExpression();
+        }
+
+        public void UpdateRightSideDynamic(string path)
+        {
+            if (!ListContainsInnerPath(path))
+                throw new ArtemisCoreException($"List type {ListType.Name} does not contain path {path}");
+
+            PredicateType = PredicateType.Dynamic;
+            RightPropertyPath = path;
+
+            CreateExpression();
+        }
+
+        public void UpdateRightSideStatic(object staticValue)
+        {
+            PredicateType = PredicateType.Static;
+            RightPropertyPath = null;
+
+            SetStaticValue(staticValue);
+            CreateExpression();
+        }
+
+        public void UpdateOperator(DisplayConditionOperator displayConditionOperator)
+        {
+            if (displayConditionOperator == null)
+            {
+                Operator = null;
+                return;
+            }
+
+            if (LeftPropertyPath == null)
+            {
+                Operator = displayConditionOperator;
+                return;
+            }
+
+            var leftType = GetTypeAtInnerPath(LeftPropertyPath);
+            if (displayConditionOperator.SupportsType(leftType))
+                Operator = displayConditionOperator;
+
+            CreateExpression();
+        }
+
+        private void CreateExpression()
+        {
+            CompiledListPredicate = null;
+
+            if (Operator == null)
+                return;
+
+            // If the operator does not support a right side, create a static expression because the right side will simply be null
+            if (PredicateType == PredicateType.Dynamic && Operator.SupportsRightSide)
+                CreateDynamicExpression();
+
+            CreateStaticExpression();
+        }
+
+        internal override void ApplyToEntity()
+        {
+            Entity.PredicateType = (int) PredicateType;
+            Entity.ListDataModelGuid = ListDataModel?.PluginInfo?.Guid;
+            Entity.ListPropertyPath = ListPropertyPath;
+
+            Entity.LeftPropertyPath = LeftPropertyPath;
+            Entity.RightPropertyPath = RightPropertyPath;
+            Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
+
+            Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
+            Entity.OperatorType = Operator?.GetType().Name;
+        }
+
+        public override bool Evaluate()
+        {
+            return false;
+        }
+
+        public override bool EvaluateObject(object target)
+        {
+            return CompiledListPredicate != null && CompiledListPredicate(target);
+        }
+
+        internal override void Initialize(IDataModelService dataModelService)
+        {
+            // Left side
+            if (Entity.LeftPropertyPath != null && ListContainsInnerPath(Entity.LeftPropertyPath))
+                UpdateLeftSide(Entity.LeftPropertyPath);
+
+            // Operator
+            if (Entity.OperatorPluginGuid != null)
+            {
+                var conditionOperator = dataModelService.GetConditionOperator(Entity.OperatorPluginGuid.Value, Entity.OperatorType);
+                if (conditionOperator != null)
+                    UpdateOperator(conditionOperator);
+            }
+
+            // Right side dynamic
+            if (PredicateType == PredicateType.Dynamic && Entity.RightPropertyPath != null)
+            {
+                if (ListContainsInnerPath(Entity.RightPropertyPath))
+                    UpdateLeftSide(Entity.LeftPropertyPath);
+            }
+            // Right side static
+            else if (PredicateType == PredicateType.Static && Entity.RightStaticValue != null)
+            {
+                try
+                {
+                    if (LeftPropertyPath != null)
+                    {
+                        // Use the left side type so JSON.NET has a better idea what to do
+                        var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+                        object rightSideValue;
+
+                        try
+                        {
+                            rightSideValue = JsonConvert.DeserializeObject(Entity.RightStaticValue, leftSideType);
+                        }
+                        // If deserialization fails, use the type's default
+                        catch (JsonSerializationException e)
+                        {
+                            dataModelService.LogListPredicateDeserializationFailure(this, e);
+                            rightSideValue = Activator.CreateInstance(leftSideType);
+                        }
+
+                        UpdateRightSideStatic(rightSideValue);
+                    }
+                    else
+                    {
+                        // Hope for the best... we must infer the type from JSON now
+                        UpdateRightSideStatic(JsonConvert.DeserializeObject(Entity.RightStaticValue));
+                    }
+                }
+                catch (JsonException e)
+                {
+                    dataModelService.LogListPredicateDeserializationFailure(this, e);
+                }
             }
         }
 
-        public Func<object, IList> CompiledListAccessor { get; set; }
-    }
+        internal override DisplayConditionPartEntity GetEntity()
+        {
+            return Entity;
+        }
 
-    public enum ListOperator
-    {
-        Any,
-        All,
-        None,
-        Count
+        private void ValidateOperator()
+        {
+            if (LeftPropertyPath == null || Operator == null)
+                return;
+
+            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+            if (!Operator.SupportsType(leftSideType))
+                Operator = null;
+        }
+
+        private void ValidateRightSide()
+        {
+            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+            if (PredicateType == PredicateType.Dynamic)
+            {
+                if (RightPropertyPath == null)
+                    return;
+
+                var rightSideType = GetTypeAtInnerPath(RightPropertyPath);
+                if (!leftSideType.IsCastableFrom(rightSideType))
+                    UpdateRightSideDynamic(null);
+            }
+            else
+            {
+                if (RightStaticValue != null && leftSideType.IsCastableFrom(RightStaticValue.GetType()))
+                    UpdateRightSideStatic(RightStaticValue);
+                else
+                    UpdateRightSideStatic(null);
+            }
+        }
+
+        private void SetStaticValue(object staticValue)
+        {
+            // If the left side is empty simply apply the value, any validation will wait
+            if (LeftPropertyPath == null)
+            {
+                RightStaticValue = staticValue;
+                return;
+            }
+
+            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+
+            // If not null ensure the types match and if not, convert it
+            if (staticValue != null && staticValue.GetType() == leftSideType)
+                RightStaticValue = staticValue;
+            else if (staticValue != null)
+                RightStaticValue = Convert.ChangeType(staticValue, leftSideType);
+            // If null create a default instance for value types or simply make it null for reference types
+            else if (leftSideType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(leftSideType);
+            else
+                RightStaticValue = null;
+        }
+
+        private void CreateDynamicExpression()
+        {
+            if (LeftPropertyPath == null || RightPropertyPath == null || Operator == null)
+                return;
+
+            // List accessors share the same parameter because a list always contains one item per entry
+            var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+            var leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
+            var rightSideAccessor = CreateListAccessor(RightPropertyPath, leftSideParameter);
+
+            // A conversion may be required if the types differ
+            // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
+            if (rightSideAccessor.Type != leftSideAccessor.Type)
+                rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
+
+            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
+            var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
+            CompiledListPredicate = lambda.Compile();
+        }
+
+        private void CreateStaticExpression()
+        {
+            if (LeftPropertyPath == null || Operator == null)
+                return;
+
+            // List accessors share the same parameter because a list always contains one item per entry
+            var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+            var leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
+
+            // If the left side is a value type but the input is empty, this isn't a valid expression
+            if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
+                return;
+
+            // If the right side value is null, the constant type cannot be inferred and must be provided manually
+            var rightSideConstant = RightStaticValue != null
+                ? Expression.Constant(RightStaticValue)
+                : Expression.Constant(null, leftSideAccessor.Type);
+
+            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
+            var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
+            CompiledListPredicate = lambda.Compile();
+        }
+
+        private Expression CreateListAccessor(string path, ParameterExpression listParameter)
+        {
+            return path.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(listParameter, ListType), // Cast to the appropriate type
+                Expression.Property
+            );
+        }
+
+        public bool ListContainsInnerPath(string path)
+        {
+            if (ListType == null)
+                return false;
+
+            var parts = path.Split('.');
+            var current = ListType;
+            foreach (var part in parts)
+            {
+                var property = current.GetProperty(part);
+                current = property?.PropertyType;
+
+                if (property == null)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public Type GetTypeAtInnerPath(string path)
+        {
+            if (!ListContainsInnerPath(path))
+                return null;
+
+            var parts = path.Split('.');
+            var current = ListType;
+
+            Type result = null;
+            foreach (var part in parts)
+            {
+                var property = current.GetProperty(part);
+                current = property.PropertyType;
+                result = property.PropertyType;
+            }
+
+            return result;
+        }
     }
 }
