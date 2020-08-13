@@ -18,17 +18,17 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             PredicateType = predicateType;
-            DisplayConditionPredicateEntity = new DisplayConditionPredicateEntity();
+            Entity = new DisplayConditionPredicateEntity();
         }
 
         public DisplayConditionPredicate(DisplayConditionPart parent, DisplayConditionPredicateEntity entity)
         {
             Parent = parent;
-            DisplayConditionPredicateEntity = entity;
+            Entity = entity;
             PredicateType = (PredicateType) entity.PredicateType;
         }
 
-        public DisplayConditionPredicateEntity DisplayConditionPredicateEntity { get; set; }
+        public DisplayConditionPredicateEntity Entity { get; set; }
 
         public PredicateType PredicateType { get; set; }
         public DisplayConditionOperator Operator { get; private set; }
@@ -38,6 +38,8 @@ namespace Artemis.Core.Models.Profile.Conditions
         public DataModel RightDataModel { get; private set; }
         public string RightPropertyPath { get; private set; }
         public object RightStaticValue { get; private set; }
+        public DataModel ListDataModel { get; private set; }
+        public string ListPropertyPath { get; private set; }
 
         public Func<DataModel, DataModel, bool> CompiledDynamicPredicate { get; private set; }
         public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
@@ -135,16 +137,16 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override void ApplyToEntity()
         {
-            DisplayConditionPredicateEntity.PredicateType = (int) PredicateType;
-            DisplayConditionPredicateEntity.LeftDataModelGuid = LeftDataModel?.PluginInfo?.Guid;
-            DisplayConditionPredicateEntity.LeftPropertyPath = LeftPropertyPath;
+            Entity.PredicateType = (int) PredicateType;
+            Entity.LeftDataModelGuid = LeftDataModel?.PluginInfo?.Guid;
+            Entity.LeftPropertyPath = LeftPropertyPath;
 
-            DisplayConditionPredicateEntity.RightDataModelGuid = RightDataModel?.PluginInfo?.Guid;
-            DisplayConditionPredicateEntity.RightPropertyPath = RightPropertyPath;
-            DisplayConditionPredicateEntity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
+            Entity.RightDataModelGuid = RightDataModel?.PluginInfo?.Guid;
+            Entity.RightPropertyPath = RightPropertyPath;
+            Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
 
-            DisplayConditionPredicateEntity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
-            DisplayConditionPredicateEntity.OperatorType = Operator?.GetType().Name;
+            Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
+            Entity.OperatorType = Operator?.GetType().Name;
         }
 
         public override bool Evaluate()
@@ -168,30 +170,30 @@ namespace Artemis.Core.Models.Profile.Conditions
         internal override void Initialize(IDataModelService dataModelService)
         {
             // Left side
-            if (DisplayConditionPredicateEntity.LeftDataModelGuid != null)
+            if (Entity.LeftDataModelGuid != null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.LeftDataModelGuid.Value);
-                if (dataModel != null && dataModel.ContainsPath(DisplayConditionPredicateEntity.LeftPropertyPath))
-                    UpdateLeftSide(dataModel, DisplayConditionPredicateEntity.LeftPropertyPath);
+                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.LeftDataModelGuid.Value);
+                if (dataModel != null && dataModel.ContainsPath(Entity.LeftPropertyPath))
+                    UpdateLeftSide(dataModel, Entity.LeftPropertyPath);
             }
 
             // Operator
-            if (DisplayConditionPredicateEntity.OperatorPluginGuid != null)
+            if (Entity.OperatorPluginGuid != null)
             {
-                var conditionOperator = dataModelService.GetConditionOperator(DisplayConditionPredicateEntity.OperatorPluginGuid.Value, DisplayConditionPredicateEntity.OperatorType);
+                var conditionOperator = dataModelService.GetConditionOperator(Entity.OperatorPluginGuid.Value, Entity.OperatorType);
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
 
             // Right side dynamic
-            if (PredicateType == PredicateType.Dynamic && DisplayConditionPredicateEntity.RightDataModelGuid != null)
+            if (PredicateType == PredicateType.Dynamic && Entity.RightDataModelGuid != null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(DisplayConditionPredicateEntity.RightDataModelGuid.Value);
-                if (dataModel != null && dataModel.ContainsPath(DisplayConditionPredicateEntity.RightPropertyPath))
-                    UpdateRightSide(dataModel, DisplayConditionPredicateEntity.RightPropertyPath);
+                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.RightDataModelGuid.Value);
+                if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
+                    UpdateRightSide(dataModel, Entity.RightPropertyPath);
             }
             // Right side static
-            else if (PredicateType == PredicateType.Static && DisplayConditionPredicateEntity.RightStaticValue != null)
+            else if (PredicateType == PredicateType.Static && Entity.RightStaticValue != null)
             {
                 try
                 {
@@ -203,12 +205,12 @@ namespace Artemis.Core.Models.Profile.Conditions
 
                         try
                         {
-                            rightSideValue = JsonConvert.DeserializeObject(DisplayConditionPredicateEntity.RightStaticValue, leftSideType);
+                            rightSideValue = JsonConvert.DeserializeObject(Entity.RightStaticValue, leftSideType);
                         }
                         // If deserialization fails, use the type's default
                         catch (JsonSerializationException e)
                         {
-                            dataModelService.LogDeserializationFailure(this, e);
+                            dataModelService.LogPredicateDeserializationFailure(this, e);
                             rightSideValue = Activator.CreateInstance(leftSideType);
                         }
 
@@ -217,7 +219,7 @@ namespace Artemis.Core.Models.Profile.Conditions
                     else
                     {
                         // Hope for the best...
-                        UpdateRightSide(JsonConvert.DeserializeObject(DisplayConditionPredicateEntity.RightStaticValue));
+                        UpdateRightSide(JsonConvert.DeserializeObject(Entity.RightStaticValue));
                     }
                 }
                 catch (JsonReaderException)
@@ -230,7 +232,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override DisplayConditionPartEntity GetEntity()
         {
-            return DisplayConditionPredicateEntity;
+            return Entity;
         }
 
         private void ValidateOperator()
@@ -292,7 +294,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (LeftDataModel == null || RightDataModel == null || Operator == null)
                 return;
 
-            var isListExpression = LeftDataModel.GetListTypeAtPath(LeftPropertyPath) != null;
+            var isListExpression = LeftDataModel.GetListTypeInPath(LeftPropertyPath) != null;
 
             Expression leftSideAccessor;
             Expression rightSideAccessor;
@@ -335,7 +337,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var isListExpression = LeftDataModel.GetListTypeAtPath(LeftPropertyPath) != null;
+            var isListExpression = LeftDataModel.GetListTypeInPath(LeftPropertyPath) != null;
 
             Expression leftSideAccessor;
             ParameterExpression leftSideParameter;
@@ -373,7 +375,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         
         private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
         {
-            var listType = dataModel.GetListTypeAtPath(path);
+            var listType = dataModel.GetListTypeInPath(path);
             if (listType != null)
                 throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
 
@@ -386,7 +388,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         private Expression CreateListAccessor(DataModel dataModel, string path, ParameterExpression listParameter)
         {
-            var listType = dataModel.GetListTypeAtPath(path);
+            var listType = dataModel.GetListTypeInPath(path);
             if (listType == null)
                 throw new ArtemisCoreException($"Cannot create a list accessor at path {path} because the path does not contain a list");
 

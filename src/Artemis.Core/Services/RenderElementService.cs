@@ -154,8 +154,15 @@ namespace Artemis.Core.Services
                 ? new DisplayConditionGroup(null, renderElement.RenderElementEntity.RootDisplayCondition)
                 : new DisplayConditionGroup(null);
 
-            displayCondition.Initialize(_dataModelService);
-            renderElement.DisplayConditionGroup = displayCondition;
+            try
+            {
+                displayCondition.Initialize(_dataModelService);
+                renderElement.DisplayConditionGroup = displayCondition;
+            }
+            catch (Exception e)
+            {
+               _logger.Warning(e, $"Failed to init display conditions for {renderElement}");
+            }
         }
     }
 }

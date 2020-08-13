@@ -178,9 +178,27 @@ namespace Artemis.Core.Services
             return RegisteredConditionOperators.FirstOrDefault(o => o.PluginInfo.Guid == operatorPluginGuid && o.GetType().Name == operatorType);
         }
 
-        public void LogDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonSerializationException exception)
+        public void LogPredicateDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonException exception)
         {
-            _logger.Warning(exception, "Failed to deserialize display condition predicate {predicate}", displayConditionPredicate);
+            _logger.Warning(
+                exception,
+                "Failed to deserialize display condition predicate {left} {operator} {right}",
+                displayConditionPredicate.Entity.LeftPropertyPath,
+                displayConditionPredicate.Entity.OperatorType,
+                displayConditionPredicate.Entity.RightPropertyPath
+            );
+        }
+
+        public void LogListPredicateDeserializationFailure(DisplayConditionListPredicate displayConditionPredicate, JsonException exception)
+        {
+            _logger.Warning(
+                exception,
+                "Failed to deserialize display condition list predicate {list} => {left} {operator} {right}",
+                displayConditionPredicate.Entity.ListPropertyPath,
+                displayConditionPredicate.Entity.LeftPropertyPath,
+                displayConditionPredicate.Entity.OperatorType,
+                displayConditionPredicate.Entity.RightPropertyPath
+            );
         }
 
         private void RegisterBuiltInConditionOperators()

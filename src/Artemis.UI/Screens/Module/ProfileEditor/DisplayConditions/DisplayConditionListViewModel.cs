@@ -17,7 +17,7 @@ using Humanizer;
 
 namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionListPredicateViewModel : DisplayConditionViewModel
+    public class DisplayConditionListViewModel : DisplayConditionViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly IDataModelVisualizationService _dataModelVisualizationService;
@@ -27,13 +27,13 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         private DataModelPropertiesViewModel _targetDataModel;
         private readonly Timer _updateTimer;
 
-        public DisplayConditionListPredicateViewModel(
-            DisplayConditionListPredicate displayConditionListPredicate,
+        public DisplayConditionListViewModel(
+            DisplayConditionList displayConditionList,
             DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
             IDataModelVisualizationService dataModelVisualizationService,
             IDisplayConditionsVmFactory displayConditionsVmFactory,
-            ISettingsService settingsService) : base(displayConditionListPredicate, parent)
+            ISettingsService settingsService) : base(displayConditionList, parent)
         {
             _profileEditorService = profileEditorService;
             _dataModelVisualizationService = dataModelVisualizationService;
@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public DelegateCommand SelectListPropertyCommand { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
 
-        public DisplayConditionListPredicate DisplayConditionListPredicate => (DisplayConditionListPredicate) Model;
+        public DisplayConditionList DisplayConditionList => (DisplayConditionList) Model;
 
         public bool IsInitialized
         {
@@ -73,21 +73,21 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _selectedListProperty, value);
         }
 
-        public string SelectedListOperator => DisplayConditionListPredicate.ListOperator.Humanize();
+        public string SelectedListOperator => DisplayConditionList.ListOperator.Humanize();
 
         public void SelectListOperator(string type)
         {
             var enumValue = Enum.Parse<ListOperator>(type);
-            DisplayConditionListPredicate.ListOperator = enumValue;
+            DisplayConditionList.ListOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
         }
 
         public void AddCondition(string type)
         {
             if (type == "Static")
-                DisplayConditionListPredicate.AddChild(new DisplayConditionPredicate(DisplayConditionListPredicate, PredicateType.Static));
+                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, PredicateType.Static));
             else if (type == "Dynamic")
-                DisplayConditionListPredicate.AddChild(new DisplayConditionPredicate(DisplayConditionListPredicate, PredicateType.Dynamic));
+                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, PredicateType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -95,7 +95,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         public void AddGroup()
         {
-            DisplayConditionListPredicate.AddChild(new DisplayConditionGroup(DisplayConditionListPredicate));
+            DisplayConditionList.AddChild(new DisplayConditionGroup(DisplayConditionList));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -146,7 +146,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
 
         public void ApplyList()
         {
-            DisplayConditionListPredicate.UpdateList(SelectedListProperty.DataModel, SelectedListProperty.PropertyPath);
+            DisplayConditionList.UpdateList(SelectedListProperty.DataModel, SelectedListProperty.PropertyPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
@@ -155,7 +155,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
         public override DataModelPropertiesViewModel GetDataModelOverride()
         {
             if (SelectedListProperty != null)
-                 return (DataModelPropertiesViewModel) SelectedListProperty.GetListTypeViewModel(_dataModelVisualizationService);
+                return SelectedListProperty.GetListTypeViewModel(_dataModelVisualizationService);
 
             return base.GetDataModelOverride();
         }
@@ -168,9 +168,12 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             // Update the selected list property
-            if (DisplayConditionListPredicate.ListDataModel != null && DisplayConditionListPredicate.ListPropertyPath != null)
+            if (DisplayConditionList.ListDataModel != null && DisplayConditionList.ListPropertyPath != null)
             {
-                var child = TargetDataModel.GetChildByPath(DisplayConditionListPredicate.ListDataModel.PluginInfo.Guid, DisplayConditionListPredicate.ListPropertyPath);
+                var child = TargetDataModel.GetChildByPath(
+                    DisplayConditionList.ListDataModel.PluginInfo.Guid,
+                    DisplayConditionList.ListPropertyPath
+                );
                 SelectedListProperty = child as DataModelListViewModel;
             }
 
@@ -178,7 +181,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             TargetDataModel.ApplyTypeFilter(true, typeof(IList));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Children.Where(c => !DisplayConditionListPredicate.Children.Contains(c.Model)).ToList();
+            var toRemove = Children.Where(c => !DisplayConditionList.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
             {

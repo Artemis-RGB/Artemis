@@ -9,6 +9,7 @@
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              xmlns:profile="clr-namespace:Artemis.Core.Models.Profile;assembly=Artemis.Core"
              xmlns:layerBrush="clr-namespace:Artemis.Core.Plugins.LayerBrush;assembly=Artemis.Core"
+             xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
              mc:Ignorable="d"
              behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -22,12 +23,12 @@
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
-            <ControlTemplate x:Key="SimpleTemplate">
+            <DataTemplate x:Key="SimpleTemplate">
                 <StackPanel d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}" Orientation="Horizontal">
                     <TextBlock Text="{Binding Name}" />
                 </StackPanel>
-            </ControlTemplate>
-            <ControlTemplate x:Key="ExtendedTemplate">
+            </DataTemplate>
+            <DataTemplate x:Key="ExtendedTemplate">
                 <Grid d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -44,14 +45,6 @@
                         <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" HorizontalAlignment="Right" />
                     </Button>
                 </Grid>
-            </ControlTemplate>
-            <DataTemplate x:Key="ProfileDescriptorTemplate">
-                <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource ExtendedTemplate}" />
-                <DataTemplate.Triggers>
-                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type ComboBoxItem}}, Path=IsSelected}" Value="{x:Null}">
-                        <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource SimpleTemplate}" />
-                    </DataTrigger>
-                </DataTemplate.Triggers>
             </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -138,7 +131,9 @@
                           VerticalAlignment="Top"
                           ItemsSource="{Binding Profiles}"
                           SelectedItem="{Binding SelectedProfile}"
-                          ItemTemplate="{StaticResource ProfileDescriptorTemplate}">
+                          ItemTemplateSelector="{dataTemplateSelectors:ComboBoxTemplateSelector
+                                         SelectedItemTemplate={StaticResource SimpleTemplate},
+                                         DropdownItemsTemplate={StaticResource ExtendedTemplate}}" >
                     <ComboBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <VirtualizingStackPanel />

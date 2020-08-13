@@ -12,19 +12,21 @@ namespace Artemis.Core.Models.Profile.Conditions
         public DisplayConditionGroup(DisplayConditionPart parent)
         {
             Parent = parent;
-            DisplayConditionGroupEntity = new DisplayConditionGroupEntity();
+            Entity = new DisplayConditionGroupEntity();
         }
 
         public DisplayConditionGroup(DisplayConditionPart parent, DisplayConditionGroupEntity entity)
         {
             Parent = parent;
-            DisplayConditionGroupEntity = entity;
-            BooleanOperator = (BooleanOperator) DisplayConditionGroupEntity.BooleanOperator;
+            Entity = entity;
+            BooleanOperator = (BooleanOperator) Entity.BooleanOperator;
 
-            foreach (var childEntity in DisplayConditionGroupEntity.Children)
+            foreach (var childEntity in Entity.Children)
             {
                 if (childEntity is DisplayConditionGroupEntity groupEntity)
                     AddChild(new DisplayConditionGroup(this, groupEntity));
+                else if (childEntity is DisplayConditionListEntity listEntity)
+                    AddChild(new DisplayConditionList(this, listEntity));
                 else if (childEntity is DisplayConditionPredicateEntity predicateEntity)
                     AddChild(new DisplayConditionPredicate(this, predicateEntity));
                 else if (childEntity is DisplayConditionListPredicateEntity listPredicateEntity)
@@ -33,7 +35,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         }
 
         public BooleanOperator BooleanOperator { get; set; }
-        public DisplayConditionGroupEntity DisplayConditionGroupEntity { get; set; }
+        public DisplayConditionGroupEntity Entity { get; set; }
 
         public override bool Evaluate()
         {
@@ -80,10 +82,10 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override void ApplyToEntity()
         {
-            DisplayConditionGroupEntity.BooleanOperator = (int) BooleanOperator;
+            Entity.BooleanOperator = (int) BooleanOperator;
 
-            DisplayConditionGroupEntity.Children.Clear();
-            DisplayConditionGroupEntity.Children.AddRange(Children.Select(c => c.GetEntity()));
+            Entity.Children.Clear();
+            Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
             foreach (var child in Children)
                 child.ApplyToEntity();
         }
@@ -96,7 +98,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override DisplayConditionPartEntity GetEntity()
         {
-            return DisplayConditionGroupEntity;
+            return Entity;
         }
     }
 

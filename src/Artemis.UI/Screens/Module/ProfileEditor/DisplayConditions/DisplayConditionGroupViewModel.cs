@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
             else if (type == "Dynamic")
                 DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
             else if (type == "List")
-                DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup));
+                DisplayConditionGroup.AddChild(new DisplayConditionList(DisplayConditionGroup));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -108,8 +108,8 @@ namespace Artemis.UI.Screens.Module.ProfileEditor.DisplayConditions
                     case DisplayConditionGroup displayConditionGroup:
                         Children.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this));
                         break;
-                    case DisplayConditionListPredicate displayConditionListPredicate:
-                        Children.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate, this));
+                    case DisplayConditionList displayConditionListPredicate:
+                        Children.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate, this));
                         break;
                     case DisplayConditionPredicate displayConditionPredicate:
                         Children.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate, this));
