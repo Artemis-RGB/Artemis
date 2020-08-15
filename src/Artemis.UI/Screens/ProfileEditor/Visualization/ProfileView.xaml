@@ -1,0 +1,204 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.Visualization.ProfileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization"
+             xmlns:utilities="clr-namespace:Artemis.UI.Shared.Utilities;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:visualization="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization"
+             mc:Ignorable="d"
+             d:DesignHeight="510.9" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type visualization:ProfileViewModel}}">
+    <UserControl.Resources>
+        <Style TargetType="Grid" x:Key="InitializingFade">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsInitializing}" Value="False">
+                    <DataTrigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.5">
+                                    <DoubleAnimation.EasingFunction>
+                                        <QuadraticEase EasingMode="EaseInOut" />
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>
+                                <ObjectAnimationUsingKeyFrames BeginTime="0:0:0.5" Storyboard.TargetProperty="Visibility">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Hidden}" />
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.EnterActions>
+                    <DataTrigger.ExitActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" />
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </DataTrigger.ExitActions>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <ToolBarTray Orientation="Vertical" Width="58">
+            <ToolBar Style="{DynamicResource MaterialDesignToolBar}" ClipToBounds="False" ToolBarTray.IsLocked="True">
+                <ListBox SelectedIndex="{Binding ActiveToolIndex}" ToolBar.OverflowMode="Never">
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical" />
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBoxItem ToolTip="Pan over different parts of the surface">
+                        <materialDesign:PackIcon Kind="HandLeft" />
+                    </ListBoxItem>
+                    <ListBoxItem ToolTip="Edit shape in layer" IsEnabled="{Binding CanSelectEditTool}">
+                        <materialDesign:PackIcon Kind="Edit" />
+                    </ListBoxItem>
+                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection)">
+                        <materialDesign:PackIcon Kind="SelectionDrag" />
+                    </ListBoxItem>
+                    <ListBoxItem ToolTip="Remove from layer selection">
+                        <materialDesign:PackIcon Kind="SelectOff" />
+                    </ListBoxItem>
+                </ListBox>
+            </ToolBar>
+        </ToolBarTray>
+        <Grid Grid.Column="1"
+              ClipToBounds="True"
+              MouseWheel="{s:Action CanvasMouseWheel}"
+              MouseUp="{s:Action CanvasMouseUp}"
+              MouseDown="{s:Action CanvasMouseDown}"
+              MouseMove="{s:Action CanvasMouseMove}"
+              Cursor="{Binding ActiveToolViewModel.Cursor}"
+              utilities:SizeObserver.Observe="True"
+              utilities:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth, Mode=OneWayToSource}"
+              utilities:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight, Mode=OneWayToSource}">
+
+            <Grid.Background>
+                <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="{Binding PanZoomViewModel.BackgroundViewport}" ViewportUnits="Absolute">
+                    <VisualBrush.Visual>
+                        <Grid Width="25" Height="25">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Rectangle Grid.Row="0" Grid.Column="0" Fill="Black" Opacity="0.15" />
+                            <Rectangle Grid.Row="0" Grid.Column="1" />
+                            <Rectangle Grid.Row="1" Grid.Column="0" />
+                            <Rectangle Grid.Row="1" Grid.Column="1" Fill="Black" Opacity="0.15" />
+                        </Grid>
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Grid.Background>
+
+            <Grid Name="DeviceDisplayGrid">
+                <Grid.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                        <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
+                    </TransformGroup>
+                </Grid.RenderTransform>
+                <ItemsControl ItemsSource="{Binding Devices}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <controls:DeviceVisualizer Device="{Binding}"
+                                                       ShowColors="True"
+                                                       HighlightedLeds="{Binding DataContext.HighlightedLeds, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+            <Grid Name="EditorDisplayGrid">
+                <Grid.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
+                        <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
+                    </TransformGroup>
+                </Grid.RenderTransform>
+                <ItemsControl ItemsSource="{Binding CanvasViewModels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <Canvas />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemContainerStyle>
+                        <Style TargetType="ContentPresenter">
+                            <Setter Property="Canvas.Left" Value="{Binding X}" />
+                            <Setter Property="Canvas.Top" Value="{Binding Y}" />
+                        </Style>
+                    </ItemsControl.ItemContainerStyle>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl s:View.Model="{Binding}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+
+            <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
+                <materialDesign:Card Padding="8">
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding OnlyShowSelectedShape.Value}" IsEnabled="False">
+                            Only show shape of selected layer (NYI)
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding HighlightSelectedLayer.Value}">
+                            Highlight LEDs of selected layer
+                        </CheckBox>
+                    </StackPanel>
+                </materialDesign:Card>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
+                        Margin="10" ZIndex="1">
+                <Slider Margin="0,0,14,0"
+                        Orientation="Vertical"
+                        Minimum="10"
+                        Maximum="250"
+                        Height="100"
+                        FocusVisualStyle="{x:Null}"
+                        Value="{Binding PanZoomViewModel.ZoomPercentage}"
+                        Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                <Button Command="{s:Action ResetZoomAndPan}"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        HorizontalAlignment="Right"
+                        ToolTip="Reset zoom &amp; position">
+                    <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
+                </Button>
+            </StackPanel>
+
+            <!-- Loading indicator -->
+            <Grid Background="{StaticResource MaterialDesignPaper}" Style="{StaticResource InitializingFade}" d:IsHidden="True">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        Initializing LED visualization...
+                    </TextBlock>
+                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+
+</UserControl>

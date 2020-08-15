@@ -1,0 +1,180 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:displayConditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
+    x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionsView"
+    mc:Ignorable="d"
+    d:DesignHeight="450" d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance {x:Type displayConditions:DisplayConditionsViewModel}}">
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
+
+    <materialDesign:Transitioner AutoApplyTransitionOrigins="True" SelectedIndex="{Binding TransitionerIndex}">
+        <!-- Conditions intro -->
+        <materialDesign:ColorZone Mode="PrimaryDark"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="32">
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" TextAlignment="Center" Margin="0 15">Unleash Artemis's true potential</TextBlock>
+                <TextBlock TextWrapping="Wrap" TextAlignment="Center">Start using conditions to dynamically show and hide groups and layers</TextBlock>
+
+                <Button Style="{DynamicResource MaterialDesignFloatingActionAccentButton}" Command="{x:Static materialDesign:Transitioner.MoveNextCommand}" Margin="16">
+                    <materialDesign:PackIcon Kind="ArrowRight" />
+                </Button>
+            </StackPanel>
+        </materialDesign:ColorZone>
+
+        <!-- Conditions content -->
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0 0 0 -4">
+            Display conditions
+            </TextBlock>
+            <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
+
+            <Grid Grid.Row="2" Grid.Column="0">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
+                    <ContentControl s:View.Model="{Binding RootGroup}" />
+                </ScrollViewer>
+            </Grid>
+
+            <Grid Grid.Row="3">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="140" />
+                    <ColumnDefinition Width="*" MinWidth="170" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Play mode -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" />
+                    <TextBlock Text="Play mode" VerticalAlignment="Center">
+                        <TextBlock.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-30">
+                                <TextBlock>
+                                Configure how the layer should act while the conditions above are met
+                                </TextBlock>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                </TextBlock>
+                </StackPanel>
+
+                <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3" Margin="0 0 2 0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Grid.Column="0"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding DisplayContinuously}"
+                                 MinWidth="0"
+                                 Padding="5 0">
+                            <RadioButton.ToolTip>
+                                <ToolTip Placement="Center" VerticalOffset="-40">
+                                    <TextBlock>
+                                    Continue repeating the main segment of the timeline while the condition is met
+                                    </TextBlock>
+                                </ToolTip>
+                            </RadioButton.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" />
+                                <TextBlock FontSize="12" VerticalAlignment="Center">REPEAT</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Grid.Column="1"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
+                                 MinWidth="0"
+                                 Padding="5 0">
+                            <RadioButton.ToolTip>
+                                <ToolTip Placement="Center" VerticalOffset="-40">
+                                    <TextBlock>
+                                    Only play the timeline once when the condition is met
+                                    </TextBlock>
+                                </ToolTip>
+                            </RadioButton.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="StopwatchOutline" VerticalAlignment="Center" />
+                                <TextBlock FontSize="12" VerticalAlignment="Center">ONCE</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </Grid>
+                </materialDesign:ColorZone>
+
+                <!-- Stop mode -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="Stop" VerticalAlignment="Center" />
+                    <TextBlock Text="Stop mode" VerticalAlignment="Center">
+                        <TextBlock.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-30">
+                                <TextBlock>
+                                Configure how the layer should act when the conditions above are no longer met
+                                </TextBlock>
+                            </ToolTip>
+                        </TextBlock.ToolTip>
+                </TextBlock>
+                </StackPanel>
+                <materialDesign:ColorZone Grid.Row="1" Grid.Column="1" Mode="Standard" CornerRadius="3" Margin="2 0 0 0" HorizontalAlignment="Stretch">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition MinWidth="100" />
+                        </Grid.ColumnDefinitions>
+                        <RadioButton Grid.Column="0"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding AlwaysFinishTimeline}"
+                                 MinWidth="0"
+                                 Padding="5 0">
+                            <RadioButton.ToolTip>
+                                <ToolTip Placement="Center" VerticalOffset="-40">
+                                    <TextBlock>
+                                    When conditions are no longer met, finish the the current run of the main timeline
+                                    </TextBlock>
+                                </ToolTip>
+                            </RadioButton.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" />
+                                <TextBlock FontSize="12" VerticalAlignment="Center">FINISH</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Grid.Column="1"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
+                                 MinWidth="0"
+                                 Padding="5 0">
+                            <RadioButton.ToolTip>
+                                <ToolTip Placement="Center" VerticalOffset="-40">
+                                    <TextBlock>
+                                    When conditions are no longer met, skip to the end segment of the timeline
+                                    </TextBlock>
+                                </ToolTip>
+                            </RadioButton.ToolTip>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="SkipNextOutline" VerticalAlignment="Center" />
+                                <TextBlock FontSize="12" VerticalAlignment="Center">SKIP TO END</TextBlock>
+                            </StackPanel>
+                        </RadioButton>
+                    </Grid>
+                </materialDesign:ColorZone>
+            </Grid>
+        </Grid>
+
+
+    </materialDesign:Transitioner>
+
+   
+</UserControl>

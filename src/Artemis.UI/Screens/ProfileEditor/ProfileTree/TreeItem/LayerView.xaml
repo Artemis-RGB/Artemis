@@ -1,0 +1,58 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.LayerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:treeItem="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
+             xmlns:treeItem1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type treeItem1:LayerViewModel}}">
+    <!-- Capture clicks on full tree view item -->
+    <StackPanel Margin="-10" Background="Transparent">
+        <StackPanel.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Rename" Command="{s:Action RenameElement}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="RenameBox" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Delete" Command="{s:Action DeleteElement}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="TrashCan" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </StackPanel.ContextMenu>
+        <Grid Margin="10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <materialDesign:PackIcon Grid.Column="0" Kind="Layers" Width="16" VerticalAlignment="Center"/>
+            <materialDesign:PackIcon Grid.Column="1"
+                                     VerticalAlignment="Center"
+                                     Kind="{Binding Layer.LayerBrush.Descriptor.Icon}"
+                                     Width="16"
+                                     Margin="5 0 0 0"
+                                     ToolTip="{Binding Layer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                     Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                                     Background="Transparent" />
+            <TextBlock Grid.Column="2" Text="{Binding Layer.Name}" VerticalAlignment="Center" Margin="5 0 0 0" />
+            <ToggleButton Grid.Column="3"
+                          Style="{StaticResource MaterialDesignFlatToggleButton}"
+                          ToolTip="Toggle enabled state"
+                          Width="18"
+                          Height="18"
+                          IsChecked="{Binding ProfileElement.Enabled}"
+                          Command="{s:Action EnableToggled}"
+                          VerticalAlignment="Center" Padding="-25">
+                <materialDesign:PackIcon Kind="Eye" Height="13" Width="13" />
+            </ToggleButton>
+        </Grid>
+    </StackPanel>
+</UserControl>
