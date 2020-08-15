@@ -1,0 +1,378 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+    xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
+    xmlns:controls="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls"
+    x:Class="Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerPropertiesView"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance {x:Type layerProperties:LayerPropertiesViewModel}}"
+    behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
+    <UserControl.Resources>
+        <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <Converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+        <Style x:Key="SvStyle" TargetType="{x:Type ScrollViewer}">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ScrollContentPresenter Grid.ColumnSpan="2" Grid.RowSpan="2" />
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                       HorizontalAlignment="Right"
+                                       Opacity="0.5"
+                                       Grid.Row="0"
+                                       Grid.Column="1"
+                                       Value="{TemplateBinding VerticalOffset}"
+                                       Maximum="{TemplateBinding ScrollableHeight}"
+                                       ViewportSize="{TemplateBinding ViewportHeight}"
+                                       Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}" />
+                            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                       VerticalAlignment="Bottom"
+                                       Orientation="Horizontal"
+                                       Opacity="0.5"
+                                       Grid.Row="1"
+                                       Grid.Column="0"
+                                       Value="{TemplateBinding HorizontalOffset}"
+                                       Maximum="{TemplateBinding ScrollableWidth}"
+                                       ViewportSize="{TemplateBinding ViewportWidth}"
+                                       Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Command="{s:Action Play}" Key="Space" />
+        <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space" />
+    </UserControl.InputBindings>
+    <Grid x:Name="ContainerGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="28" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="1.5*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- Left side -->
+        <Grid Grid.Column="0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Misc controls & time display -->
+            <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                <DockPanel VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                ToolTip="Play from start (Shift+Space)" Command="{s:Action PlayFromStart}"
+                                Focusable="False">
+                            <materialDesign:PackIcon Kind="StepForward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                ToolTip="Toggle play/pause (Space)" Command="{s:Action Play}" Focusable="False">
+                            <StackPanel>
+                                <materialDesign:PackIcon Kind="Play"
+                                                         Visibility="{Binding Playing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+                                <materialDesign:PackIcon Kind="Pause"
+                                                         Visibility="{Binding Playing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to start" Command="{s:Action GoToStart}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipBackward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Go to end" Command="{s:Action GoToEnd}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipForward" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Previous frame" Command="{s:Action GoToPreviousFrame}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipPrevious" />
+                        </Button>
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
+                            <materialDesign:PackIcon Kind="SkipNext" />
+                        </Button>
+                        <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                      ToolTip="Repeat after last keyframe"
+                                      IsChecked="{Binding RepeatAfterLastKeyframe}"
+                                      Focusable="False">
+                            <materialDesign:PackIcon Kind="Repeat" Height="24" Width="24" />
+                        </ToggleButton>
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Text="{Binding FormattedCurrentTime}" HorizontalAlignment="Right" Margin="0 0 20 0" />
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+
+            <!-- Properties tree -->
+            <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" DialogTheme="Inherit" CloseOnClickAway="True" Grid.Row="1">
+                <materialDesign:Transitioner x:Name="PropertyTreeTransitioner" SelectedIndex="{Binding PropertyTreeIndex}" DefaultTransitionOrigin="0.9, 0.9" AutoApplyTransitionOrigins="True">
+                    <ScrollViewer x:Name="PropertyTreeScrollViewer"
+                                  HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden"
+                                  ScrollChanged="TimelineScrollChanged">
+                        <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
+                            <ContentControl s:View.Model="{Binding TreeViewModel}" />
+                        </Border>
+                    </ScrollViewer>
+                    <materialDesign:TransitionerSlide>
+                        <materialDesign:TransitionerSlide.BackwardWipe>
+                            <materialDesign:CircleWipe />
+                        </materialDesign:TransitionerSlide.BackwardWipe>
+                        <Grid>
+                            <ContentControl s:View.Model="{Binding EffectsViewModel}" />
+                            <!-- Transitions only work when the command comes from inside the transitioner but we want the button outside, 
+                            by setting the command target to this hidden button we cercumvent that -->
+                            <Button x:Name="TransitionCommandAnchor"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Bottom"
+                                    Width="110"
+                                    Height="1"
+                                    Visibility="Hidden" />
+                        </Grid>
+                    </materialDesign:TransitionerSlide>
+                </materialDesign:Transitioner>
+            </materialDesign:DialogHost>
+        </Grid>
+
+        <!-- Resize -->
+        <GridSplitter Grid.Row="0" Grid.RowSpan="2" Grid.Column="1" Width="15" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="-15 0" Background="Transparent" />
+
+        <!-- Right side -->
+        <Grid Grid.Row="0" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <!-- Timeline headers -->
+            <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+                <Canvas Background="{DynamicResource MaterialDesignCardBackground}" Width="{Binding ActualWidth, ElementName=PropertyTimeLine}">
+                    <!-- Timeline segments -->
+                    <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding EndTimelineSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding MainTimelineSegmentViewModel}" />
+                    <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding StartTimelineSegmentViewModel}" />
+
+                    <!-- Timeline caret -->
+                    <Polygon Canvas.Left="{Binding TimeCaretPosition}"
+                             Cursor="SizeWE"
+                             MouseDown="{s:Action TimelineMouseDown}"
+                             MouseUp="{s:Action TimelineMouseUp}"
+                             MouseMove="{s:Action TimelineMouseMove}"
+                             Points="-8,0 -8,8 0,20, 8,8 8,0"
+                             Fill="{StaticResource SecondaryAccentBrush}" />
+                    <Line Canvas.Left="{Binding TimeCaretPosition}"
+                          Cursor="SizeWE"
+                          MouseDown="{s:Action TimelineMouseDown}"
+                          MouseUp="{s:Action TimelineMouseUp}"
+                          MouseMove="{s:Action TimelineMouseMove}"
+                          X1="0"
+                          X2="0"
+                          Y1="0"
+                          Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                          StrokeThickness="2"
+                          Stroke="{StaticResource SecondaryAccentBrush}" />
+
+
+                    <!-- Timeline header body -->
+                    <controls:PropertyTimelineHeader Margin="0 25 0 0"
+                                                     Fill="{DynamicResource MaterialDesignBody}"
+                                                     PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
+                                                     HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
+                                                     VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
+                                                     OffsetFirstValue="True"
+                                                     Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
+                </Canvas>
+            </ScrollViewer>
+
+            <!-- Timeline rails -->
+            <ScrollViewer x:Name="TimelineRailsScrollViewer" Grid.Row="1" Style="{StaticResource SvStyle}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
+                          ScrollChanged="TimelineScrollChanged">
+                <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
+                    <Canvas Grid.Column="0" Panel.ZIndex="1">
+                        <Line Canvas.Left="{Binding TimeCaretPosition}"
+                              Cursor="SizeWE"
+                              MouseDown="{s:Action TimelineMouseDown}"
+                              MouseUp="{s:Action TimelineMouseUp}"
+                              MouseMove="{s:Action TimelineMouseMove}"
+                              X1="0"
+                              X2="0"
+                              Y1="0"
+                              Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                              StrokeThickness="2"
+                              Stroke="{StaticResource SecondaryAccentBrush}" />
+                    </Canvas>
+
+                    <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" x:Name="PropertyTimeLine" />
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Bottom row, a bit hacky but has a ZIndex of 2 to cut off the time caret that overlaps the entire timeline -->
+        <Grid Grid.Row="1"
+              Grid.Column="0"
+              Panel.ZIndex="2"
+              HorizontalAlignment="Stretch"
+              Background="{DynamicResource MaterialDesignCardBackground}">
+            <!-- Selected layer controls -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="6"
+                        Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}">
+                <materialDesign:PackIcon Kind="Layers" Width="16" />
+                <materialDesign:PackIcon Kind="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
+                                         Width="16"
+                                         Margin="5 0 0 0"
+                                         ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                         Background="Transparent"
+                                         Visibility="{Binding SelectedLayer.LayerBrush, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock Text="{Binding SelectedLayer.Name}" Margin="5 0 0 0" />
+            </StackPanel>
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="6"
+                        Visibility="{Binding SelectedFolder, Converter={StaticResource NullToVisibilityConverter}}">
+                <materialDesign:PackIcon Kind="Folder" Width="16" />
+                <TextBlock Text="{Binding SelectedFolder.Name}" Margin="5 0 0 0" />
+            </StackPanel>
+            <Button Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                    Margin="0 -2 5 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Select an effect to add"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}"
+                    Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                <TextBlock FontSize="11">
+                    ADD EFFECT
+                </TextBlock>
+            </Button>
+            <Button Grid.Column="1"
+                    Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                    Margin="0 -2 5 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Show the layer/folder properties"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
+                    Command="{x:Static materialDesign:Transitioner.MoveFirstCommand}"
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                <TextBlock FontSize="11">
+                    SHOW PROPERTIES
+                </TextBlock>
+            </Button>
+        </Grid>
+
+        <Grid Grid.Row="1"
+              Grid.Column="2"
+              HorizontalAlignment="Stretch"
+              Panel.ZIndex="2"
+              Background="{DynamicResource MaterialDesignCardBackground}">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0"
+                    Margin="5 -2 0 -2"
+                    Padding="10 0"
+                    Height="20"
+                    Width="110"
+                    ToolTip="Select an effect to add"
+                    VerticalAlignment="Center"
+                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
+                        <Style.Triggers>
+                            <EventTrigger RoutedEvent="Click">
+                                <EventTrigger.Actions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                                <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                            </BooleanAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger.Actions>
+                            </EventTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <Button.ContextMenu>
+                    <ContextMenu>
+                        <ContextMenu.Resources>
+                            <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+                        </ContextMenu.Resources>
+                        <MenuItem Header="Start"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="Start"
+                                  IsEnabled="{Binding Data.StartTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                        <MenuItem Header="Main"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="Main"
+                                  IsEnabled="{Binding Data.MainTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                        <MenuItem Header="End"
+                                  Command="{s:Action EnableSegment}"
+                                  CommandParameter="End"
+                                  IsEnabled="{Binding Data.EndTimelineSegmentViewModel.SegmentEnabled, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}" />
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <TextBlock FontSize="11">
+                    ADD SEGMENT
+                </TextBlock>
+            </Button>
+
+            <!-- Zoom control -->
+            <Slider Grid.Column="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="10 5"
+                    Minimum="31"
+                    Maximum="350"
+                    TickFrequency="1"
+                    IsSnapToTickEnabled="True"
+                    AutoToolTipPlacement="TopLeft"
+                    Value="{Binding ProfileEditorService.PixelsPerSecond}"
+                    Width="319" />
+
+        </Grid>
+    </Grid>
+</UserControl>

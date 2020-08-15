@@ -1,0 +1,30 @@
+﻿<controls:MaterialWindow x:Class="Artemis.UI.Screens.ProfileEditor.LayerBrushSettingsWindowView"
+                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                         xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor"
+                         xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                         xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                         mc:Ignorable="d"
+                         Title="Layer brush configuration"
+                         Background="{DynamicResource MaterialDesignPaper}"
+                         FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                         UseLayoutRounding="True"
+                         Width="800"
+                         Height="800"
+                         d:DesignHeight="800"
+                         d:DesignWidth="800"
+                         d:DataContext="{d:DesignInstance local:LayerBrushSettingsWindowViewModel}"
+                         Icon="/Resources/Images/Logo/logo-512.png">
+    <DockPanel>
+        <controls:AppBar Type="Dense" Title="{Binding ActiveItem.LayerBrush.Descriptor.DisplayName}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
+            <controls:AppBar.AppIcon>
+                <materialDesign:PackIcon Kind="{Binding ActiveItem.LayerBrush.Descriptor.Icon}" Width="20" Height="28" />
+            </controls:AppBar.AppIcon>
+        </controls:AppBar>
+
+        <ContentControl s:View.Model="{Binding ActiveItem}" />
+    </DockPanel>
+</controls:MaterialWindow>
