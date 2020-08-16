@@ -39,6 +39,7 @@ namespace Artemis.Core.Services
         private List<BaseDataModelExpansion> _dataModelExpansions;
         private List<Module> _modules;
         private IntroAnimation _introAnimation;
+        private DateTime _lastModuleActivationUpdate;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
         internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
@@ -95,8 +96,6 @@ namespace Artemis.Core.Services
                 _logger.Information("Initialized without an active surface entity");
 
             PlayIntroAnimation();
-            _profileService.ActivateLastActiveProfiles();
-
             OnInitialized();
         }
 
@@ -170,6 +169,11 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
+
+                // Only run the module activation update every 2 seconds
+                if (DateTime.Now - _lastModuleActivationUpdate > TimeSpan.FromSeconds(2))
+                    ModuleActivationUpdate();
+
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules
@@ -177,12 +181,15 @@ namespace Artemis.Core.Services
                         dataModelExpansion.Update(args.DeltaTime);
                 }
 
+                List<Module> modules;
                 lock (_modules)
                 {
-                    // Update all active modules
-                    foreach (var module in _modules)
-                        module.Update(args.DeltaTime);
+                    modules = _modules.Where(m => m.IsActivated).ToList();
                 }
+
+                // Update all active modules
+                foreach (var module in modules)
+                    module.Update(args.DeltaTime);
 
                 // If there is no ready bitmap brush, skip the frame
                 if (_rgbService.BitmapBrush == null)
@@ -194,20 +201,15 @@ namespace Artemis.Core.Services
                         return;
 
                     // Render all active modules
-                    using (var canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap))
+                    using var canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
+                    canvas.Clear(new SKColor(0, 0, 0));
+                    if (!ModuleRenderingDisabled)
                     {
-                        canvas.Clear(new SKColor(0, 0, 0));
-                        if (!ModuleRenderingDisabled)
-                        {
-                            lock (_modules)
-                            {
-                                foreach (var module in _modules)
-                                    module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
-                            }
-                        }
-
-                        OnFrameRendering(new FrameRenderingEventArgs(_modules, canvas, args.DeltaTime, _rgbService.Surface));
+                        foreach (var module in modules)
+                            module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                     }
+
+                    OnFrameRendering(new FrameRenderingEventArgs(modules, canvas, args.DeltaTime, _rgbService.Surface));
                 }
             }
             catch (Exception e)
@@ -219,6 +221,33 @@ namespace Artemis.Core.Services
                 _frameStopWatch.Stop();
                 FrameTime = _frameStopWatch.Elapsed;
             }
+        }
+
+        private void ModuleActivationUpdate()
+        {
+            _lastModuleActivationUpdate = DateTime.Now;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            lock (_modules)
+            {
+                foreach (var module in _modules)
+                {
+                    var shouldBeActivated = module.EvaluateActivationRequirements();
+                    if (shouldBeActivated && !module.IsActivated)
+                    {
+                        module.Activate();
+                        // If this is a profile module, activate the last active profile after module activation
+                        if (module is ProfileModule profileModule)
+                            _profileService.ActivateLastProfile(profileModule);
+                    }
+                    else if (!shouldBeActivated && module.IsActivated)
+                        module.Deactivate();
+                }
+            }
+
+            stopwatch.Stop();
+            if (stopwatch.ElapsedMilliseconds > 100)
+                _logger.Warning("Activation requirements evaluation took too long: {moduleCount} module(s) in {elapsed}", _modules.Count, stopwatch.Elapsed);
         }
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)

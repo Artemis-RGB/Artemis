@@ -51,13 +51,13 @@
     </mde:MaterialWindow.Resources>
     <materialDesign:DialogHost Identifier="RootDialog" DialogTheme="Inherit" SnackbarMessageQueue="{Binding MainMessageQueue}">
         <Grid>
-            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding IsSidebarVisible}">
+            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}">
                 <materialDesign:DrawerHost.LeftDrawerContent>
                     <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
                 </materialDesign:DrawerHost.LeftDrawerContent>
                 <DockPanel>
                     <mde:AppBar Type="Dense"
-                                IsNavigationDrawerOpen="{Binding IsSidebarVisible, Mode=TwoWay}"
+                                IsNavigationDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
                                 Title="{Binding ActiveItem.DisplayName}"
                                 ShowNavigationDrawerButton="True"
                                 DockPanel.Dock="Top">

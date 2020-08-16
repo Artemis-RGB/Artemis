@@ -12,11 +12,6 @@ namespace Artemis.Core.Services.Storage.Interfaces
     public interface IProfileService : IArtemisService
     {
         /// <summary>
-        ///     Activates the last profile for each module
-        /// </summary>
-        void ActivateLastActiveProfiles();
-
-        /// <summary>
         ///     Creates a new profile for the given module and returns a descriptor pointing to it
         /// </summary>
         /// <param name="module">The profile module to create the profile for</param>
@@ -49,6 +44,12 @@ namespace Artemis.Core.Services.Storage.Interfaces
         /// </summary>
         /// <param name="profileDescriptor">The descriptor pointing to the profile to delete</param>
         void DeleteProfile(ProfileDescriptor profileDescriptor);
+
+        /// <summary>
+        ///     Activates the last profile of the given profile module
+        /// </summary>
+        /// <param name="profileModule"></param>
+        void ActivateLastProfile(ProfileModule profileModule);
 
         /// <summary>
         ///     Activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently active surface
