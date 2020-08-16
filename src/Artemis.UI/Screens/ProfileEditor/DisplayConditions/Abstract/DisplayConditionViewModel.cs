@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract
@@ -28,11 +27,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract
         }
 
         public abstract void Update();
-
-        public virtual DataModelPropertiesViewModel GetDataModelOverride()
-        {
-            return Parent?.GetDataModelOverride();
-        }
 
         public virtual void Delete()
         {

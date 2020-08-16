@@ -198,6 +198,9 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
         {
+            if (propertyPath == null)
+                return null;
+
             // Ensure children are populated by requesting an update
             if (!IsVisualizationExpanded)
             {

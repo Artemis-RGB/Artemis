@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionGroupView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,14 +6,18 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+             x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionGroupView"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance Type=local:DisplayConditionGroupViewModel, IsDesignTimeCreatable=False}">
+             d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type local:DisplayConditionGroupViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -68,23 +72,23 @@
             <Button.Style>
                 <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
                     <Style.Triggers>
-                        <EventTrigger RoutedEvent="Click">
-                            <EventTrigger.Actions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
-                                            <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
-                                        </BooleanAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </EventTrigger.Actions>
+                        <EventTrigger RoutedEvent="ButtonBase.Click">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <BooleanAnimationUsingKeyFrames Storyboard.TargetProperty="ContextMenu.IsOpen">
+                                        <DiscreteBooleanKeyFrame KeyTime="0:0:0" Value="True" />
+                                    </BooleanAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
                         </EventTrigger>
                     </Style.Triggers>
                 </Style>
             </Button.Style>
-            <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
             <Button.ContextMenu>
                 <ContextMenu>
+                    <ContextMenu.Resources>
+                        <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+                    </ContextMenu.Resources>
                     <MenuItem Header="Add static condition"
                               ToolTip="A condition that compares a data model property to a static input"
                               Command="{s:Action AddCondition}"
@@ -104,7 +108,8 @@
                     <MenuItem Header="Add list condition"
                               ToolTip="A condition that evaluates on items in a list"
                               Command="{s:Action AddCondition}"
-                              CommandParameter="List">
+                              CommandParameter="List" 
+                              IsEnabled="{Binding Data.IsListGroup, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="FormatListBulleted" />
                         </MenuItem.Icon>
@@ -116,6 +121,7 @@
                     </MenuItem>
                 </ContextMenu>
             </Button.ContextMenu>
+            <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
         </Button>
 
         <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Children}">

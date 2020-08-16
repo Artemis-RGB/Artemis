@@ -73,12 +73,14 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         }
 
         public string SelectedListOperator => DisplayConditionList.ListOperator.Humanize();
-
+        
         public void SelectListOperator(string type)
         {
             var enumValue = Enum.Parse<ListOperator>(type);
             DisplayConditionList.ListOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void AddCondition(string type)
@@ -151,14 +153,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             Update();
         }
 
-        public override DataModelPropertiesViewModel GetDataModelOverride()
-        {
-            if (SelectedListProperty != null)
-                return SelectedListProperty.GetListTypeViewModel(_dataModelVisualizationService);
-
-            return base.GetDataModelOverride();
-        }
-
         public override void Update()
         {
             if (TargetDataModel == null)
@@ -195,7 +189,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 if (!(childModel is DisplayConditionGroup displayConditionGroup))
                     continue;
 
-                var viewModel = _displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this);
+                var viewModel = _displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this, true);
                 viewModel.IsRootGroup = true;
                 Children.Add(viewModel);
             }

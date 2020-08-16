@@ -98,7 +98,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup(null);
 
             RootGroup?.Dispose();
-            RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null);
+            RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null, false);
             RootGroup.IsRootGroup = true;
             RootGroup.Update();
 

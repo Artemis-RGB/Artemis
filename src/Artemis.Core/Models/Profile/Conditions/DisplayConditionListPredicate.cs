@@ -19,6 +19,8 @@ namespace Artemis.Core.Models.Profile.Conditions
             Parent = parent;
             PredicateType = predicateType;
             Entity = new DisplayConditionListPredicateEntity();
+
+            ApplyParentList();
         }
 
         public DisplayConditionListPredicate(DisplayConditionPart parent, DisplayConditionListPredicateEntity entity)
@@ -26,6 +28,8 @@ namespace Artemis.Core.Models.Profile.Conditions
             Parent = parent;
             Entity = entity;
             PredicateType = (PredicateType) entity.PredicateType;
+
+            ApplyParentList();
         }
 
         public DisplayConditionListPredicateEntity Entity { get; set; }
@@ -42,6 +46,20 @@ namespace Artemis.Core.Models.Profile.Conditions
         public object RightStaticValue { get; private set; }
 
         public Func<object, bool> CompiledListPredicate { get; private set; }
+
+        public void ApplyParentList()
+        {
+            var current = Parent;
+            while (current != null)
+            {
+                if (current is DisplayConditionList parentList)
+                {
+                    UpdateList(parentList.ListDataModel, parentList.ListPropertyPath);
+                    return;
+                }
+                current = current.Parent;
+            }
+        }
 
         public void UpdateList(DataModel dataModel, string path)
         {
@@ -66,9 +84,9 @@ namespace Artemis.Core.Models.Profile.Conditions
             ListDataModel = dataModel;
             ListPropertyPath = path;
 
-            if (!ListContainsInnerPath(LeftPropertyPath))
+            if (LeftPropertyPath != null && !ListContainsInnerPath(LeftPropertyPath))
                 LeftPropertyPath = null;
-            if (!ListContainsInnerPath(RightPropertyPath))
+            if (RightPropertyPath != null && !ListContainsInnerPath(RightPropertyPath))
                 RightPropertyPath = null;
 
             CreateExpression();

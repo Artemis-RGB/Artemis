@@ -30,7 +30,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="0 3" Visibility="{Binding IsInitialized, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+    <Grid Margin="0 3">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -55,11 +55,12 @@
         <!-- Left side, the list this predicate is targeting -->
         <Button Grid.Row="0"
                 Grid.Column="1"
-                Background="#ab47bc"
-                BorderBrush="#ab47bc"
+                Background="#476CBC"
+                BorderBrush="#476CBC"
                 Style="{StaticResource DisplayConditionButton}"
                 ToolTip="{Binding SelectedListProperty.DisplayPropertyPath}"
-                Click="PropertyButton_OnClick">
+                Click="PropertyButton_OnClick"
+                Visibility="{Binding IsInitialized, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding TargetDataModel.Children}" IsOpen="{Binding TargetDataModelOpen, Mode=OneWayToSource}">
                     <ContextMenu.ItemContainerStyle>
@@ -92,7 +93,8 @@
                 BorderBrush="#7B7B7B"
                 Content="{Binding SelectedListOperator}"
                 Click="PropertyButton_OnClick"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                Visibility="{Binding IsInitialized, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Any" Command="{s:Action SelectListOperator}" CommandParameter="Any" />
