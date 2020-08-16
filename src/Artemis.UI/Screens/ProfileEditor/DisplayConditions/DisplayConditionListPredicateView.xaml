@@ -1,0 +1,187 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+    xmlns:displayConditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
+    x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionListPredicateView"
+    mc:Ignorable="d"
+    d:DesignHeight="450" d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type displayConditions:DisplayConditionListPredicateViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
+                <ResourceDictionary>
+                    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                    <DataTemplate x:Key="DataModelDataTemplate">
+                        <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
+                        <DataTemplate.Triggers>
+                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
+                                <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="0 3" Visibility="{Binding IsInitialized, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0"
+                Grid.Column="0"
+                ToolTip="Delete the predicate"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                HorizontalAlignment="Left"
+                Foreground="#E74C4C"
+                Width="25"
+                Height="25"
+                Command="{s:Action Delete}">
+            <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
+        </Button>
+
+        <!-- Left side, always a property -->
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Background="#476CBC"
+                BorderBrush="#476CBC"
+                Style="{StaticResource DisplayConditionButton}"
+                ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
+                Click="PropertyButton_OnClick">
+            <Button.ContextMenu>
+                <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}" IsOpen="{Binding LeftSideDataModelOpen, Mode=OneWayToSource}">
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                            <Setter Property="ItemsSource" Value="{Binding Children}" />
+                            <Setter Property="Command" Value="{Binding Data.SelectLeftPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="CommandTarget" Value="{Binding}" />
+                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                            <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
+                </ContextMenu>
+            </Button.ContextMenu>
+            <Grid>
+                <TextBlock Text="{Binding SelectedLeftSideProperty.PropertyDescription.Name}"
+                           Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock Text="« Select a property »"
+                           FontStyle="Italic"
+                           Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+            </Grid>
+        </Button>
+
+        <!-- Operator -->
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
+                Background="#7B7B7B"
+                BorderBrush="#7B7B7B"
+                Content="{Binding SelectedOperator.Description}"
+                Click="PropertyButton_OnClick">
+            <Button.ContextMenu>
+                <ContextMenu ItemsSource="{Binding Operators}">
+                    <ContextMenu.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0" />
+                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ContextMenu.ItemTemplate>
+                    <ContextMenu.ItemContainerStyle>
+                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                            <Setter Property="Command" Value="{Binding Data.SelectOperatorCommand, Source={StaticResource DataContextProxy}}" />
+                            <Setter Property="CommandParameter" Value="{Binding}" />
+                            <Setter Property="CommandTarget" Value="{Binding}" />
+                        </Style>
+                    </ContextMenu.ItemContainerStyle>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+
+        <Grid Grid.Row="0"
+              Grid.Column="3"
+              Visibility="{Binding SelectedOperator.SupportsRightSide, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <!-- Right side property if type is dynamic -->
+            <Button Background="{DynamicResource PrimaryHueMidBrush}"
+                    BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                    Style="{StaticResource DisplayConditionButton}"
+                    ToolTip="{Binding SelectedRightSideProperty.DisplayPropertyPath}"
+                    Click="PropertyButton_OnClick"
+                    Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                <Button.ContextMenu>
+                    <ContextMenu ItemsSource="{Binding RightSideDataModel.Children}">
+                        <ContextMenu.ItemContainerStyle>
+                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                                <Setter Property="ItemsSource" Value="{Binding Children}" />
+                                <Setter Property="Command" Value="{Binding Data.SelectRightPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                                <Setter Property="CommandParameter" Value="{Binding}" />
+                                <Setter Property="CommandTarget" Value="{Binding}" />
+                                <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                                <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                                <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
+                            </Style>
+                        </ContextMenu.ItemContainerStyle>
+                    </ContextMenu>
+                </Button.ContextMenu>
+                <Grid>
+                    <TextBlock Text="{Binding SelectedRightSideProperty.PropertyDescription.Name}"
+                               Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
+                    <TextBlock Text="« Select a property »"
+                               FontStyle="Italic"
+                               Visibility="{Binding SelectedRightSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                </Grid>
+            </Button>
+
+            <!-- Right side property if type is static -->
+            <materialDesign:Transitioner SelectedIndex="{Binding RightSideTransitionIndex}"
+                                         DefaultTransitionOrigin="0.5, 0.5"
+                                         Margin="3 -4"
+                                         Visibility="{Binding ShowRightSidePropertySelection, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                <Button Style="{StaticResource DisplayConditionButton}"
+                        Background="{DynamicResource PrimaryHueMidBrush}"
+                        BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                        Margin="0 4"
+                        Command="{s:Action ActivateRightSideInputViewModel}"
+                        HorizontalAlignment="Left">
+                    <Grid>
+                        <StackPanel Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
+                            <TextBlock FontWeight="Light"
+                                       Text="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix}"
+                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
+                            <TextBlock Text="{Binding RightStaticValue}" />
+                            <TextBlock FontWeight="Light"
+                                       Text="{Binding SelectedLeftSideProperty.PropertyDescription.Affix}"
+                                       Visibility="{Binding SelectedLeftSideProperty.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
+                        </StackPanel>
+
+                        <TextBlock Text="« Enter a value »"
+                                   FontStyle="Italic"
+                                   Visibility="{Binding RightStaticValue, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                    </Grid>
+                </Button>
+                <Border BorderBrush="{DynamicResource PrimaryHueMidBrush}"
+                        Background="{DynamicResource MaterialDesignPaper}"
+                        CornerRadius="3"
+                        Padding="3"
+                        HorizontalAlignment="Left"
+                        MinWidth="140">
+                    <ContentControl s:View.Model="{Binding RightSideInputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                </Border>
+            </materialDesign:Transitioner>
+        </Grid>
+    </Grid>
+</UserControl>

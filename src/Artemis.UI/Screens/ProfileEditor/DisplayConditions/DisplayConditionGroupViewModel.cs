@@ -18,9 +18,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private bool _isInitialized;
         private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent,
+        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, bool isListGroup,
             IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
         {
+            IsListGroup = isListGroup;
             _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
 
@@ -32,6 +33,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 IsInitialized = true;
             });
         }
+
+        public bool IsListGroup { get; }
 
         public DisplayConditionGroup DisplayConditionGroup => (DisplayConditionGroup) Model;
 
@@ -62,15 +65,27 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             var enumValue = Enum.Parse<BooleanOperator>(type);
             DisplayConditionGroup.BooleanOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void AddCondition(string type)
         {
             if (type == "Static")
-                DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
+            {
+                if (!IsListGroup)
+                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
+                else
+                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, PredicateType.Static));
+            }
             else if (type == "Dynamic")
-                DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
-            else if (type == "List")
+            {
+                if (!IsListGroup)
+                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+                else
+                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+            }
+            else if (type == "List" && !IsListGroup)
                 DisplayConditionGroup.AddChild(new DisplayConditionList(DisplayConditionGroup));
 
             Update();
@@ -106,13 +121,18 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 switch (childModel)
                 {
                     case DisplayConditionGroup displayConditionGroup:
-                        Children.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this));
+                        Children.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this, IsListGroup));
                         break;
                     case DisplayConditionList displayConditionListPredicate:
                         Children.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate, this));
                         break;
                     case DisplayConditionPredicate displayConditionPredicate:
-                        Children.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate, this));
+                        if (!IsListGroup)
+                            Children.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate, this));
+                        break;       
+                    case DisplayConditionListPredicate displayConditionListPredicate:
+                        if (IsListGroup)
+                            Children.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate, this));
                         break;
                 }
             }

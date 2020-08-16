@@ -17,9 +17,6 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             Entity = new DisplayConditionListEntity();
-
-            // There is always a child root group, add it
-            AddChild(new DisplayConditionGroup(this));
         }
 
         public DisplayConditionList(DisplayConditionPart parent, DisplayConditionListEntity entity)
@@ -27,16 +24,6 @@ namespace Artemis.Core.Models.Profile.Conditions
             Parent = parent;
             Entity = entity;
             ListOperator = (ListOperator) entity.ListOperator;
-
-            // There should only be one child and it should be a group
-            var rootGroup = Entity.Children.SingleOrDefault() as DisplayConditionGroupEntity;
-            if (rootGroup == null)
-            {
-                Entity.Children.Clear();
-                AddChild(new DisplayConditionGroup(this));
-            }
-            else
-                AddChild(new DisplayConditionGroup(this, rootGroup));
         }
 
         public DisplayConditionListEntity Entity { get; set; }
@@ -55,6 +42,8 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public override bool EvaluateObject(object target)
         {
+            if (!Children.Any())
+                return false;
             if (!(target is IList list))
                 return false;
 
@@ -92,17 +81,28 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         internal override void Initialize(IDataModelService dataModelService)
         {
-            // Target list
-            if (Entity.ListDataModelGuid != null)
-            {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.ListDataModelGuid.Value);
-                if (dataModel != null && dataModel.ContainsPath(Entity.ListPropertyPath))
-                    UpdateList(dataModel, Entity.ListPropertyPath);
-            }
+            if (Entity.ListDataModelGuid == null)
+                return;
 
-            // Children
-            var rootGroup = (DisplayConditionGroup) Children.Single();
-            rootGroup.Initialize(dataModelService);
+            // Get the data model and ensure the path is valid
+            var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.ListDataModelGuid.Value);
+            if (dataModel == null || !dataModel.ContainsPath(Entity.ListPropertyPath))
+                return;
+
+            // Populate properties and create the accessor expression
+            ListDataModel = dataModel;
+            ListPropertyPath = Entity.ListPropertyPath;
+            CreateExpression();
+
+            // There should only be one child and it should be a group
+            if (Entity.Children.SingleOrDefault() is DisplayConditionGroupEntity rootGroup)
+                AddChild(new DisplayConditionGroup(this, rootGroup));
+            else
+            {
+                Entity.Children.Clear();
+                AddChild(new DisplayConditionGroup(this));
+            }
+            Children[0].Initialize(dataModelService);
         }
 
         public void UpdateList(DataModel dataModel, string path)
@@ -120,19 +120,30 @@ namespace Artemis.Core.Models.Profile.Conditions
                     throw new ArtemisCoreException($"The path '{path}' does not contain a list");
             }
 
+            // Remove the old root group that was tied to the old data model
+            while (Children.Any())
+                RemoveChild(Children[0]);
+
             ListDataModel = dataModel;
             ListPropertyPath = path;
 
-            if (dataModel != null)
-            {
-                var parameter = Expression.Parameter(typeof(object), "listDataModel");
-                var accessor = path.Split('.').Aggregate<string, Expression>(
-                    Expression.Convert(parameter, dataModel.GetType()),
-                    (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+            if (dataModel == null)
+                return;
 
-                var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
-                CompiledListAccessor = lambda.Compile();
-            }
+            // Create a new root group
+            AddChild(new DisplayConditionGroup(this));
+            CreateExpression();
+        }
+
+        public void CreateExpression()
+        {
+            var parameter = Expression.Parameter(typeof(object), "listDataModel");
+            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, ListDataModel.GetType()),
+                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+
+            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
+            CompiledListAccessor = lambda.Compile();
         }
 
         public Func<object, IList> CompiledListAccessor { get; set; }
