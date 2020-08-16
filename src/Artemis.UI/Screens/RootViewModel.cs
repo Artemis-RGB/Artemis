@@ -66,13 +66,7 @@ namespace Artemis.UI.Screens
             get => _mainMessageQueue;
             set => SetAndNotify(ref _mainMessageQueue, value);
         }
-
-        public bool IsSidebarVisible
-        {
-            get => _isSidebarVisible;
-            set => SetAndNotify(ref _isSidebarVisible, value);
-        }
-
+        
         public bool ActiveItemReady
         {
             get => _activeItemReady;
@@ -140,7 +134,7 @@ namespace Artemis.UI.Screens
         {
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem))
             {
-                IsSidebarVisible = false;
+                SidebarViewModel.IsSidebarOpen = false;
                 ActiveItemReady = false;
 
                 // Allow the menu to close, it's slower but feels more responsive, funny how that works right
@@ -254,7 +248,7 @@ namespace Artemis.UI.Screens
         protected override void OnClose()
         {
             SidebarViewModel.Dispose();
-            
+
 
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Plugins.Modules.General.Utilities;
 
@@ -16,7 +17,7 @@ namespace Artemis.Plugins.Modules.General.DataModel.Windows
             ProcessName = process.ProcessName;
 
             // Accessing MainModule requires admin privileges, this way does not
-            ProgramLocation = WindowUtilities.GetProcessFilename(process);
+            ProgramLocation = process.GetProcessFilename();
         }
 
         public string WindowTitle { get; set; }

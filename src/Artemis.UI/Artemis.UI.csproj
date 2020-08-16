@@ -121,6 +121,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Cursors\aero_rotate.cur" />
+    <Resource Include="Resources\Images\Sidebar\sidebar-header.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="FluentValidation" Version="8.6.2" />
@@ -296,6 +297,7 @@
   <ItemGroup>
     <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
     <None Remove="Resources\Images\Logo\logo-512.ico" />
+    <None Remove="Resources\Images\Sidebar\sidebar-header.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

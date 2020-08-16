@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.ModuleActivationRequirements;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -26,7 +28,7 @@ namespace Artemis.Core.Plugins.Abstract
         ///     Gets or sets whether this module must also expand the main data model
         ///     <para>
         ///         Note: If expanding the main data model is all you want your plugin to do, create a
-        ///         <see cref="BaseDataModelExpansion" /> plugin instead.
+        ///         <see cref="BaseDataModelExpansion{T}" /> plugin instead.
         ///     </para>
         /// </summary>
         public bool ExpandsDataModel
@@ -66,9 +68,11 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Module : Plugin
     {
-        internal DataModel InternalDataModel { get; set; }
-
-        internal bool InternalExpandsMainDataModel { get; set; }
+        protected Module()
+        {
+            ActivationRequirements = new List<IModuleActivationRequirement>();
+            ActivationRequirementMode = ActivationRequirementType.Any;
+        }
 
         /// <summary>
         ///     The modules display name that's shown in the menu
@@ -80,6 +84,27 @@ namespace Artemis.Core.Plugins.Abstract
         ///     icons
         /// </summary>
         public string DisplayIcon { get; set; }
+
+        /// <summary>
+        ///     Gets whether this module is activated. A module can only be active while its <see cref="ActivationRequirements" />
+        ///     are met
+        /// </summary>
+        public bool IsActivated { get; internal set; }
+
+        /// <summary>
+        ///     A list of activation requirements
+        ///     <para>Note: if empty the module is always activated</para>
+        /// </summary>
+        public List<IModuleActivationRequirement> ActivationRequirements { get; }
+
+        /// <summary>
+        ///     Gets or sets the activation requirement mode, defaults to <see cref="ActivationRequirementType.Any" />
+        /// </summary>
+        public ActivationRequirementType ActivationRequirementMode { get; set; }
+
+        internal DataModel InternalDataModel { get; set; }
+
+        internal bool InternalExpandsMainDataModel { get; set; }
 
         /// <summary>
         ///     Called each frame when the module must update
@@ -101,5 +126,62 @@ namespace Artemis.Core.Plugins.Abstract
         /// </summary>
         /// <returns></returns>
         public abstract IEnumerable<ModuleViewModel> GetViewModels();
+
+        /// <summary>
+        ///     Called when the <see cref="ActivationRequirements" /> are met
+        /// </summary>
+        public abstract void ModuleActivated();
+
+        /// <summary>
+        ///     Called when the <see cref="ActivationRequirements" /> are no longer met
+        /// </summary>
+        public abstract void ModuleDeactivated();
+
+        /// <summary>
+        ///     Evaluates the activation requirements following the <see cref="ActivationRequirementMode" /> and returns the result
+        /// </summary>
+        /// <returns>The evaluated result of the activation requirements</returns>
+        public bool EvaluateActivationRequirements()
+        {
+            if (!ActivationRequirements.Any())
+                return true;
+            if (ActivationRequirementMode == ActivationRequirementType.All)
+                return ActivationRequirements.All(r => r.Evaluate());
+            if (ActivationRequirementMode == ActivationRequirementType.Any)
+                return ActivationRequirements.Any(r => r.Evaluate());
+
+            return false;
+        }
+
+        internal virtual void Activate()
+        {
+            if (IsActivated)
+                return;
+
+            ModuleActivated();
+            IsActivated = true;
+        }
+
+        internal virtual void Deactivate()
+        {
+            if (!IsActivated)
+                return;
+
+            IsActivated = false;
+            ModuleDeactivated();
+        }
+    }
+
+    public enum ActivationRequirementType
+    {
+        /// <summary>
+        ///     Any activation requirement must be met for the module to activate
+        /// </summary>
+        Any,
+
+        /// <summary>
+        ///     All activation requirements must be met for the module to activate
+        /// </summary>
+        All
     }
 }

@@ -143,7 +143,8 @@ namespace Artemis.Core.Plugins.Abstract
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
-
+            if (!IsActivated)
+                throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
 
             if (profile == ActiveProfile || AnimatingProfileChange)
                 return;
@@ -164,6 +165,9 @@ namespace Artemis.Core.Plugins.Abstract
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
+            if (!IsActivated)
+                throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
+
             lock (this)
             {
                 if (profile == ActiveProfile)
@@ -187,6 +191,15 @@ namespace Artemis.Core.Plugins.Abstract
         /// Indicates whether or not a profile change is being animated
         /// </summary>
         public bool AnimatingProfileChange { get; private set; }
+
+        internal override void Deactivate()
+        {
+            base.Deactivate();
+
+            var profile = ActiveProfile;
+            ActiveProfile = null;
+            profile?.Dispose();
+        }
 
         #region Events
 

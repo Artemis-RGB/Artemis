@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
@@ -27,6 +28,9 @@ namespace Artemis.UI.Screens.Sidebar
         private BindableCollection<INavigationItem> _sidebarItems;
         private Dictionary<INavigationItem, Core.Plugins.Abstract.Module> _sidebarModules;
         private IScreen _selectedItem;
+        private bool _isSidebarOpen;
+        private readonly Timer _activeModulesUpdateTimer;
+        private string _activeModules;
 
         public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
@@ -37,11 +41,24 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarModules = new Dictionary<INavigationItem, Core.Plugins.Abstract.Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
 
+            _activeModulesUpdateTimer = new Timer(1000);
+            _activeModulesUpdateTimer.Start();
+            _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
+
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
 
             SetupSidebar();
             eventAggregator.Subscribe(this);
+        }
+
+        private void ActiveModulesUpdateTimerOnElapsed(object sender, EventArgs e)
+        {
+            if (!IsSidebarOpen)
+                return;
+
+            var activeModules = SidebarModules.Count(m => m.Value.IsActivated);
+            ActiveModules = activeModules == 1 ? "1 active module" : $"{activeModules} active modules";
         }
 
         public BindableCollection<INavigationItem> SidebarItems
@@ -56,19 +73,35 @@ namespace Artemis.UI.Screens.Sidebar
             set => SetAndNotify(ref _sidebarModules, value);
         }
 
+        public string ActiveModules
+        {
+            get => _activeModules;
+            set => SetAndNotify(ref _activeModules, value);
+        }
+
         public IScreen SelectedItem
         {
             get => _selectedItem;
             set => SetAndNotify(ref _selectedItem, value);
         }
 
+        public bool IsSidebarOpen
+        {
+            get => _isSidebarOpen;
+            set
+            {
+                SetAndNotify(ref _isSidebarOpen, value);
+                if (value)
+                    ActiveModulesUpdateTimerOnElapsed(this, EventArgs.Empty);
+            }
+        }
+
         public void SetupSidebar()
         {
-           SidebarItems.Clear();
+            SidebarItems.Clear();
             SidebarModules.Clear();
 
             // Add all default sidebar items
-            SidebarItems.Add(new DividerNavigationItem());
             SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Home, Label = "Home"});
             SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Newspaper, Label = "News"});
             SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.TestTube, Label = "Workshop"});
@@ -83,7 +116,7 @@ namespace Artemis.UI.Screens.Sidebar
                 AddModule(module);
 
             // Select the top item, which will be one of the defaults
-            Task.Run(() => SelectSidebarItem(SidebarItems[1]));
+            Task.Run(() => SelectSidebarItem(SidebarItems[0]));
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view
@@ -202,6 +235,9 @@ namespace Artemis.UI.Screens.Sidebar
 
             _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
             _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
+
+            _activeModulesUpdateTimer.Stop();
+            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
         }
     }
 }

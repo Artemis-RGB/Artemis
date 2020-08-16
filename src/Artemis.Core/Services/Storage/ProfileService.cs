@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.Compression;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Events;
@@ -11,7 +10,6 @@ using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -44,15 +42,6 @@ namespace Artemis.Core.Services.Storage
         public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
         public JsonSerializerSettings ExportSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
-        public void ActivateLastActiveProfiles()
-        {
-            foreach (var profileModule in _pluginService.GetPluginsOfType<ProfileModule>())
-            {
-                var activeProfile = GetLastActiveProfile(profileModule);
-                ActivateProfile(activeProfile);
-            }
-        }
-
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
             var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
@@ -65,6 +54,12 @@ namespace Artemis.Core.Services.Storage
             _profileRepository.Add(profileEntity);
 
             return new ProfileDescriptor(module, profileEntity);
+        }
+
+        public void ActivateLastProfile(ProfileModule profileModule)
+        {
+            var activeProfile = GetLastActiveProfile(profileModule);
+            ActivateProfile(activeProfile);
         }
 
         public Profile ActivateProfile(ProfileDescriptor profileDescriptor)
@@ -107,16 +102,6 @@ namespace Artemis.Core.Services.Storage
         {
             module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
             SaveActiveProfile(module);
-        }
-
-        private void SaveActiveProfile(ProfileModule module)
-        {
-            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            foreach (var profileEntity in profileEntities)
-            {
-                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
-                _profileRepository.Save(profileEntity);
-            }
         }
 
         public async Task ClearActiveProfileAnimated(ProfileModule module)
@@ -210,13 +195,6 @@ namespace Artemis.Core.Services.Storage
             }
         }
 
-        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
-        {
-            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
-        }
-
         public void InstantiateProfile(Profile profile)
         {
             profile.PopulateLeds(_surfaceService.ActiveSurface);
@@ -243,6 +221,23 @@ namespace Artemis.Core.Services.Storage
 
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);
+        }
+
+        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
+        {
+            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
+            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
+        }
+
+        private void SaveActiveProfile(ProfileModule module)
+        {
+            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            foreach (var profileEntity in profileEntities)
+            {
+                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
+                _profileRepository.Save(profileEntity);
+            }
         }
 
         /// <summary>
@@ -347,11 +342,6 @@ namespace Artemis.Core.Services.Storage
                 ActiveProfilesInstantiatePlugins();
             if (e.PluginInfo.Instance is LayerEffectProvider)
                 ActiveProfilesInstantiatePlugins();
-            else if (e.PluginInfo.Instance is ProfileModule profileModule)
-            {
-                var activeProfile = GetLastActiveProfile(profileModule);
-                ActivateProfile(activeProfile);
-            }
         }
 
         #endregion

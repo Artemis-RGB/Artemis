@@ -12,9 +12,28 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : ProfileModule<GeneralDataModel>
     {
-        public override IEnumerable<ModuleViewModel> GetViewModels()
+        public override void EnablePlugin()
         {
-            return new List<ModuleViewModel> {new GeneralViewModel(this)};
+            DisplayName = "General";
+            DisplayIcon = "AllInclusive";
+            ExpandsDataModel = true;
+
+            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1) });
+            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2) });
+            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(3), CurrentTimeUTC = DateTime.UtcNow.AddDays(3) });
+            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(4), CurrentTimeUTC = DateTime.UtcNow.AddDays(4) });
+        }
+
+        public override void DisablePlugin()
+        {
+        }
+
+        public override void ModuleActivated()
+        {
+        }
+
+        public override void ModuleDeactivated()
+        {
         }
 
         public override void Update(double deltaTime)
@@ -26,20 +45,9 @@ namespace Artemis.Plugins.Modules.General
             base.Update(deltaTime);
         }
 
-        public override void EnablePlugin()
+        public override IEnumerable<ModuleViewModel> GetViewModels()
         {
-            DisplayName = "General";
-            DisplayIcon = "AllInclusive";
-            ExpandsDataModel = true;
-
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(3), CurrentTimeUTC = DateTime.UtcNow.AddDays(3)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(4), CurrentTimeUTC = DateTime.UtcNow.AddDays(4)});
-        }
-
-        public override void DisablePlugin()
-        {
+            return new List<ModuleViewModel> { new GeneralViewModel(this) };
         }
 
         #region Open windows
