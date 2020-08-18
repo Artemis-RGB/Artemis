@@ -6,6 +6,7 @@ using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.ModuleActivationRequirements;
+using Artemis.Storage.Entities.Module;
 using SkiaSharp;
 
 namespace Artemis.Core.Plugins.Abstract
@@ -68,12 +69,6 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Module : Plugin
     {
-        protected Module()
-        {
-            ActivationRequirements = new List<IModuleActivationRequirement>();
-            ActivationRequirementMode = ActivationRequirementType.Any;
-        }
-
         /// <summary>
         ///     The modules display name that's shown in the menu
         /// </summary>
@@ -95,16 +90,33 @@ namespace Artemis.Core.Plugins.Abstract
         ///     A list of activation requirements
         ///     <para>Note: if empty the module is always activated</para>
         /// </summary>
-        public List<IModuleActivationRequirement> ActivationRequirements { get; }
+        public List<IModuleActivationRequirement> ActivationRequirements { get; } = new List<IModuleActivationRequirement>();
 
         /// <summary>
         ///     Gets or sets the activation requirement mode, defaults to <see cref="ActivationRequirementType.Any" />
         /// </summary>
-        public ActivationRequirementType ActivationRequirementMode { get; set; }
+        public ActivationRequirementType ActivationRequirementMode { get; set; } = ActivationRequirementType.Any;
+
+        /// <summary>
+        ///     Gets or sets the default priority category for this module, defaults to
+        ///     <see cref="ModulePriorityCategory.Normal" />
+        /// </summary>
+        public ModulePriorityCategory DefaultPriorityCategory { get; set; } = ModulePriorityCategory.Normal;
+
+        /// <summary>
+        ///     Gets or sets the current priority category of this module
+        /// </summary>
+        public ModulePriorityCategory PriorityCategory { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the current priority of this module within its priority category
+        /// </summary>
+        public int Priority { get; set; }
 
         internal DataModel InternalDataModel { get; set; }
 
         internal bool InternalExpandsMainDataModel { get; set; }
+        internal ModuleSettingsEntity Entity { get; set; }
 
         /// <summary>
         ///     Called each frame when the module must update
@@ -170,6 +182,16 @@ namespace Artemis.Core.Plugins.Abstract
             IsActivated = false;
             ModuleDeactivated();
         }
+
+        internal void ApplyToEntity()
+        {
+            if (Entity == null)
+                Entity = new ModuleSettingsEntity();
+
+            Entity.PluginGuid = PluginInfo.Guid;
+            Entity.PriorityCategory = (int) PriorityCategory;
+            Entity.Priority = Priority;
+        }
     }
 
     public enum ActivationRequirementType
@@ -183,5 +205,23 @@ namespace Artemis.Core.Plugins.Abstract
         ///     All activation requirements must be met for the module to activate
         /// </summary>
         All
+    }
+
+    public enum ModulePriorityCategory
+    {
+        /// <summary>
+        ///     Indicates a normal render priority
+        /// </summary>
+        Normal,
+
+        /// <summary>
+        ///     Indicates that the module renders for a specific application/game, rendering on top of normal modules
+        /// </summary>
+        Application,
+
+        /// <summary>
+        ///     Indicates that the module renders an overlay, always rendering on top
+        /// </summary>
+        Overlay
     }
 }

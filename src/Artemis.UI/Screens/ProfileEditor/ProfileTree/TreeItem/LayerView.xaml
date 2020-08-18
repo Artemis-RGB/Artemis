@@ -28,12 +28,12 @@
         </StackPanel.ContextMenu>
         <Grid Margin="10">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <materialDesign:PackIcon Grid.Column="0" Kind="Layers" Width="16" VerticalAlignment="Center"/>
+            <materialDesign:PackIcon Grid.Column="0" Kind="Layers" Width="16" VerticalAlignment="Center" />
             <materialDesign:PackIcon Grid.Column="1"
                                      VerticalAlignment="Center"
                                      Kind="{Binding Layer.LayerBrush.Descriptor.Icon}"
