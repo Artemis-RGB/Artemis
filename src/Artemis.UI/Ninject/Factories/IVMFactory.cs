@@ -32,14 +32,10 @@ namespace Artemis.UI.Ninject.Factories
         ModuleRootViewModel Create(Module module);
     }
 
-    public interface IPluginSettingsVmFactory : IVmFactory
+    public interface ISettingsVmFactory : IVmFactory
     {
-        PluginSettingsViewModel Create(Plugin plugin);
-    }
-
-    public interface IDeviceSettingsVmFactory : IVmFactory
-    {
-        DeviceSettingsViewModel Create(ArtemisDevice device);
+        PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
+        DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
     }
 
     public interface IDeviceDebugVmFactory : IVmFactory

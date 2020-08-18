@@ -271,6 +271,15 @@
                 </StackPanel>
             </ScrollViewer>
         </TabItem>
+
+        <TabItem Header="MODULE PRIORITY" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="15" MaxWidth="800">
+                    <ContentControl xaml:View.Model="{Binding ModuleOrderViewModel}"></ContentControl>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
         <TabItem Header="PLUGINS" TextElement.Foreground="{DynamicResource MaterialDesignBody}">
             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">
                 <DockPanel Margin="15" MaxWidth="1230" HorizontalAlignment="Center">

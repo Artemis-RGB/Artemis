@@ -39,11 +39,10 @@ namespace Artemis.Core.Services
         private List<BaseDataModelExpansion> _dataModelExpansions;
         private List<Module> _modules;
         private IntroAnimation _introAnimation;
-        private DateTime _lastModuleActivationUpdate;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
         internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
-            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
+            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
             _logger = logger;
             _pluginService = pluginService;
@@ -169,11 +168,6 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
-
-                // Only run the module activation update every 2 seconds
-                if (DateTime.Now - _lastModuleActivationUpdate > TimeSpan.FromSeconds(2))
-                    ModuleActivationUpdate();
-
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules
@@ -184,7 +178,7 @@ namespace Artemis.Core.Services
                 List<Module> modules;
                 lock (_modules)
                 {
-                    modules = _modules.Where(m => m.IsActivated).ToList();
+                    modules = _modules.Where(m => m.IsActivated).OrderByDescending(m => m.PriorityCategory).ThenByDescending(m => m.Priority).ToList();
                 }
 
                 // Update all active modules
@@ -221,33 +215,6 @@ namespace Artemis.Core.Services
                 _frameStopWatch.Stop();
                 FrameTime = _frameStopWatch.Elapsed;
             }
-        }
-
-        private void ModuleActivationUpdate()
-        {
-            _lastModuleActivationUpdate = DateTime.Now;
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-            lock (_modules)
-            {
-                foreach (var module in _modules)
-                {
-                    var shouldBeActivated = module.EvaluateActivationRequirements();
-                    if (shouldBeActivated && !module.IsActivated)
-                    {
-                        module.Activate();
-                        // If this is a profile module, activate the last active profile after module activation
-                        if (module is ProfileModule profileModule)
-                            _profileService.ActivateLastProfile(profileModule);
-                    }
-                    else if (!shouldBeActivated && module.IsActivated)
-                        module.Deactivate();
-                }
-            }
-
-            stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 100)
-                _logger.Warning("Activation requirements evaluation took too long: {moduleCount} module(s) in {elapsed}", _modules.Count, stopwatch.Elapsed);
         }
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)

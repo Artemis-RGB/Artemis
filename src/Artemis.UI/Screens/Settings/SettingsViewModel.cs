@@ -11,6 +11,7 @@ using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Core.Utilities;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
+using Artemis.UI.Screens.Settings.Tabs.Modules;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
@@ -22,12 +23,12 @@ namespace Artemis.UI.Screens.Settings
 {
     public class SettingsViewModel : MainScreenViewModel
     {
+        public ModuleOrderViewModel ModuleOrderViewModel { get; }
         private readonly IDebugService _debugService;
-        private readonly IDeviceSettingsVmFactory _deviceSettingsVmFactory;
         private readonly IDialogService _dialogService;
         private readonly IPluginService _pluginService;
         private readonly ISettingsService _settingsService;
-        private readonly IPluginSettingsVmFactory _pluginSettingsVmFactory;
+        private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly ISurfaceService _surfaceService;
         private List<Tuple<string, int>> _targetFrameRates;
         private List<Tuple<string, double>> _renderScales;
@@ -35,9 +36,15 @@ namespace Artemis.UI.Screens.Settings
         private BindableCollection<DeviceSettingsViewModel> _deviceSettingsViewModels;
         private BindableCollection<PluginSettingsViewModel> _plugins;
 
-        public SettingsViewModel(ISurfaceService surfaceService, IPluginService pluginService, IDialogService dialogService, IDebugService debugService,
-            ISettingsService settingsService, IPluginSettingsVmFactory pluginSettingsVmFactory, IDeviceSettingsVmFactory deviceSettingsVmFactory)
+        public SettingsViewModel(ISurfaceService surfaceService, 
+            IPluginService pluginService, 
+            IDialogService dialogService, 
+            IDebugService debugService,
+            ISettingsService settingsService,
+            ISettingsVmFactory settingsVmFactory,
+            ModuleOrderViewModel moduleOrderViewModel)
         {
+            ModuleOrderViewModel = moduleOrderViewModel;
             DisplayName = "Settings";
 
             _surfaceService = surfaceService;
@@ -45,8 +52,7 @@ namespace Artemis.UI.Screens.Settings
             _dialogService = dialogService;
             _debugService = debugService;
             _settingsService = settingsService;
-            _pluginSettingsVmFactory = pluginSettingsVmFactory;
-            _deviceSettingsVmFactory = deviceSettingsVmFactory;
+            _settingsVmFactory = settingsVmFactory;
 
             DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
             Plugins = new BindableCollection<PluginSettingsViewModel>();
@@ -225,10 +231,10 @@ namespace Artemis.UI.Screens.Settings
             Task.Run(ApplyAutorun);
 
             DeviceSettingsViewModels.Clear();
-            DeviceSettingsViewModels.AddRange(_surfaceService.ActiveSurface.Devices.Select(d => _deviceSettingsVmFactory.Create(d)));
+            DeviceSettingsViewModels.AddRange(_surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)));
 
             Plugins.Clear();
-            Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => _pluginSettingsVmFactory.Create(p.Instance)));
+            Plugins.AddRange(_pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)));
 
             base.OnInitialActivate();
         }
