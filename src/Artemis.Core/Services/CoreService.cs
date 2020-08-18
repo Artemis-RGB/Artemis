@@ -125,11 +125,6 @@ namespace Artemis.Core.Services
             });
         }
 
-        public void SetMainWindowHandle(IntPtr handle)
-        {
-            Constants.MainWindowHandle = handle;
-        }
-
         protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
         {
             FrameRendering?.Invoke(this, e);

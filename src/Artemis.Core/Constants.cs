@@ -70,7 +70,5 @@ namespace Artemis.Core
             typeof(double),
             typeof(decimal) 
         };
-
-        public static IntPtr MainWindowHandle { get; internal set; }
     }
 }

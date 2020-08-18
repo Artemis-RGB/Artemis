@@ -46,11 +46,5 @@ namespace Artemis.Core.Services.Interfaces
         ///     Occurs whenever a frame is finished rendering and processed by RGB.NET
         /// </summary>
         event EventHandler<FrameRenderedEventArgs> FrameRendered;
-
-        /// <summary>
-        /// To be called by the UI to setup the main window handle
-        /// </summary>
-        /// <param name="handle"></param>
-        void SetMainWindowHandle(IntPtr handle);
     }
 }
