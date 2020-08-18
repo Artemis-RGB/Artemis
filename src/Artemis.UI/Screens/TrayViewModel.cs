@@ -1,36 +1,29 @@
-﻿using System.Windows;
-using System.Windows.Interop;
-using Artemis.Core;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Utilities;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Shared.Controls;
 using Artemis.UI.Shared.Services.Interfaces;
-using MaterialDesignExtensions.Controls;
 using Ninject;
 using Stylet;
 
 namespace Artemis.UI.Screens
 {
-    public class TrayViewModel : PropertyChangedBase, IViewAware
+    public class TrayViewModel : Screen
     {
         private readonly IEventAggregator _eventAggregator;
-        private readonly ICoreService _coreService;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
         private bool _setGradientPickerService;
         private SplashViewModel _splashViewModel;
         private bool _canShowRootViewModel;
-        private UIElement _view;
 
         public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
         {
             _kernel = kernel;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
-            _coreService = coreService;
             CanShowRootViewModel = true;
 
             var autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -96,15 +89,5 @@ namespace Artemis.UI.Screens
         {
             CanShowRootViewModel = true;
         }
-
-        public void AttachView(UIElement view)
-        {
-            View = view;
-
-            var handle = new WindowInteropHelper((Window) view).EnsureHandle();
-            _coreService.SetMainWindowHandle(handle);
-        }
-
-        public UIElement View { get; set; }
     }
 }
