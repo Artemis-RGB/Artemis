@@ -19,6 +19,7 @@ namespace Artemis.UI.Shared.Ninject
             Kernel.Bind(x =>
             {
                 x.FromAssemblyContaining<IVmFactory>()
+                    .IncludingNonPublicTypes()
                     .SelectAllInterfaces()
                     .InheritedFrom<IVmFactory>()
                     .BindToFactory();
@@ -28,6 +29,7 @@ namespace Artemis.UI.Shared.Ninject
             Kernel.Bind(x =>
             {
                 x.FromAssemblyContaining<IArtemisSharedUIService>()
+                    .IncludingNonPublicTypes()
                     .SelectAllClasses()
                     .InheritedFrom<IArtemisSharedUIService>()
                     .BindAllInterfaces()

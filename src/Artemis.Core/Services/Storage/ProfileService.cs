@@ -17,7 +17,7 @@ using Serilog;
 
 namespace Artemis.Core.Services.Storage
 {
-    public class ProfileService : IProfileService
+    internal class ProfileService : IProfileService
     {
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
@@ -59,7 +59,8 @@ namespace Artemis.Core.Services.Storage
         public void ActivateLastProfile(ProfileModule profileModule)
         {
             var activeProfile = GetLastActiveProfile(profileModule);
-            ActivateProfile(activeProfile);
+            if (activeProfile != null)
+                ActivateProfile(activeProfile);
         }
 
         public Profile ActivateProfile(ProfileDescriptor profileDescriptor)

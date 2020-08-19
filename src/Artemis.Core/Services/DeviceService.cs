@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
-    public class DeviceService : IDeviceService
+    internal class DeviceService : IDeviceService
     {
         private readonly ICoreService _coreService;
 

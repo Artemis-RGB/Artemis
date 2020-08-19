@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Artemis.Core.Extensions;
 
-namespace Artemis.Core.Plugins.ModuleActivationRequirements
+namespace Artemis.Core.Plugins.Modules
 {
     public class ProcessActivationRequirement : IModuleActivationRequirement
     {

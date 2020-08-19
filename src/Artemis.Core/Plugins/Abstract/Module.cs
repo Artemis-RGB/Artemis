@@ -5,7 +5,7 @@ using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
 using Artemis.Core.Plugins.Abstract.ViewModels;
-using Artemis.Core.Plugins.ModuleActivationRequirements;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Storage.Entities.Module;
 using SkiaSharp;
 
@@ -134,10 +134,10 @@ namespace Artemis.Core.Plugins.Abstract
         public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo);
 
         /// <summary>
-        ///     Called when the module's view model is being show, return view models here to create tabs for them
+        ///     Called when the module's view model is being show, return a list of module tabs here if you want them to show up in the UI
         /// </summary>
         /// <returns></returns>
-        public abstract IEnumerable<ModuleViewModel> GetViewModels();
+        public abstract IEnumerable<ModuleTab> GetModuleTabs();
 
         /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are met

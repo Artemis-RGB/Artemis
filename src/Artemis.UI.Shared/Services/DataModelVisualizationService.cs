@@ -18,7 +18,7 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
-    public class DataModelVisualizationService : IDataModelVisualizationService
+    internal class DataModelVisualizationService : IDataModelVisualizationService
     {
         private readonly IDataModelService _dataModelService;
         private readonly IKernel _kernel;

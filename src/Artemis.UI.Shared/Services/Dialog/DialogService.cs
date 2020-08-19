@@ -12,7 +12,7 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Services.Dialog
 {
-    public class DialogService : IDialogService
+    internal class DialogService : IDialogService
     {
         private readonly IKernel _kernel;
         private readonly IViewManager _viewManager;

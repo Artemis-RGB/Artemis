@@ -20,14 +20,14 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides access to the main data model
     /// </summary>
-    public class DataModelService : IDataModelService
+    internal class DataModelService : IDataModelService
     {
         private readonly List<DataModel> _dataModelExpansions;
         private readonly IPluginService _pluginService;
         private readonly ILogger _logger;
         private readonly List<DisplayConditionOperator> _registeredConditionOperators;
 
-        internal DataModelService(IPluginService pluginService, ILogger logger)
+        public DataModelService(IPluginService pluginService, ILogger logger)
         {
             _pluginService = pluginService;
             _logger = logger;

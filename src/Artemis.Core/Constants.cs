@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Windows.Interop;
 using Artemis.Core.Plugins.Models;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     A few useful constant values
+    /// </summary>
     public static class Constants
     {
         /// <summary>
@@ -68,7 +70,7 @@ namespace Artemis.Core
         {
             typeof(float),
             typeof(double),
-            typeof(decimal) 
+            typeof(decimal)
         };
     }
 }

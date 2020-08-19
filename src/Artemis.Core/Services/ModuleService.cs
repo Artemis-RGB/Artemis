@@ -10,7 +10,7 @@ using Serilog;
 
 namespace Artemis.Core.Services
 {
-    public class ModuleService : IModuleService
+    internal class ModuleService : IModuleService
     {
         private readonly ILogger _logger;
         private readonly IModuleRepository _moduleRepository;

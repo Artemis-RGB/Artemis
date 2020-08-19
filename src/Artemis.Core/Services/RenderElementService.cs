@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Artemis.Core.Services
 {
-    public class RenderElementService : IRenderElementService
+    internal class RenderElementService : IRenderElementService
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;

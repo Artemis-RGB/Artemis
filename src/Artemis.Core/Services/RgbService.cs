@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides wrapped access the RGB.NET
     /// </summary>
-    public class RgbService : IRgbService, IDisposable
+    internal class RgbService : IRgbService, IDisposable
     {
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly ILogger _logger;
@@ -23,7 +23,7 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<int> _targetFrameRateSetting;
         private ListLedGroup _surfaceLedGroup;
 
-        internal RgbService(ILogger logger, ISettingsService settingsService)
+        public RgbService(ILogger logger, ISettingsService settingsService)
         {
             _logger = logger;
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);

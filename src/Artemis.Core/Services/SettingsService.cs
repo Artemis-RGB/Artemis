@@ -5,7 +5,7 @@ using Artemis.Storage.Repositories.Interfaces;
 namespace Artemis.Core.Services
 {
     /// <inheritdoc />
-    public class SettingsService : ISettingsService
+    internal class SettingsService : ISettingsService
     {
         private readonly PluginSettings _pluginSettings;
 
@@ -26,6 +26,13 @@ namespace Artemis.Core.Services
     /// </summary>
     public interface ISettingsService : IProtectedArtemisService
     {
+        /// <summary>
+        ///     Gets the setting with the provided name. If the setting does not exist yet, it is created.
+        /// </summary>
+        /// <typeparam name="T">The type of the setting, can be any serializable type</typeparam>
+        /// <param name="name">The name of the setting</param>
+        /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
+        /// <returns></returns>
         PluginSetting<T> GetSetting<T>(string name, T defaultValue = default);
     }
 }
