@@ -27,7 +27,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides Artemis's core update loop
     /// </summary>
-    public class CoreService : ICoreService
+    internal class CoreService : ICoreService
     {
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
@@ -41,7 +41,7 @@ namespace Artemis.Core.Services
         private IntroAnimation _introAnimation;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
-        internal CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
+        public CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
             _logger = logger;
@@ -173,7 +173,10 @@ namespace Artemis.Core.Services
                 List<Module> modules;
                 lock (_modules)
                 {
-                    modules = _modules.Where(m => m.IsActivated).OrderByDescending(m => m.PriorityCategory).ThenByDescending(m => m.Priority).ToList();
+                    modules = _modules.Where(m => m.IsActivated || m.InternalExpandsMainDataModel)
+                        .OrderByDescending(m => m.PriorityCategory)
+                        .ThenByDescending(m => m.Priority)
+                        .ToList();
                 }
 
                 // Update all active modules
@@ -194,7 +197,8 @@ namespace Artemis.Core.Services
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)
                     {
-                        foreach (var module in modules)
+                        // While non-activated modules may be updated above if they expand the main data model, they may never render
+                        foreach (var module in modules.Where(m => m.IsActivated))
                             module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                     }
 

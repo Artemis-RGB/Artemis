@@ -15,7 +15,7 @@ using Serilog;
 
 namespace Artemis.UI.Shared.Services
 {
-    public class ProfileEditorService : IProfileEditorService
+    internal class ProfileEditorService : IProfileEditorService
     {
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;

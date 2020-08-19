@@ -1,7 +1,10 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.UI.Ninject.Factories;
+using Ninject;
+using Ninject.Parameters;
 using Stylet;
 
 namespace Artemis.UI.Screens.Module
@@ -9,13 +12,15 @@ namespace Artemis.UI.Screens.Module
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly IProfileEditorVmFactory _profileEditorVmFactory;
+        private readonly IKernel _kernel;
 
-        public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorVmFactory profileEditorVmFactory)
+        public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
         {
             DisplayName = module?.DisplayName;
             Module = module;
 
             _profileEditorVmFactory = profileEditorVmFactory;
+            _kernel = kernel;
 
             Task.Run(AddTabsAsync);
         }
@@ -34,8 +39,18 @@ namespace Artemis.UI.Screens.Module
                 Items.Add(profileEditor);
             }
 
-            var moduleViewModels = Module.GetViewModels();
-            Items.AddRange(moduleViewModels);
+            var moduleTabs = Module.GetModuleTabs();
+            if (moduleTabs != null)
+            {
+                foreach (var moduleTab in moduleTabs.Where(m => m != null))
+                {
+                    var module = new ConstructorArgument("module", Module);
+                    var displayName = new ConstructorArgument("displayName", DisplayName);
+
+                    var viewModel = (ModuleViewModel) _kernel.Get(moduleTab.Type, module, displayName);
+                    Items.Add(viewModel);
+                }
+            }
 
             ActiveItem = Items.FirstOrDefault();
         }

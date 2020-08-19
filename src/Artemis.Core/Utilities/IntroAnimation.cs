@@ -6,6 +6,7 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
@@ -91,7 +92,7 @@ namespace Artemis.Core.Utilities
             throw new NotImplementedException();
         }
 
-        public override IEnumerable<ModuleViewModel> GetViewModels()
+        public override IEnumerable<ModuleTab> GetModuleTabs()
         {
             throw new NotImplementedException();
         }

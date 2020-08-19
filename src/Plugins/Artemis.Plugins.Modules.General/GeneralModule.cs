@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Plugins.Modules.General.DataModel;
 using Artemis.Plugins.Modules.General.DataModel.Windows;
 using Artemis.Plugins.Modules.General.Utilities;
@@ -18,10 +19,10 @@ namespace Artemis.Plugins.Modules.General
             DisplayIcon = "AllInclusive";
             ExpandsDataModel = true;
 
-            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1) });
-            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2) });
-            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(3), CurrentTimeUTC = DateTime.UtcNow.AddDays(3) });
-            DataModel.TestTimeList.Add(new TimeDataModel { CurrentTime = DateTime.Now.AddDays(4), CurrentTimeUTC = DateTime.UtcNow.AddDays(4) });
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(3), CurrentTimeUTC = DateTime.UtcNow.AddDays(3)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(4), CurrentTimeUTC = DateTime.UtcNow.AddDays(4)});
         }
 
         public override void DisablePlugin()
@@ -45,9 +46,9 @@ namespace Artemis.Plugins.Modules.General
             base.Update(deltaTime);
         }
 
-        public override IEnumerable<ModuleViewModel> GetViewModels()
+        public override IEnumerable<ModuleTab> GetModuleTabs()
         {
-            return new List<ModuleViewModel> { new GeneralViewModel(this) };
+            return new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
         }
 
         #region Open windows

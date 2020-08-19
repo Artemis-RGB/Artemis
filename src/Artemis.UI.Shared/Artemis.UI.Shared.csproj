@@ -29,6 +29,12 @@
     <NrtShowRevision>true</NrtShowRevision>
     <Version>2.0.0</Version>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\AnyCPU\Debug\Artemis.UI.Shared.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\AnyCPU\Release\Artemis.UI.Shared.xml</DocumentationFile>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
@@ -39,7 +45,7 @@
     <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="1.68.3" />
-    <PackageReference Include="Stylet" Version="1.3.2" />
+    <PackageReference Include="Stylet" Version="1.3.4" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="Unclassified.NetRevisionTask" Version="0.3.0">

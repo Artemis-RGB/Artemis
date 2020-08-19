@@ -24,6 +24,7 @@ namespace Artemis.Core.Ninject
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
+                    .IncludingNonPublicTypes()
                     .SelectAllClasses()
                     .InheritedFrom<IArtemisService>()
                     .BindAllInterfaces()
@@ -34,6 +35,7 @@ namespace Artemis.Core.Ninject
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
+                    .IncludingNonPublicTypes()
                     .SelectAllClasses()
                     .InheritedFrom<IProtectedArtemisService>()
                     .BindAllInterfaces()
@@ -68,6 +70,7 @@ namespace Artemis.Core.Ninject
             Kernel.Bind(x =>
             {
                 x.FromAssemblyContaining<IStorageMigration>()
+                    .IncludingNonPublicTypes()
                     .SelectAllClasses()
                     .InheritedFrom<IStorageMigration>()
                     .BindAllInterfaces()
@@ -78,6 +81,7 @@ namespace Artemis.Core.Ninject
             Kernel.Bind(x =>
             {
                 x.FromAssemblyContaining<IRepository>()
+                    .IncludingNonPublicTypes()
                     .SelectAllClasses()
                     .InheritedFrom<IRepository>()
                     .BindAllInterfaces()

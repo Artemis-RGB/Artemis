@@ -26,7 +26,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides access to plugin loading and unloading
     /// </summary>
-    public class PluginService : IPluginService
+    internal class PluginService : IPluginService
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
@@ -34,7 +34,7 @@ namespace Artemis.Core.Services
         private readonly List<PluginInfo> _plugins;
         private IKernel _childKernel;
 
-        internal PluginService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
+        public PluginService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
         {
             _kernel = kernel;
             _logger = logger;

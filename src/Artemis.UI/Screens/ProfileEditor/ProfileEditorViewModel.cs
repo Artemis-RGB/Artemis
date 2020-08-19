@@ -233,6 +233,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             LoadWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = true;
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
+            
             Execute.PostToUIThread(LoadProfiles);
             base.OnInitialActivate();
         }

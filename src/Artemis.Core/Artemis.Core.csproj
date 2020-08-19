@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>bin\AnyCPU\Debug\Artemis.Core.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup>
     <NrtRevisionFormat>2.0-{chash:6}</NrtRevisionFormat>
@@ -26,6 +27,9 @@
     <NrtRemoveTagV>true</NrtRemoveTagV>
     <NrtRequiredVcs>git</NrtRequiredVcs>
     <NrtShowRevision>true</NrtShowRevision>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DocumentationFile>bin\AnyCPU\Release\Artemis.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
@@ -46,7 +50,7 @@
     <PackageReference Include="Serilog.Sinks.Debug" Version="1.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="4.1.0" />
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
-    <PackageReference Include="Stylet" Version="1.3.2" />
+    <PackageReference Include="Stylet" Version="1.3.4" />
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
     <PackageReference Include="System.Reflection.Metadata" Version="1.8.0" />
