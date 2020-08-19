@@ -9,7 +9,7 @@ using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
-using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
@@ -23,22 +23,27 @@ namespace Artemis.UI.Screens
     public class RootViewModel : Conductor<IScreen>
     {
         private readonly IRegistrationService _builtInRegistrationService;
-        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly ThemeWatcher _themeWatcher;
         private readonly Timer _titleUpdateTimer;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _activeItemReady;
-        private bool _isSidebarVisible;
         private bool _lostFocus;
-        private string _windowTitle;
         private ISnackbarMessageQueue _mainMessageQueue;
+        private string _windowTitle;
 
-        public RootViewModel(IEventAggregator eventAggregator, SidebarViewModel sidebarViewModel, ISettingsService settingsService, ICoreService coreService,
-            IDebugService debugService, IRegistrationService builtInRegistrationService, ISnackbarMessageQueue snackbarMessageQueue)
+        public RootViewModel(
+            IEventAggregator eventAggregator,
+            ISettingsService settingsService,
+            ICoreService coreService,
+            IDebugService debugService,
+            IRegistrationService builtInRegistrationService,
+            ISnackbarMessageQueue snackbarMessageQueue,
+            SidebarViewModel sidebarViewModel)
         {
             SidebarViewModel = sidebarViewModel;
             _eventAggregator = eventAggregator;
@@ -66,7 +71,7 @@ namespace Artemis.UI.Screens
             get => _mainMessageQueue;
             set => SetAndNotify(ref _mainMessageQueue, value);
         }
-        
+
         public bool ActiveItemReady
         {
             get => _activeItemReady;

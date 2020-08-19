@@ -2,10 +2,11 @@
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
+using Stylet;
 
 namespace Artemis.Core.Plugins.Models
 {
-    public class PluginSetting<T>
+    public class PluginSetting<T> : PropertyChangedBase
     {
         // ReSharper disable once NotAccessedField.Local
         private readonly PluginInfo _pluginInfo;
@@ -47,6 +48,7 @@ namespace Artemis.Core.Plugins.Models
                 {
                     _value = value;
                     OnSettingChanged();
+                    NotifyOfPropertyChange(nameof(Value));
                 }
             }
         }

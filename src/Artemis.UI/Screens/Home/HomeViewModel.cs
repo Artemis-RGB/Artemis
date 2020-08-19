@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using Stylet;
 
 namespace Artemis.UI.Screens.Home
 {
-    public class HomeViewModel : MainScreenViewModel
+    public class HomeViewModel : Screen, IMainScreenViewModel
     {
         public HomeViewModel()
         {
