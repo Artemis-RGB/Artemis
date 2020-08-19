@@ -1,8 +1,9 @@
 ﻿using System.Windows.Media;
+using Stylet;
 
 namespace Artemis.UI.Screens.Workshop
 {
-    public class WorkshopViewModel : MainScreenViewModel
+    public class WorkshopViewModel : Screen, IMainScreenViewModel
     {
         private Color _testColor;
         private bool _testPopupOpen;

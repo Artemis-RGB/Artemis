@@ -26,7 +26,7 @@ namespace Artemis.UI.Ninject
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<MainScreenViewModel>()
+                    .InheritedFrom<IMainScreenViewModel>()
                     .BindAllBaseClasses()
                     .Configure(c => c.InSingletonScope());
             });

@@ -1,6 +1,8 @@
-﻿namespace Artemis.UI.Screens.News
+﻿using Stylet;
+
+namespace Artemis.UI.Screens.News
 {
-    public class NewsViewModel : MainScreenViewModel
+    public class NewsViewModel : Screen, IMainScreenViewModel
     {
         public NewsViewModel()
         {

@@ -20,7 +20,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor
 {
-    public class SurfaceEditorViewModel : MainScreenViewModel
+    public class SurfaceEditorViewModel : Screen, IMainScreenViewModel
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
