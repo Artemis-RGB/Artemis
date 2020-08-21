@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Events;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.RGB.NET;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;

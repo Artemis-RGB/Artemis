@@ -5,9 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:layerEffect="clr-namespace:Artemis.Core.Plugins.LayerEffect;assembly=Artemis.Core"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
+             xmlns:layerEffect="clr-namespace:Artemis.Core.Plugins.LayerEffects;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:EffectsViewModel}">

@@ -1,6 +1,6 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
 using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.PropertyInput

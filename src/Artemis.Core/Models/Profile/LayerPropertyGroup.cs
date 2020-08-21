@@ -8,8 +8,9 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Profile.LayerProperties;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
-using Artemis.Core.Plugins.LayerEffect.Abstract;
+using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core.Plugins.LayerBrushes.Internal;
+using Artemis.Core.Plugins.LayerEffects;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 

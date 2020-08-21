@@ -2,9 +2,12 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
+using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.Plugins.DeviceProviders;
+using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core.Plugins.LayerEffects;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
@@ -127,7 +130,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     return PackIconKind.Devices;
                 case ProfileModule _:
                     return PackIconKind.VectorRectangle;
-                case Core.Plugins.Abstract.Module _:
+                case Core.Plugins.Modules.Module _:
                     return PackIconKind.GearBox;
                 case LayerBrushProvider _:
                     return PackIconKind.Brush;

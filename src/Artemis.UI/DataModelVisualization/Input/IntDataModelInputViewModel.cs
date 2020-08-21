@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using System.Windows.Input;
-using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.Core.Plugins.DataModelExpansions.Attributes;
 using Artemis.UI.Shared.DataModelVisualization;
 
 namespace Artemis.UI.DataModelVisualization.Input

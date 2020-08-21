@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Tabs"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:plugins="clr-namespace:Artemis.Core.Plugins.Abstract;assembly=Artemis.Core"
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
+             xmlns:modules="clr-namespace:Artemis.Core.Plugins.Modules;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
     <Grid>
@@ -46,7 +46,7 @@
                       ItemsSource="{Binding Modules}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate>
-                        <StackPanel d:DataContext="{d:DesignInstance Type=plugins:Module}" Orientation="Horizontal">
+                        <StackPanel d:DataContext="{d:DesignInstance Type=modules:Module}" Orientation="Horizontal">
                             <wpf:PackIcon Kind="{Binding DisplayIcon}" VerticalAlignment="Center" Margin="0 0 5 0" />
                             <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
                         </StackPanel>

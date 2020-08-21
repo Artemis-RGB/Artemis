@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;

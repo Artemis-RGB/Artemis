@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
+using Artemis.Core.Plugins.DataModelExpansions.Attributes;
 using Stylet;
 
 namespace Artemis.UI.Shared.DataModelVisualization

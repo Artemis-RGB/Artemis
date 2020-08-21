@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
+using Artemis.Core.Plugins.Modules;
 using Artemis.UI.Shared.Events;
 using Artemis.UI.Shared.PropertyInput;
 using Ninject;

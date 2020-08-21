@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.DeviceProviders;
 using Artemis.Core.Services.Interfaces;
 using Microsoft.Win32;
 using RGB.NET.Core;

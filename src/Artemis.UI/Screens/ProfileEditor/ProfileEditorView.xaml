@@ -8,7 +8,6 @@
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              xmlns:profile="clr-namespace:Artemis.Core.Models.Profile;assembly=Artemis.Core"
-             xmlns:layerBrush="clr-namespace:Artemis.Core.Plugins.LayerBrush;assembly=Artemis.Core"
              xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
              mc:Ignorable="d"
              behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True"

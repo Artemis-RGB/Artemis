@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Plugins.DataModelExpansions;
 
 namespace Artemis.UI.Shared.Services.DataModelVisualization
 {

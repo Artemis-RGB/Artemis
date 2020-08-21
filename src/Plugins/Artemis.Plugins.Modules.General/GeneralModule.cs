@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Plugins.Modules.General.DataModel;
 using Artemis.Plugins.Modules.General.DataModel.Windows;
@@ -45,7 +44,7 @@ namespace Artemis.Plugins.Modules.General
             UpdateCurrentWindow();
             base.Update(deltaTime);
         }
-
+        
         #region Open windows
 
         public void UpdateCurrentWindow()

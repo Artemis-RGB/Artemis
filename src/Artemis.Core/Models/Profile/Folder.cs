@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Plugins.LayerEffect.Abstract;
+using Artemis.Core.Plugins.LayerEffects;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;

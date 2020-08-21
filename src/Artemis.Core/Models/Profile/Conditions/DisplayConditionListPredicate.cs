@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;

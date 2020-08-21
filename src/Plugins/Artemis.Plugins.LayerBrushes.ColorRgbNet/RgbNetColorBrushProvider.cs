@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.Abstract;
+﻿using Artemis.Core.Plugins.LayerBrushes;
 using Artemis.Plugins.LayerBrushes.ColorRgbNet.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 

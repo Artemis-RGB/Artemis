@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics;
-using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.LayerEffects;
 
 namespace Artemis.Plugins.LayerEffects.Filter.ViewModels
 {

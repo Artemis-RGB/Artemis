@@ -1,6 +1,6 @@
-﻿using Artemis.Core.Plugins.Abstract;
+﻿using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
 using Ninject;
 using Ninject.Activation;

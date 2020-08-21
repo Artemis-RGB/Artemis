@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Modules;
 using Artemis.UI.Ninject.Factories;
 using Ninject;
@@ -16,7 +14,7 @@ namespace Artemis.UI.Screens.Module
         private readonly IProfileEditorVmFactory _profileEditorVmFactory;
         private readonly IKernel _kernel;
 
-        public ModuleRootViewModel(Core.Plugins.Abstract.Module module, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
+        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
         {
             DisplayName = module?.DisplayName;
             Module = module;
@@ -27,7 +25,7 @@ namespace Artemis.UI.Screens.Module
             Task.Run(AddTabsAsync);
         }
 
-        public Core.Plugins.Abstract.Module Module { get; }
+        public Core.Plugins.Modules.Module Module { get; }
 
         private async Task AddTabsAsync()
         {

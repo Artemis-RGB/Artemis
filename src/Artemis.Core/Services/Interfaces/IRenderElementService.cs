@@ -1,8 +1,7 @@
 ﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrush;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
-using Artemis.Core.Plugins.LayerEffect;
-using Artemis.Core.Plugins.LayerEffect.Abstract;
+using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core.Plugins.LayerBrushes.Internal;
+using Artemis.Core.Plugins.LayerEffects;
 
 namespace Artemis.Core.Services.Interfaces
 {

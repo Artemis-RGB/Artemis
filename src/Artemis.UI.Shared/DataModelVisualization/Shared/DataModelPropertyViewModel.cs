@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared

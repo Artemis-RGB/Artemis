@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.Abstract;
+﻿using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Shared.Services.Dialog;
 using ICSharpCode.AvalonEdit.Document;
