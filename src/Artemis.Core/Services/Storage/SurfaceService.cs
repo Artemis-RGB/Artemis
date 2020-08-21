@@ -50,7 +50,7 @@ namespace Artemis.Core.Services.Storage
             // Add all current devices
             foreach (var rgbDevice in _rgbService.LoadedDevices)
             {
-                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                var plugin = _pluginService.GetPluginByDevice(rgbDevice);
                 configuration.Devices.Add(new ArtemisDevice(rgbDevice, plugin, configuration));
             }
 
@@ -142,7 +142,7 @@ namespace Artemis.Core.Services.Storage
                     var device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
                     if (device != null)
                     {
-                        var plugin = _pluginService.GetDevicePlugin(device);
+                        var plugin = _pluginService.GetPluginByDevice(device);
                         surfaceConfiguration.Devices.Add(new ArtemisDevice(device, plugin, surfaceConfiguration, position));
                     }
                 }
@@ -184,7 +184,7 @@ namespace Artemis.Core.Services.Storage
             var existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceIdentifier == deviceIdentifier);
             if (existingDeviceConfig != null)
             {
-                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                var plugin = _pluginService.GetPluginByDevice(rgbDevice);
                 device = new ArtemisDevice(rgbDevice, plugin, surface, existingDeviceConfig);
             }
             // Fall back on creating a new device
@@ -195,7 +195,7 @@ namespace Artemis.Core.Services.Storage
                     rgbDevice.DeviceInfo,
                     deviceIdentifier
                 );
-                var plugin = _pluginService.GetDevicePlugin(rgbDevice);
+                var plugin = _pluginService.GetPluginByDevice(rgbDevice);
                 device = new ArtemisDevice(rgbDevice, plugin, surface);
             }
 

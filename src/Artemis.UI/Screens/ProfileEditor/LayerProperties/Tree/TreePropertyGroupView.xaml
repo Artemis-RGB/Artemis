@@ -106,7 +106,7 @@
                     VerticalAlignment="Center"
                     HorizontalAlignment="Right"
                     Command="{s:Action OpenBrushSettings}"
-                    Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.HasConfigurationViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                    Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.ConfigurationDialog, Converter={StaticResource NullToVisibilityConverter}}">
                 <materialDesign:PackIcon Kind="Settings" Height="16" Width="16" />
             </Button>
         </Grid>
@@ -184,7 +184,7 @@
                         Height="24"
                         VerticalAlignment="Center"
                         Command="{s:Action OpenEffectSettings}"
-                        Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.HasConfigurationViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                        Visibility="{Binding LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.ConfigurationDialog, Converter={StaticResource NullToVisibilityConverter}}">
                     <materialDesign:PackIcon Kind="Settings" Height="16" Width="16" />
                 </Button>
                 <Button Style="{StaticResource MaterialDesignIconButton}"

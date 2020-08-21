@@ -8,8 +8,16 @@ using SkiaSharp;
 
 namespace Artemis.Core.Plugins.LayerBrush.Abstract
 {
+    /// <summary>
+    ///     An RGB.NET brush that uses RGB.NET's per-LED rendering engine.
+    ///     <para>Note: This brush type always renders on top of regular brushes</para>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class RgbNetLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="RgbNetLayerBrush{T}" /> class
+        /// </summary>
         protected RgbNetLayerBrush()
         {
             BrushType = LayerBrushType.RgbNet;

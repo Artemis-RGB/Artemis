@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
@@ -13,13 +12,14 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
     /// </summary>
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
-        private Guid _entityId;
-        private RenderProfileElement _profileElement;
-        private string _name;
-        private bool _enabled;
-        private bool _hasBeenRenamed;
-        private int _order;
         private LayerEffectDescriptor _descriptor;
+        private bool _enabled;
+        private Guid _entityId;
+        private bool _hasBeenRenamed;
+        private string _name;
+        private int _order;
+        private RenderProfileElement _profileElement;
+        private LayerEffectConfigurationDialog _configurationDialog;
 
         /// <summary>
         ///     Gets the unique ID of this effect
@@ -77,12 +77,21 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         }
 
         /// <summary>
-        ///     Gets the descriptor of this effect
+        ///     Gets the <see cref="LayerEffectDescriptor"/> that registered this effect
         /// </summary>
         public LayerEffectDescriptor Descriptor
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a configuration dialog complementing the regular properties
+        /// </summary>
+        public LayerEffectConfigurationDialog ConfigurationDialog
+        {
+            get => _configurationDialog;
+            protected set => SetAndNotify(ref _configurationDialog, value);
         }
 
         /// <summary>
@@ -97,12 +106,7 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
 
         internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
 
-        /// <summary>
-        ///     Gets or sets whether this plugin has a configuration view model.
-        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
-        /// </summary>
-        public bool HasConfigurationViewModel { get; protected set; }
-
+        /// <inheritdoc />
         public void Dispose()
         {
             DisableLayerEffect();
@@ -146,16 +150,5 @@ namespace Artemis.Core.Plugins.LayerEffect.Abstract
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core
         internal abstract void Initialize(IRenderElementService renderElementService);
-
-
-        /// <summary>
-        ///     Called when the effect configuration window is opened from the UI. The UI will only attempt to open if
-        ///     <see cref="HasConfigurationViewModel" /> is set to True.
-        /// </summary>
-        /// <returns></returns>
-        public virtual EffectConfigurationViewModel GetConfigurationViewModel()
-        {
-            return null;
-        }
     }
 }

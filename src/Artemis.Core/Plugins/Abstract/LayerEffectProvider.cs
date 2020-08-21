@@ -7,14 +7,16 @@ using Artemis.Core.Plugins.LayerEffect.Abstract;
 
 namespace Artemis.Core.Plugins.Abstract
 {
-    /// <inheritdoc />
     /// <summary>
-    ///     Allows you to create one or more <see cref="LayerEffect" />s usable by profile layers.
+    ///     Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
     /// </summary>
     public abstract class LayerEffectProvider : Plugin
     {
         private readonly List<LayerEffectDescriptor> _layerEffectDescriptors;
 
+        /// <summary>
+        /// Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
+        /// </summary>
         protected LayerEffectProvider()
         {
             _layerEffectDescriptors = new List<LayerEffectDescriptor>();

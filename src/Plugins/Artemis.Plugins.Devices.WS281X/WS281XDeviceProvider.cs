@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Devices.WS281X.Settings;
@@ -23,10 +22,9 @@ namespace Artemis.Plugins.Devices.WS281X
             _rgbService = rgbService;
         }
 
-
         public override void EnablePlugin()
         {
-            HasConfigurationViewModel = true;
+            ConfigurationDialog = new PluginConfigurationDialog<WS281XConfigurationViewModel>();
 
             var definitions = _settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
             if (definitions.Value == null)
@@ -53,11 +51,6 @@ namespace Artemis.Plugins.Devices.WS281X
         public override void DisablePlugin()
         {
             // TODO: Remove the device provider from the surface
-        }
-
-        public override PluginConfigurationViewModel GetConfigurationViewModel()
-        {
-            return new WS281XConfigurationViewModel(this, _settings);
         }
     }
 }

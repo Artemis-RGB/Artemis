@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.Abstract.ViewModels;
+﻿using Artemis.Core.Plugins.LayerEffect;
 using Artemis.Core.Plugins.LayerEffect.Abstract;
 using Artemis.Plugins.LayerEffects.Filter.ViewModels;
 using SkiaSharp;
@@ -9,12 +9,7 @@ namespace Artemis.Plugins.LayerEffects.Filter
     {
         public override void EnableLayerEffect()
         {
-            HasConfigurationViewModel = true;
-        }
-
-        public override EffectConfigurationViewModel GetConfigurationViewModel()
-        {
-            return new ColorMatrixConfigurationViewModel(this);
+            ConfigurationDialog = new LayerEffectConfigurationDialog<ColorMatrixConfigurationViewModel>();
         }
 
         public override void DisableLayerEffect()

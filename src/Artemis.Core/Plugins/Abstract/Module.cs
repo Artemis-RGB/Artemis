@@ -4,7 +4,6 @@ using System.Linq;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Abstract.DataModels;
 using Artemis.Core.Plugins.Abstract.DataModels.Attributes;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Storage.Entities.Module;
 using SkiaSharp;
@@ -104,19 +103,24 @@ namespace Artemis.Core.Plugins.Abstract
         public ModulePriorityCategory DefaultPriorityCategory { get; set; } = ModulePriorityCategory.Normal;
 
         /// <summary>
-        ///     Gets or sets the current priority category of this module
+        ///     Gets the current priority category of this module
         /// </summary>
-        public ModulePriorityCategory PriorityCategory { get; set; }
+        public ModulePriorityCategory PriorityCategory { get; internal set; }
 
         /// <summary>
-        ///     Gets or sets the current priority of this module within its priority category
+        ///     Gets the current priority of this module within its priority category
         /// </summary>
-        public int Priority { get; set; }
+        public int Priority { get; internal set; }
 
         internal DataModel InternalDataModel { get; set; }
 
         internal bool InternalExpandsMainDataModel { get; set; }
         internal ModuleSettingsEntity Entity { get; set; }
+
+        /// <summary>
+        ///     A list of custom module tabs that show in the UI
+        /// </summary>
+        public IEnumerable<ModuleTab> ModuleTabs { get; protected set; }
 
         /// <summary>
         ///     Called each frame when the module must update
@@ -132,12 +136,6 @@ namespace Artemis.Core.Plugins.Abstract
         /// <param name="canvas"></param>
         /// <param name="canvasInfo"></param>
         public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo);
-
-        /// <summary>
-        ///     Called when the module's view model is being show, return a list of module tabs here if you want them to show up in the UI
-        /// </summary>
-        /// <returns></returns>
-        public abstract IEnumerable<ModuleTab> GetModuleTabs();
 
         /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are met
@@ -194,6 +192,9 @@ namespace Artemis.Core.Plugins.Abstract
         }
     }
 
+    /// <summary>
+    ///     Describes in what way the activation requirements of a module must be met
+    /// </summary>
     public enum ActivationRequirementType
     {
         /// <summary>
@@ -207,6 +208,9 @@ namespace Artemis.Core.Plugins.Abstract
         All
     }
 
+    /// <summary>
+    ///     Describes the priority category of a module
+    /// </summary>
     public enum ModulePriorityCategory
     {
         /// <summary>

@@ -13,21 +13,38 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class DeviceProvider : Plugin
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DeviceProvider" /> class
+        /// </summary>
+        /// <param name="rgbDeviceProvider"></param>
         protected DeviceProvider(IRGBDeviceProvider rgbDeviceProvider)
         {
             RgbDeviceProvider = rgbDeviceProvider ?? throw new ArgumentNullException(nameof(rgbDeviceProvider));
         }
 
+        /// <summary>
+        ///     The RGB.NET device provider backing this Artemis device provider
+        /// </summary>
         public IRGBDeviceProvider RgbDeviceProvider { get; }
 
+        /// <summary>
+        ///     TODO: Make internal while still injecting.
+        ///     A logger used by the device provider internally, ignore this
+        /// </summary>
         [Inject]
         public ILogger Logger { get; set; }
 
+        /// <inheritdoc />
         public override void DisablePlugin()
         {
             // Does not happen with device providers, they require Artemis to restart
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)
         {
             if (sender.GetType() == type || sender.GetType().IsGenericType(type))

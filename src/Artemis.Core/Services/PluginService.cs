@@ -46,10 +46,8 @@ namespace Artemis.Core.Services
                 Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
 
-        /// <inheritdoc />
         public bool LoadingPlugins { get; private set; }
 
-        /// <inheritdoc />
         public void CopyBuiltInPlugins()
         {
             OnCopyingBuildInPlugins();
@@ -161,7 +159,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <inheritdoc />
         public void UnloadPlugins()
         {
             lock (_plugins)
@@ -181,7 +178,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <inheritdoc />
         public void LoadPlugin(PluginInfo pluginInfo)
         {
             lock (_plugins)
@@ -256,7 +252,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <inheritdoc />
         public void UnloadPlugin(PluginInfo pluginInfo)
         {
             lock (_plugins)
@@ -347,25 +342,27 @@ namespace Artemis.Core.Services
             OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
         }
 
-        /// <inheritdoc />
         public PluginInfo GetPluginInfo(Plugin plugin)
         {
             return _plugins.FirstOrDefault(p => p.Instance == plugin);
         }
 
-        /// <inheritdoc />
         public List<PluginInfo> GetAllPluginInfo()
         {
             return new List<PluginInfo>(_plugins);
         }
 
-        /// <inheritdoc />
         public List<T> GetPluginsOfType<T>() where T : Plugin
         {
             return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
         }
 
-        public Plugin GetDevicePlugin(IRGBDevice rgbDevice)
+        public Plugin GetPluginByAssembly(Assembly assembly)
+        {
+            return _plugins.FirstOrDefault(p => p.Assembly == assembly)?.Instance;
+        }
+
+        public Plugin GetPluginByDevice(IRGBDevice rgbDevice)
         {
             return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices != null && d.RgbDeviceProvider.Devices.Contains(rgbDevice));
         }

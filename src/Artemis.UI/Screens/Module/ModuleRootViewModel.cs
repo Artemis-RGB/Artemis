@@ -1,7 +1,9 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.Modules;
 using Artemis.UI.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
@@ -39,9 +41,9 @@ namespace Artemis.UI.Screens.Module
                 Items.Add(profileEditor);
             }
 
-            var moduleTabs = Module.GetModuleTabs();
-            if (moduleTabs != null)
+            if (Module.ModuleTabs != null)
             {
+                var moduleTabs = new List<ModuleTab>(Module.ModuleTabs);
                 foreach (var moduleTab in moduleTabs.Where(m => m != null))
                 {
                     var module = new ConstructorArgument("module", Module);

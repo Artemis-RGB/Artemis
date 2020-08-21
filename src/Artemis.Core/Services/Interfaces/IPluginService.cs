@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Artemis.Core.Events;
 using Artemis.Core.Plugins.Abstract;
 using Artemis.Core.Plugins.Models;
@@ -75,7 +76,19 @@ namespace Artemis.Core.Services.Interfaces
         /// <returns>Returns a list of plug instances of type <see cref="T" /></returns>
         List<T> GetPluginsOfType<T>() where T : Plugin;
 
-        Plugin GetDevicePlugin(IRGBDevice device);
+        /// <summary>
+        ///     Gets the plugin that provided the specified assembly
+        /// </summary>
+        /// <param name="assembly"></param>
+        /// <returns></returns>
+        Plugin GetPluginByAssembly(Assembly assembly);
+
+        /// <summary>
+        ///     Gets the plugin that defined the specified device
+        /// </summary>
+        /// <param name="device"></param>
+        /// <returns></returns>
+        Plugin GetPluginByDevice(IRGBDevice device);
 
         #region Events
 
