@@ -7,14 +7,16 @@ using Artemis.Core.Plugins.LayerBrush.Abstract;
 
 namespace Artemis.Core.Plugins.Abstract
 {
-    /// <inheritdoc />
     /// <summary>
-    ///     Allows you to create one or more <see cref="LayerBrush" />s usable by profile layers.
+    ///     Allows you to create one or more <see cref="LayerBrush{T}" />s usable by profile layers.
     /// </summary>
     public abstract class LayerBrushProvider : Plugin
     {
         private readonly List<LayerBrushDescriptor> _layerBrushDescriptors;
 
+        /// <summary>
+        ///     Allows you to register one or more <see cref="LayerBrush{T}" />s usable by profile layers.
+        /// </summary>
         protected LayerBrushProvider()
         {
             _layerBrushDescriptors = new List<LayerBrushDescriptor>();

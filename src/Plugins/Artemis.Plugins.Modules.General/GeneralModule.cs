@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Plugins.Modules.General.DataModel;
 using Artemis.Plugins.Modules.General.DataModel.Windows;
@@ -18,6 +17,7 @@ namespace Artemis.Plugins.Modules.General
             DisplayName = "General";
             DisplayIcon = "AllInclusive";
             ExpandsDataModel = true;
+            ModuleTabs = new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
 
             DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1)});
             DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2)});
@@ -44,11 +44,6 @@ namespace Artemis.Plugins.Modules.General
 
             UpdateCurrentWindow();
             base.Update(deltaTime);
-        }
-
-        public override IEnumerable<ModuleTab> GetModuleTabs()
-        {
-            return new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
         }
 
         #region Open windows

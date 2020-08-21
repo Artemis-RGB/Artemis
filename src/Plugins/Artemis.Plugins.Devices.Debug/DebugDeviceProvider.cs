@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Devices.Debug.Settings;
@@ -24,20 +22,24 @@ namespace Artemis.Plugins.Devices.Debug
             _rgbService = rgbService;
         }
 
-
         public override void EnablePlugin()
         {
-            HasConfigurationViewModel = true;
+            ConfigurationDialog = new PluginConfigurationDialog<DebugConfigurationViewModel>();
             PathHelper.ResolvingAbsolutePath += PathHelperOnResolvingAbsolutePath;
 
-            var definitions = _settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
+            var definitions = _settings.GetSetting("DeviceDefinitions", new List<DeviceDefinition>());
             if (definitions.Value == null)
                 definitions.Value = new List<DeviceDefinition>();
 
-            foreach (var deviceDefinition in definitions.Value) 
+            foreach (var deviceDefinition in definitions.Value)
                 RGB.NET.Devices.Debug.DebugDeviceProvider.Instance.AddFakeDeviceDefinition(deviceDefinition.Layout, deviceDefinition.ImageLayout);
 
             _rgbService.AddDeviceProvider(RgbDeviceProvider);
+        }
+
+        public override void DisablePlugin()
+        {
+            // TODO: Remove the device provider from the surface
         }
 
         private void PathHelperOnResolvingAbsolutePath(object sender, ResolvePathEventArgs e)
@@ -49,19 +51,7 @@ namespace Artemis.Plugins.Devices.Debug
                     var rootDirectory = debugRgbDevice.LayoutPath.Split("\\Layouts")[0];
                     e.FinalPath = Path.Combine(rootDirectory, e.RelativePath);
                 }
-
-                var test =debugRgbDevice.LayoutPath;
             }
-        }
-
-        public override void DisablePlugin()
-        {
-            // TODO: Remove the device provider from the surface
-        }
-
-        public override PluginConfigurationViewModel GetConfigurationViewModel()
-        {
-            return new DebugConfigurationViewModel(this, _settings);
         }
     }
 }

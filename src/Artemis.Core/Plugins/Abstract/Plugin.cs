@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
-using Castle.Core.Internal;
 
 namespace Artemis.Core.Plugins.Abstract
 {
@@ -12,19 +11,22 @@ namespace Artemis.Core.Plugins.Abstract
     /// </summary>
     public abstract class Plugin : IDisposable
     {
+        /// <summary>
+        ///     Gets the plugin info related to this plugin
+        /// </summary>
         public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
         ///     Gets whether the plugin is enabled
         /// </summary>
         public bool Enabled { get; private set; }
-
+        
         /// <summary>
-        ///     Gets or sets whether this plugin has a configuration view model.
-        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
+        ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
         /// </summary>
-        public bool HasConfigurationViewModel { get; protected set; }
+        public PluginConfigurationDialog ConfigurationDialog { get; protected set; }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             DisablePlugin();
@@ -39,16 +41,6 @@ namespace Artemis.Core.Plugins.Abstract
         ///     Called when the plugin is deactivated or when Artemis shuts down
         /// </summary>
         public abstract void DisablePlugin();
-
-        /// <summary>
-        ///     Called when the plugins configuration window is opened from the UI. The UI will only attempt to open if
-        ///     <see cref="HasConfigurationViewModel" /> is set to True.
-        /// </summary>
-        /// <returns></returns>
-        public virtual PluginConfigurationViewModel GetConfigurationViewModel()
-        {
-            return null;
-        }
 
         internal void SetEnabled(bool enable, bool isAutoEnable = false)
         {
@@ -116,14 +108,27 @@ namespace Artemis.Core.Plugins.Abstract
 
         #region Events
 
+        /// <summary>
+        ///     Occurs when the plugin is enabled
+        /// </summary>
         public event EventHandler PluginEnabled;
+
+        /// <summary>
+        ///     Occurs when the plugin is disabled
+        /// </summary>
         public event EventHandler PluginDisabled;
 
+        /// <summary>
+        ///     Triggers the PluginEnabled event
+        /// </summary>
         protected virtual void OnPluginEnabled()
         {
             PluginEnabled?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Triggers the PluginDisabled event
+        /// </summary>
         protected virtual void OnPluginDisabled()
         {
             PluginDisabled?.Invoke(this, EventArgs.Empty);

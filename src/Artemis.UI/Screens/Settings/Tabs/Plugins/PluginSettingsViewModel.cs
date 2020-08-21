@@ -3,10 +3,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
+using Ninject;
+using Ninject.Parameters;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
@@ -16,17 +19,23 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IDialogService _dialogService;
         private readonly IPluginService _pluginService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
+        private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
         private Plugin _plugin;
         private PluginInfo _pluginInfo;
         private bool _enabling;
 
-        public PluginSettingsViewModel(Plugin plugin, IWindowManager windowManager, IDialogService dialogService, IPluginService pluginService,
+        public PluginSettingsViewModel(Plugin plugin,
+            IKernel kernel,
+            IWindowManager windowManager,
+            IDialogService dialogService,
+            IPluginService pluginService,
             ISnackbarMessageQueue snackbarMessageQueue)
         {
             Plugin = plugin;
             PluginInfo = plugin.PluginInfo;
 
+            _kernel = kernel;
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginService = pluginService;
@@ -53,7 +62,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public PackIconKind Icon => GetIconKind();
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
-        public bool CanOpenSettings => IsEnabled && Plugin.HasConfigurationViewModel;
+        public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
         public bool DisplayLoadFailed => !Enabling && PluginInfo.LoadException != null;
 
         public bool IsEnabled
@@ -64,11 +73,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public void OpenSettings()
         {
+            var configurationViewModel = Plugin.ConfigurationDialog;
+            if (configurationViewModel == null)
+                return;
+
             try
             {
-                var configurationViewModel = Plugin.GetConfigurationViewModel();
-                if (configurationViewModel != null)
-                    _windowManager.ShowDialog(new PluginSettingsWindowViewModel(configurationViewModel, Icon));
+                var plugin = new ConstructorArgument("plugin", Plugin);
+                var viewModel = (PluginConfigurationViewModel) _kernel.Get(configurationViewModel.Type, plugin);
+                _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
             }
             catch (Exception e)
             {

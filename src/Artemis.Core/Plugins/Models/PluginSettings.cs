@@ -46,6 +46,12 @@ namespace Artemis.Core.Plugins.Models
                 }
 
                 var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginRepository, settingEntity);
+                
+                // This overrides null with the default value, I'm not sure if that's desirable because you
+                // might expect something to go null and you might not
+                // if (pluginSetting.Value == null && defaultValue != null)
+                //    pluginSetting.Value = defaultValue;
+
                 _settingEntities.Add(name, pluginSetting);
                 return pluginSetting;
             }

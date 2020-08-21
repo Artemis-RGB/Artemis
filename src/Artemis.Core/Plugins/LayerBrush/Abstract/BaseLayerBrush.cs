@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services.Interfaces;
@@ -15,6 +14,7 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
     public abstract class BaseLayerBrush : PropertyChangedBase, IDisposable
     {
         private LayerBrushType _brushType;
+        private LayerBrushConfigurationDialog _configurationDialog;
         private LayerBrushDescriptor _descriptor;
         private Layer _layer;
         private bool _supportsTransformation = true;
@@ -35,6 +35,15 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a configuration dialog complementing the regular properties
+        /// </summary>
+        public LayerBrushConfigurationDialog ConfigurationDialog
+        {
+            get => _configurationDialog;
+            protected set => SetAndNotify(ref _configurationDialog, value);
         }
 
         /// <summary>
@@ -71,17 +80,12 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
             }
         }
 
-        /// <summary>
-        ///     Gets or sets whether this plugin has a configuration view model.
-        ///     If set to true, <see cref="GetConfigurationViewModel" /> will be called when the plugin is configured from the UI.
-        /// </summary>
-        public bool HasConfigurationViewModel { get; protected set; }
-
+        /// <inheritdoc />
         public void Dispose()
         {
             DisableLayerBrush();
             BaseProperties.Dispose();
-            
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -102,16 +106,6 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         /// <param name="deltaTime">Seconds passed since last update</param>
         public abstract void Update(double deltaTime);
 
-        /// <summary>
-        ///     Called when the brush configuration window is opened from the UI. The UI will only attempt to open if
-        ///     <see cref="HasConfigurationViewModel" /> is set to True.
-        /// </summary>
-        /// <returns></returns>
-        public virtual BrushConfigurationViewModel GetConfigurationViewModel()
-        {
-            return null;
-        }
-
         // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
         // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
         internal abstract void Initialize(IRenderElementService renderElementService);
@@ -123,9 +117,19 @@ namespace Artemis.Core.Plugins.LayerBrush.Abstract
         }
     }
 
+    /// <summary>
+    ///     Describes the type of a layer brush
+    /// </summary>
     public enum LayerBrushType
     {
+        /// <summary>
+        ///     A regular brush that users Artemis' SkiaSharp-based rendering engine
+        /// </summary>
         Regular,
+
+        /// <summary>
+        ///     An RGB.NET brush that uses RGB.NET's per-LED rendering engine.     
+        /// </summary>
         RgbNet
     }
 }

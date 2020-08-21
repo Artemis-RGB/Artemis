@@ -10,11 +10,11 @@ namespace Artemis.Plugins.Devices.Debug.ViewModels
 {
     public class DebugConfigurationViewModel : PluginConfigurationViewModel
     {
-        private PluginSetting<List<DeviceDefinition>> _definitions;
+        private readonly PluginSetting<List<DeviceDefinition>> _definitions;
 
         public DebugConfigurationViewModel(Plugin plugin, PluginSettings settings) : base(plugin)
         {
-            _definitions = settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
+            _definitions = settings.GetSetting("DeviceDefinitions", new List<DeviceDefinition>());
             Definitions = new BindableCollection<DeviceDefinition>(_definitions.Value);
         }
 
