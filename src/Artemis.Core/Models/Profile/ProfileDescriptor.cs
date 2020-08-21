@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core.Models.Profile

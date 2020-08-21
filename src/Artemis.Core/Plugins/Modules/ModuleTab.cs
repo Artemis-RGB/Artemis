@@ -1,6 +1,4 @@
 ﻿using System;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.ViewModels;
 
 namespace Artemis.Core.Plugins.Modules
 {

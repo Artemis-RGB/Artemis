@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
 
 namespace Artemis.Core
 {

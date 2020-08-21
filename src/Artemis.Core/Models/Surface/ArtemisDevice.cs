@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;

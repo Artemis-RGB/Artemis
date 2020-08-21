@@ -1,5 +1,5 @@
 ﻿using System.IO;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.DeviceProviders;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.DeviceProviders;
 using Artemis.Core.Services.Interfaces;
 using HidSharp;
 using RGB.NET.Core;

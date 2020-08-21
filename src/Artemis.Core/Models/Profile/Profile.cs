@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 

@@ -1,6 +1,6 @@
 ﻿using System.IO;
 using Artemis.Core.Exceptions;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;

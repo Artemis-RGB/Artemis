@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:propertyInput="clr-namespace:Artemis.UI.PropertyInput"
-             xmlns:layerBrush="clr-namespace:Artemis.Core.Plugins.LayerBrush;assembly=Artemis.Core"
              xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
+             xmlns:layerBrush="clr-namespace:Artemis.Core.Plugins.LayerBrushes;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type propertyInput:BrushPropertyInputViewModel}}">

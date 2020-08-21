@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Plugins.LayerBrush;
+using Artemis.Core.Plugins.LayerBrushes;
 
 namespace Artemis.Core.Models.Profile
 {

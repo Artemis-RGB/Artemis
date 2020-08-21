@@ -6,7 +6,7 @@ using System.Windows.Input;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;

@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Plugins.Models;
 using Artemis.Core.Services;
 using Artemis.Core.Utilities;
 using Artemis.UI.Services.Interfaces;

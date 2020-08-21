@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Artemis.Core.Annotations;
 using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Abstract.DataModels;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
+using Artemis.Core.Plugins.DataModelExpansions;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Services.Interfaces

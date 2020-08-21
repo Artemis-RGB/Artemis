@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.Settings;
 using RGB.NET.Core;
 using SkiaSharp;
 

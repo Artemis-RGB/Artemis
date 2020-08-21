@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Plugins.Abstract.ViewModels;
+using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core.Plugins.LayerEffects;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;

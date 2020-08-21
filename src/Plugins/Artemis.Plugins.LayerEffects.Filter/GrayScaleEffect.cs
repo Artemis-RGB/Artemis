@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.LayerEffect.Abstract;
+﻿using Artemis.Core.Plugins.LayerEffects;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerEffects.Filter

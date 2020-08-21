@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Artemis.Core.Events;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services.Interfaces

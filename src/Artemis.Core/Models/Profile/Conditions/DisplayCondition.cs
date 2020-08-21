@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Plugins.DataModelExpansions;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {

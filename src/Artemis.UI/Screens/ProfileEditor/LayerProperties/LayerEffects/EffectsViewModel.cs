@@ -2,8 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.LayerEffect;
+using Artemis.Core.Plugins.LayerEffects;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;

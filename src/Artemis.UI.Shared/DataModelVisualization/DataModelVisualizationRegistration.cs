@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared.DataModelVisualization

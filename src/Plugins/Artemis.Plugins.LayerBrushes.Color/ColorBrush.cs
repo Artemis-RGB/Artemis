@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrush.Abstract;
+using Artemis.Core.Plugins.LayerBrushes;
 using Artemis.Plugins.LayerBrushes.Color.PropertyGroups;
 using SkiaSharp;
 using static Artemis.Plugins.LayerBrushes.Color.PropertyGroups.ColorBrushProperties;

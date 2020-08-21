@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Reflection;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Abstract.DataModels;
+using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 using Stylet;
 

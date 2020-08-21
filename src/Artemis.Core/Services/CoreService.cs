@@ -9,8 +9,8 @@ using Artemis.Core.Exceptions;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Ninject;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Core.Utilities;
@@ -20,7 +20,7 @@ using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
-using Module = Artemis.Core.Plugins.Abstract.Module;
+using Module = Artemis.Core.Plugins.Modules.Module;
 
 namespace Artemis.Core.Services
 {

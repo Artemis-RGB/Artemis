@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Artemis.Core.Plugins.Abstract;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
+using Artemis.Core.Plugins.DeviceProviders;
+using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Devices.Debug.Settings;
 using Artemis.Plugins.Devices.Debug.ViewModels;

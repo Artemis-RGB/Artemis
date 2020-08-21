@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Models;
+using Artemis.Core.Plugins;
 using Artemis.Core.Services.Interfaces;
 
 namespace Artemis.Core.Models.Profile.Conditions

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Timers;
 using Artemis.Core.Events;
-using Artemis.Core.Plugins.Abstract;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;

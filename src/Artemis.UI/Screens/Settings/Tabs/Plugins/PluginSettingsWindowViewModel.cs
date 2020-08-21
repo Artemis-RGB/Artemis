@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.Abstract.ViewModels;
+﻿using Artemis.Core.Plugins;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 

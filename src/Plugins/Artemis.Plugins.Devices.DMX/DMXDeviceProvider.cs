@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Plugins.Abstract;
+﻿using Artemis.Core.Plugins;
+using Artemis.Core.Plugins.DeviceProviders;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Plugins.Devices.DMX.ViewModels;
 
