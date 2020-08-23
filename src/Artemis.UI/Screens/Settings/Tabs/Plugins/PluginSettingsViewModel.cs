@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Plugins.DeviceProviders;
 using Artemis.Core.Plugins.LayerBrushes;
 using Artemis.Core.Plugins.LayerEffects;

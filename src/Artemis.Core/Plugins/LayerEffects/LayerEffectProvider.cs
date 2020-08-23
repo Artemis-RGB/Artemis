@@ -22,7 +22,7 @@ namespace Artemis.Core.Plugins.LayerEffects
         }
 
         /// <summary>
-        ///     A read-only collection of all layer effects added with <see cref="AddLayerEffectDescriptor{T}" />
+        ///     A read-only collection of all layer effects added with <see cref="RegisterLayerEffectDescriptor{T}" />
         /// </summary>
         public ReadOnlyCollection<LayerEffectDescriptor> LayerEffectDescriptors => _layerEffectDescriptors.AsReadOnly();
 
@@ -37,7 +37,7 @@ namespace Artemis.Core.Plugins.LayerEffects
         ///     The Material icon to display in the UI, a full reference can be found
         ///     <see href="https://materialdesignicons.com">here</see>
         /// </param>
-        protected void AddLayerEffectDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerEffect
+        protected void RegisterLayerEffectDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerEffect
         {
             if (!Enabled)
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer effect descriptor when the plugin is enabled");

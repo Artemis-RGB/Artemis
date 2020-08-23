@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.DataModelExpansions.Attributes;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Plugins.Modules;
 
 namespace Artemis.Core.Plugins.DataModelExpansions

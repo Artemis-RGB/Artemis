@@ -28,7 +28,7 @@ namespace Artemis.Core.Plugins.Modules
         ///     Gets or sets whether this module must also expand the main data model
         ///     <para>
         ///         Note: If expanding the main data model is all you want your plugin to do, create a
-        ///         <see cref="BaseDataModelExpansion{T}" /> plugin instead.
+        ///         <see cref="DataModelExpansion{T}" /> plugin instead.
         ///     </para>
         /// </summary>
         public bool ExpandsDataModel

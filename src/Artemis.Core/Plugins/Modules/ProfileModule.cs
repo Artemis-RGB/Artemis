@@ -10,6 +10,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Plugins.DataModelExpansions.Attributes;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Utilities;
 using SkiaSharp;
 
