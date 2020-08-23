@@ -9,6 +9,7 @@ using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Models.Profile.Conditions.Operators;
 using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;

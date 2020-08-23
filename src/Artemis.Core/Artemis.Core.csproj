@@ -61,9 +61,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="RGB.NET.Brushes">
-      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Brushes.dll</HintPath>
-    </Reference>
     <Reference Include="RGB.NET.Core">
       <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
     </Reference>

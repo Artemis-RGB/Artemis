@@ -52,6 +52,11 @@
     <Page Remove="publish\**" />
   </ItemGroup>
   <ItemGroup>
+    <!-- TODO: Remove when moving to Nuget, this is so the plugin templates have the DLL to reference -->
+    <Reference Include="RGB.NET.Brushes">
+      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Brushes.dll</HintPath>
+      <Private>true</Private>
+    </Reference>
     <Reference Include="RGB.NET.Core">
       <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
     </Reference>

@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Utilities;
 
 namespace Artemis.Core.Plugins.DataModelExpansions
@@ -12,7 +9,7 @@ namespace Artemis.Core.Plugins.DataModelExpansions
     /// <summary>
     ///     Allows you to expand the application-wide datamodel
     /// </summary>
-    public abstract class BaseDataModelExpansion<T> : BaseDataModelExpansion where T : DataModel
+    public abstract class DataModelExpansion<T> : BaseDataModelExpansion where T : DataModel
     {
         /// <summary>
         ///     The data model driving this module
@@ -56,33 +53,6 @@ namespace Artemis.Core.Plugins.DataModelExpansions
         {
             DataModel = null;
             base.InternalDisablePlugin();
-        }
-    }
-
-    /// <summary>
-    ///     For internal use only, to implement your own layer property type, extend <see cref="BaseDataModelExpansion{T}" />
-    ///     instead.
-    /// </summary>
-    public abstract class BaseDataModelExpansion : Plugin
-    {
-        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
-
-        /// <summary>
-        ///     Gets a list of all properties ignored at runtime using IgnoreProperty(x => x.y)
-        /// </summary>
-        public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
-
-        internal DataModel InternalDataModel { get; set; }
-        public abstract void Update(double deltaTime);
-
-        /// <summary>
-        ///     Override to provide your own data model description. By default this returns a description matching your plugin
-        ///     name and description
-        /// </summary>
-        /// <returns></returns>
-        public virtual DataModelPropertyAttribute GetDataModelDescription()
-        {
-            return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
         }
     }
 }

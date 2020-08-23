@@ -10,6 +10,7 @@ using Artemis.Core.JsonConverters;
 using Artemis.Core.Models.Profile;
 using Artemis.Core.Ninject;
 using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.Plugins.DataModelExpansions.Internal;
 using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
