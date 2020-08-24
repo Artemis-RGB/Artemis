@@ -7,6 +7,9 @@ using RGB.NET.Core;
 
 namespace Artemis.Core.Services.Interfaces
 {
+    /// <summary>
+    /// A service providing plugin management
+    /// </summary>
     public interface IPluginService : IArtemisService, IDisposable
     {
         /// <summary>

@@ -137,7 +137,7 @@ namespace Artemis.UI.Screens
 
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SidebarViewModel.SelectedItem))
+            if (e.PropertyName == nameof(SidebarViewModel.SelectedItem) && ActiveItem != SidebarViewModel.SelectedItem)
             {
                 SidebarViewModel.IsSidebarOpen = false;
                 ActiveItemReady = false;

@@ -52,6 +52,14 @@ namespace Artemis.Core.Services.Storage.Interfaces
         void ActivateLastProfile(ProfileModule profileModule);
 
         /// <summary>
+        ///     Asynchronously activates the last profile of the given profile module using a fade animation
+        /// </summary>
+        /// <param name="profileModule"></param>
+        /// <returns></returns>
+
+        Task ActivateLastProfileAnimated(ProfileModule profileModule);
+
+        /// <summary>
         ///     Activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently active surface
         /// </summary>
         /// <param name="profileDescriptor">The descriptor describing the profile to activate</param>

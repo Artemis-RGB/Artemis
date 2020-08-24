@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Artemis.Core.Extensions;
@@ -39,7 +40,7 @@ namespace Artemis.Core.Plugins.Modules.ActivationRequirements
 
             var processes = ProcessName != null ? Process.GetProcessesByName(ProcessName).Where(p => !p.HasExited) : Process.GetProcesses().Where(p => !p.HasExited);
             return Location != null
-                ? processes.Any(p => Path.GetDirectoryName(p.GetProcessFilename()) == Location)
+                ? processes.Any(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.CurrentCultureIgnoreCase))
                 : processes.Any();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.DeviceProviders;
@@ -8,6 +9,7 @@ using Artemis.Plugins.Devices.Debug.Settings;
 using Artemis.Plugins.Devices.Debug.ViewModels;
 using RGB.NET.Core;
 using RGB.NET.Devices.Debug;
+using Serilog;
 
 namespace Artemis.Plugins.Devices.Debug
 {
@@ -16,10 +18,12 @@ namespace Artemis.Plugins.Devices.Debug
     {
         private readonly IRgbService _rgbService;
         private readonly PluginSettings _settings;
+        private readonly ILogger _logger;
 
-        public DebugDeviceProvider(IRgbService rgbService, PluginSettings settings) : base(RGB.NET.Devices.Debug.DebugDeviceProvider.Instance)
+        public DebugDeviceProvider(IRgbService rgbService, PluginSettings settings, ILogger logger) : base(RGB.NET.Devices.Debug.DebugDeviceProvider.Instance)
         {
             _settings = settings;
+            _logger = logger;
             _rgbService = rgbService;
         }
 
@@ -35,7 +39,14 @@ namespace Artemis.Plugins.Devices.Debug
             foreach (var deviceDefinition in definitions.Value)
                 RGB.NET.Devices.Debug.DebugDeviceProvider.Instance.AddFakeDeviceDefinition(deviceDefinition.Layout, deviceDefinition.ImageLayout);
 
-            _rgbService.AddDeviceProvider(RgbDeviceProvider);
+            try
+            {
+                _rgbService.AddDeviceProvider(RgbDeviceProvider);
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Debug device provided failed to initialize, check paths");
+            }
         }
 
         public override void DisablePlugin()

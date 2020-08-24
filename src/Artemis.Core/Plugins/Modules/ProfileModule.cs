@@ -193,9 +193,9 @@ namespace Artemis.Core.Plugins.Modules
         /// </summary>
         public bool AnimatingProfileChange { get; private set; }
 
-        internal override void Deactivate()
+        internal override void Deactivate(bool isOverride)
         {
-            base.Deactivate();
+            base.Deactivate(isOverride);
 
             var profile = ActiveProfile;
             ActiveProfile = null;

@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
@@ -11,21 +13,40 @@ namespace Artemis.UI.Screens.Module
 {
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
+        private readonly IModuleService _moduleService;
         private readonly IProfileEditorVmFactory _profileEditorVmFactory;
         private readonly IKernel _kernel;
 
-        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
+        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IModuleService moduleService, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
         {
             DisplayName = module?.DisplayName;
             Module = module;
 
+            _moduleService = moduleService;
             _profileEditorVmFactory = profileEditorVmFactory;
             _kernel = kernel;
-
-            Task.Run(AddTabsAsync);
         }
 
         public Core.Plugins.Modules.Module Module { get; }
+
+        protected override void OnActivate()
+        {
+            Task.Run(async () =>
+            {
+                await _moduleService.SetActiveModuleOverride(Module);
+                await AddTabsAsync();
+            });
+            base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            Task.Run(async () =>
+            {
+                await _moduleService.SetActiveModuleOverride(null);
+            });
+            base.OnDeactivate();
+        }
 
         private async Task AddTabsAsync()
         {
