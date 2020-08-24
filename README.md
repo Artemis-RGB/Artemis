@@ -1,4 +1,5 @@
 
+
 # Artemis
 [![Build status](https://build.rbeekman.nl/app/rest/builds/buildType:(id:Artemis_Build)/statusIcon.svg)](https://build.rbeekman.nl/viewType.html?buildTypeId=Artemis_Build&guest=1)
 [![GitHub release](https://img.shields.io/github/release/spoinkynl/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/releases)
@@ -27,7 +28,16 @@ Executable of latest Artemis 2 build: [Artemis_Build.zip]( https://build.rbeekma
 
 For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page
 
-### Work in progress screenshots
+## Plugin development
+While Artemis 2 is still in development, the plugin API is pretty far along.  
+To get started, you can download the Visual Studio extension in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=SpoinkyNL.ArtemisTemplates).
+
+This extension provides you with interactive template projects for each type of Artemis 2 plugin.
+To use the templates you must have Artemis 2 extracted somewhere on your drive. The plugin wizard will ask you to locate the exectuable in order to setup all the required project references for you.
+
+Due to the volatine nature of the project right now, there is no documentation yet. The templates provide some commentary to get you going and feel free to ask for more help in Discord.
+
+## Work in progress screenshots
 **Note:** Video tutorials and written guides on many of the features displayed below are planned for when Artemis 2 nears feature-completion.
 
 ![Plugins](https://i.imgur.com/x8LGJxp.png)
