@@ -80,6 +80,12 @@ namespace Artemis.Core.Plugins.Modules
         public string DisplayIcon { get; set; }
 
         /// <summary>
+        ///     A path to an image to use as the modules display icon that's shown in the menu.
+        ///     <para>If set, takes precedence over <see cref="DisplayIcon" /></para>
+        /// </summary>
+        public string DisplayIconPath { get; set; }
+
+        /// <summary>
         ///     Gets whether this module is activated. A module can only be active while its <see cref="ActivationRequirements" />
         ///     are met
         /// </summary>
@@ -138,14 +144,22 @@ namespace Artemis.Core.Plugins.Modules
         public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo);
 
         /// <summary>
-        ///     Called when the <see cref="ActivationRequirements" /> are met
+        ///     Called when the <see cref="ActivationRequirements" /> are met or during an override
         /// </summary>
-        public abstract void ModuleActivated();
+        /// <param name="isOverride">
+        ///     If true, the activation was due to an override. This usually means the module was activated
+        ///     by the profile editor
+        /// </param>
+        public abstract void ModuleActivated(bool isOverride);
 
         /// <summary>
-        ///     Called when the <see cref="ActivationRequirements" /> are no longer met
+        ///     Called when the <see cref="ActivationRequirements" /> are no longer met or during an override
         /// </summary>
-        public abstract void ModuleDeactivated();
+        /// <param name="isOverride">
+        ///     If true, the deactivation was due to an override. This usually means the module was deactivated
+        ///     by the profile editor
+        /// </param>
+        public abstract void ModuleDeactivated(bool isOverride);
 
         /// <summary>
         ///     Evaluates the activation requirements following the <see cref="ActivationRequirementMode" /> and returns the result
@@ -163,22 +177,22 @@ namespace Artemis.Core.Plugins.Modules
             return false;
         }
 
-        internal virtual void Activate()
+        internal virtual void Activate(bool isOverride)
         {
             if (IsActivated)
                 return;
 
-            ModuleActivated();
+            ModuleActivated(isOverride);
             IsActivated = true;
         }
 
-        internal virtual void Deactivate()
+        internal virtual void Deactivate(bool isOverride)
         {
             if (!IsActivated)
                 return;
 
             IsActivated = false;
-            ModuleDeactivated();
+            ModuleDeactivated(isOverride);
         }
 
         internal void ApplyToEntity()

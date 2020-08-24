@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Media.Imaging;
 using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Events;
@@ -22,15 +24,15 @@ namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>, IDisposable
     {
+        private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginService _pluginService;
+        private string _activeModules;
+        private bool _isSidebarOpen;
+        private IScreen _selectedItem;
         private BindableCollection<INavigationItem> _sidebarItems;
         private Dictionary<INavigationItem, Core.Plugins.Modules.Module> _sidebarModules;
-        private IScreen _selectedItem;
-        private bool _isSidebarOpen;
-        private readonly Timer _activeModulesUpdateTimer;
-        private string _activeModules;
 
         public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
@@ -50,15 +52,6 @@ namespace Artemis.UI.Screens.Sidebar
 
             SetupSidebar();
             eventAggregator.Subscribe(this);
-        }
-
-        private void ActiveModulesUpdateTimerOnElapsed(object sender, EventArgs e)
-        {
-            if (!IsSidebarOpen)
-                return;
-
-            var activeModules = SidebarModules.Count(m => m.Value.IsActivated);
-            ActiveModules = activeModules == 1 ? "1 active module" : $"{activeModules} active modules";
         }
 
         public BindableCollection<INavigationItem> SidebarItems
@@ -96,6 +89,18 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
+        public void Dispose()
+        {
+            SelectedItem?.Deactivate();
+            SelectedItem = null;
+
+            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
+            _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
+
+            _activeModulesUpdateTimer.Stop();
+            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
+        }
+
         public void SetupSidebar()
         {
             SidebarItems.Clear();
@@ -120,7 +125,7 @@ namespace Artemis.UI.Screens.Sidebar
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view
-        public async Task SelectItem(WillSelectNavigationItemEventArgs args)
+        public void SelectItem(WillSelectNavigationItemEventArgs args)
         {
             if (args.NavigationItemToSelect == null)
             {
@@ -128,7 +133,7 @@ namespace Artemis.UI.Screens.Sidebar
                 return;
             }
 
-            await SelectSidebarItem(args.NavigationItemToSelect);
+            SelectSidebarItem(args.NavigationItemToSelect);
         }
 
         public void AddModule(Core.Plugins.Modules.Module module)
@@ -137,11 +142,19 @@ namespace Artemis.UI.Screens.Sidebar
             if (SidebarModules.Any(io => io.Value == module))
                 return;
 
-            // Icon is provided as string to avoid having to reference MaterialDesignThemes
-            var parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out var iconEnum);
-            if (parsedIcon == false)
-                iconEnum = PackIconKind.QuestionMarkCircle;
-            var sidebarItem = new FirstLevelNavigationItem {Icon = iconEnum, Label = module.DisplayName};
+            object icon;
+            if (module.DisplayIconPath != null && File.Exists(Path.Combine(module.PluginInfo.Directory.FullName, module.DisplayIconPath)))
+                icon = new BitmapImage(new Uri(Path.Combine(module.PluginInfo.Directory.FullName, module.DisplayIconPath)));
+            else
+            {
+                // Icon is provided as string to avoid having to reference MaterialDesignThemes
+                var parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out var iconEnum);
+                if (parsedIcon == false)
+                    iconEnum = PackIconKind.QuestionMarkCircle;
+                icon = iconEnum;
+            }
+
+            var sidebarItem = new FirstLevelNavigationItem {Icon = icon, Label = module.DisplayName};
             SidebarItems.Add(sidebarItem);
             SidebarModules.Add(sidebarItem, module);
         }
@@ -157,54 +170,48 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarModules.Remove(existing.Key);
         }
 
-        private async Task SelectSidebarItem(INavigationItem sidebarItem)
+        private void ActiveModulesUpdateTimerOnElapsed(object sender, EventArgs e)
+        {
+            if (!IsSidebarOpen)
+                return;
+
+            var activeModules = SidebarModules.Count(m => m.Value.IsActivated);
+            ActiveModules = activeModules == 1 ? "1 active module" : $"{activeModules} active modules";
+        }
+
+        private void SelectSidebarItem(INavigationItem sidebarItem)
         {
             // A module was selected if the dictionary contains the selected item
             if (SidebarModules.ContainsKey(sidebarItem))
-                await ActivateModule(sidebarItem);
+                ActivateModule(sidebarItem);
             else if (sidebarItem is FirstLevelNavigationItem navigationItem)
-                await ActivateViewModel(navigationItem.Label);
-            else if (await CloseCurrentItem())
+                ActivateViewModel(navigationItem.Label);
+            else
                 SelectedItem = null;
         }
 
-        private async Task<bool> CloseCurrentItem()
-        {
-            if (SelectedItem == null)
-                return true;
-
-            var canClose = await SelectedItem.CanCloseAsync();
-            if (!canClose)
-                return false;
-
-            SelectedItem.Close();
-            return true;
-        }
-
-        private async Task ActivateViewModel(string label)
+        private void ActivateViewModel(string label)
         {
             if (label == "Home")
-                await ActivateViewModel<HomeViewModel>();
+                ActivateViewModel<HomeViewModel>();
             else if (label == "News")
-                await ActivateViewModel<NewsViewModel>();
+                ActivateViewModel<NewsViewModel>();
             else if (label == "Workshop")
-                await ActivateViewModel<WorkshopViewModel>();
+                ActivateViewModel<WorkshopViewModel>();
             else if (label == "Surface Editor")
-                await ActivateViewModel<SurfaceEditorViewModel>();
+                ActivateViewModel<SurfaceEditorViewModel>();
             else if (label == "Settings")
-                await ActivateViewModel<SettingsViewModel>();
+                ActivateViewModel<SettingsViewModel>();
         }
 
-        private async Task ActivateViewModel<T>()
+        private void ActivateViewModel<T>()
         {
-            if (await CloseCurrentItem())
-                SelectedItem = (IScreen) _kernel.Get<T>();
+            SelectedItem = (IScreen) _kernel.Get<T>();
         }
 
-        private async Task ActivateModule(INavigationItem sidebarItem)
+        private void ActivateModule(INavigationItem sidebarItem)
         {
-            if (await CloseCurrentItem())
-                SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
+            SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
         }
 
         #region Event handlers
@@ -223,21 +230,9 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void Handle(RequestSelectSidebarItemEvent message)
         {
-            Execute.OnUIThread(async () => await ActivateViewModel(message.Label));
+            ActivateViewModel(message.Label);
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            var closeTask = CloseCurrentItem();
-            closeTask.Wait();
-
-            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
-            _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
-
-            _activeModulesUpdateTimer.Stop();
-            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
-        }
     }
 }

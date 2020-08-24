@@ -64,6 +64,13 @@ namespace Artemis.Core.Services.Storage
                 ActivateProfile(activeProfile);
         }
 
+        public async Task ActivateLastProfileAnimated(ProfileModule profileModule)
+        {
+            var activeProfile = GetLastActiveProfile(profileModule);
+            if (activeProfile != null)
+                await ActivateProfileAnimated(activeProfile);
+        }
+
         public Profile ActivateProfile(ProfileDescriptor profileDescriptor)
         {
             if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
@@ -94,11 +101,24 @@ namespace Artemis.Core.Services.Storage
             var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
+            void ActivatingProfileSurfaceUpdate(object sender, SurfaceConfigurationEventArgs e) => profile.PopulateLeds(e.Surface);
+            void ActivatingProfilePluginToggle(object sender, PluginEventArgs e) => InstantiateProfile(profile);
+
+            // This could happen during activation so subscribe to it
+            _pluginService.PluginEnabled += ActivatingProfilePluginToggle;
+            _pluginService.PluginDisabled += ActivatingProfilePluginToggle;
+            _surfaceService.SurfaceConfigurationUpdated += ActivatingProfileSurfaceUpdate;
+
             await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _surfaceService.ActiveSurface);
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
+            _pluginService.PluginEnabled -= ActivatingProfilePluginToggle;
+            _pluginService.PluginDisabled -= ActivatingProfilePluginToggle;
+            _surfaceService.SurfaceConfigurationUpdated -= ActivatingProfileSurfaceUpdate;
+
             return profile;
         }
+
 
         public void ClearActiveProfile(ProfileModule module)
         {
@@ -234,6 +254,9 @@ namespace Artemis.Core.Services.Storage
 
         private void SaveActiveProfile(ProfileModule module)
         {
+            if (module.ActiveProfile == null)
+                return;
+
             var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             foreach (var profileEntity in profileEntities)
             {

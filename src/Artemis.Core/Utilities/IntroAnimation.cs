@@ -79,12 +79,12 @@ namespace Artemis.Core.Utilities
             throw new NotImplementedException();
         }
 
-        public override void ModuleActivated()
+        public override void ModuleActivated(bool isOverride)
         {
             throw new NotImplementedException();
         }
 
-        public override void ModuleDeactivated()
+        public override void ModuleDeactivated(bool isOverride)
         {
             throw new NotImplementedException();
         }

@@ -228,14 +228,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
         }
 
-        protected override void OnInitialActivate()
+        protected override void OnActivate()
         {
             LoadWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = true;
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
             
             Execute.PostToUIThread(LoadProfiles);
-            base.OnInitialActivate();
+            base.OnActivate();
         }
 
         protected override void OnClose()
@@ -243,6 +243,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             SaveWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = false;
             Module.ActiveProfileChanged -= ModuleOnActiveProfileChanged;
+
+            _profileEditorService.ChangeSelectedProfile(null);
             base.OnClose();
         }
 

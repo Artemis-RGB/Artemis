@@ -28,11 +28,11 @@ namespace Artemis.Plugins.Modules.General
         {
         }
 
-        public override void ModuleActivated()
+        public override void ModuleActivated(bool isOverride)
         {
         }
 
-        public override void ModuleDeactivated()
+        public override void ModuleDeactivated(bool isOverride)
         {
         }
 
