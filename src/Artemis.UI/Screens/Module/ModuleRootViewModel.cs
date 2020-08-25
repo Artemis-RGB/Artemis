@@ -50,9 +50,6 @@ namespace Artemis.UI.Screens.Module
 
         private async Task AddTabsAsync()
         {
-            // Give the screen a moment to active without freezing the UI thread
-            await Task.Delay(400);
-
             // Create the profile editor and module VMs
             if (Module is ProfileModule profileModule)
             {
