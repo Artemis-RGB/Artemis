@@ -9,11 +9,6 @@ namespace Artemis.Core.Services.Interfaces
     public interface IModuleService : IArtemisService
     {
         /// <summary>
-        ///     Gets whether an override is currently being applied
-        /// </summary>
-        bool ApplyingOverride { get; }
-
-        /// <summary>
         ///     Gets the current active module override. If set, all other modules are deactivated and only the
         ///     <see cref="ActiveModuleOverride" /> is active.
         /// </summary>

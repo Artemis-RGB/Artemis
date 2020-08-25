@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Events;
+using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -17,6 +18,7 @@ namespace Artemis.Core.Services
 {
     internal class ModuleService : IModuleService
     {
+        private static readonly SemaphoreSlim ActiveModuleSemaphore = new SemaphoreSlim(1, 1);
         private readonly ILogger _logger;
         private readonly IModuleRepository _moduleRepository;
         private readonly IPluginService _pluginService;
@@ -37,7 +39,6 @@ namespace Artemis.Core.Services
             PopulatePriorities();
         }
 
-        public bool ApplyingOverride { get; private set; }
         public Module ActiveModuleOverride { get; private set; }
 
         public async Task SetActiveModuleOverride(Module overrideModule)
@@ -45,42 +46,43 @@ namespace Artemis.Core.Services
             if (ActiveModuleOverride == overrideModule)
                 return;
 
+            if (!await ActiveModuleSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+                throw new ArtemisCoreException("Timed out while acquiring active module lock");
+
             try
             {
-                // Not the cleanest way but locks don't work async and I cba with a mutex
-                while (ApplyingOverride)
-                    await Task.Delay(50);
-
-                ApplyingOverride = true;
                 ActiveModuleOverride = overrideModule;
 
                 // If set to null, resume regular activation
                 if (ActiveModuleOverride == null)
                 {
-                    await UpdateModuleActivation();
                     _logger.Information("Cleared active module override");
                     return;
                 }
 
                 // If a module was provided, activate it and deactivate everything else
                 var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-                var deactivationTasks = new List<Task>();
+                var tasks = new List<Task>();
                 foreach (var module in modules)
                 {
                     if (module != ActiveModuleOverride)
-                        deactivationTasks.Add(DeactivateModule(module, true));
+                        tasks.Add(DeactivateModule(module, true));
                 }
 
-                await Task.WhenAll(deactivationTasks);
-
                 if (!ActiveModuleOverride.IsActivated)
-                    await ActivateModule(ActiveModuleOverride, true);
+                    tasks.Add(ActivateModule(ActiveModuleOverride, true));
+
+                await Task.WhenAll(tasks);
 
                 _logger.Information($"Set active module override to {ActiveModuleOverride.DisplayName}");
             }
             finally
             {
-                ApplyingOverride = false;
+                ActiveModuleSemaphore.Release();
+
+                // With the semaphore released, trigger an update with the override was cleared
+                if (ActiveModuleOverride == null)
+                    await UpdateModuleActivation();
             }
         }
 
@@ -89,25 +91,35 @@ namespace Artemis.Core.Services
             if (ActiveModuleOverride != null)
                 return;
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            if (!await ActiveModuleSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
+                throw new ArtemisCoreException("Timed out while acquiring active module lock");
 
-            var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-            var tasks = new List<Task>();
-            foreach (var module in modules)
+            try
             {
-                var shouldBeActivated = module.EvaluateActivationRequirements();
-                if (shouldBeActivated && !module.IsActivated)
-                    tasks.Add(ActivateModule(module, false));
-                else if (!shouldBeActivated && module.IsActivated)
-                    tasks.Add(DeactivateModule(module, false));
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
+                var modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                var tasks = new List<Task>();
+                foreach (var module in modules)
+                {
+                    var shouldBeActivated = module.EvaluateActivationRequirements();
+                    if (shouldBeActivated && !module.IsActivated)
+                        tasks.Add(ActivateModule(module, false));
+                    else if (!shouldBeActivated && module.IsActivated)
+                        tasks.Add(DeactivateModule(module, false));
+                }
+
+                await Task.WhenAll(tasks);
+
+                stopwatch.Stop();
+                if (stopwatch.ElapsedMilliseconds > 100 && !tasks.Any())
+                    _logger.Warning("Activation requirements evaluation took too long: {moduleCount} module(s) in {elapsed}", modules.Count, stopwatch.Elapsed);
             }
-
-            await Task.WhenAll(tasks);
-
-            stopwatch.Stop();
-            if (stopwatch.ElapsedMilliseconds > 100)
-                _logger.Warning("Activation requirements evaluation took too long: {moduleCount} module(s) in {elapsed}", modules.Count, stopwatch.Elapsed);
+            finally
+            {
+                ActiveModuleSemaphore.Release();
+            }
         }
 
         public void UpdateModulePriority(Module module, ModulePriorityCategory category, int priority)
