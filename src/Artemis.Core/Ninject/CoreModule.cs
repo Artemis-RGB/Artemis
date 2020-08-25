@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services.Interfaces;
@@ -44,10 +46,6 @@ namespace Artemis.Core.Ninject
 
             Kernel.Bind<LiteRepository>().ToMethod(t =>
             {
-                // Ensure the data folder exists
-                if (!Directory.Exists(Constants.DataFolder))
-                    Directory.CreateDirectory(Constants.DataFolder);
-
                 try
                 {
                     return new LiteRepository(Constants.ConnectionString);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Events;
 using Artemis.Core.Exceptions;
+using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
@@ -156,20 +157,36 @@ namespace Artemis.Core.Services
 
         private async Task ActivateModule(Module module, bool isOverride)
         {
-            module.Activate(isOverride);
+            try
+            {
+                module.Activate(isOverride);
 
-            // If this is a profile module, activate the last active profile after module activation
-            if (module is ProfileModule profileModule)
-                await _profileService.ActivateLastProfileAnimated(profileModule);
+                // If this is a profile module, activate the last active profile after module activation
+                if (module is ProfileModule profileModule)
+                    await _profileService.ActivateLastProfileAnimated(profileModule);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to activate module and last profile.", e), "Failed to activate module and last profile");
+                throw;
+            }
         }
 
         private async Task DeactivateModule(Module module, bool isOverride)
         {
-            // If this is a profile module, activate the last active profile after module activation
-            if (module.IsActivated && module is ProfileModule profileModule)
-                await profileModule.ChangeActiveProfileAnimated(null, null);
+            try
+            {
+                // If this is a profile module, activate the last active profile after module activation
+                if (module.IsActivated && module is ProfileModule profileModule)
+                    await profileModule.ChangeActiveProfileAnimated(null, null);
 
-            module.Deactivate(isOverride);
+                module.Deactivate(isOverride);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to deactivate module and last profile.", e), "Failed to deactivate module and last profile");
+                throw;
+            }
         }
 
         private void PopulatePriorities()
