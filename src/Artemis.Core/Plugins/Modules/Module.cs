@@ -92,6 +92,12 @@ namespace Artemis.Core.Plugins.Modules
         public bool IsActivated { get; internal set; }
 
         /// <summary>
+        ///     Gets whether this module's activation was due to an override, can only be true if <see cref="IsActivated" /> is
+        ///     true
+        /// </summary>
+        public bool IsActivatedOverride { get; set; }
+
+        /// <summary>
         ///     A list of activation requirements
         ///     <para>Note: if empty the module is always activated</para>
         /// </summary>
@@ -182,6 +188,7 @@ namespace Artemis.Core.Plugins.Modules
             if (IsActivated)
                 return;
 
+            IsActivatedOverride = isOverride;
             ModuleActivated(isOverride);
             IsActivated = true;
         }
@@ -191,6 +198,7 @@ namespace Artemis.Core.Plugins.Modules
             if (!IsActivated)
                 return;
 
+            IsActivatedOverride = false;
             IsActivated = false;
             ModuleDeactivated(isOverride);
         }
