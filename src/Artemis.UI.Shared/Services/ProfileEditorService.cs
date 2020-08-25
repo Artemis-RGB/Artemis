@@ -8,10 +8,12 @@ using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Shared.Events;
+using Artemis.UI.Shared.Exceptions;
 using Artemis.UI.Shared.PropertyInput;
 using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Serilog;
+using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -20,10 +22,10 @@ namespace Artemis.UI.Shared.Services
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
-        private TimeSpan _currentTime;
-        private int _pixelsPerSecond;
         private readonly object _selectedProfileElementLock = new object();
         private readonly object _selectedProfileLock = new object();
+        private TimeSpan _currentTime;
+        private int _pixelsPerSecond;
 
         public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger)
         {
@@ -72,11 +74,20 @@ namespace Artemis.UI.Shared.Services
                 if (SelectedProfile == profile)
                     return;
 
+                if (profile != null && !profile.IsActivated)
+                    throw new ArtemisSharedUIException("Cannot change the selected profile to an inactive profile");
+
                 _logger.Verbose("ChangeSelectedProfile {profile}", profile);
                 ChangeSelectedProfileElement(null);
 
                 var profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
+
+                // Ensure there is never a deactivated profile as the selected profile
+                if (SelectedProfile != null)
+                    SelectedProfile.Deactivated -= SelectedProfileOnDeactivated;
                 SelectedProfile = profile;
+                if (SelectedProfile != null)
+                    SelectedProfile.Deactivated += SelectedProfileOnDeactivated;
 
                 OnSelectedProfileChanged(profileElementEvent);
                 UpdateProfilePreview();
@@ -308,6 +319,11 @@ namespace Artemis.UI.Shared.Services
         protected virtual void OnProfilePreviewUpdated()
         {
             ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SelectedProfileOnDeactivated(object sender, EventArgs e)
+        {
+            Execute.PostToUIThread(() => ChangeSelectedProfile(null));
         }
     }
 }
