@@ -10,7 +10,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
     {
         private readonly IPluginService _pluginService;
 
-        public ModuleOrderTabViewModel(IPluginService pluginService)
+        public ModuleOrderTabViewModel(IPluginService pluginService, IModuleService moduleService)
         {
             DisplayName = "MODULE PRIORITY";
 
@@ -18,11 +18,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
             NormalModules = new BindableCollection<Core.Plugins.Modules.Module>();
             ApplicationModules = new BindableCollection<Core.Plugins.Modules.Module>();
             OverlayModules = new BindableCollection<Core.Plugins.Modules.Module>();
+
+            ModulesDropHandler = new ModulesDropHandler(moduleService, NormalModules, ApplicationModules, OverlayModules);
         }
 
         public BindableCollection<Core.Plugins.Modules.Module> NormalModules { get; set; }
         public BindableCollection<Core.Plugins.Modules.Module> ApplicationModules { get; set; }
         public BindableCollection<Core.Plugins.Modules.Module> OverlayModules { get; set; }
+
+        public ModulesDropHandler ModulesDropHandler { get; }
+
 
         protected override void OnActivate()
         {

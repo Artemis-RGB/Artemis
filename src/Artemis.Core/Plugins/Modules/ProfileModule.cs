@@ -96,12 +96,12 @@ namespace Artemis.Core.Plugins.Modules
     /// </summary>
     public abstract class ProfileModule : Module
     {
+        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+
         protected ProfileModule()
         {
             OpacityOverride = 1;
         }
-
-        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
 
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using IgnoreProperty(x => x.y)
@@ -115,9 +115,59 @@ namespace Artemis.Core.Plugins.Modules
         /// </summary>
         public bool IsProfileUpdatingDisabled { get; set; }
 
-        /// <inheritdoc />
-        public override void Update(double deltaTime)
+        /// <summary>
+        ///     Overrides the opacity of the root folder
+        /// </summary>
+        public double OpacityOverride { get; set; }
+
+        /// <summary>
+        ///     Indicates whether or not a profile change is being animated
+        /// </summary>
+        public bool AnimatingProfileChange { get; private set; }
+
+        /// <summary>
+        ///     Called before the profile updates, this is the best place to perform data model updates
+        /// </summary>
+        /// <param name="deltaTime">Time in seconds since the last update</param>
+        public virtual void ProfileUpdate(double deltaTime)
         {
+        }
+
+        /// <summary>
+        ///     Called after the profile has updated
+        /// </summary>
+        /// <param name="deltaTime">Time in seconds since the last update</param>
+        public virtual void ProfileUpdated(double deltaTime)
+        {
+        }
+
+        /// <summary>
+        ///     Called before the profile renders
+        /// </summary>
+        /// <param name="deltaTime">Time since the last render</param>
+        /// <param name="surface">The RGB Surface to render to</param>
+        /// <param name="canvas"></param>
+        /// <param name="canvasInfo"></param>
+        public virtual void ProfileRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+        }
+
+        /// <summary>
+        ///     Called after the profile has rendered
+        /// </summary>
+        /// <param name="deltaTime">Time since the last render</param>
+        /// <param name="surface">The RGB Surface to render to</param>
+        /// <param name="canvas"></param>
+        /// <param name="canvasInfo"></param>
+        public virtual void ProfileRendered(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+        }
+
+        /// <inheritdoc />
+        public sealed override void Update(double deltaTime)
+        {
+            ProfileUpdate(deltaTime);
+
             lock (this)
             {
                 OpacityOverride = AnimatingProfileChange
@@ -128,16 +178,22 @@ namespace Artemis.Core.Plugins.Modules
                 if (!IsProfileUpdatingDisabled)
                     ActiveProfile?.Update(deltaTime);
             }
+
+            ProfileUpdated(deltaTime);
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        public sealed override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            ProfileRender(deltaTime, surface, canvas, canvasInfo);
+
             lock (this)
             {
                 // Render the profile
                 ActiveProfile?.Render(deltaTime, canvas, canvasInfo);
             }
+
+            ProfileRendered(deltaTime, surface, canvas, canvasInfo);
         }
 
         internal async Task ChangeActiveProfileAnimated(Profile profile, ArtemisSurface surface)
@@ -182,16 +238,6 @@ namespace Artemis.Core.Plugins.Modules
 
             OnActiveProfileChanged();
         }
-
-        /// <summary>
-        /// Overrides the opacity of the root folder
-        /// </summary>
-        public double OpacityOverride { get; set; }
-
-        /// <summary>
-        /// Indicates whether or not a profile change is being animated
-        /// </summary>
-        public bool AnimatingProfileChange { get; private set; }
 
         internal override void Deactivate(bool isOverride)
         {

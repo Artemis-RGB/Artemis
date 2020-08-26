@@ -36,15 +36,14 @@ namespace Artemis.Plugins.Modules.General
         {
         }
 
-        public override void Update(double deltaTime)
+        public override void ProfileUpdate(double deltaTime)
         {
             DataModel.TimeDataModel.CurrentTime = DateTime.Now;
             DataModel.TimeDataModel.CurrentTimeUTC = DateTime.UtcNow;
 
             UpdateCurrentWindow();
-            base.Update(deltaTime);
         }
-        
+
         #region Open windows
 
         public void UpdateCurrentWindow()

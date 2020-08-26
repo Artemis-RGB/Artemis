@@ -1,0 +1,7 @@
+{
+  "Guid": "5ea31fec-3774-4cbf-8774-1cab7caaaa18",
+  "Name": "TestModule2",
+  "Description": "This is my awesome plugin",
+  "Version": "1.0.0.0",
+  "Main": "TestModule2.dll"
+}

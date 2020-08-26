@@ -6,15 +6,16 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Modules"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:ModuleOrderTabViewModel}">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <Grid Margin="15" MaxWidth="800">
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <!-- Profile editor settings -->
@@ -35,7 +36,14 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding OverlayModules}" DisplayMemberPath="DisplayName"/>
+                        <ListBox ItemsSource="{Binding OverlayModules}" 
+                                 DisplayMemberPath="DisplayName"
+                                 materialDesign:RippleAssist.IsDisabled="True"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
+                                 dd:DragDrop.UseDefaultDragAdorner="True"
+                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
+                                 MinHeight="30"/>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
@@ -57,7 +65,14 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding ApplicationModules}" DisplayMemberPath="DisplayName"/>
+                        <ListBox ItemsSource="{Binding ApplicationModules}" 
+                                 DisplayMemberPath="DisplayName"
+                                 materialDesign:RippleAssist.IsDisabled="True"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
+                                 dd:DragDrop.UseDefaultDragAdorner="True"
+                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
+                                 MinHeight="30"/>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
@@ -79,7 +94,14 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding NormalModules}" DisplayMemberPath="DisplayName"/>
+                        <ListBox ItemsSource="{Binding NormalModules}" 
+                                 DisplayMemberPath="DisplayName"
+                                 materialDesign:RippleAssist.IsDisabled="True"
+                                 dd:DragDrop.IsDragSource="True"
+                                 dd:DragDrop.IsDropTarget="True"
+                                 dd:DragDrop.UseDefaultDragAdorner="True"
+                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
+                                 MinHeight="30"/>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
