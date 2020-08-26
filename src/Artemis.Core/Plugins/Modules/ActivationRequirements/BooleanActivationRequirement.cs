@@ -15,5 +15,10 @@
         {
             return ActivationMet;
         }
+
+        public string GetUserFriendlyDescription()
+        {
+            return "No description available";
+        }
     }
 }

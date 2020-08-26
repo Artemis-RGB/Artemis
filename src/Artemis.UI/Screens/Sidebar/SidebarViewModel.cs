@@ -211,7 +211,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void ActivateModule(INavigationItem sidebarItem)
         {
-            SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.Create(SidebarModules[sidebarItem]) : null;
+            SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]) : null;
         }
 
         #region Event handlers

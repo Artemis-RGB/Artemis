@@ -5,7 +5,9 @@ using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Plugins.Modules.ActivationRequirements;
 using Artemis.UI.Screens.Module;
+using Artemis.UI.Screens.Module.Tabs;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
@@ -30,7 +32,10 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IModuleVmFactory : IVmFactory
     {
-        ModuleRootViewModel Create(Module module);
+        ModuleRootViewModel CreateModuleRootViewModel(Module module);
+        ProfileEditorViewModel CreateProfileEditorViewModel(ProfileModule module);
+        ActivationRequirementsViewModel CreateActivationRequirementsViewModel(Module module);
+        ActivationRequirementViewModel CreateActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
     }
 
     public interface ISettingsVmFactory : IVmFactory
@@ -43,12 +48,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         DeviceDebugViewModel Create(ArtemisDevice device);
     }
-
-    public interface IProfileEditorVmFactory : IVmFactory
-    {
-        ProfileEditorViewModel Create(ProfileModule module);
-    }
-
+    
     public interface IFolderVmFactory : IVmFactory
     {
         FolderViewModel Create(ProfileElement folder);

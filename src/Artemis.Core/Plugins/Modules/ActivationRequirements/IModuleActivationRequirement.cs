@@ -10,5 +10,11 @@
         /// </summary>
         /// <returns></returns>
         bool Evaluate();
+
+        /// <summary>
+        ///     Returns a user-friendly description of the activation requirement, should include parameters if applicable
+        /// </summary>
+        /// <returns>A user-friendly description of the activation requirement</returns>
+        string GetUserFriendlyDescription();
     }
 }

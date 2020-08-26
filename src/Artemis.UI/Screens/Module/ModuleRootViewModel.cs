@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
@@ -13,17 +10,15 @@ namespace Artemis.UI.Screens.Module
 {
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
-        private readonly IModuleService _moduleService;
-        private readonly IProfileEditorVmFactory _profileEditorVmFactory;
         private readonly IKernel _kernel;
+        private readonly IModuleVmFactory _moduleVmFactory;
 
-        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IModuleService moduleService, IProfileEditorVmFactory profileEditorVmFactory, IKernel kernel)
+        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IModuleVmFactory moduleVmFactory, IKernel kernel)
         {
             DisplayName = module?.DisplayName;
             Module = module;
 
-            _moduleService = moduleService;
-            _profileEditorVmFactory = profileEditorVmFactory;
+            _moduleVmFactory = moduleVmFactory;
             _kernel = kernel;
         }
 
@@ -31,31 +26,18 @@ namespace Artemis.UI.Screens.Module
 
         protected override void OnActivate()
         {
-            Task.Run(async () =>
-            {
-                await _moduleService.SetActiveModuleOverride(Module);
-                await AddTabsAsync();
-            });
+            AddTabs();
             base.OnActivate();
         }
 
-        protected override void OnDeactivate()
-        {
-            Task.Run(async () =>
-            {
-                await _moduleService.SetActiveModuleOverride(null);
-            });
-            base.OnDeactivate();
-        }
-
-        private async Task AddTabsAsync()
+        private void AddTabs()
         {
             // Create the profile editor and module VMs
             if (Module is ProfileModule profileModule)
-            {
-                var profileEditor = _profileEditorVmFactory.Create(profileModule);
-                Items.Add(profileEditor);
-            }
+                Items.Add(_moduleVmFactory.CreateProfileEditorViewModel(profileModule));
+
+            if (Module.ActivationRequirements.Any())
+                Items.Add(_moduleVmFactory.CreateActivationRequirementsViewModel(Module));
 
             if (Module.ModuleTabs != null)
             {

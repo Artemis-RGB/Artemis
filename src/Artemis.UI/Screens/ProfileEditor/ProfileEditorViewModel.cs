@@ -7,6 +7,7 @@ using Artemis.Core.Models.Profile;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
+using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
@@ -24,6 +25,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
+        private readonly IModuleService _moduleService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private BindableCollection<ProfileDescriptor> _profiles;
         private PluginSetting<GridLength> _sidePanelsWidth;
@@ -42,11 +44,13 @@ namespace Artemis.UI.Screens.ProfileEditor
             IProfileService profileService,
             IDialogService dialogService,
             ISettingsService settingsService,
+            IModuleService moduleService,
             ISnackbarMessageQueue snackbarMessageQueue)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
+            _moduleService = moduleService;
             _snackbarMessageQueue = snackbarMessageQueue;
 
             DisplayName = "Profile editor";
@@ -233,19 +237,21 @@ namespace Artemis.UI.Screens.ProfileEditor
             LoadWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = true;
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
-            
-            Execute.PostToUIThread(LoadProfiles);
+            LoadProfiles();
+
+            Task.Run(async () => { await _moduleService.SetActiveModuleOverride(Module); });
             base.OnActivate();
         }
 
-        protected override void OnClose()
+        protected override void OnDeactivate()
         {
             SaveWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = false;
             Module.ActiveProfileChanged -= ModuleOnActiveProfileChanged;
 
             _profileEditorService.ChangeSelectedProfile(null);
-            base.OnClose();
+            Task.Run(async () => { await _moduleService.SetActiveModuleOverride(null); });
+            base.OnDeactivate();
         }
 
         private void RemoveProfile(ProfileDescriptor profileDescriptor)
@@ -309,19 +315,6 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Get all profiles from the database
             Profiles.Clear();
             Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(d => d.Name));
-
-            // Populate the selected profile
-            var lastActiveProfile = Profiles.FirstOrDefault(p => p.IsLastActiveProfile) ?? Profiles.FirstOrDefault();
-            if (lastActiveProfile != null)
-            {
-                SelectedProfile = lastActiveProfile;
-                return;
-            }
-
-            // Create a default profile if there is none
-            var defaultProfile = _profileService.CreateProfileDescriptor(Module, "Default");
-            Profiles.Add(defaultProfile);
-            SelectedProfile = defaultProfile;
         }
     }
 }

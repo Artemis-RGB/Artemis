@@ -1,4 +1,6 @@
-﻿using Artemis.Core.Plugins.Modules;
+﻿using System;
+using System.IO;
+using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Plugins.Modules.ActivationRequirements;
 
 namespace Artemis.Plugins.Modules.Overlay
@@ -14,6 +16,11 @@ namespace Artemis.Plugins.Modules.Overlay
             DefaultPriorityCategory = ModulePriorityCategory.Overlay;
 
             ActivationRequirements.Add(new ProcessActivationRequirement("taskmgr"));
+            ActivationRequirements.Add(new ProcessActivationRequirement("calc"));
+            ActivationRequirements.Add(new ProcessActivationRequirement("mspaint")
+            {
+                Location = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.System)).FullName, "System32")
+            });
         }
 
         // This is the end of your plugin life cycle.
