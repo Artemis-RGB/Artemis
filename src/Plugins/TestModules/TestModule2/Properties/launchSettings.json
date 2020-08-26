@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "ModuleProject": {
+      "commandName": "Executable",
+      "executablePath": "C:\\Repos\\Artemis\\src\\Artemis.UI\\bin\\x64\\Debug\\netcoreapp3.1\\Artemis.UI.exe",
+      "workingDirectory": "C:\\Repos\\Artemis\\src\\Artemis.UI\\bin\\x64\\Debug\\netcoreapp3.1"
+    }
+  }
+}

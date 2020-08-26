@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile;
+using Artemis.Core.Models.Surface;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Entities.Profile;

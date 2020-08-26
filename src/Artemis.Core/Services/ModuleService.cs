@@ -44,18 +44,17 @@ namespace Artemis.Core.Services
 
         public async Task SetActiveModuleOverride(Module overrideModule)
         {
-            await ActiveModuleSemaphore.WaitAsync();
-
-            if (ActiveModuleOverride == overrideModule)
-                return;
-
             try
             {
-                ActiveModuleOverride = overrideModule;
+                await ActiveModuleSemaphore.WaitAsync();
+
+                if (ActiveModuleOverride == overrideModule)
+                    return;
 
                 // If set to null, resume regular activation
-                if (ActiveModuleOverride == null)
+                if (overrideModule == null)
                 {
+                    ActiveModuleOverride = null;
                     _logger.Information("Cleared active module override");
                     return;
                 }
@@ -65,14 +64,15 @@ namespace Artemis.Core.Services
                 var tasks = new List<Task>();
                 foreach (var module in modules)
                 {
-                    if (module != ActiveModuleOverride)
+                    if (module != overrideModule)
                         tasks.Add(DeactivateModule(module, true));
                 }
 
-                if (!ActiveModuleOverride.IsActivated)
-                    tasks.Add(ActivateModule(ActiveModuleOverride, true));
+                if (!overrideModule.IsActivated)
+                    tasks.Add(ActivateModule(overrideModule, true));
 
                 await Task.WhenAll(tasks);
+                ActiveModuleOverride = overrideModule;
 
                 _logger.Information($"Set active module override to {ActiveModuleOverride.DisplayName}");
             }
@@ -88,13 +88,13 @@ namespace Artemis.Core.Services
 
         public async Task UpdateModuleActivation()
         {
-            if (ActiveModuleOverride != null)
-                return;
-
-            await ActiveModuleSemaphore.WaitAsync();
-
             try
             {
+                await ActiveModuleSemaphore.WaitAsync();
+
+                if (ActiveModuleOverride != null)
+                    return;
+
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
 
@@ -129,19 +129,19 @@ namespace Artemis.Core.Services
                 modules.Remove(module);
 
             if (modules.Count == 0)
-                priority = 1;
-            else if (priority < 1)
-                priority = 1;
+                priority = 0;
+            else if (priority < 0)
+                priority = 0;
             else if (priority > modules.Count)
                 priority = modules.Count;
 
             module.PriorityCategory = category;
-            modules.Insert(priority - 1, module);
+            modules.Insert(priority, module);
 
             for (var index = 0; index < modules.Count; index++)
             {
                 var categoryModule = modules[index];
-                categoryModule.Priority = index + 1;
+                categoryModule.Priority = index;
                 categoryModule.ApplyToEntity();
 
                 _moduleRepository.Save(categoryModule.Entity);

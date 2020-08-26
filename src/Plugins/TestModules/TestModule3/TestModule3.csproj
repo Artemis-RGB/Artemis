@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+    
+    <AssemblyName>TestModule3</AssemblyName>
+    <RootNamespace>TestModule3</RootNamespace>
+    <Platforms>x64</Platforms>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    
+    <PackageReference Include="SkiaSharp" Version="1.68.3" />
+    <PackageReference Include="Stylet" Version="1.3.4" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <Reference Include="Artemis.Core">
+      <HintPath>C:\Repos\Artemis\src\Artemis.UI\bin\x64\Debug\netcoreapp3.1\Artemis.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Artemis.UI.Shared">
+      <HintPath>C:\Repos\Artemis\src\Artemis.UI\bin\x64\Debug\netcoreapp3.1\Artemis.UI.Shared.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="plugin.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
+    <Exec Command="echo Copying resources to plugin output directory&#xD;&#xA;XCOPY &quot;$(ProjectDir)Images&quot; &quot;$(TargetDir)Images&quot; /s /q /i /y&#xD;&#xA;XCOPY &quot;$(ProjectDir)Layouts&quot; &quot;$(TargetDir)Layouts&quot; /s /q /i /y&#xD;&#xA;echo Copying plugin to Artemis plugin directory&#xD;&#xA;XCOPY &quot;$(TargetDir.TrimEnd('\'))&quot; &quot;%25ProgramData%25\Artemis\Plugins\$(ProjectName)&quot; /s /q /i /y&#xD;&#xA;" />
+  </Target>
+</Project>
