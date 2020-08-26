@@ -270,6 +270,9 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             Execute.PostToUIThread(async () =>
             {
+                if (SelectedProfile == null)
+                    return;
+
                 var changeTask = _profileService.ActivateProfileAnimated(SelectedProfile);
                 _profileEditorService.ChangeSelectedProfile(null);
                 var profile = await changeTask;
@@ -279,7 +282,10 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         private void ModuleOnActiveProfileChanged(object sender, EventArgs e)
         {
-            SelectedProfile = Profiles.FirstOrDefault(d => d.Id == Module.ActiveProfile.EntityId);
+            if (Module.ActiveProfile == null)
+                SelectedProfile = null;
+            else
+                SelectedProfile = Profiles.FirstOrDefault(d => d.Id == Module.ActiveProfile.EntityId);
         }
 
         private void LoadWorkspaceSettings()
