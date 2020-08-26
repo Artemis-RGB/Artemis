@@ -7,20 +7,18 @@
     <AssemblyTitle>Artemis</AssemblyTitle>
     <Product>Artemis</Product>
     <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>Adds third-party support for RGB keyboards to games.</Description>
+    <Description>Provides advanced unified lighting across many different brands RGB peripherals</Description>
     <Copyright>Copyright © Robert Beekman - 2020</Copyright>
     <FileVersion>2.0.0.0</FileVersion>
-    <Prefer32Bit>true</Prefer32Bit>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugType>full</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugType>pdbonly</DebugType>
-  </PropertyGroup>
+
   <PropertyGroup>
     <ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
   </PropertyGroup>

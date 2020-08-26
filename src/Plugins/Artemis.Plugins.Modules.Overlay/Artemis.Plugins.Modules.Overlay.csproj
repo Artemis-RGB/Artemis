@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
     <AssemblyName>Artemis.Plugins.Modules.Overlay</AssemblyName>
     <RootNamespace>Artemis.Plugins.Modules.Overlay</RootNamespace>
     <Platforms>x64</Platforms>
@@ -10,14 +10,13 @@
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
-  <ItemGroup>
-    
+  <ItemGroup>    
     <PackageReference Include="SkiaSharp" Version="1.68.3" />
     <PackageReference Include="Stylet" Version="1.3.4" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

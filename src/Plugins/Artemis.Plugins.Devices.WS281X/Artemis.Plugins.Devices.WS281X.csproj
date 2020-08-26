@@ -1,19 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AssemblyTitle>Artemis.Plugins.Devices.Wooting</AssemblyTitle>
-    <Product>Artemis.Plugins.Devices.Wooting</Product>
-    <Copyright>Copyright ©  2019</Copyright>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <LangVersion>7.3</LangVersion>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
+    <AssemblyName>Artemis.Plugins.Devices.WS281X</AssemblyName>
+    <RootNamespace>Artemis.Plugins.Devices.WS281X</RootNamespace>
     <UseWPF>true</UseWPF>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugType>full</DebugType>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugType>pdbonly</DebugType>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Views\WS281XConfigurationView.xaml" />
