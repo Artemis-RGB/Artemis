@@ -44,11 +44,10 @@ namespace Artemis.Core.Services
 
         public async Task SetActiveModuleOverride(Module overrideModule)
         {
+            await ActiveModuleSemaphore.WaitAsync();
+
             if (ActiveModuleOverride == overrideModule)
                 return;
-
-            if (!await ActiveModuleSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
-                throw new ArtemisCoreException("Timed out while acquiring active module lock");
 
             try
             {
@@ -92,8 +91,7 @@ namespace Artemis.Core.Services
             if (ActiveModuleOverride != null)
                 return;
 
-            if (!await ActiveModuleSemaphore.WaitAsync(TimeSpan.FromSeconds(10)))
-                throw new ArtemisCoreException("Timed out while acquiring active module lock");
+            await ActiveModuleSemaphore.WaitAsync();
 
             try
             {

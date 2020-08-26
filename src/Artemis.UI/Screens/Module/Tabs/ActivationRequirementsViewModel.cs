@@ -24,13 +24,11 @@ namespace Artemis.UI.Screens.Module.Tabs
         public Core.Plugins.Modules.Module Module { get; }
 
         public string ActivationType { get; set; }
-        
+
         protected override void OnActivate()
         {
-            if (!Items.Any())
-                Items.AddRange(Module.ActivationRequirements.Select(_moduleVmFactory.CreateActivationRequirementViewModel));
-
-           
+            Items.Clear();
+            Items.AddRange(Module.ActivationRequirements.Select(_moduleVmFactory.CreateActivationRequirementViewModel));
         }
     }
 }
