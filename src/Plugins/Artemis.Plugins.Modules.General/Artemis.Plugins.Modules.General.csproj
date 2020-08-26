@@ -2,21 +2,15 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ShouldIncludeNativeSkiaSharp>false</ShouldIncludeNativeSkiaSharp>
-    <AssemblyTitle>Artemis.Plugins.Modules.General</AssemblyTitle>
-    <Product>Artemis</Product>
-    <Copyright>Copyright © Robert Beekman - 2019</Copyright>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <AssemblyName>Artemis.Plugins.Modules.General</AssemblyName>
+    <RootNamespace>Artemis.Plugins.Modules.General</RootNamespace>
     <UseWPF>true</UseWPF>
+    <Platforms>x64</Platforms>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugType>full</DebugType>
-    <LangVersion>7</LangVersion>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugType>pdbonly</DebugType>
-    <LangVersion>7.3</LangVersion>
-  </PropertyGroup>
+
   <ItemGroup>
     <None Include="plugin.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
