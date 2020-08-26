@@ -1,0 +1,53 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Module.Tabs.ActivationRequirementsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Module.Tabs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:ActivationRequirementsViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="15" MaxWidth="800">
+            <!-- General settings -->
+            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Activation requirements</TextBlock>
+            <TextBlock Margin="0 0 0 15" TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}">
+                This module has built-in activation requirements and won't activate until <Run Text="{Binding ActivationType}" FontWeight="Medium"  Foreground="{StaticResource SecondaryAccentBrush}" />. <LineBreak />
+                These requirements allow the module creator to decide when the module is activated and you cannot override them.
+            </TextBlock>
+
+            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                       Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                       TextWrapping="Wrap">
+                Note: While you have the profile editor open the module is always activated and any other modules are deactivated.
+            </TextBlock>
+
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
+
+                <ItemsControl ItemsSource="{Binding Items}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <Separator Margin="0 -10">
+                                    <Separator.Style>
+                                        <Style TargetType="Separator" BasedOn="{StaticResource MaterialDesignSeparator}">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource PreviousData}}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Separator.Style>
+                                </Separator>
+                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" Margin="20" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+            </materialDesign:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

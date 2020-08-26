@@ -43,5 +43,14 @@ namespace Artemis.Core.Plugins.Modules.ActivationRequirements
                 ? processes.Any(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.CurrentCultureIgnoreCase))
                 : processes.Any();
         }
+
+        public string GetUserFriendlyDescription()
+        {
+            var description = $"Requirement met when \"{ProcessName}.exe\" is running";
+            if (Location != null)
+                description += $" from \"{Location}\"";
+
+            return description;
+        }
     }
 }
