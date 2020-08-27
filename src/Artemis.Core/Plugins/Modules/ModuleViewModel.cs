@@ -15,7 +15,7 @@ namespace Artemis.Core.Plugins.Modules
         protected ModuleViewModel(Module module, string displayName)
         {
             Module = module;
-            DisplayName = displayName;
+            DisplayName = displayName.ToUpper();
         }
 
         /// <summary>

@@ -176,7 +176,7 @@ namespace Artemis.Core.Services
                 {
                     modules = _modules.Where(m => m.IsActivated || m.InternalExpandsMainDataModel)
                         .OrderBy(m => m.PriorityCategory)
-                        .ThenBy(m => m.Priority)
+                        .ThenByDescending(m => m.Priority)
                         .ToList();
                 }
 

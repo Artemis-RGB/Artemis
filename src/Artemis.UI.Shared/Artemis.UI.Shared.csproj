@@ -15,6 +15,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>bin\x64\Debug\Artemis.UI.Shared.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,11 +29,8 @@
     <NrtShowRevision>true</NrtShowRevision>
     <Version>2.0.0</Version>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\AnyCPU\Debug\Artemis.UI.Shared.xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\AnyCPU\Release\Artemis.UI.Shared.xml</DocumentationFile>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DocumentationFile>bin\x64\Release\Artemis.UI.Shared.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />

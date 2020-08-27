@@ -12,10 +12,11 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
+    <DocumentationFile>bin\x64\Debug\Artemis.Core.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
-    <NrtRevisionFormat>2.0-{chash:6}</NrtRevisionFormat>
+    <NrtRevisionFormat>1.0-{chash:6}</NrtRevisionFormat>
     <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
     <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
     <NrtResolveCopyright>true</NrtResolveCopyright>
@@ -24,8 +25,9 @@
     <NrtRequiredVcs>git</NrtRequiredVcs>
     <NrtShowRevision>true</NrtShowRevision>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>bin\AnyCPU\Release\Artemis.Core.xml</DocumentationFile>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DocumentationFile>bin\x64\Release\Artemis.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">

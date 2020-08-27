@@ -11,6 +11,7 @@ using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Plugins.Modules;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Storage.Entities.Module;
 using Artemis.Storage.Repositories.Interfaces;
 using Serilog;
 using Timer = System.Timers.Timer;
@@ -37,7 +38,8 @@ namespace Artemis.Core.Services
             activationUpdateTimer.Start();
             activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
 
-            PopulatePriorities();
+            foreach (var module in _pluginService.GetPluginsOfType<Module>())
+                InitialiseOrApplyPriority(module);
         }
 
         public Module ActiveModuleOverride { get; private set; }
@@ -123,28 +125,28 @@ namespace Artemis.Core.Services
 
         public void UpdateModulePriority(Module module, ModulePriorityCategory category, int priority)
         {
-            var modules = _pluginService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
+            if (module.PriorityCategory == category && module.Priority == priority)
+                return;
 
+            var modules = _pluginService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
             if (modules.Contains(module))
                 modules.Remove(module);
 
-            if (modules.Count == 0)
-                priority = 0;
-            else if (priority < 0)
-                priority = 0;
-            else if (priority > modules.Count)
-                priority = modules.Count;
-
-            module.PriorityCategory = category;
+            priority = Math.Min(modules.Count, Math.Max(0, priority));
             modules.Insert(priority, module);
 
+            module.PriorityCategory = category;
             for (var index = 0; index < modules.Count; index++)
             {
                 var categoryModule = modules[index];
                 categoryModule.Priority = index;
-                categoryModule.ApplyToEntity();
 
-                _moduleRepository.Save(categoryModule.Entity);
+                // Don't save modules whose priority hasn't been initialized yet
+                if (categoryModule == module || categoryModule.Entity != null)
+                {
+                    categoryModule.ApplyToEntity();
+                    _moduleRepository.Save(categoryModule.Entity);
+                }
             }
         }
 
@@ -187,23 +189,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void PopulatePriorities()
-        {
-            var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-            var moduleEntities = _moduleRepository.GetAll();
-
-            foreach (var module in modules)
-            {
-                var entity = moduleEntities.FirstOrDefault(e => e.PluginGuid == module.PluginInfo.Guid);
-                if (entity != null)
-                {
-                    module.Entity = entity;
-                    module.PriorityCategory = (ModulePriorityCategory) entity.PriorityCategory;
-                    module.Priority = entity.Priority;
-                }
-            }
-        }
-
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
             if (e.PluginInfo.Instance is Module module)
@@ -212,15 +197,17 @@ namespace Artemis.Core.Services
 
         private void InitialiseOrApplyPriority(Module module)
         {
-            var entity = _moduleRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            if (entity != null)
+            var category = module.DefaultPriorityCategory;
+            var priority = 1;
+
+            module.Entity = _moduleRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            if (module.Entity != null)
             {
-                module.Entity = entity;
-                module.PriorityCategory = (ModulePriorityCategory) entity.PriorityCategory;
-                module.Priority = entity.Priority;
+                category = (ModulePriorityCategory) module.Entity.PriorityCategory;
+                priority = module.Entity.Priority;
             }
-            else
-                UpdateModulePriority(module, module.DefaultPriorityCategory, 1);
+
+            UpdateModulePriority(module, category, priority);
         }
     }
 }

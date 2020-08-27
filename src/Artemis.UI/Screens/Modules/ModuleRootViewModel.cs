@@ -6,14 +6,14 @@ using Ninject;
 using Ninject.Parameters;
 using Stylet;
 
-namespace Artemis.UI.Screens.Module
+namespace Artemis.UI.Screens.Modules
 {
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
 
-        public ModuleRootViewModel(Core.Plugins.Modules.Module module, IModuleVmFactory moduleVmFactory, IKernel kernel)
+        public ModuleRootViewModel(Module module, IModuleVmFactory moduleVmFactory, IKernel kernel)
         {
             DisplayName = module?.DisplayName;
             Module = module;
@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.Module
             _kernel = kernel;
         }
 
-        public Core.Plugins.Modules.Module Module { get; }
+        public Module Module { get; }
 
         protected override void OnActivate()
         {
