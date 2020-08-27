@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Extensions;
 using Artemis.Core.Plugins;
 using Artemis.Core.Plugins.DataModelExpansions.Attributes;
 using Artemis.Core.Plugins.Exceptions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services.DataModelVisualization;
 using Artemis.UI.Shared.Services.Interfaces;
 using Ninject;
 using Ninject.Parameters;
-using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
-    internal class DataModelVisualizationService : IDataModelVisualizationService
+    internal class DataModelUIService : IDataModelUIService
     {
         private readonly IDataModelService _dataModelService;
         private readonly IKernel _kernel;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
 
-        public DataModelVisualizationService(IDataModelService dataModelService, IKernel kernel)
+        public DataModelUIService(IDataModelService dataModelService, IKernel kernel)
         {
             _dataModelService = dataModelService;
             _kernel = kernel;
@@ -61,18 +57,7 @@ namespace Artemis.UI.Shared.Services
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
-
-        // public DataModelPropertiesViewModel GetListDataModelVisualization(IList list)
-        // {
-        //     var viewModel = new DataModelPropertiesViewModel(null, null, null);
-        //     viewModel.Children.Add(new DataModelListPropertiesViewModel(null, viewModel, null) {DisplayValue = list});
-        //
-        //     // Update to populate children
-        //     viewModel.Update(this);
-        //     viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
-        //     return viewModel;
-        // }
-
+        
         public bool GetPluginExtendsDataModel(Plugin plugin)
         {
             return _dataModelService.GetPluginExtendsDataModel(plugin);
@@ -90,8 +75,11 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
+                    {
                         throw new ArtemisPluginException($"Cannot register data model input for type {supportedType.Name} " +
                                                          $"because an editor was already registered by {pluginInfo.Name}");
+                    }
+
                     return existing;
                 }
 
@@ -119,8 +107,11 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
+                    {
                         throw new ArtemisPluginException($"Cannot register data model display for type {supportedType.Name} " +
                                                          $"because an editor was already registered by {pluginInfo.Name}");
+                    }
+
                     return existing;
                 }
 
@@ -213,28 +204,5 @@ namespace Artemis.UI.Shared.Services
             viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
             return viewModel;
         }
-    }
-
-    public interface IDataModelVisualizationService : IArtemisSharedUIService
-    {
-        DataModelPropertiesViewModel GetMainDataModelVisualization();
-        DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin);
-
-        /// <summary>
-        ///     Determines whether the given plugin expands the main data model
-        /// </summary>
-        /// <param name="plugin"></param>
-        /// <returns></returns>
-        bool GetPluginExtendsDataModel(Plugin plugin);
-
-        DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes) where T : DataModelInputViewModel;
-        DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel;
-        void RemoveDataModelInput(DataModelVisualizationRegistration registration);
-        void RemoveDataModelDisplay(DataModelVisualizationRegistration registration);
-
-        DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
-        DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
-        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
-        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
     }
 }

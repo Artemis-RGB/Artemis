@@ -24,7 +24,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionListPredicateViewModel : DisplayConditionViewModel, IHandle<MainWindowKeyEvent>, IHandle<MainWindowMouseEvent>
     {
         private readonly IDataModelService _dataModelService;
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private readonly Timer _updateTimer;
@@ -45,13 +45,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             DisplayConditionListPredicate displayConditionListPredicate,
             DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
-            IDataModelVisualizationService dataModelVisualizationService,
+            IDataModelUIService dataModelUIService,
             IDataModelService dataModelService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator) : base(displayConditionListPredicate, parent)
         {
             _profileEditorService = profileEditorService;
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             _dataModelService = dataModelService;
             _eventAggregator = eventAggregator;
             _updateTimer = new Timer(500);
@@ -180,7 +180,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             RightSideDataModel.UpdateRequested += RightDataModelUpdateRequested;
 
             // Determine which types are currently supported
-            var editors = _dataModelVisualizationService.RegisteredDataModelEditors;
+            var editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
 
@@ -272,7 +272,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 return;
 
             RightSideTransitionIndex = 1;
-            RightSideInputViewModel = _dataModelVisualizationService.GetDataModelInputViewModel(
+            RightSideInputViewModel = _dataModelUIService.GetDataModelInputViewModel(
                 SelectedLeftSideProperty.PropertyInfo.PropertyType,
                 SelectedLeftSideProperty.PropertyDescription,
                 DisplayConditionListPredicate.RightStaticValue,
@@ -290,9 +290,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             if (LeftSideDataModelOpen)
-                LeftSideDataModel.Update(_dataModelVisualizationService);
+                LeftSideDataModel.Update(_dataModelUIService);
             else if (RightSideDataModelOpen)
-                RightSideDataModel.Update(_dataModelVisualizationService);
+                RightSideDataModel.Update(_dataModelUIService);
         }
 
         private void RightDataModelUpdateRequested(object sender, EventArgs e)
@@ -319,16 +319,16 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (DisplayConditionListPredicate.ListDataModel == null || DisplayConditionListPredicate.ListPropertyPath == null)
                 throw new ArtemisUIException("Cannot create a list predicate without first selecting a target list");
 
-            var dataModel = _dataModelVisualizationService.GetMainDataModelVisualization();
-            if (!_dataModelVisualizationService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-                dataModel.Children.Add(_dataModelVisualizationService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
+            var dataModel = _dataModelUIService.GetMainDataModelVisualization();
+            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
+                dataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
 
             var listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
                 DisplayConditionListPredicate.ListDataModel.PluginInfo.Guid,
                 DisplayConditionListPredicate.ListPropertyPath
             );
 
-            return listDataModel.GetListTypeViewModel(_dataModelVisualizationService);
+            return listDataModel.GetListTypeViewModel(_dataModelUIService);
         }
 
         private void ExecuteSelectLeftProperty(object context)

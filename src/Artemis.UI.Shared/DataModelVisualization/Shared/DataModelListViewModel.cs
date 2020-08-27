@@ -4,6 +4,7 @@ using System.Reflection;
 using Artemis.Core.Extensions;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared
@@ -33,16 +34,16 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _count, value);
         }
 
-        public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelVisualizationService dataModelVisualizationService)
+        public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
             // Create a property VM describing the type of the list
-            var viewModel = CreateListChild(dataModelVisualizationService, List.GetType().GenericTypeArguments[0]);
+            var viewModel = CreateListChild(dataModelUIService, List.GetType().GenericTypeArguments[0]);
 
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
             {
                 dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
-                dataModelListClassViewModel.Update(dataModelVisualizationService);
+                dataModelListClassViewModel.Update(dataModelUIService);
                 return dataModelListClassViewModel;
             }
 
@@ -57,7 +58,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             return null;
         }
 
-        public override void Update(IDataModelVisualizationService dataModelVisualizationService)
+        public override void Update(IDataModelUIService dataModelUIService)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded)
                 return;
@@ -72,7 +73,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 DataModelVisualizationViewModel child;
                 if (ListChildren.Count <= index)
                 {
-                    child = CreateListChild(dataModelVisualizationService, item.GetType());
+                    child = CreateListChild(dataModelUIService, item.GetType());
                     ListChildren.Add(child);
                 }
                 else
@@ -89,7 +90,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                     dataModelListPropertyViewModel.Index = index;
                 }
 
-                child.Update(dataModelVisualizationService);
+                child.Update(dataModelUIService);
                 index++;
             }
 
@@ -99,10 +100,10 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             Count = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
         }
 
-        protected DataModelVisualizationViewModel CreateListChild(IDataModelVisualizationService dataModelVisualizationService, Type listType)
+        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
         {
             // If a display VM was found, prefer to use that in any case
-            var typeViewModel = dataModelVisualizationService.GetDataModelDisplayViewModel(listType);
+            var typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
             if (typeViewModel != null)
                 return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine

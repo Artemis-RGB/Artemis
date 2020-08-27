@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
@@ -38,16 +39,16 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
 
         public override string DisplayPropertyPath => null;
 
-        public override void Update(IDataModelVisualizationService dataModelVisualizationService)
+        public override void Update(IDataModelUIService dataModelUIService)
         {
             // Display value gets updated by parent, don't do anything if it is null
             if (DisplayValue == null)
                 return;
 
             ListType = DisplayValue.GetType();
-            PopulateProperties(dataModelVisualizationService);
+            PopulateProperties(dataModelUIService);
             foreach (var dataModelVisualizationViewModel in Children)
-                dataModelVisualizationViewModel.Update(dataModelVisualizationService);
+                dataModelVisualizationViewModel.Update(dataModelUIService);
         }
 
         public override object GetCurrentValue()
@@ -55,14 +56,14 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             return DisplayValue;
         }
 
-        private void PopulateProperties(IDataModelVisualizationService dataModelVisualizationService)
+        private void PopulateProperties(IDataModelUIService dataModelUIService)
         {
             if (Children.Any())
                 return;
 
             foreach (var propertyInfo in ListType.GetProperties())
             {
-                var child = CreateChild(dataModelVisualizationService, propertyInfo, GetChildDepth());
+                var child = CreateChild(dataModelUIService, propertyInfo, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }

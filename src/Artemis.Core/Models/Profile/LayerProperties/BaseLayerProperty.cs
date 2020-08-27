@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Artemis.Core.Events;
 using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Storage.Entities.Profile;
@@ -71,6 +72,9 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         /// </summary>
         public bool IsCoreProperty { get; internal set; }
 
+        /// <summary>
+        ///     Gets the description attribute applied to this property
+        /// </summary>
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
         /// <summary>
@@ -81,8 +85,21 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         internal PropertyEntity PropertyEntity { get; set; }
         internal LayerPropertyGroup LayerPropertyGroup { get; set; }
 
+        /// <summary>
+        ///     Overrides the property value with the default value
+        /// </summary>
         public abstract void ApplyDefaultValue();
 
+        /// <summary>
+        ///     Returns the type of the property
+        /// </summary>
+        public abstract Type GetPropertyType();
+
+        /// <summary>
+        ///     Returns a list of properties to which data bindings can be applied
+        /// </summary>
+        /// <returns></returns>
+        public abstract List<PropertyInfo> GetDataBindingProperties();
 
         /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values

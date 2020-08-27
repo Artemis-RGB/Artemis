@@ -10,6 +10,7 @@ using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Plugins.DataModelExpansions.Attributes;
 using Artemis.UI.Shared.Exceptions;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 using Humanizer;
 using Stylet;
 
@@ -122,8 +123,8 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
         /// </summary>
-        /// <param name="dataModelVisualizationService"></param>
-        public abstract void Update(IDataModelVisualizationService dataModelVisualizationService);
+        /// <param name="dataModelUIService"></param>
+        public abstract void Update(IDataModelUIService dataModelUIService);
 
         public virtual object GetCurrentValue()
         {
@@ -230,7 +231,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             }
         }
 
-        protected DataModelVisualizationViewModel CreateChild(IDataModelVisualizationService dataModelVisualizationService, PropertyInfo propertyInfo, int depth)
+        protected DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, PropertyInfo propertyInfo, int depth)
         {
             if (depth > MaxDepth)
                 return null;
@@ -242,7 +243,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 return null;
 
             // If a display VM was found, prefer to use that in any case
-            var typeViewModel = dataModelVisualizationService.GetDataModelDisplayViewModel(propertyInfo.PropertyType);
+            var typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyInfo.PropertyType);
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, propertyInfo) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine

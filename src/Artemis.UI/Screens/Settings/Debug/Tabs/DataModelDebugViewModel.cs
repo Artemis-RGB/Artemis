@@ -5,13 +5,14 @@ using Artemis.Core.Events;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug.Tabs
 {
     public class DataModelDebugViewModel : Screen
     {
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
         private readonly IPluginService _pluginService;
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
@@ -20,9 +21,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private string _propertySearch;
         private Core.Plugins.Modules.Module _selectedModule;
 
-        public DataModelDebugViewModel(IDataModelVisualizationService dataModelVisualizationService, IPluginService pluginService)
+        public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginService pluginService)
         {
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             _pluginService = pluginService;
             _updateTimer = new Timer(500);
 
@@ -92,14 +93,14 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
         {
-            MainDataModel.Update(_dataModelVisualizationService);
+            MainDataModel.Update(_dataModelUIService);
         }
 
         private void GetDataModel()
         {
             MainDataModel = SelectedModule != null
-                ? _dataModelVisualizationService.GetPluginDataModelVisualization(SelectedModule)
-                : _dataModelVisualizationService.GetMainDataModelVisualization();
+                ? _dataModelUIService.GetPluginDataModelVisualization(SelectedModule)
+                : _dataModelUIService.GetMainDataModelVisualization();
         }
 
         private void PluginServiceOnPluginToggled(object? sender, PluginEventArgs e)

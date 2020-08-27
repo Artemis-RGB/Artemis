@@ -12,6 +12,7 @@ using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Core.Services;
 using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
@@ -33,11 +34,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private int _propertyTreeIndex;
         private bool _repeatAfterLastKeyframe;
         private RenderProfileElement _selectedProfileElement;
+        private DataBindingsViewModel _dataBindingsViewModel;
         private TimelineViewModel _timelineViewModel;
         private TreeViewModel _treeViewModel;
         private TimelineSegmentViewModel _startTimelineSegmentViewModel;
         private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
         private TimelineSegmentViewModel _endTimelineSegmentViewModel;
+        private int _rightSideIndex;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -87,6 +90,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
+        public int RightSideIndex
+        {
+            get => _rightSideIndex;
+            set => SetAndNotify(ref _rightSideIndex, value);
+        }
+
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
         public RenderProfileElement SelectedProfileElement
@@ -102,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
-        
+
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
         {
             get => _layerPropertyGroups;
@@ -119,6 +128,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             get => _effectsViewModel;
             set => SetAndNotify(ref _effectsViewModel, value);
+        }
+
+        public DataBindingsViewModel DataBindingsViewModel
+        {
+            get => _dataBindingsViewModel;
+            set => SetAndNotify(ref _dataBindingsViewModel, value);
         }
 
         public TimelineViewModel TimelineViewModel
@@ -151,6 +166,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
             base.OnInitialActivate();
@@ -160,6 +176,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
@@ -202,6 +219,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
+        }
+
+        private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
+        {
+            if (ProfileEditorService.SelectedDataBinding != null)
+            {
+                RightSideIndex = 1;
+                DataBindingsViewModel = new DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
+            } else
+            {
+                RightSideIndex = 0;
+                DataBindingsViewModel = null;
+            }
         }
 
         #region View model managament
@@ -266,7 +296,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             ApplyLayerBrush();
             ApplyEffects();
         }
-        
+
         private void SelectedLayerOnLayerBrushUpdated(object sender, EventArgs e)
         {
             ApplyLayerBrush();
@@ -599,7 +629,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         #endregion
 
         #region Segments
-        
+
         public void EnableSegment(string segment)
         {
             if (segment == "Start")

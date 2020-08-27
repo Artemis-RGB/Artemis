@@ -51,7 +51,8 @@
                 ToolTip="Change the property's data binding"
                 Width="24"
                 Height="24"
-                VerticalAlignment="Center">
+                VerticalAlignment="Center"
+                Command="{s:Action OpenDataBindings}">
             <materialDesign:PackIcon Kind="VectorLink" Height="16" Width="16" />
         </Button>
     </Grid>

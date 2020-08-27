@@ -41,6 +41,7 @@ namespace Artemis.UI.Shared.Services
         public IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public RenderProfileElement SelectedProfileElement { get; private set; }
+        public BaseLayerProperty SelectedDataBinding { get; private set; }
 
         public TimeSpan CurrentTime
         {
@@ -129,6 +130,12 @@ namespace Artemis.UI.Shared.Services
                 UpdateProfilePreview();
                 OnSelectedProfileElementUpdated(new RenderProfileElementEventArgs(SelectedProfileElement));
             }
+        }
+
+        public void ChangeSelectedDataBinding(BaseLayerProperty layerProperty)
+        {
+            SelectedDataBinding = layerProperty;
+            OnSelectedDataBindingChanged();
         }
 
         public void UpdateProfilePreview()
@@ -276,6 +283,7 @@ namespace Artemis.UI.Shared.Services
         public event EventHandler<ProfileEventArgs> SelectedProfileUpdated;
         public event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
         public event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
+        public event EventHandler SelectedDataBindingChanged;
         public event EventHandler CurrentTimeChanged;
         public event EventHandler PixelsPerSecondChanged;
         public event EventHandler ProfilePreviewUpdated;
@@ -324,6 +332,11 @@ namespace Artemis.UI.Shared.Services
         private void SelectedProfileOnDeactivated(object sender, EventArgs e)
         {
             Execute.PostToUIThread(() => ChangeSelectedProfile(null));
+        }
+
+        protected virtual void OnSelectedDataBindingChanged()
+        {
+            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }
