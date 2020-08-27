@@ -23,7 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionPredicateViewModel : DisplayConditionViewModel, IHandle<MainWindowKeyEvent>, IHandle<MainWindowMouseEvent>
     {
         private readonly IDataModelService _dataModelService;
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
@@ -44,13 +44,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             DisplayConditionPredicate displayConditionPredicate,
             DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
-            IDataModelVisualizationService dataModelVisualizationService,
+            IDataModelUIService dataModelUIService,
             IDataModelService dataModelService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator) : base(displayConditionPredicate, parent)
         {
             _profileEditorService = profileEditorService;
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             _dataModelService = dataModelService;
             _eventAggregator = eventAggregator;
             _updateTimer = new Timer(500);
@@ -173,16 +173,16 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void Initialize()
         {
             // Get the data models
-            LeftSideDataModel = _dataModelVisualizationService.GetMainDataModelVisualization();
-            RightSideDataModel = _dataModelVisualizationService.GetMainDataModelVisualization();
-            if (!_dataModelVisualizationService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
+            LeftSideDataModel = _dataModelUIService.GetMainDataModelVisualization();
+            RightSideDataModel = _dataModelUIService.GetMainDataModelVisualization();
+            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
             {
-                LeftSideDataModel.Children.Add(_dataModelVisualizationService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-                RightSideDataModel.Children.Add(_dataModelVisualizationService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
+                LeftSideDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
+                RightSideDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
             }
 
             // Determine which types are currently supported
-            var editors = _dataModelVisualizationService.RegisteredDataModelEditors;
+            var editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
 
@@ -274,7 +274,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 return;
 
             RightSideTransitionIndex = 1;
-            RightSideInputViewModel = _dataModelVisualizationService.GetDataModelInputViewModel(
+            RightSideInputViewModel = _dataModelUIService.GetDataModelInputViewModel(
                 SelectedLeftSideProperty.PropertyInfo.PropertyType,
                 SelectedLeftSideProperty.PropertyDescription,
                 DisplayConditionPredicate.RightStaticValue,
@@ -292,9 +292,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             if (LeftSideDataModelOpen)
-                LeftSideDataModel.Update(_dataModelVisualizationService);
+                LeftSideDataModel.Update(_dataModelUIService);
             else if (RightSideDataModelOpen)
-                RightSideDataModel.Update(_dataModelVisualizationService);
+                RightSideDataModel.Update(_dataModelUIService);
         }
 
         private void RightDataModelUpdateRequested(object sender, EventArgs e)

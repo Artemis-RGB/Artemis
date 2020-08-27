@@ -2,6 +2,7 @@
 using System.Reflection;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
@@ -47,13 +48,13 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             set => SetAndNotify(ref _showViewModel, value);
         }
 
-        public override void Update(IDataModelVisualizationService dataModelVisualizationService)
+        public override void Update(IDataModelUIService dataModelUIService)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
                 return;
 
-            if (DisplayViewModel == null && dataModelVisualizationService.RegisteredDataModelDisplays.Any(d => d.SupportedType == PropertyInfo.PropertyType))
-                dataModelVisualizationService.GetDataModelDisplayViewModel(PropertyInfo.PropertyType);
+            if (DisplayViewModel == null && dataModelUIService.RegisteredDataModelDisplays.Any(d => d.SupportedType == PropertyInfo.PropertyType))
+                dataModelUIService.GetDataModelDisplayViewModel(PropertyInfo.PropertyType);
 
             DisplayValue = GetCurrentValue();
             UpdateDisplayParameters();

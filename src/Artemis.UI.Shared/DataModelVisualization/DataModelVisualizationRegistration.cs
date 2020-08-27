@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Plugins;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.DataModelVisualization
 {
     public class DataModelVisualizationRegistration
     {
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
 
-        public DataModelVisualizationRegistration(IDataModelVisualizationService dataModelVisualizationService,
+        public DataModelVisualizationRegistration(IDataModelUIService dataModelUIService,
             RegistrationType registrationType,
             PluginInfo pluginInfo,
             Type supportedType,
             Type viewModelType)
         {
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             RegistrationType = registrationType;
             PluginInfo = pluginInfo;
             SupportedType = supportedType;
@@ -42,9 +43,9 @@ namespace Artemis.UI.Shared.DataModelVisualization
         private void InstanceOnPluginDisabled(object sender, EventArgs e)
         {
             if (RegistrationType == RegistrationType.Input)
-                _dataModelVisualizationService.RemoveDataModelInput(this);
+                _dataModelUIService.RemoveDataModelInput(this);
             else if (RegistrationType == RegistrationType.Display)
-                _dataModelVisualizationService.RemoveDataModelDisplay(this);
+                _dataModelUIService.RemoveDataModelDisplay(this);
         }
     }
 

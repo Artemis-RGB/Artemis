@@ -14,15 +14,16 @@ namespace Artemis.UI.Shared.Services.Interfaces
     {
         Profile SelectedProfile { get; }
         RenderProfileElement SelectedProfileElement { get; }
+        BaseLayerProperty SelectedDataBinding { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
         IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
         IKernel Kernel { get; }
-
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(RenderProfileElement profileElement);
         void UpdateSelectedProfileElement();
+        void ChangeSelectedDataBinding(BaseLayerProperty layerProperty);
         void UpdateProfilePreview();
         bool UndoUpdateProfile();
         bool RedoUpdateProfile();
@@ -47,6 +48,11 @@ namespace Artemis.UI.Shared.Services.Interfaces
         ///     Occurs when the currently selected profile element is updated
         /// </summary>
         event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
+
+        /// <summary>
+        /// Occurs when the currently selected data binding layer property is changed
+        /// </summary>
+        event EventHandler SelectedDataBindingChanged;
 
         /// <summary>
         ///     Occurs when the current editor time is changed
@@ -86,5 +92,5 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
         /// <returns></returns>
         TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
-    }
+        }
 }

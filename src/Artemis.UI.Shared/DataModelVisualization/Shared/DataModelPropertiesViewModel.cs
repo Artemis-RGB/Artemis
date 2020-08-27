@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Shared.DataModelVisualization.Shared
 {
@@ -12,17 +13,17 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         {
         }
 
-        public override void Update(IDataModelVisualizationService dataModelVisualizationService)
+        public override void Update(IDataModelUIService dataModelUIService)
         {
             // Always populate properties
-            PopulateProperties(dataModelVisualizationService);
+            PopulateProperties(dataModelUIService);
 
             // Only update children if the parent is expanded
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
                 return;
 
             foreach (var dataModelVisualizationViewModel in Children)
-                dataModelVisualizationViewModel.Update(dataModelVisualizationService);
+                dataModelVisualizationViewModel.Update(dataModelUIService);
         }
 
         public override object GetCurrentValue()
@@ -30,7 +31,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
         }
 
-        private void PopulateProperties(IDataModelVisualizationService dataModelVisualizationService)
+        private void PopulateProperties(IDataModelUIService dataModelUIService)
         {
             if (IsRootViewModel)
                 return;
@@ -42,7 +43,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 if (Children.Any(c => c.PropertyInfo.Equals(propertyInfo)))
                     continue;
 
-                var child = CreateChild(dataModelVisualizationService, propertyInfo, GetChildDepth());
+                var child = CreateChild(dataModelUIService, propertyInfo, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }

@@ -37,6 +37,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             set => ApplyKeyframesEnabled(value);
         }
 
+        public void OpenDataBindings()
+        {
+            _profileEditorService.ChangeSelectedDataBinding(LayerPropertyViewModel.BaseLayerProperty);
+        }
+
         public override void Dispose()
         {
             PropertyInputViewModel.Dispose();

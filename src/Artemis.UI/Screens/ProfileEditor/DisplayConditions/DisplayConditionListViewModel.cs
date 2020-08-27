@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionListViewModel : DisplayConditionViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private bool _isInitialized;
         private DataModelListViewModel _selectedListProperty;
@@ -30,12 +30,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             DisplayConditionList displayConditionList,
             DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
-            IDataModelVisualizationService dataModelVisualizationService,
+            IDataModelUIService dataModelUIService,
             IDisplayConditionsVmFactory displayConditionsVmFactory,
             ISettingsService settingsService) : base(displayConditionList, parent)
         {
             _profileEditorService = profileEditorService;
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
             _updateTimer = new Timer(500);
 
@@ -111,9 +111,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void Initialize()
         {
             // Get the data models
-            TargetDataModel = _dataModelVisualizationService.GetMainDataModelVisualization();
-            if (!_dataModelVisualizationService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-                TargetDataModel.Children.Add(_dataModelVisualizationService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
+            TargetDataModel = _dataModelUIService.GetMainDataModelVisualization();
+            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
+                TargetDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
 
             TargetDataModel.UpdateRequested += TargetDataModelUpdateRequested;
 
@@ -135,8 +135,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             if (TargetDataModelOpen)
             {
-                TargetDataModel?.Update(_dataModelVisualizationService);
-                SelectedListProperty?.Update(_dataModelVisualizationService);
+                TargetDataModel?.Update(_dataModelUIService);
+                SelectedListProperty?.Update(_dataModelUIService);
             }
         }
 

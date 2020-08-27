@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using Artemis.Core.Exceptions;
 using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
@@ -166,10 +167,20 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 RemoveKeyframe(layerPropertyKeyframe);
         }
 
+        /// <inheritdoc />
         public override void ApplyDefaultValue()
         {
             BaseValue = DefaultValue;
             CurrentValue = DefaultValue;
+        }
+
+        /// <inheritdoc />
+        public override Type GetPropertyType() => typeof(T);
+
+        /// <inheritdoc />
+        public override List<PropertyInfo> GetDataBindingProperties()
+        {
+            return new List<PropertyInfo> {GetType().GetProperty(nameof(CurrentValue))};
         }
 
         /// <summary>
@@ -206,8 +217,8 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             else
             {
                 var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float)((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
-                var keyframeProgressEased = (float)Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
+                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
 
@@ -245,7 +256,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
                 _keyframes.AddRange(entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
                     JsonConvert.DeserializeObject<T>(k.Value),
                     k.Position,
-                    (Easings.Functions)k.EasingFunction,
+                    (Easings.Functions) k.EasingFunction,
                     this
                 )));
             }
@@ -274,7 +285,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties
             {
                 Value = JsonConvert.SerializeObject(k.Value),
                 Position = k.Position,
-                EasingFunction = (int)k.EasingFunction
+                EasingFunction = (int) k.EasingFunction
             }));
         }
     }

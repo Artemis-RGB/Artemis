@@ -10,15 +10,15 @@ namespace Artemis.UI.Services
 {
     public class RegistrationService : IRegistrationService
     {
-        private readonly IDataModelVisualizationService _dataModelVisualizationService;
+        private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
 
-        public RegistrationService(IDataModelVisualizationService dataModelVisualizationService, IProfileEditorService profileEditorService)
+        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService)
         {
-            _dataModelVisualizationService = dataModelVisualizationService;
+            _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
         }
 
@@ -27,7 +27,7 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelDisplays)
                 return;
 
-            _dataModelVisualizationService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePluginInfo);
+            _dataModelUIService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePluginInfo);
 
             _registeredBuiltInDataModelDisplays = true;
         }
@@ -37,9 +37,9 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelInputs)
                 return;
 
-            _dataModelVisualizationService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
-            _dataModelVisualizationService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
-            _dataModelVisualizationService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.FloatNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.FloatNumberTypes);
 
             _registeredBuiltInDataModelInputs = true;
         }
