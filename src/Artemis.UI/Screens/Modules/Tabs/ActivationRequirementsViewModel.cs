@@ -3,17 +3,17 @@ using Artemis.Core.Plugins.Modules;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
-namespace Artemis.UI.Screens.Module.Tabs
+namespace Artemis.UI.Screens.Modules.Tabs
 {
     public class ActivationRequirementsViewModel : Conductor<ActivationRequirementViewModel>.Collection.AllActive
     {
         private readonly IModuleVmFactory _moduleVmFactory;
 
-        public ActivationRequirementsViewModel(Core.Plugins.Modules.Module module, IModuleVmFactory moduleVmFactory)
+        public ActivationRequirementsViewModel(Module module, IModuleVmFactory moduleVmFactory)
         {
             _moduleVmFactory = moduleVmFactory;
 
-            DisplayName = "Activation requirements";
+            DisplayName = "ACTIVATION REQUIREMENTS";
             Module = module;
 
             ActivationType = Module.ActivationRequirementMode == ActivationRequirementType.All
@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.Module.Tabs
                 : "any requirement is met";
         }
 
-        public Core.Plugins.Modules.Module Module { get; }
+        public Module Module { get; }
 
         public string ActivationType { get; set; }
 

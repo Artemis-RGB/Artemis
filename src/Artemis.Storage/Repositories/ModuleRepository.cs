@@ -13,7 +13,7 @@ namespace Artemis.Storage.Repositories
         internal ModuleRepository(LiteRepository repository)
         {
             _repository = repository;
-            _repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.PluginGuid);
+            _repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.PluginGuid, true);
         }
 
         public void Add(ModuleSettingsEntity moduleSettingsEntity)

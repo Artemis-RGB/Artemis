@@ -53,7 +53,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             _moduleService = moduleService;
             _snackbarMessageQueue = snackbarMessageQueue;
 
-            DisplayName = "Profile editor";
+            DisplayName = "PROFILE EDITOR";
             Module = module;
             DialogService = dialogService;
 
@@ -238,6 +238,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             Module.IsProfileUpdatingDisabled = true;
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
             LoadProfiles();
+
+            // If the module already has an active profile use that, the override won't trigger a profile change
+            if (Module.ActiveProfile != null)
+                SelectedProfile = Profiles.FirstOrDefault(d => d.Id == Module.ActiveProfile.EntityId);
 
             Task.Run(async () => { await _moduleService.SetActiveModuleOverride(Module); });
             base.OnActivate();

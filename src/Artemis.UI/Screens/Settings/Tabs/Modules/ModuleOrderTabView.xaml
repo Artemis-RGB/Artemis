@@ -18,14 +18,19 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Profile editor settings -->
             <StackPanel>
-                <Grid Margin="0 15">
+                <TextBlock TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}">
+                    Drag and drop the modules below to change their rendering priority. <LineBreak/><LineBreak/>
+                    - Like in the profile editor, the modules at the top render over modules at the bottom <LineBreak/>
+                    - The categories serve as a starting point for new modules, you may freely move modules between the categories <LineBreak/>
+                </TextBlock>
+
+                <Grid Margin="0 0 0 5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">Overlays</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">1 - Overlays</TextBlock>
                     <TextBlock Grid.Column="1"
                                Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                VerticalAlignment="Bottom"
@@ -36,25 +41,41 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding OverlayModules}" 
-                                 DisplayMemberPath="DisplayName"
-                                 materialDesign:RippleAssist.IsDisabled="True"
-                                 dd:DragDrop.IsDragSource="True"
-                                 dd:DragDrop.IsDropTarget="True"
-                                 dd:DragDrop.UseDefaultDragAdorner="True"
-                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
-                                 MinHeight="30"/>
+                        <Border BorderThickness="2" >
+                            <Border.BorderBrush>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Rectangle StrokeDashArray="4 2" Stroke="{DynamicResource MaterialDesignDivider}" StrokeThickness="2"
+                                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.BorderBrush>
+                            <ListBox ItemsSource="{Binding OverlayModules}" 
+                                     materialDesign:RippleAssist.IsDisabled="True"
+                                     dd:DragDrop.IsDragSource="True"
+                                     dd:DragDrop.IsDropTarget="True"
+                                     dd:DragDrop.UseDefaultDragAdorner="True"
+                                     dd:DragDrop.DropHandler="{Binding}"
+                                     MinHeight="40">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
 
             <StackPanel Grid.Row="1">
-                <Grid Margin="0 15">
+                <Grid Margin="0 15 0 5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">Applications/games</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">2 - Applications/games</TextBlock>
                     <TextBlock Grid.Column="1"
                                Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                VerticalAlignment="Bottom"
@@ -65,25 +86,41 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding ApplicationModules}" 
-                                 DisplayMemberPath="DisplayName"
-                                 materialDesign:RippleAssist.IsDisabled="True"
-                                 dd:DragDrop.IsDragSource="True"
-                                 dd:DragDrop.IsDropTarget="True"
-                                 dd:DragDrop.UseDefaultDragAdorner="True"
-                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
-                                 MinHeight="30"/>
+                        <Border BorderThickness="2" >
+                            <Border.BorderBrush>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Rectangle StrokeDashArray="4 2" Stroke="{DynamicResource MaterialDesignDivider}" StrokeThickness="2"
+                                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.BorderBrush>
+                            <ListBox ItemsSource="{Binding ApplicationModules}" 
+                                     materialDesign:RippleAssist.IsDisabled="True"
+                                     dd:DragDrop.IsDragSource="True"
+                                     dd:DragDrop.IsDropTarget="True"
+                                     dd:DragDrop.UseDefaultDragAdorner="True"
+                                     dd:DragDrop.DropHandler="{Binding}"
+                                     MinHeight="40">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
 
             <StackPanel Grid.Row="2">
-                <Grid Margin="0 15">
+                <Grid Margin="0 15 0 5">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">Normal</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">3 - Normal</TextBlock>
                     <TextBlock Grid.Column="1"
                                Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                VerticalAlignment="Bottom"
@@ -94,14 +131,30 @@
                 </Grid>
                 <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                     <StackPanel Margin="15">
-                        <ListBox ItemsSource="{Binding NormalModules}" 
-                                 DisplayMemberPath="DisplayName"
-                                 materialDesign:RippleAssist.IsDisabled="True"
-                                 dd:DragDrop.IsDragSource="True"
-                                 dd:DragDrop.IsDropTarget="True"
-                                 dd:DragDrop.UseDefaultDragAdorner="True"
-                                 dd:DragDrop.DropHandler="{Binding ModulesDropHandler}"
-                                 MinHeight="30"/>
+                        <Border BorderThickness="2" >
+                            <Border.BorderBrush>
+                                <VisualBrush>
+                                    <VisualBrush.Visual>
+                                        <Rectangle StrokeDashArray="4 2" Stroke="{DynamicResource MaterialDesignDivider}" StrokeThickness="2"
+                                                   Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
+                                                   Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}"/>
+                                    </VisualBrush.Visual>
+                                </VisualBrush>
+                            </Border.BorderBrush>
+                            <ListBox ItemsSource="{Binding NormalModules}" 
+                                     materialDesign:RippleAssist.IsDisabled="True"
+                                     dd:DragDrop.IsDragSource="True"
+                                     dd:DragDrop.IsDropTarget="True"
+                                     dd:DragDrop.UseDefaultDragAdorner="True"
+                                     dd:DragDrop.DropHandler="{Binding}"
+                                     MinHeight="40">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>

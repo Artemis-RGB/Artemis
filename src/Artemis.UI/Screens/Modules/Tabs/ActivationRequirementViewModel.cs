@@ -3,7 +3,7 @@ using Artemis.Core.Plugins.Modules.ActivationRequirements;
 using Humanizer;
 using Stylet;
 
-namespace Artemis.UI.Screens.Module.Tabs
+namespace Artemis.UI.Screens.Modules.Tabs
 {
     public class ActivationRequirementViewModel : Screen
     {
