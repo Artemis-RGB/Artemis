@@ -26,7 +26,7 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
 
         public override List<PropertyInfo> GetDataBindingProperties()
         {
-            return typeof(SKSize).GetProperties().ToList();
+            return typeof(SKSize).GetProperties().Where(p => p.CanWrite).ToList();
         }
     }
 }

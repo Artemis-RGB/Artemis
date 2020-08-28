@@ -156,7 +156,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             if (Children.Any())
             {
                 foreach (var child in Children)
-                    child.ApplyTypeFilter(looseMatch, filteredTypes);
+                    child?.ApplyTypeFilter(looseMatch, filteredTypes);
 
                 IsMatchingFilteredTypes = true;
                 return;

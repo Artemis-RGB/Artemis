@@ -9,7 +9,6 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-
     public class TreePropertyViewModel<T> : TreePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
@@ -21,6 +20,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             _profileEditorService = profileEditorService;
             LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
             PropertyInputViewModel = propertyInputViewModel;
+
+            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
         }
 
         public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
@@ -37,14 +38,20 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             set => ApplyKeyframesEnabled(value);
         }
 
-        public void OpenDataBindings()
+        public bool DataBindingsOpen
         {
-            _profileEditorService.ChangeSelectedDataBinding(LayerPropertyViewModel.BaseLayerProperty);
+            get => _profileEditorService.SelectedDataBinding == LayerPropertyViewModel.BaseLayerProperty;
+            set => _profileEditorService.ChangeSelectedDataBinding(value ? LayerPropertyViewModel.BaseLayerProperty : null);
         }
 
         public override void Dispose()
         {
             PropertyInputViewModel.Dispose();
+        }
+
+        private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(DataBindingsOpen));
         }
 
         private void ApplyKeyframesEnabled(bool enable)
@@ -77,6 +84,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         }
 
         public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
+
         public abstract void Dispose();
     }
 }
