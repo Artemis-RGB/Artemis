@@ -4,9 +4,9 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingsTabViewModel : PropertyChangedBase
+    public class DataBindingViewModel : PropertyChangedBase
     {
-        public DataBindingsTabViewModel(BaseLayerProperty layerProperty, PropertyInfo dataBindingProperty)
+        public DataBindingViewModel(BaseLayerProperty layerProperty, PropertyInfo dataBindingProperty)
         {
             DisplayName = dataBindingProperty.Name.ToUpper();
             LayerProperty = layerProperty;

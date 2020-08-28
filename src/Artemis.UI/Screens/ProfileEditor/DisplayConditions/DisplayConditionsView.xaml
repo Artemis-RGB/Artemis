@@ -172,9 +172,5 @@
                 </materialDesign:ColorZone>
             </Grid>
         </Grid>
-
-
     </materialDesign:Transitioner>
-
-   
 </UserControl>

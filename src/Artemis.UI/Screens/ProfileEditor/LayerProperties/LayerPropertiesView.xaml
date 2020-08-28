@@ -168,60 +168,34 @@
                                      Grid.Column="2"
                                      x:Name="RightSideTransitioner"
                                      SelectedIndex="{Binding RightSideIndex}"
-                                     DefaultTransitionOrigin="0, 0.5"
-                                     AutoApplyTransitionOrigins="True">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="56" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+                                     DefaultTransitionOrigin="0, 0.5">
+            <materialDesign:TransitionerSlide>
+                <materialDesign:TransitionerSlide.BackwardWipe>
+                    <materialDesign:CircleWipe />
+                </materialDesign:TransitionerSlide.BackwardWipe>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="56" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-                <!-- Timeline headers -->
-                <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
-                    <Canvas Background="{DynamicResource MaterialDesignCardBackground}" Width="{Binding ActualWidth, ElementName=PropertyTimeLine}">
-                        <!-- Timeline segments -->
-                        <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding EndTimelineSegmentViewModel}" />
-                        <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding MainTimelineSegmentViewModel}" />
-                        <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding StartTimelineSegmentViewModel}" />
+                    <!-- Timeline headers -->
+                    <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+                        <Canvas Background="{DynamicResource MaterialDesignCardBackground}" Width="{Binding ActualWidth, ElementName=PropertyTimeLine}">
+                            <!-- Timeline segments -->
+                            <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding EndTimelineSegmentViewModel}" />
+                            <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding MainTimelineSegmentViewModel}" />
+                            <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding StartTimelineSegmentViewModel}" />
 
-                        <!-- Timeline caret -->
-                        <Polygon Canvas.Left="{Binding TimeCaretPosition}"
-                                 Cursor="SizeWE"
-                                 MouseDown="{s:Action TimelineMouseDown}"
-                                 MouseUp="{s:Action TimelineMouseUp}"
-                                 MouseMove="{s:Action TimelineMouseMove}"
-                                 Points="-8,0 -8,8 0,20, 8,8 8,0"
-                                 Fill="{StaticResource SecondaryAccentBrush}" />
-                        <Line Canvas.Left="{Binding TimeCaretPosition}"
-                              Cursor="SizeWE"
-                              MouseDown="{s:Action TimelineMouseDown}"
-                              MouseUp="{s:Action TimelineMouseUp}"
-                              MouseMove="{s:Action TimelineMouseMove}"
-                              X1="0"
-                              X2="0"
-                              Y1="0"
-                              Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
-                              StrokeThickness="2"
-                              Stroke="{StaticResource SecondaryAccentBrush}" />
-
-
-                        <!-- Timeline header body -->
-                        <controls:PropertyTimelineHeader Margin="0 25 0 0"
-                                                         Fill="{DynamicResource MaterialDesignBody}"
-                                                         PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
-                                                         HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
-                                                         VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
-                                                         OffsetFirstValue="True"
-                                                         Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
-                    </Canvas>
-                </ScrollViewer>
-
-                <!-- Timeline rails -->
-                <ScrollViewer x:Name="TimelineRailsScrollViewer" Grid.Row="1" Style="{StaticResource SvStyle}" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
-                              ScrollChanged="TimelineScrollChanged">
-                    <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
-                        <Canvas Grid.Column="0" Panel.ZIndex="1">
+                            <!-- Timeline caret -->
+                            <Polygon Canvas.Left="{Binding TimeCaretPosition}"
+                                     Cursor="SizeWE"
+                                     MouseDown="{s:Action TimelineMouseDown}"
+                                     MouseUp="{s:Action TimelineMouseUp}"
+                                     MouseMove="{s:Action TimelineMouseMove}"
+                                     Points="-8,0 -8,8 0,20, 8,8 8,0"
+                                     Fill="{StaticResource SecondaryAccentBrush}" />
                             <Line Canvas.Left="{Binding TimeCaretPosition}"
                                   Cursor="SizeWE"
                                   MouseDown="{s:Action TimelineMouseDown}"
@@ -233,18 +207,54 @@
                                   Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
                                   StrokeThickness="2"
                                   Stroke="{StaticResource SecondaryAccentBrush}" />
-                        </Canvas>
 
-                        <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" x:Name="PropertyTimeLine" />
-                    </Grid>
-                </ScrollViewer>
-            </Grid>
+
+                            <!-- Timeline header body -->
+                            <controls:PropertyTimelineHeader Margin="0 25 0 0"
+                                                             Fill="{DynamicResource MaterialDesignBody}"
+                                                             PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
+                                                             HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
+                                                             VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
+                                                             OffsetFirstValue="True"
+                                                             Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
+                        </Canvas>
+                    </ScrollViewer>
+
+                    <!-- Timeline rails -->
+                    <ScrollViewer Grid.Row="1"
+                                  x:Name="TimelineRailsScrollViewer"
+                                  Style="{StaticResource SvStyle}"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                                  ScrollChanged="TimelineScrollChanged">
+                        <Grid Background="{DynamicResource MaterialDesignToolBarBackground}">
+                            <Canvas Grid.Column="0" Panel.ZIndex="1">
+                                <Line Canvas.Left="{Binding TimeCaretPosition}"
+                                      Cursor="SizeWE"
+                                      MouseDown="{s:Action TimelineMouseDown}"
+                                      MouseUp="{s:Action TimelineMouseUp}"
+                                      MouseMove="{s:Action TimelineMouseMove}"
+                                      X1="0"
+                                      X2="0"
+                                      Y1="0"
+                                      Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
+                                      StrokeThickness="2"
+                                      Stroke="{StaticResource SecondaryAccentBrush}" />
+                            </Canvas>
+
+                            <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" x:Name="PropertyTimeLine" />
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </materialDesign:TransitionerSlide>
 
             <materialDesign:TransitionerSlide>
                 <materialDesign:TransitionerSlide.BackwardWipe>
                     <materialDesign:CircleWipe />
                 </materialDesign:TransitionerSlide.BackwardWipe>
-                <ContentControl s:View.Model="{Binding DataBindingsViewModel}" Background="White"/>
+                <Grid Background="{StaticResource MaterialDesignPaper}">
+                    <ContentControl s:View.Model="{Binding DataBindingsViewModel}" />
+                </Grid>
             </materialDesign:TransitionerSlide>
         </materialDesign:Transitioner>
 

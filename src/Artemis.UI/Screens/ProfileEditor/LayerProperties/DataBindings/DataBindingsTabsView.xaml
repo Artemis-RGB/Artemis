@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DataBindingsView"
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DataBindingsTabsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,11 +7,12 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:DataBindingsViewModel}">
-    <Grid>
-        <!-- Use tabs for multiple properties only, only one of these VMs is set -->
-        <ContentControl s:View.Model="{Binding DataBindingsTabsViewModel}" />
-        <ContentControl s:View.Model="{Binding DataBindingViewModel}" />
-    </Grid>
+             d:DesignHeight="450" d:DesignWidth="800">
+    <TabControl ItemsSource="{Binding Tabs}" DisplayMemberPath="DisplayName" Style="{StaticResource MaterialDesignTabControl}" >
+        <TabControl.ContentTemplate>
+            <DataTemplate>
+                <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
+            </DataTemplate>
+        </TabControl.ContentTemplate>
+    </TabControl>
 </UserControl>

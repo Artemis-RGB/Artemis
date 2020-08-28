@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -227,11 +228,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             {
                 RightSideIndex = 1;
                 DataBindingsViewModel = new DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
-            } else
-            {
-                RightSideIndex = 0;
-                DataBindingsViewModel = null;
             }
+            else
+                RightSideIndex = 0;
         }
 
         #region View model managament

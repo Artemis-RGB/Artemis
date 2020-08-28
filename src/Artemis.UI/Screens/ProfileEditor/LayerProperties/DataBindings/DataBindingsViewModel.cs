@@ -1,25 +1,50 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties;
+﻿using System.Linq;
+using Artemis.Core.Models.Profile.LayerProperties;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
     public class DataBindingsViewModel : PropertyChangedBase
     {
+        private DataBindingViewModel _dataBindingViewModel;
+        private DataBindingsTabsViewModel _dataBindingsTabsViewModel;
+
         public DataBindingsViewModel(BaseLayerProperty layerProperty)
         {
-            Tabs = new BindableCollection<DataBindingsTabViewModel>();
             LayerProperty = layerProperty;
-
             Initialise();
         }
 
-        public BindableCollection<DataBindingsTabViewModel> Tabs { get; set; }
         public BaseLayerProperty LayerProperty { get; }
+
+        public DataBindingViewModel DataBindingViewModel
+        {
+            get => _dataBindingViewModel;
+            set => SetAndNotify(ref _dataBindingViewModel, value);
+        }
+
+        public DataBindingsTabsViewModel DataBindingsTabsViewModel
+        {
+            get => _dataBindingsTabsViewModel;
+            set => SetAndNotify(ref _dataBindingsTabsViewModel, value);
+        }
 
         private void Initialise()
         {
-            foreach (var dataBindingProperty in LayerProperty.GetDataBindingProperties())
-                Tabs.Add(new DataBindingsTabViewModel(LayerProperty, dataBindingProperty));
+            var properties = LayerProperty.GetDataBindingProperties();
+            if (properties.Count == 0)
+                return;
+
+            if (properties.Count == 1)
+            {
+                DataBindingViewModel = new DataBindingViewModel(LayerProperty, properties.First());
+            }
+            else
+            {
+                DataBindingsTabsViewModel = new DataBindingsTabsViewModel();
+                foreach (var dataBindingProperty in LayerProperty.GetDataBindingProperties())
+                    DataBindingsTabsViewModel.Tabs.Add(new DataBindingViewModel(LayerProperty, dataBindingProperty));
+            }
         }
     }
 }
