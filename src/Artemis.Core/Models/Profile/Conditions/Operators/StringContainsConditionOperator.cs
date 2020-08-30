@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Artemis.Core.Models.Profile.Conditions.Operators
 {
-    public class StringContainsConditionOperator : DisplayConditionOperator
+    internal class StringContainsConditionOperator : DisplayConditionOperator
     {
         private readonly MethodInfo _toLower;
         private readonly MethodInfo _contains;

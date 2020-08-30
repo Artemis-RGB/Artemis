@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.Abstract;
 
-namespace Artemis.Storage.Entities.Profile
+namespace Artemis.Storage.Entities.Profile.Conditions
 {
     public class DisplayConditionGroupEntity : DisplayConditionPartEntity
     {

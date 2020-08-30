@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Artemis.Core.Models.Profile.Conditions.Operators
 {
-    public class StringNullConditionOperator : DisplayConditionOperator
+    internal class StringNullConditionOperator : DisplayConditionOperator
     {
         public StringNullConditionOperator()
         {

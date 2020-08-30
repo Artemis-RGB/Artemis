@@ -1,7 +1,7 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Abstract;
 
-namespace Artemis.Storage.Entities.Profile
+namespace Artemis.Storage.Entities.Profile.Conditions
 {
     public class DisplayConditionPredicateEntity : DisplayConditionPartEntity
     {

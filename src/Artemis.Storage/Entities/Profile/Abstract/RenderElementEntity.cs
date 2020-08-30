@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Storage.Entities.Profile.Abstract
 {

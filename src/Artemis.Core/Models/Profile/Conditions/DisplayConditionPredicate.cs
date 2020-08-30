@@ -6,45 +6,95 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
+    /// <summary>
+    ///     A predicate in a display condition using either two data model values or one data model value and a
+    ///     static value
+    /// </summary>
     public class DisplayConditionPredicate : DisplayConditionPart
     {
-        public DisplayConditionPredicate(DisplayConditionPart parent, PredicateType predicateType)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DisplayConditionPredicate" /> class
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="predicateType"></param>
+        public DisplayConditionPredicate(DisplayConditionPart parent, ProfileRightSideType predicateType)
         {
             Parent = parent;
             PredicateType = predicateType;
             Entity = new DisplayConditionPredicateEntity();
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DisplayConditionPredicate" /> class
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="entity"></param>
         public DisplayConditionPredicate(DisplayConditionPart parent, DisplayConditionPredicateEntity entity)
         {
             Parent = parent;
             Entity = entity;
-            PredicateType = (PredicateType) entity.PredicateType;
+            PredicateType = (ProfileRightSideType) entity.PredicateType;
         }
 
-        public DisplayConditionPredicateEntity Entity { get; set; }
+        /// <summary>
+        ///     Gets or sets the predicate type
+        /// </summary>
+        public ProfileRightSideType PredicateType { get; set; }
 
-        public PredicateType PredicateType { get; set; }
+        /// <summary>
+        ///     Gets the operator
+        /// </summary>
         public DisplayConditionOperator Operator { get; private set; }
 
+        /// <summary>
+        ///     Gets the currently used instance of the left data model
+        /// </summary>
         public DataModel LeftDataModel { get; private set; }
+
+        /// <summary>
+        ///     Gets the path of the left property in the <see cref="LeftDataModel" />
+        /// </summary>
         public string LeftPropertyPath { get; private set; }
+
+        /// <summary>
+        ///     Gets the currently used instance of the right data model
+        /// </summary>
         public DataModel RightDataModel { get; private set; }
+
+        /// <summary>
+        ///     Gets the path of the right property in the <see cref="RightDataModel" />
+        /// </summary>
         public string RightPropertyPath { get; private set; }
+
+        /// <summary>
+        ///     Gets the right static value, only used it <see cref="PredicateType" /> is
+        ///     <see cref="ProfileRightSideType.Static" />
+        /// </summary>
         public object RightStaticValue { get; private set; }
-        public DataModel ListDataModel { get; private set; }
-        public string ListPropertyPath { get; private set; }
 
+        /// <summary>
+        ///     Gets the compiled function that evaluates this predicate if it of a dynamic <see cref="PredicateType" />
+        /// </summary>
         public Func<DataModel, DataModel, bool> CompiledDynamicPredicate { get; private set; }
-        public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
-        public Func<object, bool> CompiledListPredicate { get; private set; }
 
+        /// <summary>
+        ///     Gets the compiled function that evaluates this predicate if it is of a static <see cref="PredicateType" />
+        /// </summary>
+        public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
+
+        internal DisplayConditionPredicateEntity Entity { get; set; }
+
+        /// <summary>
+        ///     Updates the left side of the predicate
+        /// </summary>
+        /// <param name="dataModel">The data model of the left side value</param>
+        /// <param name="path">The path pointing to the left side value inside the data model</param>
         public void UpdateLeftSide(DataModel dataModel, string path)
         {
             if (dataModel != null && path == null)
@@ -67,6 +117,11 @@ namespace Artemis.Core.Models.Profile.Conditions
             CreateExpression();
         }
 
+        /// <summary>
+        ///     Updates the right side of the predicate, makes the predicate dynamic and re-compiles the expression
+        /// </summary>
+        /// <param name="dataModel">The data model of the right side value</param>
+        /// <param name="path">The path pointing to the right side value inside the data model</param>
         public void UpdateRightSide(DataModel dataModel, string path)
         {
             if (dataModel != null && path == null)
@@ -80,32 +135,61 @@ namespace Artemis.Core.Models.Profile.Conditions
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
             }
 
-            PredicateType = PredicateType.Dynamic;
+            PredicateType = ProfileRightSideType.Dynamic;
             RightDataModel = dataModel;
             RightPropertyPath = path;
 
             CreateExpression();
         }
 
+        /// <summary>
+        ///     Updates the right side of the predicate, makes the predicate static and re-compiles the expression
+        /// </summary>
+        /// <param name="staticValue">The right side value to use</param>
         public void UpdateRightSide(object staticValue)
         {
-            PredicateType = PredicateType.Static;
+            PredicateType = ProfileRightSideType.Static;
             RightDataModel = null;
             RightPropertyPath = null;
 
-            SetStaticValue(staticValue);
+            // If the left side is empty simply apply the value, any validation will wait
+            if (LeftDataModel == null)
+            {
+                RightStaticValue = staticValue;
+                return;
+            }
+
+            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+
+            // If not null ensure the types match and if not, convert it
+            if (staticValue != null && staticValue.GetType() == leftSideType)
+                RightStaticValue = staticValue;
+            else if (staticValue != null)
+                RightStaticValue = Convert.ChangeType(staticValue, leftSideType);
+            // If null create a default instance for value types or simply make it null for reference types
+            else if (leftSideType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(leftSideType);
+            else
+                RightStaticValue = null;
 
             CreateExpression();
         }
 
+        /// <summary>
+        ///     Updates the operator of the predicate and re-compiles the expression
+        /// </summary>
+        /// <param name="displayConditionOperator"></param>
         public void UpdateOperator(DisplayConditionOperator displayConditionOperator)
         {
+            // Calling CreateExpression will clear compiled expressions
             if (displayConditionOperator == null)
             {
                 Operator = null;
+                CreateExpression();
                 return;
             }
 
+            // No need to clear compiled expressions, without a left data model they are already null
             if (LeftDataModel == null)
             {
                 Operator = displayConditionOperator;
@@ -113,26 +197,37 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
 
             var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
-            if (displayConditionOperator.SupportsType(leftType))
-                Operator = displayConditionOperator;
+            if (!displayConditionOperator.SupportsType(leftType))
+                throw new ArtemisCoreException($"Cannot apply operator {displayConditionOperator.GetType().Name} to this predicate because " +
+                                               $"it does not support left side type {leftType.Name}");
 
+            Operator = displayConditionOperator;
             CreateExpression();
         }
 
-        private void CreateExpression()
+        /// <inheritdoc />
+        public override bool Evaluate()
         {
-            CompiledDynamicPredicate = null;
-            CompiledStaticPredicate = null;
-            CompiledListPredicate = null;
+            if (CompiledDynamicPredicate != null)
+                return CompiledDynamicPredicate(LeftDataModel, RightDataModel);
+            if (CompiledStaticPredicate != null)
+                return CompiledStaticPredicate(LeftDataModel);
 
-            if (Operator == null)
-                return;
+            return false;
+        }
 
-            // If the operator does not support a right side, create a static expression because the right side will simply be null
-            if (PredicateType == PredicateType.Dynamic && Operator.SupportsRightSide)
-                CreateDynamicExpression();
+        /// <inheritdoc />
+        public override bool EvaluateObject(object target)
+        {
+            return false;
+        }
 
-            CreateStaticExpression();
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            if (PredicateType == ProfileRightSideType.Dynamic)
+                return $"[Dynamic] {LeftPropertyPath} {Operator.Description} {RightPropertyPath}";
+            return $"[Static] {LeftPropertyPath} {Operator.Description} {RightStaticValue}";
         }
 
         internal override void ApplyToEntity()
@@ -147,24 +242,6 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
             Entity.OperatorType = Operator?.GetType().Name;
-        }
-
-        public override bool Evaluate()
-        {
-            if (CompiledDynamicPredicate != null)
-                return CompiledDynamicPredicate(LeftDataModel, RightDataModel);
-            if (CompiledStaticPredicate != null)
-                return CompiledStaticPredicate(LeftDataModel);
-
-            return false;
-        }
-
-        public override bool EvaluateObject(object target)
-        {
-            if (CompiledListPredicate != null)
-                return CompiledListPredicate(target);
-
-            return false;
         }
 
         internal override void Initialize(IDataModelService dataModelService)
@@ -186,14 +263,14 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
 
             // Right side dynamic
-            if (PredicateType == PredicateType.Dynamic && Entity.RightDataModelGuid != null)
+            if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightDataModelGuid != null)
             {
                 var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.RightDataModelGuid.Value);
                 if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
                     UpdateRightSide(dataModel, Entity.RightPropertyPath);
             }
             // Right side static
-            else if (PredicateType == PredicateType.Static && Entity.RightStaticValue != null)
+            else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
             {
                 try
                 {
@@ -235,6 +312,21 @@ namespace Artemis.Core.Models.Profile.Conditions
             return Entity;
         }
 
+        private void CreateExpression()
+        {
+            CompiledDynamicPredicate = null;
+            CompiledStaticPredicate = null;
+
+            if (Operator == null)
+                return;
+
+            // If the operator does not support a right side, create a static expression because the right side will simply be null
+            if (PredicateType == ProfileRightSideType.Dynamic && Operator.SupportsRightSide)
+                CreateDynamicExpression();
+            else
+                CreateStaticExpression();
+        }
+
         private void ValidateOperator()
         {
             if (LeftDataModel == null || Operator == null)
@@ -248,7 +340,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         private void ValidateRightSide()
         {
             var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
-            if (PredicateType == PredicateType.Dynamic)
+            if (PredicateType == ProfileRightSideType.Dynamic)
             {
                 if (RightDataModel == null)
                     return;
@@ -266,70 +358,22 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
         }
 
-        private void SetStaticValue(object staticValue)
-        {
-            // If the left side is empty simply apply the value, any validation will wait
-            if (LeftDataModel == null)
-            {
-                RightStaticValue = staticValue;
-                return;
-            }
-
-            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
-
-            // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == leftSideType)
-                RightStaticValue = staticValue;
-            else if (staticValue != null)
-                RightStaticValue = Convert.ChangeType(staticValue, leftSideType);
-            // If null create a default instance for value types or simply make it null for reference types
-            else if (leftSideType.IsValueType)
-                RightStaticValue = Activator.CreateInstance(leftSideType);
-            else
-                RightStaticValue = null;
-        }
-
         private void CreateDynamicExpression()
         {
             if (LeftDataModel == null || RightDataModel == null || Operator == null)
                 return;
 
-            var isListExpression = LeftDataModel.GetListTypeInPath(LeftPropertyPath) != null;
+            var leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
+            var rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
 
-            Expression leftSideAccessor;
-            Expression rightSideAccessor;
-            ParameterExpression leftSideParameter;
-            ParameterExpression rightSideParameter = null;
-            if (isListExpression)
-            {
-                // List accessors share the same parameter because a list always contains one item per entry
-                leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-                leftSideAccessor = CreateListAccessor(LeftDataModel, LeftPropertyPath, leftSideParameter);
-                rightSideAccessor = CreateListAccessor(RightDataModel, RightPropertyPath, leftSideParameter);
-            }
-            else
-            {
-                leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out leftSideParameter);
-                rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out rightSideParameter);
-            }
-            
             // A conversion may be required if the types differ
             // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
             var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
-
-            if (isListExpression)
-            {
-                var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
-                CompiledListPredicate = lambda.Compile();
-            }
-            else
-            {
-                var lambda = Expression.Lambda<Func<DataModel, DataModel, bool>>(conditionExpression, leftSideParameter, rightSideParameter);
-                CompiledDynamicPredicate = lambda.Compile();
-            }
+            var lambda = Expression.Lambda<Func<DataModel, DataModel, bool>>(conditionExpression, leftSideParameter, rightSideParameter);
+            CompiledDynamicPredicate = lambda.Compile();
         }
 
         private void CreateStaticExpression()
@@ -337,18 +381,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var isListExpression = LeftDataModel.GetListTypeInPath(LeftPropertyPath) != null;
-
-            Expression leftSideAccessor;
-            ParameterExpression leftSideParameter;
-            if (isListExpression)
-            {
-                // List accessors share the same parameter because a list always contains one item per entry
-                leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-                leftSideAccessor = CreateListAccessor(LeftDataModel, LeftPropertyPath, leftSideParameter);
-            }
-            else
-                leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out leftSideParameter);
+            var leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
 
             // If the left side is a value type but the input is empty, this isn't a valid expression
             if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
@@ -360,19 +393,10 @@ namespace Artemis.Core.Models.Profile.Conditions
                 : Expression.Constant(null, leftSideAccessor.Type);
 
             var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
-
-            if (isListExpression)
-            {
-                var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
-                CompiledListPredicate = lambda.Compile();
-            }
-            else
-            {
-                var lambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
-                CompiledStaticPredicate = lambda.Compile();
-            }
+            var lambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
+            CompiledStaticPredicate = lambda.Compile();
         }
-        
+
         private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
         {
             var listType = dataModel.GetListTypeInPath(path);
@@ -398,18 +422,5 @@ namespace Artemis.Core.Models.Profile.Conditions
                 Expression.Property
             );
         }
-
-        public override string ToString()
-        {
-            if (PredicateType == PredicateType.Dynamic)
-                return $"[Dynamic] {LeftPropertyPath} {Operator.Description} {RightPropertyPath}";
-            return $"[Static] {LeftPropertyPath} {Operator.Description} {RightStaticValue}";
-        }
-    }
-
-    public enum PredicateType
-    {
-        Static,
-        Dynamic
     }
 }

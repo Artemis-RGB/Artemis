@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
@@ -74,16 +75,16 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (type == "Static")
             {
                 if (!IsListGroup)
-                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Static));
+                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, ProfileRightSideType.Static));
                 else
-                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, PredicateType.Static));
+                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, ProfileRightSideType.Static));
             }
             else if (type == "Dynamic")
             {
                 if (!IsListGroup)
-                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, ProfileRightSideType.Dynamic));
                 else
-                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, PredicateType.Dynamic));
+                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, ProfileRightSideType.Dynamic));
             }
             else if (type == "List" && !IsListGroup)
                 DisplayConditionGroup.AddChild(new DisplayConditionList(DisplayConditionGroup));

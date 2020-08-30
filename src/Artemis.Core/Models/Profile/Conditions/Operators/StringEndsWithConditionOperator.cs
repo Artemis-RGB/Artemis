@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Artemis.Core.Models.Profile.Conditions.Operators
 {
-    public class StringEndsWithConditionOperator : DisplayConditionOperator
+    internal class StringEndsWithConditionOperator : DisplayConditionOperator
     {
         private readonly MethodInfo _toLower;
         private readonly MethodInfo _endsWith;

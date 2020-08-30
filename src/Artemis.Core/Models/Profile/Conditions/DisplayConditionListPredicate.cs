@@ -6,15 +6,15 @@ using Artemis.Core.Extensions;
 using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
     public class DisplayConditionListPredicate : DisplayConditionPart
     {
-        public DisplayConditionListPredicate(DisplayConditionPart parent, PredicateType predicateType)
+        public DisplayConditionListPredicate(DisplayConditionPart parent, ProfileRightSideType predicateType)
         {
             Parent = parent;
             PredicateType = predicateType;
@@ -27,14 +27,14 @@ namespace Artemis.Core.Models.Profile.Conditions
         {
             Parent = parent;
             Entity = entity;
-            PredicateType = (PredicateType) entity.PredicateType;
+            PredicateType = (ProfileRightSideType) entity.PredicateType;
 
             ApplyParentList();
         }
 
         public DisplayConditionListPredicateEntity Entity { get; set; }
 
-        public PredicateType PredicateType { get; set; }
+        public ProfileRightSideType PredicateType { get; set; }
         public DisplayConditionOperator Operator { get; private set; }
 
         public Type ListType { get; private set; }
@@ -57,6 +57,7 @@ namespace Artemis.Core.Models.Profile.Conditions
                     UpdateList(parentList.ListDataModel, parentList.ListPropertyPath);
                     return;
                 }
+
                 current = current.Parent;
             }
         }
@@ -77,9 +78,7 @@ namespace Artemis.Core.Models.Profile.Conditions
                 ListType = listType;
             }
             else
-            {
                 ListType = null;
-            }
 
             ListDataModel = dataModel;
             ListPropertyPath = path;
@@ -109,7 +108,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             if (!ListContainsInnerPath(path))
                 throw new ArtemisCoreException($"List type {ListType.Name} does not contain path {path}");
 
-            PredicateType = PredicateType.Dynamic;
+            PredicateType = ProfileRightSideType.Dynamic;
             RightPropertyPath = path;
 
             CreateExpression();
@@ -117,7 +116,7 @@ namespace Artemis.Core.Models.Profile.Conditions
 
         public void UpdateRightSideStatic(object staticValue)
         {
-            PredicateType = PredicateType.Static;
+            PredicateType = ProfileRightSideType.Static;
             RightPropertyPath = null;
 
             SetStaticValue(staticValue);
@@ -145,18 +144,52 @@ namespace Artemis.Core.Models.Profile.Conditions
             CreateExpression();
         }
 
-        private void CreateExpression()
+        public override bool Evaluate()
         {
-            CompiledListPredicate = null;
+            return false;
+        }
 
-            if (Operator == null)
-                return;
+        public override bool EvaluateObject(object target)
+        {
+            return CompiledListPredicate != null && CompiledListPredicate(target);
+        }
 
-            // If the operator does not support a right side, create a static expression because the right side will simply be null
-            if (PredicateType == PredicateType.Dynamic && Operator.SupportsRightSide)
-                CreateDynamicExpression();
+        public bool ListContainsInnerPath(string path)
+        {
+            if (ListType == null)
+                return false;
 
-            CreateStaticExpression();
+            var parts = path.Split('.');
+            var current = ListType;
+            foreach (var part in parts)
+            {
+                var property = current.GetProperty(part);
+                current = property?.PropertyType;
+
+                if (property == null)
+                    return false;
+            }
+
+            return true;
+        }
+
+        public Type GetTypeAtInnerPath(string path)
+        {
+            if (!ListContainsInnerPath(path))
+                return null;
+
+            var parts = path.Split('.');
+            var current = ListType;
+
+            Type result = null;
+            foreach (var part in parts)
+            {
+                var property = current.GetProperty(part);
+                current = property.PropertyType;
+                result = property.PropertyType;
+            }
+
+            return result;
         }
 
         internal override void ApplyToEntity()
@@ -171,16 +204,6 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
             Entity.OperatorType = Operator?.GetType().Name;
-        }
-
-        public override bool Evaluate()
-        {
-            return false;
-        }
-
-        public override bool EvaluateObject(object target)
-        {
-            return CompiledListPredicate != null && CompiledListPredicate(target);
         }
 
         internal override void Initialize(IDataModelService dataModelService)
@@ -198,13 +221,13 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
 
             // Right side dynamic
-            if (PredicateType == PredicateType.Dynamic && Entity.RightPropertyPath != null)
+            if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPropertyPath != null)
             {
                 if (ListContainsInnerPath(Entity.RightPropertyPath))
                     UpdateLeftSide(Entity.LeftPropertyPath);
             }
             // Right side static
-            else if (PredicateType == PredicateType.Static && Entity.RightStaticValue != null)
+            else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
             {
                 try
                 {
@@ -245,6 +268,20 @@ namespace Artemis.Core.Models.Profile.Conditions
             return Entity;
         }
 
+        private void CreateExpression()
+        {
+            CompiledListPredicate = null;
+
+            if (Operator == null)
+                return;
+
+            // If the operator does not support a right side, create a static expression because the right side will simply be null
+            if (PredicateType == ProfileRightSideType.Dynamic && Operator.SupportsRightSide)
+                CreateDynamicExpression();
+
+            CreateStaticExpression();
+        }
+
         private void ValidateOperator()
         {
             if (LeftPropertyPath == null || Operator == null)
@@ -258,7 +295,7 @@ namespace Artemis.Core.Models.Profile.Conditions
         private void ValidateRightSide()
         {
             var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
-            if (PredicateType == PredicateType.Dynamic)
+            if (PredicateType == ProfileRightSideType.Dynamic)
             {
                 if (RightPropertyPath == null)
                     return;
@@ -348,44 +385,6 @@ namespace Artemis.Core.Models.Profile.Conditions
                 Expression.Convert(listParameter, ListType), // Cast to the appropriate type
                 Expression.Property
             );
-        }
-
-        public bool ListContainsInnerPath(string path)
-        {
-            if (ListType == null)
-                return false;
-
-            var parts = path.Split('.');
-            var current = ListType;
-            foreach (var part in parts)
-            {
-                var property = current.GetProperty(part);
-                current = property?.PropertyType;
-
-                if (property == null)
-                    return false;
-            }
-
-            return true;
-        }
-
-        public Type GetTypeAtInnerPath(string path)
-        {
-            if (!ListContainsInnerPath(path))
-                return null;
-
-            var parts = path.Split('.');
-            var current = ListType;
-
-            Type result = null;
-            foreach (var part in parts)
-            {
-                var property = current.GetProperty(part);
-                current = property.PropertyType;
-                result = property.PropertyType;
-            }
-
-            return result;
         }
     }
 }
