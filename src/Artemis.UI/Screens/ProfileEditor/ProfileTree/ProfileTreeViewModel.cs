@@ -84,7 +84,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                     break;
             }
 
+            Unsubscribe();
             _profileEditorService.UpdateSelectedProfile();
+            Subscribe();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -152,15 +154,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         protected override void OnInitialActivate()
         {
-            _profileEditorService.ProfileSelected += OnProfileSelected;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+            Subscribe();
             CreateRootFolderViewModel();
         }
 
         protected override void OnClose()
         {
-            _profileEditorService.ProfileSelected -= OnProfileSelected;
-            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+            Unsubscribe();
 
             RootFolder?.Dispose();
             RootFolder = null;
@@ -168,6 +168,18 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         }
 
         #region Event handlers
+
+        private void Subscribe()
+        {
+            _profileEditorService.ProfileSelected += OnProfileSelected;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+        }
+
+        private void Unsubscribe()
+        {
+            _profileEditorService.ProfileSelected -= OnProfileSelected;
+            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+        }
 
         private void OnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {

@@ -41,9 +41,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
             Children = new BindableCollection<TreeItemViewModel>();
 
-            ProfileElement.ChildAdded += ProfileElementOnChildAdded;
-            ProfileElement.ChildRemoved += ProfileElementOnChildRemoved;
-
+            Subscribe();
             UpdateProfileElements();
         }
 
@@ -65,9 +63,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void Dispose()
         {
-            ProfileElement.ChildAdded -= ProfileElementOnChildAdded;
-            ProfileElement.ChildRemoved -= ProfileElementOnChildRemoved;
-
+            Unsubscribe();
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -94,8 +90,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 Parent.AddExistingElement(source);
             }
 
+            Parent.Unsubscribe();
             Parent.ProfileElement.RemoveChild(source.ProfileElement);
             Parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order);
+            Parent.Subscribe();
+
+            Parent.UpdateProfileElements();
         }
 
         public void SetElementBehind(TreeItemViewModel source)
@@ -106,8 +106,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 Parent.AddExistingElement(source);
             }
 
+            Parent.Unsubscribe();
             Parent.ProfileElement.RemoveChild(source.ProfileElement);
             Parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order + 1);
+            Parent.Subscribe();
+
+            Parent.UpdateProfileElements();
         }
 
         public void RemoveExistingElement(TreeItemViewModel treeItem)
@@ -116,7 +120,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 throw new ArtemisUIException("Cannot remove a child from a profile element of type " + ProfileElement.GetType().Name);
 
             ProfileElement.RemoveChild(treeItem.ProfileElement);
-            Children.Remove(treeItem);
             treeItem.Parent = null;
             treeItem.Dispose();
         }
@@ -127,7 +130,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 throw new ArtemisUIException("Cannot add a child to a profile element of type " + ProfileElement.GetType().Name);
 
             ProfileElement.AddChild(treeItem.ProfileElement);
-            Children.Add(treeItem);
             treeItem.Parent = this;
         }
 
@@ -187,12 +189,18 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void UpdateProfileElements()
         {
+            // Remove VMs that are no longer a child
+            var toRemove = Children.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
+            foreach (var treeItemViewModel in toRemove) 
+                Children.Remove(treeItemViewModel);
+
             // Order the children
             var vmsList = Children.OrderBy(v => v.ProfileElement.Order).ToList();
             for (var index = 0; index < vmsList.Count; index++)
             {
                 var profileElementViewModel = vmsList[index];
-                Children.Move(Children.IndexOf(profileElementViewModel), index);
+                if (Children.IndexOf(profileElementViewModel) != index)
+                    Children.Move(Children.IndexOf(profileElementViewModel), index);
             }
 
             // Ensure every child element has an up-to-date VM
@@ -218,9 +226,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 return;
 
             // Add the new children in one call, prevent extra UI events
-            Children.AddRange(newChildren);
             foreach (var treeItemViewModel in newChildren)
+            {
                 treeItemViewModel.UpdateProfileElements();
+                Children.Add(treeItemViewModel);
+            }
         }
 
         public void EnableToggled()
@@ -233,6 +243,18 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (disposing)
             {
             }
+        }
+
+        private void Subscribe()
+        {
+            ProfileElement.ChildAdded += ProfileElementOnChildAdded;
+            ProfileElement.ChildRemoved += ProfileElementOnChildRemoved;
+        }
+
+        private void Unsubscribe()
+        {
+            ProfileElement.ChildAdded -= ProfileElementOnChildAdded;
+            ProfileElement.ChildRemoved -= ProfileElementOnChildRemoved;
         }
 
         private void ProfileElementOnChildRemoved(object sender, EventArgs e)
