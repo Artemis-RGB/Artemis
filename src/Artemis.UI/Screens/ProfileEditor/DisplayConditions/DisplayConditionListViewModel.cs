@@ -3,13 +3,13 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Utilities;
 using Humanizer;
@@ -18,13 +18,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
     public class DisplayConditionListViewModel : DisplayConditionViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
+        private readonly IProfileEditorService _profileEditorService;
+        private readonly Timer _updateTimer;
         private bool _isInitialized;
         private DataModelListViewModel _selectedListProperty;
         private DataModelPropertiesViewModel _targetDataModel;
-        private readonly Timer _updateTimer;
 
         public DisplayConditionListViewModel(
             DisplayConditionList displayConditionList,
@@ -73,7 +73,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         }
 
         public string SelectedListOperator => DisplayConditionList.ListOperator.Humanize();
-        
+
         public void SelectListOperator(string type)
         {
             var enumValue = Enum.Parse<ListOperator>(type);
@@ -86,9 +86,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void AddCondition(string type)
         {
             if (type == "Static")
-                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, PredicateType.Static));
+                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, ProfileRightSideType.Static));
             else if (type == "Dynamic")
-                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, PredicateType.Dynamic));
+                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, ProfileRightSideType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -123,26 +123,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
 
             IsInitialized = true;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _updateTimer.Stop();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-        }
-
-        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (TargetDataModelOpen)
-            {
-                TargetDataModel?.Update(_dataModelUIService);
-                SelectedListProperty?.Update(_dataModelUIService);
-            }
-        }
-
-        private void TargetDataModelUpdateRequested(object sender, EventArgs e)
-        {
-            TargetDataModel.ApplyTypeFilter(true, typeof(IList));
         }
 
         public void ApplyList()
@@ -196,6 +176,26 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             foreach (var childViewModel in Children)
                 childViewModel.Update();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _updateTimer.Stop();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+        }
+
+        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (TargetDataModelOpen)
+            {
+                TargetDataModel?.Update(_dataModelUIService);
+                SelectedListProperty?.Update(_dataModelUIService);
+            }
+        }
+
+        private void TargetDataModelUpdateRequested(object sender, EventArgs e)
+        {
+            TargetDataModel.ApplyTypeFilter(true, typeof(IList));
         }
 
 

@@ -1,22 +1,30 @@
 ﻿using System.Collections.Generic;
-using System.Linq.Expressions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core.Models.Profile.Conditions.Abstract
 {
+    /// <summary>
+    ///     An abstract class for display condition parts
+    /// </summary>
     public abstract class DisplayConditionPart
     {
-        private readonly List<DisplayConditionPart> _children;
+        private readonly List<DisplayConditionPart> _children = new List<DisplayConditionPart>();
+        
+        /// <summary>
+        ///     Gets the parent of this part
+        /// </summary>
+        public DisplayConditionPart Parent { get; internal set; }
 
-        protected DisplayConditionPart()
-        {
-            _children = new List<DisplayConditionPart>();
-        }
-
-        public DisplayConditionPart Parent { get; set; }
+        /// <summary>
+        ///     Gets the children of this part
+        /// </summary>
         public IReadOnlyList<DisplayConditionPart> Children => _children.AsReadOnly();
 
+        /// <summary>
+        ///     Adds a child to the display condition part's <see cref="Children" /> collection
+        /// </summary>
+        /// <param name="displayConditionPart"></param>
         public void AddChild(DisplayConditionPart displayConditionPart)
         {
             if (!_children.Contains(displayConditionPart))
@@ -26,6 +34,10 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
             }
         }
 
+        /// <summary>
+        ///     Removes a child from the display condition part's <see cref="Children" /> collection
+        /// </summary>
+        /// <param name="displayConditionPart">The child to remove</param>
         public void RemoveChild(DisplayConditionPart displayConditionPart)
         {
             if (_children.Contains(displayConditionPart))
@@ -36,13 +48,13 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
         }
 
         /// <summary>
-        /// Evaluates the condition part on the data model
+        ///     Evaluates the condition part on the data model
         /// </summary>
         /// <returns></returns>
         public abstract bool Evaluate();
 
         /// <summary>
-        /// Evaluates the condition part on the given target (currently only for lists)
+        ///     Evaluates the condition part on the given target (currently only for lists)
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>

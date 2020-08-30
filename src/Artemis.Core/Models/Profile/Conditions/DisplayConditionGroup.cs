@@ -4,17 +4,31 @@ using Artemis.Core.Models.Profile.Conditions.Abstract;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {
+    /// <summary>
+    ///     A group containing zero to many <see cref="DisplayConditionPart" />s which it evaluates using a boolean specific
+    ///     operator
+    /// </summary>
     public class DisplayConditionGroup : DisplayConditionPart
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DisplayConditionGroup" /> class
+        /// </summary>
+        /// <param name="parent"></param>
         public DisplayConditionGroup(DisplayConditionPart parent)
         {
             Parent = parent;
             Entity = new DisplayConditionGroupEntity();
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DisplayConditionGroup" /> class
+        /// </summary>
+        /// <param name="parent"></param>
+        /// <param name="entity"></param>
         public DisplayConditionGroup(DisplayConditionPart parent, DisplayConditionGroupEntity entity)
         {
             Parent = parent;
@@ -34,9 +48,14 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the boolean operator of this group
+        /// </summary>
         public BooleanOperator BooleanOperator { get; set; }
-        public DisplayConditionGroupEntity Entity { get; set; }
 
+        internal DisplayConditionGroupEntity Entity { get; set; }
+
+        /// <inheritdoc />
         public override bool Evaluate()
         {
             // Empty groups are always true
@@ -61,6 +80,7 @@ namespace Artemis.Core.Models.Profile.Conditions
             }
         }
 
+        /// <inheritdoc />
         public override bool EvaluateObject(object target)
         {
             // Empty groups are always true

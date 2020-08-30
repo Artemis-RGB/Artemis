@@ -8,6 +8,7 @@ using Artemis.Core.Plugins.DataModelExpansions;
 using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core.Models.Profile.Conditions
 {

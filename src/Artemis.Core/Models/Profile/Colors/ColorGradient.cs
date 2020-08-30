@@ -3,35 +3,35 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Windows.Documents;
 using Artemis.Core.Annotations;
 using SkiaSharp;
 using Stylet;
 
 namespace Artemis.Core.Models.Profile.Colors
 {
+    /// <summary>
+    ///     A gradient containing a list of <see cref="ColorGradientStop" />s
+    /// </summary>
     public class ColorGradient : INotifyPropertyChanged
     {
-        private float _rotation;
-
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ColorGradient" /> class
+        /// </summary>
         public ColorGradient()
         {
             Stops = new BindableCollection<ColorGradientStop>();
         }
 
+        /// <summary>
+        ///     Gets a list of all the <see cref="ColorGradientStop" />s in the gradient
+        /// </summary>
         public BindableCollection<ColorGradientStop> Stops { get; }
 
-        public float Rotation
-        {
-            get => _rotation;
-            set
-            {
-                if (value.Equals(_rotation)) return;
-                _rotation = value;
-                OnPropertyChanged();
-            }
-        }
-
+        /// <summary>
+        ///     Gets all the colors in the color gradient
+        /// </summary>
+        /// <param name="timesToRepeat">The amount of times to repeat the colors</param>
+        /// <returns></returns>
         public SKColor[] GetColorsArray(int timesToRepeat = 0)
         {
             if (timesToRepeat == 0)
@@ -46,6 +46,14 @@ namespace Artemis.Core.Models.Profile.Colors
             return result.ToArray();
         }
 
+        /// <summary>
+        ///     Gets all the positions in the color gradient
+        /// </summary>
+        /// <param name="timesToRepeat">
+        ///     The amount of times to repeat the positions, positions will get squished together and
+        ///     always stay between 0.0 and 1.0
+        /// </param>
+        /// <returns></returns>
         public float[] GetPositionsArray(int timesToRepeat = 0)
         {
             if (timesToRepeat == 0)
@@ -65,11 +73,18 @@ namespace Artemis.Core.Models.Profile.Colors
             return result.ToArray();
         }
 
+        /// <summary>
+        ///     Triggers a property changed event of the <see cref="Stops" /> collection
+        /// </summary>
         public void OnColorValuesUpdated()
         {
             OnPropertyChanged(nameof(Stops));
         }
 
+        /// <summary>
+        ///     Gets a color at any position between 0.0 and 1.0 using interpolation
+        /// </summary>
+        /// <param name="position">A position between 0.0 and 1.0</param>
         public SKColor GetColor(float position)
         {
             if (!Stops.Any())
@@ -119,6 +134,7 @@ namespace Artemis.Core.Models.Profile.Colors
 
         #region PropertyChanged
 
+        /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
 
         [NotifyPropertyChangedInvocator]

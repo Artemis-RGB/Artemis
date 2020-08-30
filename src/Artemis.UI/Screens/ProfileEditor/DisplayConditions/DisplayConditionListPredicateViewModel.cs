@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
+using Artemis.Core.Models.Profile;
 using Artemis.Core.Models.Profile.Conditions;
 using Artemis.Core.Plugins.Settings;
 using Artemis.Core.Services;
@@ -14,7 +15,6 @@ using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Shared.DataModelVisualization;
 using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services;
 using Artemis.UI.Shared.Services.Interfaces;
 using Artemis.UI.Utilities;
 using Stylet;
@@ -69,7 +69,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         }
 
         public DisplayConditionListPredicate DisplayConditionListPredicate => (DisplayConditionListPredicate) Model;
-        public bool ShowRightSidePropertySelection => DisplayConditionListPredicate.PredicateType == PredicateType.Dynamic;
+        public bool ShowRightSidePropertySelection => DisplayConditionListPredicate.PredicateType == ProfileRightSideType.Dynamic;
         public bool CanActivateRightSideInputViewModel => SelectedLeftSideProperty?.PropertyInfo != null;
         public PluginSetting<bool> ShowDataModelValues { get; }
 
@@ -201,7 +201,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             var listDataModelGuid = DisplayConditionListPredicate.ListDataModel.PluginInfo.Guid;
 
             // If static, only allow selecting properties also supported by input
-            if (DisplayConditionListPredicate.PredicateType == PredicateType.Static)
+            if (DisplayConditionListPredicate.PredicateType == ProfileRightSideType.Static)
                 LeftSideDataModel.ApplyTypeFilter(false, _supportedInputTypes.ToArray());
 
             // Determine the left side property first
@@ -216,7 +216,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             SelectedOperator = DisplayConditionListPredicate.Operator;
 
             // Determine the right side
-            if (DisplayConditionListPredicate.PredicateType == PredicateType.Dynamic)
+            if (DisplayConditionListPredicate.PredicateType == ProfileRightSideType.Dynamic)
             {
                 SelectedRightSideProperty = RightSideDataModel.GetChildByPath(listDataModelGuid, DisplayConditionListPredicate.RightPropertyPath);
                 RightSideDataModel.ApplyTypeFilter(true, leftSideType);
@@ -310,7 +310,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void LeftDataModelUpdateRequested(object sender, EventArgs e)
         {
-            if (DisplayConditionListPredicate.PredicateType == PredicateType.Static)
+            if (DisplayConditionListPredicate.PredicateType == ProfileRightSideType.Static)
                 LeftSideDataModel.ApplyTypeFilter(false, _supportedInputTypes.ToArray());
         }
 

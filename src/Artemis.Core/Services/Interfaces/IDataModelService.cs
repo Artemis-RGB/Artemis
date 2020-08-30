@@ -10,7 +10,14 @@ namespace Artemis.Core.Services.Interfaces
 {
     public interface IDataModelService : IArtemisService
     {
+        /// <summary>
+        ///     Gets a read-only collection of all registered condition operators
+        /// </summary>
         IReadOnlyCollection<DisplayConditionOperator> RegisteredConditionOperators { get; }
+
+        /// <summary>
+        ///     Gets a read-only collection of all registered data model expansions
+        /// </summary>
         IReadOnlyCollection<DataModel> DataModelExpansions { get; }
 
         /// <summary>
@@ -57,9 +64,30 @@ namespace Artemis.Core.Services.Interfaces
         /// <param name="displayConditionOperator">The layer condition operator to remove</param>
         void RemoveConditionOperator([NotNull] DisplayConditionOperator displayConditionOperator);
 
+        /// <summary>
+        ///     Returns all the display condition operators compatible with the provided type
+        /// </summary>
         List<DisplayConditionOperator> GetCompatibleConditionOperators(Type type);
+
+        /// <summary>
+        ///     Gets a condition operator by its plugin GUID and type name
+        /// </summary>
+        /// <param name="operatorPluginGuid">The operator's plugin GUID</param>
+        /// <param name="operatorType">The type name of the operator</param>
         DisplayConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
+
+        /// <summary>
+        ///     Logs a predicate deserialization failure
+        /// </summary>
+        /// <param name="displayConditionPredicate">The predicate that failed to deserialize</param>
+        /// <param name="exception">The JSON exception that occurred</param>
         void LogPredicateDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonException exception);
+
+        /// <summary>
+        ///     Logs a list predicate deserialization failure
+        /// </summary>
+        /// <param name="displayConditionListPredicate">The list predicate that failed to deserialize</param>
+        /// <param name="exception">The JSON exception that occurred</param>
         void LogListPredicateDeserializationFailure(DisplayConditionListPredicate displayConditionListPredicate, JsonException exception);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Storage.Entities.Profile
 {
@@ -17,13 +18,6 @@ namespace Artemis.Storage.Entities.Profile
         public bool KeyframesEnabled { get; set; }
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
-    }
-
-    public class KeyframeEntity
-    {
-        public TimeSpan Position { get; set; }
-        public int Timeline { get; set; }
-        public string Value { get; set; }
-        public int EasingFunction { get; set; }
+        public DataBindingEntity DataBindingEntity { get; set; }
     }
 }

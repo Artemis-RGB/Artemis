@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Storage.Entities.Profile
+namespace Artemis.Storage.Entities.Profile.Conditions
 {
     public class ProfileConditionEntity
     {
