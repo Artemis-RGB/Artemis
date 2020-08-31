@@ -1,7 +1,6 @@
-﻿using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Stylet;
+﻿using Stylet;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     public abstract class BrushConfigurationViewModel : Screen
     {

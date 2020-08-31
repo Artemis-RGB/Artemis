@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Artemis.Core.Models.Profile.Conditions.Operators
+namespace Artemis.Core
 {
     internal class GreaterThanOrEqualConditionOperator : DisplayConditionOperator
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Models.Profile.Conditions.Abstract;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract

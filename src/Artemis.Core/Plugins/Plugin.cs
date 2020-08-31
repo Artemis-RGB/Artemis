@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Artemis.Core.Plugins.Exceptions;
 
-namespace Artemis.Core.Plugins
+namespace Artemis.Core
 {
     /// <summary>
     ///     This is the base plugin type, use the other interfaces such as Module to create plugins
@@ -18,7 +17,7 @@ namespace Artemis.Core.Plugins
         ///     Gets whether the plugin is enabled
         /// </summary>
         public bool Enabled { get; private set; }
-        
+
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
         /// </summary>

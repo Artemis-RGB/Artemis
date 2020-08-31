@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Modules;
-using Artemis.UI.Shared.Events;
-using Artemis.UI.Shared.PropertyInput;
+using Artemis.Core;
+using Artemis.Core.Modules;
 using Ninject;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     public interface IProfileEditorService : IArtemisSharedUIService
     {
@@ -50,7 +46,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
 
         /// <summary>
-        /// Occurs when the currently selected data binding layer property is changed
+        ///     Occurs when the currently selected data binding layer property is changed
         /// </summary>
         event EventHandler SelectedDataBindingChanged;
 
@@ -92,5 +88,5 @@ namespace Artemis.UI.Shared.Services.Interfaces
         /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
         /// <returns></returns>
         TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
-        }
+    }
 }

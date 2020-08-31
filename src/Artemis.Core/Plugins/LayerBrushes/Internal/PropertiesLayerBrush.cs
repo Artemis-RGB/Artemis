@@ -1,9 +1,7 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 
-namespace Artemis.Core.Plugins.LayerBrushes.Internal
+namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead

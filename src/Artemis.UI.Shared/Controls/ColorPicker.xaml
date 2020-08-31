@@ -4,7 +4,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:converters="clr-namespace:Artemis.UI.Shared.Converters" x:Class="Artemis.UI.Shared.Controls.ColorPicker"
+    xmlns:shared="clr-namespace:Artemis.UI.Shared"
+    x:Class="Artemis.UI.Shared.ColorPicker"
     mc:Ignorable="d"
     d:DesignHeight="101.848" d:DesignWidth="242.956">
     <UserControl.Resources>
@@ -13,8 +14,8 @@
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/Resources/ArtemisShared.xaml" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.ColorPicker.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <converters:ColorToStringConverter x:Key="ColorToStringConverter" />
-            <converters:ColorToSolidColorConverter x:Key="ColorToSolidColorConverter" />
+            <shared:ColorToStringConverter x:Key="ColorToStringConverter" />
+            <shared:ColorToSolidColorConverter x:Key="ColorToSolidColorConverter" />
             <ControlTemplate x:Key="MaterialDesignOpacitySlider" TargetType="{x:Type Slider}">
                 <Border
                     x:Name="border"

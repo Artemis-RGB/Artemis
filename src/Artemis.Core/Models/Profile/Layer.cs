@@ -2,21 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Profile.LayerShapes;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Artemis.Core.Plugins.LayerEffects;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a layer on a profile. To create new layers use the <see cref="RenderElementService" /> by injecting
@@ -232,10 +225,10 @@ namespace Artemis.Core.Models.Profile
             switch (General.ShapeType.CurrentValue)
             {
                 case LayerShapeType.Ellipse:
-                    LayerShape = new Ellipse(this);
+                    LayerShape = new EllipseShape(this);
                     break;
                 case LayerShapeType.Rectangle:
-                    LayerShape = new Rectangle(this);
+                    LayerShape = new RectangleShape(this);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -291,9 +284,7 @@ namespace Artemis.Core.Models.Profile
             if (stickToMainSegment)
             {
                 if (!DisplayContinuously)
-                {
                     TimelinePosition = StartSegmentLength + timeOverride;
-                }
                 else
                 {
                     var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;

@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Corsair LL RGB Fan</Name>
   <Description>Physical layout of Corsairs LL RGB Fan</Description>
@@ -32,63 +33,63 @@
       <X>-</X>
       <Y>-</Y>
     </Led>
-	
-	<Led Id="Fan5">
+
+    <Led Id="Fan5">
       <Shape>Circle</Shape>
       <X>7.9</X>
       <Y>29.8</Y>
-    </Led> 
+    </Led>
     <Led Id="Fan6">
       <Shape>Circle</Shape>
       <X>0.4</X>
       <Y>59.9</Y>
     </Led>
-	<Led Id="Fan7">
+    <Led Id="Fan7">
       <Shape>Circle</Shape>
       <X>8</X>
       <Y>90.4</Y>
     </Led>
-	<Led Id="Fan8">
+    <Led Id="Fan8">
       <Shape>Circle</Shape>
       <X>30.7</X>
       <Y>113.1</Y>
     </Led>
-	<Led Id="Fan9">
+    <Led Id="Fan9">
       <Shape>Circle</Shape>
       <X>59.5</X>
       <Y>120.5</Y>
     </Led>
-	<Led Id="Fan10">
+    <Led Id="Fan10">
       <Shape>Circle</Shape>
       <X>90.5</X>
       <Y>113.1</Y>
     </Led>
-	<Led Id="Fan11">
+    <Led Id="Fan11">
       <Shape>Circle</Shape>
       <X>113</X>
       <Y>90.4</Y>
     </Led>
-	<Led Id="Fan12">
+    <Led Id="Fan12">
       <Shape>Circle</Shape>
       <X>120.5</X>
       <Y>59.9</Y>
     </Led>
-	<Led Id="Fan13">
+    <Led Id="Fan13">
       <Shape>Circle</Shape>
       <X>113</X>
       <Y>29.8</Y>
     </Led>
-	<Led Id="Fan14">
+    <Led Id="Fan14">
       <Shape>Circle</Shape>
       <X>90.5</X>
       <Y>7.6</Y>
     </Led>
-	<Led Id="Fan15">
+    <Led Id="Fan15">
       <Shape>Circle</Shape>
       <X>59.5</X>
       <Y>0</Y>
     </Led>
-	<Led Id="Fan16">
+    <Led Id="Fan16">
       <Shape>Circle</Shape>
       <X>28</X>
       <Y>7.6</Y>

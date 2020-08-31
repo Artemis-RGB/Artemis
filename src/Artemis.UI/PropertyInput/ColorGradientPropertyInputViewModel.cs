@@ -1,8 +1,7 @@
 ﻿using System;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.PropertyInput
 {

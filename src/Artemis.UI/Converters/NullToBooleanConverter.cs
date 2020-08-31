@@ -12,7 +12,7 @@ namespace Artemis.UI.Converters
             if (parameter == null)
                 direction = Parameters.Normal;
             else
-                direction = (Parameters)Enum.Parse(typeof(Parameters), (string)parameter);
+                direction = (Parameters) Enum.Parse(typeof(Parameters), (string) parameter);
 
             if (direction == Parameters.Normal)
             {

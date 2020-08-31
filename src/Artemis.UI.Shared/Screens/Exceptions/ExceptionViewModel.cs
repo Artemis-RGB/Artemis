@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.UI.Shared.Services.Dialog;
 using ICSharpCode.AvalonEdit.Document;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.Exceptions
 {
-    public class ExceptionViewModel : Screen
+    internal class ExceptionViewModel : Screen
     {
         private List<DialogException> _exceptions;
 
@@ -32,7 +31,7 @@ namespace Artemis.UI.Shared.Screens.Exceptions
         }
     }
 
-    public class DialogException
+    internal class DialogException
     {
         public DialogException(Exception exception)
         {

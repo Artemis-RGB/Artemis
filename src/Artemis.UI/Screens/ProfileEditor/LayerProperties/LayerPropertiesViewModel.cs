@@ -2,23 +2,18 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using Artemis.Core.Events;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Shared.Events;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
 using static Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerPropertyGroupViewModel.ViewModelType;
@@ -29,19 +24,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
+        private DataBindingsViewModel _dataBindingsViewModel;
         private EffectsViewModel _effectsViewModel;
+        private TimelineSegmentViewModel _endTimelineSegmentViewModel;
         private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
+        private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
         private bool _playing;
         private int _propertyTreeIndex;
         private bool _repeatAfterLastKeyframe;
+        private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
-        private DataBindingsViewModel _dataBindingsViewModel;
+        private TimelineSegmentViewModel _startTimelineSegmentViewModel;
         private TimelineViewModel _timelineViewModel;
         private TreeViewModel _treeViewModel;
-        private TimelineSegmentViewModel _startTimelineSegmentViewModel;
-        private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
-        private TimelineSegmentViewModel _endTimelineSegmentViewModel;
-        private int _rightSideIndex;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -160,6 +155,20 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             get => _endTimelineSegmentViewModel;
             set => SetAndNotify(ref _endTimelineSegmentViewModel, value);
         }
+
+        #region Segments
+
+        public void EnableSegment(string segment)
+        {
+            if (segment == "Start")
+                StartTimelineSegmentViewModel.EnableSegment();
+            else if (segment == "Main")
+                MainTimelineSegmentViewModel.EnableSegment();
+            else if (segment == "End")
+                EndTimelineSegmentViewModel.EnableSegment();
+        }
+
+        #endregion
 
         protected override void OnInitialActivate()
         {
@@ -623,20 +632,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
 
             return result;
-        }
-
-        #endregion
-
-        #region Segments
-
-        public void EnableSegment(string segment)
-        {
-            if (segment == "Start")
-                StartTimelineSegmentViewModel.EnableSegment();
-            else if (segment == "Main")
-                MainTimelineSegmentViewModel.EnableSegment();
-            else if (segment == "End")
-                EndTimelineSegmentViewModel.EnableSegment();
         }
 
         #endregion

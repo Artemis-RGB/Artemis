@@ -1,9 +1,9 @@
 ﻿using System;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.Shared.PropertyInput
+namespace Artemis.UI.Shared
 {
     public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     {
@@ -127,7 +127,7 @@ namespace Artemis.UI.Shared.PropertyInput
     }
 
     /// <summary>
-    /// For internal use only, implement <see cref="PropertyInputViewModel{T}"/> instead.
+    ///     For internal use only, implement <see cref="PropertyInputViewModel{T}" /> instead.
     /// </summary>
     public abstract class PropertyInputViewModel : ValidatingModelBase, IDisposable
     {
@@ -140,7 +140,7 @@ namespace Artemis.UI.Shared.PropertyInput
         }
 
         /// <summary>
-        /// Prevents this type being implemented directly, implement <see cref="PropertyInputViewModel{T}"/> instead.
+        ///     Prevents this type being implemented directly, implement <see cref="PropertyInputViewModel{T}" /> instead.
         /// </summary>
         // ReSharper disable once UnusedMember.Global
         internal abstract object InternalGuard { get; }

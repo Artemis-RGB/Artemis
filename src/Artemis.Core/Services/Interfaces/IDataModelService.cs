@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Annotations;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Properties;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     public interface IDataModelService : IArtemisService
     {

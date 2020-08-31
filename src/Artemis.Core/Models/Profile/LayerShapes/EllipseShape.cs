@@ -1,13 +1,17 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerShapes
+namespace Artemis.Core
 {
-    public class Ellipse : LayerShape
+    /// <summary>
+    ///     Represents an ellipse layer shape
+    /// </summary>
+    public class EllipseShape : LayerShape
     {
-        public Ellipse(Layer layer) : base(layer)
+        internal EllipseShape(Layer layer) : base(layer)
         {
         }
 
+        /// <inheritdoc />
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();

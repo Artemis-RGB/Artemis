@@ -41,7 +41,7 @@ namespace Artemis.UI.DataTemplateSelectors
 
         public override object ProvideValue(IServiceProvider serviceProvider)
         {
-            return new ComboBoxTemplateSelector()
+            return new ComboBoxTemplateSelector
             {
                 SelectedItemTemplate = SelectedItemTemplate,
                 SelectedItemTemplateSelector = SelectedItemTemplateSelector,

@@ -5,16 +5,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Utilities;
+using Artemis.Core.DataModelExpansions;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.Modules
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Allows you to add support for new games/applications while utilizing Artemis' profile engine and your own data

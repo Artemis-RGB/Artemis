@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.LayerBrushes;
+﻿using Artemis.Core.LayerBrushes;
 
 namespace Artemis.Plugins.LayerBrushes.Color
 {

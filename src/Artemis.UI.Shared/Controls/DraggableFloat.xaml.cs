@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Interaction logic for DraggableFloat.xaml

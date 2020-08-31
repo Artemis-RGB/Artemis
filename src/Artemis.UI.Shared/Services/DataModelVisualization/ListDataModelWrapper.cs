@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Artemis.Core.Plugins.DataModelExpansions;
+﻿using Artemis.Core.DataModelExpansions;
 
-namespace Artemis.UI.Shared.Services.DataModelVisualization
+namespace Artemis.UI.Shared.Services
 {
     public class ListDataModelWrapper : DataModel
     {
-        public ListDataModelWrapper()
-        {
-            
-        }
     }
 }

@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract
 {
     public abstract class LayerPropertyBaseViewModel : PropertyChangedBase, IDisposable
     {
-        private bool _isExpanded;
         private BindableCollection<LayerPropertyBaseViewModel> _children;
+        private bool _isExpanded;
 
         protected LayerPropertyBaseViewModel()
         {

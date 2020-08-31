@@ -31,7 +31,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise.Utilities
             -11, -4, -4, -4, -11, -4, -4, -4, -11,
             11, -4, -4, 4, -11, -4, 4, -4, -11
         };
-        
+
         private static readonly Contribution2[] lookup2D;
         private static readonly Contribution3[] lookup3D;
 
@@ -258,7 +258,7 @@ namespace Artemis.Plugins.LayerBrushes.Noise.Utilities
 
             return value * NORM_3D;
         }
-        
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int FastFloor(double x)
         {

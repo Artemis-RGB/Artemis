@@ -1,9 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.Services;
 using Artemis.Plugins.LayerBrushes.Noise.Utilities;
 using SkiaSharp;
 
@@ -59,6 +58,35 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 _z = 0;
 
             DetermineRenderScale();
+        }
+
+        public override SKColor GetColor(ArtemisLed led, SKPoint renderPoint)
+        {
+            var mainColor = Properties.MainColor.CurrentValue;
+            var secondColor = Properties.SecondaryColor.CurrentValue;
+            var gradientColor = Properties.GradientColor.CurrentValue;
+            var scale = Properties.Scale.CurrentValue;
+            var hardness = Properties.Hardness.CurrentValue / 100f;
+
+            var scrolledX = renderPoint.X + _x;
+            if (float.IsNaN(scrolledX))
+                scrolledX = 0;
+            var scrolledY = renderPoint.Y + _y;
+            if (float.IsNaN(scrolledY))
+                scrolledY = 0;
+
+
+            var evalX = scrolledX * (scale.Width * -1) / 1000f;
+            var evalY = scrolledY * (scale.Height * -1) / 1000f;
+
+            var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
+            var amount = Math.Max(0f, Math.Min(1f, v));
+
+            if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
+                return mainColor.Interpolate(secondColor, amount);
+            if (gradientColor != null && _colorMap.Length == 101)
+                return _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
+            return SKColor.Empty;
         }
 
         // public override void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
@@ -154,36 +182,6 @@ namespace Artemis.Plugins.LayerBrushes.Noise
                 colorMap[i] = Properties.GradientColor.BaseValue.GetColor(i / 100f);
 
             _colorMap = colorMap;
-        }
-
-        public override SKColor GetColor(ArtemisLed led, SKPoint renderPoint)
-        {
-            var mainColor = Properties.MainColor.CurrentValue;
-            var secondColor = Properties.SecondaryColor.CurrentValue;
-            var gradientColor = Properties.GradientColor.CurrentValue;
-            var scale = Properties.Scale.CurrentValue;
-            var hardness = Properties.Hardness.CurrentValue / 100f;
-
-            var scrolledX = renderPoint.X + _x;
-            if (float.IsNaN(scrolledX))
-                scrolledX = 0;
-            var scrolledY = renderPoint.Y + _y;
-            if (float.IsNaN(scrolledY))
-                scrolledY = 0;
-
-
-            var evalX = scrolledX * (scale.Width *-1) / 1000f;
-            var evalY = scrolledY * (scale.Height*-1) / 1000f;
-
-            var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
-            var amount = Math.Max(0f, Math.Min(1f, v));
-
-            if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
-                return mainColor.Interpolate(secondColor, amount);
-            else if (gradientColor != null && _colorMap.Length == 101)
-                return _colorMap[(int) Math.Round(amount * 100, MidpointRounding.AwayFromZero)];
-            else
-                return SKColor.Empty;
         }
     }
 

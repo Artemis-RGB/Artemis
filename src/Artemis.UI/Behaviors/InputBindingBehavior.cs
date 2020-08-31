@@ -33,7 +33,7 @@ namespace Artemis.UI.Behaviors
         private static void OnLoaded(object sender, RoutedEventArgs e)
         {
             var frameworkElement = (FrameworkElement) sender;
-           
+
             var window = Window.GetWindow(frameworkElement);
             if (window == null) return;
 

@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Artemis.Core.Utilities;
+using Artemis.Core;
 using Humanizer;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline

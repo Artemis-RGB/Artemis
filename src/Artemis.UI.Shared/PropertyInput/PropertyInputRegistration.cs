@@ -1,9 +1,8 @@
 ﻿using System;
 using Artemis.Core;
-using Artemis.Core.Plugins;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 
-namespace Artemis.UI.Shared.PropertyInput
+namespace Artemis.UI.Shared
 {
     public class PropertyInputRegistration
     {

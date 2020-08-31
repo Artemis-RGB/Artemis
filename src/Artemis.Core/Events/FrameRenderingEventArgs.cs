@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.Events
+namespace Artemis.Core
 {
     public class FrameRenderingEventArgs : EventArgs
     {

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using Artemis.Core.Annotations;
+using Artemis.Core.Properties;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Models.Profile.Colors
+namespace Artemis.Core
 {
     /// <summary>
     ///     A gradient containing a list of <see cref="ColorGradientStop" />s
@@ -136,7 +136,7 @@ namespace Artemis.Core.Models.Profile.Colors
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler PropertyChanged;
-        
+
         [NotifyPropertyChangedInvocator]
         internal virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

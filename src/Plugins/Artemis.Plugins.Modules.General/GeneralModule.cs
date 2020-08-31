@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 using Artemis.Plugins.Modules.General.DataModel;
 using Artemis.Plugins.Modules.General.DataModel.Windows;
 using Artemis.Plugins.Modules.General.Utilities;

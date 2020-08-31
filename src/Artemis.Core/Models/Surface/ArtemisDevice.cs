@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Models.Surface
+namespace Artemis.Core
 {
     public class ArtemisDevice : PropertyChangedBase
     {
-        private SKRect _renderRectangle;
-        private SKPath _renderPath;
         private ReadOnlyCollection<ArtemisLed> _leds;
+        private SKPath _renderPath;
+        private SKRect _renderRectangle;
 
         internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface)
         {

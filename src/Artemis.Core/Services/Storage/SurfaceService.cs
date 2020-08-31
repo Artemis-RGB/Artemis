@@ -2,18 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
 using Serilog;
 
-namespace Artemis.Core.Services.Storage
+namespace Artemis.Core.Services
 {
     public class SurfaceService : ISurfaceService
     {

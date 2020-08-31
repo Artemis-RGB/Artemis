@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class IntLayerProperty : LayerProperty<int>

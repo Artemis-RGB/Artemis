@@ -1,7 +1,6 @@
 ﻿using System;
-using Artemis.Core.Exceptions;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class EnumLayerProperty<T> : LayerProperty<T> where T : Enum

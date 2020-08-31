@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 

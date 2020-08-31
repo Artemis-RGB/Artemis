@@ -1,5 +1,5 @@
-﻿using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.UI.Shared.DataModelVisualization;
+﻿using Artemis.Core.DataModelExpansions;
+using Artemis.UI.Shared;
 
 namespace Artemis.UI.DataModelVisualization.Input
 {

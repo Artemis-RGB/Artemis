@@ -1,6 +1,6 @@
 ﻿using Stylet;
 
-namespace Artemis.UI.Shared.DataModelVisualization
+namespace Artemis.UI.Shared
 {
     public abstract class DataModelDisplayViewModel<T> : DataModelDisplayViewModel
     {

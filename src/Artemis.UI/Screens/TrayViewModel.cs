@@ -1,10 +1,9 @@
-﻿using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Utilities;
+﻿using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
-using Artemis.UI.Shared.Controls;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Ninject;
 using Stylet;
 
@@ -15,9 +14,9 @@ namespace Artemis.UI.Screens
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
+        private bool _canShowRootViewModel;
         private bool _setGradientPickerService;
         private SplashViewModel _splashViewModel;
-        private bool _canShowRootViewModel;
 
         public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
         {
@@ -73,7 +72,7 @@ namespace Artemis.UI.Screens
 
         public void TrayExit()
         {
-            CurrentProcessUtilities.Shutdown(2, false);
+            ApplicationUtilities.Shutdown(2, false);
         }
 
         private void ShowSplashScreen()

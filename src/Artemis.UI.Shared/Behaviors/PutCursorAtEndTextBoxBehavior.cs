@@ -2,7 +2,7 @@
 using System.Windows.Controls;
 using Microsoft.Xaml.Behaviors;
 
-namespace Artemis.UI.Shared.Behaviors
+namespace Artemis.UI.Shared
 {
     public class PutCursorAtEndTextBoxBehavior : Behavior<UIElement>
     {

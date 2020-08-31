@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Activation;
 
@@ -31,8 +28,10 @@ namespace Artemis.Core.Ninject
                 pluginInfo = _pluginService.GetPluginByAssembly(parentRequest.Service.Assembly)?.PluginInfo;
             // Fall back to assembly based detection
             if (pluginInfo == null)
+            {
                 throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +
                                                "or into a class defined in a plugin assembly");
+            }
 
             return new PluginSettings(pluginInfo, _pluginRepository);
         }

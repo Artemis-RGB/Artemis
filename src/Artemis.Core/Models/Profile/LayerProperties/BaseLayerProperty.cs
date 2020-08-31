@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Artemis.Core.Events;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
 using Artemis.Storage.Entities.Profile;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core
 {
     /// <summary>
     ///     For internal use only, to implement your own layer property type, extend <see cref="LayerProperty{T}" /> instead.

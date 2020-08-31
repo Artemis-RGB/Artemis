@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Events;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.Services;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
-        private readonly IRenderElementService _renderElementService;
         private readonly IPluginService _pluginService;
+        private readonly IRenderElementService _renderElementService;
         private List<LayerBrushDescriptor> _descriptors;
 
         public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService,

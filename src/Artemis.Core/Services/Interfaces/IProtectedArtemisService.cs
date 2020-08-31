@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.Services.Interfaces
+﻿namespace Artemis.Core.Services
 {
     /// <summary>
     ///     A singleton service that cannot be used by plugins

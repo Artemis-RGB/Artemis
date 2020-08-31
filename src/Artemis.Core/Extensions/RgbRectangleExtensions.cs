@@ -1,7 +1,7 @@
 ﻿using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class RgbRectangleExtensions
     {

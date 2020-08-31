@@ -2,15 +2,12 @@
 using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.Conditions.Abstract;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
-namespace Artemis.Core.Models.Profile.Conditions
+namespace Artemis.Core
 {
     public class DisplayConditionList : DisplayConditionPart
     {
@@ -32,6 +29,8 @@ namespace Artemis.Core.Models.Profile.Conditions
         public ListOperator ListOperator { get; set; }
         public DataModel ListDataModel { get; private set; }
         public string ListPropertyPath { get; private set; }
+
+        public Func<object, IList> CompiledListAccessor { get; set; }
 
         public override bool Evaluate()
         {
@@ -57,6 +56,47 @@ namespace Artemis.Core.Models.Profile.Conditions
                 ListOperator.Count => false,
                 _ => throw new ArgumentOutOfRangeException()
             };
+        }
+
+        public void UpdateList(DataModel dataModel, string path)
+        {
+            if (dataModel != null && path == null)
+                throw new ArtemisCoreException("If a data model is provided, a path is also required");
+            if (dataModel == null && path != null)
+                throw new ArtemisCoreException("If path is provided, a data model is also required");
+
+            if (dataModel != null)
+            {
+                if (!dataModel.ContainsPath(path))
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+                if (dataModel.GetListTypeAtPath(path) == null)
+                    throw new ArtemisCoreException($"The path '{path}' does not contain a list");
+            }
+
+            // Remove the old root group that was tied to the old data model
+            while (Children.Any())
+                RemoveChild(Children[0]);
+
+            ListDataModel = dataModel;
+            ListPropertyPath = path;
+
+            if (dataModel == null)
+                return;
+
+            // Create a new root group
+            AddChild(new DisplayConditionGroup(this));
+            CreateExpression();
+        }
+
+        public void CreateExpression()
+        {
+            var parameter = Expression.Parameter(typeof(object), "listDataModel");
+            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, ListDataModel.GetType()),
+                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+
+            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
+            CompiledListAccessor = lambda.Compile();
         }
 
         internal override void ApplyToEntity()
@@ -103,51 +143,9 @@ namespace Artemis.Core.Models.Profile.Conditions
                 Entity.Children.Clear();
                 AddChild(new DisplayConditionGroup(this));
             }
+
             Children[0].Initialize(dataModelService);
         }
-
-        public void UpdateList(DataModel dataModel, string path)
-        {
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
-
-            if (dataModel != null)
-            {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-                if (dataModel.GetListTypeAtPath(path) == null)
-                    throw new ArtemisCoreException($"The path '{path}' does not contain a list");
-            }
-
-            // Remove the old root group that was tied to the old data model
-            while (Children.Any())
-                RemoveChild(Children[0]);
-
-            ListDataModel = dataModel;
-            ListPropertyPath = path;
-
-            if (dataModel == null)
-                return;
-
-            // Create a new root group
-            AddChild(new DisplayConditionGroup(this));
-            CreateExpression();
-        }
-
-        public void CreateExpression()
-        {
-            var parameter = Expression.Parameter(typeof(object), "listDataModel");
-            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, ListDataModel.GetType()),
-                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
-
-            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
-            CompiledListAccessor = lambda.Compile();
-        }
-
-        public Func<object, IList> CompiledListAccessor { get; set; }
     }
 
     public enum ListOperator

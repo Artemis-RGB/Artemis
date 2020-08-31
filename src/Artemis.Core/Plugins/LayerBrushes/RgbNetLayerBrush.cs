@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     An RGB.NET brush that uses RGB.NET's per-LED rendering engine.

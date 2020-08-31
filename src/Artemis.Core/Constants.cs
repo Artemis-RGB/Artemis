@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Artemis.Core.Plugins;
 
 namespace Artemis.Core
 {
@@ -14,6 +13,11 @@ namespace Artemis.Core
         ///     The full path to the Artemis application folder
         /// </summary>
         public static readonly string ApplicationFolder = Path.GetDirectoryName(typeof(Constants).Assembly.Location);
+
+        /// <summary>
+        ///     The full path to the Artemis executable
+        /// </summary>
+        public static readonly string ExecutablePath = ApplicationUtilities.GetCurrentLocation();
 
         /// <summary>
         ///     The full path to the Artemis data folder

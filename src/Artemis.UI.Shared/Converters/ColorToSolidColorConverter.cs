@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Artemis.UI.Shared.Converters
+namespace Artemis.UI.Shared
 {
     /// <inheritdoc />
     /// <summary>
@@ -13,12 +13,14 @@ namespace Artemis.UI.Shared.Converters
     [ValueConversion(typeof(Color), typeof(string))]
     public class ColorToSolidColorConverter : IValueConverter
     {
+        /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var color = (Color) value;
             return Color.FromRgb(color.R, color.G, color.B);
         }
 
+        /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();

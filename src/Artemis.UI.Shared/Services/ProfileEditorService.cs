@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Shared.Events;
-using Artemis.UI.Shared.Exceptions;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Ninject;
 using Serilog;
 using Stylet;
@@ -329,14 +322,14 @@ namespace Artemis.UI.Shared.Services
             ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SelectedProfileOnDeactivated(object sender, EventArgs e)
-        {
-            Execute.PostToUIThread(() => ChangeSelectedProfile(null));
-        }
-
         protected virtual void OnSelectedDataBindingChanged()
         {
             SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void SelectedProfileOnDeactivated(object sender, EventArgs e)
+        {
+            Execute.PostToUIThread(() => ChangeSelectedProfile(null));
         }
     }
 }

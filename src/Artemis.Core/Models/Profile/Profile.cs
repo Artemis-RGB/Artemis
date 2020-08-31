@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public sealed class Profile : ProfileElement
     {

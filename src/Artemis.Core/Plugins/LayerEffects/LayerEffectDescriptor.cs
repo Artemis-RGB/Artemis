@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     /// <summary>
     ///     A class that describes a layer effect

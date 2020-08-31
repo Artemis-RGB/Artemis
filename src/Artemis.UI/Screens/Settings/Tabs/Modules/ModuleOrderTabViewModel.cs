@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
 
@@ -10,10 +9,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
 {
     public class ModuleOrderTabViewModel : Screen, IDropTarget
     {
-        private readonly IPluginService _pluginService;
         private readonly IModuleService _moduleService;
-        private List<ModuleOrderModuleViewModel> _modules;
-        private DefaultDropHandler _defaultDropHandler;
+        private readonly IPluginService _pluginService;
+        private readonly DefaultDropHandler _defaultDropHandler;
+        private readonly List<ModuleOrderModuleViewModel> _modules;
 
         public ModuleOrderTabViewModel(IPluginService pluginService, IModuleService moduleService)
         {

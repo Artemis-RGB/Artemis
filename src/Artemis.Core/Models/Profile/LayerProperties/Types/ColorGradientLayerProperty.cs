@@ -1,8 +1,6 @@
-﻿using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.Storage.Entities.Profile;
+﻿using Artemis.Storage.Entities.Profile;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class ColorGradientLayerProperty : LayerProperty<ColorGradient>

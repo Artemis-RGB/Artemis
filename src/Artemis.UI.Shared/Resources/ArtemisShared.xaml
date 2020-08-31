@@ -1,6 +1,5 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:Artemis.UI.Shared.Resources">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <VisualBrush x:Key="Checkerboard" TileMode="Tile" Stretch="Uniform" ViewportUnits="Absolute" Viewport="0,0,10,10">
         <VisualBrush.Visual>
             <Grid Width="10" Height="10">

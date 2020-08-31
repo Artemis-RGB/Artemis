@@ -1,13 +1,13 @@
 ﻿using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
     public class DataBindingsViewModel : PropertyChangedBase
     {
-        private DataBindingViewModel _dataBindingViewModel;
         private DataBindingsTabsViewModel _dataBindingsTabsViewModel;
+        private DataBindingViewModel _dataBindingViewModel;
 
         public DataBindingsViewModel(BaseLayerProperty layerProperty)
         {
@@ -36,9 +36,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 return;
 
             if (properties.Count == 1)
-            {
                 DataBindingViewModel = new DataBindingViewModel(LayerProperty, properties.First());
-            }
             else
             {
                 DataBindingsTabsViewModel = new DataBindingsTabsViewModel();

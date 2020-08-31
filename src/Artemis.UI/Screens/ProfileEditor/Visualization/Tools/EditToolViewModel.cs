@@ -2,10 +2,10 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 using Artemis.UI.Events;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -17,10 +17,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private readonly ILayerEditorService _layerEditorService;
         private SKPoint _dragOffset;
         private SKPoint _dragStart;
-        private SKPoint _topLeft;
-        private SKPath _shapePath;
         private SKPoint _shapeAnchor;
         private RectangleGeometry _shapeGeometry;
+        private SKPath _shapePath;
+        private SKPoint _topLeft;
 
         public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
             : base(profileViewModel, profileEditorService)

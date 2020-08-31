@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
 using Artemis.Plugins.Devices.Debug.Settings;
 using Stylet;
 

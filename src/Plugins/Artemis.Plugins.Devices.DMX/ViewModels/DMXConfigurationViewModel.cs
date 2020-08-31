@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins;
+﻿using Artemis.Core;
 
 namespace Artemis.Plugins.Devices.DMX.ViewModels
 {

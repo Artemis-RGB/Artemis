@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Serilog;
 
-namespace Artemis.Core.Services.Storage
+namespace Artemis.Core.Services
 {
     internal class ProfileService : IProfileService
     {
@@ -101,8 +95,15 @@ namespace Artemis.Core.Services.Storage
             var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
-            void ActivatingProfileSurfaceUpdate(object sender, SurfaceConfigurationEventArgs e) => profile.PopulateLeds(e.Surface);
-            void ActivatingProfilePluginToggle(object sender, PluginEventArgs e) => InstantiateProfile(profile);
+            void ActivatingProfileSurfaceUpdate(object sender, SurfaceConfigurationEventArgs e)
+            {
+                profile.PopulateLeds(e.Surface);
+            }
+
+            void ActivatingProfilePluginToggle(object sender, PluginEventArgs e)
+            {
+                InstantiateProfile(profile);
+            }
 
             // This could happen during activation so subscribe to it
             _pluginService.PluginEnabled += ActivatingProfilePluginToggle;

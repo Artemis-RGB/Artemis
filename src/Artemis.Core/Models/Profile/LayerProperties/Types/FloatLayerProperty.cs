@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.Models.Profile.LayerProperties.Types
+﻿namespace Artemis.Core
 {
     /// <inheritdoc />
     public class FloatLayerProperty : LayerProperty<float>

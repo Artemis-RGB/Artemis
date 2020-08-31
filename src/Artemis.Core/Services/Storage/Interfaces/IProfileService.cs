@@ -1,10 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Modules;
 
-namespace Artemis.Core.Services.Storage.Interfaces
+namespace Artemis.Core.Services
 {
     /// <summary>
     ///     Provides access to profile storage and is responsible for activating default profiles
@@ -56,7 +54,6 @@ namespace Artemis.Core.Services.Storage.Interfaces
         /// </summary>
         /// <param name="profileModule"></param>
         /// <returns></returns>
-
         Task ActivateLastProfileAnimated(ProfileModule profileModule);
 
         /// <summary>

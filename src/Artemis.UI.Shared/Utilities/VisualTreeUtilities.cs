@@ -1,9 +1,12 @@
 ﻿using System.Windows;
 using System.Windows.Media;
 
-namespace Artemis.UI.Shared.Utilities
+namespace Artemis.UI.Shared
 {
     // ReSharper disable once InconsistentNaming
+    /// <summary>
+    ///     Provides utilities for navigating the visual tree
+    /// </summary>
     public static class VisualTreeUtilities
     {
         /// <summary>

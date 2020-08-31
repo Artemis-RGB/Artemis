@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Reflection;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
-namespace Artemis.UI.Shared.DataModelVisualization.Shared
+namespace Artemis.UI.Shared
 {
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
@@ -50,7 +49,7 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
             if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
             {
                 dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
-                var wrapper = new DataModelPropertiesViewModel(null,null,null);
+                var wrapper = new DataModelPropertiesViewModel(null, null, null);
                 wrapper.Children.Add(dataModelListPropertyViewModel);
                 return wrapper;
             }

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Shared.DataModelVisualization;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Services;
 using Ninject;
 using Ninject.Parameters;
 
@@ -57,7 +53,7 @@ namespace Artemis.UI.Shared.Services
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
-        
+
         public bool GetPluginExtendsDataModel(Plugin plugin)
         {
             return _dataModelService.GetPluginExtendsDataModel(plugin);

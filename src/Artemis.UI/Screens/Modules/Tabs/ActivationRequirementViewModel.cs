@@ -1,5 +1,5 @@
 ﻿using System.Timers;
-using Artemis.Core.Plugins.Modules.ActivationRequirements;
+using Artemis.Core.Modules;
 using Humanizer;
 using Stylet;
 

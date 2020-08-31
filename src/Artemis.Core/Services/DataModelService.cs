@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Models.Profile.Conditions.Operators;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Newtonsoft.Json;
 using Serilog;
 
@@ -24,8 +14,8 @@ namespace Artemis.Core.Services
     internal class DataModelService : IDataModelService
     {
         private readonly List<DataModel> _dataModelExpansions;
-        private readonly IPluginService _pluginService;
         private readonly ILogger _logger;
+        private readonly IPluginService _pluginService;
         private readonly List<DisplayConditionOperator> _registeredConditionOperators;
 
         public DataModelService(IPluginService pluginService, ILogger logger)

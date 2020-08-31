@@ -2,18 +2,31 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Annotations;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.LayerEffects;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public abstract class RenderProfileElement : ProfileElement
     {
+        /// <summary>
+        ///     Returns a list of all keyframes on all properties and effects of this layer
+        /// </summary>
+        public virtual List<BaseLayerPropertyKeyframe> GetAllKeyframes()
+        {
+            var keyframes = new List<BaseLayerPropertyKeyframe>();
+            foreach (var layerEffect in LayerEffects)
+            {
+                foreach (var baseLayerProperty in layerEffect.BaseProperties.GetAllLayerProperties())
+                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
+            }
+
+            return keyframes;
+        }
+
         protected void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
@@ -52,21 +65,6 @@ namespace Artemis.Core.Models.Profile
                 RenderElementEntity.LayerEffects.Add(layerEffectEntity);
                 layerEffect.BaseProperties.ApplyToEntity();
             }
-        }
-
-        /// <summary>
-        ///     Returns a list of all keyframes on all properties and effects of this layer
-        /// </summary>
-        public virtual List<BaseLayerPropertyKeyframe> GetAllKeyframes()
-        {
-            var keyframes = new List<BaseLayerPropertyKeyframe>();
-            foreach (var layerEffect in LayerEffects)
-            {
-                foreach (var baseLayerProperty in layerEffect.BaseProperties.GetAllLayerProperties())
-                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            }
-
-            return keyframes;
         }
 
         #region Properties
@@ -215,7 +213,7 @@ namespace Artemis.Core.Models.Profile
 
 
         /// <summary>
-        /// Overrides the progress of the element
+        ///     Overrides the progress of the element
         /// </summary>
         /// <param name="timeOverride"></param>
         /// <param name="stickToMainSegment"></param>

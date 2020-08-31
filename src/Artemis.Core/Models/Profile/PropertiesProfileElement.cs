@@ -1,11 +1,6 @@
-﻿using System.Collections.Generic;
-using Artemis.Storage.Entities.Profile;
-using SkiaSharp;
-
-namespace Artemis.Core.Models.Profile
+﻿namespace Artemis.Core
 {
     public abstract class PropertiesProfileElement : ProfileElement
     {
-       
     }
 }

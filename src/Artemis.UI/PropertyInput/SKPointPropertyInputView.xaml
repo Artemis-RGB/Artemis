@@ -3,27 +3,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.PropertyInput"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:propertyInput="clr-namespace:Artemis.UI.PropertyInput"
              mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance propertyInput:SKPointPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal" KeyboardNavigation.IsTabStop="True">
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
-        <controls:DraggableFloat ToolTip="X-coordinate (horizontal)"
-                                 Value="{Binding X}"
-                                 StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                                 DragStarted="{s:Action InputDragStarted}"
-                                 DragEnded="{s:Action InputDragEnded}" />
+        <shared:DraggableFloat ToolTip="X-coordinate (horizontal)"
+                               Value="{Binding X}"
+                               StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                               DragStarted="{s:Action InputDragStarted}"
+                               DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
-        <controls:DraggableFloat ToolTip="Y-coordinate (vertical)"
-                                 Value="{Binding Y}"
-                                 StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
-                                 DragStarted="{s:Action InputDragStarted}"
-                                 DragEnded="{s:Action InputDragEnded}" />
+        <shared:DraggableFloat ToolTip="Y-coordinate (vertical)"
+                               Value="{Binding Y}"
+                               StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                               DragStarted="{s:Action InputDragStarted}"
+                               DragEnded="{s:Action InputDragEnded}" />
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

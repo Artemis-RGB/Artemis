@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.Core.Plugins.Modules.ActivationRequirements;
+using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Module;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.Modules
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Allows you to add support for new games/applications while utilizing your own data model

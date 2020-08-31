@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
@@ -17,11 +16,11 @@
     <StackPanel Orientation="Horizontal" Visibility="{Binding SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
         <StackPanel.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Repeat main segment" 
+                <MenuItem Header="Repeat main segment"
                           IsCheckable="True"
-                          IsChecked="{Binding Data.RepeatSegment, Source={StaticResource DataContextProxy}}" 
-                          Visibility="{Binding Data.IsMainSegment, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Source={StaticResource DataContextProxy}}"/>
-                <MenuItem Header="Disable segment" Command="{s:Action DisableSegment}"/>
+                          IsChecked="{Binding Data.RepeatSegment, Source={StaticResource DataContextProxy}}"
+                          Visibility="{Binding Data.IsMainSegment, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Source={StaticResource DataContextProxy}}" />
+                <MenuItem Header="Disable segment" Command="{s:Action DisableSegment}" />
             </ContextMenu>
         </StackPanel.ContextMenu>
 
@@ -86,8 +85,8 @@
                                                     <QuadraticEase EasingMode="EaseInOut" />
                                                 </DoubleAnimation.EasingFunction>
                                             </DoubleAnimation>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" >
-                                                <DiscreteObjectKeyFrame KeyTime="00:00:0.25" Value="{x:Static Visibility.Collapsed}"/>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)">
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:0.25" Value="{x:Static Visibility.Collapsed}" />
                                             </ObjectAnimationUsingKeyFrames>
                                         </Storyboard>
                                     </BeginStoryboard>
@@ -96,7 +95,7 @@
                                     <BeginStoryboard>
                                         <Storyboard>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)">
-                                                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}"/>
+                                                <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Visible}" />
                                             </ObjectAnimationUsingKeyFrames>
                                             <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.25" />
                                         </Storyboard>

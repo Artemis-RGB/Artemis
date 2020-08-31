@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.Exceptions
+namespace Artemis.Core
 {
     public class ArtemisPluginLockException : Exception
     {

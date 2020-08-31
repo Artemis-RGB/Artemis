@@ -5,7 +5,7 @@ using Artemis.Plugins.Modules.General.DataModel.Windows;
 
 namespace Artemis.Plugins.Modules.General.DataModel
 {
-    public class GeneralDataModel : Core.Plugins.DataModelExpansions.DataModel
+    public class GeneralDataModel : Core.DataModelExpansions.DataModel
     {
         public GeneralDataModel()
         {
@@ -25,7 +25,7 @@ namespace Artemis.Plugins.Modules.General.DataModel
         public List<TimeDataModel> TestTimeList { get; set; }
     }
 
-    public class TimeDataModel : Core.Plugins.DataModelExpansions.DataModel
+    public class TimeDataModel : Core.DataModelExpansions.DataModel
     {
         public DateTime CurrentTime { get; set; }
         public DateTime CurrentTimeUTC { get; set; }

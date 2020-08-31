@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Events;
-using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     public interface IRgbService : IArtemisService
     {

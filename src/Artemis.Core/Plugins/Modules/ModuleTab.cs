@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.Modules
+namespace Artemis.Core.Modules
 {
     /// <inheritdoc />
     public class ModuleTab<T> : ModuleTab where T : ModuleViewModel

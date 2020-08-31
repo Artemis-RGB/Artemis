@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Plugins.Modules.ActivationRequirements;
+using Artemis.Core.Modules;
 
 namespace Artemis.Plugins.Modules.Overlay
 {

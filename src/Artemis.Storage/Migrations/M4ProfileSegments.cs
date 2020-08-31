@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Runtime.InteropServices;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
@@ -20,7 +19,7 @@ namespace Artemis.Storage.Migrations
                 {
                     if (folder.PropertyEntities.Any(p => p.KeyframeEntities.Any()))
                         folder.MainSegmentLength = folder.PropertyEntities.Where(p => p.KeyframeEntities.Any()).Max(p => p.KeyframeEntities.Max(k => k.Position));
-                    if (folder.MainSegmentLength == TimeSpan.Zero) 
+                    if (folder.MainSegmentLength == TimeSpan.Zero)
                         folder.MainSegmentLength = TimeSpan.FromSeconds(5);
 
                     folder.DisplayContinuously = true;

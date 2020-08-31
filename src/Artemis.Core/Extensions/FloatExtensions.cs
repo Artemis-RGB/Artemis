@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class FloatExtensions
     {

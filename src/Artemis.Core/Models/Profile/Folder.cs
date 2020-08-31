@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Utilities;
+using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public sealed class Folder : RenderProfileElement
     {
@@ -183,7 +182,7 @@ namespace Artemis.Core.Models.Profile
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
-            
+
             // If required, apply the opacity override of the module to the root folder
             if (IsRootFolder && Profile.Module.OpacityOverride < 1)
             {

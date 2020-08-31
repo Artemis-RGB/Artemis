@@ -1,6 +1,6 @@
 ﻿using Stylet;
 
-namespace Artemis.Core.Plugins
+namespace Artemis.Core
 {
     public abstract class PluginConfigurationViewModel : Screen
     {

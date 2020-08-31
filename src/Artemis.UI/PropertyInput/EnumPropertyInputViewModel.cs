@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Utilities;
+using Artemis.Core;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.PropertyInput

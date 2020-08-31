@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.Plugins.LayerEffects.Filter.Views"
              xmlns:viewModels="clr-namespace:Artemis.Plugins.LayerEffects.Filter.ViewModels"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
@@ -11,12 +10,12 @@
              d:DataContext="{d:DesignInstance viewModels:ColorMatrixConfigurationViewModel}">
     <StackPanel Margin="15">
         <TextBlock>
-            Below you can define the color matrix to be applied to the folder/layer. <LineBreak/>
+            Below you can define the color matrix to be applied to the folder/layer. <LineBreak />
             Please note this is an advanced effect mainly included for the sake of completion.
         </TextBlock>
         <TextBlock TextWrapping="Wrap" Margin="0 25">
             If you are still not deterred,
-            <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/graphics/skiasharp/effects/color-filters" 
+            <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/graphics/skiasharp/effects/color-filters"
                        RequestNavigate="{s:Action OpenGuide}">
                 click here
             </Hyperlink>
@@ -25,16 +24,16 @@
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="50" />
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="50"/>
-                <ColumnDefinition Width="50"/>
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
+                <ColumnDefinition Width="50" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBox Grid.Row="0" Grid.Column="0" Text="{Binding Properties.ColorMatrix.CurrentValue[0]}" Margin="2" />
             <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Properties.ColorMatrix.CurrentValue[1]}" Margin="2" />
@@ -61,5 +60,5 @@
             <TextBox Grid.Row="3" Grid.Column="4" Text="{Binding Properties.ColorMatrix.CurrentValue[19]}" Margin="2" />
         </Grid>
     </StackPanel>
-    
+
 </UserControl>

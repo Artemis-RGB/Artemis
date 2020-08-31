@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Attributes
+namespace Artemis.Core
 {
     public class PropertyDescriptionAttribute : Attribute
     {

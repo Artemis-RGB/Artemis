@@ -1,7 +1,7 @@
 ﻿using System;
-using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core.LayerBrushes;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     /// <summary>
     ///     A reference to a <see cref="LayerBrushDescriptor" />

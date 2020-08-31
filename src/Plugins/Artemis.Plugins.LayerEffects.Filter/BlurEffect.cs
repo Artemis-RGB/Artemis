@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Plugins.LayerEffects;
+using Artemis.Core.LayerEffects;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerEffects.Filter

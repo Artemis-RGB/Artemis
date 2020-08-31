@@ -7,7 +7,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
     public class TreeViewModel : PropertyChangedBase
     {
-
         public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
         {
             LayerPropertiesViewModel = layerPropertiesViewModel;

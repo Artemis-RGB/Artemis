@@ -2,9 +2,8 @@
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.ProfileEditor;
-using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services.Dialog;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using FluentValidation;
 using Ninject.Extensions.Conventions;

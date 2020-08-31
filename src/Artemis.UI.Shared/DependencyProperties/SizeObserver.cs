@@ -1,7 +1,10 @@
 ﻿using System.Windows;
 
-namespace Artemis.UI.Shared.Utilities
+namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Provides a dependency property that can observe the size of an element and apply it to bindings
+    /// </summary>
     public static class SizeObserver
     {
         public static readonly DependencyProperty ObserveProperty = DependencyProperty.RegisterAttached(

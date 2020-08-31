@@ -4,12 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 
-namespace Artemis.Core.Plugins.DataModelExpansions
+namespace Artemis.Core.DataModelExpansions
 {
     public abstract class DataModel
     {

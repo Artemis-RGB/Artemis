@@ -2,12 +2,16 @@
 using System.Windows;
 using System.Windows.Media;
 
-namespace Artemis.UI.Shared.Utilities
+namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Provides utilities for running hit tests on visual elements
+    /// </summary>
     public static class HitTestUtilities
     {
         /// <summary>
-        ///     Runs a hit test on children of the container within the rectangle matching all elements that have a data context of T
+        ///     Runs a hit test on children of the container within the rectangle matching all elements that have a data context of
+        ///     T
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="container"></param>

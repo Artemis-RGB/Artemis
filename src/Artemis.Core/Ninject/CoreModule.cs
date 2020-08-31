@@ -1,9 +1,5 @@
 ﻿using System.IO;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;
 using Artemis.Storage.Repositories.Interfaces;
@@ -15,8 +11,12 @@ using Serilog;
 
 namespace Artemis.Core.Ninject
 {
+    /// <summary>
+    ///     The main <see cref="NinjectModule" /> of the Artemis Core that binds all services
+    /// </summary>
     public class CoreModule : NinjectModule
     {
+        /// <inheritdoc />
         public override void Load()
         {
             if (Kernel == null)

@@ -1,11 +1,5 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Plugins.Modules.ActivationRequirements;
+﻿using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
 using Artemis.UI.Screens.ProfileEditor;
@@ -48,7 +42,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         DeviceDebugViewModel Create(ArtemisDevice device);
     }
-    
+
     public interface IFolderVmFactory : IVmFactory
     {
         FolderViewModel Create(ProfileElement folder);
@@ -72,6 +66,7 @@ namespace Artemis.UI.Ninject.Factories
         SelectionToolViewModel SelectionToolViewModel(ProfileViewModel profileViewModel);
         SelectionRemoveToolViewModel SelectionRemoveToolViewModel(ProfileViewModel profileViewModel);
     }
+
     public interface IDisplayConditionsVmFactory : IVmFactory
     {
         DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, bool isListGroup);

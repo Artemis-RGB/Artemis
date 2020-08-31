@@ -1,8 +1,7 @@
 ﻿using System;
-using Artemis.Core.Extensions;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class SKColorLayerProperty : LayerProperty<SKColor>

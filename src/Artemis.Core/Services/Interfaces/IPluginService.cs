@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using Artemis.Core.Events;
-using Artemis.Core.Plugins;
 using RGB.NET.Core;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     /// <summary>
-    /// A service providing plugin management
+    ///     A service providing plugin management
     /// </summary>
     public interface IPluginService : IArtemisService, IDisposable
     {

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.Conditions.Abstract;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Models.Profile.Conditions
+namespace Artemis.Core
 {
     /// <summary>
     ///     A predicate in a display condition using either two data model values or one data model value and a
@@ -198,8 +195,10 @@ namespace Artemis.Core.Models.Profile.Conditions
 
             var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (!displayConditionOperator.SupportsType(leftType))
+            {
                 throw new ArtemisCoreException($"Cannot apply operator {displayConditionOperator.GetType().Name} to this predicate because " +
                                                $"it does not support left side type {leftType.Name}");
+            }
 
             Operator = displayConditionOperator;
             CreateExpression();

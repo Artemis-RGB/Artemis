@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Artemis.Core.JsonConverters
 {
-    public class SKColorConverter : JsonConverter<SKColor>
+    internal class SKColorConverter : JsonConverter<SKColor>
     {
         public override void WriteJson(JsonWriter writer, SKColor value, JsonSerializer serializer)
         {

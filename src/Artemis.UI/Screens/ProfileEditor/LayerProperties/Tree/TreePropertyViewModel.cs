@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Utilities;
+using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree

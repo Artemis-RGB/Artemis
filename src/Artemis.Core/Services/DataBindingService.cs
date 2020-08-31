@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.DataBindings;
-using Artemis.Core.Models.Profile.DataBindings.Modifiers;
-using Artemis.Core.Plugins;
-using Artemis.Core.Services.Interfaces;
 using Newtonsoft.Json;
 using Serilog;
 

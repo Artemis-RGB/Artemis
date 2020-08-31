@@ -1,8 +1,7 @@
 ﻿using System;
-using Artemis.Core.Utilities;
 using Stylet;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core
 {
     /// <summary>
     ///     For internal use only, use <see cref="LayerPropertyKeyframe{T}" /> instead.

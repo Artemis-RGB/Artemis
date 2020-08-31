@@ -2,9 +2,9 @@
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Artemis.Core.Utilities
+namespace Artemis.Core
 {
-    public static class ReflectionUtilities
+    internal static class ReflectionUtilities
     {
         public static PropertyInfo GetPropertyInfo<TSource, TProperty>(TSource source, Expression<Func<TSource, TProperty>> propertyLambda)
         {
@@ -17,7 +17,7 @@ namespace Artemis.Core.Utilities
             var propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
                 throw new ArgumentException(string.Format("Expression '{0}' refers to a field, not a property.", propertyLambda));
-            
+
             return propInfo;
         }
     }

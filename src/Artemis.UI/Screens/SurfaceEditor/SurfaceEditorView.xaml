@@ -5,8 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:s="https://github.com/canton7/Stylet"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:models="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
-    xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
+    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:models="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+    x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
     mc:Ignorable="d"
     d:DesignHeight="600" d:DesignWidth="600">
     <UserControl.Resources>

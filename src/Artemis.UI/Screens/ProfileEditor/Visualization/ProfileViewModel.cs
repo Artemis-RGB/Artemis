@@ -3,18 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Artemis.Core.Events;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Events;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
@@ -211,6 +207,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             base.OnClose();
         }
 
+        protected override void OnActivate()
+        {
+            ApplyActiveProfile();
+        }
+
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
         {
             ApplySurfaceConfiguration(e.Surface);
@@ -235,11 +236,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 profileLayerViewModel.Dispose();
                 CanvasViewModels.Remove(profileLayerViewModel);
             }
-        }
-
-        protected override void OnActivate()
-        {
-            ApplyActiveProfile();
         }
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)

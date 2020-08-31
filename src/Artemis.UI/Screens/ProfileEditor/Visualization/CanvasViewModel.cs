@@ -20,17 +20,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _y, value);
         }
 
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
             {
             }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

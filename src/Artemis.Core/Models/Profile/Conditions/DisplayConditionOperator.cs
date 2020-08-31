@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 
-namespace Artemis.Core.Models.Profile.Conditions
+namespace Artemis.Core
 {
     /// <summary>
     ///     A display condition operator is used by the conditions system to perform a specific boolean check

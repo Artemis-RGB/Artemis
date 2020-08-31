@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Linq;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline

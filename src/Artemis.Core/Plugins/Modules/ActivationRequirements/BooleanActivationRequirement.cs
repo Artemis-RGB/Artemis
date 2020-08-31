@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.Plugins.Modules.ActivationRequirements
+﻿namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Evaluates to true or false by returning the value of ActivationMet

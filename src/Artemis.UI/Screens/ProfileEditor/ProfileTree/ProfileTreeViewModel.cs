@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
-using Artemis.UI.Shared.Events;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
 
@@ -15,9 +15,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
     {
         private readonly IFolderVmFactory _folderVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private FolderViewModel _rootFolder;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
-        private FolderViewModel _rootFolder;
 
         public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderVmFactory folderVmFactory)
         {
@@ -101,6 +101,21 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             RootFolder?.AddLayer();
         }
 
+        protected override void OnInitialActivate()
+        {
+            Subscribe();
+            CreateRootFolderViewModel();
+        }
+
+        protected override void OnClose()
+        {
+            Unsubscribe();
+
+            RootFolder?.Dispose();
+            RootFolder = null;
+            base.OnClose();
+        }
+
         private void CreateRootFolderViewModel()
         {
             _updatingTree = true;
@@ -150,21 +165,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 default:
                     return DragDropType.None;
             }
-        }
-
-        protected override void OnInitialActivate()
-        {
-            Subscribe();
-            CreateRootFolderViewModel();
-        }
-
-        protected override void OnClose()
-        {
-            Unsubscribe();
-
-            RootFolder?.Dispose();
-            RootFolder = null;
-            base.OnClose();
         }
 
         #region Event handlers

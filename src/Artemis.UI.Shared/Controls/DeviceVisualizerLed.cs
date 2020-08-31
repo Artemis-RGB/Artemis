@@ -3,11 +3,11 @@ using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using RGB.NET.Core;
 using Color = System.Windows.Media.Color;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     internal class DeviceVisualizerLed
     {
@@ -69,7 +69,7 @@ namespace Artemis.UI.Shared.Controls
             // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size
             drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), null, LedRect);
             // Translate to the top-left of the LedRect
-            drawingContext.PushTransform(new TranslateTransform(LedRect.X , LedRect.Y));
+            drawingContext.PushTransform(new TranslateTransform(LedRect.X, LedRect.Y));
             // Render the LED geometry
             drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1) {LineJoin = PenLineJoin.Round}, DisplayGeometry.GetOutlinedPathGeometry());
             // Restore the drawing context

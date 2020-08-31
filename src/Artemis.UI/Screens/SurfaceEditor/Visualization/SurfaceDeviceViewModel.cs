@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Input;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
     public class SurfaceDeviceViewModel : PropertyChangedBase
     {
+        private Cursor _cursor;
+        private ArtemisDevice _device;
         private double _dragOffsetX;
         private double _dragOffsetY;
-        private ArtemisDevice _device;
         private SelectionStatus _selectionStatus;
-        private Cursor _cursor;
 
         public SurfaceDeviceViewModel(ArtemisDevice device)
         {

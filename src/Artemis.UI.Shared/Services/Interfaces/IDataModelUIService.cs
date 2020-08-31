@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.UI.Shared.DataModelVisualization;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     public interface IDataModelUIService : IArtemisSharedUIService
     {
+        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
+        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
         DataModelPropertiesViewModel GetMainDataModelVisualization();
         DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin);
 
@@ -26,7 +26,5 @@ namespace Artemis.UI.Shared.Services.Interfaces
 
         DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
         DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
-        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
-        IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
     }
 }

@@ -1,5 +1,5 @@
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using RGB.NET.Core;
 using RGB.NET.Devices.Novation;
 

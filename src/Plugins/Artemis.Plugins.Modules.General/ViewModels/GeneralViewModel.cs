@@ -1,15 +1,15 @@
-﻿using Artemis.Core.Plugins.Modules;
+﻿using Artemis.Core.Modules;
 
 namespace Artemis.Plugins.Modules.General.ViewModels
 {
     public class GeneralViewModel : ModuleViewModel
     {
-        public GeneralModule GeneralModule { get; }
-
         public GeneralViewModel(GeneralModule module) : base(module, "General")
         {
             GeneralModule = module;
         }
+
+        public GeneralModule GeneralModule { get; }
 
         public void ShowUTCTimeInDataModel()
         {

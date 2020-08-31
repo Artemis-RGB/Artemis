@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using HidSharp;
 using RGB.NET.Core;
 using RGB.NET.Devices.Logitech;

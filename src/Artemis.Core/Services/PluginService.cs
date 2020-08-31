@@ -3,14 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Utilities;
+using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
@@ -328,7 +321,7 @@ namespace Artemis.Core.Services
                     _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
 
                     _logger.Debug("Shutting down for device provider disable {pluginInfo}", plugin.PluginInfo);
-                    CurrentProcessUtilities.Shutdown(2, true);
+                    ApplicationUtilities.Shutdown(2, true);
                     return;
                 }
 

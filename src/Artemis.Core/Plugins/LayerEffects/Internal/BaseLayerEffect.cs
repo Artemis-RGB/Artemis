@@ -1,16 +1,16 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
     /// </summary>
     public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
     {
+        private LayerEffectConfigurationDialog _configurationDialog;
         private LayerEffectDescriptor _descriptor;
         private bool _enabled;
         private Guid _entityId;
@@ -18,7 +18,6 @@ namespace Artemis.Core.Plugins.LayerEffects
         private string _name;
         private int _order;
         private RenderProfileElement _profileElement;
-        private LayerEffectConfigurationDialog _configurationDialog;
 
         /// <summary>
         ///     Gets the unique ID of this effect
@@ -76,7 +75,7 @@ namespace Artemis.Core.Plugins.LayerEffects
         }
 
         /// <summary>
-        ///     Gets the <see cref="LayerEffectDescriptor"/> that registered this effect
+        ///     Gets the <see cref="LayerEffectDescriptor" /> that registered this effect
         /// </summary>
         public LayerEffectDescriptor Descriptor
         {

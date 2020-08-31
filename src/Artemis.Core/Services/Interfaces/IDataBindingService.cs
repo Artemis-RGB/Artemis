@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Annotations;
-using Artemis.Core.Models.Profile.DataBindings;
-using Artemis.Core.Models.Profile.DataBindings.Modifiers;
-using Artemis.Core.Plugins;
+using Artemis.Core.Properties;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     public interface IDataBindingService : IArtemisService
     {

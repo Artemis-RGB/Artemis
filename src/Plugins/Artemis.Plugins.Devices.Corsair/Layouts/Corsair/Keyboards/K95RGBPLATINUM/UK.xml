@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Corsair K95 RGB PLATINUM - Physical UK</Name>
   <Description>Physical UK-Layout of Corsairs K95 RGB PLATINUM (Logical: BE, CH, DE, ES, EU_Int, FR, IT, ND, MEX, PT, TR, UK)</Description>
@@ -460,7 +461,7 @@
         <LedImage Id="Keyboard_Custom19" Image="Empty.png" />
       </LedImages>
     </LedImageLayout>
-	 <LedImageLayout Layout="EU_Int">
+    <LedImageLayout Layout="EU_Int">
       <LedImages>
         <LedImage Id="Keyboard_Brightness" Image="Strafe_Keys\Brightness.png" />
         <LedImage Id="Keyboard_WinLock" Image="Strafe_Keys\WinLock.png" />

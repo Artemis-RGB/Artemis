@@ -1,4 +1,4 @@
-﻿using Artemis.UI.Shared.DataModelVisualization;
+﻿using Artemis.UI.Shared;
 using SkiaSharp;
 
 namespace Artemis.UI.DataModelVisualization.Display

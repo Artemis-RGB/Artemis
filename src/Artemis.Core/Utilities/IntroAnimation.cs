@@ -1,17 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Storage.Interfaces;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 using Serilog;
 using SkiaSharp;
 
-namespace Artemis.Core.Utilities
+namespace Artemis.Core
 {
     internal class IntroAnimation
     {

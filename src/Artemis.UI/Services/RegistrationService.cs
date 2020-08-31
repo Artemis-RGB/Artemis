@@ -4,7 +4,6 @@ using Artemis.UI.DataModelVisualization.Input;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 
 namespace Artemis.UI.Services
 {

@@ -8,18 +8,30 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Visualizes an <see cref="ArtemisDevice" /> with optional per-LED colors
+    /// </summary>
     public class DeviceVisualizer : FrameworkElement, IDisposable
     {
+        /// <summary>
+        ///     The device to visualize
+        /// </summary>
         public static readonly DependencyProperty DeviceProperty = DependencyProperty.Register(nameof(Device), typeof(ArtemisDevice), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(ArtemisDevice), FrameworkPropertyMetadataOptions.AffectsRender, DevicePropertyChangedCallback));
 
+        /// <summary>
+        ///     Whether or not to show per-LED colors
+        /// </summary>
         public static readonly DependencyProperty ShowColorsProperty = DependencyProperty.Register(nameof(ShowColors), typeof(bool), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(bool), FrameworkPropertyMetadataOptions.AffectsRender, ShowColorsPropertyChangedCallback));
 
+        /// <summary>
+        ///     A list of LEDs to highlight
+        /// </summary>
         public static readonly DependencyProperty HighlightedLedsProperty = DependencyProperty.Register(nameof(HighlightedLeds), typeof(IEnumerable<ArtemisLed>), typeof(DeviceVisualizer),
             new FrameworkPropertyMetadata(default(IEnumerable<ArtemisLed>)));
 
@@ -29,6 +41,9 @@ namespace Artemis.UI.Shared.Controls
         private BitmapImage _deviceImage;
         private ArtemisDevice _oldDevice;
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DeviceVisualizer" /> class
+        /// </summary>
         public DeviceVisualizer()
         {
             _backingStore = new DrawingGroup();
@@ -42,44 +57,40 @@ namespace Artemis.UI.Shared.Controls
             Unloaded += OnUnloaded;
         }
 
+        /// <summary>
+        ///     Gets or sets the device to visualize
+        /// </summary>
         public ArtemisDevice Device
         {
             get => (ArtemisDevice) GetValue(DeviceProperty);
             set => SetValue(DeviceProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets whether or not to show per-LED colors
+        /// </summary>
         public bool ShowColors
         {
             get => (bool) GetValue(ShowColorsProperty);
             set => SetValue(ShowColorsProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets a list of LEDs to highlight
+        /// </summary>
         public IEnumerable<ArtemisLed> HighlightedLeds
         {
             get => (IEnumerable<ArtemisLed>) GetValue(HighlightedLedsProperty);
             set => SetValue(HighlightedLedsProperty, value);
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             _timer.Stop();
         }
 
-        public static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
-        {
-            double scale;
-            if (maxWidth == double.PositiveInfinity && maxHeight != double.PositiveInfinity)
-                scale = maxHeight / src.Height;
-            else if (maxWidth != double.PositiveInfinity && maxHeight == double.PositiveInfinity)
-                scale = maxWidth / src.Width;
-            else if (maxWidth == double.PositiveInfinity && maxHeight == double.PositiveInfinity)
-                return src;
-
-            scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
-
-            return new Size(src.Width * scale, src.Height * scale);
-        }
-
+        /// <inheritdoc />
         protected override void OnRender(DrawingContext drawingContext)
         {
             if (Device == null)
@@ -118,6 +129,32 @@ namespace Artemis.UI.Shared.Controls
             drawingContext.DrawDrawing(_backingStore);
         }
 
+        /// <inheritdoc />
+        protected override Size MeasureOverride(Size availableSize)
+        {
+            if (Device == null)
+                return Size.Empty;
+
+            var deviceSize = MeasureDevice();
+            return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
+        }
+
+        private static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
+        {
+            double scale;
+            // ??
+            if (double.IsPositiveInfinity(maxWidth) && !double.IsPositiveInfinity(maxHeight))
+                scale = maxHeight / src.Height;
+            else if (!double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
+                scale = maxWidth / src.Width;
+            else if (double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
+                return src;
+
+            scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
+
+            return new Size(src.Width * scale, src.Height * scale);
+        }
+
         private Size MeasureDevice()
         {
             if (Device == null)
@@ -127,15 +164,6 @@ namespace Artemis.UI.Shared.Controls
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
             return rotationRect.Size;
-        }
-
-        protected override Size MeasureOverride(Size availableSize)
-        {
-            if (Device == null)
-                return Size.Empty;
-
-            var deviceSize = MeasureDevice();
-            return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)

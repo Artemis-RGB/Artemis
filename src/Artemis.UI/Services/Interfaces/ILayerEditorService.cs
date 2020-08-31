@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Media;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 using SkiaSharp;
 
 namespace Artemis.UI.Services.Interfaces

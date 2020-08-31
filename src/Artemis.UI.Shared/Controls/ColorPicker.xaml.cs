@@ -5,7 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Interaction logic for ColorPicker.xaml

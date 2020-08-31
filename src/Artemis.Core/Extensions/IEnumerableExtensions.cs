@@ -22,7 +22,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class IEnumerableExtensions
     {

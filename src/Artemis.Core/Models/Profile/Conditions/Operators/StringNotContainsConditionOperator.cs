@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Artemis.Core.Models.Profile.Conditions.Operators
+namespace Artemis.Core
 {
     internal class StringNotContainsConditionOperator : DisplayConditionOperator
     {
-        private readonly MethodInfo _toLower;
         private readonly MethodInfo _contains;
+        private readonly MethodInfo _toLower;
 
         public StringNotContainsConditionOperator()
         {
             _toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            _contains = typeof(string).GetMethod("Contains", new[] { typeof(string) });
+            _contains = typeof(string).GetMethod("Contains", new[] {typeof(string)});
         }
 
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> { typeof(string) };
+        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
 
         public override string Description => "Does not contain";
         public override string Icon => "FormatStrikethrough";

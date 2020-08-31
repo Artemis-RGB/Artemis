@@ -1,7 +1,6 @@
 ﻿using System;
-using Artemis.Core.Plugins;
 
-namespace Artemis.Core.Events
+namespace Artemis.Core
 {
     public class PluginEventArgs : EventArgs
     {

@@ -3,14 +3,12 @@ using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Utilities;
 using Humanizer;
 

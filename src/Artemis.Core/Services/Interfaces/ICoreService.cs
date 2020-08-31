@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Artemis.Core.Events;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     public interface ICoreService : IArtemisService, IDisposable
     {
@@ -16,7 +14,7 @@ namespace Artemis.Core.Services.Interfaces
         ///     The time the last frame took to render
         /// </summary>
         TimeSpan FrameTime { get; }
-        
+
         /// <summary>
         ///     Gets or sets whether modules are rendered each frame by calling their Render method
         /// </summary>

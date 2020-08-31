@@ -2,19 +2,13 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.Annotations;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Properties;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public abstract class LayerPropertyGroup : IDisposable
     {
@@ -89,6 +83,13 @@ namespace Artemis.Core.Models.Profile
         /// </summary>
         public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
 
+        public void Dispose()
+        {
+            DisableProperties();
+            foreach (var layerPropertyGroup in _layerPropertyGroups)
+                layerPropertyGroup.Dispose();
+        }
+
         /// <summary>
         ///     Recursively gets all layer properties on this group and any subgroups
         /// </summary>
@@ -106,13 +107,6 @@ namespace Artemis.Core.Models.Profile
 
             _allLayerProperties = result.AsReadOnly();
             return _allLayerProperties;
-        }
-
-        public void Dispose()
-        {
-            DisableProperties();
-            foreach (var layerPropertyGroup in _layerPropertyGroups)
-                layerPropertyGroup.Dispose();
         }
 
         /// <summary>

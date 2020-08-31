@@ -3,7 +3,7 @@ using System.Linq;
 using System.Reflection;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class SKSizeLayerProperty : LayerProperty<SKSize>
@@ -17,16 +17,16 @@ namespace Artemis.Core.Models.Profile.LayerProperties.Types
             return p.CurrentValue;
         }
 
+        public override List<PropertyInfo> GetDataBindingProperties()
+        {
+            return typeof(SKSize).GetProperties().Where(p => p.CanWrite).ToList();
+        }
+
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             var widthDiff = NextKeyframe.Value.Width - CurrentKeyframe.Value.Width;
             var heightDiff = NextKeyframe.Value.Height - CurrentKeyframe.Value.Height;
             CurrentValue = new SKSize(CurrentKeyframe.Value.Width + widthDiff * keyframeProgressEased, CurrentKeyframe.Value.Height + heightDiff * keyframeProgressEased);
-        }
-
-        public override List<PropertyInfo> GetDataBindingProperties()
-        {
-            return typeof(SKSize).GetProperties().Where(p => p.CanWrite).ToList();
         }
     }
 }

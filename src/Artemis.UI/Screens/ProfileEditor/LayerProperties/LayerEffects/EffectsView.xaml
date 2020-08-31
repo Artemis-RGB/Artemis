@@ -7,7 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
-             xmlns:layerEffect="clr-namespace:Artemis.Core.Plugins.LayerEffects;assembly=Artemis.Core"
+             xmlns:layerEffect="clr-namespace:Artemis.Core.LayerEffects;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:EffectsViewModel}">

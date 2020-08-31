@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.LayerBrushes;
+﻿using Artemis.Core.LayerBrushes;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor

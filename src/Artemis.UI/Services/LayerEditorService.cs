@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 

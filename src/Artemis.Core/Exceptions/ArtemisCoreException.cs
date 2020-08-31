@@ -1,18 +1,17 @@
 ﻿using System;
 
-namespace Artemis.Core.Exceptions
+namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents errors that occur withing the Artemis Core
+    /// </summary>
     public class ArtemisCoreException : Exception
     {
-        public ArtemisCoreException()
+        internal ArtemisCoreException(string message) : base(message)
         {
         }
 
-        public ArtemisCoreException(string message) : base(message)
-        {
-        }
-
-        public ArtemisCoreException(string message, Exception inner) : base(message, inner)
+        internal ArtemisCoreException(string message, Exception inner) : base(message, inner)
         {
         }
     }

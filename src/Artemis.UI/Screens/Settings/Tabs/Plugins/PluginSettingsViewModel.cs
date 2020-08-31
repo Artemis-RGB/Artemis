@@ -2,15 +2,14 @@
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
+using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Ninject.Parameters;
@@ -21,13 +20,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     public class PluginSettingsViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
+        private readonly IKernel _kernel;
         private readonly IPluginService _pluginService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
-        private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
+        private bool _enabling;
         private Plugin _plugin;
         private PluginInfo _pluginInfo;
-        private bool _enabling;
 
         public PluginSettingsViewModel(Plugin plugin,
             IKernel kernel,
@@ -131,7 +130,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     return PackIconKind.Devices;
                 case ProfileModule _:
                     return PackIconKind.VectorRectangle;
-                case Core.Plugins.Modules.Module _:
+                case Module _:
                     return PackIconKind.GearBox;
                 case LayerBrushProvider _:
                     return PackIconKind.Brush;

@@ -1,8 +1,8 @@
-﻿using Artemis.UI.Shared.Services.Dialog;
+﻿using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared.Screens.Dialogs
 {
-    public class ConfirmDialogViewModel : DialogViewModelBase
+    internal class ConfirmDialogViewModel : DialogViewModelBase
     {
         public ConfirmDialogViewModel(string header, string text, string confirmText, string cancelText)
         {

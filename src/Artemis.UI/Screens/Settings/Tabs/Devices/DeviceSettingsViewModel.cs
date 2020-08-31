@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.Settings.Debug;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Humanizer;
 using Stylet;
 
@@ -12,10 +11,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
     public class DeviceSettingsViewModel : PropertyChangedBase
     {
+        private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IWindowManager _windowManager;
-        private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
         private bool _isDeviceEnabled;
 
         public DeviceSettingsViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService,

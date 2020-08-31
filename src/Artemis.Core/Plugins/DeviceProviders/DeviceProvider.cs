@@ -1,11 +1,10 @@
 ﻿using System;
 using System.IO;
-using Artemis.Core.Extensions;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
 
-namespace Artemis.Core.Plugins.DeviceProviders
+namespace Artemis.Core.DeviceProviders
 {
     /// <inheritdoc />
     /// <summary>

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Utilities;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
@@ -42,7 +41,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 if (desiredPosition > TimeSpan.Zero)
                     newKeyframe.Position = desiredPosition;
             }
-            
+
             LayerPropertyKeyframe.LayerProperty.AddKeyframe(newKeyframe);
             _profileEditorService.UpdateSelectedProfileElement();
         }
@@ -98,6 +97,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             get => _timestamp;
             set => SetAndNotify(ref _timestamp, value);
+        }
+
+        public void Dispose()
+        {
+            BaseLayerPropertyKeyframe.PropertyChanged -= BaseLayerPropertyKeyframeOnPropertyChanged;
         }
 
         public void Update(int pixelsPerSecond)
@@ -182,10 +186,5 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            BaseLayerPropertyKeyframe.PropertyChanged -= BaseLayerPropertyKeyframeOnPropertyChanged;
-        }
     }
 }

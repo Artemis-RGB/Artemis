@@ -1,9 +1,8 @@
 ﻿using System.Linq;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Shared.Events;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
@@ -11,11 +10,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     {
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private bool _alwaysFinishTimeline;
+        private bool _displayContinuously;
         private RenderProfileElement _renderProfileElement;
         private DisplayConditionGroupViewModel _rootGroup;
         private int _transitionerIndex;
-        private bool _displayContinuously;
-        private bool _alwaysFinishTimeline;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
@@ -85,7 +84,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             _alwaysFinishTimeline = RenderProfileElement?.AlwaysFinishTimeline ?? false;
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
-            
+
             if (e.RenderProfileElement == null)
             {
                 RootGroup?.Dispose();

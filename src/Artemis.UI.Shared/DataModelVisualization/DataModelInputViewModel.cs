@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
+using Artemis.Core.DataModelExpansions;
 using Stylet;
 
-namespace Artemis.UI.Shared.DataModelVisualization
+namespace Artemis.UI.Shared
 {
     public abstract class DataModelInputViewModel<T> : DataModelInputViewModel
     {

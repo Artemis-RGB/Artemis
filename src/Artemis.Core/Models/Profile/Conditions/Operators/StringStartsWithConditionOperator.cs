@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Artemis.Core.Models.Profile.Conditions.Operators
+namespace Artemis.Core
 {
     internal class StringStartsWithConditionOperator : DisplayConditionOperator
     {
-        private readonly MethodInfo _toLower;
         private readonly MethodInfo _startsWith;
+        private readonly MethodInfo _toLower;
 
         public StringStartsWithConditionOperator()
         {
             _toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-            _startsWith = typeof(string).GetMethod("StartsWith", new[] { typeof(string) });
+            _startsWith = typeof(string).GetMethod("StartsWith", new[] {typeof(string)});
         }
 
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> { typeof(string) };
+        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
 
         public override string Description => "Starts with";
         public override string Icon => "ContainStart";

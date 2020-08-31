@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Artemis.Core;
-using Artemis.Core.Plugins;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared.DataModelVisualization
+namespace Artemis.UI.Shared
 {
     public class DataModelVisualizationRegistration
     {
