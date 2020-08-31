@@ -10,7 +10,7 @@
 
 Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
 **Download**: https://github.com/SpoinkyNL/Artemis/releases  
-**FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)
+**FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)  
 **Documentation**: https://artemis-rgb.com/docs/
 
 ### Notice
