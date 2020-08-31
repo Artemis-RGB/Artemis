@@ -7,7 +7,7 @@
             "Artemis.Core/Artemis.Core.csproj",
             "Artemis.UI.Shared/Artemis.UI.Shared.csproj",
           ],
-          "src": "../src"
+          "src": "../../src"
         }
       ],
       "dest": "api",
