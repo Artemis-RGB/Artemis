@@ -5,44 +5,6 @@ namespace Artemis.Core.Utilities
     public static class Easings
     {
         /// <summary>
-        ///     Easing Functions enumeration
-        /// </summary>
-        public enum Functions
-        {
-            Linear,
-            QuadraticEaseIn,
-            QuadraticEaseOut,
-            QuadraticEaseInOut,
-            CubicEaseIn,
-            CubicEaseOut,
-            CubicEaseInOut,
-            QuarticEaseIn,
-            QuarticEaseOut,
-            QuarticEaseInOut,
-            QuinticEaseIn,
-            QuinticEaseOut,
-            QuinticEaseInOut,
-            SineEaseIn,
-            SineEaseOut,
-            SineEaseInOut,
-            CircularEaseIn,
-            CircularEaseOut,
-            CircularEaseInOut,
-            ExponentialEaseIn,
-            ExponentialEaseOut,
-            ExponentialEaseInOut,
-            ElasticEaseIn,
-            ElasticEaseOut,
-            ElasticEaseInOut,
-            BackEaseIn,
-            BackEaseOut,
-            BackEaseInOut,
-            BounceEaseIn,
-            BounceEaseOut,
-            BounceEaseInOut
-        }
-
-        /// <summary>
         ///     Constant Pi.
         /// </summary>
         private const double PI = Math.PI;
@@ -178,9 +140,9 @@ namespace Artemis.Core.Utilities
         }
 
         /// <summary>
-        // Modeled after the piecewise quartic
-        // y = (1/2)((2x)^4)        ; [0, 0.5)
-        // y = -(1/2)((2x-2)^4 - 2) ; [0.5, 1]
+        ///     Modeled after the piecewise quartic
+        ///     y = (1/2)((2x)^4)        ; [0, 0.5)
+        ///     y = -(1/2)((2x-2)^4 - 2) ; [0.5, 1]
         /// </summary>
         public static double QuarticEaseInOut(double p)
         {
@@ -393,6 +355,44 @@ namespace Artemis.Core.Utilities
             if (p < 0.5)
                 return 0.5 * BounceEaseIn(p * 2);
             return 0.5 * BounceEaseOut(p * 2 - 1) + 0.5;
+        }
+
+        /// <summary>
+        ///     Easing Functions enumeration
+        /// </summary>
+        public enum Functions
+        {
+            Linear,
+            QuadraticEaseIn,
+            QuadraticEaseOut,
+            QuadraticEaseInOut,
+            CubicEaseIn,
+            CubicEaseOut,
+            CubicEaseInOut,
+            QuarticEaseIn,
+            QuarticEaseOut,
+            QuarticEaseInOut,
+            QuinticEaseIn,
+            QuinticEaseOut,
+            QuinticEaseInOut,
+            SineEaseIn,
+            SineEaseOut,
+            SineEaseInOut,
+            CircularEaseIn,
+            CircularEaseOut,
+            CircularEaseInOut,
+            ExponentialEaseIn,
+            ExponentialEaseOut,
+            ExponentialEaseInOut,
+            ElasticEaseIn,
+            ElasticEaseOut,
+            ElasticEaseInOut,
+            BackEaseIn,
+            BackEaseOut,
+            BackEaseInOut,
+            BounceEaseIn,
+            BounceEaseOut,
+            BounceEaseInOut
         }
     }
 }
