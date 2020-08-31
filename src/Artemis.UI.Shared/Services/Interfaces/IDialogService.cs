@@ -10,7 +10,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
     public interface IDialogService : IArtemisSharedUIService
     {
         /// <summary>
-        ///     Shows a confirm dialog on the dialog host provided in <see cref="identifier" />.
+        ///     Shows a confirm dialog on the dialog host provided
         /// </summary>
         /// <param name="header">The title of the dialog</param>
         /// <param name="text">The body text of the dialog</param>
@@ -20,7 +20,7 @@ namespace Artemis.UI.Shared.Services.Interfaces
         Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel");
 
         /// <summary>
-        ///     Shows a confirm dialog on the dialog host provided in <see cref="identifier" />.
+        ///     Shows a confirm dialog on the dialog host provided in identifier.
         /// </summary>
         /// <param name="identifier">
         ///     The identifier of the <see cref="DialogHost" /> to use eg.
