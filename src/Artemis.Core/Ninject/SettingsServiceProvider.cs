@@ -1,13 +1,10 @@
-﻿using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Ninject;
 using Ninject.Activation;
 
 namespace Artemis.Core.Ninject
 {
-    public class SettingsServiceProvider : Provider<ISettingsService>
+    internal class SettingsServiceProvider : Provider<ISettingsService>
     {
         private readonly SettingsService _instance;
 

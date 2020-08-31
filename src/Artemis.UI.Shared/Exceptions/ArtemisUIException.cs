@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.UI.Shared.Exceptions
+namespace Artemis.UI.Shared
 {
     public class ArtemisSharedUIException : Exception
     {

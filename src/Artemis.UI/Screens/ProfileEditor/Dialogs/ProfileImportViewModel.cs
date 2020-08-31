@@ -1,6 +1,6 @@
-﻿using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Shared.Services.Dialog;
+﻿using Artemis.Core.Modules;
+using Artemis.Core.Services;
+using Artemis.UI.Shared.Services;
 using ICSharpCode.AvalonEdit.Document;
 using MaterialDesignThemes.Wpf;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrushes;
+using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using Artemis.Plugins.LayerBrushes.Color.PropertyGroups;
 using SkiaSharp;
 using static Artemis.Plugins.LayerBrushes.Color.PropertyGroups.ColorBrushProperties;
@@ -11,10 +11,10 @@ namespace Artemis.Plugins.LayerBrushes.Color
     public class ColorBrush : LayerBrush<ColorBrushProperties>
     {
         private SKColor _color;
+        private float _linearGradientRotation;
         private SKPaint _paint;
         private SKShader _shader;
         private SKRect _shaderBounds;
-        private float _linearGradientRotation;
 
         public override void EnableLayerBrush()
         {
@@ -44,7 +44,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
             if (Properties.GradientType.BaseValue == ColorType.Solid && _color != Properties.Color.CurrentValue)
                 CreateSolid();
             // While rendering a linear gradient, if the rotation was changed since the last frame, recreate the shader
-            else if (Properties.GradientType.BaseValue == ColorType.LinearGradient && Math.Abs(_linearGradientRotation - Properties.LinearGradientRotation.CurrentValue) > 0.01) 
+            else if (Properties.GradientType.BaseValue == ColorType.LinearGradient && Math.Abs(_linearGradientRotation - Properties.LinearGradientRotation.CurrentValue) > 0.01)
                 CreateLinearGradient();
         }
 

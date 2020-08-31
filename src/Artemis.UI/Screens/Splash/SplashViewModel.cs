@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
-using Artemis.Core.Events;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.Services;
 using MaterialDesignExtensions.Controls;
 using Stylet;
 

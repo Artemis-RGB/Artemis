@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Artemis.Core.Events;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.RGB.NET;
-using Artemis.Core.Services.Interfaces;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Serilog;
@@ -67,10 +62,10 @@ namespace Artemis.Core.Services
                 _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;
             }
-    
+
             foreach (var surfaceDevice in deviceProvider.Devices)
             {
-                _logger.Debug("Device provider {deviceProvider} added {deviceName}", 
+                _logger.Debug("Device provider {deviceProvider} added {deviceName}",
                     deviceProvider.GetType().Name, surfaceDevice.DeviceInfo?.DeviceName);
                 if (!_loadedDevices.Contains(surfaceDevice))
                 {

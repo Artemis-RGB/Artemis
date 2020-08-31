@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization.Tools"
-             xmlns:userControls="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization.UserControls"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:tools="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization.Tools"
              xmlns:userControls1="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization.UserControls"
@@ -14,17 +12,17 @@
              d:DataContext="{d:DesignInstance {x:Type tools:EditToolViewModel}}">
     <Canvas UseLayoutRounding="False">
         <userControls1:LayerShapeControl Zoom="{Binding ProfileViewModel.PanZoomViewModel.Zoom}"
-                                        ShapePath="{Binding ShapePath}"
-                                        ShapeAnchor="{Binding ShapeAnchor}"
-                                        ShapeGeometry="{Binding ShapeGeometry}"
-                                        RotateMouseDown="{s:Action RotateMouseDown}"
-                                        RotateMouseUp="{s:Action RotateMouseUp}"
-                                        RotateMouseMove="{s:Action RotateMouseMove}"
-                                        ResizeMouseDown="{s:Action ResizeMouseDown}"
-                                        ResizeMouseUp="{s:Action ResizeMouseUp}"
-                                        ResizeMouseMove="{s:Action ResizeMouseMove}"
-                                        MoveMouseDown="{s:Action MoveMouseDown}"
-                                        MoveMouseUp="{s:Action MoveMouseUp}"
-                                        MoveMouseMove="{s:Action MoveMouseMove}" />
+                                         ShapePath="{Binding ShapePath}"
+                                         ShapeAnchor="{Binding ShapeAnchor}"
+                                         ShapeGeometry="{Binding ShapeGeometry}"
+                                         RotateMouseDown="{s:Action RotateMouseDown}"
+                                         RotateMouseUp="{s:Action RotateMouseUp}"
+                                         RotateMouseMove="{s:Action RotateMouseMove}"
+                                         ResizeMouseDown="{s:Action ResizeMouseDown}"
+                                         ResizeMouseUp="{s:Action ResizeMouseUp}"
+                                         ResizeMouseMove="{s:Action ResizeMouseMove}"
+                                         MoveMouseDown="{s:Action MoveMouseDown}"
+                                         MoveMouseUp="{s:Action MoveMouseUp}"
+                                         MoveMouseMove="{s:Action MoveMouseMove}" />
     </Canvas>
 </UserControl>

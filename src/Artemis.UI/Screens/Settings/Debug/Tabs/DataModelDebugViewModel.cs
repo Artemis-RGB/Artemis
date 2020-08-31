@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
-using Artemis.Core.Events;
-using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Shared.DataModelVisualization.Shared;
+using Artemis.Core;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug.Tabs
@@ -17,9 +17,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
         private DataModelPropertiesViewModel _mainDataModel;
-        private List<Core.Plugins.Modules.Module> _modules;
+        private List<Module> _modules;
         private string _propertySearch;
-        private Core.Plugins.Modules.Module _selectedModule;
+        private Module _selectedModule;
 
         public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginService pluginService)
         {
@@ -42,13 +42,13 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             set => SetAndNotify(ref _propertySearch, value);
         }
 
-        public List<Core.Plugins.Modules.Module> Modules
+        public List<Module> Modules
         {
             get => _modules;
             set => SetAndNotify(ref _modules, value);
         }
 
-        public Core.Plugins.Modules.Module SelectedModule
+        public Module SelectedModule
         {
             get => _selectedModule;
             set
@@ -110,7 +110,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void PopulateModules()
         {
-            Modules = _pluginService.GetPluginsOfType<Core.Plugins.Modules.Module>().Where(p => p.Enabled).ToList();
+            Modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
         }
     }
 }

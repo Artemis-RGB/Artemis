@@ -1,7 +1,6 @@
 ﻿using System;
-using Artemis.Core.Models.Surface;
 
-namespace Artemis.Core.Events
+namespace Artemis.Core
 {
     public class SurfaceConfigurationEventArgs : EventArgs
     {

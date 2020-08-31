@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
-             xmlns:visualization="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization"
              xmlns:visualization1="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance {x:Type visualization1:ProfileLedViewModel}}"

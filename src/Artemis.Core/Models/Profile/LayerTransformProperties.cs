@@ -1,8 +1,6 @@
-﻿using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Profile.LayerProperties.Types;
-using SkiaSharp;
+﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public class LayerTransformProperties : LayerPropertyGroup
     {

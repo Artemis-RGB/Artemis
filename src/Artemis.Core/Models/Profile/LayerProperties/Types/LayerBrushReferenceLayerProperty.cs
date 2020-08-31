@@ -1,6 +1,4 @@
-﻿using Artemis.Core.Exceptions;
-
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+﻿namespace Artemis.Core
 {
     /// <summary>
     ///     A special layer property used to configure the selected layer brush

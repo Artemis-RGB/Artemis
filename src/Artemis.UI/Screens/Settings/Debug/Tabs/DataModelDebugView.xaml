@@ -6,8 +6,8 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Tabs"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:dataModel="clr-namespace:Artemis.UI.Shared.DataModelVisualization.Shared;assembly=Artemis.UI.Shared"
-             xmlns:modules="clr-namespace:Artemis.Core.Plugins.Modules;assembly=Artemis.Core"
+             xmlns:modules="clr-namespace:Artemis.Core.Modules;assembly=Artemis.Core"
+             xmlns:dataModel="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
     <Grid>
@@ -54,14 +54,13 @@
                 </ComboBox.ItemTemplate>
             </ComboBox>
         </Grid>
-        <TreeView Grid.Row="1" 
-                  ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch" 
+        <TreeView Grid.Row="1"
+                  ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch"
                   VirtualizingStackPanel.IsVirtualizing="True"
                   VirtualizingStackPanel.VirtualizationMode="Recycling">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
-                    <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}">
-                    </Setter>
+                    <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
                 </Style>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
                     <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />

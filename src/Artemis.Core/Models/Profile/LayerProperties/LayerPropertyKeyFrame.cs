@@ -1,13 +1,12 @@
 ﻿using System;
-using Artemis.Core.Utilities;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core
 {
     public class LayerPropertyKeyframe<T> : BaseLayerPropertyKeyframe
     {
+        private LayerProperty<T> _layerProperty;
         private TimeSpan _position;
         private T _value;
-        private LayerProperty<T> _layerProperty;
 
         public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction, LayerProperty<T> layerProperty) : base(layerProperty)
         {

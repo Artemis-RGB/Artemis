@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Utilities;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Models.Profile.LayerProperties
+namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a property on a layer. Properties are saved in storage and can optionally be modified from the UI.
@@ -175,7 +173,10 @@ namespace Artemis.Core.Models.Profile.LayerProperties
         }
 
         /// <inheritdoc />
-        public override Type GetPropertyType() => typeof(T);
+        public override Type GetPropertyType()
+        {
+            return typeof(T);
+        }
 
         /// <inheritdoc />
         public override List<PropertyInfo> GetDataBindingProperties()

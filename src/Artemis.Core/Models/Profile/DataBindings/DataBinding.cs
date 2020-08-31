@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.DataModelExpansions;
 
-namespace Artemis.Core.Models.Profile.DataBindings
+namespace Artemis.Core
 {
     /// <summary>
     ///     A data binding that binds a certain <see cref="BaseLayerProperty" /> to a value inside a <see cref="DataModel" />

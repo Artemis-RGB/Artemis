@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:s="https://github.com/canton7/Stylet"
     xmlns:converters="clr-namespace:Artemis.UI.Converters"
@@ -18,7 +17,7 @@
 
     <materialDesign:Transitioner AutoApplyTransitionOrigins="True" SelectedIndex="{Binding TransitionerIndex}">
         <!-- Conditions intro -->
-        <materialDesign:ColorZone Mode="PrimaryDark"  VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch">
+        <materialDesign:ColorZone Mode="PrimaryDark" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" VerticalContentAlignment="Stretch">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="32">
                 <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" TextAlignment="Center" Margin="0 15">Unleash Artemis's true potential</TextBlock>
                 <TextBlock TextWrapping="Wrap" TextAlignment="Center">Start using conditions to dynamically show and hide groups and layers</TextBlock>
@@ -38,7 +37,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0 0 0 -4">
-            Display conditions
+                Display conditions
             </TextBlock>
             <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
@@ -65,11 +64,11 @@
                         <TextBlock.ToolTip>
                             <ToolTip Placement="Center" VerticalOffset="-30">
                                 <TextBlock>
-                                Configure how the layer should act while the conditions above are met
+                                    Configure how the layer should act while the conditions above are met
                                 </TextBlock>
                             </ToolTip>
                         </TextBlock.ToolTip>
-                </TextBlock>
+                    </TextBlock>
                 </StackPanel>
 
                 <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3" Margin="0 0 2 0">
@@ -79,14 +78,14 @@
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <RadioButton Grid.Column="0"
-                                 Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding DisplayContinuously}"
-                                 MinWidth="0"
-                                 Padding="5 0">
+                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                     IsChecked="{Binding DisplayContinuously}"
+                                     MinWidth="0"
+                                     Padding="5 0">
                             <RadioButton.ToolTip>
                                 <ToolTip Placement="Center" VerticalOffset="-40">
                                     <TextBlock>
-                                    Continue repeating the main segment of the timeline while the condition is met
+                                        Continue repeating the main segment of the timeline while the condition is met
                                     </TextBlock>
                                 </ToolTip>
                             </RadioButton.ToolTip>
@@ -96,14 +95,14 @@
                             </StackPanel>
                         </RadioButton>
                         <RadioButton Grid.Column="1"
-                                 Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
-                                 MinWidth="0"
-                                 Padding="5 0">
+                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                     IsChecked="{Binding DisplayContinuously, Converter={StaticResource InverseBooleanConverter}}"
+                                     MinWidth="0"
+                                     Padding="5 0">
                             <RadioButton.ToolTip>
                                 <ToolTip Placement="Center" VerticalOffset="-40">
                                     <TextBlock>
-                                    Only play the timeline once when the condition is met
+                                        Only play the timeline once when the condition is met
                                     </TextBlock>
                                 </ToolTip>
                             </RadioButton.ToolTip>
@@ -122,11 +121,11 @@
                         <TextBlock.ToolTip>
                             <ToolTip Placement="Center" VerticalOffset="-30">
                                 <TextBlock>
-                                Configure how the layer should act when the conditions above are no longer met
+                                    Configure how the layer should act when the conditions above are no longer met
                                 </TextBlock>
                             </ToolTip>
                         </TextBlock.ToolTip>
-                </TextBlock>
+                    </TextBlock>
                 </StackPanel>
                 <materialDesign:ColorZone Grid.Row="1" Grid.Column="1" Mode="Standard" CornerRadius="3" Margin="2 0 0 0" HorizontalAlignment="Stretch">
                     <Grid>
@@ -135,14 +134,14 @@
                             <ColumnDefinition MinWidth="100" />
                         </Grid.ColumnDefinitions>
                         <RadioButton Grid.Column="0"
-                                 Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding AlwaysFinishTimeline}"
-                                 MinWidth="0"
-                                 Padding="5 0">
+                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                     IsChecked="{Binding AlwaysFinishTimeline}"
+                                     MinWidth="0"
+                                     Padding="5 0">
                             <RadioButton.ToolTip>
                                 <ToolTip Placement="Center" VerticalOffset="-40">
                                     <TextBlock>
-                                    When conditions are no longer met, finish the the current run of the main timeline
+                                        When conditions are no longer met, finish the the current run of the main timeline
                                     </TextBlock>
                                 </ToolTip>
                             </RadioButton.ToolTip>
@@ -152,14 +151,14 @@
                             </StackPanel>
                         </RadioButton>
                         <RadioButton Grid.Column="1"
-                                 Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
-                                 MinWidth="0"
-                                 Padding="5 0">
+                                     Style="{StaticResource MaterialDesignTabRadioButton}"
+                                     IsChecked="{Binding AlwaysFinishTimeline, Converter={StaticResource InverseBooleanConverter}}"
+                                     MinWidth="0"
+                                     Padding="5 0">
                             <RadioButton.ToolTip>
                                 <ToolTip Placement="Center" VerticalOffset="-40">
                                     <TextBlock>
-                                    When conditions are no longer met, skip to the end segment of the timeline
+                                        When conditions are no longer met, skip to the end segment of the timeline
                                     </TextBlock>
                                 </ToolTip>
                             </RadioButton.ToolTip>

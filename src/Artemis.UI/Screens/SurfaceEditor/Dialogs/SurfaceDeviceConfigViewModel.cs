@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
-using Artemis.UI.Shared.Services.Dialog;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
@@ -9,11 +9,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
     public class SurfaceDeviceConfigViewModel : DialogViewModelBase
     {
         private readonly ICoreService _coreService;
+        private int _rotation;
+        private double _scale;
         private string _title;
         private int _x;
         private int _y;
-        private double _scale;
-        private int _rotation;
 
         public SurfaceDeviceConfigViewModel(SurfaceDeviceViewModel surfaceDeviceViewModel, ICoreService coreService, IModelValidator<SurfaceDeviceConfigViewModel> validator)
             : base(validator)

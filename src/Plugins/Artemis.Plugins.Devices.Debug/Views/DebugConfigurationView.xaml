@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.Plugins.Devices.Debug.Views"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
@@ -11,11 +10,11 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock>
-            Enter absolute paths to the device layout and choose the image layout you wish to test. <LineBreak/>
+            Enter absolute paths to the device layout and choose the image layout you wish to test. <LineBreak />
             Please note that currently RGB.NET does not support changing devices on runtime and so any changes below won't be applied until you restart Artemis.
         </TextBlock>
         <DataGrid Grid.Row="1"
@@ -38,7 +37,7 @@
             </DataGrid.Columns>
         </DataGrid>
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0 0 5 0"  Command="{s:Action Cancel}">
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0 0 5 0" Command="{s:Action Cancel}">
                 CANCEL
             </Button>
             <Button Style="{StaticResource MaterialDesignFlatMidBgButton}" Command="{s:Action SaveChanges}">

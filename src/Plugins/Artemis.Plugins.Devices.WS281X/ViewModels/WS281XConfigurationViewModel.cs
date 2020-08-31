@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
 using Artemis.Plugins.Devices.WS281X.Settings;
 
 namespace Artemis.Plugins.Devices.WS281X.ViewModels

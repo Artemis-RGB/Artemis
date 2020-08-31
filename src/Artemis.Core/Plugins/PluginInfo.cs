@@ -6,7 +6,7 @@ using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 using Stylet;
 
-namespace Artemis.Core.Plugins
+namespace Artemis.Core
 {
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : PropertyChangedBase

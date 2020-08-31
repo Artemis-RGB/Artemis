@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class PluginConfigurationDialog<T> : PluginConfigurationDialog where T : PluginConfigurationViewModel

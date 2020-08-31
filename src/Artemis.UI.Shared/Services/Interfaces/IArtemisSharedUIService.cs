@@ -1,4 +1,4 @@
-﻿namespace Artemis.UI.Shared.Services.Interfaces
+﻿namespace Artemis.UI.Shared.Services
 {
     // ReSharper disable once InconsistentNaming
     public interface IArtemisSharedUIService

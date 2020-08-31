@@ -1,9 +1,7 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     public abstract class LayerEffect<T> : BaseLayerEffect where T : LayerPropertyGroup
     {

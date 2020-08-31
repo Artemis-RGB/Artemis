@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Modules

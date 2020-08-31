@@ -6,8 +6,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:dd="urn:gong-wpf-dragdrop"
-             xmlns:profileTree="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
-             xmlns:treeItem="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:profileTree1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"

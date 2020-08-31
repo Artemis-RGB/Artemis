@@ -1,7 +1,4 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Profile.LayerProperties.Types;
+﻿using Artemis.Core;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerBrushes.Noise
@@ -24,7 +21,8 @@ namespace Artemis.Plugins.LayerBrushes.Noise
         [PropertyDescription(Description = "The scale of the noise", MinInputValue = 0f, InputAffix = "%")]
         public SKSizeLayerProperty Scale { get; set; }
 
-        [PropertyDescription(Description = "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", InputAffix = "%", MinInputValue = 0f, MaxInputValue = 400)]
+        [PropertyDescription(Description = "The hardness of the noise, lower means there are gradients in the noise, higher means hard lines", InputAffix = "%", MinInputValue = 0f,
+            MaxInputValue = 400)]
         public FloatLayerProperty Hardness { get; set; }
 
         [PropertyDescription(Description = "The speed at which the noise moves vertically and horizontally", MinInputValue = -64f, MaxInputValue = 64f)]

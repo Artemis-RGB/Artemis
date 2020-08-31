@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerProperties.Types
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class SKPointLayerProperty : LayerProperty<SKPoint>

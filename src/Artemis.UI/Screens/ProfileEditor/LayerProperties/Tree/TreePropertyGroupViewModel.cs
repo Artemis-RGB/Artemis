@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Ninject;
 using Ninject.Parameters;
 using Stylet;
@@ -15,10 +15,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
     public class TreePropertyGroupViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
-        private readonly IWindowManager _windowManager;
         private readonly IKernel _kernel;
-        private readonly IRenderElementService _renderElementService;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IRenderElementService _renderElementService;
+        private readonly IWindowManager _windowManager;
 
         public TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel,
             IProfileEditorService profileEditorService,

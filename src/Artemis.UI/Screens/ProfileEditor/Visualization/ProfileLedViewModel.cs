@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Media;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using Artemis.UI.Extensions;
 using RGB.NET.Core;
 using Stylet;
@@ -11,11 +11,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
     public class ProfileLedViewModel : PropertyChangedBase
     {
-        private bool _isSelected;
-        private bool _isDimmed;
-        private Geometry _displayGeometry;
-        private Geometry _strokeGeometry;
         private Color _displayColor;
+        private Geometry _displayGeometry;
+        private bool _isDimmed;
+        private bool _isSelected;
+        private Geometry _strokeGeometry;
 
         public ProfileLedViewModel(ArtemisLed led)
         {

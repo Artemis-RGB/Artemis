@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class DoubleExtensions
     {

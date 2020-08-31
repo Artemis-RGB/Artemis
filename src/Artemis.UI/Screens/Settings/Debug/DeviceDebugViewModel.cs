@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Shared.Services.Interfaces;
-// using PropertyChanged;
-using Stylet;
+using Artemis.UI.Shared.Services;
+using Stylet; // using PropertyChanged;
 
 namespace Artemis.UI.Screens.Settings.Debug
 {

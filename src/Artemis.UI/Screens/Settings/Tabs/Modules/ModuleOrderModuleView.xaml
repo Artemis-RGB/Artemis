@@ -9,7 +9,7 @@
              d:DataContext="{d:DesignInstance local:ModuleOrderModuleViewModel}">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="40"/>
+            <ColumnDefinition Width="40" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <TextBlock Text="{Binding Priority}"

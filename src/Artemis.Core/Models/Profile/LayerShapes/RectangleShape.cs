@@ -1,13 +1,17 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerShapes
+namespace Artemis.Core
 {
-    public class Rectangle : LayerShape
+    /// <summary>
+    ///     Represents a rectangular layer shape
+    /// </summary>
+    public class RectangleShape : LayerShape
     {
-        public Rectangle(Layer layer) : base(layer)
+        internal RectangleShape(Layer layer) : base(layer)
         {
         }
 
+        /// <inheritdoc />
         public override void CalculateRenderProperties()
         {
             var path = new SKPath();

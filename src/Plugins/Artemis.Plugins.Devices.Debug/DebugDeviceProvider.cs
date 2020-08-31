@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using Artemis.Plugins.Devices.Debug.Settings;
 using Artemis.Plugins.Devices.Debug.ViewModels;
 using RGB.NET.Core;
@@ -16,9 +15,9 @@ namespace Artemis.Plugins.Devices.Debug
     // ReSharper disable once UnusedMember.Global
     public class DebugDeviceProvider : DeviceProvider
     {
+        private readonly ILogger _logger;
         private readonly IRgbService _rgbService;
         private readonly PluginSettings _settings;
-        private readonly ILogger _logger;
 
         public DebugDeviceProvider(IRgbService rgbService, PluginSettings settings, ILogger logger) : base(RGB.NET.Devices.Debug.DebugDeviceProvider.Instance)
         {

@@ -1,8 +1,7 @@
 ﻿using System;
-using Artemis.Core.RGB.NET;
 using RGB.NET.Core;
 
-namespace Artemis.Core.Events
+namespace Artemis.Core
 {
     public class FrameRenderedEventArgs : EventArgs
     {

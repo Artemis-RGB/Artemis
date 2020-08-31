@@ -5,8 +5,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Media.Imaging;
-using Artemis.Core.Events;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
@@ -32,7 +33,7 @@ namespace Artemis.UI.Screens.Sidebar
         private bool _isSidebarOpen;
         private IScreen _selectedItem;
         private BindableCollection<INavigationItem> _sidebarItems;
-        private Dictionary<INavigationItem, Core.Plugins.Modules.Module> _sidebarModules;
+        private Dictionary<INavigationItem, Module> _sidebarModules;
 
         public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
         {
@@ -40,7 +41,7 @@ namespace Artemis.UI.Screens.Sidebar
             _moduleVmFactory = moduleVmFactory;
             _pluginService = pluginService;
 
-            SidebarModules = new Dictionary<INavigationItem, Core.Plugins.Modules.Module>();
+            SidebarModules = new Dictionary<INavigationItem, Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
 
             _activeModulesUpdateTimer = new Timer(1000);
@@ -60,7 +61,7 @@ namespace Artemis.UI.Screens.Sidebar
             set => SetAndNotify(ref _sidebarItems, value);
         }
 
-        public Dictionary<INavigationItem, Core.Plugins.Modules.Module> SidebarModules
+        public Dictionary<INavigationItem, Module> SidebarModules
         {
             get => _sidebarModules;
             set => SetAndNotify(ref _sidebarModules, value);
@@ -116,7 +117,7 @@ namespace Artemis.UI.Screens.Sidebar
             // Add all activated modules
             SidebarItems.Add(new DividerNavigationItem());
             SidebarItems.Add(new SubheaderNavigationItem {Subheader = "Modules"});
-            var modules = _pluginService.GetPluginsOfType<Core.Plugins.Modules.Module>().ToList();
+            var modules = _pluginService.GetPluginsOfType<Module>().ToList();
             foreach (var module in modules)
                 AddModule(module);
 
@@ -136,7 +137,7 @@ namespace Artemis.UI.Screens.Sidebar
             SelectSidebarItem(args.NavigationItemToSelect);
         }
 
-        public void AddModule(Core.Plugins.Modules.Module module)
+        public void AddModule(Module module)
         {
             // Ensure the module is not already in the list
             if (SidebarModules.Any(io => io.Value == module))
@@ -159,7 +160,7 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarModules.Add(sidebarItem, module);
         }
 
-        public void RemoveModule(Core.Plugins.Modules.Module module)
+        public void RemoveModule(Module module)
         {
             // If not in the list there's nothing to do
             if (SidebarModules.All(io => io.Value != module))
@@ -218,13 +219,13 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Core.Plugins.Modules.Module module)
+            if (e.PluginInfo.Instance is Module module)
                 AddModule(module);
         }
 
         private void PluginServiceOnPluginDisabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Core.Plugins.Modules.Module module)
+            if (e.PluginInfo.Instance is Module module)
                 RemoveModule(module);
         }
 

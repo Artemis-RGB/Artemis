@@ -1,29 +1,21 @@
 ﻿using System;
-using Artemis.UI.Shared.Ninject.Factories;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
 namespace Artemis.UI.Shared.Ninject
 {
-    // ReSharper disable once InconsistentNaming
+    /// <summary>
+    ///     The main <see cref="NinjectModule" /> of the Artemis Shared UI toolkit that binds all services
+    /// </summary>
     public class SharedUIModule : NinjectModule
     {
+        /// <inheritdoc />
         public override void Load()
         {
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
-
-            // Bind UI factories
-            Kernel.Bind(x =>
-            {
-                x.FromAssemblyContaining<IVmFactory>()
-                    .IncludingNonPublicTypes()
-                    .SelectAllInterfaces()
-                    .InheritedFrom<IVmFactory>()
-                    .BindToFactory();
-            });
 
             // Bind all shared UI services as singletons
             Kernel.Bind(x =>

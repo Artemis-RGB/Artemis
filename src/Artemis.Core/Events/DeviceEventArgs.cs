@@ -1,7 +1,7 @@
 ﻿using System;
 using RGB.NET.Core;
 
-namespace Artemis.Core.Events
+namespace Artemis.Core
 {
     public class DeviceEventArgs : EventArgs
     {

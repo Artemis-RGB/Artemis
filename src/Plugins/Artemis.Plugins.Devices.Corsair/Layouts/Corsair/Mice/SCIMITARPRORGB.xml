@@ -1,4 +1,5 @@
 <?xml version="1.0"?>
+
 <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Corsair SCIMITAR RGB</Name>
   <Description>Physical layout of Corsairs SCIMITAR RGB</Description>
@@ -41,5 +42,5 @@
       <Width>21</Width>
       <Height>17</Height>
     </Led>
-  </Leds>  
+  </Leds>
 </Device>

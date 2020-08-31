@@ -1,11 +1,9 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Plugins.LayerBrushes.Internal
+namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
@@ -127,7 +125,7 @@ namespace Artemis.Core.Plugins.LayerBrushes.Internal
         Regular,
 
         /// <summary>
-        ///     An RGB.NET brush that uses RGB.NET's per-LED rendering engine.     
+        ///     An RGB.NET brush that uses RGB.NET's per-LED rendering engine.
         /// </summary>
         RgbNet
     }

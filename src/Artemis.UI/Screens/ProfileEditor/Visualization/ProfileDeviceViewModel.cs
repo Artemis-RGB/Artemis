@@ -2,16 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Artemis.Core.Models.Surface;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
     public class ProfileDeviceViewModel : CanvasViewModel
     {
-        private ObservableCollection<ProfileLedViewModel> _leds;
-        private ArtemisDevice _device;
         private bool _addedLeds;
+        private ArtemisDevice _device;
+        private ObservableCollection<ProfileLedViewModel> _leds;
 
         public ProfileDeviceViewModel(ArtemisDevice device)
         {

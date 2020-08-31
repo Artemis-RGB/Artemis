@@ -1,5 +1,5 @@
-﻿using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.LayerBrushes;
+﻿using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using RGB.NET.Brushes;
 using RGB.NET.Core;
 

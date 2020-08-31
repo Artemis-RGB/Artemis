@@ -1,20 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.Settings;
 using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.RGB.NET
+namespace Artemis.Core
 {
+    /// <summary>
+    ///     The RGB.NET brush Artemis uses to map the SkiaSharp bitmap to LEDs
+    /// </summary>
     public class BitmapBrush : AbstractDecoratable<IBrushDecorator>, IBrush, IDisposable
     {
+        private readonly object _disposeLock;
         private readonly PluginSetting<int> _sampleSizeSetting;
-        private object _disposeLock;
 
         #region Constructors
 
-        public BitmapBrush(Scale scale, PluginSetting<int> sampleSizeSetting)
+        internal BitmapBrush(Scale scale, PluginSetting<int> sampleSizeSetting)
         {
             _sampleSizeSetting = sampleSizeSetting;
             Scale = scale;

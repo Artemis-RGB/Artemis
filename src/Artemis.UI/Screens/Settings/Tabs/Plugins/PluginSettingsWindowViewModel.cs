@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins;
+﻿using Artemis.Core;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 
@@ -6,8 +6,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginSettingsWindowViewModel : Conductor<PluginConfigurationViewModel>
     {
-        public PackIconKind Icon { get; }
-
         public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, PackIconKind icon)
         {
             Icon = icon;
@@ -15,6 +13,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             ActiveItem.Closed += ActiveItemOnClosed;
         }
+
+        public PackIconKind Icon { get; }
 
         private void ActiveItemOnClosed(object? sender, CloseEventArgs e)
         {

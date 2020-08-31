@@ -1,6 +1,6 @@
-﻿using Artemis.Core.Plugins.LayerBrushes;
+﻿using Artemis.Core.LayerBrushes;
 using Artemis.Plugins.LayerBrushes.ColorRgbNet.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.Plugins.LayerBrushes.ColorRgbNet
 {

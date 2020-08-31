@@ -1,10 +1,9 @@
 ﻿using System.Linq;
 using System.Reflection;
-using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared.DataModelVisualization.Shared
+namespace Artemis.UI.Shared
 {
     public class DataModelPropertyViewModel : DataModelVisualizationViewModel
     {

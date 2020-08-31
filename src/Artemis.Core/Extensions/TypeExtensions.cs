@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class TypeExtensions
     {
@@ -65,7 +65,7 @@ namespace Artemis.Core.Extensions
 
         // From https://stackoverflow.com/a/2224421/5015269 but inverted and renamed to match similar framework methods
         /// <summary>
-        /// Determines whether an instance of a specified type can be casted to a variable of the current type
+        ///     Determines whether an instance of a specified type can be casted to a variable of the current type
         /// </summary>
         /// <param name="to"></param>
         /// <param name="from"></param>

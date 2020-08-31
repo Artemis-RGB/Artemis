@@ -4,9 +4,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile;
-using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Utilities;
+using Artemis.Core;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
@@ -14,9 +14,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
     public class TimelineSegmentViewModel : PropertyChangedBase, IDisposable
     {
         private bool _draggingSegment;
-        private bool _showSegmentName;
-        private bool _showRepeatButton;
         private bool _showDisableButton;
+        private bool _showRepeatButton;
+        private bool _showSegmentName;
 
         public TimelineSegmentViewModel(IProfileEditorService profileEditorService, SegmentViewModelType segment)
         {

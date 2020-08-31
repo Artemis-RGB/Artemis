@@ -16,7 +16,7 @@ namespace Artemis.Storage.Migrations
                 foreach (var profileEntityFolder in profileEntity.Folders)
                 {
                     profileEntityFolder.Enabled = true;
-                    foreach (var layerEffectEntity in profileEntityFolder.LayerEffects) 
+                    foreach (var layerEffectEntity in profileEntityFolder.LayerEffects)
                         layerEffectEntity.Enabled = true;
                 }
 

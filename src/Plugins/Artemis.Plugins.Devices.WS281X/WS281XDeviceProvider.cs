@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using Artemis.Plugins.Devices.WS281X.Settings;
 using Artemis.Plugins.Devices.WS281X.ViewModels;
 using RGB.NET.Devices.WS281X.Arduino;

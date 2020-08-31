@@ -1,6 +1,4 @@
 ﻿using System;
-using LiteDB;
-using Newtonsoft.Json;
 
 namespace Artemis.Storage.Entities.Plugins
 {

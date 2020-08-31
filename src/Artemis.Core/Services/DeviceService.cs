@@ -1,7 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Artemis.Core.Events;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Services.Interfaces;
 using SkiaSharp;
 
 namespace Artemis.Core.Services

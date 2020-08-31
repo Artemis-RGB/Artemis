@@ -1,6 +1,6 @@
 ﻿using System.IO;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 
 namespace Artemis.Plugins.Devices.Roccat
 {

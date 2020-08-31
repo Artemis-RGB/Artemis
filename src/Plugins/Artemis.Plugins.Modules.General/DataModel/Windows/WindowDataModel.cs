@@ -1,15 +1,11 @@
 ﻿using System.Diagnostics;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.Plugins.Modules.General.Utilities;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
 
 namespace Artemis.Plugins.Modules.General.DataModel.Windows
 {
     public class WindowDataModel
     {
-        [DataModelIgnore]
-        public Process Process { get; }
-
         public WindowDataModel(Process process)
         {
             Process = process;
@@ -19,6 +15,9 @@ namespace Artemis.Plugins.Modules.General.DataModel.Windows
             // Accessing MainModule requires admin privileges, this way does not
             ProgramLocation = process.GetProcessFilename();
         }
+
+        [DataModelIgnore]
+        public Process Process { get; }
 
         public string WindowTitle { get; set; }
         public string ProcessName { get; set; }

@@ -12,13 +12,13 @@ namespace Artemis.UI.Screens.Shared
 {
     public class PanZoomViewModel : PropertyChangedBase
     {
+        private double _canvasHeight;
+        private double _canvasWidth;
         private Point? _lastPanPosition;
-        private double _zoom = 1;
+        private bool _limitToZero;
         private double _panX;
         private double _panY;
-        private double _canvasWidth;
-        private double _canvasHeight;
-        private bool _limitToZero;
+        private double _zoom = 1;
 
         public Point? LastPanPosition
         {

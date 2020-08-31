@@ -1,7 +1,7 @@
 ﻿using System.IO;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using RGB.NET.Core;
 using RGB.NET.Devices.Razer;
 

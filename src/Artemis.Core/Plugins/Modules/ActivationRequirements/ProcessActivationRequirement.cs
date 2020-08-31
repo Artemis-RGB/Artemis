@@ -2,9 +2,8 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Artemis.Core.Extensions;
 
-namespace Artemis.Core.Plugins.Modules.ActivationRequirements
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Evaluates to true or false by checking if the specified process is running

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Utilities;
 
-namespace Artemis.Core.Plugins.DataModelExpansions
+namespace Artemis.Core.DataModelExpansions
 {
     /// <summary>
     ///     Allows you to expand the application-wide datamodel
@@ -32,7 +30,8 @@ namespace Artemis.Core.Plugins.DataModelExpansions
         }
 
         /// <summary>
-        ///     Stop hiding the provided property using a lambda expression, e.g. ShowProperty(dm => dm.TimeDataModel.CurrentTimeUTC)
+        ///     Stop hiding the provided property using a lambda expression, e.g. ShowProperty(dm =>
+        ///     dm.TimeDataModel.CurrentTimeUTC)
         /// </summary>
         /// <param name="propertyLambda">A lambda expression pointing to the property to stop ignoring</param>
         public void ShowProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)

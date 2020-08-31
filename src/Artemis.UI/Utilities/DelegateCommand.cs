@@ -22,7 +22,7 @@ namespace Artemis.UI.Utilities
 
         public bool CanExecute(object parameter)
         {
-            if (_canExecute == null) 
+            if (_canExecute == null)
                 return true;
 
             return _canExecute(parameter);

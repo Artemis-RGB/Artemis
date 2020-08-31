@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.DataModelExpansions.Attributes
+namespace Artemis.Core.DataModelExpansions
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class DataModelPropertyAttribute : Attribute

@@ -1,7 +1,7 @@
 ﻿using System;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 
-namespace Artemis.UI.Shared.Events
+namespace Artemis.UI.Shared
 {
     public class RenderProfileElementEventArgs : EventArgs
     {

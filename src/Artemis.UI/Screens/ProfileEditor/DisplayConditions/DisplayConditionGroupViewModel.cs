@@ -2,11 +2,10 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
+using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Humanizer;
 using Stylet;
 
@@ -130,7 +129,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                     case DisplayConditionPredicate displayConditionPredicate:
                         if (!IsListGroup)
                             Children.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate, this));
-                        break;       
+                        break;
                     case DisplayConditionListPredicate displayConditionListPredicate:
                         if (IsListGroup)
                             Children.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate, this));

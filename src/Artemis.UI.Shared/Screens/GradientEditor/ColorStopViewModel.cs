@@ -4,13 +4,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.UI.Shared.Utilities;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
 {
-    public class ColorStopViewModel : PropertyChangedBase
+    internal class ColorStopViewModel : PropertyChangedBase
     {
         private readonly GradientEditorViewModel _gradientEditorViewModel;
         private bool _isSelected;

@@ -1,9 +1,7 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Artemis.Core.Services.Interfaces;
+﻿using Artemis.Core.Services;
 using SkiaSharp;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {

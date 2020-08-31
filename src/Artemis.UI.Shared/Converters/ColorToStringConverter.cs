@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Artemis.UI.Shared.Converters
+namespace Artemis.UI.Shared
 {
     /// <inheritdoc />
     /// <summary>
@@ -12,11 +12,13 @@ namespace Artemis.UI.Shared.Converters
     [ValueConversion(typeof(Color), typeof(string))]
     public class ColorToStringConverter : IValueConverter
     {
+        /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return value?.ToString();
         }
 
+        /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             try

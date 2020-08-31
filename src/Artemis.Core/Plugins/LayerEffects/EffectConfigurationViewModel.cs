@@ -1,6 +1,6 @@
 ﻿using Stylet;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     public abstract class EffectConfigurationViewModel : Screen
     {

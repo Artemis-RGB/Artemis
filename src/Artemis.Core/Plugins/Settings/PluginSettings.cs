@@ -3,7 +3,7 @@ using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 
-namespace Artemis.Core.Plugins.Settings
+namespace Artemis.Core
 {
     /// <summary>
     ///     <para>This contains all the settings for your plugin. To access a setting use <see cref="GetSetting{T}" />.</para>
@@ -46,7 +46,7 @@ namespace Artemis.Core.Plugins.Settings
                 }
 
                 var pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginRepository, settingEntity);
-                
+
                 // This overrides null with the default value, I'm not sure if that's desirable because you
                 // might expect something to go null and you might not
                 // if (pluginSetting.Value == null && defaultValue != null)

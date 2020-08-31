@@ -1,6 +1,4 @@
-﻿using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Repositories.Interfaces;
+﻿using Artemis.Storage.Repositories.Interfaces;
 
 namespace Artemis.Core.Services
 {

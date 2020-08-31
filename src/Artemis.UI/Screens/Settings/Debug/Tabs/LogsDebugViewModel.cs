@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug.Tabs
 {

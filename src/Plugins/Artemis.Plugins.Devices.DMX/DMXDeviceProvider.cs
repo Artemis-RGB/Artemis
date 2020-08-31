@@ -1,6 +1,6 @@
-﻿using Artemis.Core.Plugins;
-using Artemis.Core.Plugins.DeviceProviders;
-using Artemis.Core.Services.Interfaces;
+﻿using Artemis.Core;
+using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using Artemis.Plugins.Devices.DMX.ViewModels;
 
 namespace Artemis.Plugins.Devices.DMX

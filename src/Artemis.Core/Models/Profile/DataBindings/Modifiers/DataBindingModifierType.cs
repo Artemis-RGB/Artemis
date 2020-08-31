@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Extensions;
-using Artemis.Core.Plugins;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
 
-namespace Artemis.Core.Models.Profile.DataBindings.Modifiers
+namespace Artemis.Core
 {
     /// <summary>
-    /// A modifier that changes the source value of a data binding in some way
+    ///     A modifier that changes the source value of a data binding in some way
     /// </summary>
     public abstract class DataBindingModifierType
     {
-        private bool _registered;
         private IDataBindingService _dataBindingService;
+        private bool _registered;
 
         /// <summary>
         ///     Gets the plugin info this data binding modifier belongs to

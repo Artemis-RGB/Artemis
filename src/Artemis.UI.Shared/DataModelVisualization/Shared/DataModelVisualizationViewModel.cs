@@ -1,20 +1,14 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Windows.Documents;
-using Artemis.Core.Extensions;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
-using Artemis.UI.Shared.Exceptions;
+using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 using Humanizer;
 using Stylet;
 
-namespace Artemis.UI.Shared.DataModelVisualization.Shared
+namespace Artemis.UI.Shared
 {
     public abstract class DataModelVisualizationViewModel : PropertyChangedBase
     {

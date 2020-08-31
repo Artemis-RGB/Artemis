@@ -1,14 +1,14 @@
 ﻿using Stylet;
 
-namespace Artemis.Core.Plugins.Modules
+namespace Artemis.Core.Modules
 {
     /// <summary>
-    /// The base class for any view model that belongs to a module
+    ///     The base class for any view model that belongs to a module
     /// </summary>
     public abstract class ModuleViewModel : Screen
     {
         /// <summary>
-        /// The base class for any view model that belongs to a module
+        ///     The base class for any view model that belongs to a module
         /// </summary>
         /// <param name="module">The module this view model belongs to</param>
         /// <param name="displayName">The name of the tab that's shown on the modules UI page</param>
@@ -19,7 +19,7 @@ namespace Artemis.Core.Plugins.Modules
         }
 
         /// <summary>
-        /// Gets the module this view model belongs to
+        ///     Gets the module this view model belongs to
         /// </summary>
         public Module Module { get; }
     }

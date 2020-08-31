@@ -4,7 +4,7 @@ using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Stylet;
 
-namespace Artemis.Core.Plugins.Settings
+namespace Artemis.Core
 {
     public class PluginSetting<T> : PropertyChangedBase
     {

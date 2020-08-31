@@ -1,14 +1,13 @@
-﻿using Artemis.Core.Extensions;
-using RGB.NET.Core;
+﻿using RGB.NET.Core;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Models.Surface
+namespace Artemis.Core
 {
     public class ArtemisLed : PropertyChangedBase
     {
-        private SKRect _renderRectangle;
         private SKRect _absoluteRenderRectangle;
+        private SKRect _renderRectangle;
 
         public ArtemisLed(Led led, ArtemisDevice device)
         {

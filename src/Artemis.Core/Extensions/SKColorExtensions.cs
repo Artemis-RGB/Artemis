@@ -2,7 +2,7 @@
 using RGB.NET.Core;
 using SkiaSharp;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     // ReSharper disable once InconsistentNaming - I didn't come up with SKColor
     public static class SKColorExtensions
@@ -29,7 +29,7 @@ namespace Artemis.Core.Extensions
 
         private static byte ClampToByte(float value)
         {
-            return (byte)Math.Clamp(value, 0, 255);
+            return (byte) Math.Clamp(value, 0, 255);
         }
     }
 }

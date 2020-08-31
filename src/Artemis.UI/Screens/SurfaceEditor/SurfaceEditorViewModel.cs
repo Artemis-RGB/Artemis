@@ -7,15 +7,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Artemis.Core.Models.Surface;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor
@@ -27,13 +24,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
-        private ArtemisSurface _selectedSurface;
-        private ObservableCollection<SurfaceDeviceViewModel> _devices;
-        private ObservableCollection<ArtemisSurface> _surfaceConfigurations;
-        private RectangleGeometry _selectionRectangle;
-        private PanZoomViewModel _panZoomViewModel;
-        private PluginSetting<GridLength> _surfaceListWidth;
         private Cursor _cursor;
+        private ObservableCollection<SurfaceDeviceViewModel> _devices;
+        private PanZoomViewModel _panZoomViewModel;
+        private ArtemisSurface _selectedSurface;
+        private RectangleGeometry _selectionRectangle;
+        private ObservableCollection<ArtemisSurface> _surfaceConfigurations;
+        private PluginSetting<GridLength> _surfaceListWidth;
 
         public SurfaceEditorViewModel(IRgbService rgbService, ISurfaceService surfaceService, IDialogService dialogService, ISettingsService settingsService,
             IDeviceService deviceService)

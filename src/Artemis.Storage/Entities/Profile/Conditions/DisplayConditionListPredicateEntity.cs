@@ -11,7 +11,9 @@ namespace Artemis.Storage.Entities.Profile.Conditions
         public string ListPropertyPath { get; set; }
 
         public string LeftPropertyPath { get; set; }
+
         public string RightPropertyPath { get; set; }
+
         // Stored as a string to be able to control serialization and deserialization ourselves
         public string RightStaticValue { get; set; }
 

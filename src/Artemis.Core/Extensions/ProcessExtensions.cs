@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class ProcessExtensions
     {

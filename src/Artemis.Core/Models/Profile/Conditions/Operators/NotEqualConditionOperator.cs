@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 
-namespace Artemis.Core.Models.Profile.Conditions.Operators
+namespace Artemis.Core
 {
     internal class NotEqualConditionOperator : DisplayConditionOperator
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> { typeof(object) };
+        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(object)};
 
         public override string Description => "Does not equal";
         public override string Icon => "NotEqualVariant";

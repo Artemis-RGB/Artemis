@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using RGB.NET.Core;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class RgbDeviceExtensions
     {

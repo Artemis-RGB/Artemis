@@ -3,11 +3,11 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
-using Artemis.Core.Models.Profile.Colors;
+using Artemis.Core;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.UI.Shared.Converters
+namespace Artemis.UI.Shared
 {
     /// <inheritdoc />
     /// <summary>
@@ -17,6 +17,7 @@ namespace Artemis.UI.Shared.Converters
     [ValueConversion(typeof(BindableCollection<ColorGradientStop>), typeof(GradientStopCollection))]
     public class ColorGradientToGradientStopsConverter : IValueConverter
     {
+        /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var colorGradients = (BindableCollection<ColorGradientStop>) value;
@@ -29,6 +30,7 @@ namespace Artemis.UI.Shared.Converters
             return collection;
         }
 
+        /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = (GradientStopCollection) value;

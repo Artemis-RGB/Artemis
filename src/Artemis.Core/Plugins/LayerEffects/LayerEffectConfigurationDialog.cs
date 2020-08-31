@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     /// <inheritdoc />
     public class LayerEffectConfigurationDialog<T> : LayerEffectConfigurationDialog where T : EffectConfigurationViewModel

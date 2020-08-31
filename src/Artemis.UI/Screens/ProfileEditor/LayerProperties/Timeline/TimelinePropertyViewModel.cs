@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             {
                 var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
                 var toRemove = TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe)).ToList();
-                foreach (var timelineKeyframeViewModel in toRemove) 
+                foreach (var timelineKeyframeViewModel in toRemove)
                     timelineKeyframeViewModel.Dispose();
 
                 TimelineKeyframeViewModels.RemoveRange(toRemove);
@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private void DisposeKeyframeViewModels()
         {
-            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels) 
+            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
                 timelineKeyframeViewModel.Dispose();
             TimelineKeyframeViewModels.Clear();
         }

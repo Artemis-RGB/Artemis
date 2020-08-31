@@ -1,14 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Exceptions;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.Conditions;
-using Artemis.Core.Plugins.LayerBrushes;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
+using Artemis.Core.LayerBrushes;
+using Artemis.Core.LayerEffects;
 using Ninject;
 using Serilog;
 
@@ -16,10 +9,10 @@ namespace Artemis.Core.Services
 {
     internal class RenderElementService : IRenderElementService
     {
+        private readonly IDataModelService _dataModelService;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
-        private readonly IDataModelService _dataModelService;
 
         public RenderElementService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService)
         {
@@ -160,7 +153,7 @@ namespace Artemis.Core.Services
             }
             catch (Exception e)
             {
-               _logger.Warning(e, $"Failed to init display conditions for {renderElement}");
+                _logger.Warning(e, $"Failed to init display conditions for {renderElement}");
             }
         }
     }

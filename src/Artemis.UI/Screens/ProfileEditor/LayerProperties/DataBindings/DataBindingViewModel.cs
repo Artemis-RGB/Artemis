@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings

@@ -6,10 +6,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.Core.Utilities;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Utilities;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Serilog.Events;
 using Stylet;
 
@@ -200,7 +199,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             try
             {
                 var autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-                var executableFile = CurrentProcessUtilities.GetCurrentLocation();
+                var executableFile = Constants.ExecutablePath;
 
                 if (File.Exists(autoRunFile))
                     File.Delete(autoRunFile);

@@ -1,10 +1,8 @@
-﻿<UserControl x:Class="Artemis.UI.Shared.Controls.DraggableFloat"
+﻿<UserControl x:Class="Artemis.UI.Shared.DraggableFloat"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Style>
@@ -19,7 +17,7 @@
                 <VisualBrush>
                     <VisualBrush.Visual>
                         <Rectangle x:Name="BorderVisual"
-                                   Stroke="{DynamicResource MaterialDesignTextBoxBorder}" 
+                                   Stroke="{DynamicResource MaterialDesignTextBoxBorder}"
                                    StrokeThickness="1"
                                    Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualWidth}"
                                    Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type Border}}, Path=ActualHeight}" />
@@ -50,6 +48,6 @@
                  KeyDown="InputKeyDown"
                  Visibility="Collapsed"
                  RequestBringIntoView="Input_OnRequestBringIntoView"
-                 PreviewTextInput="Input_PreviewTextInput"/>
+                 PreviewTextInput="Input_PreviewTextInput" />
     </Grid>
 </UserControl>

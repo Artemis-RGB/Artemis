@@ -2,13 +2,26 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace Artemis.UI.Shared.Utilities
+namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Provides utilities for creating desktop shortcuts
+    /// </summary>
     public class ShortcutUtilities
     {
         private static readonly Type m_type = Type.GetTypeFromProgID("WScript.Shell");
         private static readonly object m_shell = Activator.CreateInstance(m_type);
 
+        /// <summary>
+        ///     Creates a shortcut
+        /// </summary>
+        /// <param name="fileName">The name of the file to create the shortcut for</param>
+        /// <param name="targetPath">The path of the file to create the shortcut for</param>
+        /// <param name="arguments">Arguments to pass to the file when running</param>
+        /// <param name="workingDirectory">The working directory of the shortcut</param>
+        /// <param name="description">The description of the shortcut</param>
+        /// <param name="hotkey">The hot key of the shortcut</param>
+        /// <param name="iconPath">The icon path of the shortcut</param>
         public static void Create(string fileName, string targetPath, string arguments, string workingDirectory, string description, string hotkey, string iconPath)
         {
             var shortcut = (IWshShortcut) m_type.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, m_shell, new object[] {fileName});

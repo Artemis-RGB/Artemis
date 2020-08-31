@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 
-namespace Artemis.Core.Models.Profile.Conditions.Abstract
+namespace Artemis.Core
 {
     /// <summary>
     ///     An abstract class for display condition parts
@@ -10,7 +10,7 @@ namespace Artemis.Core.Models.Profile.Conditions.Abstract
     public abstract class DisplayConditionPart
     {
         private readonly List<DisplayConditionPart> _children = new List<DisplayConditionPart>();
-        
+
         /// <summary>
         ///     Gets the parent of this part
         /// </summary>

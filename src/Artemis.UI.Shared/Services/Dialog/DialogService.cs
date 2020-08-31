@@ -4,13 +4,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Screens.Dialogs;
 using Artemis.UI.Shared.Screens.Exceptions;
-using Artemis.UI.Shared.Services.Interfaces;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Ninject.Parameters;
 using Stylet;
 
-namespace Artemis.UI.Shared.Services.Dialog
+namespace Artemis.UI.Shared.Services
 {
     internal class DialogService : IDialogService
     {
@@ -24,7 +23,7 @@ namespace Artemis.UI.Shared.Services.Dialog
             _viewManager = viewManager;
             _windowManager = windowManager;
         }
-        
+
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
             var arguments = new IParameter[]

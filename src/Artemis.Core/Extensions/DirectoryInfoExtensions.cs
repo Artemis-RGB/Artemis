@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Artemis.Core.Extensions
+namespace Artemis.Core
 {
     public static class DirectoryInfoExtensions
     {

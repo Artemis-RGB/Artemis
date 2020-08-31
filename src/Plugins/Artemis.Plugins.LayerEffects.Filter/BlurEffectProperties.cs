@@ -1,6 +1,4 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Profile.LayerProperties.Types;
+﻿using Artemis.Core;
 
 namespace Artemis.Plugins.LayerEffects.Filter
 {

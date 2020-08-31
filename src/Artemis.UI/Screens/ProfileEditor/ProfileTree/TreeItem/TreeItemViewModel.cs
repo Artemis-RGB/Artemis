@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
@@ -191,7 +191,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         {
             // Remove VMs that are no longer a child
             var toRemove = Children.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
-            foreach (var treeItemViewModel in toRemove) 
+            foreach (var treeItemViewModel in toRemove)
                 Children.Remove(treeItemViewModel);
 
             // Order the children

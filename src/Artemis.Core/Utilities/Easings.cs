@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Utilities
+namespace Artemis.Core
 {
     public static class Easings
     {

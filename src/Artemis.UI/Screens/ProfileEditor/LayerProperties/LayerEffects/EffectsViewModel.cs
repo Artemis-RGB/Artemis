@@ -1,19 +1,19 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.LayerEffects;
-using Artemis.Core.Services.Interfaces;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.LayerEffects;
+using Artemis.Core.Services;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 {
     public class EffectsViewModel : PropertyChangedBase
     {
-        private readonly IRenderElementService _renderElementService;
         private readonly IPluginService _pluginService;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IRenderElementService _renderElementService;
         private BindableCollection<LayerEffectDescriptor> _layerEffectDescriptors;
         private LayerEffectDescriptor _selectedLayerEffectDescriptor;
 
@@ -41,7 +41,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
             get => _selectedLayerEffectDescriptor;
             set => SetAndNotify(ref _selectedLayerEffectDescriptor, value);
         }
-        
+
         public void PopulateDescriptors()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();

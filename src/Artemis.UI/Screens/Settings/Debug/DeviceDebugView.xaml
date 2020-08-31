@@ -7,8 +7,8 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                     xmlns:debug="clr-namespace:Artemis.UI.Screens.Settings.Debug"
-                    xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
-                    xmlns:surface="clr-namespace:Artemis.Core.Models.Surface;assembly=Artemis.Core"
+                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+                    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                     mc:Ignorable="d"
                     Title="Artemis device debugger"
                     TitleBarIcon="{StaticResource BowIcon}"
@@ -49,7 +49,7 @@
 
         <Grid Margin="10, 10, 10, 10">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
@@ -59,7 +59,7 @@
                 Please note that having this window open can have a performance impact on your system.
             </TextBlock>
 
-            <controls:DeviceVisualizer Grid.Row="1" Device="{Binding Device}" HighlightedLeds="{Binding SelectedLeds}" HorizontalAlignment="Center" MaxHeight="500" ShowColors="True" />
+            <shared:DeviceVisualizer Grid.Row="1" Device="{Binding Device}" HighlightedLeds="{Binding SelectedLeds}" HorizontalAlignment="Center" MaxHeight="500" ShowColors="True" />
 
             <Expander Grid.Row="2" Width="800" VerticalAlignment="Center" Header="Device properties">
                 <StackPanel Orientation="Horizontal">
@@ -235,7 +235,7 @@
             <DataGrid Grid.Row="3"
                       Margin="0 8 0 0"
                       ItemsSource="{Binding Device.Leds}"
-                      d:DataContext="{d:DesignInstance Type=surface:ArtemisLed}"
+                      d:DataContext="{d:DesignInstance Type=core:ArtemisLed}"
                       CanUserSortColumns="True"
                       IsReadOnly="True"
                       CanUserAddRows="False"

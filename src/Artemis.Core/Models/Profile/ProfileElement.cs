@@ -5,23 +5,10 @@ using System.Linq;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.Core.Models.Profile
+namespace Artemis.Core
 {
     public abstract class ProfileElement : PropertyChangedBase, IDisposable
     {
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected bool _disposed;
         private bool _enabled;
         private Guid _entityId;
@@ -84,6 +71,12 @@ namespace Artemis.Core.Models.Profile
         {
             get => _enabled;
             set => SetAndNotify(ref _enabled, value);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -199,6 +192,13 @@ namespace Artemis.Core.Models.Profile
         public override string ToString()
         {
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
         }
 
         /// <summary>

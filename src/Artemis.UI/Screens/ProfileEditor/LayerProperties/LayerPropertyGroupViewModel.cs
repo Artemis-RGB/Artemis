@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
+using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Humanizer;
 using Ninject;
 using Ninject.Parameters;
@@ -17,19 +15,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
     public class LayerPropertyGroupViewModel : LayerPropertyBaseViewModel
     {
-        public enum ViewModelType
-        {
-            General,
-            Transform,
-            LayerBrushRoot,
-            LayerEffectRoot,
-            None
-        }
-
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private ViewModelType _groupType;
-        private TreePropertyGroupViewModel _treePropertyGroupViewModel;
         private TimelinePropertyGroupViewModel _timelinePropertyGroupViewModel;
+        private TreePropertyGroupViewModel _treePropertyGroupViewModel;
 
         public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription,
             IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
@@ -58,7 +47,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             DetermineType();
         }
 
-        public override bool IsVisible => !LayerPropertyGroup.IsHidden; 
+        public override bool IsVisible => !LayerPropertyGroup.IsHidden;
         public IProfileEditorService ProfileEditorService { get; }
         public LayerPropertyGroup LayerPropertyGroup { get; }
         public PropertyGroupDescriptionAttribute PropertyGroupDescription { get; }
@@ -125,6 +114,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             return result;
         }
 
+        public void UpdateOrder(int order)
+        {
+            LayerPropertyGroup.LayerEffect.Order = order;
+            NotifyOfPropertyChange(nameof(IsExpanded));
+        }
+
         private void DetermineType()
         {
             if (LayerPropertyGroup is LayerGeneralProperties)
@@ -186,10 +181,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(IsVisible));
         }
 
-        public void UpdateOrder(int order)
+        public enum ViewModelType
         {
-            LayerPropertyGroup.LayerEffect.Order = order;
-            NotifyOfPropertyChange(nameof(IsExpanded));
+            General,
+            Transform,
+            LayerBrushRoot,
+            LayerEffectRoot,
+            None
         }
     }
 }

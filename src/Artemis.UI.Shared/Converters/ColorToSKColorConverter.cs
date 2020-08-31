@@ -4,7 +4,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using SkiaSharp;
 
-namespace Artemis.UI.Shared.Converters
+namespace Artemis.UI.Shared
 {
     /// <inheritdoc />
     /// <summary>
@@ -13,12 +13,14 @@ namespace Artemis.UI.Shared.Converters
     [ValueConversion(typeof(Color), typeof(SKColor))]
     public class SKColorToColorConverter : IValueConverter
     {
+        /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var skColor = (SKColor) value;
             return Color.FromArgb(skColor.Alpha, skColor.Red, skColor.Green, skColor.Blue);
         }
 
+        /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var color = (Color) value;

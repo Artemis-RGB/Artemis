@@ -2,8 +2,8 @@
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Artemis.Core.Events;
-using Artemis.Core.Services.Interfaces;
+using Artemis.Core;
+using Artemis.Core.Services;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;

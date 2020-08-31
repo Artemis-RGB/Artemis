@@ -4,24 +4,16 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Artemis.Core.Events;
-using Artemis.Core.Exceptions;
+using Artemis.Core.DataModelExpansions;
 using Artemis.Core.JsonConverters;
-using Artemis.Core.Models.Profile;
 using Artemis.Core.Ninject;
-using Artemis.Core.Plugins.DataModelExpansions;
-using Artemis.Core.Plugins.DataModelExpansions.Internal;
-using Artemis.Core.Plugins.Settings;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.Core.Utilities;
 using Artemis.Storage;
 using Newtonsoft.Json;
 using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
-using Module = Artemis.Core.Plugins.Modules.Module;
+using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.Services
 {
@@ -38,8 +30,8 @@ namespace Artemis.Core.Services
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
         private List<BaseDataModelExpansion> _dataModelExpansions;
-        private List<Module> _modules;
         private IntroAnimation _introAnimation;
+        private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
         public CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
@@ -99,6 +91,16 @@ namespace Artemis.Core.Services
             OnInitialized();
         }
 
+        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
+        {
+            FrameRendering?.Invoke(this, e);
+        }
+
+        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
+        {
+            FrameRendered?.Invoke(this, e);
+        }
+
         private void PlayIntroAnimation()
         {
             FrameRendering += DrawOverlay;
@@ -124,16 +126,6 @@ namespace Artemis.Core.Services
                 _introAnimation.AnimationProfile?.Dispose();
                 _introAnimation = null;
             });
-        }
-
-        protected virtual void OnFrameRendering(FrameRenderingEventArgs e)
-        {
-            FrameRendering?.Invoke(this, e);
-        }
-
-        protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
-        {
-            FrameRendered?.Invoke(this, e);
         }
 
         private void UpdatePluginCache()

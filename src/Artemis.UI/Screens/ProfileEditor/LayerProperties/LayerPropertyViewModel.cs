@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Models.Profile.LayerProperties;
+using Artemis.Core;
 using Artemis.UI.Exceptions;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Shared.PropertyInput;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Humanizer;
 using Ninject;
 using Ninject.Parameters;
@@ -17,8 +17,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
     public class LayerPropertyViewModel<T> : LayerPropertyViewModel
     {
-        private TreePropertyViewModel<T> _treePropertyViewModel;
         private TimelinePropertyViewModel<T> _timelinePropertyViewModel;
+        private TreePropertyViewModel<T> _treePropertyViewModel;
 
         public LayerPropertyViewModel(IProfileEditorService profileEditorService, LayerProperty<T> layerProperty) : base(profileEditorService, layerProperty)
         {
@@ -114,8 +114,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
     public abstract class LayerPropertyViewModel : LayerPropertyBaseViewModel
     {
-        private TreePropertyViewModel _treePropertyBaseViewModel;
         private TimelinePropertyViewModel _timelinePropertyBaseViewModel;
+        private TreePropertyViewModel _treePropertyBaseViewModel;
 
         protected LayerPropertyViewModel(IProfileEditorService profileEditorService, BaseLayerProperty baseLayerProperty)
         {

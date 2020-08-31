@@ -1,7 +1,6 @@
 ﻿using System;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     /// <inheritdoc />
     public class LayerBrushConfigurationDialog<T> : LayerBrushConfigurationDialog where T : BrushConfigurationViewModel

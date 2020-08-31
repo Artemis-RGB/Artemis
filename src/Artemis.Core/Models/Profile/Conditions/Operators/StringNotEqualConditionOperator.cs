@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace Artemis.Core.Models.Profile.Conditions.Operators
+namespace Artemis.Core
 {
     internal class StringNotEqualConditionOperator : DisplayConditionOperator
     {

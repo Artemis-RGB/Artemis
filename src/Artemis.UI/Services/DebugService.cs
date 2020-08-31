@@ -1,10 +1,6 @@
-﻿using System;
-using System.Windows;
-using Artemis.Core;
-using Artemis.UI.DataModelVisualization.Display;
+﻿using System.Windows;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services;
 using MaterialDesignExtensions.Controls;
 using Ninject;
 using Stylet;

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.Plugins.Exceptions;
 
-namespace Artemis.Core.Plugins.LayerEffects
+namespace Artemis.Core.LayerEffects
 {
     /// <summary>
     ///     Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
@@ -13,7 +12,7 @@ namespace Artemis.Core.Plugins.LayerEffects
         private readonly List<LayerEffectDescriptor> _layerEffectDescriptors;
 
         /// <summary>
-        /// Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
+        ///     Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
         /// </summary>
         protected LayerEffectProvider()
         {

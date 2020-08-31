@@ -13,19 +13,19 @@
         <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
         <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
 
-        <TextBox materialDesign:HintAssist.Hint="X-coordinate" 
-                 Text="{Binding X, UpdateSourceTrigger=PropertyChanged}" 
+        <TextBox materialDesign:HintAssist.Hint="X-coordinate"
+                 Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
-        <TextBox materialDesign:HintAssist.Hint="Y-coordinate" 
+        <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
                  Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
-        <TextBox materialDesign:HintAssist.Hint="Scale" 
-                 Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}" 
-                 Margin="0 10"  />
-        <TextBox materialDesign:HintAssist.Hint="Rotation" 
-                 Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}" 
+        <TextBox materialDesign:HintAssist.Hint="Scale"
+                 Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Margin="0 10" />
+        <TextBox materialDesign:HintAssist.Hint="Rotation"
+                 Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
 

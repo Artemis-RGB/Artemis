@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.Plugins.Exceptions;
-using Artemis.Core.Plugins.LayerBrushes.Internal;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     Allows you to create one or more <see cref="LayerBrush{T}" />s usable by profile layers.

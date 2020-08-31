@@ -1,7 +1,5 @@
-﻿using Artemis.Core.Models.Profile;
-using Artemis.Core.Models.Profile.LayerProperties.Attributes;
-using Artemis.Core.Models.Profile.LayerProperties.Types;
-using Artemis.Core.Plugins.LayerEffects;
+﻿using Artemis.Core;
+using Artemis.Core.LayerEffects;
 using SkiaSharp;
 
 namespace Artemis.Plugins.LayerEffects.Filter

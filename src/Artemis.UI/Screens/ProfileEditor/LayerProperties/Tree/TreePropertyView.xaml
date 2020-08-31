@@ -3,7 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:tree="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree"
@@ -46,9 +45,9 @@
             </ContentControl.Resources>
         </ContentControl>
 
-        <ToggleButton Grid.Column="3" 
+        <ToggleButton Grid.Column="3"
                       Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
-                      ToolTip="Change the property's data binding" 
+                      ToolTip="Change the property's data binding"
                       Width="20"
                       Height="20"
                       VerticalAlignment="Center"

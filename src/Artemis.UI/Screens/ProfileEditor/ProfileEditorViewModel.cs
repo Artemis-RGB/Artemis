@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Plugins.Modules;
-using Artemis.Core.Plugins.Settings;
+using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Core.Services.Storage.Interfaces;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 
@@ -22,21 +19,21 @@ namespace Artemis.UI.Screens.ProfileEditor
 {
     public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
     {
+        private readonly IModuleService _moduleService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
-        private readonly IModuleService _moduleService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
-        private BindableCollection<ProfileDescriptor> _profiles;
-        private PluginSetting<GridLength> _sidePanelsWidth;
-        private PluginSetting<GridLength> _displayConditionsHeight;
         private PluginSetting<GridLength> _bottomPanelsHeight;
-        private PluginSetting<GridLength> _elementPropertiesWidth;
-        private ProfileViewModel _profileViewModel;
-        private ProfileTreeViewModel _profileTreeViewModel;
-        private LayerPropertiesViewModel _layerPropertiesViewModel;
+        private PluginSetting<GridLength> _displayConditionsHeight;
         private DisplayConditionsViewModel _displayConditionsViewModel;
+        private PluginSetting<GridLength> _elementPropertiesWidth;
+        private LayerPropertiesViewModel _layerPropertiesViewModel;
+        private BindableCollection<ProfileDescriptor> _profiles;
+        private ProfileTreeViewModel _profileTreeViewModel;
+        private ProfileViewModel _profileViewModel;
         private ProfileDescriptor _selectedProfile;
+        private PluginSetting<GridLength> _sidePanelsWidth;
 
         public ProfileEditorViewModel(ProfileModule module,
             ICollection<ProfileEditorPanelViewModel> viewModels,

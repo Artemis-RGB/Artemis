@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     /// <summary>
     ///     A service providing module activation functionality

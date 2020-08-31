@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
@@ -11,6 +8,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             Tabs = new BindableCollection<DataBindingViewModel>();
         }
+
         public BindableCollection<DataBindingViewModel> Tabs { get; set; }
     }
 }

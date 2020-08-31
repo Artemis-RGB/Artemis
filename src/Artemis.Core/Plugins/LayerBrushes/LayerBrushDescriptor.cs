@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.Plugins.LayerBrushes
+namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     A class that describes a layer brush

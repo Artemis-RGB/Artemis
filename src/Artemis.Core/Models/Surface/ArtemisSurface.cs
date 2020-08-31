@@ -5,14 +5,14 @@ using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using Stylet;
 
-namespace Artemis.Core.Models.Surface
+namespace Artemis.Core
 {
     public class ArtemisSurface : PropertyChangedBase
     {
-        private double _scale;
-        private string _name;
-        private bool _isActive;
         private List<ArtemisDevice> _devices;
+        private bool _isActive;
+        private string _name;
+        private double _scale;
 
         internal ArtemisSurface(RGBSurface rgbSurface, string name, double scale)
         {

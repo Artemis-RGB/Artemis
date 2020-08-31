@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Artemis.Core.Models.Profile.Colors;
+using Artemis.Core;
 
-namespace Artemis.UI.Shared.Services.Interfaces
+namespace Artemis.UI.Shared.Services
 {
     public interface IGradientPickerService : IArtemisSharedUIService
     {

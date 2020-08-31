@@ -4,12 +4,12 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Artemis.Core.Models.Profile.Colors;
-using Artemis.UI.Shared.Annotations;
-using Artemis.UI.Shared.Services.Interfaces;
+using Artemis.Core;
+using Artemis.UI.Shared.Properties;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Interaction logic for GradientPicker.xaml

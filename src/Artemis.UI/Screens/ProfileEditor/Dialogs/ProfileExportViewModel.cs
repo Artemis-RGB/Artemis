@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using Artemis.Core.Models.Profile;
-using Artemis.Core.Services.Storage.Interfaces;
-using Artemis.UI.Shared.Services.Dialog;
+using Artemis.Core;
+using Artemis.Core.Services;
+using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.ProfileEditor.Dialogs

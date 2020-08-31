@@ -1,4 +1,4 @@
-﻿using Artemis.Core.Plugins.LayerEffects;
+﻿using Artemis.Core.LayerEffects;
 
 namespace Artemis.Plugins.LayerEffects.Filter
 {

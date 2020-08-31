@@ -1,10 +1,13 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.LayerShapes
+namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents the shape of a layer
+    /// </summary>
     public abstract class LayerShape
     {
-        protected LayerShape(Layer layer)
+        internal LayerShape(Layer layer)
         {
             Layer = layer;
         }
@@ -19,6 +22,9 @@ namespace Artemis.Core.Models.Profile.LayerShapes
         /// </summary>
         public SKPath Path { get; protected set; }
 
+        /// <summary>
+        ///     Calculates the <see cref="Path" />
+        /// </summary>
         public abstract void CalculateRenderProperties();
     }
 }

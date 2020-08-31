@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.Models.Profile
+﻿namespace Artemis.Core
 {
     /// <summary>
     ///     An enum defining the right side type of a profile entity

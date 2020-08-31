@@ -7,10 +7,10 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Artemis.Core.Models.Profile;
+using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
-using Artemis.UI.Shared.Services.Interfaces;
-using Artemis.UI.Shared.Utilities;
+using Artemis.UI.Shared;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
@@ -63,6 +63,20 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
 
+        public void Update()
+        {
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+            {
+                layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.UpdateKeyframes();
+
+                foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
+                {
+                    if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)
+                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
+                }
+            }
+        }
+
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.StartSegmentLength))
@@ -87,20 +101,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
                 NotifyOfPropertyChange(nameof(EndSegmentEnabled));
                 NotifyOfPropertyChange(nameof(TotalTimelineWidth));
-            }
-        }
-
-        public void Update()
-        {
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-            {
-                layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.UpdateKeyframes();
-
-                foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
-                {
-                    if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)
-                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
-                }
             }
         }
 

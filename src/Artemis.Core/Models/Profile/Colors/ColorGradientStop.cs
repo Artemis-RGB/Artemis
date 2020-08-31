@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using Artemis.Core.Annotations;
+using Artemis.Core.Properties;
 using SkiaSharp;
 
-namespace Artemis.Core.Models.Profile.Colors
+namespace Artemis.Core
 {
     /// <summary>
     ///     A color with a position, usually contained in a <see cref="ColorGradient" />

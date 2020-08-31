@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Core.Models.Profile.Conditions.Abstract;
-using Artemis.Core.Services.Interfaces;
-using Artemis.Storage.Entities.Profile;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
-namespace Artemis.Core.Models.Profile.Conditions
+namespace Artemis.Core
 {
     /// <summary>
     ///     A group containing zero to many <see cref="DisplayConditionPart" />s which it evaluates using a boolean specific

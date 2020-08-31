@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
-using Artemis.Core.Plugins.DataModelExpansions.Attributes;
 
-namespace Artemis.Core.Plugins.DataModelExpansions.Internal
+namespace Artemis.Core.DataModelExpansions
 {
     /// <summary>
     ///     For internal use only, to implement your own layer property type, extend <see cref="DataModelExpansion{T}" />

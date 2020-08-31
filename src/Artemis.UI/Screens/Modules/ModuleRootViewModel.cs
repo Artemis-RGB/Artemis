@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Plugins.Modules;
+using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;

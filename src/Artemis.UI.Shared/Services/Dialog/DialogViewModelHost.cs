@@ -1,7 +1,7 @@
 ﻿using MaterialDesignThemes.Wpf;
 using Stylet;
 
-namespace Artemis.UI.Shared.Services.Dialog
+namespace Artemis.UI.Shared.Services
 {
     public class DialogViewModelHost : PropertyChangedBase
     {

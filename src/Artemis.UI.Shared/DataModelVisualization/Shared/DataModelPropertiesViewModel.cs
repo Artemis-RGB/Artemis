@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Plugins.DataModelExpansions;
+using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Interfaces;
 
-namespace Artemis.UI.Shared.DataModelVisualization.Shared
+namespace Artemis.UI.Shared
 {
     public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
     {
@@ -29,6 +28,11 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
         public override object GetCurrentValue()
         {
             return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
+        }
+
+        protected int GetChildDepth()
+        {
+            return PropertyDescription != null && !PropertyDescription.ResetsDepth ? Depth + 1 : 1;
         }
 
         private void PopulateProperties(IDataModelUIService dataModelUIService)
@@ -56,11 +60,6 @@ namespace Artemis.UI.Shared.DataModelVisualization.Shared
                 if (hiddenProperties.Contains(dataModelVisualizationViewModel.PropertyInfo))
                     Children.Remove(dataModelVisualizationViewModel);
             }
-        }
-
-        protected int GetChildDepth()
-        {
-            return PropertyDescription != null && !PropertyDescription.ResetsDepth ? Depth + 1 : 1;
         }
     }
 }
