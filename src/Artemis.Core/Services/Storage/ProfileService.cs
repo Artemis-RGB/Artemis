@@ -249,6 +249,9 @@ namespace Artemis.Core.Services
         public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
         {
             var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            if (!moduleProfiles.Any())
+                return CreateProfileDescriptor(module, "Default");
+
             var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
             return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
         }
