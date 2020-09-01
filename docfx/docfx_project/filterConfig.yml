@@ -1,0 +1,13 @@
+apiRules:
+- exclude:
+      uidRegex: ^System\.Object
+      type: Type
+- exclude:
+      uidRegex: ^System\.Windows
+      type: Type
+- exclude:
+      uidRegex: ^System\.ComponentModel
+      type: Type
+- exclude:
+      uidRegex: ^Stylet\.PropertyChangedBase
+      type: Type
