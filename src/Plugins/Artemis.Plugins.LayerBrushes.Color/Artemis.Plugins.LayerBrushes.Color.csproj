@@ -15,7 +15,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="SkiaSharp" Version="1.68.3" />
+    <PackageReference Include="SkiaSharp" Version="1.68.3">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
     <PackageReference Include="System.Buffers" Version="4.5.0" />
     <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
   </ItemGroup>
@@ -25,9 +27,15 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj">
       <Private>false</Private>
+      <PrivateAssets>all</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
+ 
+  <Target Name="DeleteDepsFile" AfterTargets="PostBuildEvent">
+    <Delete Files="$(OutDir)$(TargetName).deps.json" />
+  </Target>
+
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(BuildingInsideVisualStudio)' == 'true'">
-    <Exec Command="echo Copying resources to plugin output directory&#xD;&#xA;XCOPY &quot;$(ProjectDir)Images&quot; &quot;$(TargetDir)Images&quot; /s /q /i /y&#xD;&#xA;XCOPY &quot;$(ProjectDir)Layouts&quot; &quot;$(TargetDir)Layouts&quot; /s /q /i /y&#xD;&#xA;echo Copying plugin to Artemis.UI output directory&#xD;&#xA;XCOPY &quot;$(TargetDir.TrimEnd('\'))&quot; &quot;$(SolutionDir)\Artemis.UI\$(OutDir)Plugins\$(ProjectName)&quot; /s /q /i /y" />
+    <Exec Command="echo Copying plugin to Artemis.UI output directory&#xD;&#xA;XCOPY &quot;$(TargetDir.TrimEnd('\'))&quot; &quot;$(SolutionDir)\Artemis.UI\$(OutDir)Plugins\$(ProjectName)&quot; /s /q /i /y" />
   </Target>
 </Project>

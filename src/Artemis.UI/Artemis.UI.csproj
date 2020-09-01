@@ -40,6 +40,11 @@
   <Target Name="SkiaCleanUpAfterBuild" AfterTargets="AfterBuild">
     <Delete Files="$(OutputPath)\libSkiaSharp.dylib" />
   </Target>
+  <ItemGroup>
+    <FluentValidationExcludedCultures Include="cs;da;de;es;fa;fi;fr;it;ko;mk;nl;pl;pt;ru;ru-ru;sv;tr;zh-CN;uz-Latn-UZ">
+      <InProject>false</InProject>
+    </FluentValidationExcludedCultures>
+  </ItemGroup>
   <Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
     <RemoveDir Directories="@(FluentValidationExcludedCultures->'$(OutputPath)%(Filename)')" />
   </Target>
