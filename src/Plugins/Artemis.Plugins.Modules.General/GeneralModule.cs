@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core.Modules;
-using Artemis.Plugins.Modules.General.DataModel;
-using Artemis.Plugins.Modules.General.DataModel.Windows;
+using Artemis.Plugins.Modules.General.DataModels;
+using Artemis.Plugins.Modules.General.DataModels.Windows;
 using Artemis.Plugins.Modules.General.Utilities;
 using Artemis.Plugins.Modules.General.ViewModels;
 

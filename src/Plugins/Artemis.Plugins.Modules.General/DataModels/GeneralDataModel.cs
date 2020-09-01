@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Plugins.Modules.General.DataModel.Windows;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Plugins.Modules.General.DataModels.Windows;
 
-namespace Artemis.Plugins.Modules.General.DataModel
+namespace Artemis.Plugins.Modules.General.DataModels
 {
-    public class GeneralDataModel : Core.DataModelExpansions.DataModel
+    public class GeneralDataModel : DataModel
     {
         public GeneralDataModel()
         {
@@ -25,7 +26,7 @@ namespace Artemis.Plugins.Modules.General.DataModel
         public List<TimeDataModel> TestTimeList { get; set; }
     }
 
-    public class TimeDataModel : Core.DataModelExpansions.DataModel
+    public class TimeDataModel : DataModel
     {
         public DateTime CurrentTime { get; set; }
         public DateTime CurrentTimeUTC { get; set; }

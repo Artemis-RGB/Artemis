@@ -2,7 +2,7 @@
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 
-namespace Artemis.Plugins.Modules.General.DataModel.Windows
+namespace Artemis.Plugins.Modules.General.DataModels.Windows
 {
     public class WindowDataModel
     {
