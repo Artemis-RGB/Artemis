@@ -11,3 +11,9 @@ apiRules:
 - exclude:
       uidRegex: ^Stylet\.PropertyChangedBase
       type: Type
+- exclude:
+      uidRegex: ^Artemis\.Core\.Properties
+      type: Type
+- exclude:
+      uidRegex: ^Artemis\.UI\.Shared\.Properties
+      type: Type
