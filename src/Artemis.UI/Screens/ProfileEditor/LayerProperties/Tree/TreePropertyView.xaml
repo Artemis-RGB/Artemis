@@ -51,6 +51,7 @@
                       Width="20"
                       Height="20"
                       VerticalAlignment="Center"
+                      IsEnabled="{Binding LayerPropertyViewModel.LayerProperty.DataBindingsSupported}"
                       IsChecked="{Binding DataBindingsOpen}">
             <materialDesign:PackIcon Kind="VectorLink" Height="13" Width="13" />
         </ToggleButton>

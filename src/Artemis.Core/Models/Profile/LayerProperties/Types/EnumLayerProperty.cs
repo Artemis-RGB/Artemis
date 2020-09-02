@@ -8,6 +8,7 @@ namespace Artemis.Core
         public EnumLayerProperty()
         {
             KeyframesSupported = false;
+            DataBindingsSupported = false;
         }
 
         public static implicit operator T(EnumLayerProperty<T> p)

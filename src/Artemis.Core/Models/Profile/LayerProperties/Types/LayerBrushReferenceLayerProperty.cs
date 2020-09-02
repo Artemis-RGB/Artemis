@@ -8,6 +8,7 @@
         internal LayerBrushReferenceLayerProperty()
         {
             KeyframesSupported = false;
+            DataBindingsSupported = false;
         }
 
         public static implicit operator LayerBrushReference(LayerBrushReferenceLayerProperty p)

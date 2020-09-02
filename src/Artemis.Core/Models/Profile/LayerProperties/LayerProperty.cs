@@ -178,12 +178,6 @@ namespace Artemis.Core
             return typeof(T);
         }
 
-        /// <inheritdoc />
-        public override List<PropertyInfo> GetDataBindingProperties()
-        {
-            return new List<PropertyInfo> {GetType().GetProperty(nameof(CurrentValue))};
-        }
-
         /// <summary>
         ///     Called every update (if keyframes are both supported and enabled) to determine the new <see cref="CurrentValue" />
         ///     based on the provided progress
@@ -233,6 +227,7 @@ namespace Artemis.Core
         {
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
+
 
         internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage)
         {
@@ -289,5 +284,23 @@ namespace Artemis.Core
                 EasingFunction = (int) k.EasingFunction
             }));
         }
+
+        #region Data bindings
+
+        /// <inheritdoc />
+        public override List<PropertyInfo> GetDataBindingProperties()
+        {
+            return new List<PropertyInfo> {GetType().GetProperty(nameof(CurrentValue))};
+        }
+
+        /// <inheritdoc />
+        protected override void ApplyDataBinding(DataBinding dataBinding)
+        {
+            // The default implementation only supports simple types
+            if (dataBinding.TargetProperty.DeclaringType == GetType())
+                CurrentValue = (T) dataBinding.GetValue(CurrentValue);
+        }
+
+        #endregion
     }
 }

@@ -8,6 +8,7 @@ namespace Artemis.Core
         internal ColorGradientLayerProperty()
         {
             KeyframesSupported = false;
+            DataBindingsSupported = false;
         }
 
         public static implicit operator ColorGradient(ColorGradientLayerProperty p)

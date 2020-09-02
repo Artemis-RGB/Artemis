@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using Serilog;
@@ -57,7 +58,7 @@ namespace Artemis.Core.Services
                 throw e;
             }
 
-            if (deviceProvider.Devices == null)
+            if (deviceProvider.Devices == null || !deviceProvider.Devices.Any())
             {
                 _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
                 return;

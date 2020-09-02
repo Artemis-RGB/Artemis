@@ -89,7 +89,7 @@ namespace Artemis.Core
         /// <returns>The modified value</returns>
         public object Apply(object currentValue)
         {
-            var targetType = DataBinding.Target.GetPropertyType();
+            var targetType = DataBinding.LayerProperty.GetPropertyType();
             if (currentValue.GetType() != targetType)
             {
                 throw new ArtemisCoreException("The current value of the data binding does not match the type of the target property." +
@@ -118,7 +118,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.Target.GetPropertyType();
+            var targetType = DataBinding.LayerProperty.GetPropertyType();
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -164,7 +164,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.Target.GetPropertyType();
+            var targetType = DataBinding.LayerProperty.GetPropertyType();
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -200,7 +200,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.Target.GetPropertyType();
+                var targetType = DataBinding.LayerProperty.GetPropertyType();
                 object staticValue;
 
                 try
@@ -240,15 +240,15 @@ namespace Artemis.Core
             if (ParameterDataModel == null)
                 return;
 
-            var currentValueParameter = Expression.Parameter(DataBinding.Target.GetPropertyType());
+            var currentValueParameter = Expression.Parameter(DataBinding.LayerProperty.GetPropertyType());
 
             // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
             var rightSideAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "right", out var rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
-            if (rightSideAccessor.Type != DataBinding.Target.GetPropertyType())
-                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.Target.GetPropertyType());
+            if (rightSideAccessor.Type != DataBinding.LayerProperty.GetPropertyType())
+                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.LayerProperty.GetPropertyType());
 
             var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideAccessor);
             var lambda = Expression.Lambda<Func<object, DataModel, object>>(modifierExpression, currentValueParameter, rightSideParameter);
@@ -257,12 +257,12 @@ namespace Artemis.Core
 
         private void CreateStaticExpression()
         {
-            var currentValueParameter = Expression.Parameter(DataBinding.Target.GetPropertyType());
+            var currentValueParameter = Expression.Parameter(DataBinding.LayerProperty.GetPropertyType());
 
             // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
             var rightSideConstant = ParameterStaticValue != null
                 ? Expression.Constant(ParameterStaticValue)
-                : Expression.Constant(null, DataBinding.Target.GetPropertyType());
+                : Expression.Constant(null, DataBinding.LayerProperty.GetPropertyType());
 
             var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideConstant);
             var lambda = Expression.Lambda<Func<object, object>>(modifierExpression, currentValueParameter);

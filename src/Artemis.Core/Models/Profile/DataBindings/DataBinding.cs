@@ -1,4 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Artemis.Core.DataModelExpansions;
 
 namespace Artemis.Core
@@ -11,9 +15,14 @@ namespace Artemis.Core
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
 
         /// <summary>
-        ///     The <see cref="BaseLayerProperty" /> that the data binding targets
+        ///     Gets the layer property this data binding targets
         /// </summary>
-        public BaseLayerProperty Target { get; set; } // BIG FAT TODO: Take into account X and Y of SkPosition etc., forgot about it again :>
+        public BaseLayerProperty LayerProperty { get; private set; }
+
+        /// <summary>
+        ///     Gets the inner property this data binding targets
+        /// </summary>
+        public PropertyInfo TargetProperty { get; private set; }
 
         /// <summary>
         ///     Gets the currently used instance of the data model that contains the source of the data binding
@@ -29,6 +38,8 @@ namespace Artemis.Core
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
         public IReadOnlyList<DataBindingModifier> Modifiers => _modifiers.AsReadOnly();
+
+        public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
 
         /// <summary>
         ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
@@ -54,6 +65,45 @@ namespace Artemis.Core
                 modifier.CreateExpression();
                 _modifiers.Remove(modifier);
             }
+        }
+
+        /// <summary>
+        ///     Gets the current value of the data binding
+        /// </summary>
+        /// <param name="baseValue">The base value of the property the data binding is applied to</param>
+        /// <returns></returns>
+        public object GetValue(object baseValue)
+        {
+            if (baseValue.GetType() != TargetProperty.PropertyType)
+            {
+                throw new ArtemisCoreException($"The provided current value type ({baseValue.GetType().Name}) not match the " +
+                                               $"target property type ({TargetProperty.PropertyType.Name})");
+            }
+
+            if (CompiledTargetAccessor == null)
+                return baseValue;
+
+            var dataBindingValue = CompiledTargetAccessor(SourceDataModel);
+            foreach (var dataBindingModifier in Modifiers)
+                dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
+
+            return dataBindingValue;
+        }
+
+        public void Update()
+        {
+            var listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
+            if (listType != null)
+                throw new ArtemisCoreException($"Cannot create a regular accessor at path {SourcePropertyPath} because the path contains a list");
+
+            var parameter = Expression.Parameter(typeof(object), "targetDataModel");
+            var accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, SourceDataModel.GetType()), // Cast to the appropriate type
+                Expression.Property
+            );
+
+            var lambda = Expression.Lambda<Func<DataModel, object>>(accessor);
+            CompiledTargetAccessor = lambda.Compile();
         }
     }
 }
