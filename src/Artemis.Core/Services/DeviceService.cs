@@ -1,17 +1,13 @@
-﻿using System.Threading.Tasks;
-using SkiaSharp;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using RGB.NET.Brushes;
+using RGB.NET.Core;
+using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {
     internal class DeviceService : IDeviceService
     {
-        private readonly ICoreService _coreService;
-
-        public DeviceService(ICoreService coreService)
-        {
-            _coreService = coreService;
-        }
-
         public void IdentifyDevice(ArtemisDevice device)
         {
             BlinkDevice(device, 0);
@@ -19,36 +15,26 @@ namespace Artemis.Core.Services
 
         private void BlinkDevice(ArtemisDevice device, int blinkCount)
         {
-            // Draw a white overlay over the device
-            void DrawOverlay(object sender, FrameRenderingEventArgs args)
+            // Create a LED group way at the top
+            var ledGroup = new ListLedGroup(device.Leds.Select(l => l.RgbLed))
             {
-                args.Canvas.DrawPath(device.RenderPath, new SKPaint {Color = new SKColor(255, 255, 255)});
-            }
+                Brush = new SolidColorBrush(new Color(255, 255, 255)), 
+                ZIndex = 999
+            };
 
-            _coreService.FrameRendering += DrawOverlay;
-
-            // After 200ms, stop drawing the overlay
+            // After 200ms, detach the LED group
             Task.Run(async () =>
             {
                 await Task.Delay(200);
-                _coreService.FrameRendering -= DrawOverlay;
+                ledGroup.Detach();
 
                 if (blinkCount < 5)
                 {
-                    // After another 200ms, draw the overlay again, repeat six times
+                    // After another 200ms, start over, repeat six times
                     await Task.Delay(200);
                     BlinkDevice(device, blinkCount + 1);
                 }
             });
         }
-    }
-
-    public interface IDeviceService : IArtemisService
-    {
-        /// <summary>
-        ///     Identifies the device by making it blink white 5 times
-        /// </summary>
-        /// <param name="device"></param>
-        void IdentifyDevice(ArtemisDevice device);
     }
 }
