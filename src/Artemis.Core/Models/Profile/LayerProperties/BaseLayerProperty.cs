@@ -10,6 +10,7 @@ namespace Artemis.Core
     /// </summary>
     public abstract class BaseLayerProperty
     {
+        private readonly List<DataBinding> _dataBindings = new List<DataBinding>();
         private bool _isHidden;
         private bool _keyframesEnabled;
 
@@ -30,7 +31,17 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets whether keyframes are supported on this type of property
         /// </summary>
-        public bool KeyframesSupported { get; protected internal set; } = true;
+        public bool KeyframesSupported { get; protected internal set; } = true; 
+        
+        /// <summary>
+        ///     Gets whether data bindings are supported on this type of property
+        /// </summary>
+        public bool DataBindingsSupported { get; protected internal set; } = true;
+
+        /// <summary>
+        /// Gets a read-only collection of the currently applied data bindings
+        /// </summary>
+        public IReadOnlyCollection<DataBinding> DataBindings => _dataBindings.AsReadOnly();
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
@@ -100,6 +111,12 @@ namespace Artemis.Core
         public abstract List<PropertyInfo> GetDataBindingProperties();
 
         /// <summary>
+        ///     Called when the provided data binding must be applied to a property
+        /// </summary>
+        /// <param name="dataBinding"></param>
+        protected abstract void ApplyDataBinding(DataBinding dataBinding);
+
+        /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
         /// <param name="entity"></param>
@@ -112,6 +129,19 @@ namespace Artemis.Core
         ///     <see cref="ApplyToLayerProperty" />
         /// </summary>
         internal abstract void ApplyToEntity();
+
+        #region Data bindings
+
+        /// <summary>
+        ///     Applies the current <see cref="DataBindings" /> to the layer property
+        /// </summary>
+        public void ApplyDataBindings()
+        {
+            foreach (var dataBinding in DataBindings)
+                ApplyDataBinding(dataBinding);
+        }
+
+        #endregion
 
         #region Events
 
