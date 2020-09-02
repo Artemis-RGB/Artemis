@@ -4,6 +4,8 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
 {
@@ -14,15 +16,28 @@ namespace Artemis.Core
     {
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
 
+        public DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty)
+        {
+            LayerProperty = layerProperty;
+            TargetProperty = targetProperty;
+        }
+
+        public DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty, DataBindingEntity entity)
+        {
+            LayerProperty = layerProperty;
+            TargetProperty = targetProperty;
+            Entity = entity;
+        }
+
         /// <summary>
         ///     Gets the layer property this data binding targets
         /// </summary>
-        public BaseLayerProperty LayerProperty { get; private set; }
+        public BaseLayerProperty LayerProperty { get; }
 
         /// <summary>
         ///     Gets the inner property this data binding targets
         /// </summary>
-        public PropertyInfo TargetProperty { get; private set; }
+        public PropertyInfo TargetProperty { get; }
 
         /// <summary>
         ///     Gets the currently used instance of the data model that contains the source of the data binding
@@ -39,7 +54,12 @@ namespace Artemis.Core
         /// </summary>
         public IReadOnlyList<DataBindingModifier> Modifiers => _modifiers.AsReadOnly();
 
+        /// <summary>
+        /// Gets the compiled function that gets the current value of the data binding target
+        /// </summary>
         public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
+
+        internal DataBindingEntity Entity { get; }
 
         /// <summary>
         ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
@@ -49,7 +69,6 @@ namespace Artemis.Core
             if (!_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = this;
-                modifier.CreateExpression();
                 _modifiers.Add(modifier);
             }
         }
@@ -62,9 +81,31 @@ namespace Artemis.Core
             if (_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = null;
-                modifier.CreateExpression();
                 _modifiers.Remove(modifier);
             }
+        }
+
+        /// <summary>
+        ///     Updates the source of the data binding and re-compiles the expression
+        /// </summary>
+        /// <param name="dataModel">The data model of the source</param>
+        /// <param name="path">The path pointing to the source inside the data model</param>
+        public void UpdateSource(DataModel dataModel, string path)
+        {
+            if (dataModel != null && path == null)
+                throw new ArtemisCoreException("If a data model is provided, a path is also required");
+            if (dataModel == null && path != null)
+                throw new ArtemisCoreException("If path is provided, a data model is also required");
+
+            if (dataModel != null)
+            {
+                if (!dataModel.ContainsPath(path))
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            }
+
+            SourceDataModel = dataModel;
+            SourcePropertyPath = path;
+            CreateExpression();
         }
 
         /// <summary>
@@ -90,7 +131,18 @@ namespace Artemis.Core
             return dataBindingValue;
         }
 
-        public void Update()
+        internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
+        {
+            // Source
+
+            // Modifiers
+
+
+            foreach (var dataBindingModifier in Modifiers) 
+                dataBindingModifier.Initialize(dataModelService, dataBindingService);
+        }
+
+        private void CreateExpression()
         {
             var listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
             if (listType != null)
