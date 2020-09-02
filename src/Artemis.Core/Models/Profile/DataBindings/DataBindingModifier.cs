@@ -13,6 +13,8 @@ namespace Artemis.Core
     /// </summary>
     public class DataBindingModifier
     {
+        private DataBinding _dataBinding;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="DataBindingModifier" /> class
         /// </summary>
@@ -37,7 +39,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data binding this modifier is applied to
         /// </summary>
-        public DataBinding DataBinding { get; internal set; }
+        public DataBinding DataBinding
+        {
+            get => _dataBinding;
+            internal set
+            {
+                _dataBinding = value;
+                CreateExpression();
+            }
+        }
 
         /// <summary>
         ///     Gets the type of modifier that is being applied
@@ -89,7 +99,7 @@ namespace Artemis.Core
         /// <returns>The modified value</returns>
         public object Apply(object currentValue)
         {
-            var targetType = DataBinding.LayerProperty.GetPropertyType();
+            var targetType = DataBinding.TargetProperty.GetType();
             if (currentValue.GetType() != targetType)
             {
                 throw new ArtemisCoreException("The current value of the data binding does not match the type of the target property." +
@@ -118,7 +128,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.LayerProperty.GetPropertyType();
+            var targetType = DataBinding.TargetProperty.GetType();
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -164,7 +174,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.LayerProperty.GetPropertyType();
+            var targetType = DataBinding.TargetProperty.GetType();
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -200,7 +210,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.LayerProperty.GetPropertyType();
+                var targetType = DataBinding.TargetProperty.GetType();
                 object staticValue;
 
                 try
@@ -221,7 +231,7 @@ namespace Artemis.Core
         }
 
 
-        internal void CreateExpression()
+        private void CreateExpression()
         {
             CompiledDynamicPredicate = null;
             CompiledStaticPredicate = null;
@@ -240,15 +250,15 @@ namespace Artemis.Core
             if (ParameterDataModel == null)
                 return;
 
-            var currentValueParameter = Expression.Parameter(DataBinding.LayerProperty.GetPropertyType());
+            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
 
             // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
             var rightSideAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "right", out var rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
-            if (rightSideAccessor.Type != DataBinding.LayerProperty.GetPropertyType())
-                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.LayerProperty.GetPropertyType());
+            if (rightSideAccessor.Type != DataBinding.TargetProperty.GetType())
+                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.TargetProperty.GetType());
 
             var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideAccessor);
             var lambda = Expression.Lambda<Func<object, DataModel, object>>(modifierExpression, currentValueParameter, rightSideParameter);
@@ -257,12 +267,12 @@ namespace Artemis.Core
 
         private void CreateStaticExpression()
         {
-            var currentValueParameter = Expression.Parameter(DataBinding.LayerProperty.GetPropertyType());
+            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
 
             // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
             var rightSideConstant = ParameterStaticValue != null
                 ? Expression.Constant(ParameterStaticValue)
-                : Expression.Constant(null, DataBinding.LayerProperty.GetPropertyType());
+                : Expression.Constant(null, DataBinding.TargetProperty.GetType());
 
             var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideConstant);
             var lambda = Expression.Lambda<Func<object, object>>(modifierExpression, currentValueParameter);
