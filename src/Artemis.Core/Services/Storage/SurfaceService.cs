@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Artemis.Core.Services
 {
-    public class SurfaceService : ISurfaceService
+    internal class SurfaceService : ISurfaceService
     {
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
@@ -17,7 +17,7 @@ namespace Artemis.Core.Services
         private readonly List<ArtemisSurface> _surfaceConfigurations;
         private readonly ISurfaceRepository _surfaceRepository;
 
-        internal SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginService pluginService, ISettingsService settingsService)
+        public SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginService pluginService, ISettingsService settingsService)
         {
             _logger = logger;
             _surfaceRepository = surfaceRepository;

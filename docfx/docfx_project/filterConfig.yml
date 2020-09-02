@@ -15,5 +15,8 @@ apiRules:
       uidRegex: ^Artemis\.Core\.Properties
       type: Type
 - exclude:
+      uidRegex: ^Artemis\.Core\.Services\.IArtemisService
+      type: Type
+- exclude:
       uidRegex: ^Artemis\.UI\.Shared\.Properties
       type: Type
