@@ -10,7 +10,7 @@ namespace Artemis.Core
     /// </summary>
     public abstract class BaseLayerProperty
     {
-        private readonly List<DataBinding> _dataBindings = new List<DataBinding>();
+        protected readonly List<DataBinding> _dataBindings = new List<DataBinding>();
         private bool _isHidden;
         private bool _keyframesEnabled;
 
@@ -31,15 +31,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets whether keyframes are supported on this type of property
         /// </summary>
-        public bool KeyframesSupported { get; protected internal set; } = true; 
-        
+        public bool KeyframesSupported { get; protected internal set; } = true;
+
         /// <summary>
         ///     Gets whether data bindings are supported on this type of property
         /// </summary>
         public bool DataBindingsSupported { get; protected internal set; } = true;
 
         /// <summary>
-        /// Gets a read-only collection of the currently applied data bindings
+        ///     Gets a read-only collection of the currently applied data bindings
         /// </summary>
         public IReadOnlyCollection<DataBinding> DataBindings => _dataBindings.AsReadOnly();
 
@@ -140,6 +140,30 @@ namespace Artemis.Core
             foreach (var dataBinding in DataBindings)
                 ApplyDataBinding(dataBinding);
         }
+
+        /// <summary>
+        ///     Adds a new data binding targeting the given property to the <see cref="DataBindings" /> collection
+        /// </summary>
+        /// <param name="targetProperty">The property the new data binding should target</param>
+        /// <returns>The newly created data binding</returns>
+        public DataBinding AddDataBinding(PropertyInfo targetProperty)
+        {
+            var dataBinding = new DataBinding(this, targetProperty);
+            _dataBindings.Add(dataBinding);
+
+            return dataBinding;
+        }
+
+        /// <summary>
+        ///     Removes the provided data binding from the <see cref="DataBindings" /> collection
+        /// </summary>
+        /// <param name="dataBinding">The data binding to remove</param>
+        public void RemoveDataBinding(DataBinding dataBinding)
+        {
+            _dataBindings.Remove(dataBinding);
+        }
+
+        
 
         #endregion
 

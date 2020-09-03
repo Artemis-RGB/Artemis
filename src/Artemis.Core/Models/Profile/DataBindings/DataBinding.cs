@@ -15,18 +15,23 @@ namespace Artemis.Core
     public class DataBinding
     {
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
+        private bool _isInitialized;
 
-        public DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty)
+        internal DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty)
         {
             LayerProperty = layerProperty;
             TargetProperty = targetProperty;
+            Entity = new DataBindingEntity();
+
+            ApplyToEntity();
         }
 
-        public DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty, DataBindingEntity entity)
+        internal DataBinding(BaseLayerProperty layerProperty, DataBindingEntity entity)
         {
             LayerProperty = layerProperty;
-            TargetProperty = targetProperty;
             Entity = entity;
+
+            ApplyToDataBinding();
         }
 
         /// <summary>
@@ -37,7 +42,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the inner property this data binding targets
         /// </summary>
-        public PropertyInfo TargetProperty { get; }
+        public PropertyInfo TargetProperty { get; private set; }
 
         /// <summary>
         ///     Gets the currently used instance of the data model that contains the source of the data binding
@@ -49,13 +54,25 @@ namespace Artemis.Core
         /// </summary>
         public string SourcePropertyPath { get; private set; }
 
+        public DataBindingMode Mode { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the easing time of the data binding
+        /// </summary>
+        public TimeSpan EasingTime { get; set; }
+
+        /// <summary>
+        ///     Gets ors ets the easing function of the data binding
+        /// </summary>
+        public Easings.Functions EasingFunction { get; set; }
+
         /// <summary>
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
         public IReadOnlyList<DataBindingModifier> Modifiers => _modifiers.AsReadOnly();
 
         /// <summary>
-        /// Gets the compiled function that gets the current value of the data binding target
+        ///     Gets the compiled function that gets the current value of the data binding target
         /// </summary>
         public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
 
@@ -131,15 +148,60 @@ namespace Artemis.Core
             return dataBindingValue;
         }
 
-        internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
+        internal void ApplyToEntity()
         {
-            // Source
+            // General 
+            Entity.TargetProperty = TargetProperty?.Name;
+            Entity.DataBindingMode = (int) Mode;
+            Entity.EasingTime = EasingTime;
+            Entity.EasingFunction = (int) EasingFunction;
+
+            // Data model
+            Entity.SourceDataModelGuid = SourceDataModel?.PluginInfo?.Guid;
+            Entity.SourcePropertyPath = SourcePropertyPath;
 
             // Modifiers
+            Entity.Modifiers.Clear();
+            foreach (var dataBindingModifier in Modifiers)
+            {
+                dataBindingModifier.ApplyToEntity();
+                Entity.Modifiers.Add(dataBindingModifier.Entity);
+            }
+        }
 
+        internal void ApplyToDataBinding()
+        {
+            // General
+            TargetProperty = LayerProperty.GetDataBindingProperties()?.FirstOrDefault(p => p.Name == Entity.TargetProperty);
+            Mode = (DataBindingMode) Entity.DataBindingMode;
+            EasingTime = Entity.EasingTime;
+            EasingFunction = (Easings.Functions) Entity.EasingFunction;
 
-            foreach (var dataBindingModifier in Modifiers) 
+            // Data model is done during Initialize
+
+            // Modifiers
+            foreach (var dataBindingModifierEntity in Entity.Modifiers)
+                _modifiers.Add(new DataBindingModifier(this, dataBindingModifierEntity));
+        }
+
+        internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
+        {
+            if (_isInitialized)
+                throw new ArtemisCoreException("Data binding is already initialized");
+
+            // Source
+            if (Entity.SourceDataModelGuid != null)
+            {
+                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.SourceDataModelGuid.Value);
+                if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
+                    UpdateSource(dataModel, Entity.SourcePropertyPath);
+            }
+
+            // Modifiers
+            foreach (var dataBindingModifier in Modifiers)
                 dataBindingModifier.Initialize(dataModelService, dataBindingService);
+
+            _isInitialized = true;
         }
 
         private void CreateExpression()
@@ -157,5 +219,11 @@ namespace Artemis.Core
             var lambda = Expression.Lambda<Func<DataModel, object>>(accessor);
             CompiledTargetAccessor = lambda.Compile();
         }
+    }
+
+    public enum DataBindingMode
+    {
+        Override,
+        Add
     }
 }

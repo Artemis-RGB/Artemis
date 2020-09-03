@@ -112,6 +112,7 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _layerBrush, value);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
@@ -138,6 +139,7 @@ namespace Artemis.Core
             return keyframes;
         }
 
+        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (!disposing)

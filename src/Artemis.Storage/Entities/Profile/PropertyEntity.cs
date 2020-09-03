@@ -9,6 +9,7 @@ namespace Artemis.Storage.Entities.Profile
         public PropertyEntity()
         {
             KeyframeEntities = new List<KeyframeEntity>();
+            DataBindingEntities = new List<DataBindingEntity>();
         }
 
         public Guid PluginGuid { get; set; }
@@ -18,6 +19,6 @@ namespace Artemis.Storage.Entities.Profile
         public bool KeyframesEnabled { get; set; }
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
-        public DataBindingEntity DataBindingEntity { get; set; }
+        public List<DataBindingEntity> DataBindingEntities { get; set; }
     }
 }

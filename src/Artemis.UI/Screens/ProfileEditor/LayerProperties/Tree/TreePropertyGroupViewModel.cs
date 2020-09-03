@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared.Services;
@@ -39,33 +42,48 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public void OpenBrushSettings()
         {
-            var configurationViewModel = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush.ConfigurationDialog;
+            var layerBrush = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush;
+            var configurationViewModel = layerBrush.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
-                var layerBrush = new ConstructorArgument("layerBrush", LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush);
-                var viewModel = (BrushConfigurationViewModel) _kernel.Get(configurationViewModel.Type, layerBrush);
+                // Limit to one constructor, there's no need to have more and it complicates things anyway
+                var constructors = configurationViewModel.Type.GetConstructors();
+                if (constructors.Length != 1)
+                    throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
+
+                // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
+                var brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
+                var argument = new ConstructorArgument(brushParameter.Name, layerBrush);
+                var viewModel = (BrushConfigurationViewModel) _kernel.Get(configurationViewModel.Type, argument);
+
                 _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
             {
                 _dialogService.ShowExceptionDialog("An exception occured while trying to show the brush's settings window", e);
-                throw;
             }
         }
 
         public void OpenEffectSettings()
         {
-            var configurationViewModel = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.ConfigurationDialog;
+            var layerEffect = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect;
+            var configurationViewModel = layerEffect.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
-                var layerEffect = new ConstructorArgument("layerEffect", LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect);
-                var viewModel = (EffectConfigurationViewModel) _kernel.Get(configurationViewModel.Type, layerEffect);
+                // Limit to one constructor, there's no need to have more and it complicates things anyway
+                var constructors = configurationViewModel.Type.GetConstructors();
+                if (constructors.Length != 1)
+                    throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
+
+                var effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
+                var argument = new ConstructorArgument(effectParameter.Name, layerEffect);
+                var viewModel = (EffectConfigurationViewModel) _kernel.Get(configurationViewModel.Type, argument);
                 _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
