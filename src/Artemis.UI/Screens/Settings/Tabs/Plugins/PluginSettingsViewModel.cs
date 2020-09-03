@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
@@ -13,6 +14,7 @@ using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Ninject.Parameters;
+using Serilog;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
@@ -21,6 +23,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
+        private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly IWindowManager _windowManager;
@@ -30,6 +33,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public PluginSettingsViewModel(Plugin plugin,
             IKernel kernel,
+            ILogger logger,
             IWindowManager windowManager,
             IDialogService dialogService,
             IPluginService pluginService,
@@ -39,6 +43,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             PluginInfo = plugin.PluginInfo;
 
             _kernel = kernel;
+            _logger = logger;
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginService = pluginService;
@@ -67,10 +72,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
         public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
         public bool DisplayLoadFailed => !Enabling && PluginInfo.LoadException != null;
+        public bool RequiresRestart => Plugin.Enabled && !PluginInfo.Enabled;
 
         public bool IsEnabled
         {
-            get => Plugin.Enabled;
+            get => Plugin.PluginInfo.Enabled;
             set => Task.Run(() => UpdateEnabled(value));
         }
 
@@ -113,6 +119,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _dialogService.ShowExceptionDialog("The plugin failed to load: " + PluginInfo.LoadException.Message, PluginInfo.LoadException);
         }
 
+        public async Task Restart()
+        {
+            _logger.Debug("Restarting for device provider disable {pluginInfo}", Plugin.PluginInfo);
+
+            // Give the logger a chance to write, might not always be enough but oh well
+            await Task.Delay(500);
+            ApplicationUtilities.Shutdown(2, true);
+        }
+
         private PackIconKind GetIconKind()
         {
             if (PluginInfo.Icon != null)
@@ -143,7 +158,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private async Task UpdateEnabled(bool enable)
         {
-            if (Plugin.Enabled == enable)
+            if (IsEnabled == enable)
             {
                 NotifyOfPropertyChange(nameof(IsEnabled));
                 return;
@@ -151,15 +166,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             if (!enable && Plugin is DeviceProvider)
             {
-                var confirm = await _dialogService.ShowConfirmDialog(
-                    "Disable device provider",
-                    "You are disabling a device provider, this requires that Artemis restarts, please confirm."
-                );
-                if (!confirm)
-                {
-                    NotifyOfPropertyChange(nameof(IsEnabled));
-                    return;
-                }
+                await DisableDeviceProvider();
+                return;
             }
 
             if (enable)
@@ -178,14 +186,46 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 finally
                 {
                     Enabling = false;
-                    NotifyOfPropertyChange(nameof(IsEnabled));
-                    NotifyOfPropertyChange(nameof(DisplayLoadFailed));
                 }
             }
             else
                 _pluginService.DisablePlugin(Plugin);
 
             NotifyOfPropertyChange(nameof(IsEnabled));
+            NotifyOfPropertyChange(nameof(RequiresRestart));
+            NotifyOfPropertyChange(nameof(DisplayLoadFailed));
+        }
+
+        private async Task DisableDeviceProvider()
+        {
+            var restart = false;
+
+            // If any plugin already requires a restart, don't ask the user again
+            var restartQueued = _pluginService.GetAllPluginInfo().Any(p => p.Instance != null && !p.Enabled && p.Instance.Enabled);
+            // If the plugin isn't enabled (load failed), it can be disabled without a restart
+            if (!restartQueued && Plugin.Enabled)
+            {
+                restart = await _dialogService.ShowConfirmDialog(
+                    "Disable device provider",
+                    "You are disabling a device provider, Artemis has to restart to \r\nfully disable this type of plugin",
+                    "Restart now",
+                    "Restart later"
+                );
+            }
+
+            _pluginService.DisablePlugin(Plugin);
+            if (restart)
+            {
+                _logger.Debug("Restarting for device provider disable {pluginInfo}", Plugin.PluginInfo);
+
+                // Give the logger a chance to write, might not always be enough but oh well
+                await Task.Delay(500);
+                ApplicationUtilities.Shutdown(2, true);
+            }
+
+            NotifyOfPropertyChange(nameof(IsEnabled));
+            NotifyOfPropertyChange(nameof(RequiresRestart));
+            NotifyOfPropertyChange(nameof(DisplayLoadFailed));
         }
     }
 }

@@ -142,15 +142,14 @@ namespace Artemis.UI.Shared
         private static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
         {
             double scale;
-            // ??
             if (double.IsPositiveInfinity(maxWidth) && !double.IsPositiveInfinity(maxHeight))
                 scale = maxHeight / src.Height;
             else if (!double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
                 scale = maxWidth / src.Width;
             else if (double.IsPositiveInfinity(maxWidth) && double.IsPositiveInfinity(maxHeight))
                 return src;
-
-            scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
+            else
+                scale = Math.Min(maxWidth / src.Width, maxHeight / src.Height);
 
             return new Size(src.Width * scale, src.Height * scale);
         }

@@ -23,7 +23,7 @@ namespace Artemis.UI.Services
         public Rect GetLayerBounds(Layer layer)
         {
             // Adjust the render rectangle for the difference in render scale
-            var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
+            var renderScale = _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
             return new Rect(
                 layer.Bounds.Left / renderScale * 1,
                 layer.Bounds.Top / renderScale * 1,
@@ -105,7 +105,7 @@ namespace Artemis.UI.Services
         /// <inheritdoc />
         public SKPoint GetScaledPoint(Layer layer, SKPoint point, bool absolute)
         {
-            var renderScale = _settingsService.GetSetting("Core.RenderScale", 1.0).Value;
+            var renderScale = _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
             if (absolute)
             {
                 return new SKPoint(
