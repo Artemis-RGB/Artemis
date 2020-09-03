@@ -6,6 +6,9 @@ using Ninject.Parameters;
 
 namespace Artemis.UI.Shared.Services
 {
+    /// <summary>
+    ///     Provides different ways of showing confirmation dialogs and custom dialogs
+    /// </summary>
     public interface IDialogService : IArtemisSharedUIService
     {
         /// <summary>

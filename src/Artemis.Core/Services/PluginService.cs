@@ -281,6 +281,15 @@ namespace Artemis.Core.Services
             {
                 try
                 {
+                    // A device provider may be queued for disable on next restart, this undoes that
+                    if (plugin is DeviceProvider && plugin.Enabled && !plugin.PluginInfo.Enabled)
+                    {
+                        plugin.PluginInfo.Enabled = true;
+                        plugin.PluginInfo.ApplyToEntity();
+                        _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                        return;
+                    }
+
                     plugin.SetEnabled(true, isAutoEnable);
                 }
                 catch (Exception e)
@@ -312,16 +321,13 @@ namespace Artemis.Core.Services
             {
                 _logger.Debug("Disabling plugin {pluginInfo}", plugin.PluginInfo);
 
-                // Device providers cannot be disabled at runtime, restart the application
+                // Device providers cannot be disabled at runtime simply queue a disable for next restart
                 if (plugin is DeviceProvider)
                 {
                     // Don't call SetEnabled(false) but simply update enabled state and save it
                     plugin.PluginInfo.Enabled = false;
                     plugin.PluginInfo.ApplyToEntity();
                     _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
-
-                    _logger.Debug("Shutting down for device provider disable {pluginInfo}", plugin.PluginInfo);
-                    ApplicationUtilities.Shutdown(2, true);
                     return;
                 }
 
