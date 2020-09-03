@@ -53,6 +53,7 @@
                             BorderBrush="#ab47bc"
                             Style="{StaticResource DisplayConditionButton}"
                             ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
+                            IsEnabled="{Binding IsDataBindingEnabled}"
                             HorizontalAlignment="Left">
                         <Button.ContextMenu>
                             <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}" IsOpen="{Binding LeftSideDataModelOpen, Mode=OneWayToSource}">
@@ -82,7 +83,8 @@
                 <ComboBox Grid.Row="1"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                           materialDesign:HintAssist.Hint="Mode"
-                          MinWidth="128">
+                          MinWidth="128"
+                          IsEnabled="{Binding IsDataBindingEnabled}">
                     <ComboBoxItem>
                         Replace value
                     </ComboBoxItem>
@@ -99,13 +101,15 @@
                              Text="200"
                              materialDesign:TextFieldAssist.HasClearButton="True"
                              materialDesign:TextFieldAssist.SuffixText="ms"
-                             materialDesign:HintAssist.Hint="Smoothing time" />
+                             materialDesign:HintAssist.Hint="Smoothing time"
+                             IsEnabled="{Binding IsDataBindingEnabled}" />
                 </StackPanel>
 
                 <ComboBox Grid.Row="3"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                           materialDesign:HintAssist.Hint="Smoothing type"
-                          MinWidth="128">
+                          MinWidth="128"
+                          IsEnabled="{Binding IsDataBindingEnabled}">
                     <ComboBoxItem>
                         Ease in
                     </ComboBoxItem>
@@ -149,6 +153,10 @@
 
             <Grid Grid.Column="1">
                 <Grid Margin="5 26 0 0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
@@ -158,7 +166,8 @@
                             HorizontalAlignment="Left"
                             FontSize="12"
                             Padding="6 4"
-                            Height="22">
+                            Height="22"
+                            IsEnabled="{Binding IsDataBindingEnabled}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />
                             <TextBlock>
@@ -167,7 +176,18 @@
                         </StackPanel>
                     </Button>
 
+                    <CheckBox Grid.Row="0"
+                              Grid.Column="1"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              HorizontalAlignment="Right"
+                              VerticalAlignment="Top"
+                              IsChecked="{Binding IsDataBindingEnabled}">
+                        Enable data binding
+                    </CheckBox>
+
                     <ListBox Grid.Row="1"
+                             Grid.Column="0"
+                             Grid.ColumnSpan="2"
                              ItemsSource="{Binding ModifierViewModels}"
                              materialDesign:RippleAssist.IsDisabled="True"
                              dd:DragDrop.IsDragSource="True"
@@ -180,7 +200,6 @@
                                 <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
-                       
                     </ListBox>
                 </Grid>
             </Grid>
