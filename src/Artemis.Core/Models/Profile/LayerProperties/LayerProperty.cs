@@ -255,6 +255,13 @@ namespace Artemis.Core
                     (Easings.Functions) k.EasingFunction,
                     this
                 )));
+
+                _dataBindings.Clear();
+                foreach (var entityDataBindingEntity in entity.DataBindingEntities)
+                {
+                    var dataBinding = new DataBinding(this, entityDataBindingEntity);
+                    _dataBindings.Add(dataBinding);
+                }
             }
             catch (JsonException e)
             {

@@ -10,6 +10,7 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
@@ -88,7 +89,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             try
             {
-                var plugin = new ConstructorArgument("plugin", Plugin);
+                // Limit to one constructor, there's no need to have more and it complicates things anyway
+                var constructors = configurationViewModel.Type.GetConstructors();
+                if (constructors.Length != 1)
+                    throw new ArtemisUIException("Plugin configuration dialogs must have exactly one constructor");
+
+                var pluginParameter = constructors.First().GetParameters().First(p => typeof(Plugin).IsAssignableFrom(p.ParameterType));
+                var plugin = new ConstructorArgument(pluginParameter.Name, Plugin);
                 var viewModel = (PluginConfigurationViewModel) _kernel.Get(configurationViewModel.Type, plugin);
                 _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
             }

@@ -8,8 +8,10 @@
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:DataBindingViewModel}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -165,103 +167,20 @@
                         </StackPanel>
                     </Button>
 
-                    <!-- ItemsSource="{Binding ModifierViewModels}" -->
                     <ListBox Grid.Row="1"
+                             ItemsSource="{Binding ModifierViewModels}"
                              materialDesign:RippleAssist.IsDisabled="True"
                              dd:DragDrop.IsDragSource="True"
                              dd:DragDrop.IsDropTarget="True"
                              dd:DragDrop.UseDefaultDragAdorner="True"
                              dd:DragDrop.DropHandler="{Binding}"
                              HorizontalContentAlignment="Stretch">
-                        <!-- <ListBox.ItemTemplate> -->
-                        <!--     <DataTemplate> -->
-                        <!--         <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" /> -->
-                        <!--     </DataTemplate> -->
-                        <!-- </ListBox.ItemTemplate> -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    ToolTip="Delete the modifier"
-                                    Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                    HorizontalAlignment="Left"
-                                    Foreground="#E74C4C"
-                                    Width="25"
-                                    Height="25"
-                                    Command="{s:Action Delete}">
-                                <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
-                            </Button>
-                            <Button Grid.Column="1"
-                                    ToolTip="Swap modifier type to static/dynamic"
-                                    Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                    HorizontalAlignment="Left"
-                                    Foreground="{StaticResource SecondaryAccentBrush}"
-                                    Width="25"
-                                    Height="25"
-                                    Command="{s:Action SwapType}">
-                                <materialDesign:PackIcon Kind="SwapHorizontalVariant" Width="18" Height="18" />
-                            </Button>
-
-                            <Button Grid.Column="2"
-                                    Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
-                                    Background="#7B7B7B"
-                                    BorderBrush="#7B7B7B"
-                                    Content="{Binding SelectedOperator.Description}">
-                                <!-- Click="PropertyButton_OnClick" -->
-                                <Button.ContextMenu>
-                                    <ContextMenu ItemsSource="{Binding Operators}">
-                                        <ContextMenu.ItemTemplate>
-                                            <DataTemplate>
-                                                <StackPanel Orientation="Horizontal">
-                                                    <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0" />
-                                                    <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
-                                                </StackPanel>
-                                            </DataTemplate>
-                                        </ContextMenu.ItemTemplate>
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                                                <Setter Property="Command" Value="{Binding Data.SelectOperatorCommand, Source={StaticResource DataContextProxy}}" />
-                                                <Setter Property="CommandParameter" Value="{Binding}" />
-                                                <Setter Property="CommandTarget" Value="{Binding}" />
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
-                            </Button>
-                            <Button Grid.Column="3"
-                                    Background="#ab47bc"
-                                    BorderBrush="#ab47bc"
-                                    Style="{StaticResource DisplayConditionButton}"
-                                    ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
-                                    HorizontalAlignment="Left">
-                                <Button.ContextMenu>
-                                    <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}" IsOpen="{Binding LeftSideDataModelOpen, Mode=OneWayToSource}">
-                                        <ContextMenu.ItemContainerStyle>
-                                            <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                                                <Setter Property="ItemsSource" Value="{Binding Children}" />
-                                                <Setter Property="Command" Value="{Binding Data.SelectLeftPropertyCommand, Source={StaticResource DataContextProxy}}" />
-                                                <Setter Property="CommandParameter" Value="{Binding}" />
-                                                <Setter Property="CommandTarget" Value="{Binding}" />
-                                                <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
-                                                <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                                                <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
-                                            </Style>
-                                        </ContextMenu.ItemContainerStyle>
-                                    </ContextMenu>
-                                </Button.ContextMenu>
-                                <Grid>
-                                    <TextBlock Text="{Binding SelectedLeftSideProperty.PropertyDescription.Name}"
-                                               Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
-                                    <TextBlock Text="« Select a property »"
-                                               FontStyle="Italic"
-                                               Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
-                                </Grid>
-                            </Button>
-                        </Grid>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                       
                     </ListBox>
                 </Grid>
             </Grid>

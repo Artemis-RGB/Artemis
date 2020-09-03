@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.DataBindings;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -14,26 +15,26 @@ namespace Artemis.Core
     public class DataBindingModifier
     {
         private DataBinding _dataBinding;
+        private bool _isInitialized;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="DataBindingModifier" /> class
+        /// Creates a new instance of the <see cref="DataBindingModifier"/> class
         /// </summary>
-        public DataBindingModifier(DataBinding dataBinding, ProfileRightSideType parameterType)
+        /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
+        public DataBindingModifier(ProfileRightSideType parameterType)
         {
-            DataBinding = dataBinding;
             ParameterType = parameterType;
             Entity = new DataBindingModifierEntity();
+
+            ApplyToEntity();
         }
 
-        /// <summary>
-        ///     Creates a new instance of the <see cref="DataBindingModifier" /> class
-        /// </summary>
-        public DataBindingModifier(DataBinding dataBinding, DataBindingModifierEntity entity)
+        internal DataBindingModifier(DataBinding dataBinding, DataBindingModifierEntity entity)
         {
             DataBinding = dataBinding;
-            ParameterType = (ProfileRightSideType) entity.ParameterType;
-            Order = entity.Order;
             Entity = entity;
+
+            ApplyToDataBindingModifier();
         }
 
         /// <summary>
@@ -192,6 +193,9 @@ namespace Artemis.Core
 
         internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
+            if (_isInitialized)
+                throw new ArtemisCoreException("Data binding modifier is already initialized");
+
             // Modifier type
             if (Entity.ModifierTypePluginGuid != null)
             {
@@ -207,6 +211,7 @@ namespace Artemis.Core
                 if (dataModel != null && dataModel.ContainsPath(Entity.ParameterPropertyPath))
                     UpdateParameter(dataModel, Entity.ParameterPropertyPath);
             }
+            // Static parameter
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
@@ -227,7 +232,7 @@ namespace Artemis.Core
                 UpdateParameter(staticValue);
             }
 
-            // Static parameter
+            _isInitialized = true;
         }
 
 
@@ -290,6 +295,33 @@ namespace Artemis.Core
                 Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
+        }
+
+        internal void ApplyToEntity()
+        {
+            // Modifier
+            Entity.ModifierType = ModifierType?.GetType().Name;
+            Entity.ModifierTypePluginGuid = ModifierType?.PluginInfo.Guid;
+
+            // General
+            Entity.Order = Order;
+            Entity.ParameterType = (int) ParameterType;
+
+            // Parameter
+            Entity.ParameterDataModelGuid = ParameterDataModel?.PluginInfo.Guid;
+            Entity.ParameterPropertyPath = ParameterPropertyPath;
+            Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue);
+        }
+
+        internal void ApplyToDataBindingModifier()
+        {
+            // Modifier type is done during Initialize
+
+            // General
+            Order = Entity.Order;
+            ParameterType = (ProfileRightSideType) Entity.ParameterType;
+
+            // Parameter is done during initialize
         }
     }
 }
