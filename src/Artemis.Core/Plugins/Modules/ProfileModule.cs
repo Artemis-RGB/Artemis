@@ -118,31 +118,12 @@ namespace Artemis.Core.Modules
         ///     Indicates whether or not a profile change is being animated
         /// </summary>
         public bool AnimatingProfileChange { get; private set; }
-
-        /// <summary>
-        ///     Called before the profile updates, this is the best place to perform data model updates
-        /// </summary>
-        /// <param name="deltaTime">Time in seconds since the last update</param>
-        public virtual void ProfileUpdate(double deltaTime)
-        {
-        }
-
+        
         /// <summary>
         ///     Called after the profile has updated
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
         public virtual void ProfileUpdated(double deltaTime)
-        {
-        }
-
-        /// <summary>
-        ///     Called before the profile renders
-        /// </summary>
-        /// <param name="deltaTime">Time since the last render</param>
-        /// <param name="surface">The RGB Surface to render to</param>
-        /// <param name="canvas"></param>
-        /// <param name="canvasInfo"></param>
-        public virtual void ProfileRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
         {
         }
 
@@ -157,10 +138,9 @@ namespace Artemis.Core.Modules
         {
         }
 
-        /// <inheritdoc />
-        public sealed override void Update(double deltaTime)
+        internal override void InternalUpdate(double deltaTime)
         {
-            ProfileUpdate(deltaTime);
+            Update(deltaTime);
 
             lock (this)
             {
@@ -176,10 +156,9 @@ namespace Artemis.Core.Modules
             ProfileUpdated(deltaTime);
         }
 
-        /// <inheritdoc />
-        public sealed override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        internal override void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            ProfileRender(deltaTime, surface, canvas, canvasInfo);
+            Render(deltaTime, surface, canvas, canvasInfo);
 
             lock (this)
             {

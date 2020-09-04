@@ -174,7 +174,7 @@ namespace Artemis.Core.Services
 
                 // Update all active modules
                 foreach (var module in modules)
-                    module.Update(args.DeltaTime);
+                    module.InternalUpdate(args.DeltaTime);
 
                 // If there is no ready bitmap brush, skip the frame
                 if (_rgbService.BitmapBrush == null)
@@ -192,7 +192,7 @@ namespace Artemis.Core.Services
                     {
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
                         foreach (var module in modules.Where(m => m.IsActivated))
-                            module.Render(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
+                            module.InternalRender(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                     }
 
                     OnFrameRendering(new FrameRenderingEventArgs(modules, canvas, args.DeltaTime, _rgbService.Surface));

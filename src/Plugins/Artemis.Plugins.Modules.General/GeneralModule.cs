@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Plugins.Modules.General.DataModels;
 using Artemis.Plugins.Modules.General.DataModels.Windows;
 using Artemis.Plugins.Modules.General.Utilities;
 using Artemis.Plugins.Modules.General.ViewModels;
+using SkiaSharp;
 
 namespace Artemis.Plugins.Modules.General
 {
@@ -36,12 +38,16 @@ namespace Artemis.Plugins.Modules.General
         {
         }
 
-        public override void ProfileUpdate(double deltaTime)
+        public override void Update(double deltaTime)
         {
             DataModel.TimeDataModel.CurrentTime = DateTime.Now;
             DataModel.TimeDataModel.CurrentTimeUTC = DateTime.UtcNow;
 
             UpdateCurrentWindow();
+        }
+
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
         }
 
         #region Open windows

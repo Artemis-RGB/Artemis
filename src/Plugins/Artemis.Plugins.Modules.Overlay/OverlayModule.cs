@@ -1,6 +1,8 @@
 ﻿using System;
 using System.IO;
+using Artemis.Core;
 using Artemis.Core.Modules;
+using SkiaSharp;
 
 namespace Artemis.Plugins.Modules.Overlay
 {
@@ -36,6 +38,14 @@ namespace Artemis.Plugins.Modules.Overlay
         public override void ModuleDeactivated(bool isOverride)
         {
             // When this gets called your activation requirements are no longer met and your module will stop displaying
+        }
+
+        public override void Update(double deltaTime)
+        {
+        }
+
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Ninject;
 using Ninject.Parameters;
@@ -176,6 +177,11 @@ namespace Artemis.UI.Shared.Services
 
                 return null;
             }
+        }
+
+        public DataModelSelectionViewModel GetDataModelSelectionViewModel(Module module)
+        {
+            return _kernel.Get<DataModelSelectionViewModel>(new ConstructorArgument("module", module));
         }
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
