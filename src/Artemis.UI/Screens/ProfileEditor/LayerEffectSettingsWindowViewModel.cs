@@ -1,4 +1,5 @@
-﻿using Artemis.Core.LayerEffects;
+﻿using System;
+using Artemis.Core.LayerEffects;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
@@ -7,7 +8,14 @@ namespace Artemis.UI.Screens.ProfileEditor
     {
         public LayerEffectSettingsWindowViewModel(EffectConfigurationViewModel configurationViewModel)
         {
-            ActiveItem = configurationViewModel;
+            ActiveItem = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
+            ActiveItem.Closed += ActiveItemOnClosed;
+        }
+
+        private void ActiveItemOnClosed(object sender, CloseEventArgs e)
+        {
+            ActiveItem.Closed -= ActiveItemOnClosed;
+            RequestClose();
         }
     }
 }

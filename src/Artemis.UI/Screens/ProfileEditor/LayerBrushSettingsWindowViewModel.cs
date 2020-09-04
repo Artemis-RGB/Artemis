@@ -1,4 +1,5 @@
-﻿using Artemis.Core.LayerBrushes;
+﻿using System;
+using Artemis.Core.LayerBrushes;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
@@ -7,7 +8,14 @@ namespace Artemis.UI.Screens.ProfileEditor
     {
         public LayerBrushSettingsWindowViewModel(BrushConfigurationViewModel configurationViewModel)
         {
-            ActiveItem = configurationViewModel;
+            ActiveItem = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
+            ActiveItem.Closed += ActiveItemOnClosed;
+        }
+
+        private void ActiveItemOnClosed(object sender, CloseEventArgs e)
+        {
+            ActiveItem.Closed -= ActiveItemOnClosed;
+            RequestClose();
         }
     }
 }
