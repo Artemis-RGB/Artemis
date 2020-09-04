@@ -1,16 +1,19 @@
 ﻿using System.Linq;
 using Artemis.Core;
+using Artemis.UI.Ninject.Factories;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
     public class DataBindingsViewModel : PropertyChangedBase
     {
+        private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private DataBindingsTabsViewModel _dataBindingsTabsViewModel;
         private DataBindingViewModel _dataBindingViewModel;
 
-        public DataBindingsViewModel(BaseLayerProperty layerProperty)
+        public DataBindingsViewModel(BaseLayerProperty layerProperty, IDataBindingsVmFactory dataBindingsVmFactory)
         {
+            _dataBindingsVmFactory = dataBindingsVmFactory;
             LayerProperty = layerProperty;
             Initialise();
         }
@@ -41,12 +44,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
             // and creating the actual data bindings
             if (properties.Count == 1)
-                DataBindingViewModel = new DataBindingViewModel(LayerProperty, properties.First());
+                DataBindingViewModel = _dataBindingsVmFactory.DataBindingViewModel(LayerProperty, properties.First());
             else
             {
                 DataBindingsTabsViewModel = new DataBindingsTabsViewModel();
                 foreach (var dataBindingProperty in properties)
-                    DataBindingsTabsViewModel.Tabs.Add(new DataBindingViewModel(LayerProperty, dataBindingProperty));
+                    DataBindingsTabsViewModel.Tabs.Add(_dataBindingsVmFactory.DataBindingViewModel(LayerProperty, dataBindingProperty));
             }
         }
     }

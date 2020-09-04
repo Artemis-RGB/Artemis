@@ -21,11 +21,6 @@ namespace Artemis.Core
         public PluginInfo PluginInfo { get; internal set; }
 
         /// <summary>
-        ///     Gets the data binding modifier this modifier type is applied to
-        /// </summary>
-        public DataBindingModifier Modifier { get; internal set; }
-
-        /// <summary>
         ///     Gets the types this modifier supports
         /// </summary>
         public abstract IReadOnlyCollection<Type> CompatibleTypes { get; }

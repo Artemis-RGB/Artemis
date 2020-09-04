@@ -100,13 +100,6 @@ namespace Artemis.Core
         /// <returns>The modified value</returns>
         public object Apply(object currentValue)
         {
-            var targetType = DataBinding.TargetProperty.GetType();
-            if (currentValue.GetType() != targetType)
-            {
-                throw new ArtemisCoreException("The current value of the data binding does not match the type of the target property." +
-                                               $" {targetType.Name} expected, received {currentValue.GetType().Name}.");
-            }
-
             if (CompiledDynamicPredicate != null)
                 return CompiledDynamicPredicate(currentValue, ParameterDataModel);
             if (CompiledStaticPredicate != null)
