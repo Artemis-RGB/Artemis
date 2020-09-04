@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Artemis.UI.Utilities
+namespace Artemis.UI.Shared
 {
     public class DelegateCommand : ICommand
     {

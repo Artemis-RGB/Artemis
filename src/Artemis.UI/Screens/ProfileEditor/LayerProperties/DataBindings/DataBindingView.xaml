@@ -16,18 +16,6 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
-                <ResourceDictionary>
-                    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-                    <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
-                    <DataTemplate x:Key="DataModelDataTemplate">
-                        <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
-                                <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
-                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -49,36 +37,7 @@
 
                 <StackPanel Grid.Row="0" Margin="-3 0 0 0">
                     <Label FontSize="10" Foreground="{StaticResource MaterialDesignNavigationItemSubheader}" Margin="0 0 0 2">Source</Label>
-                    <Button Background="#ab47bc"
-                            BorderBrush="#ab47bc"
-                            Style="{StaticResource DisplayConditionButton}"
-                            ToolTip="{Binding SelectedSourceProperty.DisplayPropertyPath}"
-                            IsEnabled="{Binding IsDataBindingEnabled}"
-                            HorizontalAlignment="Left"
-                            Click="PropertyButton_OnClick">
-                        <Button.ContextMenu>
-                            <ContextMenu ItemsSource="{Binding SourceDataModel.Children}" IsOpen="{Binding SourceDataModelOpen, Mode=OneWayToSource}">
-                                <ContextMenu.ItemContainerStyle>
-                                    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                                        <Setter Property="ItemsSource" Value="{Binding Children}" />
-                                        <Setter Property="Command" Value="{Binding Data.SelectSourcePropertyCommand, Source={StaticResource DataContextProxy}}" />
-                                        <Setter Property="CommandParameter" Value="{Binding}" />
-                                        <Setter Property="CommandTarget" Value="{Binding}" />
-                                        <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
-                                        <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                                        <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
-                                    </Style>
-                                </ContextMenu.ItemContainerStyle>
-                            </ContextMenu>
-                        </Button.ContextMenu>
-                        <Grid>
-                            <TextBlock Text="{Binding SelectedSourceProperty.PropertyDescription.Name}"
-                                       Visibility="{Binding SelectedSourceProperty, Converter={StaticResource NullToVisibilityConverter}}" />
-                            <TextBlock Text="« Select a property »"
-                                       FontStyle="Italic"
-                                       Visibility="{Binding SelectedSourceProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
-                        </Grid>
-                    </Button>
+                    <ContentControl s:View.Model="{Binding TargetSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                 </StackPanel>
 
                 <ComboBox Grid.Row="1"

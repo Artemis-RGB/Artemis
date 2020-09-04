@@ -1,11 +1,8 @@
-﻿using System;
-using System.Threading.Tasks;
-using System.Timers;
+﻿using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
@@ -15,11 +12,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private readonly IDataBindingService _dataBindingService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly Timer _updateTimer;
-        private DataModelPropertiesViewModel _parameterDataModel;
-        private bool _parameterDataModelOpen;
         private DataBindingModifierType _selectedModifierType;
-        private DataModelVisualizationViewModel _selectedParameterProperty;
 
         public DataBindingModifierViewModel(DataBindingModifier modifier,
             IDataBindingService dataBindingService,
@@ -30,7 +23,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _dataBindingService = dataBindingService;
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
-            _updateTimer = new Timer(500);
 
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
 
@@ -55,37 +47,20 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             set => SetAndNotify(ref _selectedModifierType, value);
         }
 
-        public DataModelPropertiesViewModel ParameterDataModel
-        {
-            get => _parameterDataModel;
-            set => SetAndNotify(ref _parameterDataModel, value);
-        }
-
-        public bool ParameterDataModelOpen
-        {
-            get => _parameterDataModelOpen;
-            set => SetAndNotify(ref _parameterDataModelOpen, value);
-        }
-
-        public DataModelVisualizationViewModel SelectedParameterProperty
-        {
-            get => _selectedParameterProperty;
-            set => SetAndNotify(ref _selectedParameterProperty, value);
-        }
+        public DataModelSelectionViewModel ParameterSelectionViewModel { get; private set; }
 
         private void Initialize()
         {
-            // Get the data models
-            ParameterDataModel = _dataModelUIService.GetMainDataModelVisualization();
-            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-                ParameterDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-
-            ParameterDataModel.UpdateRequested += ParameterDataModelOnUpdateRequested;
+            ParameterSelectionViewModel = _dataModelUIService.GetDataModelSelectionViewModel(_profileEditorService.GetCurrentModule());
+            ParameterSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
+            ParameterSelectionViewModel.FilterTypes = new[] {Modifier.DataBinding.TargetProperty.PropertyType};
 
             Update();
+        }
 
-            _updateTimer.Start();
-            _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
+        private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelPropertySelectedEventArgs e)
+        {
+            Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
         }
 
         private void Update()
@@ -95,11 +70,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             ModifierTypes.AddRange(_dataBindingService.GetCompatibleModifierTypes(Modifier.DataBinding.TargetProperty.PropertyType));
             SelectedModifierType = Modifier.ModifierType;
 
-            // Determine the parameter property
-            if (Modifier.ParameterDataModel == null)
-                SelectedParameterProperty = null;
-            else
-                SelectedParameterProperty = ParameterDataModel.GetChildByPath(Modifier.ParameterDataModel.PluginInfo.Guid, Modifier.ParameterPropertyPath);
+            ParameterSelectionViewModel.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
         }
 
         private void ExecuteSelectModifierTypeCommand(object context)
@@ -111,17 +82,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
-        }
-
-        private void ParameterDataModelOnUpdateRequested(object sender, EventArgs e)
-        {
-            ParameterDataModel.ApplyTypeFilter(true, Modifier.DataBinding.TargetProperty.PropertyType);
-        }
-
-        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (ParameterDataModelOpen)
-                ParameterDataModel.Update(_dataModelUIService);
         }
     }
 }

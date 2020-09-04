@@ -77,6 +77,16 @@ namespace Artemis.Core
             throw new NotImplementedException();
         }
 
+        public override void Update(double deltaTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void ModuleActivated(bool isOverride)
         {
             throw new NotImplementedException();
