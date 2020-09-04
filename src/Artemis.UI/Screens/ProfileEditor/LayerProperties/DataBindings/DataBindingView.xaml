@@ -52,15 +52,16 @@
                     <Button Background="#ab47bc"
                             BorderBrush="#ab47bc"
                             Style="{StaticResource DisplayConditionButton}"
-                            ToolTip="{Binding SelectedLeftSideProperty.DisplayPropertyPath}"
+                            ToolTip="{Binding SelectedSourceProperty.DisplayPropertyPath}"
                             IsEnabled="{Binding IsDataBindingEnabled}"
-                            HorizontalAlignment="Left">
+                            HorizontalAlignment="Left"
+                            Click="PropertyButton_OnClick">
                         <Button.ContextMenu>
-                            <ContextMenu ItemsSource="{Binding LeftSideDataModel.Children}" IsOpen="{Binding LeftSideDataModelOpen, Mode=OneWayToSource}">
+                            <ContextMenu ItemsSource="{Binding SourceDataModel.Children}" IsOpen="{Binding SourceDataModelOpen, Mode=OneWayToSource}">
                                 <ContextMenu.ItemContainerStyle>
                                     <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                                         <Setter Property="ItemsSource" Value="{Binding Children}" />
-                                        <Setter Property="Command" Value="{Binding Data.SelectLeftPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                                        <Setter Property="Command" Value="{Binding Data.SelectSourcePropertyCommand, Source={StaticResource DataContextProxy}}" />
                                         <Setter Property="CommandParameter" Value="{Binding}" />
                                         <Setter Property="CommandTarget" Value="{Binding}" />
                                         <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
@@ -71,11 +72,11 @@
                             </ContextMenu>
                         </Button.ContextMenu>
                         <Grid>
-                            <TextBlock Text="{Binding SelectedLeftSideProperty.PropertyDescription.Name}"
-                                       Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}}" />
+                            <TextBlock Text="{Binding SelectedSourceProperty.PropertyDescription.Name}"
+                                       Visibility="{Binding SelectedSourceProperty, Converter={StaticResource NullToVisibilityConverter}}" />
                             <TextBlock Text="« Select a property »"
                                        FontStyle="Italic"
-                                       Visibility="{Binding SelectedLeftSideProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                       Visibility="{Binding SelectedSourceProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
                         </Grid>
                     </Button>
                 </StackPanel>
@@ -142,10 +143,10 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <TextBlock Margin="0 2">Input</TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 2" FontFamily="Consolas">1250</TextBlock>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestInputValue}"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 2">Output</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 2" FontFamily="Consolas">909</TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestResultValue}"/>
                         </Grid>
                     </Grid>
                 </materialDesign:Card>
@@ -167,7 +168,8 @@
                             FontSize="12"
                             Padding="6 4"
                             Height="22"
-                            IsEnabled="{Binding IsDataBindingEnabled}">
+                            IsEnabled="{Binding IsDataBindingEnabled}"
+                            Command="{s:Action AddModifier}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />
                             <TextBlock>

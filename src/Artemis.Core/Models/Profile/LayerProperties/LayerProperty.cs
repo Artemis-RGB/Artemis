@@ -19,7 +19,6 @@ namespace Artemis.Core
     public class LayerProperty<T> : BaseLayerProperty
     {
         private T _baseValue;
-        private T _currentValue;
         private bool _isInitialized;
         private List<LayerPropertyKeyframe<T>> _keyframes;
 
@@ -47,11 +46,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the current value of this property as it is affected by it's keyframes, updated once every frame
         /// </summary>
-        public T CurrentValue
-        {
-            get => !KeyframesEnabled || !KeyframesSupported ? BaseValue : _currentValue;
-            internal set => _currentValue = value;
-        }
+        public T CurrentValue { get; set; }
 
         /// <summary>
         ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property
@@ -100,7 +95,7 @@ namespace Artemis.Core
                     currentKeyframe.Value = value;
 
                 // Update the property so that the new keyframe is reflected on the current value
-                Update();
+                Update(0);
             }
         }
 
@@ -190,9 +185,19 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Updates the property, applying keyframes to the current value
+        ///     Updates the property, applying keyframes and data bindings to the current value
         /// </summary>
-        internal void Update()
+        internal void Update(double deltaTime)
+        {
+            CurrentValue = BaseValue;
+
+            UpdateKeyframes();
+            UpdateDataBindings(deltaTime);
+
+            OnUpdated();
+        }
+
+        private void UpdateKeyframes()
         {
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
@@ -216,8 +221,15 @@ namespace Artemis.Core
                 var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
+        }
 
-            OnUpdated();
+        private void UpdateDataBindings(double deltaTime)
+        {
+            foreach (var dataBinding in DataBindings)
+            {
+                dataBinding.Update(deltaTime);
+                ApplyDataBinding(dataBinding);
+            }
         }
 
         /// <summary>
@@ -237,7 +249,7 @@ namespace Artemis.Core
 
             PropertyEntity = entity;
             LayerPropertyGroup = layerPropertyGroup;
-            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update();
+            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
 
             try
             {
@@ -303,9 +315,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void ApplyDataBinding(DataBinding dataBinding)
         {
-            // The default implementation only supports simple types
-            if (dataBinding.TargetProperty.DeclaringType == GetType())
-                CurrentValue = (T) dataBinding.GetValue(CurrentValue);
+            CurrentValue = (T) dataBinding.GetValue(CurrentValue);
         }
 
         #endregion

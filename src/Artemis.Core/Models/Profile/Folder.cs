@@ -79,7 +79,7 @@ namespace Artemis.Core
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
             }
 
@@ -125,7 +125,7 @@ namespace Artemis.Core
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
             }
         }

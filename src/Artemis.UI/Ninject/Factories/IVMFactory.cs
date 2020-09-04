@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
@@ -7,6 +8,7 @@ using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
@@ -17,6 +19,7 @@ using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Stylet;
+using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.UI.Ninject.Factories
 {
@@ -73,6 +76,13 @@ namespace Artemis.UI.Ninject.Factories
         DisplayConditionListViewModel DisplayConditionListViewModel(DisplayConditionList displayConditionList, DisplayConditionViewModel parent);
         DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent);
         DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate, DisplayConditionViewModel parent);
+    }
+
+    public interface IDataBindingsVmFactory : IVmFactory
+    {
+        DataBindingsViewModel DataBindingsViewModel(BaseLayerProperty layerProperty);
+        DataBindingViewModel DataBindingViewModel(BaseLayerProperty layerProperty, PropertyInfo targetProperty);
+        DataBindingModifierViewModel DataBindingModifierViewModel(DataBindingModifier modifier);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

@@ -23,6 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : ProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
+        private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
         private DataBindingsViewModel _dataBindingsViewModel;
         private EffectsViewModel _effectsViewModel;
@@ -38,10 +39,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private TimelineViewModel _timelineViewModel;
         private TreeViewModel _treeViewModel;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, ICoreService coreService, ISettingsService settingsService,
-            ILayerPropertyVmFactory layerPropertyVmFactory)
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, 
+            ICoreService coreService,
+            ISettingsService settingsService,
+            ILayerPropertyVmFactory layerPropertyVmFactory,
+            IDataBindingsVmFactory dataBindingsVmFactory)
         {
             _layerPropertyVmFactory = layerPropertyVmFactory;
+            _dataBindingsVmFactory = dataBindingsVmFactory;
 
             ProfileEditorService = profileEditorService;
             CoreService = coreService;
@@ -236,7 +241,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (ProfileEditorService.SelectedDataBinding != null)
             {
                 RightSideIndex = 1;
-                DataBindingsViewModel = new DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
+                DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
             }
             else
                 RightSideIndex = 0;

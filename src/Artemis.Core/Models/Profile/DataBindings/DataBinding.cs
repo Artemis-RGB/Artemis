@@ -132,11 +132,13 @@ namespace Artemis.Core
         /// <returns></returns>
         public object GetValue(object baseValue)
         {
-            if (baseValue.GetType() != TargetProperty.PropertyType)
-            {
-                throw new ArtemisCoreException($"The provided current value type ({baseValue.GetType().Name}) not match the " +
-                                               $"target property type ({TargetProperty.PropertyType.Name})");
-            }
+            // Validating this is kinda expensive, it'll fail on ChangeType later anyway ^^
+            // var targetType = TargetProperty.PropertyType;
+            // if (!targetType.IsCastableFrom(baseValue.GetType()))
+            // {
+            //     throw new ArtemisCoreException($"The provided current value type ({baseValue.GetType().Name}) not match the " +
+            //                                    $"target property type ({targetType.Name})");
+            // }
 
             if (CompiledTargetAccessor == null)
                 return baseValue;
@@ -145,7 +147,11 @@ namespace Artemis.Core
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
-            return dataBindingValue;
+            return Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
+        }
+
+        internal void Update(double deltaTime)
+        {
         }
 
         internal void ApplyToEntity()
@@ -210,20 +216,32 @@ namespace Artemis.Core
             if (listType != null)
                 throw new ArtemisCoreException($"Cannot create a regular accessor at path {SourcePropertyPath} because the path contains a list");
 
-            var parameter = Expression.Parameter(typeof(object), "targetDataModel");
+            var parameter = Expression.Parameter(typeof(DataModel), "targetDataModel");
             var accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
                 Expression.Convert(parameter, SourceDataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
 
-            var lambda = Expression.Lambda<Func<DataModel, object>>(accessor);
+            var returnValue = Expression.Convert(accessor, typeof(object));
+
+            var lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
             CompiledTargetAccessor = lambda.Compile();
         }
     }
 
+    /// <summary>
+    ///     A mode that determines how the data binding is applied to the layer property
+    /// </summary>
     public enum DataBindingMode
     {
-        Override,
+        /// <summary>
+        ///     Replaces the layer property value with the data binding value
+        /// </summary>
+        Replace,
+
+        /// <summary>
+        ///     Adds the data binding value to the layer property value
+        /// </summary>
         Add
     }
 }

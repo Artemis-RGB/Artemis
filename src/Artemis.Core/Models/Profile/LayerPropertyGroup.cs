@@ -227,11 +227,11 @@ namespace Artemis.Core
             }
         }
 
-        internal void Update()
+        internal void Update(double deltaTime)
         {
             // Since at this point we don't know what properties the group has without using reflection,
             // let properties subscribe to the update event and update themselves
-            OnPropertyGroupUpdating();
+            OnPropertyGroupUpdating(new LayerPropertyGroupUpdatingEventArgs(deltaTime));
         }
 
         private void InitializeProperty(RenderProfileElement profileElement, string path, BaseLayerProperty instance)
@@ -264,7 +264,7 @@ namespace Artemis.Core
 
         #region Events
 
-        internal event EventHandler PropertyGroupUpdating;
+        internal event EventHandler<LayerPropertyGroupUpdatingEventArgs> PropertyGroupUpdating;
 
         /// <summary>
         ///     Occurs when the property group has initialized all its children
@@ -282,9 +282,9 @@ namespace Artemis.Core
         /// </summary>
         public event EventHandler VisibilityChanged;
 
-        protected virtual void OnPropertyGroupUpdating()
+        protected virtual void OnPropertyGroupUpdating(LayerPropertyGroupUpdatingEventArgs e)
         {
-            PropertyGroupUpdating?.Invoke(this, EventArgs.Empty);
+            PropertyGroupUpdating?.Invoke(this, e);
         }
 
         protected virtual void OnVisibilityChanged()

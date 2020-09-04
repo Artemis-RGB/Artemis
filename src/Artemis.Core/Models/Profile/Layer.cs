@@ -261,14 +261,14 @@ namespace Artemis.Core
             if (TimelinePosition > TimelineLength)
                 return;
 
-            General.Update();
-            Transform.Update();
-            LayerBrush.BaseProperties?.Update();
+            General.Update(deltaTime);
+            Transform.Update(deltaTime);
+            LayerBrush.BaseProperties?.Update(deltaTime);
             LayerBrush.Update(deltaTime);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
             }
         }
@@ -301,14 +301,14 @@ namespace Artemis.Core
 
             var delta = (TimelinePosition - beginTime).TotalSeconds;
 
-            General.Update();
-            Transform.Update();
-            LayerBrush.BaseProperties?.Update();
+            General.Update(delta);
+            Transform.Update(delta);
+            LayerBrush.BaseProperties?.Update(delta);
             LayerBrush.Update(delta);
 
             foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update();
+                baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
             }
         }
