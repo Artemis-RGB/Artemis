@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -10,6 +7,8 @@ namespace Artemis.Core
     {
         internal SKSizeLayerProperty()
         {
+            RegisterDataBindingProperty(size => size.Width, new FloatDataBindingConverter());
+            RegisterDataBindingProperty(size => size.Height, new FloatDataBindingConverter());
         }
 
         /// <summary>

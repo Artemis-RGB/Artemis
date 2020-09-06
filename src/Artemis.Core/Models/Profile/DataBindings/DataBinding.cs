@@ -24,15 +24,11 @@ namespace Artemis.Core
         internal DataBinding(DataBindingRegistration dataBindingRegistration)
         {
             LayerProperty = dataBindingRegistration.LayerProperty;
-            TargetProperty = dataBindingRegistration.Property;
-            Registration = dataBindingRegistration;
-
             Entity = new DataBindingEntity();
 
+            ApplyRegistration(dataBindingRegistration);
             ApplyToEntity();
         }
-
-        public DataBindingRegistration Registration { get; private set; }
 
         internal DataBinding(BaseLayerProperty layerProperty, DataBindingEntity entity)
         {
@@ -42,13 +38,30 @@ namespace Artemis.Core
             ApplyToDataBinding();
         }
 
+        private void ApplyRegistration(DataBindingRegistration dataBindingRegistration)
+        {
+            Converter = dataBindingRegistration.Converter;
+            Registration = dataBindingRegistration;
+            TargetProperty = dataBindingRegistration.Property;
+        }
+
         /// <summary>
         ///     Gets the layer property this data binding targets
         /// </summary>
         public BaseLayerProperty LayerProperty { get; }
 
         /// <summary>
-        ///     Gets the inner property this data binding targets
+        /// Gets the data binding registration this data binding is based upon
+        /// </summary>
+        public DataBindingRegistration Registration { get; private set; }
+
+        /// <summary>
+        /// Gets the converter used to apply this data binding to the <see cref="LayerProperty"/>
+        /// </summary>
+        public IDataBindingConverter Converter { get; private set; }
+
+        /// <summary>
+        ///     Gets the property on the <see cref="LayerProperty"/> this data binding targets
         /// </summary>
         public PropertyInfo TargetProperty { get; private set; }
 
@@ -144,7 +157,7 @@ namespace Artemis.Core
         /// <returns></returns>
         public object GetValue(object baseValue)
         {
-            if (CompiledTargetAccessor == null)
+            if (CompiledTargetAccessor == null || Converter == null)
                 return baseValue;
 
             var dataBindingValue = CompiledTargetAccessor(SourceDataModel);
@@ -154,7 +167,7 @@ namespace Artemis.Core
             var value = Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
 
             // If no easing is to be applied simple return whatever the current value is
-            if (EasingTime == TimeSpan.Zero)
+            if (EasingTime == TimeSpan.Zero || Converter.SupportsInterpolate)
                 return value;
 
             // If the value changed, update the current and previous values used for easing
@@ -183,22 +196,16 @@ namespace Artemis.Core
         /// <param name="deltaTime"></param>
         public void Update(double deltaTime)
         {
+            
         }
 
         /// <summary>
-        /// Applies the data binding to the <see cref="Property"/>
+        /// Updates the value on the <see cref="LayerProperty"/> according to the data binding
         /// </summary>
         public void ApplyToProperty()
         {
-
-        }
-
-        private object GetInterpolatedValue()
-        {
-            if (_easingProgress >= 1.0f)
-                return _currentValue;
-
-            return Registration.Converter.Interpolate(_previousValue, _currentValue, _easingProgress);
+            var value = GetValue(Converter.GetValue(LayerProperty));
+            Converter.ApplyValue(LayerProperty, GetValue(value));
         }
 
         internal void ApplyToEntity()
@@ -225,7 +232,9 @@ namespace Artemis.Core
         internal void ApplyToDataBinding()
         {
             // General
-            TargetProperty = LayerProperty.GetDataBindingProperties()?.FirstOrDefault(p => p.Name == Entity.TargetProperty);
+            Registration = LayerProperty.DataBindingRegistrations.FirstOrDefault(p => p.Property.Name == Entity.TargetProperty);
+            TargetProperty = Registration?.Property;
+
             Mode = (DataBindingMode) Entity.DataBindingMode;
             EasingTime = Entity.EasingTime;
             EasingFunction = (Easings.Functions) Entity.EasingFunction;
@@ -255,6 +264,16 @@ namespace Artemis.Core
                 dataBindingModifier.Initialize(dataModelService, dataBindingService);
 
             _isInitialized = true;
+        }
+
+        private object GetInterpolatedValue()
+        {
+            if (_easingProgress == 0f)
+                return _previousValue;
+            if (_easingProgress == 1f || !Converter.SupportsInterpolate)
+                return _currentValue;
+
+            return Converter.Interpolate(LayerProperty, _previousValue, _currentValue, _easingProgress);
         }
 
         private void CreateExpression()

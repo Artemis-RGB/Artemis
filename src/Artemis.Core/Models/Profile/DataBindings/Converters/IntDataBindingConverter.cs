@@ -3,10 +3,10 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class FloatDataBindingConverter : IDataBindingConverter
+    public class IntDataBindingConverter : IDataBindingConverter
     {
         /// <inheritdoc />
-        public Type SupportedType => typeof(float);
+        public Type SupportedType => typeof(int);
 
         /// <inheritdoc />
         public bool SupportsSum => true;
@@ -17,13 +17,13 @@ namespace Artemis.Core
         /// <inheritdoc />
         public object Sum(BaseLayerProperty layerProperty, object a, object b)
         {
-            return (float) a + (float) b;
+            return (int) a + (int) b;
         }
 
         /// <inheritdoc />
         public object Interpolate(BaseLayerProperty layerProperty, object a, object b, float progress)
         {
-            var diff = (float) b - (float) a;
+            var diff = (int) b - (int) a;
             return diff * progress;
         }
 
