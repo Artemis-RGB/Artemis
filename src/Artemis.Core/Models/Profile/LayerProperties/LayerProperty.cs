@@ -93,10 +93,11 @@ namespace Artemis.Core
                     AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this));
                 else
                     currentKeyframe.Value = value;
-
-                // Update the property so that the new keyframe is reflected on the current value
-                Update(0);
             }
+
+            // Force an update so that the base value is applied to the current value and
+            // keyframes/data bindings are applied using the new base value
+            Update(0);
         }
 
         /// <summary>
