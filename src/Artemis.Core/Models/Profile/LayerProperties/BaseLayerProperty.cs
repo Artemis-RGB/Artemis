@@ -11,8 +11,12 @@ namespace Artemis.Core
     /// </summary>
     public abstract class BaseLayerProperty
     {
-        protected readonly List<DataBinding> _dataBindings = new List<DataBinding>();
         protected readonly List<DataBindingRegistration> _dataBindingRegistrations = new List<DataBindingRegistration>();
+        protected readonly List<DataBinding> _dataBindings = new List<DataBinding>();
+
+        private object _baseValue;
+        private object _currentValue;
+        private object _defaultValue;
         private bool _isHidden;
         private bool _keyframesEnabled;
 
@@ -21,9 +25,57 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Gets or sets the base value of this layer property without any keyframes applied
+        /// </summary>
+        public object BaseValue
+        {
+            get => _baseValue;
+            set
+            {
+                if (value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update base value because of a type mismatch");
+                _baseValue = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the current value of this property as it is affected by it's keyframes, updated once every frame
+        /// </summary>
+        public object CurrentValue
+        {
+            get => _currentValue;
+            set
+            {
+                if (value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update current value because of a type mismatch");
+                _currentValue = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property
+        ///     has no value in storage
+        /// </summary>
+        public object DefaultValue
+        {
+            get => _defaultValue;
+            set
+            {
+                if (value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update default value because of a type mismatch");
+                _defaultValue = value;
+            }
+        }
+
+        /// <summary>
         ///     Gets a list containing the active data bindings
         /// </summary>
         public IReadOnlyList<DataBinding> DataBindings => _dataBindings.AsReadOnly();
+
+        /// <summary>
+        ///     Gets a list containing all the data binding registrations
+        /// </summary>
+        public IReadOnlyList<DataBindingRegistration> DataBindingRegistrations => _dataBindingRegistrations.AsReadOnly();
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
@@ -122,13 +174,6 @@ namespace Artemis.Core
 
         #region Data bindings
 
-        internal DataBindingRegistration RegisterDataBindingProperty(PropertyInfo property, IDataBindingConverter converter)
-        {
-            var registration = new DataBindingRegistration(this, property, converter);
-            _dataBindingRegistrations.Add(registration);
-            return registration;
-        }
-
         internal void InitializeDataBindings(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
             foreach (var dataBinding in DataBindings)
@@ -141,7 +186,7 @@ namespace Artemis.Core
         /// <returns>The newly created data binding</returns>
         public DataBinding EnableDataBinding(DataBindingRegistration dataBindingRegistration)
         {
-            var dataBinding = new DataBinding(this, dataBindingProperty);
+            var dataBinding = new DataBinding(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
             return dataBinding;

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -20,7 +18,6 @@ namespace Artemis.Core
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
     public abstract class LayerProperty<T> : BaseLayerProperty
     {
-        private T _baseValue;
         private bool _isInitialized;
         private List<LayerPropertyKeyframe<T>> _keyframes;
 
@@ -32,30 +29,37 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the base value of this layer property without any keyframes applied
         /// </summary>
-        public T BaseValue
+        public new T BaseValue
         {
-            get => _baseValue;
+            get => (T) base.BaseValue;
             set
             {
-                if (_baseValue != null && !_baseValue.Equals(value) || _baseValue == null && value != null)
-                {
-                    _baseValue = value;
-                    OnBaseValueChanged();
-                }
+                if (Equals(base.BaseValue, value))
+                    return;
+
+                base.BaseValue = value;
+                OnBaseValueChanged();
             }
         }
 
         /// <summary>
         ///     Gets the current value of this property as it is affected by it's keyframes, updated once every frame
         /// </summary>
-        public T CurrentValue { get; set; }
+        public new T CurrentValue
+        {
+            get => (T) base.CurrentValue;
+            set => base.CurrentValue = value;
+        }
 
         /// <summary>
         ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property
-        ///     has no
-        ///     value in storage
+        ///     has no  value in storage
         /// </summary>
-        public T DefaultValue { get; set; }
+        public new T DefaultValue
+        {
+            get => (T) base.DefaultValue;
+            set => base.DefaultValue = value;
+        }
 
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
@@ -309,42 +313,14 @@ namespace Artemis.Core
 
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, IDataBindingConverter converter)
         {
-
             var propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
-            
+            if (converter.SupportedType != propertyInfo.PropertyType)
+                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyInfo.Name} " +
+                                               "because the provided converter does not support the property's type");
+
+            _dataBindingRegistrations.Add(new DataBindingRegistration(this, propertyInfo, converter));
         }
 
-        /// <summary>
-        ///     Registers the provided property to be available for data binding using a data binding property of type
-        ///     <typeparamref name="TD" />
-        /// </summary>
-        /// <typeparam name="TD">The type of data binding property to use</typeparam>
-        /// <param name="propertyName">The name of the property</param>
-        /// <returns></returns>
-        public TD RegisterDataBindingProperty<TD>(string propertyName, IDataBindingConverter converter) where TD : BaseDataBindingProperty
-        {
-            var property = typeof(T).GetProperty(propertyName);
-            if (property == null)
-            {
-                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyName} " +
-                                               $"because it does not exist on type {typeof(T).Name}");
-            }
-
-            // Create an instance of the converter
-            var dataBindingOperator = (TD) Activator.CreateInstance(typeof(TD), property);
-            if (dataBindingOperator == null)
-                throw new ArtemisCoreException($"Cannot register data binding, failed to create an instance of {typeof(TD).Name}");
-            if (dataBindingOperator.PropertyType != property.PropertyType)
-            {
-                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyName} using a {typeof(TD).Name} " +
-                                               $"because it does not support type {typeof(T).Name}");
-            }
-
-            AddDataBindingConverter(dataBindingOperator);
-
-            return dataBindingOperator;
-        }
-        
         private void UpdateDataBindings(double deltaTime)
         {
             foreach (var dataBinding in DataBindings)
