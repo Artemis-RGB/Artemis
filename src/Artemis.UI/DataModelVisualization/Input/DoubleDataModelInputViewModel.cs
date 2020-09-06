@@ -8,7 +8,7 @@ namespace Artemis.UI.DataModelVisualization.Input
 {
     public class DoubleDataModelInputViewModel : DataModelInputViewModel<double>
     {
-        public DoubleDataModelInputViewModel(DataModelPropertyAttribute description, double initialValue) : base(description, initialValue)
+        public DoubleDataModelInputViewModel(DataModelPropertyAttribute targetDescription, double initialValue) : base(targetDescription, initialValue)
         {
         }
 

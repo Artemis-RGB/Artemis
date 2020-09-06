@@ -17,14 +17,22 @@ namespace Artemis.Core
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
         private bool _isInitialized;
 
-        internal DataBinding(BaseLayerProperty layerProperty, PropertyInfo targetProperty)
+        private object _currentValue;
+        private object _previousValue;
+        private float _easingProgress;
+
+        internal DataBinding(DataBindingRegistration dataBindingRegistration)
         {
-            LayerProperty = layerProperty;
-            TargetProperty = targetProperty;
+            LayerProperty = dataBindingRegistration.LayerProperty;
+            TargetProperty = dataBindingRegistration.Property;
+            Registration = dataBindingRegistration;
+
             Entity = new DataBindingEntity();
 
             ApplyToEntity();
         }
+
+        public DataBindingRegistration Registration { get; private set; }
 
         internal DataBinding(BaseLayerProperty layerProperty, DataBindingEntity entity)
         {
@@ -87,6 +95,8 @@ namespace Artemis.Core
             {
                 modifier.DataBinding = this;
                 _modifiers.Add(modifier);
+
+                OnModifiersUpdated();
             }
         }
 
@@ -99,6 +109,8 @@ namespace Artemis.Core
             {
                 modifier.DataBinding = null;
                 _modifiers.Remove(modifier);
+
+                OnModifiersUpdated();
             }
         }
 
@@ -132,14 +144,6 @@ namespace Artemis.Core
         /// <returns></returns>
         public object GetValue(object baseValue)
         {
-            // Validating this is kinda expensive, it'll fail on ChangeType later anyway ^^
-            // var targetType = TargetProperty.PropertyType;
-            // if (!targetType.IsCastableFrom(baseValue.GetType()))
-            // {
-            //     throw new ArtemisCoreException($"The provided current value type ({baseValue.GetType().Name}) not match the " +
-            //                                    $"target property type ({targetType.Name})");
-            // }
-
             if (CompiledTargetAccessor == null)
                 return baseValue;
 
@@ -147,11 +151,54 @@ namespace Artemis.Core
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
-            return Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
+            var value = Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
+
+            // If no easing is to be applied simple return whatever the current value is
+            if (EasingTime == TimeSpan.Zero)
+                return value;
+
+            // If the value changed, update the current and previous values used for easing
+            if (!Equals(value, _currentValue))
+            {
+                _previousValue = GetInterpolatedValue();
+                _currentValue = value;
+                _easingProgress = 0f;
+            }
+
+            // Apply interpolation between the previous and current value
+            return GetInterpolatedValue();
         }
 
-        internal void Update(double deltaTime)
+        /// <summary>
+        ///     Returns the type of the source property of this data binding
+        /// </summary>
+        public Type GetSourceType()
         {
+            return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
+        }
+
+        /// <summary>
+        /// Updates the smoothing progress of the data binding
+        /// </summary>
+        /// <param name="deltaTime"></param>
+        public void Update(double deltaTime)
+        {
+        }
+
+        /// <summary>
+        /// Applies the data binding to the <see cref="Property"/>
+        /// </summary>
+        public void ApplyToProperty()
+        {
+
+        }
+
+        private object GetInterpolatedValue()
+        {
+            if (_easingProgress >= 1.0f)
+                return _currentValue;
+
+            return Registration.Converter.Interpolate(_previousValue, _currentValue, _easingProgress);
         }
 
         internal void ApplyToEntity()
@@ -227,6 +274,20 @@ namespace Artemis.Core
             var lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
             CompiledTargetAccessor = lambda.Compile();
         }
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when a modifier is added or removed
+        /// </summary>
+        public event EventHandler ModifiersUpdated;
+
+        protected virtual void OnModifiersUpdated()
+        {
+            ModifiersUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 
     /// <summary>

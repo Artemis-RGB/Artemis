@@ -15,6 +15,8 @@ namespace Artemis.Core.Services
         {
             _logger = logger;
             _registeredDataBindingModifierTypes = new List<DataBindingModifierType>();
+
+            RegisterBuiltInModifiers();
         }
 
         public IReadOnlyCollection<DataBindingModifierType> RegisteredDataBindingModifierTypes
@@ -97,6 +99,11 @@ namespace Artemis.Core.Services
                 dataBindingModifier.Entity.Order,
                 dataBindingModifier.Entity.ModifierType
             );
+        }
+
+        private void RegisterBuiltInModifiers()
+        {
+            RegisterModifierType(Constants.CorePluginInfo, new MultiplicationModifierType());
         }
     }
 }

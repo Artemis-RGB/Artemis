@@ -311,5 +311,17 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <summary>
+        /// Returns all the layer properties of this profile element
+        /// </summary>
+        public virtual List<BaseLayerProperty> GetAllLayerProperties()
+        {
+            var result = new List<BaseLayerProperty>();
+            foreach (var baseLayerEffect in LayerEffects) 
+                result.AddRange(baseLayerEffect.BaseProperties.GetAllLayerProperties());
+
+            return result;
+        }
     }
 }

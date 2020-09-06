@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Input
 {
     /// <summary>
-    ///     Interaction logic for DataModelSelectionView.xaml
+    ///     Interaction logic for DataModelDynamicView.xaml
     /// </summary>
-    public partial class DataModelSelectionView : UserControl
+    public partial class DataModelDynamicView : UserControl
     {
-        public DataModelSelectionView()
+        public DataModelDynamicView()
         {
             InitializeComponent();
         }

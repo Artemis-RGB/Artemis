@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -11,10 +8,15 @@ namespace Artemis.Core
     {
         internal SKColorLayerProperty()
         {
+            RegisterDataBindingProperty(color => color.Alpha, new SKColorDataBindingConverter(SKColorDataBindingConverter.Channel.Alpha));
+            RegisterDataBindingProperty(color => color.Red, new SKColorDataBindingConverter(SKColorDataBindingConverter.Channel.Red));
+            RegisterDataBindingProperty(color => color.Green, new SKColorDataBindingConverter(SKColorDataBindingConverter.Channel.Green));
+            RegisterDataBindingProperty(color => color.Blue, new SKColorDataBindingConverter(SKColorDataBindingConverter.Channel.Blue));
+            RegisterDataBindingProperty(color => color.Hue, new SKColorDataBindingConverter(SKColorDataBindingConverter.Channel.Hue));
         }
 
         /// <summary>
-        ///  Implicitly converts an <see cref="SKColorLayerProperty" /> to an <see cref="SKColor" />
+        ///     Implicitly converts an <see cref="SKColorLayerProperty" /> to an <see cref="SKColor" />¶
         /// </summary>
         /// <param name="p"></param>
         /// <returns></returns>
@@ -28,29 +30,84 @@ namespace Artemis.Core
         {
             CurrentValue = CurrentKeyframe.Value.Interpolate(NextKeyframe.Value, keyframeProgressEased);
         }
+    }
 
-        /// <inheritdoc />
-        public override List<PropertyInfo> GetDataBindingProperties()
+    internal class SKColorDataBindingConverter : IDataBindingConverter
+    {
+        private readonly Channel _channel;
+
+        public SKColorDataBindingConverter(Channel channel)
         {
-            return typeof(SKColor).GetProperties().ToList();
+            _channel = channel;
         }
 
-        /// <inheritdoc />
-        protected override void ApplyDataBinding(DataBinding dataBinding)
+        public BaseLayerProperty BaseLayerProperty { get; set; }
+
+        public object Sum(object a, object b)
         {
-            if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Alpha))
-                CurrentValue = CurrentValue.WithAlpha((byte) dataBinding.GetValue(BaseValue.Alpha));
-            else if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Red))
-                CurrentValue = CurrentValue.WithRed((byte) dataBinding.GetValue(BaseValue.Red));
-            else if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Green))
-                CurrentValue = CurrentValue.WithGreen((byte) dataBinding.GetValue(BaseValue.Green));
-            else if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Blue))
-                CurrentValue = CurrentValue.WithBlue((byte) dataBinding.GetValue(BaseValue.Blue));
-            else if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Hue))
+            return (float) a + (float) b;
+        }
+
+        public object Interpolate(object a, object b, float progress)
+        {
+            var diff = (float) b - (float) a;
+            return diff * progress;
+        }
+
+        public void ApplyValue(object value)
+        {
+            var property = (SKColorLayerProperty) BaseLayerProperty;
+            switch (_channel)
             {
-                CurrentValue.ToHsv(out var h, out var s, out var v);
-                CurrentValue = SKColor.FromHsv((float) dataBinding.GetValue(h), s, v);
+                case Channel.Alpha:
+                    property.CurrentValue = property.CurrentValue.WithAlpha((byte) value);
+                    break;
+                case Channel.Red:
+                    property.CurrentValue = property.CurrentValue.WithRed((byte) value);
+                    break;
+                case Channel.Green:
+                    property.CurrentValue = property.CurrentValue.WithGreen((byte) value);
+                    break;
+                case Channel.Blue:
+                    property.CurrentValue = property.CurrentValue.WithBlue((byte) value);
+                    break;
+                case Channel.Hue:
+                    property.CurrentValue.ToHsv(out var h, out var s, out var v);
+                    property.CurrentValue = SKColor.FromHsv((float) value, s, v);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+        }
+
+        public object GetValue()
+        {
+            var property = (SKColorLayerProperty) BaseLayerProperty;
+            switch (_channel)
+            {
+                case Channel.Alpha:
+                    return property.CurrentValue.Alpha;
+                case Channel.Red:
+                    return property.CurrentValue.Red;
+                case Channel.Green:
+                    return property.CurrentValue.Green;
+                case Channel.Blue:
+                    return property.CurrentValue.Blue;
+                case Channel.Hue:
+                    property.CurrentValue.ToHsv(out var h, out _, out _);
+                    return h;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public enum Channel
+        {
+            Alpha,
+            Red,
+            Green,
+            Blue,
+            Hue
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -11,12 +12,18 @@ namespace Artemis.Core
     public abstract class BaseLayerProperty
     {
         protected readonly List<DataBinding> _dataBindings = new List<DataBinding>();
+        protected readonly List<DataBindingRegistration> _dataBindingRegistrations = new List<DataBindingRegistration>();
         private bool _isHidden;
         private bool _keyframesEnabled;
 
         internal BaseLayerProperty()
         {
         }
+
+        /// <summary>
+        ///     Gets a list containing the active data bindings
+        /// </summary>
+        public IReadOnlyList<DataBinding> DataBindings => _dataBindings.AsReadOnly();
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
@@ -37,11 +44,6 @@ namespace Artemis.Core
         ///     Gets whether data bindings are supported on this type of property
         /// </summary>
         public bool DataBindingsSupported { get; protected internal set; } = true;
-
-        /// <summary>
-        ///     Gets a read-only collection of the currently applied data bindings
-        /// </summary>
-        public IReadOnlyCollection<DataBinding> DataBindings => _dataBindings.AsReadOnly();
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
@@ -105,18 +107,6 @@ namespace Artemis.Core
         public abstract Type GetPropertyType();
 
         /// <summary>
-        ///     Returns a list of properties to which data bindings can be applied
-        /// </summary>
-        /// <returns></returns>
-        public abstract List<PropertyInfo> GetDataBindingProperties();
-
-        /// <summary>
-        ///     Called when the provided data binding must be applied to a property
-        /// </summary>
-        /// <param name="dataBinding"></param>
-        protected abstract void ApplyDataBinding(DataBinding dataBinding);
-
-        /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
         /// <param name="entity"></param>
@@ -132,23 +122,26 @@ namespace Artemis.Core
 
         #region Data bindings
 
-        /// <summary>
-        ///     Applies the current <see cref="DataBindings" /> to the layer property
-        /// </summary>
-        public void ApplyDataBindings()
+        internal DataBindingRegistration RegisterDataBindingProperty(PropertyInfo property, IDataBindingConverter converter)
+        {
+            var registration = new DataBindingRegistration(this, property, converter);
+            _dataBindingRegistrations.Add(registration);
+            return registration;
+        }
+
+        internal void InitializeDataBindings(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
             foreach (var dataBinding in DataBindings)
-                ApplyDataBinding(dataBinding);
+                dataBinding.Initialize(dataModelService, dataBindingService);
         }
 
         /// <summary>
         ///     Adds a new data binding targeting the given property to the <see cref="DataBindings" /> collection
         /// </summary>
-        /// <param name="targetProperty">The property the new data binding should target</param>
         /// <returns>The newly created data binding</returns>
-        public DataBinding AddDataBinding(PropertyInfo targetProperty)
+        public DataBinding EnableDataBinding(DataBindingRegistration dataBindingRegistration)
         {
-            var dataBinding = new DataBinding(this, targetProperty);
+            var dataBinding = new DataBinding(this, dataBindingProperty);
             _dataBindings.Add(dataBinding);
 
             return dataBinding;
@@ -158,12 +151,10 @@ namespace Artemis.Core
         ///     Removes the provided data binding from the <see cref="DataBindings" /> collection
         /// </summary>
         /// <param name="dataBinding">The data binding to remove</param>
-        public void RemoveDataBinding(DataBinding dataBinding)
+        public void DisableDataBinding(DataBinding dataBinding)
         {
             _dataBindings.Remove(dataBinding);
         }
-
-        
 
         #endregion
 

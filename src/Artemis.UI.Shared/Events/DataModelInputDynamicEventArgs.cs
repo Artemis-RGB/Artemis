@@ -2,11 +2,11 @@
 
 namespace Artemis.UI.Shared
 {
-    public class DataModelPropertySelectedEventArgs : EventArgs
+    public class DataModelInputDynamicEventArgs : EventArgs
     {
         public DataModelVisualizationViewModel DataModelVisualizationViewModel { get; }
 
-        public DataModelPropertySelectedEventArgs(DataModelVisualizationViewModel dataModelVisualizationViewModel)
+        public DataModelInputDynamicEventArgs(DataModelVisualizationViewModel dataModelVisualizationViewModel)
         {
             DataModelVisualizationViewModel = dataModelVisualizationViewModel;
         }

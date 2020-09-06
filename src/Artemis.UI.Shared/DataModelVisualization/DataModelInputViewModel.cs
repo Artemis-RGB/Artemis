@@ -14,9 +14,9 @@ namespace Artemis.UI.Shared
         private bool _closed;
         private T _inputValue;
 
-        protected DataModelInputViewModel(DataModelPropertyAttribute description, T initialValue)
+        protected DataModelInputViewModel(DataModelPropertyAttribute targetDescription, T initialValue)
         {
-            Description = description;
+            TargetDescription = targetDescription;
             InputValue = initialValue;
         }
 
@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _inputValue, value);
         }
 
-        public DataModelPropertyAttribute Description { get; }
+        public DataModelPropertyAttribute TargetDescription { get; }
         internal override object InternalGuard { get; } = null;
 
         /// <inheritdoc />

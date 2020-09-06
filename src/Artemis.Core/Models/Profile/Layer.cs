@@ -186,9 +186,6 @@ namespace Artemis.Core
             Transform.ApplyToEntity();
             LayerBrush?.BaseProperties.ApplyToEntity();
 
-            // Effects
-            ApplyRenderElementToEntity();
-
             // LEDs
             LayerEntity.Leds.Clear();
             foreach (var artemisLed in Leds)
@@ -204,6 +201,8 @@ namespace Artemis.Core
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
             DisplayConditionGroup?.ApplyToEntity();
+
+            ApplyRenderElementToEntity();
         }
 
         #endregion
@@ -311,6 +310,18 @@ namespace Artemis.Core
                 baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
             }
+        }
+
+        /// <inheritdoc />
+        public override List<BaseLayerProperty> GetAllLayerProperties()
+        {
+            var result = base.GetAllLayerProperties();
+            result.AddRange(General.GetAllLayerProperties());
+            result.AddRange(Transform.GetAllLayerProperties());
+            if (LayerBrush?.BaseProperties != null) 
+                result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
+
+            return result;
         }
 
         /// <inheritdoc />
