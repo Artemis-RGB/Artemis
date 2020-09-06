@@ -136,6 +136,9 @@ namespace Artemis.UI.Shared
                 return Size.Empty;
 
             var deviceSize = MeasureDevice();
+            if (deviceSize.Width <= 0 || deviceSize.Height <= 0)
+                return Size.Empty;
+
             return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
         }
 
