@@ -5,7 +5,7 @@ namespace Artemis.UI.DataModelVisualization.Input
 {
     public class StringDataModelInputViewModel : DataModelInputViewModel<string>
     {
-        public StringDataModelInputViewModel(DataModelPropertyAttribute description, string initialValue) : base(description, initialValue)
+        public StringDataModelInputViewModel(DataModelPropertyAttribute targetDescription, string initialValue) : base(targetDescription, initialValue)
         {
         }
 

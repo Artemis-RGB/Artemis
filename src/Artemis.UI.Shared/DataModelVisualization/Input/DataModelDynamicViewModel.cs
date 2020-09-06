@@ -11,22 +11,21 @@ using Stylet;
 // Remove, annoying while working on it
 #pragma warning disable 1591
 
-namespace Artemis.UI.Shared
+namespace Artemis.UI.Shared.Input
 {
-    public class DataModelSelectionViewModel : PropertyChangedBase
+    public class DataModelDynamicViewModel : PropertyChangedBase
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Module _module;
         private readonly Timer _updateTimer;
         private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
-
         private DataModelPropertiesViewModel _dataModelViewModel;
         private bool _isDataModelViewModelOpen;
-        private bool _isEnabled;
+        private bool _isEnabled = true;
         private string _placeholder = "Select a property";
         private DataModelVisualizationViewModel _selectedPropertyViewModel;
 
-        public DataModelSelectionViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
+        internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
             _module = module;
             _dataModelUIService = dataModelUIService;
@@ -38,28 +37,28 @@ namespace Artemis.UI.Shared
             Initialize();
         }
         
-        public string Placeholder
-        {
-            get => _placeholder;
-            set => SetAndNotify(ref _placeholder, value);
-        }
-
         public Brush ButtonBrush
         {
             get => _buttonBrush;
             set => SetAndNotify(ref _buttonBrush, value);
         }
 
-        public DelegateCommand SelectPropertyCommand { get; }
-        public Type[] FilterTypes { get; set; }
 
-        public PluginSetting<bool> ShowDataModelValues { get; }
+        public string Placeholder
+        {
+            get => _placeholder;
+            set => SetAndNotify(ref _placeholder, value);
+        }
 
         public bool IsEnabled
         {
             get => _isEnabled;
             set => SetAndNotify(ref _isEnabled, value);
         }
+
+        public Type[] FilterTypes { get; set; }
+        public DelegateCommand SelectPropertyCommand { get; }
+        public PluginSetting<bool> ShowDataModelValues { get; }
 
         public DataModelPropertiesViewModel DataModelViewModel
         {
@@ -117,14 +116,15 @@ namespace Artemis.UI.Shared
                 return;
 
             SelectedPropertyViewModel = selected;
-            OnPropertySelected(new DataModelPropertySelectedEventArgs(selected));
+            OnPropertySelected(new DataModelInputDynamicEventArgs(selected));
         }
+
 
         #region Events
 
-        public event EventHandler<DataModelPropertySelectedEventArgs> PropertySelected;
+        public event EventHandler<DataModelInputDynamicEventArgs> PropertySelected;
 
-        protected virtual void OnPropertySelected(DataModelPropertySelectedEventArgs e)
+        protected virtual void OnPropertySelected(DataModelInputDynamicEventArgs e)
         {
             PropertySelected?.Invoke(this, e);
         }

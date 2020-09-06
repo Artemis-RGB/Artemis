@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -16,7 +18,7 @@ namespace Artemis.Core
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public class LayerProperty<T> : BaseLayerProperty
+    public abstract class LayerProperty<T> : BaseLayerProperty
     {
         private T _baseValue;
         private bool _isInitialized;
@@ -198,41 +200,6 @@ namespace Artemis.Core
             OnUpdated();
         }
 
-        private void UpdateKeyframes()
-        {
-            if (!KeyframesSupported || !KeyframesEnabled)
-                return;
-
-            // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
-            // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
-            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
-            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
-
-            // No need to update the current value if either of the keyframes are null
-            if (CurrentKeyframe == null)
-                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
-            else if (NextKeyframe == null)
-                CurrentValue = CurrentKeyframe.Value;
-            // Only determine progress and current value if both keyframes are present
-            else
-            {
-                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
-                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
-                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
-            }
-        }
-
-        private void UpdateDataBindings(double deltaTime)
-        {
-            foreach (var dataBinding in DataBindings)
-            {
-                dataBinding.Update(deltaTime);
-                ApplyDataBinding(dataBinding);
-            }
-        }
-
         /// <summary>
         ///     Sorts the keyframes in ascending order by position
         /// </summary>
@@ -303,20 +270,88 @@ namespace Artemis.Core
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));
+
+            PropertyEntity.DataBindingEntities.Clear();
+            foreach (var dataBinding in DataBindings)
+            {
+                dataBinding.ApplyToEntity();
+                PropertyEntity.DataBindingEntities.Add(dataBinding.Entity);
+            }
+        }
+
+        private void UpdateKeyframes()
+        {
+            if (!KeyframesSupported || !KeyframesEnabled)
+                return;
+
+            // The current keyframe is the last keyframe before the current time
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
+            // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
+            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
+            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
+
+            // No need to update the current value if either of the keyframes are null
+            if (CurrentKeyframe == null)
+                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
+            else if (NextKeyframe == null)
+                CurrentValue = CurrentKeyframe.Value;
+            // Only determine progress and current value if both keyframes are present
+            else
+            {
+                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
+                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
+                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
+            }
         }
 
         #region Data bindings
 
-        /// <inheritdoc />
-        public override List<PropertyInfo> GetDataBindingProperties()
+        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, IDataBindingConverter converter)
         {
-            return new List<PropertyInfo> {GetType().GetProperty(nameof(CurrentValue))};
+
+            var propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
+            
         }
 
-        /// <inheritdoc />
-        protected override void ApplyDataBinding(DataBinding dataBinding)
+        /// <summary>
+        ///     Registers the provided property to be available for data binding using a data binding property of type
+        ///     <typeparamref name="TD" />
+        /// </summary>
+        /// <typeparam name="TD">The type of data binding property to use</typeparam>
+        /// <param name="propertyName">The name of the property</param>
+        /// <returns></returns>
+        public TD RegisterDataBindingProperty<TD>(string propertyName, IDataBindingConverter converter) where TD : BaseDataBindingProperty
         {
-            CurrentValue = (T) dataBinding.GetValue(CurrentValue);
+            var property = typeof(T).GetProperty(propertyName);
+            if (property == null)
+            {
+                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyName} " +
+                                               $"because it does not exist on type {typeof(T).Name}");
+            }
+
+            // Create an instance of the converter
+            var dataBindingOperator = (TD) Activator.CreateInstance(typeof(TD), property);
+            if (dataBindingOperator == null)
+                throw new ArtemisCoreException($"Cannot register data binding, failed to create an instance of {typeof(TD).Name}");
+            if (dataBindingOperator.PropertyType != property.PropertyType)
+            {
+                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyName} using a {typeof(TD).Name} " +
+                                               $"because it does not support type {typeof(T).Name}");
+            }
+
+            AddDataBindingConverter(dataBindingOperator);
+
+            return dataBindingOperator;
+        }
+        
+        private void UpdateDataBindings(double deltaTime)
+        {
+            foreach (var dataBinding in DataBindings)
+            {
+                dataBinding.Update(deltaTime);
+                dataBinding.ApplyToProperty();
+            }
         }
 
         #endregion

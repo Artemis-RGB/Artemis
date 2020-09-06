@@ -10,16 +10,18 @@ namespace Artemis.Core.Services
     internal class RenderElementService : IRenderElementService
     {
         private readonly IDataModelService _dataModelService;
+        private readonly IDataBindingService _dataBindingService;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
 
-        public RenderElementService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService)
+        public RenderElementService(IKernel kernel, ILogger logger, IPluginService pluginService, IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
             _kernel = kernel;
             _logger = logger;
             _pluginService = pluginService;
             _dataModelService = dataModelService;
+            _dataBindingService = dataBindingService;
         }
 
         public Layer CreateLayer(Profile profile, ProfileElement parent, string name)
@@ -35,6 +37,7 @@ namespace Artemis.Core.Services
             InstantiateLayerBrush(layer);
             InstantiateLayerEffects(layer);
             InstantiateDisplayConditions(layer);
+            InstantiateDataBindings(layer);
             return layer;
         }
 
@@ -155,6 +158,12 @@ namespace Artemis.Core.Services
             {
                 _logger.Warning(e, $"Failed to init display conditions for {renderElement}");
             }
+        }
+
+        public void InstantiateDataBindings(RenderProfileElement renderElement)
+        {
+            foreach (var baseLayerProperty in renderElement.GetAllLayerProperties()) 
+                baseLayerProperty.InitializeDataBindings(_dataModelService, _dataBindingService);
         }
     }
 }

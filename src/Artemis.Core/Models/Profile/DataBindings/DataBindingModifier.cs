@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.DataBindings;
+using LiteDB.Engine;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
@@ -82,14 +83,9 @@ namespace Artemis.Core
         public object ParameterStaticValue { get; private set; }
 
         /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it of a dynamic <see cref="ParameterType" />
+        /// A compiled expression tree that when given a matching data model returns the value of the modifiers parameter
         /// </summary>
-        public Func<object, DataModel, object> CompiledDynamicPredicate { get; private set; }
-
-        /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it is of a static <see cref="ParameterType" />
-        /// </summary>
-        public Func<object, object> CompiledStaticPredicate { get; private set; }
+        public Func<DataModel, object> CompiledParameterAccessor { get; set; }
 
         internal DataBindingModifierEntity Entity { get; set; }
 
@@ -100,10 +96,14 @@ namespace Artemis.Core
         /// <returns>The modified value</returns>
         public object Apply(object currentValue)
         {
-            if (CompiledDynamicPredicate != null)
-                return CompiledDynamicPredicate(currentValue, ParameterDataModel);
-            if (CompiledStaticPredicate != null)
-                return CompiledStaticPredicate(currentValue);
+            if (ParameterType == ProfileRightSideType.Dynamic && CompiledParameterAccessor != null)
+            {
+                var value = CompiledParameterAccessor(ParameterDataModel);
+                return ModifierType.Apply(currentValue, value);
+            }
+
+            if (ParameterType == ProfileRightSideType.Static)
+                return ModifierType.Apply(currentValue, ParameterStaticValue);
 
             return currentValue;
         }
@@ -122,7 +122,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.TargetProperty.GetType();
+            var targetType = DataBinding.TargetProperty.PropertyType;
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -168,7 +168,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.TargetProperty.GetType();
+            var targetType = DataBinding.TargetProperty.PropertyType;
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -208,7 +208,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.TargetProperty.GetType();
+                var targetType = DataBinding.TargetProperty.PropertyType;
                 object staticValue;
 
                 try
@@ -231,52 +231,23 @@ namespace Artemis.Core
 
         private void CreateExpression()
         {
-            CompiledDynamicPredicate = null;
-            CompiledStaticPredicate = null;
+            CompiledParameterAccessor = null;
 
             if (ModifierType == null || DataBinding == null)
                 return;
 
             if (ParameterType == ProfileRightSideType.Dynamic && ModifierType.SupportsParameter)
-                CreateDynamicExpression();
-            else
-                CreateStaticExpression();
+            {
+                if (ParameterDataModel == null)
+                    return;
+
+                // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
+                var parameterAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "parameter", out var rightSideParameter);
+                var lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
+                CompiledParameterAccessor = lambda.Compile();
+            }
         }
-
-        private void CreateDynamicExpression()
-        {
-            if (ParameterDataModel == null)
-                return;
-
-            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
-
-            // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-            var rightSideAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "right", out var rightSideParameter);
-
-            // A conversion may be required if the types differ
-            // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
-            if (rightSideAccessor.Type != DataBinding.TargetProperty.GetType())
-                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.TargetProperty.GetType());
-
-            var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideAccessor);
-            var lambda = Expression.Lambda<Func<object, DataModel, object>>(modifierExpression, currentValueParameter, rightSideParameter);
-            CompiledDynamicPredicate = lambda.Compile();
-        }
-
-        private void CreateStaticExpression()
-        {
-            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
-
-            // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-            var rightSideConstant = ParameterStaticValue != null
-                ? Expression.Constant(ParameterStaticValue)
-                : Expression.Constant(null, DataBinding.TargetProperty.GetType());
-
-            var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideConstant);
-            var lambda = Expression.Lambda<Func<object, object>>(modifierExpression, currentValueParameter);
-            CompiledStaticPredicate = lambda.Compile();
-        }
-
+        
         private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
         {
             var listType = dataModel.GetListTypeInPath(path);

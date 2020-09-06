@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
+using Artemis.UI.Shared.Input;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -28,6 +29,7 @@ namespace Artemis.UI.Shared.Services
         DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
         DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
 
-        DataModelSelectionViewModel GetDataModelSelectionViewModel(Module module);
+        DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module);
+        DataModelStaticViewModel GetStaticInputViewModel(Type targetType);
     }
 }
