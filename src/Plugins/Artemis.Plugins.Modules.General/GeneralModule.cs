@@ -20,10 +20,10 @@ namespace Artemis.Plugins.Modules.General
             ExpandsDataModel = true;
             ModuleTabs = new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
 
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(1), CurrentTimeUTC = DateTime.UtcNow.AddDays(1)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(2), CurrentTimeUTC = DateTime.UtcNow.AddDays(2)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(3), CurrentTimeUTC = DateTime.UtcNow.AddDays(3)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTime.Now.AddDays(4), CurrentTimeUTC = DateTime.UtcNow.AddDays(4)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(1)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(2)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(3)});
+            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(4)});
         }
 
         public override void DisablePlugin()
@@ -40,9 +40,9 @@ namespace Artemis.Plugins.Modules.General
 
         public override void Update(double deltaTime)
         {
-            DataModel.TimeDataModel.CurrentTime = DateTime.Now;
-            DataModel.TimeDataModel.CurrentTimeUTC = DateTime.UtcNow;
-
+            DataModel.TimeDataModel.CurrentTime = DateTimeOffset.Now;
+            DataModel.TimeDataModel.SecondsSinceUnixEpoch = DateTimeOffset.Now.ToUnixTimeSeconds();
+            DataModel.TimeDataModel.TimeSinceMidnight = DateTimeOffset.Now - DateTimeOffset.Now.Date;
             UpdateCurrentWindow();
         }
 

@@ -3,39 +3,37 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class GeneralDataBindingConverter : IDataBindingConverter
+    public class GeneralDataBindingConverter : DataBindingConverter
     {
-        /// <inheritdoc />
-        public Type SupportedType => typeof(object);
+        public GeneralDataBindingConverter()
+        {
+            SupportedType = typeof(object);
+            SupportsSum = false;
+            SupportsInterpolate = false;
+        }
 
         /// <inheritdoc />
-        public bool SupportsSum => false;
-
-        /// <inheritdoc />
-        public bool SupportsInterpolate => false;
-
-        /// <inheritdoc />
-        public object Sum(BaseLayerProperty layerProperty, object a, object b)
+        public override object Sum(object a, object b)
         {
             throw new NotSupportedException();
         }
 
         /// <inheritdoc />
-        public object Interpolate(BaseLayerProperty layerProperty, object a, object b, float progress)
+        public override object Interpolate(object a, object b, double progress)
         {
             throw new NotSupportedException();
         }
 
         /// <inheritdoc />
-        public void ApplyValue(BaseLayerProperty layerProperty, object value)
+        public override void ApplyValue(object value)
         {
-            layerProperty.CurrentValue = value;
+            ValueSetter?.Invoke(value);
         }
 
         /// <inheritdoc />
-        public object GetValue(BaseLayerProperty layerProperty)
+        public override object GetValue()
         {
-            return layerProperty.CurrentValue;
+            return ValueGetter?.Invoke();
         }
     }
 }

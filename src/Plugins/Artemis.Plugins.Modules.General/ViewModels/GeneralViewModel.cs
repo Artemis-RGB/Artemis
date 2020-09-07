@@ -11,14 +11,14 @@ namespace Artemis.Plugins.Modules.General.ViewModels
 
         public GeneralModule GeneralModule { get; }
 
-        public void ShowUTCTimeInDataModel()
+        public void ShowTimeInDataModel()
         {
-            GeneralModule.ShowProperty(model => model.TimeDataModel.CurrentTimeUTC);
+            GeneralModule.ShowProperty(model => model.TimeDataModel.CurrentTime);
         }
 
-        public void HideUTCTimeInDataModel()
+        public void HideTimeInDataModel()
         {
-            GeneralModule.HideProperty(model => model.TimeDataModel.CurrentTimeUTC);
+            GeneralModule.HideProperty(model => model.TimeDataModel.CurrentTime);
         }
     }
 }

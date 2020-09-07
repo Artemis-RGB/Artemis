@@ -3,40 +3,46 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class FloatDataBindingConverter : IDataBindingConverter
+    public class FloatDataBindingConverter : DataBindingConverter
     {
-        /// <inheritdoc />
-        public Type SupportedType => typeof(float);
-
-        /// <inheritdoc />
-        public bool SupportsSum => true;
-
-        /// <inheritdoc />
-        public bool SupportsInterpolate => true;
-
-        /// <inheritdoc />
-        public object Sum(BaseLayerProperty layerProperty, object a, object b)
+        public FloatDataBindingConverter()
         {
-            return (float) a + (float) b;
+            SupportedType = typeof(float);
+            SupportsSum = true;
+            SupportsInterpolate = true;
         }
 
         /// <inheritdoc />
-        public object Interpolate(BaseLayerProperty layerProperty, object a, object b, float progress)
+        public override object Sum(object a, object b)
         {
-            var diff = (float) b - (float) a;
-            return diff * progress;
+            return Convert.ToSingle(a) + Convert.ToSingle(b);
         }
 
         /// <inheritdoc />
-        public void ApplyValue(BaseLayerProperty layerProperty, object value)
+        public override object Interpolate(object a, object b, double progress)
         {
-            layerProperty.CurrentValue = value;
+            var floatA = Convert.ToSingle(a);
+            var floatB = Convert.ToSingle(b);
+            var diff = floatB - floatA;
+            return floatA + diff * progress;
         }
 
         /// <inheritdoc />
-        public object GetValue(BaseLayerProperty layerProperty)
+        public override void ApplyValue(object value)
         {
-            return layerProperty.CurrentValue;
+            var floatValue = Convert.ToSingle(value);
+            if (DataBinding.LayerProperty.PropertyDescription.MaxInputValue is float max)
+                floatValue = Math.Min(floatValue, max);
+            if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
+                floatValue = Math.Max(floatValue, min);
+
+            ValueSetter?.Invoke(floatValue);
+        }
+
+        /// <inheritdoc />
+        public override object GetValue()
+        {
+            return ValueGetter?.Invoke();
         }
     }
 }

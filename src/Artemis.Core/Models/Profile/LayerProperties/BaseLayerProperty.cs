@@ -32,7 +32,7 @@ namespace Artemis.Core
             get => _baseValue;
             set
             {
-                if (value.GetType() != GetPropertyType())
+                if (value != null && value.GetType() != GetPropertyType())
                     throw new ArtemisCoreException("Cannot update base value because of a type mismatch");
                 _baseValue = value;
             }
@@ -46,7 +46,7 @@ namespace Artemis.Core
             get => _currentValue;
             set
             {
-                if (value.GetType() != GetPropertyType())
+                if (value != null && value.GetType() != GetPropertyType())
                     throw new ArtemisCoreException("Cannot update current value because of a type mismatch");
                 _currentValue = value;
             }
@@ -61,7 +61,7 @@ namespace Artemis.Core
             get => _defaultValue;
             set
             {
-                if (value.GetType() != GetPropertyType())
+                if (value != null && value.GetType() != GetPropertyType())
                     throw new ArtemisCoreException("Cannot update default value because of a type mismatch");
                 _defaultValue = value;
             }
@@ -186,6 +186,9 @@ namespace Artemis.Core
         /// <returns>The newly created data binding</returns>
         public DataBinding EnableDataBinding(DataBindingRegistration dataBindingRegistration)
         {
+            if (dataBindingRegistration.LayerProperty != this)
+                throw new ArtemisCoreException("Cannot enable a data binding using a data binding registration of a different layer property");
+           
             var dataBinding = new DataBinding(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
