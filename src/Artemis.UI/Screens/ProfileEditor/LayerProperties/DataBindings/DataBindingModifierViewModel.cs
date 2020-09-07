@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             SelectModifierTypeCommand = new DelegateCommand(ExecuteSelectModifierTypeCommand);
 
             // Initialize async, no need to wait for it
-            Execute.PostToUIThread(Initialize);
+            Execute.PostToUIThread(Update);
         }
 
         public DelegateCommand SelectModifierTypeCommand { get; }
@@ -62,30 +62,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             get => _staticInputViewModel;
             private set => SetAndNotify(ref _staticInputViewModel, value);
         }
-
-        private void Initialize()
-        {
-            var sourceType = Modifier.DataBinding.GetSourceType();
-            if (sourceType == null)
-                throw new ArtemisUIException("Cannot initialize a data binding modifier VM for a data binding without a source");
-
-            if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
-            {
-                StaticInputViewModel = null;
-                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-                DynamicSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
-                DynamicSelectionViewModel.FilterTypes = new[] {sourceType};
-            }
-            else
-            {
-                DynamicSelectionViewModel = null;
-                StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(sourceType);
-                StaticInputViewModel.ValueUpdated += StaticInputViewModelOnValueUpdated;
-            }
-
-            Update();
-        }
-
+        
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
@@ -99,6 +76,27 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private void Update()
         {
             var sourceType = Modifier.DataBinding.GetSourceType();
+            if (sourceType == null)
+                throw new ArtemisUIException("Cannot use a data binding modifier VM for a data binding without a source");
+
+            if (Modifier.ModifierType == null || !Modifier.ModifierType.SupportsParameter)
+            {
+                StaticInputViewModel = null;
+                DynamicSelectionViewModel = null;
+            }
+            else if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
+            {
+                StaticInputViewModel = null;
+                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+                DynamicSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
+                DynamicSelectionViewModel.FilterTypes = new[] { sourceType };
+            }
+            else
+            {
+                DynamicSelectionViewModel = null;
+                StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(sourceType);
+                StaticInputViewModel.ValueUpdated += StaticInputViewModelOnValueUpdated;
+            }
 
             // Modifier type
             ModifierTypes.Clear();
@@ -135,7 +133,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             else
                 Modifier.UpdateParameter(null, null);
 
-            Initialize();
+            Update();
         }
     }
 }

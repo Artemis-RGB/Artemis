@@ -39,6 +39,7 @@ namespace Artemis.Core
                     return;
 
                 base.BaseValue = value;
+                Update();
                 OnBaseValueChanged();
             }
         }
@@ -104,7 +105,7 @@ namespace Artemis.Core
 
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
-            Update(0);
+            Update();
         }
 
         /// <summary>
@@ -195,7 +196,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the property, applying keyframes and data bindings to the current value
         /// </summary>
-        internal void Update(double deltaTime)
+        internal void Update(double deltaTime = 0)
         {
             CurrentValue = BaseValue;
 

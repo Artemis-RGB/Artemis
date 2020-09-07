@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingsViewModel : PropertyChangedBase
+    public class DataBindingsViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private DataBindingsTabsViewModel _dataBindingsTabsViewModel;
@@ -34,6 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void Initialise()
         {
+            DataBindingViewModel?.Dispose();
             DataBindingViewModel = null;
             DataBindingsTabsViewModel = null;
 
@@ -51,6 +53,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 foreach (var registration in registrations)
                     DataBindingsTabsViewModel.Tabs.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
             }
+        }
+
+        public void Dispose()
+        {
+            DataBindingViewModel?.Dispose();
         }
     }
 }
