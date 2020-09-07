@@ -41,7 +41,6 @@ namespace Artemis.Plugins.Modules.General
         public override void Update(double deltaTime)
         {
             DataModel.TimeDataModel.CurrentTime = DateTimeOffset.Now;
-            DataModel.TimeDataModel.SecondsSinceUnixEpoch = DateTimeOffset.Now.ToUnixTimeSeconds();
             DataModel.TimeDataModel.TimeSinceMidnight = DateTimeOffset.Now - DateTimeOffset.Now.Date;
             UpdateCurrentWindow();
         }

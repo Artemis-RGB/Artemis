@@ -111,6 +111,8 @@ namespace Artemis.UI.Shared.Services
                 var profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
                 SelectedProfileElement = profileElement;
                 OnSelectedProfileElementChanged(profileElementEvent);
+
+                ChangeSelectedDataBinding(null);
             }
         }
 

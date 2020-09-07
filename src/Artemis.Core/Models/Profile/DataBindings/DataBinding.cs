@@ -17,7 +17,6 @@ namespace Artemis.Core
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
 
         private object _currentValue;
-        private bool _isInitialized;
         private object _previousValue;
         private TimeSpan _easingProgress;
 
@@ -200,6 +199,9 @@ namespace Artemis.Core
         /// <param name="deltaTime">The time in seconds that passed since the last update</param>
         public void Update(double deltaTime)
         {
+            // Data bindings cannot go back in time like brushes
+            deltaTime = Math.Max(0, deltaTime);
+
             _easingProgress = _easingProgress.Add(TimeSpan.FromSeconds(deltaTime));
             if (_easingProgress > EasingTime)
                 _easingProgress = EasingTime;
@@ -256,11 +258,8 @@ namespace Artemis.Core
 
         internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
-            if (_isInitialized)
-                throw new ArtemisCoreException("Data binding is already initialized");
-
             // Source
-            if (Entity.SourceDataModelGuid != null)
+            if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
             {
                 var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.SourceDataModelGuid.Value);
                 if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
@@ -270,8 +269,6 @@ namespace Artemis.Core
             // Modifiers
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingModifier.Initialize(dataModelService, dataBindingService);
-
-            _isInitialized = true;
         }
 
         private void ApplyRegistration(DataBindingRegistration dataBindingRegistration)

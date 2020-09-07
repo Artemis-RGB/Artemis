@@ -29,7 +29,6 @@ namespace Artemis.Plugins.Modules.General.DataModels
     public class TimeDataModel : DataModel
     {
         public DateTimeOffset CurrentTime { get; set; }
-        public long SecondsSinceUnixEpoch { get; set; }
         public TimeSpan TimeSinceMidnight { get; set; }
     }
 }
