@@ -62,8 +62,8 @@
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
-                Content="{Binding SelectedModifierType.Description}">
-            <!-- Click="PropertyButton_OnClick" -->
+                Content="{Binding SelectedModifierType.Description}"
+                Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding ModifierTypes}">
                     <ContextMenu.ItemTemplate>
@@ -85,34 +85,7 @@
             </Button.ContextMenu>
         </Button>
 
-        <Button Grid.Column="3"
-                Background="#ab47bc"
-                BorderBrush="#ab47bc"
-                Style="{StaticResource DisplayConditionButton}"
-                ToolTip="{Binding SelectedParameterProperty.DisplayPropertyPath}"
-                HorizontalAlignment="Left">
-            <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding ParameterDataModel.Children}" IsOpen="{Binding ParameterDataModelOpen, Mode=OneWayToSource}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                            <Setter Property="ItemsSource" Value="{Binding Children}" />
-                            <Setter Property="Command" Value="{Binding Data.SelectModifierTypeCommand, Source={StaticResource DataContextProxy}}" />
-                            <Setter Property="CommandParameter" Value="{Binding}" />
-                            <Setter Property="CommandTarget" Value="{Binding}" />
-                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
-                            <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
-                </ContextMenu>
-            </Button.ContextMenu>
-            <Grid>
-                <TextBlock Text="{Binding SelectedParameterProperty.PropertyDescription.Name}"
-                           Visibility="{Binding SelectedParameterProperty, Converter={StaticResource NullToVisibilityConverter}}" />
-                <TextBlock Text="« Select a property »"
-                           FontStyle="Italic"
-                           Visibility="{Binding SelectedParameterProperty, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
-            </Grid>
-        </Button>
+        <ContentControl Grid.Column="3" s:View.Model="{Binding DynamicSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+        <ContentControl Grid.Column="3" s:View.Model="{Binding StaticInputViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
     </Grid>
 </UserControl>

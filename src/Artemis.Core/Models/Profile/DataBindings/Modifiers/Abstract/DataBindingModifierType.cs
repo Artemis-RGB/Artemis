@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using Artemis.Core.Services;
 
 namespace Artemis.Core
@@ -51,12 +50,19 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Creates a binary expression comparing two types
+        ///     Called whenever the modifier must apply to a specific value, must be a value of a type contained in
+        ///     <see cref="CompatibleTypes" />
         /// </summary>
-        /// <param name="currentValue">The current value of the data binding</param>
-        /// <param name="modifierArgument">An argument passed to the modifier, either static of dynamic</param>
-        /// <returns></returns>
-        public abstract Expression<object> CreateExpression(ParameterExpression currentValue, Expression modifierArgument);
+        /// <param name="currentValue">
+        ///     The current value before modification, is always of a type contained in
+        ///     <see cref="CompatibleTypes" />
+        /// </param>
+        /// <param name="parameterValue">
+        ///     The parameter to use for the modification, is always of a type contained in
+        ///     <see cref="CompatibleTypes" />
+        /// </param>
+        /// <returns>The modified value, must be a value of a type contained in <see cref="CompatibleTypes" /></returns>
+        public abstract object Apply(object currentValue, object parameterValue);
 
         internal void Register(PluginInfo pluginInfo, IDataBindingService dataBindingService)
         {

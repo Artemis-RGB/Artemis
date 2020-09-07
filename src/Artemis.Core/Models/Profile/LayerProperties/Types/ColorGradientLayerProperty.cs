@@ -11,11 +11,15 @@ namespace Artemis.Core
             DataBindingsSupported = false;
         }
 
+        /// <summary>
+        ///     Implicitly converts an <see cref="ColorGradientLayerProperty" /> to a <see cref="ColorGradient"/>
+        /// </summary>
         public static implicit operator ColorGradient(ColorGradientLayerProperty p)
         {
             return p.CurrentValue;
         }
 
+        /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
             throw new ArtemisCoreException("Color Gradients do not support keyframes.");

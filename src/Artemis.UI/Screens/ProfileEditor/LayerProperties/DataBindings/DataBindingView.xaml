@@ -42,43 +42,46 @@
 
                 <ComboBox Grid.Row="1"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          materialDesign:HintAssist.Hint="Mode"
+                          materialDesign:HintAssist.Hint="Data binding mode"
                           MinWidth="128"
-                          IsEnabled="{Binding IsDataBindingEnabled}">
-                    <ComboBoxItem>
-                        Replace value
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        Add to value
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        Subtract from value
-                    </ComboBoxItem>
+                          SelectedValue="{Binding SelectedDataBindingMode}" ItemsSource="{Binding DataBindingModes}" SelectedValuePath="Value" DisplayMemberPath="Description" >
                 </ComboBox>
 
                 <StackPanel Grid.Row="2">
                     <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Text="200"
+                             Text="{Binding EasingTime}"
                              materialDesign:TextFieldAssist.HasClearButton="True"
                              materialDesign:TextFieldAssist.SuffixText="ms"
-                             materialDesign:HintAssist.Hint="Smoothing time"
+                             materialDesign:HintAssist.Hint="Easing time"
                              IsEnabled="{Binding IsDataBindingEnabled}" />
                 </StackPanel>
 
                 <ComboBox Grid.Row="3"
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                          materialDesign:HintAssist.Hint="Smoothing type"
+                          materialDesign:HintAssist.Hint="Easing type"
                           MinWidth="128"
-                          IsEnabled="{Binding IsDataBindingEnabled}">
-                    <ComboBoxItem>
-                        Ease in
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        Ease out
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        Ease in and out
-                    </ComboBoxItem>
+                          IsEnabled="{Binding IsEasingTimeEnabled}"
+                          SelectedItem="{Binding SelectedEasingViewModel}"
+                          ItemsSource="{Binding EasingViewModels}">
+                    <ComboBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel />
+                        </ItemsPanelTemplate>
+                    </ComboBox.ItemsPanel>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Polyline Stroke="{DynamicResource MaterialDesignBody}"
+                                          StrokeThickness="1"
+                                          Points="{Binding EasingPoints}"
+                                          Stretch="Uniform"
+                                          Width="14"
+                                          Height="14"
+                                          Margin="0 0 10 0" />
+                                <TextBlock Text="{Binding Description}" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
                 </ComboBox>
 
                 <materialDesign:Card Grid.Row="4" Grid.ColumnSpan="2" Margin="0 5 0 0">
@@ -102,10 +105,10 @@
                                 <RowDefinition />
                             </Grid.RowDefinitions>
                             <TextBlock Margin="0 2">Input</TextBlock>
-                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestInputValue}"/>
+                            <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestInputValue}" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 2">Output</TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestResultValue}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestResultValue}" />
                         </Grid>
                     </Grid>
                 </materialDesign:Card>

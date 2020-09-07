@@ -81,7 +81,7 @@ namespace Artemis.UI.Ninject.Factories
     public interface IDataBindingsVmFactory : IVmFactory
     {
         DataBindingsViewModel DataBindingsViewModel(BaseLayerProperty layerProperty);
-        DataBindingViewModel DataBindingViewModel(BaseLayerProperty layerProperty, PropertyInfo targetProperty);
+        DataBindingViewModel DataBindingViewModel(DataBindingRegistration registration);
         DataBindingModifierViewModel DataBindingModifierViewModel(DataBindingModifier modifier);
     }
 

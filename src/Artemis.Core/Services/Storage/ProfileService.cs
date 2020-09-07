@@ -299,6 +299,7 @@ namespace Artemis.Core.Services
                     _renderElementService.RemoveLayerEffect(layerLayerEffect);
 
                 _renderElementService.InstantiateDisplayConditions(folder);
+                _renderElementService.InstantiateDataBindings(folder);
             }
         }
 
@@ -324,6 +325,7 @@ namespace Artemis.Core.Services
                     _renderElementService.RemoveLayerEffect(layerLayerEffect);
 
                 _renderElementService.InstantiateDisplayConditions(layer);
+                _renderElementService.InstantiateDataBindings(layer);
             }
         }
 

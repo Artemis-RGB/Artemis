@@ -86,5 +86,13 @@ namespace Artemis.Core
                 );
             return castable;
         }
+
+        /// <summary>
+        /// Returns the default value of the given type
+        /// </summary>
+        public static object GetDefault(this Type type)
+        {
+            return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
     }
 }

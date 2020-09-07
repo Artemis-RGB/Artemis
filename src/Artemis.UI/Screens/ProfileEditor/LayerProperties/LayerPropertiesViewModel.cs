@@ -204,6 +204,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             MainTimelineSegmentViewModel = null;
             EndTimelineSegmentViewModel?.Dispose();
             EndTimelineSegmentViewModel = null;
+            DataBindingsViewModel?.Dispose();
+            DataBindingsViewModel = null;
 
             base.OnClose();
         }
@@ -241,6 +243,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (ProfileEditorService.SelectedDataBinding != null)
             {
                 RightSideIndex = 1;
+                DataBindingsViewModel?.Dispose();
                 DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
             }
             else
