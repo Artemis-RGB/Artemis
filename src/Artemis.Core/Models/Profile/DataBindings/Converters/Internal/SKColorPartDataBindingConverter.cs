@@ -4,52 +4,41 @@ using SkiaSharp;
 namespace Artemis.Core
 {
     // This is internal because it's mainly a proof-of-concept
-    internal class SKColorPartDataBindingConverter : IDataBindingConverter
+    internal class SKColorPartDataBindingConverter : DataBindingConverter
     {
         private readonly Channel _channel;
 
         public SKColorPartDataBindingConverter(Channel channel)
         {
             _channel = channel;
-        }
 
-        // This depends on what channel was passed
-        public Type SupportedType
-        {
-            get
+            SupportsSum = true;
+            SupportsInterpolate = true;
+            SupportedType = _channel switch
             {
-                switch (_channel)
-                {
-                    case Channel.Alpha:
-                    case Channel.Red:
-                    case Channel.Green:
-                    case Channel.Blue:
-                        return typeof(byte);
-                    case Channel.Hue:
-                        return typeof(float);
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
+                Channel.Alpha => typeof(byte),
+                Channel.Red => typeof(byte),
+                Channel.Green => typeof(byte),
+                Channel.Blue => typeof(byte),
+                Channel.Hue => typeof(float),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
-        public bool SupportsSum => true;
-        public bool SupportsInterpolate => true;
-
-        public object Sum(BaseLayerProperty layerProperty, object a, object b)
+        public override object Sum(object a, object b)
         {
             return (float) a + (float) b;
         }
 
-        public object Interpolate(BaseLayerProperty layerProperty, object a, object b, float progress)
+        public override object Interpolate(object a, object b, double progress)
         {
             var diff = (float) b - (float) a;
             return diff * progress;
         }
 
-        public void ApplyValue(BaseLayerProperty layerProperty, object value)
+        public override void ApplyValue(object value)
         {
-            var property = (SKColorLayerProperty) layerProperty;
+            var property = (SKColorLayerProperty) DataBinding.LayerProperty;
             switch (_channel)
             {
                 case Channel.Alpha:
@@ -73,9 +62,9 @@ namespace Artemis.Core
             }
         }
 
-        public object GetValue(BaseLayerProperty layerProperty)
+        public override object GetValue()
         {
-            var property = (SKColorLayerProperty) layerProperty;
+            var property = (SKColorLayerProperty) DataBinding.LayerProperty;
             switch (_channel)
             {
                 case Channel.Alpha:

@@ -102,7 +102,7 @@ namespace Artemis.Core
                 return ModifierType.Apply(currentValue, value);
             }
 
-            if (ParameterType == ProfileRightSideType.Static)
+            if (ParameterType == ProfileRightSideType.Static && ModifierType != null)
                 return ModifierType.Apply(currentValue, ParameterStaticValue);
 
             return currentValue;

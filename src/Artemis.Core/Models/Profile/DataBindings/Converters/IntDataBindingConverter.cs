@@ -3,40 +3,46 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class IntDataBindingConverter : IDataBindingConverter
+    public class IntDataBindingConverter : DataBindingConverter
     {
-        /// <inheritdoc />
-        public Type SupportedType => typeof(int);
+        public IntDataBindingConverter()
+        {
+            SupportedType = typeof(int);
+            SupportsSum = true;
+            SupportsInterpolate = true;
+        }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="MidpointRounding" /> mode used for rounding during interpolation. Defaults to
+        ///     <see cref="MidpointRounding.AwayFromZero" />
+        /// </summary>
+        public MidpointRounding InterpolationRoundingMode { get; set; } = MidpointRounding.AwayFromZero;
 
         /// <inheritdoc />
-        public bool SupportsSum => true;
-
-        /// <inheritdoc />
-        public bool SupportsInterpolate => true;
-
-        /// <inheritdoc />
-        public object Sum(BaseLayerProperty layerProperty, object a, object b)
+        public override object Sum(object a, object b)
         {
             return (int) a + (int) b;
         }
 
         /// <inheritdoc />
-        public object Interpolate(BaseLayerProperty layerProperty, object a, object b, float progress)
+        public override object Interpolate(object a, object b, double progress)
         {
-            var diff = (int) b - (int) a;
-            return diff * progress;
+            var intA = (int) a;
+            var intB = (int) b;
+            var diff = intB - intA;
+            return (int) Math.Round(intA + diff * progress, InterpolationRoundingMode);
         }
 
         /// <inheritdoc />
-        public void ApplyValue(BaseLayerProperty layerProperty, object value)
+        public override void ApplyValue(object value)
         {
-            layerProperty.CurrentValue = value;
+            ValueSetter?.Invoke(value);
         }
 
         /// <inheritdoc />
-        public object GetValue(BaseLayerProperty layerProperty)
+        public override object GetValue()
         {
-            return layerProperty.CurrentValue;
+            return ValueGetter?.Invoke();
         }
     }
 }

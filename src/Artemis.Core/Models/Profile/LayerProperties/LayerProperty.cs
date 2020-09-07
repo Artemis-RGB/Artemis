@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -31,7 +32,7 @@ namespace Artemis.Core
         /// </summary>
         public new T BaseValue
         {
-            get => (T) base.BaseValue;
+            get => base.BaseValue != null ? (T) base.BaseValue : default;
             set
             {
                 if (Equals(base.BaseValue, value))
@@ -47,7 +48,7 @@ namespace Artemis.Core
         /// </summary>
         public new T CurrentValue
         {
-            get => (T) base.CurrentValue;
+            get => base.CurrentValue != null ? (T) base.CurrentValue : default;
             set => base.CurrentValue = value;
         }
 
@@ -57,7 +58,7 @@ namespace Artemis.Core
         /// </summary>
         public new T DefaultValue
         {
-            get => (T) base.DefaultValue;
+            get => base.DefaultValue != null ? (T) base.DefaultValue : default;
             set => base.DefaultValue = value;
         }
 
@@ -311,14 +312,35 @@ namespace Artemis.Core
 
         #region Data bindings
 
-        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, IDataBindingConverter converter)
+        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, DataBindingConverter converter)
         {
-            var propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
+            // If the lambda references to itself, use the property info of public new T CurrentValue
+            PropertyInfo propertyInfo;
+            string path = null;
+            if (propertyLambda.Parameters[0] == propertyLambda.Body)
+            {
+                propertyInfo = GetType().GetProperties().FirstOrDefault(p => p.Name == nameof(CurrentValue) && p.PropertyType == typeof(T));
+            }
+            else
+            {
+                propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
+                // Deconstruct the lambda
+                var current = (MemberExpression) propertyLambda.Body;
+                path = current.Member.Name;
+                while (current.Expression is MemberExpression memberExpression)
+                {
+                    path = current.Member.Name + "." + path;
+                    current = memberExpression;
+                }
+            }
+
             if (converter.SupportedType != propertyInfo.PropertyType)
+            {
                 throw new ArtemisCoreException($"Cannot register data binding property for property {propertyInfo.Name} " +
                                                "because the provided converter does not support the property's type");
+            }
 
-            _dataBindingRegistrations.Add(new DataBindingRegistration(this, propertyInfo, converter));
+            _dataBindingRegistrations.Add(new DataBindingRegistration(this, propertyInfo, converter, path));
         }
 
         private void UpdateDataBindings(double deltaTime)

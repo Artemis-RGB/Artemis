@@ -37,19 +37,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             DataBindingViewModel = null;
             DataBindingsTabsViewModel = null;
 
-            var properties = LayerProperty.GetDataBindingProperties();
-            if (properties == null || properties.Count == 0)
+            var registrations = LayerProperty.DataBindingRegistrations;
+            if (registrations == null || registrations.Count == 0)
                 return;
 
             // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
             // and creating the actual data bindings
-            if (properties.Count == 1)
-                DataBindingViewModel = _dataBindingsVmFactory.DataBindingViewModel(LayerProperty, properties.First());
+            if (registrations.Count == 1)
+                DataBindingViewModel = _dataBindingsVmFactory.DataBindingViewModel(registrations.First());
             else
             {
                 DataBindingsTabsViewModel = new DataBindingsTabsViewModel();
-                foreach (var dataBindingProperty in properties)
-                    DataBindingsTabsViewModel.Tabs.Add(_dataBindingsVmFactory.DataBindingViewModel(LayerProperty, dataBindingProperty));
+                foreach (var registration in registrations)
+                    DataBindingsTabsViewModel.Tabs.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
             }
         }
     }

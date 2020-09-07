@@ -15,11 +15,11 @@ namespace Artemis.Core
     public class DataBinding
     {
         private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
-        private bool _isInitialized;
 
         private object _currentValue;
+        private bool _isInitialized;
         private object _previousValue;
-        private float _easingProgress;
+        private TimeSpan _easingProgress;
 
         internal DataBinding(DataBindingRegistration dataBindingRegistration)
         {
@@ -38,30 +38,23 @@ namespace Artemis.Core
             ApplyToDataBinding();
         }
 
-        private void ApplyRegistration(DataBindingRegistration dataBindingRegistration)
-        {
-            Converter = dataBindingRegistration.Converter;
-            Registration = dataBindingRegistration;
-            TargetProperty = dataBindingRegistration.Property;
-        }
-
         /// <summary>
         ///     Gets the layer property this data binding targets
         /// </summary>
         public BaseLayerProperty LayerProperty { get; }
 
         /// <summary>
-        /// Gets the data binding registration this data binding is based upon
+        ///     Gets the data binding registration this data binding is based upon
         /// </summary>
         public DataBindingRegistration Registration { get; private set; }
 
         /// <summary>
-        /// Gets the converter used to apply this data binding to the <see cref="LayerProperty"/>
+        ///     Gets the converter used to apply this data binding to the <see cref="LayerProperty" />
         /// </summary>
-        public IDataBindingConverter Converter { get; private set; }
+        public DataBindingConverter Converter { get; private set; }
 
         /// <summary>
-        ///     Gets the property on the <see cref="LayerProperty"/> this data binding targets
+        ///     Gets the property on the <see cref="LayerProperty" /> this data binding targets
         /// </summary>
         public PropertyInfo TargetProperty { get; private set; }
 
@@ -167,19 +160,30 @@ namespace Artemis.Core
             var value = Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
 
             // If no easing is to be applied simple return whatever the current value is
-            if (EasingTime == TimeSpan.Zero || Converter.SupportsInterpolate)
+            if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
                 return value;
 
             // If the value changed, update the current and previous values used for easing
             if (!Equals(value, _currentValue))
-            {
-                _previousValue = GetInterpolatedValue();
-                _currentValue = value;
-                _easingProgress = 0f;
-            }
+                ResetEasing(value);
 
             // Apply interpolation between the previous and current value
             return GetInterpolatedValue();
+        }
+
+        private void ResetEasing(object value)
+        {
+            _previousValue = GetInterpolatedValue();
+            _currentValue = value;
+            _easingProgress = TimeSpan.Zero;
+        }
+
+        /// <summary>
+        ///     Returns the type of the target property of this data binding
+        /// </summary>
+        public Type GetTargetType()
+        {
+            return TargetProperty.PropertyType;
         }
 
         /// <summary>
@@ -191,21 +195,26 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Updates the smoothing progress of the data binding
+        ///     Updates the smoothing progress of the data binding
         /// </summary>
-        /// <param name="deltaTime"></param>
+        /// <param name="deltaTime">The time in seconds that passed since the last update</param>
         public void Update(double deltaTime)
         {
-            
+            _easingProgress = _easingProgress.Add(TimeSpan.FromSeconds(deltaTime));
+            if (_easingProgress > EasingTime)
+                _easingProgress = EasingTime;
         }
 
         /// <summary>
-        /// Updates the value on the <see cref="LayerProperty"/> according to the data binding
+        ///     Updates the value on the <see cref="LayerProperty" /> according to the data binding
         /// </summary>
         public void ApplyToProperty()
         {
-            var value = GetValue(Converter.GetValue(LayerProperty));
-            Converter.ApplyValue(LayerProperty, GetValue(value));
+            if (Converter == null)
+                return;
+
+            var value = GetValue(Converter.GetValue());
+            Converter.ApplyValue(GetValue(value));
         }
 
         internal void ApplyToEntity()
@@ -232,8 +241,7 @@ namespace Artemis.Core
         internal void ApplyToDataBinding()
         {
             // General
-            Registration = LayerProperty.DataBindingRegistrations.FirstOrDefault(p => p.Property.Name == Entity.TargetProperty);
-            TargetProperty = Registration?.Property;
+            ApplyRegistration(LayerProperty.DataBindingRegistrations.FirstOrDefault(p => p.Property.Name == Entity.TargetProperty));
 
             Mode = (DataBindingMode) Entity.DataBindingMode;
             EasingTime = Entity.EasingTime;
@@ -266,14 +274,33 @@ namespace Artemis.Core
             _isInitialized = true;
         }
 
+        private void ApplyRegistration(DataBindingRegistration dataBindingRegistration)
+        {
+            if (dataBindingRegistration != null)
+                dataBindingRegistration.DataBinding = this;
+
+            Converter = dataBindingRegistration?.Converter;
+            Registration = dataBindingRegistration;
+            TargetProperty = dataBindingRegistration?.Property;
+
+            if (GetTargetType().IsValueType)
+            {
+                if (_currentValue == null)
+                    _currentValue = GetTargetType().GetDefault();
+                if (_previousValue == null)
+                    _previousValue = _currentValue;
+            }
+
+            Converter?.Initialize(this);
+        }
+
         private object GetInterpolatedValue()
         {
-            if (_easingProgress == 0f)
-                return _previousValue;
-            if (_easingProgress == 1f || !Converter.SupportsInterpolate)
+            if (_easingProgress == EasingTime || !Converter.SupportsInterpolate)
                 return _currentValue;
 
-            return Converter.Interpolate(LayerProperty, _previousValue, _currentValue, _easingProgress);
+            var easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
+            return Converter.Interpolate(_previousValue, _currentValue, Easings.Interpolate(easingAmount, EasingFunction));
         }
 
         private void CreateExpression()
