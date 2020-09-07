@@ -102,11 +102,6 @@
                                         </DataTemplate>
                                     </MenuItem.ItemTemplate>
                                 </MenuItem>
-                                <!-- <MenuItem Header="Easing mode" IsEnabled="{Binding CanSelectEasingMode}"> -->
-                                <!--     <MenuItem Header="Ease in" Command="{s:Action SetEasingMode}" CommandParameter="EaseIn" /> -->
-                                <!--     <MenuItem Header="Ease out" Command="{s:Action SetEasingMode}" CommandParameter="EaseOut" /> -->
-                                <!--     <MenuItem Header="Ease in and out" Command="{s:Action SetEasingMode}" CommandParameter="EaseInOut" /> -->
-                                <!-- </MenuItem> -->
                             </ContextMenu>
                         </Ellipse.ContextMenu>
                     </Ellipse>

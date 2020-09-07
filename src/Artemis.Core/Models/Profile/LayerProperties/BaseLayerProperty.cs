@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -10,13 +11,71 @@ namespace Artemis.Core
     /// </summary>
     public abstract class BaseLayerProperty
     {
+        protected readonly List<DataBindingRegistration> _dataBindingRegistrations = new List<DataBindingRegistration>();
         protected readonly List<DataBinding> _dataBindings = new List<DataBinding>();
+
+        private object _baseValue;
+        private object _currentValue;
+        private object _defaultValue;
         private bool _isHidden;
         private bool _keyframesEnabled;
 
         internal BaseLayerProperty()
         {
         }
+
+        /// <summary>
+        ///     Gets or sets the base value of this layer property without any keyframes applied
+        /// </summary>
+        public object BaseValue
+        {
+            get => _baseValue;
+            set
+            {
+                if (value != null && value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update base value because of a type mismatch");
+                _baseValue = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the current value of this property as it is affected by it's keyframes, updated once every frame
+        /// </summary>
+        public object CurrentValue
+        {
+            get => _currentValue;
+            set
+            {
+                if (value != null && value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update current value because of a type mismatch");
+                _currentValue = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property
+        ///     has no value in storage
+        /// </summary>
+        public object DefaultValue
+        {
+            get => _defaultValue;
+            set
+            {
+                if (value != null && value.GetType() != GetPropertyType())
+                    throw new ArtemisCoreException("Cannot update default value because of a type mismatch");
+                _defaultValue = value;
+            }
+        }
+
+        /// <summary>
+        ///     Gets a list containing the active data bindings
+        /// </summary>
+        public IReadOnlyList<DataBinding> DataBindings => _dataBindings.AsReadOnly();
+
+        /// <summary>
+        ///     Gets a list containing all the data binding registrations
+        /// </summary>
+        public IReadOnlyList<DataBindingRegistration> DataBindingRegistrations => _dataBindingRegistrations.AsReadOnly();
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this effect is applied to
@@ -37,11 +96,6 @@ namespace Artemis.Core
         ///     Gets whether data bindings are supported on this type of property
         /// </summary>
         public bool DataBindingsSupported { get; protected internal set; } = true;
-
-        /// <summary>
-        ///     Gets a read-only collection of the currently applied data bindings
-        /// </summary>
-        public IReadOnlyCollection<DataBinding> DataBindings => _dataBindings.AsReadOnly();
 
         /// <summary>
         ///     Gets or sets whether keyframes are enabled on this property, has no effect if <see cref="KeyframesSupported" /> is
@@ -105,18 +159,6 @@ namespace Artemis.Core
         public abstract Type GetPropertyType();
 
         /// <summary>
-        ///     Returns a list of properties to which data bindings can be applied
-        /// </summary>
-        /// <returns></returns>
-        public abstract List<PropertyInfo> GetDataBindingProperties();
-
-        /// <summary>
-        ///     Called when the provided data binding must be applied to a property
-        /// </summary>
-        /// <param name="dataBinding"></param>
-        protected abstract void ApplyDataBinding(DataBinding dataBinding);
-
-        /// <summary>
         ///     Applies the provided property entity to the layer property by deserializing the JSON base value and keyframe values
         /// </summary>
         /// <param name="entity"></param>
@@ -132,23 +174,22 @@ namespace Artemis.Core
 
         #region Data bindings
 
-        /// <summary>
-        ///     Applies the current <see cref="DataBindings" /> to the layer property
-        /// </summary>
-        public void ApplyDataBindings()
+        internal void InitializeDataBindings(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
             foreach (var dataBinding in DataBindings)
-                ApplyDataBinding(dataBinding);
+                dataBinding.Initialize(dataModelService, dataBindingService);
         }
 
         /// <summary>
         ///     Adds a new data binding targeting the given property to the <see cref="DataBindings" /> collection
         /// </summary>
-        /// <param name="targetProperty">The property the new data binding should target</param>
         /// <returns>The newly created data binding</returns>
-        public DataBinding AddDataBinding(PropertyInfo targetProperty)
+        public DataBinding EnableDataBinding(DataBindingRegistration dataBindingRegistration)
         {
-            var dataBinding = new DataBinding(this, targetProperty);
+            if (dataBindingRegistration.LayerProperty != this)
+                throw new ArtemisCoreException("Cannot enable a data binding using a data binding registration of a different layer property");
+           
+            var dataBinding = new DataBinding(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
             return dataBinding;
@@ -158,12 +199,10 @@ namespace Artemis.Core
         ///     Removes the provided data binding from the <see cref="DataBindings" /> collection
         /// </summary>
         /// <param name="dataBinding">The data binding to remove</param>
-        public void RemoveDataBinding(DataBinding dataBinding)
+        public void DisableDataBinding(DataBinding dataBinding)
         {
             _dataBindings.Remove(dataBinding);
         }
-
-        
 
         #endregion
 

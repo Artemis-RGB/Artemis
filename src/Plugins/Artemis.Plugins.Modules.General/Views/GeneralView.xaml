@@ -11,12 +11,12 @@
             <ColumnDefinition />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Button Grid.Column="0" Style="{StaticResource MaterialDesignRaisedLightButton}" Command="{s:Action ShowUTCTimeInDataModel}" Margin="0 0 25 0">
-            ShowUTCTimeInDataModel
+        <Button Grid.Column="0" Style="{StaticResource MaterialDesignRaisedLightButton}" Command="{s:Action ShowTimeInDataModel}" Margin="0 0 25 0">
+            ShowTimeInDataModel
         </Button>
 
-        <Button Grid.Column="1" Style="{StaticResource MaterialDesignRaisedButton}" Command="{s:Action HideUTCTimeInDataModel}" Margin="25 0 0 0">
-            HideUTCTimeInDataModel
+        <Button Grid.Column="1" Style="{StaticResource MaterialDesignRaisedButton}" Command="{s:Action HideTimeInDataModel}" Margin="25 0 0 0">
+            HideTimeInDataModel
         </Button>
     </Grid>
 </UserControl>

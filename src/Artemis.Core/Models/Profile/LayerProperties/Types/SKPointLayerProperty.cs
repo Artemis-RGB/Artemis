@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -10,8 +7,10 @@ namespace Artemis.Core
     {
         internal SKPointLayerProperty()
         {
+            RegisterDataBindingProperty(point => point.X, new FloatDataBindingConverter());
+            RegisterDataBindingProperty(point => point.Y, new FloatDataBindingConverter());
         }
-        
+
         /// <summary>
         ///     Implicitly converts an <see cref="SKPointLayerProperty" /> to an <see cref="SKPoint" />
         /// </summary>
@@ -26,21 +25,6 @@ namespace Artemis.Core
             var xDiff = NextKeyframe.Value.X - CurrentKeyframe.Value.X;
             var yDiff = NextKeyframe.Value.Y - CurrentKeyframe.Value.Y;
             CurrentValue = new SKPoint(CurrentKeyframe.Value.X + xDiff * keyframeProgressEased, CurrentKeyframe.Value.Y + yDiff * keyframeProgressEased);
-        }
-
-        /// <inheritdoc />
-        public override List<PropertyInfo> GetDataBindingProperties()
-        {
-            return typeof(SKPoint).GetProperties().Where(p => p.CanWrite).ToList();
-        }
-
-        /// <inheritdoc />
-        protected override void ApplyDataBinding(DataBinding dataBinding)
-        {
-            if (dataBinding.TargetProperty.Name == nameof(CurrentValue.X))
-                CurrentValue = new SKPoint((float) dataBinding.GetValue(BaseValue), CurrentValue.Y);
-            else if (dataBinding.TargetProperty.Name == nameof(CurrentValue.Y))
-                CurrentValue = new SKPoint(CurrentValue.X, (float) dataBinding.GetValue(BaseValue));
         }
     }
 }

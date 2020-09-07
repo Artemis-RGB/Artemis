@@ -54,5 +54,6 @@ namespace Artemis.Core.Services
         void RemoveLayerEffect(BaseLayerEffect layerEffect);
 
         void InstantiateDisplayConditions(RenderProfileElement renderElement);
+        void InstantiateDataBindings(RenderProfileElement renderElement);
     }
 }

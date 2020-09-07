@@ -12,8 +12,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public TimelineEasingViewModel(TimelineKeyframeViewModel keyframeViewModel, Easings.Functions easingFunction)
         {
-            _keyframeViewModel = keyframeViewModel;
-            _isEasingModeSelected = keyframeViewModel.BaseLayerPropertyKeyframe.EasingFunction == easingFunction;
+            // Can be null if used by DataBindingViewModel because I'm lazy
+            if (keyframeViewModel != null)
+            {
+                _keyframeViewModel = keyframeViewModel;
+                _isEasingModeSelected = keyframeViewModel.BaseLayerPropertyKeyframe.EasingFunction == easingFunction;
+            }
 
             EasingFunction = easingFunction;
             Description = easingFunction.Humanize();

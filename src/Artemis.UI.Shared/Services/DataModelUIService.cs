@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.Input;
 using Ninject;
 using Ninject.Parameters;
 
@@ -179,9 +180,15 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public DataModelSelectionViewModel GetDataModelSelectionViewModel(Module module)
+        public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module)
         {
-            return _kernel.Get<DataModelSelectionViewModel>(new ConstructorArgument("module", module));
+            return _kernel.Get<DataModelDynamicViewModel>(new ConstructorArgument("module", module));
+        }
+
+        public DataModelStaticViewModel GetStaticInputViewModel(Type targetType)
+        {
+            if (targetType == null) throw new ArgumentNullException(nameof(targetType));
+            return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType));
         }
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)

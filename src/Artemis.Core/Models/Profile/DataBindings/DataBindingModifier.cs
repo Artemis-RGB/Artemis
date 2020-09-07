@@ -4,7 +4,6 @@ using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.DataBindings;
-using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -15,10 +14,9 @@ namespace Artemis.Core
     public class DataBindingModifier
     {
         private DataBinding _dataBinding;
-        private bool _isInitialized;
 
         /// <summary>
-        /// Creates a new instance of the <see cref="DataBindingModifier"/> class
+        ///     Creates a new instance of the <see cref="DataBindingModifier" /> class
         /// </summary>
         /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
         public DataBindingModifier(ProfileRightSideType parameterType)
@@ -82,14 +80,9 @@ namespace Artemis.Core
         public object ParameterStaticValue { get; private set; }
 
         /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it of a dynamic <see cref="ParameterType" />
+        ///     A compiled expression tree that when given a matching data model returns the value of the modifiers parameter
         /// </summary>
-        public Func<object, DataModel, object> CompiledDynamicPredicate { get; private set; }
-
-        /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it is of a static <see cref="ParameterType" />
-        /// </summary>
-        public Func<object, object> CompiledStaticPredicate { get; private set; }
+        public Func<DataModel, object> CompiledParameterAccessor { get; set; }
 
         internal DataBindingModifierEntity Entity { get; set; }
 
@@ -100,10 +93,20 @@ namespace Artemis.Core
         /// <returns>The modified value</returns>
         public object Apply(object currentValue)
         {
-            if (CompiledDynamicPredicate != null)
-                return CompiledDynamicPredicate(currentValue, ParameterDataModel);
-            if (CompiledStaticPredicate != null)
-                return CompiledStaticPredicate(currentValue);
+            if (ModifierType == null)
+                return currentValue;
+
+            if (!ModifierType.SupportsParameter)
+                return ModifierType.Apply(currentValue, null);
+
+            if (ParameterType == ProfileRightSideType.Dynamic && CompiledParameterAccessor != null)
+            {
+                var value = CompiledParameterAccessor(ParameterDataModel);
+                return ModifierType.Apply(currentValue, value);
+            }
+
+            if (ParameterType == ProfileRightSideType.Static)
+                return ModifierType.Apply(currentValue, ParameterStaticValue);
 
             return currentValue;
         }
@@ -122,7 +125,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.TargetProperty.GetType();
+            var targetType = DataBinding.TargetProperty.PropertyType;
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -168,7 +171,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.TargetProperty.GetType();
+            var targetType = DataBinding.TargetProperty.PropertyType;
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -186,11 +189,8 @@ namespace Artemis.Core
 
         internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
         {
-            if (_isInitialized)
-                throw new ArtemisCoreException("Data binding modifier is already initialized");
-
             // Modifier type
-            if (Entity.ModifierTypePluginGuid != null)
+            if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
             {
                 var modifierType = dataBindingService.GetModifierType(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType);
                 if (modifierType != null)
@@ -198,17 +198,17 @@ namespace Artemis.Core
             }
 
             // Dynamic parameter
-            if (ParameterType == ProfileRightSideType.Dynamic && Entity.ParameterDataModelGuid != null)
+            if (ParameterType == ProfileRightSideType.Dynamic && Entity.ParameterDataModelGuid != null && ParameterDataModel == null)
             {
                 var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.ParameterDataModelGuid.Value);
                 if (dataModel != null && dataModel.ContainsPath(Entity.ParameterPropertyPath))
                     UpdateParameter(dataModel, Entity.ParameterPropertyPath);
             }
             // Static parameter
-            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
+            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.TargetProperty.GetType();
+                var targetType = DataBinding.TargetProperty.PropertyType;
                 object staticValue;
 
                 try
@@ -224,70 +224,6 @@ namespace Artemis.Core
 
                 UpdateParameter(staticValue);
             }
-
-            _isInitialized = true;
-        }
-
-
-        private void CreateExpression()
-        {
-            CompiledDynamicPredicate = null;
-            CompiledStaticPredicate = null;
-
-            if (ModifierType == null || DataBinding == null)
-                return;
-
-            if (ParameterType == ProfileRightSideType.Dynamic && ModifierType.SupportsParameter)
-                CreateDynamicExpression();
-            else
-                CreateStaticExpression();
-        }
-
-        private void CreateDynamicExpression()
-        {
-            if (ParameterDataModel == null)
-                return;
-
-            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
-
-            // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-            var rightSideAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "right", out var rightSideParameter);
-
-            // A conversion may be required if the types differ
-            // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
-            if (rightSideAccessor.Type != DataBinding.TargetProperty.GetType())
-                rightSideAccessor = Expression.Convert(rightSideAccessor, DataBinding.TargetProperty.GetType());
-
-            var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideAccessor);
-            var lambda = Expression.Lambda<Func<object, DataModel, object>>(modifierExpression, currentValueParameter, rightSideParameter);
-            CompiledDynamicPredicate = lambda.Compile();
-        }
-
-        private void CreateStaticExpression()
-        {
-            var currentValueParameter = Expression.Parameter(DataBinding.TargetProperty.GetType());
-
-            // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-            var rightSideConstant = ParameterStaticValue != null
-                ? Expression.Constant(ParameterStaticValue)
-                : Expression.Constant(null, DataBinding.TargetProperty.GetType());
-
-            var modifierExpression = ModifierType.CreateExpression(currentValueParameter, rightSideConstant);
-            var lambda = Expression.Lambda<Func<object, object>>(modifierExpression, currentValueParameter);
-            CompiledStaticPredicate = lambda.Compile();
-        }
-
-        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
-        {
-            var listType = dataModel.GetListTypeInPath(path);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
-
-            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
         }
 
         internal void ApplyToEntity()
@@ -315,6 +251,39 @@ namespace Artemis.Core
             ParameterType = (ProfileRightSideType) Entity.ParameterType;
 
             // Parameter is done during initialize
+        }
+
+
+        private void CreateExpression()
+        {
+            CompiledParameterAccessor = null;
+
+            if (ModifierType == null || DataBinding == null)
+                return;
+
+            if (ParameterType == ProfileRightSideType.Dynamic && ModifierType.SupportsParameter)
+            {
+                if (ParameterDataModel == null)
+                    return;
+
+                // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
+                var parameterAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "parameter", out var rightSideParameter);
+                var lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
+                CompiledParameterAccessor = lambda.Compile();
+            }
+        }
+
+        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
+        {
+            var listType = dataModel.GetListTypeInPath(path);
+            if (listType != null)
+                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
+
+            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
+            return path.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
+                Expression.Property
+            );
         }
     }
 }

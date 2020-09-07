@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
@@ -16,9 +17,8 @@ namespace Artemis.Core
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public class LayerProperty<T> : BaseLayerProperty
+    public abstract class LayerProperty<T> : BaseLayerProperty
     {
-        private T _baseValue;
         private bool _isInitialized;
         private List<LayerPropertyKeyframe<T>> _keyframes;
 
@@ -30,30 +30,38 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the base value of this layer property without any keyframes applied
         /// </summary>
-        public T BaseValue
+        public new T BaseValue
         {
-            get => _baseValue;
+            get => base.BaseValue != null ? (T) base.BaseValue : default;
             set
             {
-                if (_baseValue != null && !_baseValue.Equals(value) || _baseValue == null && value != null)
-                {
-                    _baseValue = value;
-                    OnBaseValueChanged();
-                }
+                if (Equals(base.BaseValue, value))
+                    return;
+
+                base.BaseValue = value;
+                Update();
+                OnBaseValueChanged();
             }
         }
 
         /// <summary>
         ///     Gets the current value of this property as it is affected by it's keyframes, updated once every frame
         /// </summary>
-        public T CurrentValue { get; set; }
+        public new T CurrentValue
+        {
+            get => base.CurrentValue != null ? (T) base.CurrentValue : default;
+            set => base.CurrentValue = value;
+        }
 
         /// <summary>
         ///     Gets or sets the default value of this layer property. If set, this value is automatically applied if the property
-        ///     has no
-        ///     value in storage
+        ///     has no  value in storage
         /// </summary>
-        public T DefaultValue { get; set; }
+        public new T DefaultValue
+        {
+            get => base.DefaultValue != null ? (T) base.DefaultValue : default;
+            set => base.DefaultValue = value;
+        }
 
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
@@ -97,7 +105,7 @@ namespace Artemis.Core
 
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
-            Update(0);
+            Update();
         }
 
         /// <summary>
@@ -188,7 +196,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the property, applying keyframes and data bindings to the current value
         /// </summary>
-        internal void Update(double deltaTime)
+        internal void Update(double deltaTime = 0)
         {
             CurrentValue = BaseValue;
 
@@ -196,41 +204,6 @@ namespace Artemis.Core
             UpdateDataBindings(deltaTime);
 
             OnUpdated();
-        }
-
-        private void UpdateKeyframes()
-        {
-            if (!KeyframesSupported || !KeyframesEnabled)
-                return;
-
-            // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
-            // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
-            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
-            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
-
-            // No need to update the current value if either of the keyframes are null
-            if (CurrentKeyframe == null)
-                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
-            else if (NextKeyframe == null)
-                CurrentValue = CurrentKeyframe.Value;
-            // Only determine progress and current value if both keyframes are present
-            else
-            {
-                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
-                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
-                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
-            }
-        }
-
-        private void UpdateDataBindings(double deltaTime)
-        {
-            foreach (var dataBinding in DataBindings)
-            {
-                dataBinding.Update(deltaTime);
-                ApplyDataBinding(dataBinding);
-            }
         }
 
         /// <summary>
@@ -303,20 +276,81 @@ namespace Artemis.Core
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));
+
+            PropertyEntity.DataBindingEntities.Clear();
+            foreach (var dataBinding in DataBindings)
+            {
+                dataBinding.ApplyToEntity();
+                PropertyEntity.DataBindingEntities.Add(dataBinding.Entity);
+            }
+        }
+
+        private void UpdateKeyframes()
+        {
+            if (!KeyframesSupported || !KeyframesEnabled)
+                return;
+
+            // The current keyframe is the last keyframe before the current time
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
+            // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
+            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
+            NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
+
+            // No need to update the current value if either of the keyframes are null
+            if (CurrentKeyframe == null)
+                CurrentValue = _keyframes.Any() ? _keyframes[0].Value : BaseValue;
+            else if (NextKeyframe == null)
+                CurrentValue = CurrentKeyframe.Value;
+            // Only determine progress and current value if both keyframes are present
+            else
+            {
+                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
+                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
+                UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
+            }
         }
 
         #region Data bindings
 
-        /// <inheritdoc />
-        public override List<PropertyInfo> GetDataBindingProperties()
+        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, DataBindingConverter converter)
         {
-            return new List<PropertyInfo> {GetType().GetProperty(nameof(CurrentValue))};
+            // If the lambda references to itself, use the property info of public new T CurrentValue
+            PropertyInfo propertyInfo;
+            string path = null;
+            if (propertyLambda.Parameters[0] == propertyLambda.Body)
+            {
+                propertyInfo = GetType().GetProperties().FirstOrDefault(p => p.Name == nameof(CurrentValue) && p.PropertyType == typeof(T));
+            }
+            else
+            {
+                propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
+                // Deconstruct the lambda
+                var current = (MemberExpression) propertyLambda.Body;
+                path = current.Member.Name;
+                while (current.Expression is MemberExpression memberExpression)
+                {
+                    path = current.Member.Name + "." + path;
+                    current = memberExpression;
+                }
+            }
+
+            if (converter.SupportedType != propertyInfo.PropertyType)
+            {
+                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyInfo.Name} " +
+                                               "because the provided converter does not support the property's type");
+            }
+
+            _dataBindingRegistrations.Add(new DataBindingRegistration(this, propertyInfo, converter, path));
         }
 
-        /// <inheritdoc />
-        protected override void ApplyDataBinding(DataBinding dataBinding)
+        private void UpdateDataBindings(double deltaTime)
         {
-            CurrentValue = (T) dataBinding.GetValue(CurrentValue);
+            foreach (var dataBinding in DataBindings)
+            {
+                dataBinding.Update(deltaTime);
+                dataBinding.ApplyToProperty();
+            }
         }
 
         #endregion
