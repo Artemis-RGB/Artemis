@@ -2,31 +2,42 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reflection;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Properties;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
     public abstract class LayerPropertyGroup : IDisposable
     {
-        private readonly List<BaseLayerProperty> _layerProperties;
+        private readonly List<ILayerProperty> _layerProperties;
         private readonly List<LayerPropertyGroup> _layerPropertyGroups;
-        private ReadOnlyCollection<BaseLayerProperty> _allLayerProperties;
         private bool _isHidden;
 
         protected LayerPropertyGroup()
         {
-            _layerProperties = new List<BaseLayerProperty>();
+            _layerProperties = new List<ILayerProperty>();
             _layerPropertyGroups = new List<LayerPropertyGroup>();
         }
 
+        public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
+
         /// <summary>
-        ///     Gets the profile element (such as layer or folder) this effect is applied to
+        ///     Gets the info of the plugin this group is associated with
+        /// </summary>
+        public PluginInfo PluginInfo { get; internal set; }
+
+        /// <summary>
+        ///     Gets the profile element (such as layer or folder) this group is associated with
         /// </summary>
         public RenderProfileElement ProfileElement { get; internal set; }
+
+        /// <summary>
+        ///     The parent group of this group
+        /// </summary>
+        public LayerPropertyGroup Parent { get; internal set; }
 
         /// <summary>
         ///     The path of this property group
@@ -34,21 +45,9 @@ namespace Artemis.Core
         public string Path { get; internal set; }
 
         /// <summary>
-        ///     The parent group of this layer property group, set after construction
-        /// </summary>
-        public LayerPropertyGroup Parent { get; internal set; }
-
-        /// <summary>
         ///     Gets whether this property groups properties are all initialized
         /// </summary>
         public bool PropertiesInitialized { get; private set; }
-
-        /// <summary>
-        ///     Used to declare that this property group doesn't belong to a plugin and should use the core plugin GUID
-        /// </summary>
-        public bool IsCorePropertyGroup { get; internal set; }
-
-        public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
 
         /// <summary>
         ///     The layer brush this property group belongs to
@@ -76,13 +75,14 @@ namespace Artemis.Core
         /// <summary>
         ///     A list of all layer properties in this group
         /// </summary>
-        public ReadOnlyCollection<BaseLayerProperty> LayerProperties => _layerProperties.AsReadOnly();
+        public ReadOnlyCollection<ILayerProperty> LayerProperties => _layerProperties.AsReadOnly();
 
         /// <summary>
         ///     A list of al child groups in this group
         /// </summary>
         public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
 
+        /// <inheritdoc />
         public void Dispose()
         {
             DisableProperties();
@@ -93,20 +93,16 @@ namespace Artemis.Core
         /// <summary>
         ///     Recursively gets all layer properties on this group and any subgroups
         /// </summary>
-        /// <returns></returns>
-        public IReadOnlyCollection<BaseLayerProperty> GetAllLayerProperties()
+        public IReadOnlyCollection<ILayerProperty> GetAllLayerProperties()
         {
             if (!PropertiesInitialized)
-                return new List<BaseLayerProperty>();
-            if (_allLayerProperties != null)
-                return _allLayerProperties;
+                return new List<ILayerProperty>();
 
-            var result = new List<BaseLayerProperty>(LayerProperties);
+            var result = new List<ILayerProperty>(LayerProperties);
             foreach (var layerPropertyGroup in LayerPropertyGroups)
                 result.AddRange(layerPropertyGroup.GetAllLayerProperties());
 
-            _allLayerProperties = result.AsReadOnly();
-            return _allLayerProperties;
+            return result.AsReadOnly();
         }
 
         /// <summary>
@@ -116,7 +112,7 @@ namespace Artemis.Core
         protected abstract void PopulateDefaults();
 
         /// <summary>
-        ///     Called when the property group is deactivated
+        ///     Called when the property group is aactivated
         /// </summary>
         protected abstract void EnableProperties();
 
@@ -125,19 +121,26 @@ namespace Artemis.Core
         /// </summary>
         protected abstract void DisableProperties();
 
+        /// <summary>
+        ///     Called when the property group and all its layer properties have been initialized
+        /// </summary>
         protected virtual void OnPropertyGroupInitialized()
         {
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void InitializeProperties(IRenderElementService renderElementService, RenderProfileElement profileElement, [NotNull] string path)
+        internal void Initialize(RenderProfileElement profileElement, [NotNull] string path, PluginInfo pluginInfo)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
+            if (pluginInfo == null)
+                throw new ArgumentNullException(nameof(pluginInfo));
+
             // Doubt this will happen but let's make sure
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
+            PluginInfo = pluginInfo;
             ProfileElement = profileElement;
             Path = path.TrimEnd('.');
 
@@ -146,55 +149,21 @@ namespace Artemis.Core
             {
                 var propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 if (propertyDescription != null)
-                {
-                    if (!typeof(BaseLayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
-                        throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path + propertyInfo.Name}");
-
-                    var instance = (BaseLayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
-                    if (instance == null)
-                        throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
-
-                    instance.ProfileElement = profileElement;
-                    instance.Parent = this;
-                    instance.PropertyDescription = (PropertyDescriptionAttribute) propertyDescription;
-                    if (instance.PropertyDescription.DisableKeyframes)
-                        instance.KeyframesSupported = false;
-
-                    InitializeProperty(profileElement, path + propertyInfo.Name, instance);
-
-                    propertyInfo.SetValue(this, instance);
-                    _layerProperties.Add(instance);
-                }
+                    InitializeProperty(propertyInfo, (PropertyDescriptionAttribute) propertyDescription);
                 else
                 {
                     var propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
                     if (propertyGroupDescription != null)
-                    {
-                        if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
-                            throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
-
-                        var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
-                        if (instance == null)
-                            throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
-
-                        instance.Parent = this;
-                        instance.GroupDescription = (PropertyGroupDescriptionAttribute) propertyGroupDescription;
-                        instance.LayerBrush = LayerBrush;
-                        instance.LayerEffect = LayerEffect;
-                        instance.InitializeProperties(renderElementService, profileElement, $"{path}{propertyInfo.Name}.");
-
-                        propertyInfo.SetValue(this, instance);
-                        _layerPropertyGroups.Add(instance);
-                    }
+                        InitializeChildGroup(propertyInfo, (PropertyGroupDescriptionAttribute) propertyGroupDescription);
                 }
             }
 
             // Request the property group to populate defaults
             PopulateDefaults();
 
-            // Apply the newly populated defaults
-            foreach (var layerProperty in _layerProperties.Where(p => !p.IsLoadedFromStorage))
-                layerProperty.ApplyDefaultValue();
+            // Load the layer properties after defaults have been applied
+            foreach (var layerProperty in _layerProperties)
+                layerProperty.Load();
 
             EnableProperties();
             PropertiesInitialized = true;
@@ -206,25 +175,11 @@ namespace Artemis.Core
             if (!PropertiesInitialized)
                 return;
 
-            // Get all properties with a PropertyDescriptionAttribute
-            foreach (var propertyInfo in GetType().GetProperties())
-            {
-                var propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
-                if (propertyDescription != null)
-                {
-                    var layerProperty = (BaseLayerProperty) propertyInfo.GetValue(this);
-                    layerProperty.ApplyToEntity();
-                }
-                else
-                {
-                    var propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                    if (propertyGroupDescription != null)
-                    {
-                        var layerPropertyGroup = (LayerPropertyGroup) propertyInfo.GetValue(this);
-                        layerPropertyGroup.ApplyToEntity();
-                    }
-                }
-            }
+            foreach (var layerProperty in LayerProperties)
+                layerProperty.Save();
+
+            foreach (var layerPropertyGroup in LayerPropertyGroups)
+                layerPropertyGroup.ApplyToEntity();
         }
 
         internal void Update(double deltaTime)
@@ -234,34 +189,57 @@ namespace Artemis.Core
             OnPropertyGroupUpdating(new LayerPropertyGroupUpdatingEventArgs(deltaTime));
         }
 
-        private void InitializeProperty(RenderProfileElement profileElement, string path, BaseLayerProperty instance)
+        private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
         {
-            Guid pluginGuid;
-            if (IsCorePropertyGroup || instance.IsCoreProperty)
-                pluginGuid = Constants.CorePluginInfo.Guid;
-            else if (instance.Parent.LayerBrush != null)
-                pluginGuid = instance.Parent.LayerBrush.PluginInfo.Guid;
-            else
-                pluginGuid = instance.Parent.LayerEffect.PluginInfo.Guid;
+            var path = Path + ".";
 
-            var entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == pluginGuid && p.Path == path);
-            var fromStorage = true;
+            if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
+                throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path + propertyInfo.Name}");
+
+            var instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
+            if (instance == null)
+                throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
+
+            var entity = GetPropertyEntity(ProfileElement, path + propertyInfo.Name, out var fromStorage);
+            instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription);
+            propertyInfo.SetValue(this, instance);
+            _layerProperties.Add(instance);
+        }
+
+        private void InitializeChildGroup(PropertyInfo propertyInfo, PropertyGroupDescriptionAttribute propertyGroupDescription)
+        {
+            var path = Path + ".";
+
+            if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
+                throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
+
+            var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
+            if (instance == null)
+                throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
+
+            instance.Parent = this;
+            instance.GroupDescription = propertyGroupDescription;
+            instance.LayerBrush = LayerBrush;
+            instance.LayerEffect = LayerEffect;
+            instance.Initialize(ProfileElement, $"{path}{propertyInfo.Name}.", PluginInfo);
+
+            propertyInfo.SetValue(this, instance);
+            _layerPropertyGroups.Add(instance);
+        }
+
+        private PropertyEntity GetPropertyEntity(RenderProfileElement profileElement, string path, out bool fromStorage)
+        {
+            var entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == PluginInfo.Guid && p.Path == path);
+            fromStorage = entity != null;
             if (entity == null)
             {
-                fromStorage = false;
-                entity = new PropertyEntity {PluginGuid = pluginGuid, Path = path};
+                entity = new PropertyEntity {PluginGuid = PluginInfo.Guid, Path = path};
                 profileElement.RenderElementEntity.PropertyEntities.Add(entity);
             }
 
-            instance.ApplyToLayerProperty(entity, this, fromStorage);
-            instance.BaseValueChanged += InstanceOnBaseValueChanged;
+            return entity;
         }
-
-        private void InstanceOnBaseValueChanged(object sender, EventArgs e)
-        {
-            OnLayerPropertyBaseValueChanged(new LayerPropertyEventArgs((BaseLayerProperty) sender));
-        }
-
+        
         #region Events
 
         internal event EventHandler<LayerPropertyGroupUpdatingEventArgs> PropertyGroupUpdating;
@@ -282,17 +260,17 @@ namespace Artemis.Core
         /// </summary>
         public event EventHandler VisibilityChanged;
 
-        protected virtual void OnPropertyGroupUpdating(LayerPropertyGroupUpdatingEventArgs e)
+        internal virtual void OnPropertyGroupUpdating(LayerPropertyGroupUpdatingEventArgs e)
         {
             PropertyGroupUpdating?.Invoke(this, e);
         }
 
-        protected virtual void OnVisibilityChanged()
+        internal virtual void OnVisibilityChanged()
         {
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected virtual void OnLayerPropertyBaseValueChanged(LayerPropertyEventArgs e)
+        internal virtual void OnLayerPropertyBaseValueChanged(LayerPropertyEventArgs e)
         {
             LayerPropertyBaseValueChanged?.Invoke(this, e);
         }

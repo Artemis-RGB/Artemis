@@ -278,9 +278,9 @@ namespace Artemis.Core.Services
             foreach (var layer in profile.GetAllLayers())
             {
                 if (!layer.General.PropertiesInitialized)
-                    layer.General.InitializeProperties(_renderElementService, layer, "General.");
+                    layer.General.Initialize(layer, "General.", Constants.CorePluginInfo);
                 if (!layer.Transform.PropertiesInitialized)
-                    layer.Transform.InitializeProperties(_renderElementService, layer, "Transform.");
+                    layer.Transform.Initialize(layer, "Transform.", Constants.CorePluginInfo);
             }
         }
 

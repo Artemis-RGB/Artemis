@@ -1,29 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Artemis.Core
 {
     /// <summary>
-    ///     A data binding converter that acts as the bridge between a <see cref="DataBinding" /> and a
-    ///     <see cref="LayerProperty{T}" />
+    ///     Represents a data binding converter that acts as the bridge between a
+    ///     <see cref="DataBinding{TLayerProperty, TProperty}" /> and a <see cref="LayerProperty{T}" />
     /// </summary>
-    public abstract class DataBindingConverter
+    public abstract class DataBindingConverter<TLayerProperty, TProperty> : IDataBindingConverter
     {
-        internal Func<object> ValueGetter { get; set; }
-        internal Action<object> ValueSetter { get; set; }
+        /// <summary>
+        ///     A dynamically compiled getter pointing to the data bound property
+        /// </summary>
+        public Func<TProperty> ValueGetter { get; private set; }
+
+        /// <summary>
+        ///     A dynamically compiled setter pointing to the data bound property
+        /// </summary>
+        public Action<TProperty> ValueSetter { get; private set; }
 
         /// <summary>
         ///     Gets the data binding this converter is applied to
         /// </summary>
-        public DataBinding DataBinding { get; private set; }
-
-        /// <summary>
-        ///     Gets the type this converter supports
-        /// </summary>
-        public Type SupportedType { get; protected set; }
+        public DataBinding<TLayerProperty, TProperty> DataBinding { get; private set; }
 
         /// <summary>
         ///     Gets whether or not this data binding converter supports the <see cref="Sum" /> method
@@ -35,17 +35,13 @@ namespace Artemis.Core
         /// </summary>
         public bool SupportsInterpolate { get; protected set; }
 
-        /// <summary>
-        ///     Called when the data binding converter has been initialized and the <see cref="DataBinding" /> is available
-        /// </summary>
-        protected virtual void OnInitialized()
-        {
-        }
+        /// <inheritdoc />
+        public Type SupportedType => typeof(TProperty);
 
         /// <summary>
         ///     Returns the sum of <paramref name="a" /> and <paramref name="b" />
         /// </summary>
-        public abstract object Sum(object a, object b);
+        public abstract TProperty Sum(TProperty a, TProperty b);
 
         /// <summary>
         ///     Returns the the interpolated value between <paramref name="a" /> and <paramref name="b" /> on a scale (generally)
@@ -56,20 +52,27 @@ namespace Artemis.Core
         /// <param name="b">The value to interpolate towards</param>
         /// <param name="progress">The progress of the interpolation between 0.0 and 1.0</param>
         /// <returns></returns>
-        public abstract object Interpolate(object a, object b, double progress);
+        public abstract TProperty Interpolate(TProperty a, TProperty b, double progress);
 
         /// <summary>
         ///     Applies the <paramref name="value" /> to the layer property
         /// </summary>
         /// <param name="value"></param>
-        public abstract void ApplyValue(object value);
+        public abstract void ApplyValue(TProperty value);
 
         /// <summary>
         ///     Returns the current base value of the data binding
         /// </summary>
-        public abstract object GetValue();
+        public abstract TProperty GetValue();
 
-        internal void Initialize(DataBinding dataBinding)
+        /// <summary>
+        ///     Called when the data binding converter has been initialized and the <see cref="DataBinding" /> is available
+        /// </summary>
+        protected virtual void OnInitialized()
+        {
+        }
+
+        internal void Initialize(DataBinding<TLayerProperty, TProperty> dataBinding)
         {
             DataBinding = dataBinding;
             ValueGetter = CreateValueGetter();
@@ -78,7 +81,7 @@ namespace Artemis.Core
             OnInitialized();
         }
 
-        private Func<object> CreateValueGetter()
+        private Func<TProperty> CreateValueGetter()
         {
             if (DataBinding.TargetProperty?.DeclaringType == null)
                 return null;
@@ -86,21 +89,19 @@ namespace Artemis.Core
             var getterMethod = DataBinding.TargetProperty.GetGetMethod();
             if (getterMethod == null)
                 return null;
-            
+
             var constant = Expression.Constant(DataBinding.LayerProperty);
             // The path is null if the registration is applied to the root (LayerProperty.CurrentValue)
-            var property = DataBinding.Registration.Path == null 
-                ? Expression.Property(constant, DataBinding.TargetProperty) 
+            var property = DataBinding.Registration.Path == null
+                ? Expression.Property(constant, DataBinding.TargetProperty)
                 : (MemberExpression) DataBinding.Registration.Path.Split('.').Aggregate<string, Expression>(constant, Expression.Property);
 
-            // The get method should cast to the object since it receives whatever type the property is
-            var body = Expression.Convert(property, typeof(object));
-            var lambda = Expression.Lambda<Func<object>>(body);
+            var lambda = Expression.Lambda<Func<TProperty>>(property);
 
             return lambda.Compile();
         }
 
-        private Action<object> CreateValueSetter()
+        private Action<TProperty> CreateValueSetter()
         {
             if (DataBinding.TargetProperty?.DeclaringType == null)
                 return null;
@@ -110,11 +111,10 @@ namespace Artemis.Core
                 return null;
 
             var constant = Expression.Constant(DataBinding.LayerProperty);
-            var propertyValue = Expression.Parameter(typeof(object), "propertyValue");
+            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
 
-            // The assign method should cast to the proper type since it receives an object
-            var body = Expression.Call(constant, setterMethod, Expression.Convert(propertyValue, DataBinding.TargetProperty.PropertyType));
-            var lambda = Expression.Lambda<Action<object>>(body, propertyValue);
+            var body = Expression.Call(constant, setterMethod, propertyValue);
+            var lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
             return lambda.Compile();
         }
     }

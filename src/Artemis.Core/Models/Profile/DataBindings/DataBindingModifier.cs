@@ -8,37 +8,33 @@ using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
-    /// <summary>
-    ///     Modifies a data model value in a way defined by the modifier type
-    /// </summary>
-    public class DataBindingModifier
+    /// <inheritdoc />
+    public class DataBindingModifier<TLayerProperty, TProperty> : IDataBindingModifier
     {
-        private DataBinding _dataBinding;
+        private DataBinding<TLayerProperty, TProperty> _dataBinding;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="DataBindingModifier" /> class
+        ///     Creates a new instance of the <see cref="DataBindingModifier{TLayerProperty,TProperty}" /> class
         /// </summary>
         /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
         public DataBindingModifier(ProfileRightSideType parameterType)
         {
             ParameterType = parameterType;
             Entity = new DataBindingModifierEntity();
-
-            ApplyToEntity();
+            Save();
         }
 
-        internal DataBindingModifier(DataBinding dataBinding, DataBindingModifierEntity entity)
+        internal DataBindingModifier(DataBinding<TLayerProperty, TProperty> dataBinding, DataBindingModifierEntity entity)
         {
             DataBinding = dataBinding;
             Entity = entity;
-
-            ApplyToDataBindingModifier();
+            Load();
         }
 
         /// <summary>
         ///     Gets the data binding this modifier is applied to
         /// </summary>
-        public DataBinding DataBinding
+        public DataBinding<TLayerProperty, TProperty> DataBinding
         {
             get => _dataBinding;
             internal set
@@ -218,7 +214,7 @@ namespace Artemis.Core
                 // If deserialization fails, use the type's default
                 catch (JsonSerializationException e)
                 {
-                    dataBindingService.LogModifierDeserializationFailure(this, e);
+                    dataBindingService.LogModifierDeserializationFailure(GetType().Name, e);
                     staticValue = Activator.CreateInstance(targetType);
                 }
 
@@ -226,8 +222,12 @@ namespace Artemis.Core
             }
         }
 
-        internal void ApplyToEntity()
+        /// <inheritdoc />
+        public void Save()
         {
+            if (!DataBinding.Entity.Modifiers.Contains(Entity))
+                DataBinding.Entity.Modifiers.Add(Entity);
+
             // Modifier
             Entity.ModifierType = ModifierType?.GetType().Name;
             Entity.ModifierTypePluginGuid = ModifierType?.PluginInfo.Guid;
@@ -242,7 +242,8 @@ namespace Artemis.Core
             Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue);
         }
 
-        internal void ApplyToDataBindingModifier()
+        /// <inheritdoc />
+        public void Load()
         {
             // Modifier type is done during Initialize
 
