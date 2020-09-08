@@ -3,11 +3,10 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class GeneralDataBindingConverter : DataBindingConverter
+    public class GeneralDataBindingConverter<T> : DataBindingConverter<T, object> where T : ILayerProperty
     {
         public GeneralDataBindingConverter()
         {
-            SupportedType = typeof(object);
             SupportsSum = false;
             SupportsInterpolate = false;
         }

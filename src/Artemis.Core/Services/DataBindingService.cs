@@ -91,14 +91,9 @@ namespace Artemis.Core.Services
             return RegisteredDataBindingModifierTypes.FirstOrDefault(o => o.PluginInfo.Guid == modifierTypePluginGuid && o.GetType().Name == modifierType);
         }
 
-        public void LogModifierDeserializationFailure(DataBindingModifier dataBindingModifier, JsonSerializationException exception)
+        public void LogModifierDeserializationFailure(string modifierName, JsonSerializationException exception)
         {
-            _logger.Warning(
-                exception,
-                "Failed to deserialize static parameter for operator {order}. {operatorType}",
-                dataBindingModifier.Entity.Order,
-                dataBindingModifier.Entity.ModifierType
-            );
+            _logger.Warning(exception, "Failed to deserialize static parameter for modifier {modifierName}", modifierName);
         }
 
         private void RegisterBuiltInModifiers()

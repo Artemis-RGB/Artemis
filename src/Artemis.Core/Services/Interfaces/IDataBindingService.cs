@@ -41,8 +41,8 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Logs a modifier deserialization failure
         /// </summary>
-        /// <param name="dataBindingModifier">The modifier that failed to deserialize</param>
+        /// <param name="modifierName">The modifier that failed to deserialize</param>
         /// <param name="exception">The JSON exception that occurred</param>
-        void LogModifierDeserializationFailure(DataBindingModifier dataBindingModifier, JsonSerializationException exception);
+        void LogModifierDeserializationFailure(string modifierName, JsonSerializationException exception);
     }
 }

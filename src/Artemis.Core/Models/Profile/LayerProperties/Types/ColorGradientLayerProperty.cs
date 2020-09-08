@@ -1,6 +1,4 @@
-﻿using Artemis.Storage.Entities.Profile;
-
-namespace Artemis.Core
+﻿namespace Artemis.Core
 {
     /// <inheritdoc />
     public class ColorGradientLayerProperty : LayerProperty<ColorGradient>
@@ -9,10 +7,12 @@ namespace Artemis.Core
         {
             KeyframesSupported = false;
             DataBindingsSupported = false;
+
+            BaseValueChanged += OnBaseValueChanged;
         }
 
         /// <summary>
-        ///     Implicitly converts an <see cref="ColorGradientLayerProperty" /> to a <see cref="ColorGradient"/>
+        ///     Implicitly converts an <see cref="ColorGradientLayerProperty" /> to a <see cref="ColorGradient" />
         /// </summary>
         public static implicit operator ColorGradient(ColorGradientLayerProperty p)
         {
@@ -25,12 +25,11 @@ namespace Artemis.Core
             throw new ArtemisCoreException("Color Gradients do not support keyframes.");
         }
 
-        internal override void ApplyToLayerProperty(PropertyEntity entity, LayerPropertyGroup layerPropertyGroup, bool fromStorage)
+        private void OnBaseValueChanged(object sender, LayerPropertyEventArgs<ColorGradient> e)
         {
-            base.ApplyToLayerProperty(entity, layerPropertyGroup, fromStorage);
-
             // Don't allow color gradients to be null
-            BaseValue ??= DefaultValue ?? new ColorGradient();
+            if (BaseValue == null)
+                BaseValue = DefaultValue ?? new ColorGradient();
         }
     }
 }

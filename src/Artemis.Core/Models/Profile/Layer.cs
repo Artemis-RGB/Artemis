@@ -34,8 +34,8 @@ namespace Artemis.Core
             Name = name;
             Enabled = true;
             DisplayContinuously = true;
-            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
-            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
+            General = new LayerGeneralProperties();
+            Transform = new LayerTransformProperties();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
@@ -55,8 +55,8 @@ namespace Artemis.Core
             Name = layerEntity.Name;
             Enabled = layerEntity.Enabled;
             Order = layerEntity.Order;
-            General = new LayerGeneralProperties {IsCorePropertyGroup = true};
-            Transform = new LayerTransformProperties {IsCorePropertyGroup = true};
+            General = new LayerGeneralProperties();
+            Transform = new LayerTransformProperties();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
