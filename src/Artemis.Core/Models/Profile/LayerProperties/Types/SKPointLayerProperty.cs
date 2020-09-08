@@ -7,8 +7,8 @@ namespace Artemis.Core
     {
         internal SKPointLayerProperty()
         {
-            RegisterDataBindingProperty(point => point.X, new FloatDataBindingConverter());
-            RegisterDataBindingProperty(point => point.Y, new FloatDataBindingConverter());
+            RegisterDataBindingProperty(point => point.X, new FloatDataBindingConverter<SKPoint>());
+            RegisterDataBindingProperty(point => point.Y, new FloatDataBindingConverter<SKPoint>());
         }
 
         /// <summary>

@@ -2,13 +2,23 @@
 
 namespace Artemis.Core
 {
-    public class LayerPropertyEventArgs : EventArgs
+    public class LayerPropertyEventArgs<T> : EventArgs
     {
-        public LayerPropertyEventArgs(BaseLayerProperty layerProperty)
+        public LayerPropertyEventArgs(LayerProperty<T> layerProperty)
         {
             LayerProperty = layerProperty;
         }
 
-        public BaseLayerProperty LayerProperty { get; }
+        public LayerProperty<T> LayerProperty { get; }
+    }  
+    
+    public class LayerPropertyEventArgs : EventArgs
+    {
+        public LayerPropertyEventArgs(ILayerProperty layerProperty)
+        {
+            LayerProperty = layerProperty;
+        }
+
+        public ILayerProperty LayerProperty { get; }
     }
 }

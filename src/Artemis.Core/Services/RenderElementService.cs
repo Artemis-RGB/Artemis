@@ -30,8 +30,8 @@ namespace Artemis.Core.Services
             parent.AddChild(layer);
 
             // Layers have two hardcoded property groups, instantiate them
-            layer.General.InitializeProperties(this, layer, "General.");
-            layer.Transform.InitializeProperties(this, layer, "Transform.");
+            layer.General.Initialize(layer, "General.", Constants.CorePluginInfo);
+            layer.Transform.Initialize(layer, "Transform.", Constants.CorePluginInfo);
 
             // With the properties loaded, the layer brush and effect can be instantiated
             InstantiateLayerBrush(layer);

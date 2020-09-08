@@ -3,11 +3,18 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class IntDataBindingConverter : DataBindingConverter
+    public class IntDataBindingConverter : FloatDataBindingConverter<int>
     {
+    }
+
+    /// <inheritdoc />
+    public class IntDataBindingConverter<T> : DataBindingConverter<T, int> where T : ILayerProperty
+    {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="IntDataBindingConverter{T}" /> class
+        /// </summary>
         public IntDataBindingConverter()
         {
-            SupportedType = typeof(int);
             SupportsSum = true;
             SupportsInterpolate = true;
         }
@@ -19,30 +26,28 @@ namespace Artemis.Core
         public MidpointRounding InterpolationRoundingMode { get; set; } = MidpointRounding.AwayFromZero;
 
         /// <inheritdoc />
-        public override object Sum(object a, object b)
+        public override int Sum(int a, int b)
         {
-            return (int) a + (int) b;
+            return a + b;
         }
 
         /// <inheritdoc />
-        public override object Interpolate(object a, object b, double progress)
+        public override int Interpolate(int a, int b, double progress)
         {
-            var intA = (int) a;
-            var intB = (int) b;
-            var diff = intB - intA;
-            return (int) Math.Round(intA + diff * progress, InterpolationRoundingMode);
+            var diff = b - a;
+            return (int) Math.Round(a + diff * progress, InterpolationRoundingMode);
         }
 
         /// <inheritdoc />
-        public override void ApplyValue(object value)
+        public override void ApplyValue(int value)
         {
             ValueSetter?.Invoke(value);
         }
 
         /// <inheritdoc />
-        public override object GetValue()
+        public override int GetValue()
         {
-            return ValueGetter?.Invoke();
+            return ValueGetter?.Invoke() ?? 0;
         }
     }
 }
