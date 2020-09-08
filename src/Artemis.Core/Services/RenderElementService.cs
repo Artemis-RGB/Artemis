@@ -74,7 +74,7 @@ namespace Artemis.Core.Services
             var brush = (BaseLayerBrush) _kernel.Get(descriptor.LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = descriptor;
-            brush.Initialize(this);
+            brush.Initialize();
             brush.Update(0);
 
             layer.LayerBrush = brush;
@@ -94,7 +94,7 @@ namespace Artemis.Core.Services
             effect.Order = renderElement.LayerEffects.Count + 1;
             effect.Descriptor = layerEffectDescriptor;
 
-            effect.Initialize(this);
+            effect.Initialize();
             effect.Update(0);
 
             renderElement.AddLayerEffect(effect);
@@ -135,7 +135,7 @@ namespace Artemis.Core.Services
                 effect.Enabled = layerEffectEntity.Enabled;
                 effect.Descriptor = descriptor;
 
-                effect.Initialize(this);
+                effect.Initialize();
                 effect.Update(0);
 
                 renderElement.AddLayerEffect(effect);
@@ -162,8 +162,7 @@ namespace Artemis.Core.Services
 
         public void InstantiateDataBindings(RenderProfileElement renderElement)
         {
-            foreach (var baseLayerProperty in renderElement.GetAllLayerProperties()) 
-                baseLayerProperty.InitializeDataBindings(_dataModelService, _dataBindingService);
+            renderElement.InitializeDataBindings(_dataBindingService, _dataModelService);
         }
     }
 }

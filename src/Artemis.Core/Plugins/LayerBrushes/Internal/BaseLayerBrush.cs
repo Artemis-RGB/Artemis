@@ -105,7 +105,7 @@ namespace Artemis.Core.LayerBrushes
 
         // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
         // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
-        internal abstract void Initialize(IRenderElementService renderElementService);
+        internal abstract void Initialize();
 
         internal abstract void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
 
