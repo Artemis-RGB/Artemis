@@ -70,9 +70,9 @@ namespace Artemis.Core.LayerBrushes
             }
         }
 
-        internal override void Initialize(IRenderElementService renderElementService)
+        internal override void Initialize()
         {
-            InitializeProperties(renderElementService);
+            InitializeProperties();
         }
     }
 }

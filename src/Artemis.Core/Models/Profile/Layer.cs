@@ -119,27 +119,6 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override List<BaseLayerPropertyKeyframe> GetAllKeyframes()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Layer");
-
-            var keyframes = base.GetAllKeyframes();
-
-            foreach (var baseLayerProperty in General.GetAllLayerProperties())
-                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            foreach (var baseLayerProperty in Transform.GetAllLayerProperties())
-                keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            if (LayerBrush?.BaseProperties != null)
-            {
-                foreach (var baseLayerProperty in LayerBrush.BaseProperties.GetAllLayerProperties())
-                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            }
-
-            return keyframes;
-        }
-
-        /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
             if (!disposing)
@@ -311,19 +290,7 @@ namespace Artemis.Core
                 baseLayerEffect.Update(delta);
             }
         }
-
-        /// <inheritdoc />
-        public override List<BaseLayerProperty> GetAllLayerProperties()
-        {
-            var result = base.GetAllLayerProperties();
-            result.AddRange(General.GetAllLayerProperties());
-            result.AddRange(Transform.GetAllLayerProperties());
-            if (LayerBrush?.BaseProperties != null) 
-                result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
-
-            return result;
-        }
-
+        
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
@@ -382,7 +349,6 @@ namespace Artemis.Core
             var targetLocation = new SKPoint(0, 0);
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
-
 
             canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
         }

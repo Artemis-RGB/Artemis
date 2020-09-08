@@ -6,6 +6,7 @@ using System.Reflection;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Properties;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -168,6 +169,14 @@ namespace Artemis.Core
             EnableProperties();
             PropertiesInitialized = true;
             OnPropertyGroupInitialized();
+        }
+
+        internal void InitializeDataBindings(IDataModelService dataModelService, IDataModelService dataModelService1)
+        {
+            foreach (var layerProperty in LayerProperties)
+            {
+                layerProperty.InitializeDataBindings(dataModelService);
+            }
         }
 
         internal void ApplyToEntity()
