@@ -12,21 +12,6 @@ namespace Artemis.Core
 {
     public abstract class RenderProfileElement : ProfileElement
     {
-        /// <summary>
-        ///     Returns a list of all keyframes on all properties and effects of this layer
-        /// </summary>
-        public virtual List<BaseLayerPropertyKeyframe> GetAllKeyframes()
-        {
-            var keyframes = new List<BaseLayerPropertyKeyframe>();
-            foreach (var layerEffect in LayerEffects)
-            {
-                foreach (var baseLayerProperty in layerEffect.BaseProperties.GetAllLayerProperties())
-                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            }
-
-            return keyframes;
-        }
-
         protected void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
@@ -312,16 +297,5 @@ namespace Artemis.Core
 
         #endregion
 
-        /// <summary>
-        /// Returns all the layer properties of this profile element
-        /// </summary>
-        public virtual List<BaseLayerProperty> GetAllLayerProperties()
-        {
-            var result = new List<BaseLayerProperty>();
-            foreach (var baseLayerEffect in LayerEffects) 
-                result.AddRange(baseLayerEffect.BaseProperties.GetAllLayerProperties());
-
-            return result;
-        }
     }
 }

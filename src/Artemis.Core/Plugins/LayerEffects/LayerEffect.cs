@@ -40,9 +40,9 @@ namespace Artemis.Core.LayerEffects
             EnableLayerEffect();
         }
 
-        internal override void Initialize(IRenderElementService renderElementService)
+        internal override void Initialize()
         {
-            InitializeProperties(renderElementService);
+            InitializeProperties();
         }
     }
 }
