@@ -60,7 +60,6 @@ namespace Artemis.Core
         /// <returns></returns>
         public abstract bool EvaluateObject(object target);
 
-        internal abstract void Initialize(IDataModelService dataModelService);
         internal abstract void ApplyToEntity();
         internal abstract DisplayConditionPartEntity GetEntity();
     }

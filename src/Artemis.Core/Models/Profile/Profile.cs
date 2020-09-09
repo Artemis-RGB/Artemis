@@ -22,7 +22,7 @@ namespace Artemis.Core
             RedoStack = new Stack<string>();
 
             AddChild(new Folder(this, this, "Root folder"));
-            ApplyToEntity();
+            Save();
         }
 
         internal Profile(ProfileModule module, ProfileEntity profileEntity)
@@ -129,7 +129,7 @@ namespace Artemis.Core
             _disposed = true;
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Profile");
@@ -140,7 +140,7 @@ namespace Artemis.Core
             ProfileEntity.IsActive = IsActivated;
 
             foreach (var profileElement in Children)
-                profileElement.ApplyToEntity();
+                profileElement.Save();
 
             ProfileEntity.Folders.Clear();
             ProfileEntity.Folders.AddRange(GetAllFolders().Select(f => f.FolderEntity));

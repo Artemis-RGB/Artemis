@@ -18,6 +18,7 @@ namespace Artemis.Core.Modules
     {
         /// <summary>
         ///     The data model driving this module
+        ///     <para>Note: This default data model is automatically registered upon plugin enable</para>
         /// </summary>
         public T DataModel
         {
@@ -118,7 +119,7 @@ namespace Artemis.Core.Modules
         ///     Indicates whether or not a profile change is being animated
         /// </summary>
         public bool AnimatingProfileChange { get; private set; }
-        
+
         /// <summary>
         ///     Called after the profile has updated
         /// </summary>

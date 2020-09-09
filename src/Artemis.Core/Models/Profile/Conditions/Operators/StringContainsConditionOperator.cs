@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Artemis.Core
 {
-    internal class StringContainsConditionOperator : DisplayConditionOperator
+    internal class StringContainsConditionOperator : ConditionOperator
     {
         private readonly MethodInfo _contains;
         private readonly MethodInfo _toLower;

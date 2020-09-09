@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -106,12 +105,6 @@ namespace Artemis.Core
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
             foreach (var child in Children)
                 child.ApplyToEntity();
-        }
-
-        internal override void Initialize(IDataModelService dataModelService)
-        {
-            foreach (var child in Children)
-                child.Initialize(dataModelService);
         }
 
         internal override DisplayConditionPartEntity GetEntity()

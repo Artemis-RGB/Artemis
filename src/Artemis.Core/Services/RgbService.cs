@@ -10,7 +10,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides wrapped access the RGB.NET
     /// </summary>
-    internal class RgbService : IRgbService, IDisposable
+    internal class RgbService : IRgbService
     {
         private readonly List<IRGBDevice> _loadedDevices;
         private readonly ILogger _logger;

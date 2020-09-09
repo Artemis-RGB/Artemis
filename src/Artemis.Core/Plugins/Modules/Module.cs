@@ -14,6 +14,7 @@ namespace Artemis.Core.Modules
     {
         /// <summary>
         ///     The data model driving this module
+        ///     <para>Note: This default data model is automatically registered upon plugin enable</para>
         /// </summary>
         public T DataModel
         {

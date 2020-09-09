@@ -26,13 +26,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private readonly Timer _updateTimer;
         private bool _isInitialized;
         private DataModelVisualizationViewModel _leftSideDataModel;
-        private BindableCollection<DisplayConditionOperator> _operators;
+        private BindableCollection<ConditionOperator> _operators;
         private DataModelVisualizationViewModel _rightSideDataModel;
         private DataModelInputViewModel _rightSideInputViewModel;
         private int _rightSideTransitionIndex;
         private object _rightStaticValue;
         private DataModelVisualizationViewModel _selectedLeftSideProperty;
-        private DisplayConditionOperator _selectedOperator;
+        private ConditionOperator _selectedOperator;
         private DataModelVisualizationViewModel _selectedRightSideProperty;
 
         private List<Type> _supportedInputTypes;
@@ -56,7 +56,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             SelectLeftPropertyCommand = new DelegateCommand(ExecuteSelectLeftProperty);
             SelectRightPropertyCommand = new DelegateCommand(ExecuteSelectRightProperty);
             SelectOperatorCommand = new DelegateCommand(ExecuteSelectOperatorCommand);
-            Operators = new BindableCollection<DisplayConditionOperator>();
+            Operators = new BindableCollection<ConditionOperator>();
 
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
 
@@ -125,13 +125,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _rightSideInputViewModel, value);
         }
 
-        public BindableCollection<DisplayConditionOperator> Operators
+        public BindableCollection<ConditionOperator> Operators
         {
             get => _operators;
             set => SetAndNotify(ref _operators, value);
         }
 
-        public DisplayConditionOperator SelectedOperator
+        public ConditionOperator SelectedOperator
         {
             get => _selectedOperator;
             set => SetAndNotify(ref _selectedOperator, value);
@@ -206,7 +206,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             // Get the supported operators
             Operators.Clear();
-            Operators.AddRange(_dataModelService.GetCompatibleConditionOperators(leftSideType));
+            Operators.AddRange(_dataModelService.GetConditionOperatorsForType(leftSideType));
             if (DisplayConditionListPredicate.Operator == null)
                 DisplayConditionListPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType)));
             SelectedOperator = DisplayConditionListPredicate.Operator;
@@ -347,7 +347,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void ExecuteSelectOperatorCommand(object context)
         {
-            if (!(context is DisplayConditionOperator displayConditionOperator))
+            if (!(context is ConditionOperator displayConditionOperator))
                 return;
 
             SelectedOperator = displayConditionOperator;
