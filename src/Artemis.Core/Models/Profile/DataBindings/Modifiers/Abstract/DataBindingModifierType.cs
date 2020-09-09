@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.Services;
 
 namespace Artemis.Core
 {
@@ -10,9 +9,6 @@ namespace Artemis.Core
     /// </summary>
     public abstract class DataBindingModifierType
     {
-        private IDataBindingService _dataBindingService;
-        private bool _registered;
-
         /// <summary>
         ///     Gets the plugin info this data binding modifier belongs to
         ///     <para>Note: Not set until after registering</para>
@@ -63,35 +59,5 @@ namespace Artemis.Core
         /// </param>
         /// <returns>The modified value, must be a value of a type contained in <see cref="CompatibleTypes" /></returns>
         public abstract object Apply(object currentValue, object parameterValue);
-
-        internal void Register(PluginInfo pluginInfo, IDataBindingService dataBindingService)
-        {
-            if (_registered)
-                return;
-
-            PluginInfo = pluginInfo;
-            _dataBindingService = dataBindingService;
-
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
-
-            _registered = true;
-        }
-
-        internal void Unsubscribe()
-        {
-            if (!_registered)
-                return;
-
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
-            _registered = false;
-        }
-
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
-        {
-            // The service will call Unsubscribe
-            _dataBindingService.RemoveModifierType(this);
-        }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -19,6 +18,8 @@ namespace Artemis.Core
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
     public abstract class LayerProperty<T> : ILayerProperty
     {
+        private bool _disposed;
+        
         /// <summary>
         ///     Creates a new instance of the <see cref="LayerProperty{T}" /> class
         /// </summary>
@@ -37,6 +38,9 @@ namespace Artemis.Core
         /// </summary>
         public void Update(double deltaTime)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             CurrentValue = BaseValue;
 
             UpdateKeyframes();
@@ -136,6 +140,9 @@ namespace Artemis.Core
         /// </param>
         public void SetCurrentValue(T value, TimeSpan? time)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (time == null || !KeyframesEnabled || !KeyframesSupported)
                 BaseValue = value;
             else
@@ -159,6 +166,9 @@ namespace Artemis.Core
         /// </summary>
         public void ApplyDefaultValue()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             BaseValue = DefaultValue;
             CurrentValue = DefaultValue;
         }
@@ -212,6 +222,9 @@ namespace Artemis.Core
         /// <param name="keyframe">The keyframe to add</param>
         public void AddKeyframe(LayerPropertyKeyframe<T> keyframe)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (_keyframes.Contains(keyframe))
                 return;
 
@@ -229,6 +242,9 @@ namespace Artemis.Core
         /// <param name="keyframe">The keyframe to remove</param>
         public LayerPropertyKeyframe<T> CopyKeyframe(LayerPropertyKeyframe<T> keyframe)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             var newKeyframe = new LayerPropertyKeyframe<T>(
                 keyframe.Value,
                 keyframe.Position,
@@ -246,6 +262,9 @@ namespace Artemis.Core
         /// <param name="keyframe">The keyframe to remove</param>
         public void RemoveKeyframe(LayerPropertyKeyframe<T> keyframe)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (!_keyframes.Contains(keyframe))
                 return;
 
@@ -260,6 +279,9 @@ namespace Artemis.Core
         /// </summary>
         public void ClearKeyframes()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             var keyframes = new List<LayerPropertyKeyframe<T>>(_keyframes);
             foreach (var layerPropertyKeyframe in keyframes)
                 RemoveKeyframe(layerPropertyKeyframe);
@@ -313,6 +335,9 @@ namespace Artemis.Core
 
         public DataBindingRegistration<T, TProperty> GetDataBindingRegistration<TProperty>(string propertyName)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             var match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
                                                                       registration.Property.Name == propertyName);
             return (DataBindingRegistration<T, TProperty>) match;
@@ -320,6 +345,9 @@ namespace Artemis.Core
 
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, DataBindingConverter<T, TProperty> converter)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             // If the lambda references to itself, use the property info of public new T CurrentValue
             PropertyInfo propertyInfo;
             string path = null;
@@ -353,6 +381,9 @@ namespace Artemis.Core
         /// <returns>The newly created data binding</returns>
         public DataBinding<T, TProperty> EnableDataBinding<TProperty>(DataBindingRegistration<T, TProperty> dataBindingRegistration)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (dataBindingRegistration.LayerProperty != this)
                 throw new ArtemisCoreException("Cannot enable a data binding using a data binding registration of a different layer property");
 
@@ -368,6 +399,9 @@ namespace Artemis.Core
         /// <param name="dataBinding">The data binding to remove</param>
         public void DisableDataBinding<TProperty>(DataBinding<T, TProperty> dataBinding)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             _dataBindings.Remove(dataBinding);
         }
 
@@ -378,12 +412,6 @@ namespace Artemis.Core
                 dataBinding.Update(deltaTime);
                 dataBinding.Apply();
             }
-        }
-
-        internal void InitializeDataBindings(IDataModelService dataModelService, IDataBindingService dataBindingService)
-        {
-            foreach (var dataBinding in _dataBindings)
-                dataBinding.Initialize(dataModelService, dataBindingService);
         }
 
         #endregion
@@ -402,6 +430,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             _isInitialized = true;
 
             ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
@@ -409,13 +440,16 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
-            
+
             LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
         }
 
         /// <inheritdoc />
         public void Load()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (!_isInitialized)
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
@@ -467,6 +501,9 @@ namespace Artemis.Core
         /// </summary>
         public void Save()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+
             if (!_isInitialized)
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
@@ -550,5 +587,14 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            foreach (var dataBinding in _dataBindings) 
+                dataBinding.Dispose();
+        }
     }
 }

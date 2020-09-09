@@ -10,6 +10,8 @@ namespace Artemis.Core
 {
     public class DisplayConditionList : DisplayConditionPart
     {
+        private bool _disposed;
+
         public DisplayConditionList(DisplayConditionPart parent)
         {
             Parent = parent;
@@ -37,6 +39,9 @@ namespace Artemis.Core
 
         public override bool Evaluate()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionList");
+
             if (CompiledListAccessor == null)
                 return false;
 
@@ -45,6 +50,9 @@ namespace Artemis.Core
 
         public override bool EvaluateObject(object target)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionList");
+
             if (!Children.Any())
                 return false;
             if (!(target is IList list))
@@ -63,6 +71,9 @@ namespace Artemis.Core
 
         public void UpdateList(DataModel dataModel, string path)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionList");
+
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
             if (dataModel == null && path != null)
@@ -93,6 +104,9 @@ namespace Artemis.Core
 
         public void CreateExpression()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionList");
+
             var parameter = Expression.Parameter(typeof(object), "listDataModel");
             var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
                 Expression.Convert(parameter, ListDataModel.GetType()),
@@ -101,12 +115,15 @@ namespace Artemis.Core
             var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
             CompiledListAccessor = lambda.Compile();
         }
-
+        
         internal override void ApplyToEntity()
         {
             // Target list
-            Entity.ListDataModelGuid = ListDataModel?.PluginInfo?.Guid;
-            Entity.ListPropertyPath = ListPropertyPath;
+            if (ListDataModel != null)
+            {
+                Entity.ListDataModelGuid = ListDataModel.PluginInfo.Guid;
+                Entity.ListPropertyPath = ListPropertyPath;
+            }
 
             // Operator
             Entity.ListOperator = (int) ListOperator;
@@ -125,6 +142,8 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
             if (Entity.ListDataModelGuid == null)
                 return;
 
@@ -147,6 +166,49 @@ namespace Artemis.Core
                 AddChild(new DisplayConditionGroup(this));
             }
         }
+
+
+        #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
+        {
+            var dataModel = e.Registration.DataModel;
+            if (dataModel.PluginInfo.Guid == Entity.ListDataModelGuid && dataModel.ContainsPath(Entity.ListPropertyPath))
+            {
+                ListDataModel = dataModel;
+                ListPropertyPath = Entity.ListPropertyPath;
+                CreateExpression();
+            }
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
+        {
+            if (ListDataModel != e.Registration.DataModel)
+                return;
+
+            ListDataModel = null;
+            CompiledListAccessor = null;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            foreach (var child in Children)
+                child.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 
     public enum ListOperator

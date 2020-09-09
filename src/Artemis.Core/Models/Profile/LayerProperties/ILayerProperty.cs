@@ -1,4 +1,5 @@
-﻿using Artemis.Storage.Entities.Profile;
+﻿using System;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
@@ -9,7 +10,7 @@ namespace Artemis.Core
     ///         initialize these for you.
     ///     </para>
     /// </summary>
-    public interface ILayerProperty : IStorageModel, IUpdateModel
+    public interface ILayerProperty : IStorageModel, IUpdateModel, IDisposable
     {
         /// <summary>
         ///     Initializes the layer property

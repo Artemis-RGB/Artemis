@@ -34,7 +34,7 @@ namespace Artemis.Core
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            ApplyToProfile();
+            Load();
         }
 
         public ProfileModule Module { get; }
@@ -86,7 +86,7 @@ namespace Artemis.Core
             return (Folder) Children.Single();
         }
 
-        public void ApplyToProfile()
+        internal override void Load()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Profile");
