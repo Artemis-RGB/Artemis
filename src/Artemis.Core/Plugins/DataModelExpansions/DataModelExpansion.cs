@@ -10,7 +10,8 @@ namespace Artemis.Core.DataModelExpansions
     public abstract class DataModelExpansion<T> : BaseDataModelExpansion where T : DataModel
     {
         /// <summary>
-        ///     The data model driving this module
+        ///     The main data model of this data model expansion
+        ///     <para>Note: This default data model is automatically registered upon plugin enable</para>
         /// </summary>
         public T DataModel
         {

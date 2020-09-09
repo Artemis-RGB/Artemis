@@ -42,21 +42,7 @@ namespace Artemis.Core
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
-            _expandedPropertyGroups.AddRange(folderEntity.ExpandedPropertyGroups);
-
-            // Load child folders
-            foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Folder(profile, this, childFolder));
-            // Load child layers
-            foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Layer(profile, this, childLayer));
-
-            // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
-            for (var index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index + 1;
-
-            ApplyRenderElementEntity();
+            Load();
         }
 
         internal FolderEntity FolderEntity { get; set; }
@@ -263,23 +249,36 @@ namespace Artemis.Core
             if (!disposing)
                 return;
 
+            _disposed = true;
+
             foreach (var baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
-            _layerEffects.Clear();
-
             foreach (var profileElement in Children)
                 profileElement.Dispose();
-            ChildrenList.Clear();
 
             _folderBitmap?.Dispose();
-            _folderBitmap = null;
-
-            Profile = null;
-            _disposed = true;
         }
 
+        internal override void Load()
+        {
+            _expandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
 
-        internal override void ApplyToEntity()
+            // Load child folders
+            foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Folder(Profile, this, childFolder));
+            // Load child layers
+            foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Layer(Profile, this, childLayer));
+
+            // Ensure order integrity, should be unnecessary but no one is perfect specially me
+            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            for (var index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index + 1;
+
+            LoadRenderElement();
+        }
+
+        internal override void Save()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Folder");
@@ -295,11 +294,11 @@ namespace Artemis.Core
             FolderEntity.ExpandedPropertyGroups.Clear();
             FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
 
-            ApplyRenderElementToEntity();
-
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
             DisplayConditionGroup?.ApplyToEntity();
+
+            SaveRenderElement();
         }
 
         #region Events

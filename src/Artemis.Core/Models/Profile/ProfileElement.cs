@@ -23,18 +23,27 @@ namespace Artemis.Core
             ChildrenList = new List<ProfileElement>();
         }
 
+        /// <summary>
+        ///     Gets the unique ID of this profile element
+        /// </summary>
         public Guid EntityId
         {
             get => _entityId;
             internal set => SetAndNotify(ref _entityId, value);
         }
 
+        /// <summary>
+        ///     Gets the profile this element belongs to
+        /// </summary>
         public Profile Profile
         {
             get => _profile;
             internal set => SetAndNotify(ref _profile, value);
         }
 
+        /// <summary>
+        ///     Gets the parent of this element
+        /// </summary>
         public ProfileElement Parent
         {
             get => _parent;
@@ -73,12 +82,6 @@ namespace Artemis.Core
             set => SetAndNotify(ref _enabled, value);
         }
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
         ///     Updates the element
         /// </summary>
@@ -90,39 +93,13 @@ namespace Artemis.Core
         /// </summary>
         public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
 
-        public List<Folder> GetAllFolders()
+        /// <inheritdoc />
+        public override string ToString()
         {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            var folders = new List<Folder>();
-            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
-            {
-                // Add all folders in this element
-                folders.Add(childFolder);
-                // Add all folders in folders inside this element
-                folders.AddRange(childFolder.GetAllFolders());
-            }
-
-            return folders;
+            return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
 
-        public List<Layer> GetAllLayers()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException(GetType().Name);
-
-            var layers = new List<Layer>();
-
-            // Add all layers in this element
-            layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());
-
-            // Add all layers in folders inside this element
-            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
-                layers.AddRange(childFolder.GetAllLayers());
-
-            return layers;
-        }
+        #region Hierarchy
 
         /// <summary>
         ///     Adds a profile element to the <see cref="Children" /> collection, optionally at the given position (1-based)
@@ -189,9 +166,64 @@ namespace Artemis.Core
             OnChildRemoved();
         }
 
-        public override string ToString()
+        /// <summary>
+        ///     Returns a flattened list of all child folders
+        /// </summary>
+        /// <returns></returns>
+        public List<Folder> GetAllFolders()
         {
-            return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            var folders = new List<Folder>();
+            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
+            {
+                // Add all folders in this element
+                folders.Add(childFolder);
+                // Add all folders in folders inside this element
+                folders.AddRange(childFolder.GetAllFolders());
+            }
+
+            return folders;
+        }
+
+        /// <summary>
+        ///     Returns a flattened list of all child layers
+        /// </summary>
+        /// <returns></returns>
+        public List<Layer> GetAllLayers()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException(GetType().Name);
+
+            var layers = new List<Layer>();
+
+            // Add all layers in this element
+            layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());
+
+            // Add all layers in folders inside this element
+            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
+                layers.AddRange(childFolder.GetAllLayers());
+
+            return layers;
+        }
+
+        #endregion
+
+        #region Storage
+
+        internal abstract void Load();
+        internal abstract void Save();
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -201,10 +233,7 @@ namespace Artemis.Core
             }
         }
 
-        /// <summary>
-        ///     Applies the profile element's properties to the underlying storage entity
-        /// </summary>
-        internal abstract void ApplyToEntity();
+        #endregion
 
         #region Events
 

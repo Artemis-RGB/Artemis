@@ -2,18 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Artemis.Core.Services;
 
 namespace Artemis.Core
 {
     /// <summary>
-    ///     A display condition operator is used by the conditions system to perform a specific boolean check
+    ///     A condition operator is used by the conditions system to perform a specific boolean check
     /// </summary>
-    public abstract class DisplayConditionOperator
+    public abstract class ConditionOperator
     {
-        private IDataModelService _dataModelService;
-        private bool _registered;
-
         /// <summary>
         ///     Gets the plugin info this condition operator belongs to
         ///     <para>Note: Not set until after registering</para>
@@ -57,35 +53,5 @@ namespace Artemis.Core
         /// <param name="rightSide">The parameter on the right side of the expression</param>
         /// <returns></returns>
         public abstract BinaryExpression CreateExpression(Expression leftSide, Expression rightSide);
-
-        internal void Register(PluginInfo pluginInfo, IDataModelService dataModelService)
-        {
-            if (_registered)
-                return;
-
-            PluginInfo = pluginInfo;
-            _dataModelService = dataModelService;
-
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
-
-            _registered = true;
-        }
-
-        internal void Unsubscribe()
-        {
-            if (!_registered)
-                return;
-
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
-            _registered = false;
-        }
-
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
-        {
-            // The service will call Unsubscribe
-            _dataModelService.RemoveConditionOperator(this);
-        }
     }
 }

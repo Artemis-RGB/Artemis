@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    /// A service that initializes the Core and manages the render loop
+    /// </summary>
     public interface ICoreService : IArtemisService, IDisposable
     {
         /// <summary>

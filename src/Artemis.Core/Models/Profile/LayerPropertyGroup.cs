@@ -171,14 +171,6 @@ namespace Artemis.Core
             OnPropertyGroupInitialized();
         }
 
-        internal void InitializeDataBindings(IDataModelService dataModelService, IDataModelService dataModelService1)
-        {
-            foreach (var layerProperty in LayerProperties)
-            {
-                layerProperty.InitializeDataBindings(dataModelService);
-            }
-        }
-
         internal void ApplyToEntity()
         {
             if (!PropertiesInitialized)

@@ -158,13 +158,13 @@ namespace Artemis.Core.Services
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
 
-            profile.ApplyToEntity();
+            profile.Save();
             if (includeChildren)
             {
                 foreach (var folder in profile.GetAllFolders())
-                    folder.ApplyToEntity();
+                    folder.Save();
                 foreach (var layer in profile.GetAllLayers())
-                    layer.ApplyToEntity();
+                    layer.Save();
             }
 
             _profileRepository.Save(profile.ProfileEntity);

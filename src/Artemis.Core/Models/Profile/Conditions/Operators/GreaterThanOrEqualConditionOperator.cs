@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Artemis.Core
 {
-    internal class GreaterThanOrEqualConditionOperator : DisplayConditionOperator
+    internal class GreaterThanOrEqualConditionOperator : ConditionOperator
     {
         public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
 

@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using SkiaSharp;
@@ -41,30 +40,27 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
 
-            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
+            InitializeDefaultGroups();
+
+            parent.AddChild(this);
             ApplyRenderElementDefaults();
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
         {
             LayerEntity = layerEntity;
-            EntityId = layerEntity.Id;
-
             Profile = profile;
             Parent = parent;
-            Name = layerEntity.Name;
-            Enabled = layerEntity.Enabled;
-            Order = layerEntity.Order;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
-            _expandedPropertyGroups.AddRange(layerEntity.ExpandedPropertyGroups);
 
-            General.PropertyGroupInitialized += GeneralOnPropertyGroupInitialized;
-            ApplyRenderElementEntity();
+            InitializeDefaultGroups();
+
+            Load();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -128,25 +124,41 @@ namespace Artemis.Core
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
-            _layerBrush = null;
 
             foreach (var baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
-            _layerEffects.Clear();
 
             _general?.Dispose();
-            _general = null;
             _layerBitmap?.Dispose();
-            _layerBitmap = null;
             _transform?.Dispose();
-            _transform = null;
+        }
 
-            Profile = null;
+        private void InitializeDefaultGroups()
+        {
+            // Layers have two hardcoded property groups, instantiate them
+            General.Initialize(this, "General.", Constants.CorePluginInfo);
+            Transform.Initialize(this, "Transform.", Constants.CorePluginInfo);
+
+            General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
+            ApplyShapeType();
         }
 
         #region Storage
 
-        internal override void ApplyToEntity()
+        internal override void Load()
+        {
+            EntityId = LayerEntity.Id;
+            Name = LayerEntity.Name;
+            Enabled = LayerEntity.Enabled;
+            Order = LayerEntity.Order;
+
+            _expandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
+            ActivateLayerBrush();
+
+            LoadRenderElement();
+        }
+
+        internal override void Save()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
@@ -181,19 +193,12 @@ namespace Artemis.Core
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
             DisplayConditionGroup?.ApplyToEntity();
 
-            ApplyRenderElementToEntity();
+            SaveRenderElement();
         }
 
         #endregion
 
         #region Shape management
-
-        private void GeneralOnPropertyGroupInitialized(object sender, EventArgs e)
-        {
-            ApplyShapeType();
-            General.ShapeType.BaseValueChanged -= ShapeTypeOnBaseValueChanged;
-            General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
-        }
 
         private void ShapeTypeOnBaseValueChanged(object sender, EventArgs e)
         {
@@ -290,7 +295,7 @@ namespace Artemis.Core
                 baseLayerEffect.Update(delta);
             }
         }
-        
+
         /// <inheritdoc />
         public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
@@ -646,7 +651,51 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Activation
+        #region Brush management
+
+        /// <summary>
+        ///     Changes the current layer brush to the brush described in the provided <paramref name="descriptor" />
+        /// </summary>
+        public void ChangeLayerBrush(LayerBrushDescriptor descriptor)
+        {
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
+
+            // Ensure the brush reference matches the brush
+            var current = General.BrushReference.CurrentValue;
+            if (current.BrushPluginGuid != descriptor.LayerBrushProvider.PluginInfo.Guid || current.BrushType != descriptor.LayerBrushType.Name)
+            {
+                General.BrushReference.CurrentValue = new LayerBrushReference
+                {
+                    BrushPluginGuid = descriptor.LayerBrushProvider.PluginInfo.Guid,
+                    BrushType = descriptor.LayerBrushType.Name
+                };
+            }
+
+            ActivateLayerBrush();
+        }
+
+        /// <summary>
+        ///     Removes the current layer brush from the layer
+        /// </summary>
+        public void RemoveLayerBrush()
+        {
+            if (LayerBrush == null)
+                return;
+
+            var brush = LayerBrush;
+            DeactivateLayerBrush();
+            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
+        }
+
+        internal void ActivateLayerBrush()
+        {
+            var current = General.BrushReference.CurrentValue;
+            var descriptor = LayerBrushStore.Get(current.BrushPluginGuid, current.BrushType)?.LayerBrushDescriptor;
+            descriptor?.CreateInstance(this);
+
+            OnLayerBrushUpdated();
+        }
 
         internal void DeactivateLayerBrush()
         {
@@ -656,16 +705,8 @@ namespace Artemis.Core
             var brush = LayerBrush;
             LayerBrush = null;
             brush.Dispose();
-        }
 
-        internal void RemoveLayerBrush()
-        {
-            if (LayerBrush == null)
-                return;
-
-            var brush = LayerBrush;
-            DeactivateLayerBrush();
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
+            OnLayerBrushUpdated();
         }
 
         #endregion
