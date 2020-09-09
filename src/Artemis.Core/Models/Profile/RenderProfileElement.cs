@@ -12,21 +12,23 @@ namespace Artemis.Core
 {
     public abstract class RenderProfileElement : ProfileElement
     {
-        protected void ApplyRenderElementDefaults()
+        internal void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
         }
 
-        protected void ApplyRenderElementEntity()
+        internal void LoadRenderElement()
         {
             StartSegmentLength = RenderElementEntity.StartSegmentLength;
             MainSegmentLength = RenderElementEntity.MainSegmentLength;
             EndSegmentLength = RenderElementEntity.EndSegmentLength;
             DisplayContinuously = RenderElementEntity.DisplayContinuously;
             AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
+
+            ActivateEffects();
         }
 
-        protected void ApplyRenderElementToEntity()
+        internal void SaveRenderElement()
         {
             RenderElementEntity.StartSegmentLength = StartSegmentLength;
             RenderElementEntity.MainSegmentLength = MainSegmentLength;
@@ -206,7 +208,7 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Effects
+        #region Effect management
 
         protected List<BaseLayerEffect> _layerEffects;
 
@@ -215,11 +217,35 @@ namespace Artemis.Core
         /// </summary>
         public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
 
-        internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
+        /// <summary>
+        ///     Adds a the layer effect described inthe provided <paramref name="descriptor" />
+        /// </summary>
+        public void AddLayerEffect(LayerEffectDescriptor descriptor)
+        {
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
+
+            var entity = new LayerEffectEntity
+            {
+                Id = Guid.NewGuid(),
+                Enabled = true,
+                Order = LayerEffects.Count + 1
+            };
+            descriptor.CreateInstance(this, entity);
+            OnLayerEffectsUpdated();
+        }
+
+        /// <summary>
+        ///     Removes the provided layer
+        /// </summary>
+        /// <param name="effect"></param>
+        public void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
         {
             if (effect == null) throw new ArgumentNullException(nameof(effect));
 
-            DeactivateLayerEffect(effect);
+            // Remove the effect from the layer and dispose it
+            _layerEffects.Remove(effect);
+            effect.Dispose();
 
             // Update the order on the remaining effects
             var index = 0;
@@ -232,20 +258,31 @@ namespace Artemis.Core
             OnLayerEffectsUpdated();
         }
 
-        internal void AddLayerEffect([NotNull] BaseLayerEffect effect)
+        internal void ActivateEffects()
         {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-            _layerEffects.Add(effect);
-            OnLayerEffectsUpdated();
+            foreach (var layerEffectEntity in RenderElementEntity.LayerEffects)
+            {
+                if (_layerEffects.Any(e => e.EntityId == layerEffectEntity.Id))
+                    continue;
+
+                var descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
+                descriptor?.CreateInstance(this, layerEffectEntity);
+            }
         }
 
-        internal void DeactivateLayerEffect([NotNull] BaseLayerEffect effect)
+        internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
+            _layerEffects.Add(layerEffect);
 
-            // Remove the effect from the layer and dispose it
-            _layerEffects.Remove(effect);
-            effect.Dispose();
+            // Update the order on the effects
+            var index = 0;
+            foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
+            {
+                baseLayerEffect.Order = Order = index + 1;
+                index++;
+            }
+
+            OnLayerEffectsUpdated();
         }
 
         #endregion
@@ -296,6 +333,5 @@ namespace Artemis.Core
         }
 
         #endregion
-
     }
 }

@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
@@ -25,6 +24,8 @@ namespace Artemis.Core
             Parent = parent;
             PredicateType = predicateType;
             Entity = new DisplayConditionPredicateEntity();
+
+            Initialize();
         }
 
         /// <summary>
@@ -37,6 +38,8 @@ namespace Artemis.Core
             Parent = parent;
             Entity = entity;
             PredicateType = (ProfileRightSideType) entity.PredicateType;
+
+            Initialize();
         }
 
         /// <summary>
@@ -47,7 +50,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the operator
         /// </summary>
-        public DisplayConditionOperator Operator { get; private set; }
+        public ConditionOperator Operator { get; private set; }
 
         /// <summary>
         ///     Gets the currently used instance of the left data model
@@ -175,11 +178,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the operator of the predicate and re-compiles the expression
         /// </summary>
-        /// <param name="displayConditionOperator"></param>
-        public void UpdateOperator(DisplayConditionOperator displayConditionOperator)
+        /// <param name="conditionOperator"></param>
+        public void UpdateOperator(ConditionOperator conditionOperator)
         {
             // Calling CreateExpression will clear compiled expressions
-            if (displayConditionOperator == null)
+            if (conditionOperator == null)
             {
                 Operator = null;
                 CreateExpression();
@@ -189,18 +192,18 @@ namespace Artemis.Core
             // No need to clear compiled expressions, without a left data model they are already null
             if (LeftDataModel == null)
             {
-                Operator = displayConditionOperator;
+                Operator = conditionOperator;
                 return;
             }
 
             var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
-            if (!displayConditionOperator.SupportsType(leftType))
+            if (!conditionOperator.SupportsType(leftType))
             {
-                throw new ArtemisCoreException($"Cannot apply operator {displayConditionOperator.GetType().Name} to this predicate because " +
+                throw new ArtemisCoreException($"Cannot apply operator {conditionOperator.GetType().Name} to this predicate because " +
                                                $"it does not support left side type {leftType.Name}");
             }
 
-            Operator = displayConditionOperator;
+            Operator = conditionOperator;
             CreateExpression();
         }
 
@@ -243,12 +246,12 @@ namespace Artemis.Core
             Entity.OperatorType = Operator?.GetType().Name;
         }
 
-        internal override void Initialize(IDataModelService dataModelService)
+        internal void Initialize()
         {
             // Left side
             if (Entity.LeftDataModelGuid != null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.LeftDataModelGuid.Value);
+                var dataModel = DataModelStore.Get(Entity.LeftDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.LeftPropertyPath))
                     UpdateLeftSide(dataModel, Entity.LeftPropertyPath);
             }
@@ -256,7 +259,7 @@ namespace Artemis.Core
             // Operator
             if (Entity.OperatorPluginGuid != null)
             {
-                var conditionOperator = dataModelService.GetConditionOperator(Entity.OperatorPluginGuid.Value, Entity.OperatorType);
+                var conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
@@ -264,7 +267,7 @@ namespace Artemis.Core
             // Right side dynamic
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightDataModelGuid != null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.RightDataModelGuid.Value);
+                var dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
                     UpdateRightSide(dataModel, Entity.RightPropertyPath);
             }
@@ -286,7 +289,7 @@ namespace Artemis.Core
                         // If deserialization fails, use the type's default
                         catch (JsonSerializationException e)
                         {
-                            dataModelService.LogPredicateDeserializationFailure(this, e);
+                            DeserializationLogger.LogPredicateDeserializationFailure(this, e);
                             rightSideValue = Activator.CreateInstance(leftSideType);
                         }
 

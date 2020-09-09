@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -15,6 +14,8 @@ namespace Artemis.Core
         {
             Parent = parent;
             Entity = new DisplayConditionListEntity();
+
+            Initialize();
         }
 
         public DisplayConditionList(DisplayConditionPart parent, DisplayConditionListEntity entity)
@@ -22,6 +23,8 @@ namespace Artemis.Core
             Parent = parent;
             Entity = entity;
             ListOperator = (ListOperator) entity.ListOperator;
+
+            Initialize();
         }
 
         public DisplayConditionListEntity Entity { get; set; }
@@ -120,13 +123,13 @@ namespace Artemis.Core
             return Entity;
         }
 
-        internal override void Initialize(IDataModelService dataModelService)
+        internal void Initialize()
         {
             if (Entity.ListDataModelGuid == null)
                 return;
 
             // Get the data model and ensure the path is valid
-            var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.ListDataModelGuid.Value);
+            var dataModel = DataModelStore.Get(Entity.ListDataModelGuid.Value)?.DataModel;
             if (dataModel == null || !dataModel.ContainsPath(Entity.ListPropertyPath))
                 return;
 
@@ -143,8 +146,6 @@ namespace Artemis.Core
                 Entity.Children.Clear();
                 AddChild(new DisplayConditionGroup(this));
             }
-
-            Children[0].Initialize(dataModelService);
         }
     }
 
