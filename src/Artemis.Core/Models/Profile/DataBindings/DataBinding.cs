@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
@@ -17,6 +16,7 @@ namespace Artemis.Core
         private TProperty _currentValue;
         private TimeSpan _easingProgress;
         private TProperty _previousValue;
+        private bool _disposed;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -25,6 +25,7 @@ namespace Artemis.Core
 
             ApplyRegistration(dataBindingRegistration);
             Save();
+            Initialize();
         }
 
         internal DataBinding(LayerProperty<TLayerProperty> layerProperty, DataBindingEntity entity)
@@ -32,6 +33,8 @@ namespace Artemis.Core
             LayerProperty = layerProperty;
             Entity = entity;
 
+            // Load will add children so be initialized before that
+            Initialize();
             Load();
         }
 
@@ -95,6 +98,9 @@ namespace Artemis.Core
         /// <param name="deltaTime">The time in seconds that passed since the last update</param>
         public void Update(double deltaTime)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             // Data bindings cannot go back in time like brushes
             deltaTime = Math.Max(0, deltaTime);
 
@@ -103,11 +109,27 @@ namespace Artemis.Core
                 _easingProgress = EasingTime;
         }
 
+        /// <inheritdoc />
+        public void Apply()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            if (Converter == null)
+                return;
+
+            var value = GetValue(Converter.GetValue());
+            Converter.ApplyValue(GetValue(value));
+        }
+
         /// <summary>
         ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
         /// </summary>
         public void AddModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (!_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = this;
@@ -122,6 +144,9 @@ namespace Artemis.Core
         /// </summary>
         public void RemoveModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = null;
@@ -138,6 +163,9 @@ namespace Artemis.Core
         /// <param name="path">The path pointing to the source inside the data model</param>
         public void UpdateSource(DataModel dataModel, string path)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
             if (dataModel == null && path != null)
@@ -161,6 +189,9 @@ namespace Artemis.Core
         /// <returns></returns>
         public TProperty GetValue(TProperty baseValue)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (CompiledTargetAccessor == null || Converter == null)
                 return baseValue;
 
@@ -198,30 +229,18 @@ namespace Artemis.Core
             return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
         }
 
-        /// <inheritdoc />
-        public void Apply()
+        private void Initialize()
         {
-            if (Converter == null)
-                return;
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
 
-            var value = GetValue(Converter.GetValue());
-            Converter.ApplyValue(GetValue(value));
-        }
-
-        /// <inheritdoc />
-        public void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
-        {
             // Source
             if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.SourceDataModelGuid.Value);
+                var dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
                     UpdateSource(dataModel, Entity.SourcePropertyPath);
             }
-
-            // Modifiers
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingModifier.Initialize(dataModelService, dataBindingService);
         }
 
         private void ResetEasing(TProperty value)
@@ -283,6 +302,8 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
             // General
             var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetProperty);
             ApplyRegistration(registration);
@@ -301,6 +322,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Save()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (!LayerProperty.Entity.DataBindingEntities.Contains(Entity))
                 LayerProperty.Entity.DataBindingEntities.Add(Entity);
 
@@ -311,13 +335,35 @@ namespace Artemis.Core
             Entity.EasingFunction = (int) EasingFunction;
 
             // Data model
-            Entity.SourceDataModelGuid = SourceDataModel?.PluginInfo?.Guid;
-            Entity.SourcePropertyPath = SourcePropertyPath;
-
+            if (SourceDataModel != null)
+            {
+                Entity.SourceDataModelGuid = SourceDataModel.PluginInfo.Guid;
+                Entity.SourcePropertyPath = SourcePropertyPath;
+            }
+            
             // Modifiers
             Entity.Modifiers.Clear();
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingModifier.Save();
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
+        {
+            var dataModel = e.Registration.DataModel;
+            if (dataModel.PluginInfo.Guid == Entity.SourceDataModelGuid && dataModel.ContainsPath(Entity.SourcePropertyPath))
+                UpdateSource(dataModel, Entity.SourcePropertyPath);
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
+        {
+            if (SourceDataModel != e.Registration.DataModel)
+                return;
+            SourceDataModel = null;
+            CompiledTargetAccessor = null;
         }
 
         #endregion
@@ -335,6 +381,18 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            foreach (var dataBindingModifier in Modifiers)
+                dataBindingModifier.Dispose();
+        }
     }
 
     /// <summary>

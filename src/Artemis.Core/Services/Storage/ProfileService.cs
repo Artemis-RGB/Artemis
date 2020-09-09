@@ -17,21 +17,17 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly IProfileRepository _profileRepository;
-        private readonly IRenderElementService _renderElementService;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, IRenderElementService renderElementService, IProfileRepository profileRepository)
+        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, IProfileRepository profileRepository)
         {
             _logger = logger;
             _pluginService = pluginService;
             _surfaceService = surfaceService;
-            _renderElementService = renderElementService;
             _profileRepository = profileRepository;
 
             _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
             _surfaceService.SurfaceConfigurationUpdated += OnSurfaceConfigurationUpdated;
-            _pluginService.PluginEnabled += OnPluginToggled;
-            _pluginService.PluginDisabled += OnPluginToggled;
         }
 
         public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
@@ -186,7 +182,7 @@ namespace Artemis.Core.Services
                 profile.RedoStack.Push(memento);
                 profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
 
-                profile.ApplyToProfile();
+                profile.Load();
                 InstantiateProfile(profile);
             }
 
@@ -210,7 +206,7 @@ namespace Artemis.Core.Services
                 profile.UndoStack.Push(memento);
                 profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
 
-                profile.ApplyToProfile();
+                profile.Load();
                 InstantiateProfile(profile);
 
                 _logger.Debug("Redo profile update - Success");
@@ -221,9 +217,6 @@ namespace Artemis.Core.Services
         public void InstantiateProfile(Profile profile)
         {
             profile.PopulateLeds(_surfaceService.ActiveSurface);
-            InitializeLayerProperties(profile);
-            InstantiateLayers(profile);
-            InstantiateFolders(profile);
         }
 
         public string ExportProfile(ProfileDescriptor profileDescriptor)
@@ -268,67 +261,7 @@ namespace Artemis.Core.Services
                 _profileRepository.Save(profileEntity);
             }
         }
-
-        /// <summary>
-        ///     Initializes the properties on the layers of the given profile
-        /// </summary>
-        /// <param name="profile"></param>
-        private void InitializeLayerProperties(Profile profile)
-        {
-            foreach (var layer in profile.GetAllLayers())
-            {
-                if (!layer.General.PropertiesInitialized)
-                    layer.General.Initialize(layer, "General.", Constants.CorePluginInfo);
-                if (!layer.Transform.PropertiesInitialized)
-                    layer.Transform.Initialize(layer, "Transform.", Constants.CorePluginInfo);
-            }
-        }
-
-        /// <summary>
-        ///     Instantiates all plugin-related classes on the folders of the given profile
-        /// </summary>
-        private void InstantiateFolders(Profile profile)
-        {
-            foreach (var folder in profile.GetAllFolders())
-            {
-                // Instantiate effects
-                _renderElementService.InstantiateLayerEffects(folder);
-                // Remove effects of plugins that are disabled
-                var disabledEffects = new List<BaseLayerEffect>(folder.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
-                foreach (var layerLayerEffect in disabledEffects)
-                    _renderElementService.RemoveLayerEffect(layerLayerEffect);
-
-                _renderElementService.InstantiateDisplayConditions(folder);
-                _renderElementService.InstantiateDataBindings(folder);
-            }
-        }
-
-        /// <summary>
-        ///     Instantiates all plugin-related classes on the layers of the given profile
-        /// </summary>
-        private void InstantiateLayers(Profile profile)
-        {
-            foreach (var layer in profile.GetAllLayers())
-            {
-                // Instantiate brush
-                if (layer.LayerBrush == null)
-                    _renderElementService.InstantiateLayerBrush(layer);
-                // Remove brush if plugin is disabled
-                else if (!layer.LayerBrush.PluginInfo.Enabled)
-                    _renderElementService.DeactivateLayerBrush(layer);
-
-                // Instantiate effects
-                _renderElementService.InstantiateLayerEffects(layer);
-                // Remove effects of plugins that are disabled
-                var disabledEffects = new List<BaseLayerEffect>(layer.LayerEffects.Where(layerLayerEffect => !layerLayerEffect.PluginInfo.Enabled));
-                foreach (var layerLayerEffect in disabledEffects)
-                    _renderElementService.RemoveLayerEffect(layerLayerEffect);
-
-                _renderElementService.InstantiateDisplayConditions(layer);
-                _renderElementService.InstantiateDataBindings(layer);
-            }
-        }
-
+      
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
         /// </summary>
@@ -339,21 +272,7 @@ namespace Artemis.Core.Services
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
-
-
-        /// <summary>
-        ///     Instantiates all missing plugin-related classes on the profile trees of all currently active profiles
-        /// </summary>
-        private void ActiveProfilesInstantiatePlugins()
-        {
-            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
-            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-            {
-                InstantiateLayers(profileModule.ActiveProfile);
-                InstantiateFolders(profileModule.ActiveProfile);
-            }
-        }
-
+        
         #region Event handlers
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
@@ -366,15 +285,7 @@ namespace Artemis.Core.Services
             if (e.Surface.IsActive)
                 ActiveProfilesPopulateLeds(e.Surface);
         }
-
-        private void OnPluginToggled(object sender, PluginEventArgs e)
-        {
-            if (e.PluginInfo.Instance is LayerBrushProvider)
-                ActiveProfilesInstantiatePlugins();
-            if (e.PluginInfo.Instance is LayerEffectProvider)
-                ActiveProfilesInstantiatePlugins();
-        }
-
+        
         #endregion
     }
 }

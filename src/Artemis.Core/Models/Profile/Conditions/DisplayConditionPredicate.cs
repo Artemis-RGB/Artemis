@@ -248,6 +248,9 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
+
             // Left side
             if (Entity.LeftDataModelGuid != null)
             {
@@ -423,6 +426,43 @@ namespace Artemis.Core
                 Expression.Convert(listParameter, listType), // Cast to the appropriate type
                 Expression.Property
             );
+        }
+
+        #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
+        {
+            var dataModel = e.Registration.DataModel;
+            if (dataModel.PluginInfo.Guid == Entity.LeftDataModelGuid && dataModel.ContainsPath(Entity.LeftPropertyPath))
+                UpdateLeftSide(dataModel, Entity.LeftPropertyPath);
+            if (dataModel.PluginInfo.Guid == Entity.RightDataModelGuid && dataModel.ContainsPath(Entity.RightPropertyPath))
+                UpdateRightSide(dataModel, Entity.RightPropertyPath);
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
+        {
+            if (LeftDataModel == e.Registration.DataModel)
+            {
+                CompiledDynamicPredicate = null;
+                LeftDataModel = null;
+            }
+
+            if (RightDataModel == e.Registration.DataModel)
+            {
+                CompiledDynamicPredicate = null;
+                RightDataModel = null;
+            }
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            base.Dispose(disposing);
         }
     }
 }

@@ -6,7 +6,6 @@ using System.Reflection;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Properties;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -15,6 +14,7 @@ namespace Artemis.Core
     {
         private readonly List<ILayerProperty> _layerProperties;
         private readonly List<LayerPropertyGroup> _layerPropertyGroups;
+        private bool _disposed;
         private bool _isHidden;
 
         protected LayerPropertyGroup()
@@ -23,6 +23,9 @@ namespace Artemis.Core
             _layerPropertyGroups = new List<LayerPropertyGroup>();
         }
 
+        /// <summary>
+        ///     Gets the description of this group
+        /// </summary>
         public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
 
         /// <summary>
@@ -83,19 +86,30 @@ namespace Artemis.Core
         /// </summary>
         public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
 
+        #region IDisposable
+
         /// <inheritdoc />
         public void Dispose()
         {
+            _disposed = true;
             DisableProperties();
+
+            foreach (var layerProperty in _layerProperties)
+                layerProperty.Dispose();
             foreach (var layerPropertyGroup in _layerPropertyGroups)
                 layerPropertyGroup.Dispose();
         }
+
+        #endregion
 
         /// <summary>
         ///     Recursively gets all layer properties on this group and any subgroups
         /// </summary>
         public IReadOnlyCollection<ILayerProperty> GetAllLayerProperties()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerPropertyGroup");
+
             if (!PropertiesInitialized)
                 return new List<ILayerProperty>();
 
@@ -240,7 +254,7 @@ namespace Artemis.Core
 
             return entity;
         }
-        
+
         #region Events
 
         internal event EventHandler<LayerPropertyGroupUpdatingEventArgs> PropertyGroupUpdating;

@@ -11,6 +11,8 @@ namespace Artemis.Core
     /// </summary>
     public class DisplayConditionGroup : DisplayConditionPart
     {
+        private bool _disposed;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="DisplayConditionGroup" /> class
         /// </summary>
@@ -55,6 +57,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override bool Evaluate()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionGroup");
+
             // Empty groups are always true
             if (Children.Count == 0)
                 return true;
@@ -80,6 +85,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override bool EvaluateObject(object target)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionGroup");
+
             // Empty groups are always true
             if (Children.Count == 0)
                 return true;
@@ -111,6 +119,19 @@ namespace Artemis.Core
         {
             return Entity;
         }
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            _disposed = true;
+            foreach (var child in Children)
+                child.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 
     public enum BooleanOperator
