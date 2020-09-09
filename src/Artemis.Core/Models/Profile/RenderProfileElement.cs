@@ -12,6 +12,12 @@ namespace Artemis.Core
 {
     public abstract class RenderProfileElement : ProfileElement
     {
+        protected RenderProfileElement()
+        {
+            LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
+        }
+
         internal void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
@@ -270,6 +276,7 @@ namespace Artemis.Core
             }
         }
 
+
         internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
             _layerEffects.Add(layerEffect);
@@ -283,6 +290,16 @@ namespace Artemis.Core
             }
 
             OnLayerEffectsUpdated();
+        }
+
+        private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void LayerEffectStoreOnLayerEffectAdded(object? sender, LayerEffectStoreEvent e)
+        {
+            ActivateEffects();
         }
 
         #endregion

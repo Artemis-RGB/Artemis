@@ -18,7 +18,7 @@ namespace Artemis.Plugins.LayerBrushes.Color.PropertyGroups
         protected override void EnableProperties()
         {
             if (ProfileElement is Layer layer)
-                layer.General.ResizeMode.BaseValueChanged += OnBaseValueChanged;
+                layer.General.ResizeMode.BaseValueChanged += ResizeModeOnBaseValueChanged;
 
             UpdateVisibility();
         }
@@ -26,10 +26,10 @@ namespace Artemis.Plugins.LayerBrushes.Color.PropertyGroups
         protected override void DisableProperties()
         {
             if (ProfileElement is Layer layer)
-                layer.General.ResizeMode.BaseValueChanged -= OnBaseValueChanged;
+                layer.General.ResizeMode.BaseValueChanged -= ResizeModeOnBaseValueChanged;
         }
 
-        private void OnBaseValueChanged(object sender, LayerPropertyEventArgs e)
+        private void ResizeModeOnBaseValueChanged(object sender, LayerPropertyEventArgs<LayerResizeMode> e)
         {
             UpdateVisibility();
         }
