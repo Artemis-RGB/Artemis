@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Ninject;
+using Ninject.Parameters;
 using Serilog;
 using Stylet;
 
@@ -267,6 +268,16 @@ namespace Artemis.UI.Shared.Services
             }
 
             return time;
+        }
+
+        public PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
+        {
+            var registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
+            if (registration == null)
+                return null;
+
+            var parameter = new ConstructorArgument("layerProperty", layerProperty);
+            return (PropertyInputViewModel<T>) Kernel.Get(registration.ViewModelType, parameter);
         }
 
         public ProfileModule GetCurrentModule()

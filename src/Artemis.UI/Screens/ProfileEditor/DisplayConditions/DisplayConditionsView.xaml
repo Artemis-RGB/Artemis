@@ -43,7 +43,7 @@
 
             <Grid Grid.Row="2" Grid.Column="0">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
-                    <ContentControl s:View.Model="{Binding RootGroup}" />
+                    <ContentControl s:View.Model="{Binding ActiveItem}" />
                 </ScrollViewer>
             </Grid>
 

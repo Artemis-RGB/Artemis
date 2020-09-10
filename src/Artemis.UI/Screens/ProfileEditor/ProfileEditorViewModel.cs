@@ -17,7 +17,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : Conductor<ProfileEditorPanelViewModel>.Collection.AllActive
+    public class ProfileEditorViewModel : Conductor<IProfileEditorPanelViewModel>.Collection.AllActive
     {
         private readonly IModuleService _moduleService;
         private readonly IProfileEditorService _profileEditorService;
@@ -36,7 +36,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private PluginSetting<GridLength> _sidePanelsWidth;
 
         public ProfileEditorViewModel(ProfileModule module,
-            ICollection<ProfileEditorPanelViewModel> viewModels,
+            ICollection<IProfileEditorPanelViewModel> viewModels,
             IProfileEditorService profileEditorService,
             IProfileService profileService,
             IDialogService dialogService,

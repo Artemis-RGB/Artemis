@@ -232,7 +232,7 @@ namespace Artemis.Core
             return $"[Static] {LeftPropertyPath} {Operator.Description} {RightStaticValue}";
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             Entity.PredicateType = (int) PredicateType;
             Entity.LeftDataModelGuid = LeftDataModel?.PluginInfo?.Guid;
@@ -250,6 +250,8 @@ namespace Artemis.Core
         {
             DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
+            ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
 
             // Left side
             if (Entity.LeftDataModelGuid != null)
@@ -415,19 +417,6 @@ namespace Artemis.Core
             );
         }
 
-        private Expression CreateListAccessor(DataModel dataModel, string path, ParameterExpression listParameter)
-        {
-            var listType = dataModel.GetListTypeInPath(path);
-            if (listType == null)
-                throw new ArtemisCoreException($"Cannot create a list accessor at path {path} because the path does not contain a list");
-
-            path = dataModel.GetListInnerPath(path);
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(listParameter, listType), // Cast to the appropriate type
-                Expression.Property
-            );
-        }
-
         #region Event handlers
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
@@ -454,6 +443,23 @@ namespace Artemis.Core
             }
         }
 
+        private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
+        {
+            var conditionOperator = e.Registration.ConditionOperator;
+            if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
+                UpdateOperator(conditionOperator);
+        }
+
+        private void ConditionOperatorStoreOnConditionOperatorRemoved(object sender, ConditionOperatorStoreEvent e)
+        {
+            if (e.Registration.ConditionOperator != Operator)
+                return;
+
+            Operator = null;
+            CompiledStaticPredicate = null;
+            CompiledDynamicPredicate = null;
+        }
+
         #endregion
 
         /// <inheritdoc />
@@ -461,6 +467,8 @@ namespace Artemis.Core
         {
             DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
 
             base.Dispose(disposing);
         }

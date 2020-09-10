@@ -53,7 +53,7 @@ namespace Artemis.UI.Ninject
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<ProfileEditorPanelViewModel>()
+                    .InheritedFrom<IProfileEditorPanelViewModel>()
                     .BindAllBaseClasses();
             });
 

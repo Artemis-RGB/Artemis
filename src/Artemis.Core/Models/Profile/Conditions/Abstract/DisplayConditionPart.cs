@@ -61,7 +61,7 @@ namespace Artemis.Core
         /// <returns></returns>
         public abstract bool EvaluateObject(object target);
 
-        internal abstract void ApplyToEntity();
+        internal abstract void Save();
         internal abstract DisplayConditionPartEntity GetEntity();
 
         #region IDisposable

@@ -2,7 +2,7 @@
 using Artemis.Core.LayerEffects;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor
+namespace Artemis.UI.Screens.ProfileEditor.Windows
 {
     public class LayerEffectSettingsWindowViewModel : Conductor<EffectConfigurationViewModel>
     {
