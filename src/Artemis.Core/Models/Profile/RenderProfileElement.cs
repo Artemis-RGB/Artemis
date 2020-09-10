@@ -204,8 +204,7 @@ namespace Artemis.Core
 
             return (TimelinePosition - oldPosition).TotalSeconds;
         }
-
-
+        
         /// <summary>
         ///     Overrides the progress of the element
         /// </summary>

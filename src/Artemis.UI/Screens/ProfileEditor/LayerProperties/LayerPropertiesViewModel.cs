@@ -16,6 +16,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
+using static Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree.LayerPropertyGroupTreeViewModel.LayerPropertyGroupType;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
@@ -38,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private TimelineViewModel _timelineViewModel;
         private TreeViewModel _treeViewModel;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, 
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
             ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory,
@@ -397,9 +398,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void SortProperties()
         {
             // Get all non-effect properties
-            var nonEffectProperties = LayerPropertyGroups.Where(l => l.GroupType != LayerEffectRoot).ToList();
+            var nonEffectProperties = LayerPropertyGroups
+                .Where(l => l.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
+                .ToList();
             // Order the effects
-            var effectProperties = LayerPropertyGroups.Where(l => l.GroupType == LayerEffectRoot).OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order).ToList();
+            var effectProperties = LayerPropertyGroups
+                .Where(l => l.LayerPropertyGroupTreeViewModel.GroupType == LayerEffectRoot)
+                .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
+                .ToList();
 
             // Put the non-effect properties in front
             for (var index = 0; index < nonEffectProperties.Count; index++)
@@ -435,7 +441,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var source = dropInfo.Data as LayerPropertyGroupViewModel;
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
-            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+            if (source == target || 
+                target?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot || 
+                source?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
                 return;
 
             dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -452,7 +460,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var source = dropInfo.Data as LayerPropertyGroupViewModel;
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
-            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+            if (source == target ||
+                target?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot ||
+                source?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
@@ -481,7 +491,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void ApplyCurrentEffectsOrder()
         {
             var order = 1;
-            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.GroupType == LayerEffectRoot))
+            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.LayerPropertyGroupTreeViewModel.GroupType == LayerEffectRoot))
             {
                 groupViewModel.UpdateOrder(order);
                 order++;
@@ -551,16 +561,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan CalculateEndTime()
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return TimeSpan.MaxValue;
-
-            var keyframes = GetKeyframes(false);
+            var keyframeTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframePositions(false)).ToList();
 
             // If there are no keyframes, don't stop at all
-            if (!keyframes.Any())
+            if (!keyframeTimes.Any())
                 return TimeSpan.MaxValue;
             // If there are keyframes, stop after the last keyframe + 10 sec
-            return keyframes.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
+            return keyframeTimes.Max().Add(TimeSpan.FromSeconds(10));
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -617,7 +624,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // If holding down shift, snap to the closest segment or keyframe
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, true);
+                    var snapTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframePositions(true)).ToList();
+                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, snapTimes);
                     ProfileEditorService.CurrentTime = snappedTime;
                     return;
                 }
@@ -632,15 +640,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
                 ProfileEditorService.CurrentTime = newTime;
             }
-        }
-
-        private List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
-        {
-            var result = new List<BaseLayerPropertyKeyframe>();
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-                result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
-
-            return result;
         }
 
         #endregion

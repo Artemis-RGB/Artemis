@@ -84,10 +84,9 @@ namespace Artemis.UI.Shared.Services
         /// <param name="tolerance">How close the time must be to snap</param>
         /// <param name="snapToSegments">Enable snapping to timeline segments</param>
         /// <param name="snapToCurrentTime">Enable snapping to the current time of the editor</param>
-        /// <param name="snapToKeyframes">Enable snapping to visible keyframes</param>
-        /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
+        /// <param name="snapTimes">An optional extra list of times to snap to</param>
         /// <returns></returns>
-        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
+        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null);
 
         /// <summary>
         /// If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}"/> supporting <typeparamref name="T"/>
