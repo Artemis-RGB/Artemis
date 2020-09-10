@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
@@ -68,6 +69,29 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 if (child is IDisposable disposableChild)
                     disposableChild.Dispose();
             }
+        }
+
+        public void UpdateOrder(int order)
+        {
+            LayerPropertyGroup.LayerEffect.Order = order;
+            NotifyOfPropertyChange(nameof(IsExpanded));
+        }
+
+        public List<TimeSpan> GetAllKeyframePositions(bool expandedOnly)
+        {
+            var result = new List<TimeSpan>();
+            if (expandedOnly == IsExpanded)
+                return result;
+
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    result.AddRange(layerPropertyViewModel.LayerPropertyTimelineViewModel.GetAllKeyframePositions());
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    result.AddRange(layerPropertyGroupViewModel.GetAllKeyframePositions(expandedOnly));
+            }
+
+            return result;
         }
     }
 }

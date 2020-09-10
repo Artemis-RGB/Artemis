@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core;
 using Stylet;
 
@@ -15,6 +17,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             LayerPropertyViewModel = layerPropertyViewModel;
         }
 
+        public List<TimeSpan> GetAllKeyframePositions()
+        {
+            return LayerProperty.Keyframes.Select(k => k.Position).ToList();
+        }
+
         public void Dispose()
         {
         }
@@ -22,5 +29,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
     public interface ILayerPropertyTimelineViewModel : IScreen, IDisposable
     {
+        List<TimeSpan> GetAllKeyframePositions();
     }
 }

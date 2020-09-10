@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared.Services
         public IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public RenderProfileElement SelectedProfileElement { get; private set; }
-        public BaseLayerProperty SelectedDataBinding { get; private set; }
+        public ILayerProperty SelectedDataBinding { get; private set; }
 
         public TimeSpan CurrentTime
         {
@@ -128,7 +128,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void ChangeSelectedDataBinding(BaseLayerProperty layerProperty)
+        public void ChangeSelectedDataBinding(ILayerProperty layerProperty)
         {
             SelectedDataBinding = layerProperty;
             OnSelectedDataBindingChanged();
@@ -229,7 +229,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null)
+        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null)
         {
             if (snapToSegments)
             {
@@ -254,17 +254,12 @@ namespace Artemis.UI.Shared.Services
                     return SelectedProfileElement.StartSegmentLength;
             }
 
-            if (snapToKeyframes)
+            if (snapTimes != null)
             {
-                // Get all visible keyframes
-                var keyframes = SelectedProfileElement.GetAllKeyframes()
-                    .Where(k => k != excludedKeyframe && SelectedProfileElement.IsPropertyGroupExpanded(k.BaseLayerProperty.Parent))
-                    .ToList();
-
                 // Find the closest keyframe
-                var closeKeyframe = keyframes.FirstOrDefault(k => Math.Abs(time.TotalMilliseconds - k.Position.TotalMilliseconds) < tolerance.TotalMilliseconds);
-                if (closeKeyframe != null)
-                    return closeKeyframe.Position;
+                var closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds);
+                if (closeSnapTime != TimeSpan.Zero)
+                    return closeSnapTime;
             }
 
             return time;
