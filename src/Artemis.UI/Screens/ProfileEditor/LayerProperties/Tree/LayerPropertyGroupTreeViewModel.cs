@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
+using Artemis.UI.Screens.ProfileEditor.Windows;
 using Artemis.UI.Shared.Services;
 using Ninject;
 using Ninject.Parameters;
@@ -15,34 +14,36 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class TreePropertyGroupViewModel : PropertyChangedBase
+    public class LayerPropertyGroupTreeViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IRenderElementService _renderElementService;
         private readonly IWindowManager _windowManager;
 
-        public TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel,
+        public LayerPropertyGroupTreeViewModel(
+            LayerPropertyGroupViewModel layerPropertyGroupViewModel,
             IProfileEditorService profileEditorService,
-            IRenderElementService renderElementService,
             IDialogService dialogService,
             IWindowManager windowManager,
             IKernel kernel)
         {
             _profileEditorService = profileEditorService;
-            _renderElementService = renderElementService;
             _dialogService = dialogService;
             _windowManager = windowManager;
             _kernel = kernel;
-            LayerPropertyGroupViewModel = (LayerPropertyGroupViewModel) layerPropertyBaseViewModel;
+
+            LayerPropertyGroupViewModel = layerPropertyGroupViewModel;
+            LayerPropertyGroup = LayerPropertyGroupViewModel.LayerPropertyGroup;
         }
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
+        public LayerPropertyGroup LayerPropertyGroup { get; }
+        public LayerPropertyGroupType GroupType { get; set; }
 
         public void OpenBrushSettings()
         {
-            var layerBrush = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerBrush;
+            var layerBrush = LayerPropertyGroup.LayerBrush;
             var configurationViewModel = layerBrush.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
@@ -69,7 +70,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public void OpenEffectSettings()
         {
-            var layerEffect = LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect;
+            var layerEffect = LayerPropertyGroup.LayerEffect;
             var configurationViewModel = layerEffect.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
@@ -100,26 +101,52 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 new Dictionary<string, object>
                 {
                     {"subject", "effect"},
-                    {"currentName", LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name}
+                    {"currentName", LayerPropertyGroup.LayerEffect.Name}
                 }
             );
             if (result is string newName)
             {
-                LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.Name = newName;
-                LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
+                LayerPropertyGroup.LayerEffect.Name = newName;
+                LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
                 _profileEditorService.UpdateSelectedProfile();
             }
         }
 
         public void DeleteEffect()
         {
-            _renderElementService.RemoveLayerEffect(LayerPropertyGroupViewModel.LayerPropertyGroup.LayerEffect);
+            if (LayerPropertyGroup.LayerEffect == null)
+                return;
+
+            LayerPropertyGroup.ProfileElement.RemoveLayerEffect(LayerPropertyGroup.LayerEffect);
             _profileEditorService.UpdateSelectedProfile();
         }
 
         public void EnableToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
+        }
+
+        private void DetermineGroupType()
+        {
+            if (LayerPropertyGroup is LayerGeneralProperties)
+                GroupType = LayerPropertyGroupType.General;
+            else if (LayerPropertyGroup is LayerTransformProperties)
+                GroupType = LayerPropertyGroupType.Transform;
+            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
+                GroupType = LayerPropertyGroupType.LayerBrushRoot;
+            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
+                GroupType = LayerPropertyGroupType.LayerEffectRoot;
+            else
+                GroupType = LayerPropertyGroupType.None;
+        }
+
+        public enum LayerPropertyGroupType
+        {
+            General,
+            Transform,
+            LayerBrushRoot,
+            LayerEffectRoot,
+            None
         }
     }
 }

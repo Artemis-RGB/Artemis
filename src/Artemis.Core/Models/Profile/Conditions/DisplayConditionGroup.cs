@@ -105,14 +105,14 @@ namespace Artemis.Core
             };
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             Entity.BooleanOperator = (int) BooleanOperator;
 
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
             foreach (var child in Children)
-                child.ApplyToEntity();
+                child.Save();
         }
 
         internal override DisplayConditionPartEntity GetEntity()

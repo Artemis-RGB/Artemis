@@ -11,24 +11,17 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
-    public class ProfileTreeViewModel : ProfileEditorPanelViewModel, IDropTarget
+    public class ProfileTreeViewModel : Conductor<FolderViewModel>, IProfileEditorPanelViewModel, IDropTarget
     {
-        private readonly IFolderVmFactory _folderVmFactory;
+        private readonly IProfileTreeVmFactory _profileTreeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private FolderViewModel _rootFolder;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
 
-        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IFolderVmFactory folderVmFactory)
+        public ProfileTreeViewModel(IProfileEditorService profileEditorService, IProfileTreeVmFactory profileTreeVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _folderVmFactory = folderVmFactory;
-        }
-
-        public FolderViewModel RootFolder
-        {
-            get => _rootFolder;
-            set => SetAndNotify(ref _rootFolder, value);
+            _profileTreeVmFactory = profileTreeVmFactory;
         }
 
         public TreeItemViewModel SelectedTreeItem
@@ -73,7 +66,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             switch (dragDropType)
             {
                 case DragDropType.Add:
-                    source.Parent.RemoveExistingElement(source);
+                    ((TreeItemViewModel) source.Parent).RemoveExistingElement(source);
                     target.AddExistingElement(source);
                     break;
                 case DragDropType.InsertBefore:
@@ -92,27 +85,25 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         // ReSharper disable once UnusedMember.Global - Called from view
         public void AddFolder()
         {
-            RootFolder?.AddFolder();
+            ActiveItem?.AddFolder();
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void AddLayer()
         {
-            RootFolder?.AddLayer();
+            ActiveItem?.AddLayer();
         }
 
         protected override void OnInitialActivate()
         {
             Subscribe();
             CreateRootFolderViewModel();
+            base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             Unsubscribe();
-
-            RootFolder?.Dispose();
-            RootFolder = null;
             base.OnClose();
         }
 
@@ -122,12 +113,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             var firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
             if (!(firstChild is Folder folder))
             {
-                RootFolder = null;
+                ActivateItem(null);
                 return;
             }
 
-            RootFolder?.Dispose();
-            RootFolder = _folderVmFactory.Create(folder);
+            ActivateItem(_profileTreeVmFactory.FolderViewModel(folder));
             _updatingTree = false;
 
             // Auto-select the first layer
@@ -150,7 +140,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             {
                 if (parent == source)
                     return DragDropType.None;
-                parent = parent.Parent;
+                parent = (TreeItemViewModel) parent.Parent;
             }
 
             switch (dropInfo.InsertPosition)
@@ -186,20 +176,20 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             if (e.RenderProfileElement == SelectedTreeItem?.ProfileElement)
                 return;
 
-            if (RootFolder == null)
+            if (ActiveItem == null)
             {
                 CreateRootFolderViewModel();
                 return;
             }
 
             _updatingTree = true;
-            RootFolder.UpdateProfileElements();
+            ActiveItem.UpdateProfileElements();
             _updatingTree = false;
             if (e.RenderProfileElement == null)
                 SelectedTreeItem = null;
             else
             {
-                var match = RootFolder.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);
+                var match = ActiveItem.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);
                 if (match != null)
                     SelectedTreeItem = match;
             }

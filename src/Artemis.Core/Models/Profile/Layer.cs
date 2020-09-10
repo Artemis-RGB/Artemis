@@ -11,8 +11,7 @@ using SkiaSharp;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents a layer on a profile. To create new layers use the <see cref="RenderElementService" /> by injecting
-    ///     <see cref="IRenderElementService" /> into your code
+    ///     Represents a layer in a <see cref="Profile" />
     /// </summary>
     public sealed class Layer : RenderProfileElement
     {
@@ -23,13 +22,19 @@ namespace Artemis.Core
         private List<ArtemisLed> _leds;
         private LayerTransformProperties _transform;
 
-        internal Layer(Profile profile, ProfileElement parent, string name)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
+        ///     <paramref name="parent" />
+        /// </summary>
+        /// <param name="parent">The parent of the layer</param>
+        /// <param name="name">The name of the layer</param>
+        public Layer(ProfileElement parent, string name)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
 
-            Profile = profile;
-            Parent = parent;
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            Profile = Parent.Profile;
             Name = name;
             Enabled = true;
             DisplayContinuously = true;
@@ -40,10 +45,10 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
 
-            InitializeDefaultGroups();
-
-            parent.AddChild(this);
+            Initialize();
             ApplyRenderElementDefaults();
+
+            Parent.AddChild(this);
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
@@ -58,8 +63,7 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
 
-            InitializeDefaultGroups();
-
+            Initialize();
             Load();
         }
 
@@ -114,6 +118,8 @@ namespace Artemis.Core
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
+        #region IDisposable
+
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
@@ -133,8 +139,13 @@ namespace Artemis.Core
             _transform?.Dispose();
         }
 
-        private void InitializeDefaultGroups()
+        #endregion
+
+        private void Initialize()
         {
+            LayerBrushStore.LayerBrushAdded += LayerBrushStoreOnLayerBrushAdded;
+            LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
+
             // Layers have two hardcoded property groups, instantiate them
             General.Initialize(this, "General.", Constants.CorePluginInfo);
             Transform.Initialize(this, "Transform.", Constants.CorePluginInfo);
@@ -191,7 +202,7 @@ namespace Artemis.Core
 
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
-            DisplayConditionGroup?.ApplyToEntity();
+            DisplayConditionGroup?.Save();
 
             SaveRenderElement();
         }
@@ -707,6 +718,27 @@ namespace Artemis.Core
             brush.Dispose();
 
             OnLayerBrushUpdated();
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void LayerBrushStoreOnLayerBrushRemoved(object sender, LayerBrushStoreEvent e)
+        {
+            if (LayerBrush.Descriptor == e.Registration.LayerBrushDescriptor)
+                DeactivateLayerBrush();
+        }
+
+        private void LayerBrushStoreOnLayerBrushAdded(object sender, LayerBrushStoreEvent e)
+        {
+            if (LayerBrush != null)
+                return;
+
+            var current = General.BrushReference.CurrentValue;
+            if (e.Registration.Plugin.PluginInfo.Guid == current.BrushPluginGuid &&
+                e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
+                ActivateLayerBrush();
         }
 
         #endregion

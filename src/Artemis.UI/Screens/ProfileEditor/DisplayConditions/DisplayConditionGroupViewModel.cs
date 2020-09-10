@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Windows;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
@@ -11,21 +10,24 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionGroupViewModel : DisplayConditionViewModel, IViewAware
+    public class DisplayConditionGroupViewModel : DisplayConditionViewModel
     {
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
         private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, bool isListGroup,
-            IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory) : base(displayConditionGroup, parent)
+        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup,
+            bool isListGroup,
+            IProfileEditorService profileEditorService,
+            IDisplayConditionsVmFactory displayConditionsVmFactory)
+            : base(displayConditionGroup)
         {
             IsListGroup = isListGroup;
             _profileEditorService = profileEditorService;
             _displayConditionsVmFactory = displayConditionsVmFactory;
 
-            Children.CollectionChanged += (sender, args) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
+            Items.CollectionChanged += (sender, args) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
 
             Execute.PostToUIThread(async () =>
             {
@@ -50,15 +52,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _isInitialized, value);
         }
 
-        public bool DisplayBooleanOperator => Children.Count > 1;
+        public bool DisplayBooleanOperator => Items.Count > 1;
         public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();
-
-        public void AttachView(UIElement view)
-        {
-            View = view;
-        }
-
-        public UIElement View { get; set; }
 
         public void SelectBooleanOperator(string type)
         {
@@ -105,39 +100,36 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Children.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
+            var toRemove = Items.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
-            {
-                Children.Remove(displayConditionViewModel);
-                displayConditionViewModel.Dispose();
-            }
+                CloseItem(displayConditionViewModel);
 
             foreach (var childModel in Model.Children)
             {
-                if (Children.Any(c => c.Model == childModel))
+                if (Items.Any(c => c.Model == childModel))
                     continue;
 
                 switch (childModel)
                 {
                     case DisplayConditionGroup displayConditionGroup:
-                        Children.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this, IsListGroup));
+                        ActivateItem(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, IsListGroup));
                         break;
                     case DisplayConditionList displayConditionListPredicate:
-                        Children.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate, this));
+                        ActivateItem(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate));
                         break;
                     case DisplayConditionPredicate displayConditionPredicate:
                         if (!IsListGroup)
-                            Children.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate, this));
+                            ActivateItem(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate));
                         break;
                     case DisplayConditionListPredicate displayConditionListPredicate:
                         if (IsListGroup)
-                            Children.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate, this));
+                            ActivateItem(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate));
                         break;
                 }
             }
 
-            foreach (var childViewModel in Children)
+            foreach (var childViewModel in Items)
                 childViewModel.Update();
         }
     }

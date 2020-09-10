@@ -9,32 +9,22 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 {
-    public class EffectsViewModel : PropertyChangedBase
+    public class EffectsViewModel : Conductor<LayerEffectDescriptor>.Collection.AllActive
     {
         private readonly IPluginService _pluginService;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IRenderElementService _renderElementService;
-        private BindableCollection<LayerEffectDescriptor> _layerEffectDescriptors;
         private LayerEffectDescriptor _selectedLayerEffectDescriptor;
 
-        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, IRenderElementService renderElementService, IProfileEditorService profileEditorService)
+        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, IProfileEditorService profileEditorService)
         {
             _pluginService = pluginService;
-            _renderElementService = renderElementService;
             _profileEditorService = profileEditorService;
             LayerPropertiesViewModel = layerPropertiesViewModel;
-            LayerEffectDescriptors = new BindableCollection<LayerEffectDescriptor>();
             PropertyChanged += HandleSelectedLayerEffectChanged;
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
-        public bool HasLayerEffectDescriptors => LayerEffectDescriptors.Any();
-
-        public BindableCollection<LayerEffectDescriptor> LayerEffectDescriptors
-        {
-            get => _layerEffectDescriptors;
-            set => SetAndNotify(ref _layerEffectDescriptors, value);
-        }
+        public bool HasLayerEffectDescriptors => Items.Any();
 
         public LayerEffectDescriptor SelectedLayerEffectDescriptor
         {
@@ -46,15 +36,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
             var descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
-            LayerEffectDescriptors.AddRange(descriptors.Except(LayerEffectDescriptors));
-            LayerEffectDescriptors.RemoveRange(LayerEffectDescriptors.Except(descriptors));
+            Items.AddRange(descriptors.Except(Items));
+            Items.RemoveRange(Items.Except(descriptors));
 
             // Sort by display name
             var index = 0;
-            foreach (var layerEffectDescriptor in LayerEffectDescriptors.OrderBy(d => d.DisplayName).ToList())
+            foreach (var layerEffectDescriptor in Items.OrderBy(d => d.DisplayName).ToList())
             {
-                if (LayerEffectDescriptors.IndexOf(layerEffectDescriptor) != index)
-                    LayerEffectDescriptors.Move(LayerEffectDescriptors.IndexOf(layerEffectDescriptor), index);
+                if (Items.IndexOf(layerEffectDescriptor) != index)
+                    ((BindableCollection<LayerEffectDescriptor>) Items).Move(Items.IndexOf(layerEffectDescriptor), index);
                 index++;
             }
 
@@ -78,7 +68,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
                 Execute.PostToUIThread(async () =>
                 {
                     await Task.Delay(500);
-                    _renderElementService.AddLayerEffect(renderElement, SelectedLayerEffectDescriptor);
+                    renderElement.AddLayerEffect(SelectedLayerEffectDescriptor);
                     _profileEditorService.UpdateSelectedProfileElement();
                 });
             }

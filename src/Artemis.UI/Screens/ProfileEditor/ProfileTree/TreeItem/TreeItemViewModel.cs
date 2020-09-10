@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
@@ -12,43 +11,26 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 {
-    public abstract class TreeItemViewModel : PropertyChangedBase, IDisposable
+    public abstract class TreeItemViewModel : Conductor<TreeItemViewModel>.Collection.AllActive, IDisposable
     {
         private readonly IDialogService _dialogService;
-        private readonly IFolderVmFactory _folderVmFactory;
-        private readonly ILayerVmFactory _layerVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IRenderElementService _renderElementService;
-        private TreeItemViewModel _parent;
+        private readonly IProfileTreeVmFactory _profileTreeVmFactory;
         private ProfileElement _profileElement;
 
-        protected TreeItemViewModel(TreeItemViewModel parent,
-            ProfileElement profileElement,
+        protected TreeItemViewModel(ProfileElement profileElement,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            IRenderElementService renderElementService,
-            IFolderVmFactory folderVmFactory,
-            ILayerVmFactory layerVmFactory)
+            IProfileTreeVmFactory profileTreeVmFactory)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
-            _renderElementService = renderElementService;
-            _folderVmFactory = folderVmFactory;
-            _layerVmFactory = layerVmFactory;
+            _profileTreeVmFactory = profileTreeVmFactory;
 
-            Parent = parent;
             ProfileElement = profileElement;
-
-            Children = new BindableCollection<TreeItemViewModel>();
 
             Subscribe();
             UpdateProfileElements();
-        }
-
-        public TreeItemViewModel Parent
-        {
-            get => _parent;
-            set => SetAndNotify(ref _parent, value);
         }
 
         public ProfileElement ProfileElement
@@ -57,21 +39,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             set => SetAndNotify(ref _profileElement, value);
         }
 
-        public BindableCollection<TreeItemViewModel> Children { get; }
-
         public abstract bool SupportsChildren { get; }
 
         public void Dispose()
         {
             Unsubscribe();
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         public List<TreeItemViewModel> GetAllChildren()
         {
             var children = new List<TreeItemViewModel>();
-            foreach (var childFolder in Children)
+            foreach (var childFolder in Items)
             {
                 // Add all children in this element
                 children.Add(childFolder);
@@ -84,34 +62,38 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void SetElementInFront(TreeItemViewModel source)
         {
+            var sourceParent = (TreeItemViewModel) source.Parent;
+            var parent = (TreeItemViewModel) Parent;
             if (source.Parent != Parent)
             {
-                source.Parent.RemoveExistingElement(source);
-                Parent.AddExistingElement(source);
+                sourceParent.RemoveExistingElement(source);
+                parent.AddExistingElement(source);
             }
 
-            Parent.Unsubscribe();
-            Parent.ProfileElement.RemoveChild(source.ProfileElement);
-            Parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order);
-            Parent.Subscribe();
+            parent.Unsubscribe();
+            parent.ProfileElement.RemoveChild(source.ProfileElement);
+            parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order);
+            parent.Subscribe();
 
-            Parent.UpdateProfileElements();
+            parent.UpdateProfileElements();
         }
 
         public void SetElementBehind(TreeItemViewModel source)
         {
+            var sourceParent = (TreeItemViewModel) source.Parent;
+            var parent = (TreeItemViewModel) Parent;
             if (source.Parent != Parent)
             {
-                source.Parent.RemoveExistingElement(source);
-                Parent.AddExistingElement(source);
+                sourceParent.RemoveExistingElement(source);
+                parent.AddExistingElement(source);
             }
 
-            Parent.Unsubscribe();
-            Parent.ProfileElement.RemoveChild(source.ProfileElement);
-            Parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order + 1);
-            Parent.Subscribe();
+            parent.Unsubscribe();
+            parent.ProfileElement.RemoveChild(source.ProfileElement);
+            parent.ProfileElement.AddChild(source.ProfileElement, ProfileElement.Order + 1);
+            parent.Subscribe();
 
-            Parent.UpdateProfileElements();
+            parent.UpdateProfileElements();
         }
 
         public void RemoveExistingElement(TreeItemViewModel treeItem)
@@ -138,7 +120,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a folder to a profile element of type " + ProfileElement.GetType().Name);
 
-            ProfileElement.AddChild(new Folder(ProfileElement.Profile, ProfileElement, "New folder"));
+            var _ = new Folder(ProfileElement, "New folder");
             _profileEditorService.UpdateSelectedProfile();
         }
 
@@ -147,7 +129,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            _renderElementService.CreateLayer(ProfileElement.Profile, ProfileElement, "New layer");
+            var _ = new Layer(ProfileElement, "New layer");
             _profileEditorService.UpdateSelectedProfile();
         }
 
@@ -180,7 +162,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 return;
 
             // Farewell, cruel world
-            var parent = Parent;
+            var parent = (TreeItemViewModel) Parent;
             ProfileElement.Parent?.RemoveChild(ProfileElement);
             parent.RemoveExistingElement(this);
 
@@ -190,17 +172,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public void UpdateProfileElements()
         {
             // Remove VMs that are no longer a child
-            var toRemove = Children.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
+            var toRemove = Items.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
             foreach (var treeItemViewModel in toRemove)
-                Children.Remove(treeItemViewModel);
+                DeactivateItem(treeItemViewModel);
 
             // Order the children
-            var vmsList = Children.OrderBy(v => v.ProfileElement.Order).ToList();
+            var vmsList = Items.OrderBy(v => v.ProfileElement.Order).ToList();
             for (var index = 0; index < vmsList.Count; index++)
             {
                 var profileElementViewModel = vmsList[index];
-                if (Children.IndexOf(profileElementViewModel) != index)
-                    Children.Move(Children.IndexOf(profileElementViewModel), index);
+                if (Items.IndexOf(profileElementViewModel) != index)
+                    ((BindableCollection<TreeItemViewModel>) Items).Move(Items.IndexOf(profileElementViewModel), index);
             }
 
             // Ensure every child element has an up-to-date VM
@@ -212,13 +194,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             {
                 if (profileElement is Folder folder)
                 {
-                    if (Children.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder) == null)
-                        newChildren.Add(_folderVmFactory.Create((FolderViewModel) this, folder));
+                    if (Items.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder) == null)
+                        newChildren.Add(_profileTreeVmFactory.FolderViewModel(folder));
                 }
                 else if (profileElement is Layer layer)
                 {
-                    if (Children.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer) == null)
-                        newChildren.Add(_layerVmFactory.Create((FolderViewModel) this, layer));
+                    if (Items.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer) == null)
+                        newChildren.Add(_profileTreeVmFactory.LayerViewModel(layer));
                 }
             }
 
@@ -229,20 +211,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             foreach (var treeItemViewModel in newChildren)
             {
                 treeItemViewModel.UpdateProfileElements();
-                Children.Add(treeItemViewModel);
+                ActivateItem(treeItemViewModel);
             }
         }
 
         public void EnableToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
         }
 
         private void Subscribe()

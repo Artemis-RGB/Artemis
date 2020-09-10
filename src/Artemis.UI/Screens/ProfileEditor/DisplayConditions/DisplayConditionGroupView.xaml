@@ -124,7 +124,7 @@
             <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
         </Button>
 
-        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Children}">
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <materialDesign:TransitioningContent>
