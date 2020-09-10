@@ -116,7 +116,7 @@ namespace Artemis.Core
             CompiledListAccessor = lambda.Compile();
         }
         
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             // Target list
             if (ListDataModel != null)
@@ -132,7 +132,7 @@ namespace Artemis.Core
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
             foreach (var child in Children)
-                child.ApplyToEntity();
+                child.Save();
         }
 
         internal override DisplayConditionPartEntity GetEntity()

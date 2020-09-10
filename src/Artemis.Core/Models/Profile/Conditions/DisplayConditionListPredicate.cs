@@ -190,22 +190,31 @@ namespace Artemis.Core
             return result;
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             Entity.PredicateType = (int) PredicateType;
-            Entity.ListDataModelGuid = ListDataModel?.PluginInfo?.Guid;
-            Entity.ListPropertyPath = ListPropertyPath;
+            if (ListDataModel != null)
+            {
+                Entity.ListDataModelGuid = ListDataModel.PluginInfo.Guid;
+                Entity.ListPropertyPath = ListPropertyPath;
+            }
 
             Entity.LeftPropertyPath = LeftPropertyPath;
             Entity.RightPropertyPath = RightPropertyPath;
             Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
 
-            Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
-            Entity.OperatorType = Operator?.GetType().Name;
+            if (Operator != null)
+            {
+                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
+                Entity.OperatorType = Operator.GetType().Name;
+            }
         }
 
-        internal void Initialize()
+        private void Initialize()
         {
+            ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
+
             // Left side
             if (Entity.LeftPropertyPath != null && ListContainsInnerPath(Entity.LeftPropertyPath))
                 UpdateLeftSide(Entity.LeftPropertyPath);
@@ -222,7 +231,7 @@ namespace Artemis.Core
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPropertyPath != null)
             {
                 if (ListContainsInnerPath(Entity.RightPropertyPath))
-                    UpdateLeftSide(Entity.LeftPropertyPath);
+                    UpdateRightSideDynamic(Entity.RightPropertyPath);
             }
             // Right side static
             else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
@@ -384,5 +393,37 @@ namespace Artemis.Core
                 Expression.Property
             );
         }
+
+        #region Event handlers
+
+        private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
+        {
+            var conditionOperator = e.Registration.ConditionOperator;
+            if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
+                UpdateOperator(conditionOperator);
+        }
+
+        private void ConditionOperatorStoreOnConditionOperatorRemoved(object sender, ConditionOperatorStoreEvent e)
+        {
+            if (e.Registration.ConditionOperator != Operator)
+                return;
+            Operator = null;
+            CompiledListPredicate = null;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }

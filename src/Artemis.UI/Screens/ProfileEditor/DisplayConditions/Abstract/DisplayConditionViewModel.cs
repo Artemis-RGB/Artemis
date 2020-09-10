@@ -1,44 +1,23 @@
-﻿using System;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract
 {
-    public abstract class DisplayConditionViewModel : PropertyChangedBase, IDisposable
+    public abstract class DisplayConditionViewModel : Conductor<DisplayConditionViewModel>.Collection.AllActive
     {
-        protected DisplayConditionViewModel(DisplayConditionPart model, DisplayConditionViewModel parent)
+        protected DisplayConditionViewModel(DisplayConditionPart model)
         {
             Model = model;
-            Parent = parent;
-            Children = new BindableCollection<DisplayConditionViewModel>();
         }
 
         public DisplayConditionPart Model { get; }
-        public DisplayConditionViewModel Parent { get; set; }
-        public BindableCollection<DisplayConditionViewModel> Children { get; }
-
-        public void Dispose()
-        {
-            foreach (var child in Children)
-                child.Dispose();
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
 
         public abstract void Update();
 
         public virtual void Delete()
         {
             Model.Parent.RemoveChild(Model);
-            Parent.Update();
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
+            ((DisplayConditionViewModel) Parent).Update();
         }
     }
 }

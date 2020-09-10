@@ -10,7 +10,7 @@ namespace Artemis.UI.Shared.Services
     {
         Profile SelectedProfile { get; }
         RenderProfileElement SelectedProfileElement { get; }
-        BaseLayerProperty SelectedDataBinding { get; }
+        ILayerProperty SelectedDataBinding { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
         IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Services
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(RenderProfileElement profileElement);
         void UpdateSelectedProfileElement();
-        void ChangeSelectedDataBinding(BaseLayerProperty layerProperty);
+        void ChangeSelectedDataBinding(ILayerProperty layerProperty);
         void UpdateProfilePreview();
         bool UndoUpdateProfile();
         bool RedoUpdateProfile();
@@ -88,5 +88,10 @@ namespace Artemis.UI.Shared.Services
         /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
         /// <returns></returns>
         TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
+
+        /// <summary>
+        /// If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}"/> supporting <typeparamref name="T"/>
+        /// </summary>
+        PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty);
     }
 }

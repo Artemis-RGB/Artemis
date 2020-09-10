@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using Artemis.Core.LayerBrushes;
 using Artemis.Storage.Entities.Profile;
 using Ninject;
 
@@ -52,6 +51,11 @@ namespace Artemis.Core.LayerEffects
         internal IKernel Kernel { get; set; }
 
         /// <summary>
+        ///     Gets a boolean indicating if this descriptor is a placeholder for a missing plugin
+        /// </summary>
+        public bool IsPlaceHolder { get; internal set; }
+
+        /// <summary>
         ///     Creates an instance of the described effect and applies it to the render element
         /// </summary>
         internal void CreateInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
@@ -59,6 +63,12 @@ namespace Artemis.Core.LayerEffects
             // Skip effects already on the element
             if (renderElement.LayerEffects.Any(e => e.EntityId == entity.Id))
                 return;
+
+            if (IsPlaceHolder)
+            {
+                CreatePlaceHolderInstance(renderElement, entity);
+                return;
+            }
 
             var effect = (BaseLayerEffect) Kernel.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
@@ -71,6 +81,12 @@ namespace Artemis.Core.LayerEffects
             effect.Initialize();
             effect.Update(0);
 
+            renderElement.ActivateLayerEffect(effect);
+        }
+
+        private void CreatePlaceHolderInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
+        {
+            var effect = new PlaceholderLayerEffect(entity) {ProfileElement = renderElement, Descriptor = this};
             renderElement.ActivateLayerEffect(effect);
         }
     }

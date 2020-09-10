@@ -2,7 +2,7 @@
 using Artemis.Core.LayerBrushes;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor
+namespace Artemis.UI.Screens.ProfileEditor.Windows
 {
     public class LayerBrushSettingsWindowViewModel : Conductor<BrushConfigurationViewModel>
     {

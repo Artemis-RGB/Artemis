@@ -17,9 +17,9 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionListPredicateViewModel : DisplayConditionViewModel, IHandle<MainWindowKeyEvent>, IHandle<MainWindowMouseEvent>
+    public class DisplayConditionListPredicateViewModel : DisplayConditionViewModel, IHandle<MainWindowKeyEvent>, IHandle<MainWindowMouseEvent>, IDisposable
     {
-        private readonly IDataModelService _dataModelService;
+        private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
@@ -39,16 +39,15 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public DisplayConditionListPredicateViewModel(
             DisplayConditionListPredicate displayConditionListPredicate,
-            DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
-            IDataModelService dataModelService,
+            IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService,
-            IEventAggregator eventAggregator) : base(displayConditionListPredicate, parent)
+            IEventAggregator eventAggregator) : base(displayConditionListPredicate)
         {
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
-            _dataModelService = dataModelService;
+            _conditionOperatorService = conditionOperatorService;
             _eventAggregator = eventAggregator;
             _updateTimer = new Timer(500);
             _supportedInputTypes = new List<Type>();
@@ -206,7 +205,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             // Get the supported operators
             Operators.Clear();
-            Operators.AddRange(_dataModelService.GetConditionOperatorsForType(leftSideType));
+            Operators.AddRange(_conditionOperatorService.GetConditionOperatorsForType(leftSideType));
             if (DisplayConditionListPredicate.Operator == null)
                 DisplayConditionListPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType)));
             SelectedOperator = DisplayConditionListPredicate.Operator;
@@ -275,12 +274,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 ApplyRightSideStatic
             );
             _eventAggregator.Subscribe(this);
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _updateTimer.Stop();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
         }
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
@@ -352,6 +345,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             SelectedOperator = displayConditionOperator;
             ApplyOperator();
+        }
+
+        public void Dispose()
+        {
+            _updateTimer.Dispose();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
         }
     }
 }

@@ -110,9 +110,12 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
-
+            
             lock (ChildrenList)
             {
+                if (ChildrenList.Contains(child))
+                    return;
+
                 // Add to the end of the list
                 if (order == null)
                 {
