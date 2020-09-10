@@ -52,6 +52,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             SettingsService = settingsService;
 
             EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
+            Items.Add(EffectsViewModel);
+
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
             PropertyChanged += HandlePropertyTreeIndexChanged;
         }
