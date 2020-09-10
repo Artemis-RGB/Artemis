@@ -8,24 +8,35 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a folder in a <see cref="Profile" />
+    /// </summary>
     public sealed class Folder : RenderProfileElement
     {
         private SKBitmap _folderBitmap;
 
-        public Folder(Profile profile, ProfileElement parent, string name)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Folder" /> class and adds itself to the child collection of the provided
+        ///     <paramref name="parent" />
+        /// </summary>
+        /// <param name="parent">The parent of the folder</param>
+        /// <param name="name">The name of the folder</param>
+        public Folder(ProfileElement parent, string name)
         {
             FolderEntity = new FolderEntity();
             EntityId = Guid.NewGuid();
 
-            Profile = profile;
-            Parent = parent;
+            Parent = parent ?? throw new ArgumentNullException(nameof(parent));
+            Profile = Parent.Profile;
             Name = name;
             Enabled = true;
             DisplayContinuously = true;
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
+
             ApplyRenderElementDefaults();
+            Parent.AddChild(this);
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
@@ -182,22 +193,7 @@ namespace Artemis.Core
 
             canvas.Restore();
         }
-
-        /// <summary>
-        ///     Adds a new folder to the bottom of this folder
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public Folder AddFolder(string name)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            var folder = new Folder(Profile, this, name) {Order = Children.LastOrDefault()?.Order ?? 1};
-            AddChild(folder);
-            return folder;
-        }
-
+        
         /// <inheritdoc />
         public override void AddChild(ProfileElement child, int? order = null)
         {
@@ -296,7 +292,7 @@ namespace Artemis.Core
 
             // Conditions
             RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
-            DisplayConditionGroup?.ApplyToEntity();
+            DisplayConditionGroup?.Save();
 
             SaveRenderElement();
         }

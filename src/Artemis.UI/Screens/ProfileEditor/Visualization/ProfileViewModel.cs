@@ -15,7 +15,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : ProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
+    public class ProfileViewModel : Screen, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileLayerVmFactory _profileLayerVmFactory;

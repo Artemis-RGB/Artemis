@@ -148,5 +148,7 @@ namespace Artemis.Core.LayerEffects
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core
         internal abstract void Initialize();
+
+        internal virtual string GetEffectTypeName() => GetType().Name;
     }
 }

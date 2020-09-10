@@ -27,7 +27,7 @@
         </StackPanel>
 
         <TreeView Grid.Row="1"
-                  ItemsSource="{Binding RootFolder.Children}"
+                  ItemsSource="{Binding ActiveItem.Items}"
                   HorizontalContentAlignment="Stretch"
                   dd:DragDrop.IsDragSource="True"
                   dd:DragDrop.IsDropTarget="True"
@@ -36,11 +36,11 @@
                 <behaviors:TreeViewSelectionBehavior ExpandSelected="True" SelectedItem="{Binding SelectedTreeItem}" />
             </b:Interaction.Behaviors>
             <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type treeItem1:FolderViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type treeItem1:FolderViewModel}" ItemsSource="{Binding Items}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
                 <!-- TODO: Ensure this item source is required -->
-                <HierarchicalDataTemplate DataType="{x:Type treeItem1:LayerViewModel}" ItemsSource="{Binding Children}">
+                <HierarchicalDataTemplate DataType="{x:Type treeItem1:LayerViewModel}" ItemsSource="{Binding Items}">
                     <ContentControl s:View.Model="{Binding}" />
                 </HierarchicalDataTemplate>
             </TreeView.Resources>

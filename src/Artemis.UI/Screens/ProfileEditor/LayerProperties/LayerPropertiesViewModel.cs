@@ -16,11 +16,10 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
-using static Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerPropertyGroupViewModel.ViewModelType;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertiesViewModel : ProfileEditorPanelViewModel, IDropTarget
+    public class LayerPropertiesViewModel : Conductor<IScreen>.Collection.AllActive, IProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;

@@ -16,17 +16,19 @@ namespace Artemis.Core
             ProfileEntity = new ProfileEntity();
             EntityId = Guid.NewGuid();
 
+            Profile = this;
             Module = module;
             Name = name;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            AddChild(new Folder(this, this, "Root folder"));
+            var _ = new Folder(this, "Root folder");
             Save();
         }
 
         internal Profile(ProfileModule module, ProfileEntity profileEntity)
         {
+            Profile = this;
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
 
@@ -103,7 +105,9 @@ namespace Artemis.Core
                 // Populate the profile starting at the root, the rest is populated recursively
                 var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
-                    AddChild(new Folder(this, this, "Root folder"));
+                {
+                    var _ = new Folder(this, "Root folder");
+                }
                 else
                     AddChild(new Folder(this, this, rootFolder));
             }
