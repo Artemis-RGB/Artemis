@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
 using Ninject;
 using Ninject.Parameters;
@@ -14,24 +15,24 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             LayerProperty = layerProperty;
 
             var parameter = new ConstructorArgument("layerProperty", LayerProperty);
-            var treeViewModelType = typeof(LayerPropertyTreeViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
-            var timelineViewModelType = typeof(LayerPropertyTimelineViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
+            var treeViewModelType = typeof(TreePropertyViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
+            var timelineViewModelType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
 
-            LayerPropertyTreeViewModel = (ILayerPropertyTreeViewModel) kernel.Get(treeViewModelType, parameter);
-            LayerPropertyTimelineViewModel = (ILayerPropertyTimelineViewModel) kernel.Get(timelineViewModelType, parameter);
+            TreePropertyViewModel = (ITreePropertyViewModel) kernel.Get(treeViewModelType, parameter);
+            TimelinePropertyViewModel = (ITimelinePropertyViewModel) kernel.Get(timelineViewModelType, parameter);
         }
 
         public ILayerProperty LayerProperty { get; }
-        public ILayerPropertyTreeViewModel LayerPropertyTreeViewModel { get; }
-        public ILayerPropertyTimelineViewModel LayerPropertyTimelineViewModel { get; }
+        public ITreePropertyViewModel TreePropertyViewModel { get; }
+        public ITimelinePropertyViewModel TimelinePropertyViewModel { get; }
 
         public bool IsVisible { get; set; }
         public bool IsExpanded { get; set; }
 
         public void Dispose()
         {
-            LayerPropertyTreeViewModel?.Dispose();
-            LayerPropertyTimelineViewModel?.Dispose();
+            TreePropertyViewModel?.Dispose();
+            TimelinePropertyViewModel?.Dispose();
         }
     }
 }

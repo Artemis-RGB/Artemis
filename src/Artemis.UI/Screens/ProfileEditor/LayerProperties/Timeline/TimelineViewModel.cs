@@ -8,7 +8,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -32,8 +31,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-
-            Update();
         }
 
         public RenderProfileElement SelectedProfileElement { get; set; }
@@ -62,21 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
-
-        public void Update()
-        {
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-            {
-                layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.UpdateKeyframes();
-
-                foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
-                {
-                    if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)
-                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
-                }
-            }
-        }
-
+        
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.StartSegmentLength))
