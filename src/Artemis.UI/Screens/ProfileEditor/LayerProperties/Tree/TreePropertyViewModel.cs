@@ -7,12 +7,12 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class LayerPropertyTreeViewModel<T> : Screen, ILayerPropertyTreeViewModel
+    public class TreePropertyViewModel<T> : Screen, ITreePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
         private PropertyInputViewModel<T> _propertyInputViewModel;
 
-        public LayerPropertyTreeViewModel(LayerProperty<T> layerProperty, LayerPropertyViewModel layerPropertyViewModel, IProfileEditorService profileEditorService)
+        public TreePropertyViewModel(LayerProperty<T> layerProperty, LayerPropertyViewModel layerPropertyViewModel, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
             LayerProperty = layerProperty;
@@ -86,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         #endregion
     }
 
-    public interface ILayerPropertyTreeViewModel : IScreen, IDisposable
+    public interface ITreePropertyViewModel : IScreen, IDisposable
     {
         bool HasPropertyInputViewModel { get; }
     }

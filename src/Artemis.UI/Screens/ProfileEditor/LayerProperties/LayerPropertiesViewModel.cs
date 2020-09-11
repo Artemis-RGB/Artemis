@@ -16,7 +16,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
-using static Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree.LayerPropertyGroupTreeViewModel.LayerPropertyGroupType;
+using static Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree.TreeGroupViewModel.LayerPropertyGroupType;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
@@ -246,7 +246,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             {
                 RightSideIndex = 1;
                 DataBindingsViewModel?.Dispose();
-                DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
+                // TODO
+                // DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
             }
             else
                 RightSideIndex = 0;
@@ -357,7 +358,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
 
             SortProperties();
-            UpdateKeyframes();
+            TimelineViewModel.Update();
         }
 
         private void ApplyEffects()
@@ -392,18 +393,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
 
             SortProperties();
-            UpdateKeyframes();
+            TimelineViewModel.Update();
         }
 
         private void SortProperties()
         {
             // Get all non-effect properties
             var nonEffectProperties = LayerPropertyGroups
-                .Where(l => l.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
+                .Where(l => l.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 .ToList();
             // Order the effects
             var effectProperties = LayerPropertyGroups
-                .Where(l => l.LayerPropertyGroupTreeViewModel.GroupType == LayerEffectRoot)
+                .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot)
                 .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
                 .ToList();
 
@@ -421,12 +422,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
         }
-
-        private void UpdateKeyframes()
-        {
-            TimelineViewModel.Update();
-        }
-
+        
         #endregion
 
         #region Drag and drop
@@ -442,8 +438,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
             if (source == target || 
-                target?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot || 
-                source?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
+                target?.TreeGroupViewModel.GroupType != LayerEffectRoot || 
+                source?.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 return;
 
             dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -461,8 +457,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
             if (source == target ||
-                target?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot ||
-                source?.LayerPropertyGroupTreeViewModel.GroupType != LayerEffectRoot)
+                target?.TreeGroupViewModel.GroupType != LayerEffectRoot ||
+                source?.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
@@ -491,7 +487,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void ApplyCurrentEffectsOrder()
         {
             var order = 1;
-            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.LayerPropertyGroupTreeViewModel.GroupType == LayerEffectRoot))
+            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
             {
                 groupViewModel.UpdateOrder(order);
                 order++;

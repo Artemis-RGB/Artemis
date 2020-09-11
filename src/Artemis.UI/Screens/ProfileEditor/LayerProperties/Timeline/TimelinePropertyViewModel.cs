@@ -1,108 +1,61 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
+using Artemis.Core;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelinePropertyViewModel<T> : TimelinePropertyViewModel
+    public class TimelinePropertyViewModel<T> : Conductor<TimelineKeyframeViewModel<T>>.Collection.AllActive, ITimelinePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
+        public LayerProperty<T> LayerProperty { get; }
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
 
-        public TimelinePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, IProfileEditorService profileEditorService) : base(layerPropertyBaseViewModel)
+        public TimelinePropertyViewModel(LayerProperty<T> layerProperty, LayerPropertyViewModel layerPropertyViewModel, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
-            LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
 
-            LayerPropertyViewModel.LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeModified;
-            LayerPropertyViewModel.LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeModified;
-            LayerPropertyViewModel.LayerProperty.KeyframesToggled += LayerPropertyOnKeyframeModified;
-            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerProperty = layerProperty;
+            LayerPropertyViewModel = layerPropertyViewModel;
         }
 
-        public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
+        public List<TimeSpan> GetAllKeyframePositions()
+        {
+            return LayerProperty.Keyframes.Select(k => k.Position).ToList();
+        }
 
-        public override void UpdateKeyframes()
+        private void UpdateKeyframes()
         {
             // Only show keyframes if they are enabled
-            if (LayerPropertyViewModel.LayerProperty.KeyframesEnabled)
+            if (LayerProperty.KeyframesEnabled)
             {
-                var keyframes = LayerPropertyViewModel.LayerProperty.Keyframes.ToList();
-                var toRemove = TimelineKeyframeViewModels.Where(t => !keyframes.Contains(t.BaseLayerPropertyKeyframe)).ToList();
+                var keyframes = LayerProperty.Keyframes.ToList();
+                var toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
                 foreach (var timelineKeyframeViewModel in toRemove)
                     timelineKeyframeViewModel.Dispose();
 
-                TimelineKeyframeViewModels.RemoveRange(toRemove);
-                TimelineKeyframeViewModels.AddRange(keyframes
-                    .Where(k => TimelineKeyframeViewModels.All(t => t.BaseLayerPropertyKeyframe != k))
-                    .Select(k => new TimelineKeyframeViewModel<T>(_profileEditorService, k))
+                Items.RemoveRange(toRemove);
+                Items.AddRange(keyframes
+                    .Where(k => Items.All(t => t.LayerPropertyKeyframe != k))
+                    .Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
                 );
             }
             else
-                DisposeKeyframeViewModels();
+                Items.Clear();
 
-            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
-                timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);
+            foreach (var timelineKeyframeViewModel in Items)
+                timelineKeyframeViewModel.Update();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
-            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            LayerPropertyViewModel.LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeModified;
-            LayerPropertyViewModel.LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeModified;
-            LayerPropertyViewModel.LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframeModified;
-            DisposeKeyframeViewModels();
-        }
-
-        private void DisposeKeyframeViewModels()
-        {
-            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
-                timelineKeyframeViewModel.Dispose();
-            TimelineKeyframeViewModels.Clear();
-        }
-
-        private void LayerPropertyOnKeyframeModified(object sender, EventArgs e)
-        {
-            UpdateKeyframes();
-        }
-
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
-        {
-            foreach (var timelineKeyframeViewModel in TimelineKeyframeViewModels)
-                timelineKeyframeViewModel.Update(_profileEditorService.PixelsPerSecond);
-
-            Width = TimelineKeyframeViewModels.Any() ? TimelineKeyframeViewModels.Max(t => t.X) + 25 : 0;
         }
     }
 
-    public abstract class TimelinePropertyViewModel : PropertyChangedBase, IDisposable
+    public interface ITimelinePropertyViewModel : IScreen, IDisposable
     {
-        private BindableCollection<TimelineKeyframeViewModel> _timelineKeyframeViewModels;
-        private double _width;
-
-        protected TimelinePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
-        {
-            LayerPropertyBaseViewModel = layerPropertyBaseViewModel;
-            TimelineKeyframeViewModels = new BindableCollection<TimelineKeyframeViewModel>();
-        }
-
-        public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
-
-        public BindableCollection<TimelineKeyframeViewModel> TimelineKeyframeViewModels
-        {
-            get => _timelineKeyframeViewModels;
-            set => SetAndNotify(ref _timelineKeyframeViewModels, value);
-        }
-
-        public double Width
-        {
-            get => _width;
-            set => SetAndNotify(ref _width, value);
-        }
-
-        public abstract void Dispose();
-
-        public abstract void UpdateKeyframes();
+        List<TimeSpan> GetAllKeyframePositions();
     }
 }
