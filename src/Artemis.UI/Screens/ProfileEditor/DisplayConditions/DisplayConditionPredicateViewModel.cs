@@ -168,14 +168,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void Initialize()
         {
             // Get the data models
-            LeftSideDataModel = _dataModelUIService.GetMainDataModelVisualization();
-            RightSideDataModel = _dataModelUIService.GetMainDataModelVisualization();
-            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-            {
-                LeftSideDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-                RightSideDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-            }
-
+            LeftSideDataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
+            RightSideDataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
+            
             // Determine which types are currently supported
             var editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();

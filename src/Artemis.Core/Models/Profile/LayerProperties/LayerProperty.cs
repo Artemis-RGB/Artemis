@@ -19,7 +19,7 @@ namespace Artemis.Core
     public abstract class LayerProperty<T> : ILayerProperty
     {
         private bool _disposed;
-        
+
         /// <summary>
         ///     Creates a new instance of the <see cref="LayerProperty{T}" /> class
         /// </summary>
@@ -275,19 +275,6 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Removes all keyframes from the layer property
-        /// </summary>
-        public void ClearKeyframes()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("LayerProperty");
-
-            var keyframes = new List<LayerPropertyKeyframe<T>>(_keyframes);
-            foreach (var layerPropertyKeyframe in keyframes)
-                RemoveKeyframe(layerPropertyKeyframe);
-        }
-
-        /// <summary>
         ///     Sorts the keyframes in ascending order by position
         /// </summary>
         internal void SortKeyframes()
@@ -341,6 +328,11 @@ namespace Artemis.Core
             var match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
                                                                       registration.Property.Name == propertyName);
             return (DataBindingRegistration<T, TProperty>) match;
+        }
+
+        public List<IDataBindingRegistration> GetAllDataBindingRegistrations()
+        {
+            return _dataBindingRegistrations;
         }
 
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, DataBindingConverter<T, TProperty> converter)
@@ -593,7 +585,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            foreach (var dataBinding in _dataBindings) 
+            foreach (var dataBinding in _dataBindings)
                 dataBinding.Dispose();
         }
     }

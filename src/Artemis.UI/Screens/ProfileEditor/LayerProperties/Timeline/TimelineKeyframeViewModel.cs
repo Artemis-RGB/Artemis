@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineKeyframeViewModel<T> : Screen, IDisposable
+    public class TimelineKeyframeViewModel<T> : Screen, ITimelineKeyframeViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
 
@@ -31,12 +31,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _easingViewModels, value);
         }
 
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set => SetAndNotify(ref _isSelected, value);
-        }
-
         public double X
         {
             get => _x;
@@ -48,6 +42,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             get => _timestamp;
             set => SetAndNotify(ref _timestamp, value);
         }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
+
+        public TimeSpan Position => LayerPropertyKeyframe.Position;
 
         public void Dispose()
         {
@@ -110,9 +112,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _offset = null;
         }
 
-        public void SaveOffsetToKeyframe(TimelineKeyframeViewModel<T> keyframeViewModel)
+        public void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source)
         {
-            if (keyframeViewModel == this)
+            if (source == this)
             {
                 _offset = null;
                 return;
@@ -121,15 +123,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (_offset != null)
                 return;
 
-            _offset = LayerPropertyKeyframe.Position - keyframeViewModel.LayerPropertyKeyframe.Position;
+            _offset = LayerPropertyKeyframe.Position - source.Position;
         }
 
-        public void ApplyOffsetToKeyframe(TimelineKeyframeViewModel<T> keyframeViewModel)
+        public void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source)
         {
-            if (keyframeViewModel == this || _offset == null)
+            if (source == this || _offset == null)
                 return;
 
-            UpdatePosition(keyframeViewModel.LayerPropertyKeyframe.Position + _offset.Value);
+            UpdatePosition(source.Position + _offset.Value);
         }
 
         public void UpdatePosition(TimeSpan position)
@@ -147,6 +149,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         #endregion
 
         #region Context menu actions
+
+        public void ContextMenuOpening()
+        {
+            CreateEasingViewModels();
+        }
+
+        public void ContextMenuClosing()
+        {
+            foreach (var timelineEasingViewModel in EasingViewModels)
+                timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
+            EasingViewModels.Clear();
+        }
 
         public void Copy()
         {
@@ -177,6 +191,28 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
             _profileEditorService.UpdateSelectedProfileElement();
         }
+
+        #endregion
+    }
+
+    public interface ITimelineKeyframeViewModel : IScreen, IDisposable
+    {
+        bool IsSelected { get; set; }
+        TimeSpan Position { get; }
+
+        #region Movement
+
+        void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source);
+        void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source);
+        void UpdatePosition(TimeSpan position);
+        void ReleaseMovement();
+
+        #endregion
+
+        #region Context menu actions
+
+        void Copy();
+        void Delete();
 
         #endregion
     }

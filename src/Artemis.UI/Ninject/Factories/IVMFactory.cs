@@ -71,21 +71,21 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDataBindingsVmFactory : IVmFactory
     {
-        DataBindingsViewModel DataBindingsViewModel(BaseLayerProperty layerProperty);
-        DataBindingViewModel DataBindingViewModel(DataBindingRegistration registration);
-        DataBindingModifierViewModel DataBindingModifierViewModel(DataBindingModifier modifier);
+        IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
+        DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory
     {
         LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
+
         LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
-        TreePropertyViewModel<T> LayerPropertyGroupViewModel<T>(LayerProperty<T> layerProperty);
         TreeGroupViewModel TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
         TimelineGroupViewModel TimelineGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
-        LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription);
+        
         TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
         TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+        TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
     }
 }
