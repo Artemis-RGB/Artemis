@@ -32,7 +32,7 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             var viewModel = new DataModelPropertiesViewModel(null, null, null);
-            foreach (var dataModelExpansion in _dataModelService.DataModelExpansions)
+            foreach (var dataModelExpansion in _dataModelService.GetDataModels())
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, null));
 
             // Update to populate children
@@ -41,8 +41,23 @@ namespace Artemis.UI.Shared.Services
             return viewModel;
         }
 
-        public DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin)
+        public DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool includeMainDataModel)
         {
+            if (includeMainDataModel)
+            {
+                var mainDataModel = GetMainDataModelVisualization();
+
+                // If the main data model already includes the plugin data model we're done
+                if (mainDataModel.Children.Any(c => c.DataModel.PluginInfo.Instance == plugin))
+                    return mainDataModel;
+                // Otherwise get just the plugin data model and add it
+                var pluginDataModel = GetPluginDataModelVisualization(plugin, false);
+                if (pluginDataModel != null)
+                    mainDataModel.Children.Add(pluginDataModel);
+
+                return mainDataModel;
+            }
+            
             var dataModel = _dataModelService.GetPluginDataModel(plugin);
             if (dataModel == null)
                 return null;
@@ -55,12 +70,7 @@ namespace Artemis.UI.Shared.Services
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
-
-        public bool GetPluginExtendsDataModel(Plugin plugin)
-        {
-            return _dataModelService.GetPluginExtendsDataModel(plugin);
-        }
-
+        
         public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes = null) where T : DataModelInputViewModel
         {
             if (compatibleConversionTypes == null)

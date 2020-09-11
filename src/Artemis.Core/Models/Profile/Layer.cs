@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -672,6 +673,13 @@ namespace Artemis.Core
             if (descriptor == null)
                 throw new ArgumentNullException(nameof(descriptor));
 
+            if (LayerBrush != null)
+            {
+                var brush = LayerBrush;
+                LayerBrush = null;
+                brush.Dispose();
+            }
+
             // Ensure the brush reference matches the brush
             var current = General.BrushReference.CurrentValue;
             if (current.BrushPluginGuid != descriptor.LayerBrushProvider.PluginInfo.Guid || current.BrushType != descriptor.LayerBrushType.Name)
@@ -721,7 +729,7 @@ namespace Artemis.Core
         }
 
         #endregion
-
+        
         #region Event handlers
 
         private void LayerBrushStoreOnLayerBrushRemoved(object sender, LayerBrushStoreEvent e)

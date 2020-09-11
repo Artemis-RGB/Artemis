@@ -89,10 +89,7 @@ namespace Artemis.UI.Shared.Input
         private void Initialize()
         {
             // Get the data models
-            DataModelViewModel = _dataModelUIService.GetMainDataModelVisualization();
-            if (!_dataModelUIService.GetPluginExtendsDataModel(_module))
-                DataModelViewModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_module));
-
+            DataModelViewModel = _dataModelUIService.GetPluginDataModelVisualization(_module, true);
             DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
 
             _updateTimer.Start();

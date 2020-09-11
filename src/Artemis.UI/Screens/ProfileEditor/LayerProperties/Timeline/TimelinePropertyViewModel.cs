@@ -21,9 +21,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerPropertyViewModel = layerPropertyViewModel;
         }
 
-        public List<TimeSpan> GetAllKeyframePositions()
+        public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
-            return LayerProperty.Keyframes.Select(k => k.Position).ToList();
+            return Items.Cast<ITimelineKeyframeViewModel>().ToList();
         }
 
         private void UpdateKeyframes()
@@ -49,6 +49,30 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 timelineKeyframeViewModel.Update();
         }
 
+        public void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            start ??= TimeSpan.Zero;
+            end ??= TimeSpan.MaxValue;
+
+            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position <= end).ToList();
+            foreach (var keyframe in toShift) 
+                LayerProperty.RemoveKeyframe(keyframe);
+
+            UpdateKeyframes();
+        }
+
+        public void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            start ??= TimeSpan.Zero;
+            end ??= TimeSpan.MaxValue;
+
+            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position <= end).ToList();
+            foreach (var keyframe in toShift)
+                keyframe.Position += amount;
+
+            UpdateKeyframes();
+        }
+
         public void Dispose()
         {
         }
@@ -56,6 +80,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
     public interface ITimelinePropertyViewModel : IScreen, IDisposable
     {
-        List<TimeSpan> GetAllKeyframePositions();
+        List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels();
+        void WipeKeyframes(TimeSpan? start, TimeSpan? end);
+        void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount);
     }
 }
