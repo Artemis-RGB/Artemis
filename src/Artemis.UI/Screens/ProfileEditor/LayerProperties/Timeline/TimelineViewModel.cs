@@ -14,7 +14,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineViewModel : PropertyChangedBase, IViewAware, IDisposable
+    public class TimelineViewModel : Screen, IDisposable
     {
         private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
         private readonly IProfileEditorService _profileEditorService;
@@ -105,7 +105,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // if (e.LeftButton == MouseButtonState.Released)
             //     return;
 
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
+            var viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
             if (viewModel == null)
                 return;
 
@@ -130,7 +130,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
         {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
+            var viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
             if (viewModel == null)
                 return;
 
@@ -142,24 +142,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Context menu actions
 
-        public void ContextMenuOpening(object sender, ContextMenuEventArgs e)
-        {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
-            viewModel?.CreateEasingViewModels();
-        }
-
-        public void ContextMenuClosing(object sender, ContextMenuEventArgs e)
-        {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
-            viewModel?.EasingViewModels.Clear();
-        }
-
-        public void Copy(TimelineKeyframeViewModel viewModel)
+        public void Copy(ITimelineKeyframeViewModel viewModel)
         {
             viewModel.Copy();
         }
 
-        public void Delete(TimelineKeyframeViewModel viewModel)
+        public void Delete(ITimelineKeyframeViewModel viewModel)
         {
             viewModel.Delete();
         }
@@ -198,7 +186,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Keyframe movement
 
-        public void MoveSelectedKeyframes(TimeSpan cursorTime, TimelineKeyframeViewModel sourceKeyframeViewModel)
+        public void MoveSelectedKeyframes(TimeSpan cursorTime, ITimelineKeyframeViewModel sourceKeyframeViewModel)
         {
             // Ensure the selection rectangle doesn't show, the view isn't aware of different types of dragging
             SelectionRectangle.Rect = new Rect();
@@ -214,8 +202,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                     TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 5),
                     true,
                     false,
-                    true,
-                    sourceKeyframeViewModel.BaseLayerPropertyKeyframe
+                    keyframeViewModels.Where(k => k != sourceKeyframeViewModel).Select(k => k.Position).ToList()
                 );
             }
 
@@ -267,7 +254,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             SelectionRectangle.Rect = selectedRect;
 
             var keyframeViewModels = GetAllKeyframeViewModels();
-            var selectedKeyframes = HitTestUtilities.GetHitViewModels<TimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
+            var selectedKeyframes = HitTestUtilities.GetHitViewModels<ITimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
             foreach (var keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);
 
@@ -287,7 +274,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        public void SelectKeyframe(TimelineKeyframeViewModel clicked, bool selectBetween, bool toggle)
+        public void SelectKeyframe(ITimelineKeyframeViewModel clicked, bool selectBetween, bool toggle)
         {
             var keyframeViewModels = GetAllKeyframeViewModels();
             if (selectBetween)
@@ -329,32 +316,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        private List<TimelineKeyframeViewModel> GetAllKeyframeViewModels()
+        private List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
-            var viewModels = new List<LayerPropertyBaseViewModel>();
+            var viewModels = new List<ITimelineKeyframeViewModel>();
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-                viewModels.AddRange(layerPropertyGroupViewModel.GetAllChildren());
-
-            var keyframes = viewModels.Where(vm => vm is LayerPropertyViewModel)
-                .SelectMany(vm => ((LayerPropertyViewModel) vm).TimelinePropertyBaseViewModel.TimelineKeyframeViewModels)
-                .ToList();
-
-            return keyframes;
+                viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
+            
+            return viewModels;
         }
-
-        #endregion
-
-        #region IViewAware
-
-        public void AttachView(UIElement view)
-        {
-            if (View != null)
-                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
-
-            View = view;
-        }
-
-        public UIElement View { get; set; }
 
         #endregion
     }

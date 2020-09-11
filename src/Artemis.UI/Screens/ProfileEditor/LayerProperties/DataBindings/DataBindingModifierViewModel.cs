@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
@@ -10,16 +8,16 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingModifierViewModel : PropertyChangedBase
+    public class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase
     {
         private readonly IDataBindingService _dataBindingService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private DataBindingModifierType _selectedModifierType;
         private DataModelDynamicViewModel _dynamicSelectionViewModel;
+        private DataBindingModifierType _selectedModifierType;
         private DataModelStaticViewModel _staticInputViewModel;
 
-        public DataBindingModifierViewModel(DataBindingModifier modifier,
+        public DataBindingModifierViewModel(DataBindingModifier<TLayerProperty, TProperty> modifier,
             IDataBindingService dataBindingService,
             ISettingsService settingsService,
             IDataModelUIService dataModelUIService,
@@ -42,7 +40,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         public DelegateCommand SelectModifierTypeCommand { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
-        public DataBindingModifier Modifier { get; }
+        public DataBindingModifier<TLayerProperty, TProperty> Modifier { get; }
         public BindableCollection<DataBindingModifierType> ModifierTypes { get; }
 
         public DataBindingModifierType SelectedModifierType
@@ -62,7 +60,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             get => _staticInputViewModel;
             private set => SetAndNotify(ref _staticInputViewModel, value);
         }
-        
+
+        public void Delete()
+        {
+            Modifier.DataBinding.RemoveModifier(Modifier);
+        }
+
+        public void SwapType()
+        {
+            if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
+                Modifier.UpdateParameter(Modifier.DataBinding.GetSourceType().GetDefault());
+            else
+                Modifier.UpdateParameter(null, null);
+
+            Update();
+        }
+
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
@@ -89,7 +102,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 StaticInputViewModel = null;
                 DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
                 DynamicSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
-                DynamicSelectionViewModel.FilterTypes = new[] { sourceType };
+                DynamicSelectionViewModel.FilterTypes = new[] {sourceType};
             }
             else
             {
@@ -117,21 +130,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             Modifier.UpdateModifierType(dataBindingModifierType);
             _profileEditorService.UpdateSelectedProfileElement();
-
-            Update();
-        }
-
-        public void Delete()
-        {
-            Modifier.DataBinding.RemoveModifier(Modifier);
-        }
-
-        public void SwapType()
-        {
-            if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
-                Modifier.UpdateParameter(Modifier.DataBinding.GetSourceType().GetDefault());
-            else
-                Modifier.UpdateParameter(null, null);
 
             Update();
         }

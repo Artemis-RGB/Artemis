@@ -308,10 +308,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (DisplayConditionListPredicate.ListDataModel == null || DisplayConditionListPredicate.ListPropertyPath == null)
                 throw new ArtemisUIException("Cannot create a list predicate without first selecting a target list");
 
-            var dataModel = _dataModelUIService.GetMainDataModelVisualization();
-            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-                dataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-
+            var dataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
             var listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
                 DisplayConditionListPredicate.ListDataModel.PluginInfo.Guid,
                 DisplayConditionListPredicate.ListPropertyPath

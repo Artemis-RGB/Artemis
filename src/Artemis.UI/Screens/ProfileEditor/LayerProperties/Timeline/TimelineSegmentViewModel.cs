@@ -18,10 +18,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private bool _showRepeatButton;
         private bool _showSegmentName;
 
-        public TimelineSegmentViewModel(IProfileEditorService profileEditorService, SegmentViewModelType segment)
+        public TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
+            IProfileEditorService profileEditorService)
         {
             ProfileEditorService = profileEditorService;
             Segment = segment;
+            LayerPropertyGroups = layerPropertyGroups;
             SelectedProfileElement = ProfileEditorService.SelectedProfileElement;
 
             switch (Segment)
@@ -47,6 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         public RenderProfileElement SelectedProfileElement { get; }
 
         public SegmentViewModelType Segment { get; }
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
         public IProfileEditorService ProfileEditorService { get; }
         public string ToolTip { get; }
 
@@ -130,7 +133,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void DisableSegment()
         {
-            var keyframes = SelectedProfileElement.GetAllKeyframes();
             var startSegmentEnd = SelectedProfileElement.StartSegmentLength;
             var mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
 
@@ -139,22 +141,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (Segment == SegmentViewModelType.Start)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position <= startSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(null, startSegmentEnd);
                 SelectedProfileElement.StartSegmentLength = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.Main)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > startSegmentEnd && k.Position <= mainSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(startSegmentEnd, startSegmentEnd);
                 SelectedProfileElement.MainSegmentLength = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.End)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > mainSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(mainSegmentEnd, null);
                 SelectedProfileElement.EndSegmentLength = TimeSpan.Zero;
             }
 
@@ -188,8 +187,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else if (Segment == SegmentViewModelType.End)
                 segmentEnd = SelectedProfileElement.TimelineLength;
 
-            foreach (var baseLayerPropertyKeyframe in SelectedProfileElement.GetAllKeyframes().Where(k => k.Position > segmentEnd))
-                baseLayerPropertyKeyframe.Position += amount;
+            ShiftKeyframes(segmentEnd, null, amount);
         }
 
         public void SegmentMouseDown(object sender, MouseButtonEventArgs e)
@@ -227,7 +225,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             // If holding down shift, snap to the closest element on the timeline
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, true);
+            {
+                var keyframeTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, keyframeTimes);
+            }
             // If holding down control, round to the closest 50ms
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
@@ -272,7 +273,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 NotifyOfPropertyChange(nameof(RepeatSegment));
         }
 
-
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(SegmentWidth));
@@ -290,6 +290,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             ShowRepeatButton = SegmentWidth > 45 && IsMainSegment;
             ShowDisableButton = SegmentWidth > 25;
+        }
+
+        private void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.WipeKeyframes(start, end);
+        }
+
+        private void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
         }
     }
 

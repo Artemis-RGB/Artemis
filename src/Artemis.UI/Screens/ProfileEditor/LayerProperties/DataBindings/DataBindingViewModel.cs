@@ -10,23 +10,23 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingViewModel : PropertyChangedBase, IDisposable
+    public class DataBindingViewModel<TLayerProperty, TProperty> : Screen, IDataBindingViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private DataBinding _dataBinding;
+        private DataBinding<TLayerProperty, TProperty> _dataBinding;
         private int _easingTime;
         private bool _isDataBindingEnabled;
         private bool _isEasingTimeEnabled;
         private DataBindingMode _selectedDataBindingMode;
         private TimelineEasingViewModel _selectedEasingViewModel;
         private DataModelDynamicViewModel _targetSelectionViewModel;
-        private object _testInputValue;
-        private object _testResultValue;
+        private TProperty _testInputValue;
+        private TProperty _testResultValue;
         private bool _updating;
 
-        public DataBindingViewModel(DataBindingRegistration registration,
+        public DataBindingViewModel(DataBindingRegistration<TLayerProperty, TProperty> registration,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IDataBindingsVmFactory dataBindingsVmFactory)
@@ -40,7 +40,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             DataBindingModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(DataBindingMode)));
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
-            ModifierViewModels = new BindableCollection<DataBindingModifierViewModel>();
+            ModifierViewModels = new BindableCollection<DataBindingModifierViewModel<TLayerProperty, TProperty>>();
 
             DataBinding = Registration.DataBinding;
             if (DataBinding != null)
@@ -52,12 +52,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             Execute.PostToUIThread(Initialize);
         }
 
-        public DataBindingRegistration Registration { get; }
-        public string DisplayName { get; }
+        public DataBindingRegistration<TLayerProperty, TProperty> Registration { get; }
 
         public BindableCollection<ValueDescription> DataBindingModes { get; }
         public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; }
-        public BindableCollection<DataBindingModifierViewModel> ModifierViewModels { get; }
+        public BindableCollection<DataBindingModifierViewModel<TLayerProperty, TProperty>> ModifierViewModels { get; }
 
         public DataBindingMode SelectedDataBindingMode
         {
@@ -114,7 +113,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
-        public DataBinding DataBinding
+        public DataBinding<TLayerProperty, TProperty> DataBinding
         {
             get => _dataBinding;
             set
@@ -124,13 +123,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
-        public object TestInputValue
+        public TProperty TestInputValue
         {
             get => _testInputValue;
             set => SetAndNotify(ref _testInputValue, value);
         }
 
-        public object TestResultValue
+        public TProperty TestResultValue
         {
             get => _testResultValue;
             set => SetAndNotify(ref _testResultValue, value);
@@ -167,7 +166,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (DataBinding == null)
                 return;
 
-            var modifier = new DataBindingModifier(ProfileRightSideType.Dynamic);
+            var modifier = new DataBindingModifier<TLayerProperty, TProperty>(ProfileRightSideType.Dynamic);
             DataBinding.AddModifier(modifier);
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -175,7 +174,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void Initialize()
         {
-            EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(v => new TimelineEasingViewModel(null, v)));
+            EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(v => new TimelineEasingViewModel(v, false)));
             TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
             TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
             _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
@@ -229,9 +228,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             var currentValue = TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
             if (currentValue == null && Registration.Property.PropertyType.IsValueType)
                 currentValue = Activator.CreateInstance(Registration.Property.PropertyType);
-
-            TestInputValue = Convert.ChangeType(currentValue, Registration.Property.PropertyType);
-            TestResultValue = DataBinding?.GetValue(TestInputValue);
+            
+            TestInputValue = currentValue is TProperty testInputValue ? testInputValue : default;
+            if (DataBinding != null)
+                TestResultValue = DataBinding.GetValue(TestInputValue);
+            else
+                TestInputValue = default;
         }
 
         private void UpdateModifierViewModels()
@@ -267,5 +269,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (DataBinding != null)
                 DataBinding.ModifiersUpdated -= DataBindingOnModifiersUpdated;
         }
+    }
+
+    public interface IDataBindingViewModel : IScreen, IDisposable
+    {
     }
 }

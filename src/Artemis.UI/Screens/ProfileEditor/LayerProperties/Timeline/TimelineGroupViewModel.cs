@@ -41,8 +41,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             KeyframePositions.Clear();
             KeyframePositions.AddRange(LayerPropertyGroupViewModel
-                .GetAllKeyframePositions(false)
-                .Select(p => p.TotalSeconds * _profileEditorService.PixelsPerSecond));
+                .GetAllKeyframeViewModels(false)
+                .Select(p => p.Position.TotalSeconds * _profileEditorService.PixelsPerSecond));
         }
     }
 }

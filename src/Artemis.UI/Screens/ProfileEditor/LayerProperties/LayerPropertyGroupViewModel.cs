@@ -82,21 +82,54 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(IsExpanded));
         }
 
-        public List<TimeSpan> GetAllKeyframePositions(bool expandedOnly)
+        public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
         {
-            var result = new List<TimeSpan>();
+            var result = new List<ITimelineKeyframeViewModel>();
             if (expandedOnly == IsExpanded)
                 return result;
 
             foreach (var child in Children)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
-                    result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframePositions());
+                    result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
                 else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
-                    result.AddRange(layerPropertyGroupViewModel.GetAllKeyframePositions(expandedOnly));
+                    result.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(expandedOnly));
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Removes the keyframes between the <paramref name="start"/> and <paramref name="end"/> position from this property group
+        /// </summary>
+        /// <param name="start">The position at which to start removing keyframes, if null this will start at the first keyframe</param>
+        /// <param name="end">The position at which to start removing keyframes, if null this will end at the last keyframe</param>
+        public virtual void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    layerPropertyViewModel.TimelinePropertyViewModel.WipeKeyframes(start, end);
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    layerPropertyGroupViewModel.WipeKeyframes(start, end);
+            }
+        }
+
+        /// <summary>
+        /// Shifts the keyframes between the <paramref name="start"/> and <paramref name="end"/> position by the provided <paramref name="amount"/>
+        /// </summary>
+        /// <param name="start">The position at which to start shifting keyframes, if null this will start at the first keyframe</param>
+        /// <param name="end">The position at which to start shifting keyframes, if null this will end at the last keyframe</param>
+        /// <param name="amount">The amount to shift the keyframes for</param>
+        public void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    layerPropertyViewModel.TimelinePropertyViewModel.ShiftKeyframes(start, end, amount);
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
+            }
         }
     }
 }
