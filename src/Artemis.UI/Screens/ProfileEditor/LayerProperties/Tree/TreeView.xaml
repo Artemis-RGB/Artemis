@@ -99,10 +99,10 @@
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type local:LayerPropertyGroupViewModel}" ItemsSource="{Binding Items}">
-                <ContentControl s:View.Model="{Binding LayerPropertyGroupTreeViewModel}" />
+                <ContentControl s:View.Model="{Binding TreeGroupViewModel}" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:LayerPropertyViewModel}">
-                <ContentControl s:View.Model="{Binding LayerPropertyTreeViewModel}" dd:DragDrop.DragSourceIgnore="True" />
+                <ContentControl s:View.Model="{Binding TreePropertyViewModel}" dd:DragDrop.DragSourceIgnore="True" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
 using Stylet;
 
@@ -16,13 +17,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             _layerPropertyVmFactory = layerPropertyVmFactory;
 
             LayerPropertyGroup = layerPropertyGroup;
-            LayerPropertyGroupTreeViewModel = layerPropertyVmFactory.LayerPropertyGroupTreeViewModel(this);
+            Children = new BindableCollection<PropertyChangedBase>();
+
+            TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
+            TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
             PopulateChildren();
         }
 
         public LayerPropertyGroup LayerPropertyGroup { get; }
-        public LayerPropertyGroupTreeViewModel LayerPropertyGroupTreeViewModel { get; }
-        public BindableCollection<PropertyChangedBase> Children { get; set; }
+        public TreeGroupViewModel TreeGroupViewModel { get; }
+        public TimelineGroupViewModel TimelineGroupViewModel { get; }
+        public BindableCollection<PropertyChangedBase> Children { get; }
 
         public bool IsVisible => !LayerPropertyGroup.IsHidden;
 
@@ -51,7 +56,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 {
                     var layerPropertyViewModel = _layerPropertyVmFactory.LayerPropertyViewModel(layerProperty);
                     // After creation ensure a supported input VM was found, if not, discard the VM
-                    if (!layerPropertyViewModel.LayerPropertyTreeViewModel.HasPropertyInputViewModel)
+                    if (!layerPropertyViewModel.TreePropertyViewModel.HasPropertyInputViewModel)
                         layerPropertyViewModel.Dispose();
                     else
                         Children.Add(layerPropertyViewModel);
@@ -86,7 +91,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             foreach (var child in Children)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
-                    result.AddRange(layerPropertyViewModel.LayerPropertyTimelineViewModel.GetAllKeyframePositions());
+                    result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframePositions());
                 else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
                     result.AddRange(layerPropertyGroupViewModel.GetAllKeyframePositions(expandedOnly));
             }

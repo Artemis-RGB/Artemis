@@ -80,8 +80,9 @@ namespace Artemis.UI.Ninject.Factories
     {
         LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
         LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
-        LayerPropertyTreeViewModel<T> LayerPropertyGroupViewModel<T>(LayerProperty<T> layerProperty);
-        LayerPropertyGroupTreeViewModel LayerPropertyGroupTreeViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
+        TreePropertyViewModel<T> LayerPropertyGroupViewModel<T>(LayerProperty<T> layerProperty);
+        TreeGroupViewModel TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
+        TimelineGroupViewModel TimelineGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
         LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription);
         TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);

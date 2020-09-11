@@ -14,14 +14,14 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class LayerPropertyGroupTreeViewModel : PropertyChangedBase
+    public class TreeGroupViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowManager _windowManager;
 
-        public LayerPropertyGroupTreeViewModel(
+        public TreeGroupViewModel(
             LayerPropertyGroupViewModel layerPropertyGroupViewModel,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
