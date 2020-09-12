@@ -19,6 +19,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             LayerProperty = layerProperty;
             LayerPropertyViewModel = layerPropertyViewModel;
+            UpdateKeyframes();
         }
 
         public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Ninject;
 
@@ -44,12 +45,7 @@ namespace Artemis.Core.LayerEffects
         ///     The plugin that provided this <see cref="LayerEffectDescriptor" />
         /// </summary>
         public LayerEffectProvider LayerEffectProvider { get; }
-
-        /// <summary>
-        ///     Gets or sets the kernel used to instantiate the described layer effect
-        /// </summary>
-        internal IKernel Kernel { get; set; }
-
+        
         /// <summary>
         ///     Gets a boolean indicating if this descriptor is a placeholder for a missing plugin
         /// </summary>
@@ -70,7 +66,7 @@ namespace Artemis.Core.LayerEffects
                 return;
             }
 
-            var effect = (BaseLayerEffect) Kernel.Get(LayerEffectType);
+            var effect = (BaseLayerEffect)CoreService.Kernel.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
             effect.EntityId = entity.Id;
             effect.Order = entity.Order;

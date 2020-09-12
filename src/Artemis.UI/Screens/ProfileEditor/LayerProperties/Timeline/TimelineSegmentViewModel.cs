@@ -11,7 +11,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineSegmentViewModel : PropertyChangedBase, IDisposable
+    public class TimelineSegmentViewModel : Screen, IDisposable
     {
         private bool _draggingSegment;
         private bool _showDisableButton;
@@ -43,7 +43,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             UpdateDisplay();
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (ProfileEditorService.SelectedProfileElement != null)
+                ProfileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
         }
 
         public RenderProfileElement SelectedProfileElement { get; }
@@ -97,6 +99,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             get
             {
+                if (SelectedProfileElement == null)
+                    return 0;
+
                 return Segment switch
                 {
                     SegmentViewModelType.Start => 0,
@@ -128,7 +133,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         public void Dispose()
         {
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (SelectedProfileElement != null)
+                SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
 
         public void DisableSegment()
@@ -258,6 +265,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             ShiftNextSegment(SegmentLength - oldSegmentLength);
             UpdateDisplay();
+        }
+
+        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        {
+            if (e.PreviousRenderProfileElement != null)
+                e.PreviousRenderProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            e.RenderProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
         }
 
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)

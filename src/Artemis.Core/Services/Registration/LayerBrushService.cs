@@ -2,24 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
-using Ninject;
 
 namespace Artemis.Core.Services
 {
     internal class LayerBrushService : ILayerBrushService
     {
-        private readonly IKernel _kernel;
-
-        public LayerBrushService(IKernel kernel)
-        {
-            _kernel = kernel;
-        }
         public LayerBrushRegistration RegisterLayerBrush(LayerBrushDescriptor descriptor)
         {
             if (descriptor == null)
                 throw new ArgumentNullException(nameof(descriptor));
 
-            descriptor.Kernel = _kernel;
             return LayerBrushStore.Add(descriptor);
         }
 

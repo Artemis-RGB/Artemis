@@ -26,13 +26,13 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void ApplyValue(object value)
         {
-            ValueSetter?.Invoke(value);
+            SetExpression?.Invoke(value);
         }
 
         /// <inheritdoc />
         public override object GetValue()
         {
-            return ValueGetter?.Invoke();
+            return GetExpression(DataBinding.LayerProperty.CurrentValue);
         }
     }
 }

@@ -23,8 +23,9 @@ namespace Artemis.Core.Services
     /// </summary>
     internal class CoreService : ICoreService
     {
+        internal static IKernel Kernel;
+
         private readonly Stopwatch _frameStopWatch;
-        private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
         private readonly IPluginService _pluginService;
@@ -37,9 +38,9 @@ namespace Artemis.Core.Services
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
         public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
-            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService)
+            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
-            _kernel = kernel;
+            Kernel = kernel;
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
@@ -80,7 +81,7 @@ namespace Artemis.Core.Services
             _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
             ApplyLoggingLevel();
 
-            DeserializationLogger.Initialize(_kernel);
+            DeserializationLogger.Initialize(Kernel);
 
             // Initialize the services
             _pluginService.CopyBuiltInPlugins();

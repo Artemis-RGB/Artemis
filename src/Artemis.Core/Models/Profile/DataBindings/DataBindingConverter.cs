@@ -13,12 +13,12 @@ namespace Artemis.Core
         /// <summary>
         ///     A dynamically compiled getter pointing to the data bound property
         /// </summary>
-        public Func<TProperty> ValueGetter { get; private set; }
+        public Func<TLayerProperty, TProperty> GetExpression { get; private set; }
 
         /// <summary>
         ///     A dynamically compiled setter pointing to the data bound property
         /// </summary>
-        public Action<TProperty> ValueSetter { get; private set; }
+        public Action<TProperty> SetExpression { get; private set; }
 
         /// <summary>
         ///     Gets the data binding this converter is applied to
@@ -75,30 +75,10 @@ namespace Artemis.Core
         internal void Initialize(DataBinding<TLayerProperty, TProperty> dataBinding)
         {
             DataBinding = dataBinding;
-            ValueGetter = CreateValueGetter();
-            ValueSetter = CreateValueSetter();
+            GetExpression = dataBinding.Registration.PropertyExpression.Compile();
+            SetExpression = CreateValueSetter();
 
             OnInitialized();
-        }
-
-        private Func<TProperty> CreateValueGetter()
-        {
-            if (DataBinding.TargetProperty?.DeclaringType == null)
-                return null;
-
-            var getterMethod = DataBinding.TargetProperty.GetGetMethod();
-            if (getterMethod == null)
-                return null;
-
-            var constant = Expression.Constant(DataBinding.LayerProperty);
-            // The path is null if the registration is applied to the root (LayerProperty.CurrentValue)
-            var property = DataBinding.Registration.Path == null
-                ? Expression.Property(constant, DataBinding.TargetProperty)
-                : (MemberExpression) DataBinding.Registration.Path.Split('.').Aggregate<string, Expression>(constant, Expression.Property);
-
-            var lambda = Expression.Lambda<Func<TProperty>>(property);
-
-            return lambda.Compile();
         }
 
         private Action<TProperty> CreateValueSetter()
@@ -110,10 +90,9 @@ namespace Artemis.Core
             if (setterMethod == null)
                 return null;
 
-            var constant = Expression.Constant(DataBinding.LayerProperty);
             var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
 
-            var body = Expression.Call(constant, setterMethod, propertyValue);
+            var body = DataBinding.Registration.PropertyExpression;
             var lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
             return lambda.Compile();
         }

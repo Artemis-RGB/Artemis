@@ -35,6 +35,7 @@ namespace Artemis.Core.LayerBrushes
         internal void InitializeProperties()
         {
             Properties = Activator.CreateInstance<T>();
+            Properties.GroupDescription ??= new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
             Properties.LayerBrush = this;
             Properties.Initialize(Layer, "LayerBrush.", PluginInfo);
             PropertiesInitialized = true;

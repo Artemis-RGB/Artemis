@@ -64,8 +64,8 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
 
-            Initialize();
             Load();
+            Initialize();
         }
 
         internal LayerEntity LayerEntity { get; set; }
@@ -148,11 +148,22 @@ namespace Artemis.Core
             LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
 
             // Layers have two hardcoded property groups, instantiate them
+            var generalAttribute = Attribute.GetCustomAttribute(
+                GetType().GetProperty(nameof(General)),
+                typeof(PropertyGroupDescriptionAttribute)
+            );
+            var transformAttribute = Attribute.GetCustomAttribute(
+                GetType().GetProperty(nameof(Transform)),
+                typeof(PropertyGroupDescriptionAttribute)
+            );
+            General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
             General.Initialize(this, "General.", Constants.CorePluginInfo);
+            Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
             Transform.Initialize(this, "Transform.", Constants.CorePluginInfo);
 
             General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
             ApplyShapeType();
+            ActivateLayerBrush();
         }
 
         #region Storage
@@ -165,8 +176,6 @@ namespace Artemis.Core
             Order = LayerEntity.Order;
 
             _expandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
-            ActivateLayerBrush();
-
             LoadRenderElement();
         }
 
@@ -710,6 +719,9 @@ namespace Artemis.Core
         internal void ActivateLayerBrush()
         {
             var current = General.BrushReference.CurrentValue;
+            if (current == null)
+                return;
+
             var descriptor = LayerBrushStore.Get(current.BrushPluginGuid, current.BrushType)?.LayerBrushDescriptor;
             descriptor?.CreateInstance(this);
 
@@ -729,7 +741,7 @@ namespace Artemis.Core
         }
 
         #endregion
-        
+
         #region Event handlers
 
         private void LayerBrushStoreOnLayerBrushRemoved(object sender, LayerBrushStoreEvent e)

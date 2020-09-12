@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -27,13 +26,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             LayerPropertyGroups = layerPropertyGroups;
             SelectionRectangle = new RectangleGeometry();
-            SelectedProfileElement = layerPropertiesViewModel.SelectedProfileElement;
 
-            SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
         }
 
-        public RenderProfileElement SelectedProfileElement { get; set; }
+        public RenderProfileElement SelectedProfileElement => _profileEditorService.SelectedProfileElement;
 
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
@@ -43,23 +43,25 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _selectionRectangle, value);
         }
 
-        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds;
+        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * (SelectedProfileElement?.StartSegmentLength.TotalSeconds ?? 0);
         public double StartSegmentEndPosition => StartSegmentWidth;
-        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.MainSegmentLength.TotalSeconds;
+        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * (SelectedProfileElement?.MainSegmentLength.TotalSeconds ?? 0);
         public double MainSegmentEndPosition => StartSegmentWidth + MainSegmentWidth;
-        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.EndSegmentLength.TotalSeconds;
+        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * (SelectedProfileElement?.EndSegmentLength.TotalSeconds ?? 0);
         public double EndSegmentEndPosition => StartSegmentWidth + MainSegmentWidth + EndSegmentWidth;
-        public double TotalTimelineWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.TimelineLength.TotalSeconds;
+        public double TotalTimelineWidth => _profileEditorService.PixelsPerSecond * (SelectedProfileElement?.TimelineLength.TotalSeconds ?? 0);
 
-        public bool StartSegmentEnabled => SelectedProfileElement.StartSegmentLength != TimeSpan.Zero;
-        public bool EndSegmentEnabled => SelectedProfileElement.EndSegmentLength != TimeSpan.Zero;
+        public bool StartSegmentEnabled => SelectedProfileElement?.StartSegmentLength != TimeSpan.Zero;
+        public bool EndSegmentEnabled => SelectedProfileElement?.EndSegmentLength != TimeSpan.Zero;
 
         public void Dispose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
-        
+
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.StartSegmentLength))
@@ -96,6 +98,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             NotifyOfPropertyChange(nameof(EndSegmentWidth));
             NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
             NotifyOfPropertyChange(nameof(TotalTimelineWidth));
+        }
+
+        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        {
+            if (e.PreviousRenderProfileElement != null)
+                e.PreviousRenderProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            e.RenderProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
         }
 
         #region Command handlers
@@ -321,7 +330,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             var viewModels = new List<ITimelineKeyframeViewModel>();
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
                 viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
-            
+
             return viewModels;
         }
 

@@ -60,10 +60,16 @@
             </ItemsControl.ItemContainerStyle>
             <ItemsControl.Resources>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyGroupViewModel}">
-                    <ContentControl s:View.Model="{Binding TimelineGroupViewModel}" IsTabStop="False" HorizontalAlignment="Stretch" />
+                    <ContentControl s:View.Model="{Binding TimelineGroupViewModel}" 
+                                    IsTabStop="False" 
+                                    HorizontalAlignment="Stretch" 
+                                    Visibility="{Binding IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type layerProperties:LayerPropertyViewModel}">
-                    <ContentControl s:View.Model="{Binding TimelinePropertyViewModel}" IsTabStop="False" HorizontalAlignment="Stretch" />
+                    <ContentControl s:View.Model="{Binding TimelinePropertyViewModel}" 
+                                    IsTabStop="False" 
+                                    HorizontalAlignment="Stretch" 
+                                    Visibility="{Binding IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
                 </DataTemplate>
             </ItemsControl.Resources>
         </ItemsControl>

@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Services;
 using Ninject;
 
 namespace Artemis.Core.LayerBrushes
@@ -44,11 +45,6 @@ namespace Artemis.Core.LayerBrushes
         public LayerBrushProvider LayerBrushProvider { get; }
 
         /// <summary>
-        ///     Gets or sets the kernel used to instantiate the described layer brush
-        /// </summary>
-        internal IKernel Kernel { get; set; }
-
-        /// <summary>
         ///     Creates an instance of the described brush and applies it to the layer
         /// </summary>
         internal void CreateInstance(Layer layer)
@@ -56,7 +52,7 @@ namespace Artemis.Core.LayerBrushes
             if (layer.LayerBrush != null)
                 throw new ArtemisCoreException("Layer already has an instantiated layer brush");
 
-            var brush = (BaseLayerBrush) Kernel.Get(LayerBrushType);
+            var brush = (BaseLayerBrush) CoreService.Kernel.Get(LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = this;
             brush.Initialize();

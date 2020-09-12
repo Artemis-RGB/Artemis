@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -20,5 +21,15 @@ namespace Artemis.Core
         ///     </para>
         /// </summary>
         void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description);
+
+        /// <summary>
+        ///     Returns a list off all data binding registrations
+        /// </summary>
+        List<IDataBindingRegistration> GetAllDataBindingRegistrations();
+
+        /// <summary>
+        ///     Gets or sets whether the property is hidden in the UI
+        /// </summary>
+        bool IsHidden { get; set; }
     }
 }

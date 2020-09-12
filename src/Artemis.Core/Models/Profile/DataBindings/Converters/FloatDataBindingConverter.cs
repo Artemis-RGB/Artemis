@@ -41,13 +41,13 @@ namespace Artemis.Core
             if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
                 value = Math.Max(value, min);
 
-            ValueSetter?.Invoke(value);
+            SetExpression?.Invoke(value);
         }
 
         /// <inheritdoc />
         public override float GetValue()
         {
-            return ValueGetter?.Invoke() ?? 0f;
+            return GetExpression(DataBinding.LayerProperty.CurrentValue);
         }
     }
 }

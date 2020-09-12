@@ -7,6 +7,7 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
+using Humanizer;
 
 namespace Artemis.Core
 {
@@ -214,6 +215,10 @@ namespace Artemis.Core
             var instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
             if (instance == null)
                 throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
+
+            // Ensure the description has a name, if not this is a good point to set it based on the property info
+            if (string.IsNullOrWhiteSpace(propertyDescription.Name))
+                propertyDescription.Name = propertyInfo.Name.Humanize();
 
             var entity = GetPropertyEntity(ProfileElement, path + propertyInfo.Name, out var fromStorage);
             instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription);
