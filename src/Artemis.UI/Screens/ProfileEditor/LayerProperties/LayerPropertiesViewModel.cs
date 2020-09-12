@@ -23,41 +23,61 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
     public class LayerPropertiesViewModel : Conductor<IScreen>.Collection.AllActive, IProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
-        private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
-        private DataBindingsViewModel _dataBindingsViewModel;
-        private EffectsViewModel _effectsViewModel;
-        private TimelineSegmentViewModel _endTimelineSegmentViewModel;
-        private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
-        private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
         private bool _playing;
         private int _propertyTreeIndex;
         private bool _repeatAfterLastKeyframe;
         private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
-        private TimelineSegmentViewModel _startTimelineSegmentViewModel;
-        private TimelineViewModel _timelineViewModel;
-        private TreeViewModel _treeViewModel;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
             ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory,
-            IDataBindingsVmFactory dataBindingsVmFactory)
+            DataBindingsViewModel dataBindingsViewModel)
         {
             _layerPropertyVmFactory = layerPropertyVmFactory;
-            _dataBindingsVmFactory = dataBindingsVmFactory;
 
             ProfileEditorService = profileEditorService;
             CoreService = coreService;
             SettingsService = settingsService;
 
-            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
-            Items.Add(EffectsViewModel);
-
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
             PropertyChanged += HandlePropertyTreeIndexChanged;
+
+            // Left side 
+            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
+            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
+            Items.Add(TreeViewModel);
+            Items.Add(EffectsViewModel);
+
+            // Right side
+            StartTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Start, LayerPropertyGroups);
+            MainTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Main, LayerPropertyGroups);
+            EndTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.End, LayerPropertyGroups);
+            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
+            DataBindingsViewModel = dataBindingsViewModel;
+            Items.Add(StartTimelineSegmentViewModel);
+            Items.Add(MainTimelineSegmentViewModel);
+            Items.Add(EndTimelineSegmentViewModel);
+            Items.Add(TimelineViewModel);
+            Items.Add(DataBindingsViewModel);
         }
+
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+
+
+        #region Child VMs
+
+        public TreeViewModel TreeViewModel { get; }
+        public EffectsViewModel EffectsViewModel { get; }
+        public TimelineSegmentViewModel StartTimelineSegmentViewModel { get; }
+        public TimelineSegmentViewModel MainTimelineSegmentViewModel { get; }
+        public TimelineSegmentViewModel EndTimelineSegmentViewModel { get; }
+        public TimelineViewModel TimelineViewModel { get; }
+        public DataBindingsViewModel DataBindingsViewModel { get; }
+
+        #endregion
 
         public IProfileEditorService ProfileEditorService { get; }
         public ICoreService CoreService { get; }
@@ -115,53 +135,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
 
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
-        {
-            get => _layerPropertyGroups;
-            set => SetAndNotify(ref _layerPropertyGroups, value);
-        }
-
-        public TreeViewModel TreeViewModel
-        {
-            get => _treeViewModel;
-            set => SetAndNotify(ref _treeViewModel, value);
-        }
-
-        public EffectsViewModel EffectsViewModel
-        {
-            get => _effectsViewModel;
-            set => SetAndNotify(ref _effectsViewModel, value);
-        }
-
-        public DataBindingsViewModel DataBindingsViewModel
-        {
-            get => _dataBindingsViewModel;
-            set => SetAndNotify(ref _dataBindingsViewModel, value);
-        }
-
-        public TimelineViewModel TimelineViewModel
-        {
-            get => _timelineViewModel;
-            set => SetAndNotify(ref _timelineViewModel, value);
-        }
-
-        public TimelineSegmentViewModel StartTimelineSegmentViewModel
-        {
-            get => _startTimelineSegmentViewModel;
-            set => SetAndNotify(ref _startTimelineSegmentViewModel, value);
-        }
-
-        public TimelineSegmentViewModel MainTimelineSegmentViewModel
-        {
-            get => _mainTimelineSegmentViewModel;
-            set => SetAndNotify(ref _mainTimelineSegmentViewModel, value);
-        }
-
-        public TimelineSegmentViewModel EndTimelineSegmentViewModel
-        {
-            get => _endTimelineSegmentViewModel;
-            set => SetAndNotify(ref _endTimelineSegmentViewModel, value);
-        }
 
         #region Segments
 
@@ -197,18 +170,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
-
-            TimelineViewModel?.Dispose();
-            TimelineViewModel = null;
-            StartTimelineSegmentViewModel?.Dispose();
-            StartTimelineSegmentViewModel = null;
-            MainTimelineSegmentViewModel?.Dispose();
-            MainTimelineSegmentViewModel = null;
-            EndTimelineSegmentViewModel?.Dispose();
-            EndTimelineSegmentViewModel = null;
-            DataBindingsViewModel?.Dispose();
-            DataBindingsViewModel = null;
-
             base.OnClose();
         }
 
@@ -242,15 +203,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
         {
-            if (ProfileEditorService.SelectedDataBinding != null)
-            {
-                RightSideIndex = 1;
-                DataBindingsViewModel?.Dispose();
-                // TODO
-                // DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
-            }
-            else
-                RightSideIndex = 0;
+            RightSideIndex = ProfileEditorService.SelectedDataBinding != null ? 1 : 0;
         }
 
         #region View model managament
@@ -292,23 +245,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General));
                 LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform));
             }
-
-            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
-
-            DeactivateItem(TimelineViewModel);
-            DeactivateItem(StartTimelineSegmentViewModel);
-            DeactivateItem(MainTimelineSegmentViewModel);
-            DeactivateItem(EndTimelineSegmentViewModel);
-
-            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
-            ActivateItem(TimelineViewModel);
-
-            StartTimelineSegmentViewModel?.Dispose();
-            StartTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Start, LayerPropertyGroups);
-            MainTimelineSegmentViewModel?.Dispose();
-            MainTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Main, LayerPropertyGroups);
-            EndTimelineSegmentViewModel?.Dispose();
-            EndTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.End, LayerPropertyGroups);
 
             ApplyLayerBrush();
             ApplyEffects();
@@ -361,21 +297,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void ApplyEffects()
         {
-            RenderProfileElement renderElement;
-            if (SelectedLayer != null)
-                renderElement = SelectedLayer;
-            else if (SelectedFolder != null)
-                renderElement = SelectedFolder;
-            else
+            if (SelectedProfileElement == null)
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !renderElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
+            var toRemove = LayerPropertyGroups
+                .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
+                .ToList();
             LayerPropertyGroups.RemoveRange(toRemove);
             foreach (var layerPropertyGroupViewModel in toRemove)
                 layerPropertyGroupViewModel.Dispose();
 
-            foreach (var layerEffect in renderElement.LayerEffects)
+            foreach (var layerEffect in SelectedProfileElement.LayerEffects)
             {
                 if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect))
                     continue;

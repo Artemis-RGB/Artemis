@@ -98,7 +98,7 @@
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type local:LayerPropertyGroupViewModel}" ItemsSource="{Binding Items}">
+            <HierarchicalDataTemplate DataType="{x:Type local:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
                 <ContentControl s:View.Model="{Binding TreeGroupViewModel}" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:LayerPropertyViewModel}">

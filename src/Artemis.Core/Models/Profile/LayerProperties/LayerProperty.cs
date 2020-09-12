@@ -61,9 +61,7 @@ namespace Artemis.Core
 
         private bool _isHidden;
 
-        /// <summary>
-        ///     Gets or sets whether the property is hidden in the UI
-        /// </summary>
+        /// <inheritdoc />
         public bool IsHidden
         {
             get => _isHidden;
@@ -335,36 +333,21 @@ namespace Artemis.Core
             return _dataBindingRegistrations;
         }
 
-        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda, DataBindingConverter<T, TProperty> converter)
+        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            // If the lambda references to itself, use the property info of public new T CurrentValue
-            PropertyInfo propertyInfo;
-            string path = null;
-            if (propertyLambda.Parameters[0] == propertyLambda.Body)
-                propertyInfo = GetType().GetProperties().FirstOrDefault(p => p.Name == nameof(CurrentValue) && p.PropertyType == typeof(T));
-            else
-            {
-                propertyInfo = ReflectionUtilities.GetPropertyInfo(CurrentValue, propertyLambda);
-                // Deconstruct the lambda
-                var current = (MemberExpression) propertyLambda.Body;
-                path = current.Member.Name;
-                while (current.Expression is MemberExpression memberExpression)
-                {
-                    path = current.Member.Name + "." + path;
-                    current = memberExpression;
-                }
-            }
+            if (propertyExpression.Body.NodeType != ExpressionType.MemberAccess && propertyExpression.Body.NodeType != ExpressionType.Parameter)
+                throw new ArtemisCoreException("Provided expression is invalid, it must be 'value => value' or 'value => value.Property'");
 
-            if (converter.SupportedType != propertyInfo.PropertyType)
+            if (converter.SupportedType != propertyExpression.ReturnType)
             {
-                throw new ArtemisCoreException($"Cannot register data binding property for property {propertyInfo.Name} " +
+                throw new ArtemisCoreException($"Cannot register data binding property for property {PropertyDescription.Name} " +
                                                "because the provided converter does not support the property's type");
             }
 
-            _dataBindingRegistrations.Add(new DataBindingRegistration<T, TProperty>(this, converter, propertyInfo, path));
+            _dataBindingRegistrations.Add(new DataBindingRegistration<T, TProperty>(this, converter, propertyExpression));
         }
 
         /// <summary>
@@ -432,7 +415,6 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
-
             LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
         }
 

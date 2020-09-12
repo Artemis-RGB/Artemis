@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace Artemis.Core
@@ -7,16 +8,13 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBindingRegistration<TLayerProperty, TProperty> : IDataBindingRegistration
     {
-        internal DataBindingRegistration(
-            LayerProperty<TLayerProperty> layerProperty,
-            DataBindingConverter<TLayerProperty, TProperty> converter,
-            PropertyInfo property,
-            string path)
+        internal DataBindingRegistration(LayerProperty<TLayerProperty> layerProperty, 
+            DataBindingConverter<TLayerProperty, TProperty> converter, 
+            Expression<Func<TLayerProperty, TProperty>> propertyExpression)
         {
             LayerProperty = layerProperty ?? throw new ArgumentNullException(nameof(layerProperty));
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
-            Property = property ?? throw new ArgumentNullException(nameof(property));
-            Path = path ?? throw new ArgumentNullException(nameof(path));
+            PropertyExpression = propertyExpression ?? throw new ArgumentNullException(nameof(propertyExpression));
         }
 
         /// <summary>
@@ -24,21 +22,20 @@ namespace Artemis.Core
         /// </summary>
         public LayerProperty<TLayerProperty> LayerProperty { get; }
 
-
         /// <summary>
         ///     Gets the converter that's used by the data binding
         /// </summary>
         public DataBindingConverter<TLayerProperty, TProperty> Converter { get; }
 
         /// <summary>
+        /// Gets the expression that that accesses the property
+        /// </summary>
+        public Expression<Func<TLayerProperty, TProperty>> PropertyExpression { get; }
+
+        /// <summary>
         ///     Gets the registered property
         /// </summary>
         public PropertyInfo Property { get; }
-
-        /// <summary>
-        ///     Gets the path of the registered property on the layer property
-        /// </summary>
-        public string Path { get; }
 
         /// <summary>
         ///     Gets the data binding created using this registration
@@ -51,7 +48,7 @@ namespace Artemis.Core
             if (DataBinding != null)
                 return DataBinding;
 
-            var dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetProperty == Path);
+            var dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetProperty == PropertyExpression.ToString());
             if (dataBinding == null)
                 return null;
 

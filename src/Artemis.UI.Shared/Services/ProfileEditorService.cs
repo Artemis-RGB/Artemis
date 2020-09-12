@@ -196,10 +196,25 @@ namespace Artemis.UI.Shared.Services
 
         public PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel
         {
-            var viewModelType = typeof(T);
+            return RegisterPropertyInput(typeof(T), pluginInfo);
+        }
+
+        public PropertyInputRegistration RegisterPropertyInput(Type viewModelType, PluginInfo pluginInfo)
+        {
+            if (!typeof(PropertyInputViewModel).IsAssignableFrom(viewModelType))
+                throw new ArtemisSharedUIException($"Property input VM type must implement {nameof(PropertyInputViewModel)}");
+
             lock (_registeredPropertyEditors)
             {
                 var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                // If the supported type is a generic, assume there is a base type
+                if (supportedType.IsGenericParameter)
+                {
+                    if (supportedType.BaseType == null)
+                        throw new ArtemisSharedUIException($"Generic property input VM type must have a type constraint");
+                    supportedType = supportedType.BaseType;
+                }
+
                 var existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
@@ -267,12 +282,24 @@ namespace Artemis.UI.Shared.Services
 
         public PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
         {
+            Type viewModelType = null;
             var registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
-            if (registration == null)
+
+            // Check for enums if no supported type was found
+            if (registration == null && typeof(T).IsEnum)
+            {
+                // The enum VM will likely be a generic, that requires creating a generic type matching the layer property
+                registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(Enum));
+                if (registration != null && registration.ViewModelType.IsGenericType)
+                    viewModelType = registration.ViewModelType.MakeGenericType(layerProperty.GetType().GenericTypeArguments);
+            }
+            else if (registration != null)
+                viewModelType = registration.ViewModelType;
+            else
                 return null;
 
             var parameter = new ConstructorArgument("layerProperty", layerProperty);
-            return (PropertyInputViewModel<T>) Kernel.Get(registration.ViewModelType, parameter);
+            return (PropertyInputViewModel<T>) Kernel.Get(viewModelType, parameter);
         }
 
         public ProfileModule GetCurrentModule()

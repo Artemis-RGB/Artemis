@@ -36,7 +36,10 @@ namespace Artemis.UI.Screens.ProfileEditor
         private PluginSetting<GridLength> _sidePanelsWidth;
 
         public ProfileEditorViewModel(ProfileModule module,
-            ICollection<IProfileEditorPanelViewModel> viewModels,
+            ProfileViewModel profileViewModel,
+            ProfileTreeViewModel profileTreeViewModel,
+            DisplayConditionsViewModel displayConditionsViewModel,
+            LayerPropertiesViewModel layerPropertiesViewModel,
             IProfileEditorService profileEditorService,
             IProfileService profileService,
             IDialogService dialogService,
@@ -55,15 +58,17 @@ namespace Artemis.UI.Screens.ProfileEditor
             DialogService = dialogService;
 
             Profiles = new BindableCollection<ProfileDescriptor>();
-
-            // Run this first to let VMs activate without causing constant UI updates
-            Items.AddRange(viewModels);
-
+            
             // Populate the panels
-            ProfileViewModel = (ProfileViewModel) viewModels.First(vm => vm is ProfileViewModel);
-            ProfileTreeViewModel = (ProfileTreeViewModel) viewModels.First(vm => vm is ProfileTreeViewModel);
-            DisplayConditionsViewModel = (DisplayConditionsViewModel) viewModels.First(vm => vm is DisplayConditionsViewModel);
-            LayerPropertiesViewModel = (LayerPropertiesViewModel) viewModels.First(vm => vm is LayerPropertiesViewModel);
+            ProfileViewModel = profileViewModel;
+            ProfileTreeViewModel = profileTreeViewModel;
+            DisplayConditionsViewModel = displayConditionsViewModel;
+            LayerPropertiesViewModel = layerPropertiesViewModel;
+
+            Items.Add(ProfileViewModel);
+            Items.Add(ProfileTreeViewModel);
+            Items.Add(DisplayConditionsViewModel);
+            Items.Add(LayerPropertiesViewModel);
         }
 
         public ProfileModule Module { get; }

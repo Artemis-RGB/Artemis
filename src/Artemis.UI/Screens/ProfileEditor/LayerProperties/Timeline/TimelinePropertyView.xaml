@@ -9,7 +9,6 @@
              xmlns:timeline="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             Visibility="{Binding LayerPropertyBaseViewModel.IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
              MinWidth="{Binding Width}"
              HorizontalAlignment="Stretch">
     <Border Height="25" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}">

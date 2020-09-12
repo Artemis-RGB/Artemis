@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Core;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
 using Ninject;
@@ -10,25 +11,20 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
     public class LayerPropertyViewModel : PropertyChangedBase, IDisposable
     {
-        public LayerPropertyViewModel(ILayerProperty layerProperty, IKernel kernel)
+        public LayerPropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
         {
             LayerProperty = layerProperty;
 
-            var parameter = new ConstructorArgument("layerProperty", LayerProperty);
-            var treeViewModelType = typeof(TreePropertyViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
-            var timelineViewModelType = typeof(TimelinePropertyViewModel<>).MakeGenericType(layerProperty.GetType().GetGenericArguments());
-
-            TreePropertyViewModel = (ITreePropertyViewModel) kernel.Get(treeViewModelType, parameter);
-            TimelinePropertyViewModel = (ITimelinePropertyViewModel) kernel.Get(timelineViewModelType, parameter);
+            TreePropertyViewModel = propertyVmFactory.TreePropertyViewModel(layerProperty, this);
+            TimelinePropertyViewModel = propertyVmFactory.TimelinePropertyViewModel(layerProperty, this);
         }
 
         public ILayerProperty LayerProperty { get; }
         public ITreePropertyViewModel TreePropertyViewModel { get; }
         public ITimelinePropertyViewModel TimelinePropertyViewModel { get; }
 
-        public bool IsVisible { get; set; }
-        public bool IsExpanded { get; set; }
-
+        public bool IsVisible => !LayerProperty.IsHidden;
+        
         public void Dispose()
         {
             TreePropertyViewModel?.Dispose();

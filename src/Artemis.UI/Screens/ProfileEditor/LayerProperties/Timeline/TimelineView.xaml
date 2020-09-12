@@ -37,7 +37,7 @@
                       HorizontalAlignment="Left">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}" HorizontalContentAlignment="Left" />
+                    <ContentControl s:View.Model="{Binding TimelineGroupViewModel}" HorizontalContentAlignment="Left" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

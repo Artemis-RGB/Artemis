@@ -35,6 +35,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
             LayerPropertyGroupViewModel = layerPropertyGroupViewModel;
             LayerPropertyGroup = LayerPropertyGroupViewModel.LayerPropertyGroup;
+
+            DetermineGroupType();
         }
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }

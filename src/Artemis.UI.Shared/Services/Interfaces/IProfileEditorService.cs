@@ -74,6 +74,16 @@ namespace Artemis.UI.Shared.Services
         /// <returns></returns>
         PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel;
 
+        /// <summary>
+        ///     Registers a new property input view model used in the profile editor for the generic type defined in
+        ///     <see cref="PropertyInputViewModel{T}" />
+        ///     <para>Note: Registration will remove itself on plugin disable so you don't have to</para>
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        /// <param name="pluginInfo"></param>
+        /// <returns></returns>
+        PropertyInputRegistration RegisterPropertyInput(Type viewModelType, PluginInfo pluginInfo);
+
         void RemovePropertyInput(PropertyInputRegistration registration);
 
         /// <summary>

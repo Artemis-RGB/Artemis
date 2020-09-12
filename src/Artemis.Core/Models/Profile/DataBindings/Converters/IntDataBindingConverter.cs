@@ -3,12 +3,12 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class IntDataBindingConverter : FloatDataBindingConverter<int>
+    public class IntDataBindingConverter : IntDataBindingConverter<int>
     {
     }
 
     /// <inheritdoc />
-    public class IntDataBindingConverter<T> : DataBindingConverter<T, int> where T : ILayerProperty
+    public class IntDataBindingConverter<T> : DataBindingConverter<T, int>
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="IntDataBindingConverter{T}" /> class
@@ -41,13 +41,13 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void ApplyValue(int value)
         {
-            ValueSetter?.Invoke(value);
+            SetExpression?.Invoke(value);
         }
 
         /// <inheritdoc />
         public override int GetValue()
         {
-            return ValueGetter?.Invoke() ?? 0;
+            return GetExpression(DataBinding.LayerProperty.CurrentValue);
         }
     }
 }
