@@ -124,20 +124,16 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            if (!disposing)
-                return;
-
             _disposed = true;
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
 
-            foreach (var baseLayerEffect in LayerEffects)
-                baseLayerEffect.Dispose();
-
             _general?.Dispose();
             _layerBitmap?.Dispose();
             _transform?.Dispose();
+
+            base.Dispose(disposing);
         }
 
         #endregion
@@ -209,10 +205,6 @@ namespace Artemis.Core
                 };
                 LayerEntity.Leds.Add(ledEntity);
             }
-
-            // Conditions
-            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
-            DisplayConditionGroup?.Save();
 
             SaveRenderElement();
         }
@@ -691,14 +683,8 @@ namespace Artemis.Core
 
             // Ensure the brush reference matches the brush
             var current = General.BrushReference.CurrentValue;
-            if (current.BrushPluginGuid != descriptor.LayerBrushProvider.PluginInfo.Guid || current.BrushType != descriptor.LayerBrushType.Name)
-            {
-                General.BrushReference.CurrentValue = new LayerBrushReference
-                {
-                    BrushPluginGuid = descriptor.LayerBrushProvider.PluginInfo.Guid,
-                    BrushType = descriptor.LayerBrushType.Name
-                };
-            }
+            if (!descriptor.MatchesLayerBrushReference(current))
+                General.BrushReference.CurrentValue = new LayerBrushReference(descriptor);
 
             ActivateLayerBrush();
         }
@@ -746,7 +732,7 @@ namespace Artemis.Core
 
         private void LayerBrushStoreOnLayerBrushRemoved(object sender, LayerBrushStoreEvent e)
         {
-            if (LayerBrush.Descriptor == e.Registration.LayerBrushDescriptor)
+            if (LayerBrush?.Descriptor == e.Registration.LayerBrushDescriptor)
                 DeactivateLayerBrush();
         }
 

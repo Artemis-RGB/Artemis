@@ -10,7 +10,7 @@ namespace Artemis.Storage.Entities.Profile.DataBindings
             Modifiers = new List<DataBindingModifierEntity>();
         }
 
-        public string TargetProperty { get; set; }
+        public string TargetExpression { get; set; }
         public Guid? SourceDataModelGuid { get; set; }
         public string SourcePropertyPath { get; set; }
         public int DataBindingMode { get; set; }

@@ -20,6 +20,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
             PropertyInputViewModel = _profileEditorService.CreatePropertyInputViewModel(LayerProperty);
             _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
+            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
+
+            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
 
         public LayerProperty<T> LayerProperty { get; }
@@ -51,6 +54,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         {
             _propertyInputViewModel?.Dispose();
             _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
+            LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
         }
 
         #endregion
@@ -81,6 +85,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(DataBindingsOpen));
+        }
+
+        private void LayerPropertyOnVisibilityChanged(object? sender, LayerPropertyEventArgs<T> e)
+        {
+            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
 
         #endregion

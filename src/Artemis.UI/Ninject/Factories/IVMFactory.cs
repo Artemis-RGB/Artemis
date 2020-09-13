@@ -69,12 +69,6 @@ namespace Artemis.UI.Ninject.Factories
         DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate);
     }
 
-    public interface IDataBindingsVmFactory : IVmFactory
-    {
-        IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
-        DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
-    }
-
     public interface ILayerPropertyVmFactory : IVmFactory
     {
         LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
@@ -87,6 +81,12 @@ namespace Artemis.UI.Ninject.Factories
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
         TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+    }
+
+    public interface IDataBindingsVmFactory
+    {
+        IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
+        DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
     }
 
     public interface IPropertyVmFactory

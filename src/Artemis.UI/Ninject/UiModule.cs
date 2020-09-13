@@ -50,6 +50,7 @@ namespace Artemis.UI.Ninject
                     .BindToFactory();
             });
 
+            Kernel.Bind<IDataBindingsVmFactory>().ToFactory(() => new DataBindingsViewModelInstanceProvider());
             Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
 
             // Bind profile editor VMs

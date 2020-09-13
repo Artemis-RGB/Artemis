@@ -26,10 +26,5 @@ namespace Artemis.Core
         ///     Returns a list off all data binding registrations
         /// </summary>
         List<IDataBindingRegistration> GetAllDataBindingRegistrations();
-
-        /// <summary>
-        ///     Gets or sets whether the property is hidden in the UI
-        /// </summary>
-        bool IsHidden { get; set; }
     }
 }

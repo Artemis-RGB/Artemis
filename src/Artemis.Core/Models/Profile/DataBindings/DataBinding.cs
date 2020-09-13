@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
@@ -14,9 +13,9 @@ namespace Artemis.Core
         private readonly List<DataBindingModifier<TLayerProperty, TProperty>> _modifiers = new List<DataBindingModifier<TLayerProperty, TProperty>>();
 
         private TProperty _currentValue;
+        private bool _disposed;
         private TimeSpan _easingProgress;
         private TProperty _previousValue;
-        private bool _disposed;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -52,11 +51,6 @@ namespace Artemis.Core
         ///     Gets the converter used to apply this data binding to the <see cref="LayerProperty" />
         /// </summary>
         public DataBindingConverter<TLayerProperty, TProperty> Converter { get; private set; }
-
-        /// <summary>
-        ///     Gets the property on the <see cref="LayerProperty" /> this data binding targets
-        /// </summary>
-        public PropertyInfo TargetProperty { get; private set; }
 
         /// <summary>
         ///     Gets the currently used instance of the data model that contains the source of the data binding
@@ -118,8 +112,21 @@ namespace Artemis.Core
             if (Converter == null)
                 return;
 
-            var value = GetValue(Converter.GetValue());
-            Converter.ApplyValue(GetValue(value));
+            var converterValue = Converter.GetValue();
+            var value = GetValue(converterValue);
+            Converter.ApplyValue(value);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            foreach (var dataBindingModifier in Modifiers)
+                dataBindingModifier.Dispose();
         }
 
         /// <summary>
@@ -218,7 +225,7 @@ namespace Artemis.Core
         /// </summary>
         public Type GetTargetType()
         {
-            return TargetProperty.PropertyType;
+            return Registration.PropertyExpression.ReturnType;
         }
 
         /// <summary>
@@ -257,7 +264,6 @@ namespace Artemis.Core
 
             Converter = dataBindingRegistration?.Converter;
             Registration = dataBindingRegistration;
-            TargetProperty = dataBindingRegistration?.Property;
 
             if (GetTargetType().IsValueType)
             {
@@ -305,7 +311,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
             // General
-            var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetProperty);
+            var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
             ApplyRegistration(registration);
 
             Mode = (DataBindingMode) Entity.DataBindingMode;
@@ -329,7 +335,7 @@ namespace Artemis.Core
                 LayerProperty.Entity.DataBindingEntities.Add(Entity);
 
             // General 
-            Entity.TargetProperty = TargetProperty?.Name;
+            Entity.TargetExpression = Registration.PropertyExpression.ToString();
             Entity.DataBindingMode = (int) Mode;
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;
@@ -340,7 +346,7 @@ namespace Artemis.Core
                 Entity.SourceDataModelGuid = SourceDataModel.PluginInfo.Guid;
                 Entity.SourcePropertyPath = SourcePropertyPath;
             }
-            
+
             // Modifiers
             Entity.Modifiers.Clear();
             foreach (var dataBindingModifier in Modifiers)
@@ -381,18 +387,6 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            _disposed = true;
-
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingModifier.Dispose();
-        }
     }
 
     /// <summary>

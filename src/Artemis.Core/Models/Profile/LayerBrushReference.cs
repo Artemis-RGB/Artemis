@@ -17,5 +17,15 @@ namespace Artemis.Core
         ///     The full type name of the brush descriptor
         /// </summary>
         public string BrushType { get; set; }
+
+        public LayerBrushReference()
+        {
+        }
+
+        public LayerBrushReference(LayerBrushDescriptor descriptor)
+        {
+            BrushPluginGuid = descriptor.LayerBrushProvider.PluginInfo.Guid;
+            BrushType = descriptor.LayerBrushType.Name;
+        }
     }
 }

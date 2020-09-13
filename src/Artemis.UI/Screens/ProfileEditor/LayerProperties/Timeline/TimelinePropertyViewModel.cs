@@ -19,6 +19,25 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             LayerProperty = layerProperty;
             LayerPropertyViewModel = layerPropertyViewModel;
+
+            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
+            LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeAdded;
+            LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeRemoved;
+            UpdateKeyframes();
+        }
+
+        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
+        {
+            UpdateKeyframes();
+        }
+
+        private void LayerPropertyOnKeyframeRemoved(object sender, LayerPropertyEventArgs<T> e)
+        {
+            UpdateKeyframes();
+        }
+
+        private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs<T> e)
+        {
             UpdateKeyframes();
         }
 
@@ -55,8 +74,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             start ??= TimeSpan.Zero;
             end ??= TimeSpan.MaxValue;
 
-            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position <= end).ToList();
-            foreach (var keyframe in toShift) 
+            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
+            foreach (var keyframe in toShift)
                 LayerProperty.RemoveKeyframe(keyframe);
 
             UpdateKeyframes();
@@ -67,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             start ??= TimeSpan.Zero;
             end ??= TimeSpan.MaxValue;
 
-            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position <= end).ToList();
+            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
             foreach (var keyframe in toShift)
                 keyframe.Position += amount;
 
@@ -76,6 +95,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void Dispose()
         {
+            LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
+            LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeAdded;
+            LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeRemoved;
         }
     }
 

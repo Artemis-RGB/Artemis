@@ -22,5 +22,10 @@ namespace Artemis.Core.Services
         ///     Returns a list of all registered layer brush descriptors
         /// </summary>
         List<LayerBrushDescriptor> GetLayerBrushes();
+
+        /// <summary>
+        /// Returns the descriptor of the default layer brush
+        /// </summary>
+        LayerBrushDescriptor GetDefaultLayerBrush();
     }
 }

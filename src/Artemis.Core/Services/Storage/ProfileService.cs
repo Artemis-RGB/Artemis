@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Artemis.Core.LayerBrushes;
-using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
@@ -19,7 +17,12 @@ namespace Artemis.Core.Services
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(ILogger logger, IPluginService pluginService, ISurfaceService surfaceService, IProfileRepository profileRepository)
+        internal ProfileService(ILogger logger,
+            IPluginService pluginService,
+            ISurfaceService surfaceService,
+            IConditionOperatorService conditionOperatorService,
+            IDataBindingService dataBindingService,
+            IProfileRepository profileRepository)
         {
             _logger = logger;
             _pluginService = pluginService;
@@ -261,7 +264,7 @@ namespace Artemis.Core.Services
                 _profileRepository.Save(profileEntity);
             }
         }
-      
+
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
         /// </summary>
@@ -272,7 +275,7 @@ namespace Artemis.Core.Services
             foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
-        
+
         #region Event handlers
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
@@ -285,7 +288,7 @@ namespace Artemis.Core.Services
             if (e.Surface.IsActive)
                 ActiveProfilesPopulateLeds(e.Surface);
         }
-        
+
         #endregion
     }
 }

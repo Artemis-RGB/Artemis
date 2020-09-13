@@ -61,5 +61,12 @@ namespace Artemis.Core.LayerBrushes
             layer.LayerBrush = brush;
             layer.OnLayerBrushUpdated();
         }
+
+        public bool MatchesLayerBrushReference(LayerBrushReference reference)
+        {
+            if (reference == null)
+                return false;
+            return LayerBrushProvider.PluginInfo.Guid == reference.BrushPluginGuid && LayerBrushType.Name == reference.BrushType;
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Artemis.Core
 {
@@ -18,7 +19,7 @@ namespace Artemis.Core
         /// <summary>
         ///     A dynamically compiled setter pointing to the data bound property
         /// </summary>
-        public Action<TProperty> SetExpression { get; private set; }
+        public Action<TLayerProperty, TProperty> SetExpression { get; private set; }
 
         /// <summary>
         ///     Gets the data binding this converter is applied to
@@ -81,19 +82,34 @@ namespace Artemis.Core
             OnInitialized();
         }
 
-        private Action<TProperty> CreateValueSetter()
+        private Action<TLayerProperty, TProperty> CreateValueSetter()
         {
-            if (DataBinding.TargetProperty?.DeclaringType == null)
-                return null;
+            MethodInfo setterMethod = null;
 
-            var setterMethod = DataBinding.TargetProperty.GetSetMethod();
+            if (DataBinding.Registration.Member != null)
+            {
+                if (DataBinding.Registration.Member is PropertyInfo propertyInfo)
+                    setterMethod = propertyInfo.GetSetMethod();
+            }
+
             if (setterMethod == null)
                 return null;
 
+            var parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
             var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
 
-            var body = DataBinding.Registration.PropertyExpression;
-            var lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
+
+            var memberAccess = Expression.MakeMemberAccess(parameter, DataBinding.Registration.Member);
+            var assignment = Expression.Assign(memberAccess, propertyValue);
+            var lambda = Expression.Lambda<Action<TLayerProperty, TProperty>>(assignment, parameter, propertyValue);
+
+            if (typeof(TLayerProperty).IsValueType)
+            {
+                // var layerProperty = Expression.Constant(DataBinding.LayerProperty);
+                // var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty, DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
+                // var assingment = Expression.Assign()    
+            }
+
             return lambda.Compile();
         }
     }
