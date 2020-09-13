@@ -310,7 +310,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             foreach (var layerEffect in SelectedProfileElement.LayerEffects)
             {
-                if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect))
+                if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
                     continue;
 
                 // TODO: wat?

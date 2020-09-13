@@ -20,16 +20,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             _profileEditorService = profileEditorService;
             LayerPropertyKeyframe = layerPropertyKeyframe;
+            EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
+
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyKeyframe.PropertyChanged += LayerPropertyKeyframeOnPropertyChanged;
         }
 
-        public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
 
-        public BindableCollection<TimelineEasingViewModel> EasingViewModels
-        {
-            get => _easingViewModels;
-            set => SetAndNotify(ref _easingViewModels, value);
-        }
+        public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
+        public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; }
 
         public double X
         {
@@ -53,6 +52,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void Dispose()
         {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyKeyframe.PropertyChanged -= LayerPropertyKeyframeOnPropertyChanged;
 
             foreach (var timelineEasingViewModel in EasingViewModels)
@@ -65,6 +65,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
         }
 
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        {
+            Update();
+        }
+
         private void LayerPropertyKeyframeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(LayerPropertyKeyframe.Position))
@@ -73,7 +78,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Easing
 
-        public void CreateEasingViewModels()
+        public void PopulateEasingViewModels()
         {
             if (EasingViewModels.Any())
                 return;
@@ -84,6 +89,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             foreach (var timelineEasingViewModel in EasingViewModels)
                 timelineEasingViewModel.EasingModeSelected += TimelineEasingViewModelOnEasingModeSelected;
+        }
+
+        public void ClearEasingViewModels()
+        {
+            EasingViewModels.Clear();
         }
 
         private void TimelineEasingViewModelOnEasingModeSelected(object sender, EventArgs e)
@@ -150,18 +160,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Context menu actions
 
-        public void ContextMenuOpening()
-        {
-            CreateEasingViewModels();
-        }
-
-        public void ContextMenuClosing()
-        {
-            foreach (var timelineEasingViewModel in EasingViewModels)
-                timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
-            EasingViewModels.Clear();
-        }
-
         public void Copy()
         {
             var newKeyframe = new LayerPropertyKeyframe<T>(
@@ -211,6 +209,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Context menu actions
 
+        void PopulateEasingViewModels();
+        void ClearEasingViewModels();
         void Copy();
         void Delete();
 

@@ -7,6 +7,13 @@ namespace Artemis.Core.Services
 {
     internal class LayerBrushService : ILayerBrushService
     {
+        private readonly ISettingsService _settingsService;
+
+        public LayerBrushService(ISettingsService settingsService)
+        {
+            _settingsService = settingsService;
+        }
+
         public LayerBrushRegistration RegisterLayerBrush(LayerBrushDescriptor descriptor)
         {
             if (descriptor == null)
@@ -25,6 +32,17 @@ namespace Artemis.Core.Services
         public List<LayerBrushDescriptor> GetLayerBrushes()
         {
             return LayerBrushStore.GetAll().Select(r => r.LayerBrushDescriptor).ToList();
+        }
+
+        public LayerBrushDescriptor GetDefaultLayerBrush()
+        {
+            var defaultReference = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
+            {
+                BrushPluginGuid = Guid.Parse("92a9d6ba-6f7a-4937-94d5-c1d715b4141a"),
+                BrushType = "ColorBrush"
+            });
+
+            return LayerBrushStore.Get(defaultReference.Value.BrushPluginGuid, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
         }
     }
 }

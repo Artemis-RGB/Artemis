@@ -61,7 +61,9 @@ namespace Artemis.Core
 
         private bool _isHidden;
 
-        /// <inheritdoc />
+        /// <summary>
+        ///     Gets or sets whether the property is hidden in the UI
+        /// </summary>
         public bool IsHidden
         {
             get => _isHidden;
@@ -318,13 +320,13 @@ namespace Artemis.Core
         /// </summary>
         public bool DataBindingsSupported { get; protected internal set; } = true;
 
-        public DataBindingRegistration<T, TProperty> GetDataBindingRegistration<TProperty>(string propertyName)
+        public DataBindingRegistration<T, TProperty> GetDataBindingRegistration<TProperty>(string expression)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             var match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                      registration.Property.Name == propertyName);
+                                                                      registration.PropertyExpression.ToString() == expression);
             return (DataBindingRegistration<T, TProperty>) match;
         }
 

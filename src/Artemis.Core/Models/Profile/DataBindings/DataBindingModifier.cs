@@ -175,7 +175,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.TargetProperty.PropertyType;
+            var targetType = DataBinding.GetTargetType();
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -227,7 +227,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.TargetProperty.PropertyType;
+            var targetType = DataBinding.GetTargetType();
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -269,7 +269,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.TargetProperty.PropertyType;
+                var targetType = DataBinding.GetTargetType();
                 object staticValue;
 
                 try

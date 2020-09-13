@@ -1,8 +1,10 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Properties;
 using Artemis.UI.Shared.Services;
 
@@ -10,10 +12,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 {
     public class SelectionToolViewModel : VisualizationToolViewModel
     {
+        private readonly ILayerBrushService _layerBrushService;
         private Rect _dragRectangle;
 
-        public SelectionToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        public SelectionToolViewModel(ProfileViewModel profileViewModel,
+            IProfileEditorService profileEditorService,
+            ILayerBrushService layerBrushService) : base(profileViewModel, profileEditorService)
         {
+            _layerBrushService = layerBrushService;
             using (var stream = new MemoryStream(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
@@ -52,20 +58,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             }
             // If no layer selected, apply it to a new layer in the selected folder
             else if (ProfileEditorService.SelectedProfileElement is Folder folder)
-            {
-                var newLayer = new Layer(folder, "New layer");
-                newLayer.AddLeds(selectedLeds);
-                ProfileEditorService.ChangeSelectedProfileElement(newLayer);
-                ProfileEditorService.UpdateSelectedProfileElement();
-            }
+                CreateLayer(folder, selectedLeds);
             // If no folder selected, apply it to a new layer in the root folder
             else
             {
                 var rootFolder = ProfileEditorService.SelectedProfile.GetRootFolder();
-                var newLayer = new Layer(rootFolder, "New layer");
-                newLayer.AddLeds(selectedLeds);
-                ProfileEditorService.ChangeSelectedProfileElement(newLayer);
-                ProfileEditorService.UpdateSelectedProfileElement();
+                CreateLayer(rootFolder, selectedLeds);
             }
         }
 
@@ -88,6 +86,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ProfileViewModel.SelectedLeds.AddRange(selectedLeds.Except(ProfileViewModel.SelectedLeds));
 
             DragRectangle = selectedRect;
+        }
+
+        private void CreateLayer(Folder folder, List<ArtemisLed> selectedLeds)
+        {
+            var newLayer = new Layer(folder, "New layer");
+            newLayer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
+            newLayer.AddLeds(selectedLeds);
+            ProfileEditorService.ChangeSelectedProfileElement(newLayer);
+            ProfileEditorService.UpdateSelectedProfileElement();
         }
     }
 }

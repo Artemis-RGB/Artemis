@@ -95,7 +95,7 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets the plugin info that defined this effect
         /// </summary>
-        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider.PluginInfo;
+        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider?.PluginInfo;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
@@ -108,7 +108,7 @@ namespace Artemis.Core.LayerEffects
         public void Dispose()
         {
             DisableLayerEffect();
-            BaseProperties.Dispose();
+            BaseProperties?.Dispose();
         }
 
         /// <summary>

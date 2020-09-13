@@ -36,7 +36,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _dataModelUIService = dataModelUIService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
 
-            DisplayName = Registration.Property.Name.ToUpper();
+            if (Registration.Member != null)
+                DisplayName = Registration.Member.Name.ToUpper();
+            else
+                DisplayName = Registration.LayerProperty.PropertyDescription.Name.ToUpper();
 
             DataBindingModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(DataBindingMode)));
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
@@ -203,7 +206,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             TargetSelectionViewModel.IsEnabled = true;
             TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DataBinding.SourceDataModel, DataBinding.SourcePropertyPath);
-            TargetSelectionViewModel.FilterTypes = new[] {DataBinding.TargetProperty.PropertyType};
+            TargetSelectionViewModel.FilterTypes = new[] {DataBinding.GetTargetType()};
 
             UpdateModifierViewModels();
 
@@ -225,11 +228,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void UpdateTestResult()
         {
+            if (DataBinding == null)
+            {
+                TestInputValue = default;
+                TestResultValue = default;
+                return;
+            }
+
             var currentValue = TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
-            if (currentValue == null && Registration.Property.PropertyType.IsValueType)
-                currentValue = Activator.CreateInstance(Registration.Property.PropertyType);
-            
-            TestInputValue = currentValue is TProperty testInputValue ? testInputValue : default;
+            if (currentValue == null)
+                currentValue = default(TProperty);
+
+            TestInputValue = (TProperty) Convert.ChangeType(currentValue, typeof(TProperty));
             if (DataBinding != null)
                 TestResultValue = DataBinding.GetValue(TestInputValue);
             else

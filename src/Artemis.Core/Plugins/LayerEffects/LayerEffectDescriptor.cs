@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Ninject;
@@ -47,9 +48,9 @@ namespace Artemis.Core.LayerEffects
         public LayerEffectProvider LayerEffectProvider { get; }
         
         /// <summary>
-        ///     Gets a boolean indicating if this descriptor is a placeholder for a missing plugin
+        ///     Gets the GUID this descriptor is acting as a placeholder for. If null, this descriptor is not a placeholder
         /// </summary>
-        public bool IsPlaceHolder { get; internal set; }
+        public Guid? PlaceholderFor { get; internal set; }
 
         /// <summary>
         ///     Creates an instance of the described effect and applies it to the render element
@@ -60,7 +61,7 @@ namespace Artemis.Core.LayerEffects
             if (renderElement.LayerEffects.Any(e => e.EntityId == entity.Id))
                 return;
 
-            if (IsPlaceHolder)
+            if (PlaceholderFor != null)
             {
                 CreatePlaceHolderInstance(renderElement, entity);
                 return;
@@ -82,7 +83,8 @@ namespace Artemis.Core.LayerEffects
 
         private void CreatePlaceHolderInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
         {
-            var effect = new PlaceholderLayerEffect(entity) {ProfileElement = renderElement, Descriptor = this};
+            var effect = new PlaceholderLayerEffect(entity, PlaceholderFor.Value) {ProfileElement = renderElement, Descriptor = this};
+            effect.Initialize();
             renderElement.ActivateLayerEffect(effect);
         }
     }

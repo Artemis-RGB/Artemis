@@ -193,7 +193,7 @@ namespace Artemis.Core
 
             canvas.Restore();
         }
-        
+
         /// <inheritdoc />
         public override void AddChild(ProfileElement child, int? order = null)
         {
@@ -242,17 +242,13 @@ namespace Artemis.Core
 
         protected override void Dispose(bool disposing)
         {
-            if (!disposing)
-                return;
-
             _disposed = true;
 
-            foreach (var baseLayerEffect in LayerEffects)
-                baseLayerEffect.Dispose();
             foreach (var profileElement in Children)
                 profileElement.Dispose();
 
             _folderBitmap?.Dispose();
+            base.Dispose(disposing);
         }
 
         internal override void Load()
@@ -289,10 +285,6 @@ namespace Artemis.Core
             FolderEntity.ProfileId = Profile.EntityId;
             FolderEntity.ExpandedPropertyGroups.Clear();
             FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
-
-            // Conditions
-            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
-            DisplayConditionGroup?.Save();
 
             SaveRenderElement();
         }

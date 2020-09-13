@@ -32,6 +32,10 @@ namespace Artemis.Core
             DisplayContinuously = RenderElementEntity.DisplayContinuously;
             AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
 
+            DisplayConditionGroup = RenderElementEntity.RootDisplayCondition != null
+                ? new DisplayConditionGroup(null, RenderElementEntity.RootDisplayCondition)
+                : new DisplayConditionGroup(null);
+
             ActivateEffects();
         }
 
@@ -49,7 +53,7 @@ namespace Artemis.Core
                 var layerEffectEntity = new LayerEffectEntity
                 {
                     Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.PluginInfo.Guid,
+                    PluginGuid = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.PluginInfo.Guid,
                     EffectType = layerEffect.GetEffectTypeName(),
                     Name = layerEffect.Name,
                     Enabled = layerEffect.Enabled,
@@ -59,6 +63,10 @@ namespace Artemis.Core
                 RenderElementEntity.LayerEffects.Add(layerEffectEntity);
                 layerEffect.BaseProperties.ApplyToEntity();
             }
+
+            // Conditions
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
+            DisplayConditionGroup?.Save();
         }
 
         #region Properties
@@ -204,7 +212,7 @@ namespace Artemis.Core
 
             return (TimelinePosition - oldPosition).TotalSeconds;
         }
-        
+
         /// <summary>
         ///     Overrides the progress of the element
         /// </summary>
@@ -238,6 +246,8 @@ namespace Artemis.Core
                 Order = LayerEffects.Count + 1
             };
             descriptor.CreateInstance(this, entity);
+
+            OrderEffects();
             OnLayerEffectsUpdated();
         }
 
@@ -254,6 +264,12 @@ namespace Artemis.Core
             effect.Dispose();
 
             // Update the order on the remaining effects
+            OrderEffects();
+            OnLayerEffectsUpdated();
+        }
+
+        private void OrderEffects()
+        {
             var index = 0;
             foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
             {
@@ -261,7 +277,7 @@ namespace Artemis.Core
                 index++;
             }
 
-            OnLayerEffectsUpdated();
+            _layerEffects.Sort((a, b) => a.Order.CompareTo(b.Order));
         }
 
         internal void ActivateEffects()
@@ -270,7 +286,7 @@ namespace Artemis.Core
             {
                 // If there is a non-placeholder existing effect, skip this entity
                 var existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
-                if (existing != null && !existing.Descriptor.IsPlaceHolder)
+                if (existing != null && existing.Descriptor.PlaceholderFor == null)
                     continue;
 
                 var descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
@@ -282,37 +298,42 @@ namespace Artemis.Core
                         _layerEffects.Remove(existing);
                         existing.Dispose();
                     }
+
                     // Create an instance with the descriptor
                     descriptor.CreateInstance(this, layerEffectEntity);
                 }
                 else if (existing == null)
                 {
                     // If no descriptor was found and there was no existing placeholder, create a placeholder
-                    descriptor = PlaceholderLayerEffectDescriptor.Create();
+                    descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.PluginGuid);
                     descriptor.CreateInstance(this, layerEffectEntity);
                 }
             }
+
+            OrderEffects();
         }
 
 
         internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
             _layerEffects.Add(layerEffect);
-
-            // Update the order on the effects
-            var index = 0;
-            foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
-            {
-                baseLayerEffect.Order = Order = index + 1;
-                index++;
-            }
-
             OnLayerEffectsUpdated();
         }
 
-        private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
+        private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
         {
-            throw new NotImplementedException();
+            // If effects provided by the plugin are on the element, replace them with placeholders
+            var pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
+                                                          ef.PluginInfo.Guid == e.Registration.Plugin.PluginInfo.Guid).ToList();
+            foreach (var pluginEffect in pluginEffects)
+            {
+                var entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
+                _layerEffects.Remove(pluginEffect);
+                pluginEffect.Dispose();
+
+                var descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.PluginInfo.Guid);
+                descriptor.CreateInstance(this, entity);
+            }
         }
 
         private void LayerEffectStoreOnLayerEffectAdded(object sender, LayerEffectStoreEvent e)
@@ -355,6 +376,21 @@ namespace Artemis.Core
                 TimelinePosition = TimeSpan.Zero;
 
             DisplayConditionMet = conditionMet;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
+
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+
+            base.Dispose(disposing);
         }
 
         #endregion

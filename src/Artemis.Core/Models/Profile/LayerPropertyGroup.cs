@@ -237,6 +237,10 @@ namespace Artemis.Core
             if (instance == null)
                 throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
 
+            // Ensure the description has a name, if not this is a good point to set it based on the property info
+            if (string.IsNullOrWhiteSpace(propertyGroupDescription.Name))
+                propertyGroupDescription.Name = propertyInfo.Name.Humanize();
+
             instance.Parent = this;
             instance.GroupDescription = propertyGroupDescription;
             instance.LayerBrush = LayerBrush;

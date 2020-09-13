@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
@@ -19,23 +20,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             KeyframePositions = new BindableCollection<double>();
 
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
+            
             UpdateKeyframePositions();
         }
+
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
         public LayerPropertyGroup LayerPropertyGroup { get; }
 
         public BindableCollection<double> KeyframePositions { get; }
-
-        public void Dispose()
-        {
-            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-        }
-
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
-        {
-            UpdateKeyframePositions();
-        }
 
         public void UpdateKeyframePositions()
         {
@@ -44,5 +38,30 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 .GetAllKeyframeViewModels(false)
                 .Select(p => p.Position.TotalSeconds * _profileEditorService.PixelsPerSecond));
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyGroupViewModel.PropertyChanged -= LayerPropertyGroupViewModelOnPropertyChanged;
+        }
+
+        #endregion
+        
+        #region Event handlers
+
+        private void LayerPropertyGroupViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LayerPropertyGroupViewModel.IsExpanded))
+                UpdateKeyframePositions();
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
+        {
+            UpdateKeyframePositions();
+        }
+
+        #endregion
     }
 }

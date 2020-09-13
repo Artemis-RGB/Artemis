@@ -26,7 +26,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void ApplyValue(object value)
         {
-            SetExpression?.Invoke(value);
+            SetExpression?.Invoke(DataBinding.LayerProperty.CurrentValue, value);
         }
 
         /// <inheritdoc />

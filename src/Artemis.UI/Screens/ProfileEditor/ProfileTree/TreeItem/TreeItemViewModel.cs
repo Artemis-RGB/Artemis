@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
@@ -16,16 +17,22 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         private readonly IDialogService _dialogService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
+        private readonly ILayerBrushService _layerBrushService;
+        private readonly ISurfaceService _surfaceService;
         private ProfileElement _profileElement;
 
         protected TreeItemViewModel(ProfileElement profileElement,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            IProfileTreeVmFactory profileTreeVmFactory)
+            IProfileTreeVmFactory profileTreeVmFactory,
+            ILayerBrushService layerBrushService,
+            ISurfaceService surfaceService)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
             _profileTreeVmFactory = profileTreeVmFactory;
+            _layerBrushService = layerBrushService;
+            _surfaceService = surfaceService;
 
             ProfileElement = profileElement;
 
@@ -129,8 +136,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            var _ = new Layer(ProfileElement, "New layer");
+            var layer = new Layer(ProfileElement, "New layer");
+            layer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
+            layer.AddLeds(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds));
             _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.ChangeSelectedProfileElement(layer);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -167,6 +177,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             parent.RemoveExistingElement(this);
 
             _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.ChangeSelectedProfileElement(null);
         }
 
         public void UpdateProfileElements()

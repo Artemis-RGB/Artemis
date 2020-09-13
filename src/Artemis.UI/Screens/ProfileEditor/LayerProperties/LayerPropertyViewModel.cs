@@ -3,14 +3,14 @@ using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Ninject;
-using Ninject.Parameters;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
     public class LayerPropertyViewModel : PropertyChangedBase, IDisposable
     {
+        private bool _isVisible;
+
         public LayerPropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
         {
             LayerProperty = layerProperty;
@@ -23,8 +23,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         public ITreePropertyViewModel TreePropertyViewModel { get; }
         public ITimelinePropertyViewModel TimelinePropertyViewModel { get; }
 
-        public bool IsVisible => !LayerProperty.IsHidden;
-        
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetAndNotify(ref _isVisible, value);
+        }
+
         public void Dispose()
         {
             TreePropertyViewModel?.Dispose();

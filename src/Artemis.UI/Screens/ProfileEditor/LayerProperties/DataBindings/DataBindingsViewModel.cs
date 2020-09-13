@@ -9,6 +9,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private int _selectedItemIndex;
 
         public DataBindingsViewModel(IProfileEditorService profileEditorService, IDataBindingsVmFactory dataBindingsVmFactory)
         {
@@ -17,6 +18,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
             CreateDataBindingViewModels();
+        }
+
+        public int SelectedItemIndex
+        {
+            get => _selectedItemIndex;
+            set => SetAndNotify(ref _selectedItemIndex, value);
         }
 
         private void CreateDataBindingViewModels()
@@ -33,6 +40,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             // and creating the actual data bindings
             foreach (var registration in registrations)
                 ActivateItem(_dataBindingsVmFactory.DataBindingViewModel(registration));
+
+            SelectedItemIndex = 0;
         }
 
         protected override void OnClose()

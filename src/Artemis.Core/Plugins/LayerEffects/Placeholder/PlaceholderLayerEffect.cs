@@ -1,17 +1,19 @@
-﻿using Artemis.Storage.Entities.Profile;
+﻿using System;
+using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
-namespace Artemis.Core.LayerEffects
+namespace Artemis.Core.LayerEffects.Placeholder
 {
     /// <summary>
     ///     Represents a layer effect that could not be loaded due to a missing plugin
     /// </summary>
-    public class PlaceholderLayerEffect : BaseLayerEffect
+    internal class PlaceholderLayerEffect : LayerEffect<PlaceholderProperties>
     {
-        internal PlaceholderLayerEffect(LayerEffectEntity originalEntity)
+        internal PlaceholderLayerEffect(LayerEffectEntity originalEntity, Guid placeholderFor)
         {
             OriginalEntity = originalEntity;
-         
+            PlaceholderFor = placeholderFor;
+
             EntityId = OriginalEntity.Id;
             Order = OriginalEntity.Order;
             Name = OriginalEntity.Name;
@@ -20,6 +22,7 @@ namespace Artemis.Core.LayerEffects
         }
 
         internal LayerEffectEntity OriginalEntity { get; }
+        public Guid PlaceholderFor { get; }
 
         /// <inheritdoc />
         public override void EnableLayerEffect()
@@ -50,8 +53,22 @@ namespace Artemis.Core.LayerEffects
         {
             return OriginalEntity.EffectType;
         }
+    }
 
-        internal override void Initialize()
+    /// <summary>
+    /// This is in place so that the UI has something to show
+    /// </summary>
+    internal class PlaceholderProperties : LayerPropertyGroup
+    {
+        protected override void PopulateDefaults()
+        {
+        }
+
+        protected override void EnableProperties()
+        {
+        }
+
+        protected override void DisableProperties()
         {
         }
     }

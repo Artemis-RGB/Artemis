@@ -1,4 +1,5 @@
 ﻿using System;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -36,12 +37,23 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void ApplyValue(float value)
         {
+            if (SetExpression == null)
+                return;
+
             if (DataBinding.LayerProperty.PropertyDescription.MaxInputValue is float max)
                 value = Math.Min(value, max);
             if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
                 value = Math.Max(value, min);
 
-            SetExpression?.Invoke(value);
+            var test = new SKSize(5,5);
+            test.Width = 10;
+
+            SetExpression(DataBinding.LayerProperty.CurrentValue, value);
+        }
+
+        private void Mehtest(ref SKSize test)
+        {
+            test.Width = 20;
         }
 
         /// <inheritdoc />

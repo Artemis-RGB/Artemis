@@ -23,7 +23,7 @@
                 Think of things like blur, black &amp; white but also audio visualization etc.
             </TextBlock>
         </StackPanel>
-        <ListBox ItemsSource="{Binding LayerEffectDescriptors}" SelectedItem="{Binding SelectedLayerEffectDescriptor}" HorizontalContentAlignment="Stretch"
+        <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedLayerEffectDescriptor}" HorizontalContentAlignment="Stretch"
                  Visibility="{Binding HasLayerEffectDescriptors, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
