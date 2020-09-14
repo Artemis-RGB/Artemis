@@ -1,5 +1,8 @@
 ﻿namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     A service that allows you manage an <see cref="ArtemisDevice"/>
+    /// </summary>
     public interface IDeviceService : IArtemisService
     {
         /// <summary>

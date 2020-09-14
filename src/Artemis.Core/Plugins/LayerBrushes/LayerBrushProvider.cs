@@ -41,11 +41,14 @@ namespace Artemis.Core.LayerBrushes
             if (!Enabled)
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer brush descriptor when the plugin is enabled");
 
-            _layerBrushDescriptors.Add(new LayerBrushDescriptor(displayName, description, icon, typeof(T), this));
+            var descriptor = new LayerBrushDescriptor(displayName, description, icon, typeof(T), this);
+            _layerBrushDescriptors.Add(descriptor);
+            LayerBrushStore.Add(descriptor);
         }
 
         private void OnPluginDisabled(object sender, EventArgs e)
         {
+            // The store will clean up the registrations by itself, the plugin just needs to clear its own list
             _layerBrushDescriptors.Clear();
         }
     }

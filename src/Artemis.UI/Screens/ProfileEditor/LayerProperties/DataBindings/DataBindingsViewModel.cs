@@ -1,63 +1,58 @@
 ﻿using System;
-using System.Linq;
-using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingsViewModel : PropertyChangedBase, IDisposable
+    public class DataBindingsViewModel : Conductor<IDataBindingViewModel>.Collection.AllActive
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
-        private DataBindingsTabsViewModel _dataBindingsTabsViewModel;
-        private DataBindingViewModel _dataBindingViewModel;
+        private readonly IProfileEditorService _profileEditorService;
+        private int _selectedItemIndex;
 
-        public DataBindingsViewModel(BaseLayerProperty layerProperty, IDataBindingsVmFactory dataBindingsVmFactory)
+        public DataBindingsViewModel(IProfileEditorService profileEditorService, IDataBindingsVmFactory dataBindingsVmFactory)
         {
+            _profileEditorService = profileEditorService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
-            LayerProperty = layerProperty;
-            Initialise();
+
+            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
+            CreateDataBindingViewModels();
         }
 
-        public BaseLayerProperty LayerProperty { get; }
-
-        public DataBindingViewModel DataBindingViewModel
+        public int SelectedItemIndex
         {
-            get => _dataBindingViewModel;
-            set => SetAndNotify(ref _dataBindingViewModel, value);
+            get => _selectedItemIndex;
+            set => SetAndNotify(ref _selectedItemIndex, value);
         }
 
-        public DataBindingsTabsViewModel DataBindingsTabsViewModel
+        private void CreateDataBindingViewModels()
         {
-            get => _dataBindingsTabsViewModel;
-            set => SetAndNotify(ref _dataBindingsTabsViewModel, value);
-        }
+            Items.Clear();
 
-        private void Initialise()
-        {
-            DataBindingViewModel?.Dispose();
-            DataBindingViewModel = null;
-            DataBindingsTabsViewModel = null;
-
-            var registrations = LayerProperty.DataBindingRegistrations;
-            if (registrations == null || registrations.Count == 0)
+            var layerProperty = _profileEditorService.SelectedDataBinding;
+            if (layerProperty == null)
                 return;
+
+            var registrations = layerProperty.GetAllDataBindingRegistrations();
 
             // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
             // and creating the actual data bindings
-            if (registrations.Count == 1)
-                DataBindingViewModel = _dataBindingsVmFactory.DataBindingViewModel(registrations.First());
-            else
-            {
-                DataBindingsTabsViewModel = new DataBindingsTabsViewModel();
-                foreach (var registration in registrations)
-                    DataBindingsTabsViewModel.Tabs.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
-            }
+            foreach (var registration in registrations)
+                ActivateItem(_dataBindingsVmFactory.DataBindingViewModel(registration));
+
+            SelectedItemIndex = 0;
         }
 
-        public void Dispose()
+        protected override void OnClose()
         {
-            DataBindingViewModel?.Dispose();
+            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
+            base.OnClose();
+        }
+
+        private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
+        {
+            CreateDataBindingViewModels();
         }
     }
 }

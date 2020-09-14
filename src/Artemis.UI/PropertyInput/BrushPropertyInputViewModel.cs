@@ -5,19 +5,19 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Stylet;
 
 namespace Artemis.UI.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
         private readonly IPluginService _pluginService;
-        private readonly IRenderElementService _renderElementService;
-        private List<LayerBrushDescriptor> _descriptors;
+        private BindableCollection<LayerBrushDescriptor> _descriptors;
 
-        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService,
-            IRenderElementService renderElementService, IPluginService pluginService) : base(layerProperty, profileEditorService)
+        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty,
+            IProfileEditorService profileEditorService,
+            IPluginService pluginService) : base(layerProperty, profileEditorService)
         {
-            _renderElementService = renderElementService;
             _pluginService = pluginService;
 
             _pluginService.PluginEnabled += PluginServiceOnPluginLoaded;
@@ -25,7 +25,7 @@ namespace Artemis.UI.PropertyInput
             UpdateEnumValues();
         }
 
-        public List<LayerBrushDescriptor> Descriptors
+        public BindableCollection<LayerBrushDescriptor> Descriptors
         {
             get => _descriptors;
             set => SetAndNotify(ref _descriptors, value);
@@ -33,14 +33,14 @@ namespace Artemis.UI.PropertyInput
 
         public LayerBrushDescriptor SelectedDescriptor
         {
-            get => Descriptors.FirstOrDefault(d => d.LayerBrushProvider.PluginInfo.Guid == InputValue?.BrushPluginGuid && d.LayerBrushType.Name == InputValue?.BrushType);
+            get => Descriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(InputValue));
             set => SetBrushByDescriptor(value);
         }
 
         public void UpdateEnumValues()
         {
             var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
-            Descriptors = layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors).ToList();
+            Descriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             NotifyOfPropertyChange(nameof(SelectedDescriptor));
         }
 
@@ -55,15 +55,12 @@ namespace Artemis.UI.PropertyInput
         protected override void OnInputValueApplied()
         {
             if (LayerProperty.ProfileElement is Layer layer)
-            {
-                _renderElementService.RemoveLayerBrush(layer);
-                _renderElementService.InstantiateLayerBrush(layer);
-            }
+                layer.ChangeLayerBrush(SelectedDescriptor);
         }
 
         private void SetBrushByDescriptor(LayerBrushDescriptor value)
         {
-            InputValue = new LayerBrushReference {BrushPluginGuid = value.LayerBrushProvider.PluginInfo.Guid, BrushType = value.LayerBrushType.Name};
+            InputValue = new LayerBrushReference(value);
         }
 
         private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)

@@ -16,7 +16,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets whether the plugin is enabled
         /// </summary>
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; internal set; }
 
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins

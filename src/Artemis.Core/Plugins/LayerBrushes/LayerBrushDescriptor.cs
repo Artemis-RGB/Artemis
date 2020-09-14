@@ -1,4 +1,6 @@
 ﻿using System;
+using Artemis.Core.Services;
+using Ninject;
 
 namespace Artemis.Core.LayerBrushes
 {
@@ -41,5 +43,30 @@ namespace Artemis.Core.LayerBrushes
         ///     The plugin that provided this <see cref="LayerBrushDescriptor" />
         /// </summary>
         public LayerBrushProvider LayerBrushProvider { get; }
+
+        /// <summary>
+        ///     Creates an instance of the described brush and applies it to the layer
+        /// </summary>
+        internal void CreateInstance(Layer layer)
+        {
+            if (layer.LayerBrush != null)
+                throw new ArtemisCoreException("Layer already has an instantiated layer brush");
+
+            var brush = (BaseLayerBrush) CoreService.Kernel.Get(LayerBrushType);
+            brush.Layer = layer;
+            brush.Descriptor = this;
+            brush.Initialize();
+            brush.Update(0);
+
+            layer.LayerBrush = brush;
+            layer.OnLayerBrushUpdated();
+        }
+
+        public bool MatchesLayerBrushReference(LayerBrushReference reference)
+        {
+            if (reference == null)
+                return false;
+            return LayerBrushProvider.PluginInfo.Guid == reference.BrushPluginGuid && LayerBrushType.Name == reference.BrushType;
+        }
     }
 }

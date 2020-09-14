@@ -1,58 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
-using Artemis.UI.Shared.Services;
-using Humanizer;
-using Ninject;
-using Ninject.Parameters;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertyGroupViewModel : LayerPropertyBaseViewModel
+    public class LayerPropertyGroupViewModel : PropertyChangedBase, IDisposable
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
-        private ViewModelType _groupType;
-        private TimelinePropertyGroupViewModel _timelinePropertyGroupViewModel;
-        private TreePropertyGroupViewModel _treePropertyGroupViewModel;
+        private bool _isVisible;
 
-        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription,
-            IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
+        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory)
         {
             _layerPropertyVmFactory = layerPropertyVmFactory;
-            ProfileEditorService = profileEditorService;
 
             LayerPropertyGroup = layerPropertyGroup;
-            PropertyGroupDescription = propertyGroupDescription;
+            Children = new BindableCollection<PropertyChangedBase>();
 
-            TreePropertyGroupViewModel = _layerPropertyVmFactory.TreePropertyGroupViewModel(this);
-            TimelinePropertyGroupViewModel = _layerPropertyVmFactory.TimelinePropertyGroupViewModel(this);
-
-            // Generate a fallback name if the description does not contain one
-            if (PropertyGroupDescription.Name == null)
-            {
-                var propertyInfo = LayerPropertyGroup.Parent?.GetType().GetProperties().FirstOrDefault(p => ReferenceEquals(p.GetValue(LayerPropertyGroup.Parent), LayerPropertyGroup));
-                if (propertyInfo != null)
-                    PropertyGroupDescription.Name = propertyInfo.Name.Humanize();
-                else
-                    PropertyGroupDescription.Name = "Unknown group";
-            }
+            TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
+            TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
 
             LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
+            IsVisible = !LayerPropertyGroup.IsHidden;
+
             PopulateChildren();
-            DetermineType();
         }
 
-        public override bool IsVisible => !LayerPropertyGroup.IsHidden;
-        public IProfileEditorService ProfileEditorService { get; }
         public LayerPropertyGroup LayerPropertyGroup { get; }
-        public PropertyGroupDescriptionAttribute PropertyGroupDescription { get; }
+        public TreeGroupViewModel TreeGroupViewModel { get; }
+        public TimelineGroupViewModel TimelineGroupViewModel { get; }
+        public BindableCollection<PropertyChangedBase> Children { get; }
 
-        public override bool IsExpanded
+        public bool IsVisible
+        {
+            get => _isVisible;
+            set => SetAndNotify(ref _isVisible, value);
+        }
+
+        public bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);
             set
@@ -62,56 +50,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
-        public ViewModelType GroupType
+        public void Dispose()
         {
-            get => _groupType;
-            set => SetAndNotify(ref _groupType, value);
-        }
-
-        public TreePropertyGroupViewModel TreePropertyGroupViewModel
-        {
-            get => _treePropertyGroupViewModel;
-            set => SetAndNotify(ref _treePropertyGroupViewModel, value);
-        }
-
-        public TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel
-        {
-            get => _timelinePropertyGroupViewModel;
-            set => SetAndNotify(ref _timelinePropertyGroupViewModel, value);
-        }
-
-        public override List<BaseLayerPropertyKeyframe> GetKeyframes(bool expandedOnly)
-        {
-            var result = new List<BaseLayerPropertyKeyframe>();
-            if (expandedOnly && !IsExpanded || LayerPropertyGroup.IsHidden)
-                return result;
-
-            foreach (var layerPropertyBaseViewModel in Children)
-                result.AddRange(layerPropertyBaseViewModel.GetKeyframes(expandedOnly));
-
-            return result;
-        }
-
-        public override void Dispose()
-        {
-            foreach (var layerPropertyBaseViewModel in Children)
-                layerPropertyBaseViewModel.Dispose();
-
+            TimelineGroupViewModel.Dispose();
             LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
-            TimelinePropertyGroupViewModel.Dispose();
-        }
-
-        public List<LayerPropertyBaseViewModel> GetAllChildren()
-        {
-            var result = new List<LayerPropertyBaseViewModel>();
-            foreach (var layerPropertyBaseViewModel in Children)
+            foreach (var child in Children)
             {
-                result.Add(layerPropertyBaseViewModel);
-                if (layerPropertyBaseViewModel is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
-                    result.AddRange(layerPropertyGroupViewModel.GetAllChildren());
+                if (child is IDisposable disposableChild)
+                    disposableChild.Dispose();
             }
-
-            return result;
         }
 
         public void UpdateOrder(int order)
@@ -120,23 +67,71 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(IsExpanded));
         }
 
-        private void DetermineType()
+        public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
         {
-            if (LayerPropertyGroup is LayerGeneralProperties)
-                GroupType = ViewModelType.General;
-            else if (LayerPropertyGroup is LayerTransformProperties)
-                GroupType = ViewModelType.Transform;
-            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerBrush != null)
-                GroupType = ViewModelType.LayerBrushRoot;
-            else if (LayerPropertyGroup.Parent == null && LayerPropertyGroup.LayerEffect != null)
-                GroupType = ViewModelType.LayerEffectRoot;
-            else
-                GroupType = ViewModelType.None;
+            var result = new List<ITimelineKeyframeViewModel>();
+            if (expandedOnly && !IsExpanded)
+                return result;
+
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    result.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(expandedOnly));
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Removes the keyframes between the <paramref name="start" /> and <paramref name="end" /> position from this property
+        ///     group
+        /// </summary>
+        /// <param name="start">The position at which to start removing keyframes, if null this will start at the first keyframe</param>
+        /// <param name="end">The position at which to start removing keyframes, if null this will end at the last keyframe</param>
+        public virtual void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    layerPropertyViewModel.TimelinePropertyViewModel.WipeKeyframes(start, end);
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    layerPropertyGroupViewModel.WipeKeyframes(start, end);
+            }
+
+            TimelineGroupViewModel.UpdateKeyframePositions();
+        }
+
+        /// <summary>
+        ///     Shifts the keyframes between the <paramref name="start" /> and <paramref name="end" /> position by the provided
+        ///     <paramref name="amount" />
+        /// </summary>
+        /// <param name="start">The position at which to start shifting keyframes, if null this will start at the first keyframe</param>
+        /// <param name="end">The position at which to start shifting keyframes, if null this will end at the last keyframe</param>
+        /// <param name="amount">The amount to shift the keyframes for</param>
+        public void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            foreach (var child in Children)
+            {
+                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                    layerPropertyViewModel.TimelinePropertyViewModel.ShiftKeyframes(start, end, amount);
+                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                    layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
+            }
+
+            TimelineGroupViewModel.UpdateKeyframePositions();
+        }
+
+        private void LayerPropertyGroupOnVisibilityChanged(object sender, EventArgs e)
+        {
+            IsVisible = !LayerPropertyGroup.IsHidden;
         }
 
         private void PopulateChildren()
         {
             // Get all properties and property groups and create VMs for them
+            // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
             foreach (var propertyInfo in LayerPropertyGroup.GetType().GetProperties())
             {
                 var propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
@@ -144,50 +139,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 var value = propertyInfo.GetValue(LayerPropertyGroup);
 
                 // Create VMs for properties on the group
-                if (propertyAttribute != null && value is BaseLayerProperty baseLayerProperty)
+                if (propertyAttribute != null && value is ILayerProperty layerProperty)
                 {
-                    var viewModel = CreateLayerPropertyViewModel(baseLayerProperty, propertyAttribute);
-                    if (viewModel != null)
-                        Children.Add(viewModel);
+                    var layerPropertyViewModel = _layerPropertyVmFactory.LayerPropertyViewModel(layerProperty);
+                    // After creation ensure a supported input VM was found, if not, discard the VM
+                    if (!layerPropertyViewModel.TreePropertyViewModel.HasPropertyInputViewModel)
+                        layerPropertyViewModel.Dispose();
+                    else
+                        Children.Add(layerPropertyViewModel);
                 }
                 // Create VMs for child groups on this group, resulting in a nested structure
                 else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
-                    Children.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup, groupAttribute));
+                    Children.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup));
             }
-        }
-
-        private LayerPropertyBaseViewModel CreateLayerPropertyViewModel(BaseLayerProperty baseLayerProperty, PropertyDescriptionAttribute propertyDescription)
-        {
-            // Go through the pain of instantiating a generic type VM now via reflection to make things a lot simpler down the line
-            var genericType = baseLayerProperty.GetType().Name == typeof(LayerProperty<>).Name
-                ? baseLayerProperty.GetType().GetGenericArguments()[0]
-                : baseLayerProperty.GetType().BaseType.GetGenericArguments()[0];
-
-            // Only create entries for types supported by a tree input VM
-            if (!genericType.IsEnum && ProfileEditorService.RegisteredPropertyEditors.All(r => r.SupportedType != genericType))
-                return null;
-            var genericViewModel = typeof(LayerPropertyViewModel<>).MakeGenericType(genericType);
-            var parameters = new IParameter[]
-            {
-                new ConstructorArgument("layerProperty", baseLayerProperty),
-                new ConstructorArgument("propertyDescription", propertyDescription)
-            };
-
-            return (LayerPropertyBaseViewModel) ProfileEditorService.Kernel.Get(genericViewModel, parameters);
-        }
-
-        private void LayerPropertyGroupOnVisibilityChanged(object sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(IsVisible));
-        }
-
-        public enum ViewModelType
-        {
-            General,
-            Transform,
-            LayerBrushRoot,
-            LayerEffectRoot,
-            None
         }
     }
 }

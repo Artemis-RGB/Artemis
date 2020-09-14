@@ -5,11 +5,13 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class TreeViewModel : PropertyChangedBase
+    public class TreeViewModel : Screen
     {
         public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
         {
             LayerPropertiesViewModel = layerPropertiesViewModel;
+
+            // Not using the Items collection because the list should persist even after this VM gets closed
             LayerPropertyGroups = layerPropertyGroups;
         }
 

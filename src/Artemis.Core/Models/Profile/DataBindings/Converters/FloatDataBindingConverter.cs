@@ -1,48 +1,51 @@
 ﻿using System;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class FloatDataBindingConverter : DataBindingConverter
+    public class FloatDataBindingConverter : FloatDataBindingConverter<float>
     {
+    }
+
+    /// <inheritdoc />
+    /// <typeparam name="T">The type of layer property this converter is applied to</typeparam>
+    public class FloatDataBindingConverter<T> : DataBindingConverter<T, float>
+    {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="FloatDataBindingConverter{T}" /> class
+        /// </summary>
         public FloatDataBindingConverter()
         {
-            SupportedType = typeof(float);
             SupportsSum = true;
             SupportsInterpolate = true;
         }
 
         /// <inheritdoc />
-        public override object Sum(object a, object b)
+        public override float Sum(float a, float b)
         {
-            return Convert.ToSingle(a) + Convert.ToSingle(b);
+            return a + b;
         }
 
         /// <inheritdoc />
-        public override object Interpolate(object a, object b, double progress)
+        public override float Interpolate(float a, float b, double progress)
         {
-            var floatA = Convert.ToSingle(a);
-            var floatB = Convert.ToSingle(b);
-            var diff = floatB - floatA;
-            return floatA + diff * progress;
+            var diff = b - a;
+            return (float) (a + diff * progress);
         }
 
         /// <inheritdoc />
-        public override void ApplyValue(object value)
+        public override void ApplyValue(float value)
         {
-            var floatValue = Convert.ToSingle(value);
+            if (ValueTypeSetExpression == null)
+                return;
+
             if (DataBinding.LayerProperty.PropertyDescription.MaxInputValue is float max)
-                floatValue = Math.Min(floatValue, max);
+                value = Math.Min(value, max);
             if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
-                floatValue = Math.Max(floatValue, min);
+                value = Math.Max(value, min);
 
-            ValueSetter?.Invoke(floatValue);
-        }
-
-        /// <inheritdoc />
-        public override object GetValue()
-        {
-            return ValueGetter?.Invoke();
+            base.ApplyValue(value);
         }
     }
 }

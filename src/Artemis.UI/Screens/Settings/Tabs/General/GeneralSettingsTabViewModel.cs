@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
@@ -22,8 +23,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private List<Tuple<string, double>> _renderScales;
         private List<int> _sampleSizes;
         private List<Tuple<string, int>> _targetFrameRates;
+        private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
 
-        public GeneralSettingsTabViewModel(IDialogService dialogService, IDebugService debugService, ISettingsService settingsService)
+        public GeneralSettingsTabViewModel(IDialogService dialogService, IDebugService debugService, ISettingsService settingsService, IPluginService pluginService)
         {
             DisplayName = "GENERAL";
 
@@ -43,6 +45,27 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
             // Anything else is kinda broken right now
             SampleSizes = new List<int> {1, 9};
+
+            var layerBrushProviders = pluginService.GetPluginsOfType<LayerBrushProvider>();
+
+            LayerBrushDescriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
+            _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
+            {
+                BrushPluginGuid = Guid.Parse("92a9d6ba-6f7a-4937-94d5-c1d715b4141a"),
+                BrushType = "ColorBrush"
+            });
+        }
+
+        public BindableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
+
+        public LayerBrushDescriptor SelectedLayerBrushDescriptor
+        {
+            get => LayerBrushDescriptors.FirstOrDefault(d => d.MatchesLayerBrushReference(_defaultLayerBrushDescriptor.Value));
+            set
+            {
+                _defaultLayerBrushDescriptor.Value = new LayerBrushReference(value);
+                _defaultLayerBrushDescriptor.Save();
+            }
         }
 
         public BindableCollection<ValueDescription> LogLevels { get; }
@@ -65,7 +88,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             get => _sampleSizes;
             set => SetAndNotify(ref _sampleSizes, value);
         }
-
 
         public bool StartWithWindows
         {

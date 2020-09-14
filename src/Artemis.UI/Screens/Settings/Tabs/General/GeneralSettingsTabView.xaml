@@ -6,9 +6,17 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Tabs.General"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:GeneralSettingsTabViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/LayerBrushDescriptors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="15" MaxWidth="800">
             <!-- General settings -->
@@ -185,6 +193,39 @@
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding ShowDataModelValues}" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Default brush</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                Sets the default brush that is applied to new layers
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="132"
+                                      Margin="0 2"
+                                      Padding="0 -1"
+                                      Height="15"
+                                      materialDesign:ComboBoxAssist.ClassicMode="True"
+                                      materialDesign:ValidationAssist.UsePopup="True"
+                                      HorizontalAlignment="Left"
+                                      ItemsSource="{Binding Path=LayerBrushDescriptors}"
+                                      SelectedValue="{Binding Path=SelectedLayerBrushDescriptor}"
+                                      ItemTemplateSelector="{dataTemplateSelectors:ComboBoxTemplateSelector
+                                         SelectedItemTemplate={StaticResource SimpleLayerBrushDescriptorTemplate},
+                                         DropdownItemsTemplate={StaticResource ExtendedLayerBrushDescriptorTemplate}}" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>

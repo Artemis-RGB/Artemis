@@ -3,17 +3,15 @@ using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionsViewModel : ProfileEditorPanelViewModel
+    public class DisplayConditionsViewModel : Conductor<DisplayConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private bool _alwaysFinishTimeline;
-        private bool _displayContinuously;
         private RenderProfileElement _renderProfileElement;
-        private DisplayConditionGroupViewModel _rootGroup;
         private int _transitionerIndex;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
@@ -28,11 +26,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _transitionerIndex, value);
         }
 
-        public DisplayConditionGroupViewModel RootGroup
-        {
-            get => _rootGroup;
-            set => SetAndNotify(ref _rootGroup, value);
-        }
 
         public RenderProfileElement RenderProfileElement
         {
@@ -42,20 +35,22 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public bool DisplayContinuously
         {
-            get => _displayContinuously;
+            get => RenderProfileElement?.DisplayContinuously ?? false;
             set
             {
-                if (!SetAndNotify(ref _displayContinuously, value)) return;
+                if (RenderProfileElement == null || RenderProfileElement.DisplayContinuously == value) return;
+                RenderProfileElement.DisplayContinuously = value;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
 
         public bool AlwaysFinishTimeline
         {
-            get => _alwaysFinishTimeline;
+            get => RenderProfileElement?.AlwaysFinishTimeline ?? false;
             set
             {
-                if (!SetAndNotify(ref _alwaysFinishTimeline, value)) return;
+                if (RenderProfileElement == null || RenderProfileElement.AlwaysFinishTimeline == value) return;
+                RenderProfileElement.AlwaysFinishTimeline = value;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
@@ -70,25 +65,18 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         protected override void OnDeactivate()
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
-
-            RootGroup?.Dispose();
-            RootGroup = null;
         }
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
             RenderProfileElement = e.RenderProfileElement;
-            NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
-
-            _displayContinuously = RenderProfileElement?.DisplayContinuously ?? false;
             NotifyOfPropertyChange(nameof(DisplayContinuously));
-            _alwaysFinishTimeline = RenderProfileElement?.AlwaysFinishTimeline ?? false;
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
+            NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
 
             if (e.RenderProfileElement == null)
             {
-                RootGroup?.Dispose();
-                RootGroup = null;
+                ActiveItem = null;
                 return;
             }
 
@@ -96,14 +84,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (e.RenderProfileElement.DisplayConditionGroup == null)
                 e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup(null);
 
-            RootGroup?.Dispose();
-            RootGroup = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, null, false);
-            RootGroup.IsRootGroup = true;
-            RootGroup.Update();
+            ActiveItem = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, false);
+            ActiveItem.IsRootGroup = true;
+            ActiveItem.Update();
 
             // Only show the intro to conditions once, and only if the layer has no conditions
             if (TransitionerIndex != 1)
-                TransitionerIndex = RootGroup.Children.Any() ? 1 : 0;
+                TransitionerIndex = ActiveItem.Items.Any() ? 1 : 0;
         }
     }
 }

@@ -9,6 +9,7 @@ using Artemis.Core.JsonConverters;
 using Artemis.Core.Ninject;
 using Artemis.Storage;
 using Newtonsoft.Json;
+using Ninject;
 using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
@@ -22,6 +23,8 @@ namespace Artemis.Core.Services
     /// </summary>
     internal class CoreService : ICoreService
     {
+        internal static IKernel Kernel;
+
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
@@ -34,9 +37,10 @@ namespace Artemis.Core.Services
         private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
-        public CoreService(ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
+        public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
+            Kernel = kernel;
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;
@@ -76,6 +80,8 @@ namespace Artemis.Core.Services
             var versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
             ApplyLoggingLevel();
+
+            DeserializationLogger.Initialize(Kernel);
 
             // Initialize the services
             _pluginService.CopyBuiltInPlugins();

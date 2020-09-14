@@ -7,7 +7,7 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:tree="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree"
-             xmlns:layerProperties1="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type tree:TreeViewModel}}">
@@ -98,11 +98,11 @@
             </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type layerProperties1:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
-                <ContentControl s:View.Model="{Binding TreePropertyGroupViewModel}" />
+            <HierarchicalDataTemplate DataType="{x:Type local:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
+                <ContentControl s:View.Model="{Binding TreeGroupViewModel}" />
             </HierarchicalDataTemplate>
-            <DataTemplate DataType="{x:Type layerProperties1:LayerPropertyViewModel}">
-                <ContentControl s:View.Model="{Binding TreePropertyBaseViewModel}" dd:DragDrop.DragSourceIgnore="True" />
+            <DataTemplate DataType="{x:Type local:LayerPropertyViewModel}">
+                <ContentControl s:View.Model="{Binding TreePropertyViewModel}" dd:DragDrop.DragSourceIgnore="True" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

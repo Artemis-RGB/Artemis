@@ -32,7 +32,13 @@ namespace Artemis.Core
         /// <summary>
         ///     The plugin info used by core components of Artemis
         /// </summary>
-        public static readonly PluginInfo CorePluginInfo = new PluginInfo {Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core"};
+        public static readonly PluginInfo CorePluginInfo = new PluginInfo
+        {
+            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Enabled = true
+        };
+
+        internal static readonly CorePlugin CorePlugin = new CorePlugin {PluginInfo = CorePluginInfo};
+        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {PluginInfo = CorePluginInfo};
 
         /// <summary>
         ///     A read-only collection containing all primitive numeric types

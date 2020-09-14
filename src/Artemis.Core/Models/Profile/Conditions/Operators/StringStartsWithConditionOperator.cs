@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Artemis.Core
 {
-    internal class StringStartsWithConditionOperator : DisplayConditionOperator
+    internal class StringStartsWithConditionOperator : ConditionOperator
     {
         private readonly MethodInfo _startsWith;
         private readonly MethodInfo _toLower;

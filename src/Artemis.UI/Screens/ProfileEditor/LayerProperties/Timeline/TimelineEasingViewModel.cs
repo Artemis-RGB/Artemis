@@ -1,23 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
 using Humanizer;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineEasingViewModel
+    public class TimelineEasingViewModel : PropertyChangedBase
     {
-        private readonly TimelineKeyframeViewModel _keyframeViewModel;
         private bool _isEasingModeSelected;
 
-        public TimelineEasingViewModel(TimelineKeyframeViewModel keyframeViewModel, Easings.Functions easingFunction)
+        public TimelineEasingViewModel(Easings.Functions easingFunction, bool isSelected)
         {
-            // Can be null if used by DataBindingViewModel because I'm lazy
-            if (keyframeViewModel != null)
-            {
-                _keyframeViewModel = keyframeViewModel;
-                _isEasingModeSelected = keyframeViewModel.BaseLayerPropertyKeyframe.EasingFunction == easingFunction;
-            }
+            _isEasingModeSelected = isSelected;
 
             EasingFunction = easingFunction;
             Description = easingFunction.Humanize();
@@ -41,9 +37,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             set
             {
                 _isEasingModeSelected = value;
-                if (_isEasingModeSelected)
-                    _keyframeViewModel.SelectEasingMode(this);
+                if (value) OnEasingModeSelected();
             }
+        }
+
+        public event EventHandler EasingModeSelected;
+
+        protected virtual void OnEasingModeSelected()
+        {
+            EasingModeSelected?.Invoke(this, EventArgs.Empty);
         }
     }
 }

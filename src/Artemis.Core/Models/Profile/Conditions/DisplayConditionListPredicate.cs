@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
@@ -18,6 +17,7 @@ namespace Artemis.Core
             Entity = new DisplayConditionListPredicateEntity();
 
             ApplyParentList();
+            Initialize();
         }
 
         public DisplayConditionListPredicate(DisplayConditionPart parent, DisplayConditionListPredicateEntity entity)
@@ -27,12 +27,13 @@ namespace Artemis.Core
             PredicateType = (ProfileRightSideType) entity.PredicateType;
 
             ApplyParentList();
+            Initialize();
         }
 
         public DisplayConditionListPredicateEntity Entity { get; set; }
 
         public ProfileRightSideType PredicateType { get; set; }
-        public DisplayConditionOperator Operator { get; private set; }
+        public ConditionOperator Operator { get; private set; }
 
         public Type ListType { get; private set; }
         public DataModel ListDataModel { get; private set; }
@@ -120,9 +121,9 @@ namespace Artemis.Core
             CreateExpression();
         }
 
-        public void UpdateOperator(DisplayConditionOperator displayConditionOperator)
+        public void UpdateOperator(ConditionOperator conditionOperator)
         {
-            if (displayConditionOperator == null)
+            if (conditionOperator == null)
             {
                 Operator = null;
                 return;
@@ -130,13 +131,13 @@ namespace Artemis.Core
 
             if (LeftPropertyPath == null)
             {
-                Operator = displayConditionOperator;
+                Operator = conditionOperator;
                 return;
             }
 
             var leftType = GetTypeAtInnerPath(LeftPropertyPath);
-            if (displayConditionOperator.SupportsType(leftType))
-                Operator = displayConditionOperator;
+            if (conditionOperator.SupportsType(leftType))
+                Operator = conditionOperator;
 
             CreateExpression();
         }
@@ -189,22 +190,31 @@ namespace Artemis.Core
             return result;
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             Entity.PredicateType = (int) PredicateType;
-            Entity.ListDataModelGuid = ListDataModel?.PluginInfo?.Guid;
-            Entity.ListPropertyPath = ListPropertyPath;
+            if (ListDataModel != null)
+            {
+                Entity.ListDataModelGuid = ListDataModel.PluginInfo.Guid;
+                Entity.ListPropertyPath = ListPropertyPath;
+            }
 
             Entity.LeftPropertyPath = LeftPropertyPath;
             Entity.RightPropertyPath = RightPropertyPath;
             Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
 
-            Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
-            Entity.OperatorType = Operator?.GetType().Name;
+            if (Operator != null)
+            {
+                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
+                Entity.OperatorType = Operator.GetType().Name;
+            }
         }
 
-        internal override void Initialize(IDataModelService dataModelService)
+        private void Initialize()
         {
+            ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
+
             // Left side
             if (Entity.LeftPropertyPath != null && ListContainsInnerPath(Entity.LeftPropertyPath))
                 UpdateLeftSide(Entity.LeftPropertyPath);
@@ -212,7 +222,7 @@ namespace Artemis.Core
             // Operator
             if (Entity.OperatorPluginGuid != null)
             {
-                var conditionOperator = dataModelService.GetConditionOperator(Entity.OperatorPluginGuid.Value, Entity.OperatorType);
+                var conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
@@ -221,7 +231,7 @@ namespace Artemis.Core
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPropertyPath != null)
             {
                 if (ListContainsInnerPath(Entity.RightPropertyPath))
-                    UpdateLeftSide(Entity.LeftPropertyPath);
+                    UpdateRightSideDynamic(Entity.RightPropertyPath);
             }
             // Right side static
             else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
@@ -241,7 +251,7 @@ namespace Artemis.Core
                         // If deserialization fails, use the type's default
                         catch (JsonSerializationException e)
                         {
-                            dataModelService.LogListPredicateDeserializationFailure(this, e);
+                            DeserializationLogger.LogListPredicateDeserializationFailure(this, e);
                             rightSideValue = Activator.CreateInstance(leftSideType);
                         }
 
@@ -255,7 +265,7 @@ namespace Artemis.Core
                 }
                 catch (JsonException e)
                 {
-                    dataModelService.LogListPredicateDeserializationFailure(this, e);
+                    DeserializationLogger.LogListPredicateDeserializationFailure(this, e);
                 }
             }
         }
@@ -383,5 +393,37 @@ namespace Artemis.Core
                 Expression.Property
             );
         }
+
+        #region Event handlers
+
+        private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
+        {
+            var conditionOperator = e.Registration.ConditionOperator;
+            if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
+                UpdateOperator(conditionOperator);
+        }
+
+        private void ConditionOperatorStoreOnConditionOperatorRemoved(object sender, ConditionOperatorStoreEvent e)
+        {
+            if (e.Registration.ConditionOperator != Operator)
+                return;
+            Operator = null;
+            CompiledListPredicate = null;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }

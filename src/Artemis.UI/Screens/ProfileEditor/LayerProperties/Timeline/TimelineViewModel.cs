@@ -3,41 +3,37 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineViewModel : PropertyChangedBase, IViewAware, IDisposable
+    public class TimelineViewModel : Screen, IDisposable
     {
-        private readonly LayerPropertiesViewModel _layerPropertiesViewModel;
         private readonly IProfileEditorService _profileEditorService;
         private RectangleGeometry _selectionRectangle;
 
         public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups, IProfileEditorService profileEditorService)
         {
-            _layerPropertiesViewModel = layerPropertiesViewModel;
             _profileEditorService = profileEditorService;
 
+            LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerPropertyGroups = layerPropertyGroups;
             SelectionRectangle = new RectangleGeometry();
-            SelectedProfileElement = layerPropertiesViewModel.SelectedProfileElement;
 
-            SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-
+            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
             Update();
         }
 
-        public RenderProfileElement SelectedProfileElement { get; set; }
-
+        public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
         public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
         public RectangleGeometry SelectionRectangle
@@ -46,73 +42,57 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _selectionRectangle, value);
         }
 
-        public double StartSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds;
-        public double StartSegmentEndPosition => StartSegmentWidth;
-        public double MainSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.MainSegmentLength.TotalSeconds;
-        public double MainSegmentEndPosition => StartSegmentWidth + MainSegmentWidth;
-        public double EndSegmentWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.EndSegmentLength.TotalSeconds;
-        public double EndSegmentEndPosition => StartSegmentWidth + MainSegmentWidth + EndSegmentWidth;
-        public double TotalTimelineWidth => _profileEditorService.PixelsPerSecond * SelectedProfileElement.TimelineLength.TotalSeconds;
-
-        public bool StartSegmentEnabled => SelectedProfileElement.StartSegmentLength != TimeSpan.Zero;
-        public bool EndSegmentEnabled => SelectedProfileElement.EndSegmentLength != TimeSpan.Zero;
-
-        public void Dispose()
+        public double StartSegmentEndPosition
         {
-            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            get => _startSegmentEndPosition;
+            set => SetAndNotify(ref _startSegmentEndPosition, value);
         }
 
-        public void Update()
+        public double MainSegmentEndPosition
         {
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-            {
-                layerPropertyGroupViewModel.TimelinePropertyGroupViewModel.UpdateKeyframes();
+            get => _mainSegmentEndPosition;
+            set => SetAndNotify(ref _mainSegmentEndPosition, value);
+        }
 
-                foreach (var layerPropertyBaseViewModel in layerPropertyGroupViewModel.GetAllChildren())
-                {
-                    if (layerPropertyBaseViewModel is LayerPropertyViewModel layerPropertyViewModel)
-                        layerPropertyViewModel.TimelinePropertyBaseViewModel.UpdateKeyframes();
-                }
-            }
+        public double EndSegmentEndPosition
+        {
+            get => _endSegmentEndPosition;
+            set => SetAndNotify(ref _endSegmentEndPosition, value);
+        }
+
+        public double TotalTimelineWidth
+        {
+            get => _totalTimelineWidth;
+            set => SetAndNotify(ref _totalTimelineWidth, value);
+        }
+
+        private void Update()
+        {
+            StartSegmentEndPosition = LayerPropertiesViewModel.StartTimelineSegmentViewModel.SegmentWidth;
+            MainSegmentEndPosition = StartSegmentEndPosition + LayerPropertiesViewModel.MainTimelineSegmentViewModel.SegmentWidth;
+            EndSegmentEndPosition = MainSegmentEndPosition + LayerPropertiesViewModel.EndTimelineSegmentViewModel.SegmentWidth;
+
+            TotalTimelineWidth = EndSegmentEndPosition;
         }
 
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.StartSegmentLength))
-            {
-                NotifyOfPropertyChange(nameof(StartSegmentWidth));
-                NotifyOfPropertyChange(nameof(StartSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(StartSegmentEnabled));
-                NotifyOfPropertyChange(nameof(TotalTimelineWidth));
-            }
-            else if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.MainSegmentLength))
-            {
-                NotifyOfPropertyChange(nameof(MainSegmentWidth));
-                NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(TotalTimelineWidth));
-            }
-            else if (e.PropertyName == nameof(_profileEditorService.SelectedProfileElement.EndSegmentLength))
-            {
-                NotifyOfPropertyChange(nameof(EndSegmentWidth));
-                NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
-                NotifyOfPropertyChange(nameof(EndSegmentEnabled));
-                NotifyOfPropertyChange(nameof(TotalTimelineWidth));
-            }
+            Update();
         }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
-            NotifyOfPropertyChange(nameof(StartSegmentWidth));
-            NotifyOfPropertyChange(nameof(StartSegmentEndPosition));
-            NotifyOfPropertyChange(nameof(MainSegmentWidth));
-            NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
-            NotifyOfPropertyChange(nameof(EndSegmentWidth));
-            NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
-            NotifyOfPropertyChange(nameof(TotalTimelineWidth));
+            Update();
+        }
+
+        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        {
+            if (e.PreviousRenderProfileElement != null)
+                e.PreviousRenderProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            if (e.RenderProfileElement != null)
+                e.RenderProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+
+            Update();
         }
 
         #region Command handlers
@@ -122,7 +102,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // if (e.LeftButton == MouseButtonState.Released)
             //     return;
 
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
+            var viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
             if (viewModel == null)
                 return;
 
@@ -147,38 +127,42 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void KeyframeMouseMove(object sender, MouseEventArgs e)
         {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
-            if (viewModel == null)
-                return;
+            if (sender is Ellipse ellipse && ellipse.DataContext is ITimelineKeyframeViewModel viewModel)
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                    MoveSelectedKeyframes(GetCursorTime(e.GetPosition(View)), viewModel);
 
-            if (e.LeftButton == MouseButtonState.Pressed)
-                MoveSelectedKeyframes(GetCursorTime(e.GetPosition(View)), viewModel);
-
-            e.Handled = true;
+                e.Handled = true;
+            }
         }
 
         #region Context menu actions
 
-        public void ContextMenuOpening(object sender, ContextMenuEventArgs e)
+        public void ContextMenuOpening(object sender, EventArgs e)
         {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
-            viewModel?.CreateEasingViewModels();
+            if (sender is Ellipse ellipse && ellipse.DataContext is ITimelineKeyframeViewModel viewModel)
+                viewModel.PopulateEasingViewModels();
         }
 
-        public void ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        public void ContextMenuClosing(object sender, EventArgs e)
         {
-            var viewModel = (sender as Ellipse)?.DataContext as TimelineKeyframeViewModel;
-            viewModel?.EasingViewModels.Clear();
+            if (sender is Ellipse ellipse && ellipse.DataContext is ITimelineKeyframeViewModel viewModel)
+                viewModel.ClearEasingViewModels();
         }
 
-        public void Copy(TimelineKeyframeViewModel viewModel)
+        public void Copy(ITimelineKeyframeViewModel viewModel)
         {
-            viewModel.Copy();
+            // viewModel.Copy();
+            var keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+                keyframeViewModel.Copy();
         }
 
-        public void Delete(TimelineKeyframeViewModel viewModel)
+        public void Delete(ITimelineKeyframeViewModel viewModel)
         {
-            viewModel.Delete();
+            var keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+                keyframeViewModel.Delete();
         }
 
         #endregion
@@ -215,7 +199,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Keyframe movement
 
-        public void MoveSelectedKeyframes(TimeSpan cursorTime, TimelineKeyframeViewModel sourceKeyframeViewModel)
+        public void MoveSelectedKeyframes(TimeSpan cursorTime, ITimelineKeyframeViewModel sourceKeyframeViewModel)
         {
             // Ensure the selection rectangle doesn't show, the view isn't aware of different types of dragging
             SelectionRectangle.Rect = new Rect();
@@ -231,8 +215,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                     TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 5),
                     true,
                     false,
-                    true,
-                    sourceKeyframeViewModel.BaseLayerPropertyKeyframe
+                    keyframeViewModels.Where(k => k != sourceKeyframeViewModel).Select(k => k.Position).ToList()
                 );
             }
 
@@ -241,7 +224,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.ApplyOffsetToKeyframe(sourceKeyframeViewModel);
 
-            _layerPropertiesViewModel.ProfileEditorService.UpdateProfilePreview();
+            _profileEditorService.UpdateProfilePreview();
         }
 
 
@@ -258,6 +241,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private Point _mouseDragStartPoint;
         private bool _mouseDragging;
+        private double _startSegmentEndPosition;
+        private double _mainSegmentEndPosition;
+        private double _endSegmentEndPosition;
+        private double _totalTimelineWidth;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void TimelineCanvasMouseDown(object sender, MouseButtonEventArgs e)
@@ -284,7 +271,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             SelectionRectangle.Rect = selectedRect;
 
             var keyframeViewModels = GetAllKeyframeViewModels();
-            var selectedKeyframes = HitTestUtilities.GetHitViewModels<TimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
+            var selectedKeyframes = HitTestUtilities.GetHitViewModels<ITimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
             foreach (var keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);
 
@@ -304,7 +291,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        public void SelectKeyframe(TimelineKeyframeViewModel clicked, bool selectBetween, bool toggle)
+        public void SelectKeyframe(ITimelineKeyframeViewModel clicked, bool selectBetween, bool toggle)
         {
             var keyframeViewModels = GetAllKeyframeViewModels();
             if (selectBetween)
@@ -346,32 +333,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        private List<TimelineKeyframeViewModel> GetAllKeyframeViewModels()
+        private List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
-            var viewModels = new List<LayerPropertyBaseViewModel>();
+            var viewModels = new List<ITimelineKeyframeViewModel>();
             foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-                viewModels.AddRange(layerPropertyGroupViewModel.GetAllChildren());
+                viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
 
-            var keyframes = viewModels.Where(vm => vm is LayerPropertyViewModel)
-                .SelectMany(vm => ((LayerPropertyViewModel) vm).TimelinePropertyBaseViewModel.TimelineKeyframeViewModels)
-                .ToList();
-
-            return keyframes;
+            return viewModels;
         }
 
         #endregion
 
-        #region IViewAware
+        #region IDisposable
 
-        public void AttachView(UIElement view)
+        public void Dispose()
         {
-            if (View != null)
-                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
-
-            View = view;
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
         }
-
-        public UIElement View { get; set; }
 
         #endregion
     }

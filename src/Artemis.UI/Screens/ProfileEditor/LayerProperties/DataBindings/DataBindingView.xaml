@@ -4,14 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:converters="clr-namespace:Artemis.UI.Converters"
-             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:DataBindingViewModel}">
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -130,7 +126,7 @@
                             FontSize="12"
                             Padding="6 4"
                             Height="22"
-                            IsEnabled="{Binding IsDataBindingEnabled}"
+                            IsEnabled="{Binding CanAddModifier}"
                             Command="{s:Action AddModifier}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />

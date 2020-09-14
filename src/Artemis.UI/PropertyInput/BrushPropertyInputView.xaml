@@ -11,28 +11,11 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type propertyInput:BrushPropertyInputViewModel}}">
     <UserControl.Resources>
-        <DataTemplate x:Key="SimpleTemplate">
-            <StackPanel d:DataContext="{d:DesignInstance {x:Type layerBrush:LayerBrushDescriptor}}" Orientation="Horizontal">
-                <materialDesign:PackIcon Kind="{Binding Icon}" Height="13" Width="13" Margin="0 1 3 0" />
-                <TextBlock Text="{Binding DisplayName}" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate x:Key="ExtendedTemplate">
-            <Grid d:DataContext="{d:DesignInstance {x:Type layerBrush:LayerBrushDescriptor}}">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <materialDesign:PackIcon Grid.Row="0" Grid.RowSpan="2" Kind="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center" />
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="350" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
-            </Grid>
-        </DataTemplate>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/LayerBrushDescriptors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
@@ -46,8 +29,8 @@
                   ItemsSource="{Binding Path=Descriptors}"
                   SelectedValue="{Binding Path=SelectedDescriptor}"
                   ItemTemplateSelector="{dataTemplateSelectors:ComboBoxTemplateSelector
-                                         SelectedItemTemplate={StaticResource SimpleTemplate},
-                                         DropdownItemsTemplate={StaticResource ExtendedTemplate}}" />
+                                         SelectedItemTemplate={StaticResource SimpleLayerBrushDescriptorTemplate},
+                                         DropdownItemsTemplate={StaticResource ExtendedLayerBrushDescriptorTemplate}}" />
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>
