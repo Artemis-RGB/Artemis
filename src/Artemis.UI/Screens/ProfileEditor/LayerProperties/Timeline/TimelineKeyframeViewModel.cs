@@ -7,22 +7,160 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineKeyframeViewModel<T> : TimelineKeyframeViewModel
+    public class TimelineKeyframeViewModel<T> : Screen, ITimelineKeyframeViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
 
-        public TimelineKeyframeViewModel(IProfileEditorService profileEditorService, LayerPropertyKeyframe<T> layerPropertyKeyframe)
-            : base(profileEditorService, layerPropertyKeyframe)
+        private BindableCollection<TimelineEasingViewModel> _easingViewModels;
+        private bool _isSelected;
+        private string _timestamp;
+        private double _x;
+
+        public TimelineKeyframeViewModel(LayerPropertyKeyframe<T> layerPropertyKeyframe, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
             LayerPropertyKeyframe = layerPropertyKeyframe;
+            EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
+
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyKeyframe.PropertyChanged += LayerPropertyKeyframeOnPropertyChanged;
         }
 
+
         public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
+        public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; }
+
+        public double X
+        {
+            get => _x;
+            set => SetAndNotify(ref _x, value);
+        }
+
+        public string Timestamp
+        {
+            get => _timestamp;
+            set => SetAndNotify(ref _timestamp, value);
+        }
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set => SetAndNotify(ref _isSelected, value);
+        }
+
+        public TimeSpan Position => LayerPropertyKeyframe.Position;
+
+        public void Dispose()
+        {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyKeyframe.PropertyChanged -= LayerPropertyKeyframeOnPropertyChanged;
+
+            foreach (var timelineEasingViewModel in EasingViewModels)
+                timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
+        }
+
+        public void Update()
+        {
+            X = _profileEditorService.PixelsPerSecond * LayerPropertyKeyframe.Position.TotalSeconds;
+            Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        {
+            Update();
+        }
+
+        private void LayerPropertyKeyframeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LayerPropertyKeyframe.Position))
+                Update();
+        }
+
+        #region Easing
+
+        public void PopulateEasingViewModels()
+        {
+            if (EasingViewModels.Any())
+                return;
+
+            EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions))
+                .Cast<Easings.Functions>()
+                .Select(e => new TimelineEasingViewModel(e, e == LayerPropertyKeyframe.EasingFunction)));
+
+            foreach (var timelineEasingViewModel in EasingViewModels)
+                timelineEasingViewModel.EasingModeSelected += TimelineEasingViewModelOnEasingModeSelected;
+        }
+
+        public void ClearEasingViewModels()
+        {
+            EasingViewModels.Clear();
+        }
+
+        private void TimelineEasingViewModelOnEasingModeSelected(object sender, EventArgs e)
+        {
+            SelectEasingMode((TimelineEasingViewModel) sender);
+        }
+
+        public void SelectEasingMode(TimelineEasingViewModel easingViewModel)
+        {
+            LayerPropertyKeyframe.EasingFunction = easingViewModel.EasingFunction;
+            // Set every selection to false except on the VM that made the change
+            foreach (var propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
+                propertyTrackEasingViewModel.IsEasingModeSelected = false;
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        #endregion
+
+        #region Movement
+
+        private TimeSpan? _offset;
+
+        public void ReleaseMovement()
+        {
+            _offset = null;
+        }
+
+        public void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source)
+        {
+            if (source == this)
+            {
+                _offset = null;
+                return;
+            }
+
+            if (_offset != null)
+                return;
+
+            _offset = LayerPropertyKeyframe.Position - source.Position;
+        }
+
+        public void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source)
+        {
+            if (source == this || _offset == null)
+                return;
+
+            UpdatePosition(source.Position + _offset.Value);
+        }
+
+        public void UpdatePosition(TimeSpan position)
+        {
+            if (position < TimeSpan.Zero)
+                LayerPropertyKeyframe.Position = TimeSpan.Zero;
+            else if (position > _profileEditorService.SelectedProfileElement.TimelineLength)
+                LayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.TimelineLength;
+            else
+                LayerPropertyKeyframe.Position = position;
+
+            Update();
+        }
+
+        #endregion
 
         #region Context menu actions
 
-        public override void Copy()
+        public void Copy()
         {
             var newKeyframe = new LayerPropertyKeyframe<T>(
                 LayerPropertyKeyframe.Value,
@@ -46,7 +184,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public override void Delete()
+        public void Delete()
         {
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
             _profileEditorService.UpdateSelectedProfileElement();
@@ -55,135 +193,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         #endregion
     }
 
-    public abstract class TimelineKeyframeViewModel : PropertyChangedBase, IDisposable
+    public interface ITimelineKeyframeViewModel : IScreen, IDisposable
     {
-        private readonly IProfileEditorService _profileEditorService;
-        private BindableCollection<TimelineEasingViewModel> _easingViewModels;
-        private bool _isSelected;
-        private int _pixelsPerSecond;
-        private string _timestamp;
-        private double _x;
-
-        protected TimelineKeyframeViewModel(IProfileEditorService profileEditorService, BaseLayerPropertyKeyframe baseLayerPropertyKeyframe)
-        {
-            _profileEditorService = profileEditorService;
-            BaseLayerPropertyKeyframe = baseLayerPropertyKeyframe;
-            EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
-
-            BaseLayerPropertyKeyframe.PropertyChanged += BaseLayerPropertyKeyframeOnPropertyChanged;
-        }
-
-        public BaseLayerPropertyKeyframe BaseLayerPropertyKeyframe { get; }
-
-        public BindableCollection<TimelineEasingViewModel> EasingViewModels
-        {
-            get => _easingViewModels;
-            set => SetAndNotify(ref _easingViewModels, value);
-        }
-
-        public bool IsSelected
-        {
-            get => _isSelected;
-            set => SetAndNotify(ref _isSelected, value);
-        }
-
-        public double X
-        {
-            get => _x;
-            set => SetAndNotify(ref _x, value);
-        }
-
-        public string Timestamp
-        {
-            get => _timestamp;
-            set => SetAndNotify(ref _timestamp, value);
-        }
-
-        public void Dispose()
-        {
-            BaseLayerPropertyKeyframe.PropertyChanged -= BaseLayerPropertyKeyframeOnPropertyChanged;
-        }
-
-        public void Update(int pixelsPerSecond)
-        {
-            _pixelsPerSecond = pixelsPerSecond;
-
-            X = pixelsPerSecond * BaseLayerPropertyKeyframe.Position.TotalSeconds;
-            Timestamp = $"{Math.Floor(BaseLayerPropertyKeyframe.Position.TotalSeconds):00}.{BaseLayerPropertyKeyframe.Position.Milliseconds:000}";
-        }
-
-        public abstract void Copy();
-
-        public abstract void Delete();
-
-        private void BaseLayerPropertyKeyframeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(BaseLayerPropertyKeyframe.Position))
-                Update(_pixelsPerSecond);
-        }
-
-        #region Easing
-
-        public void CreateEasingViewModels()
-        {
-            EasingViewModels.AddRange(Enum.GetValues(typeof(Easings.Functions)).Cast<Easings.Functions>().Select(v => new TimelineEasingViewModel(this, v)));
-        }
-
-        public void SelectEasingMode(TimelineEasingViewModel easingViewModel)
-        {
-            BaseLayerPropertyKeyframe.EasingFunction = easingViewModel.EasingFunction;
-            // Set every selection to false except on the VM that made the change
-            foreach (var propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
-                propertyTrackEasingViewModel.IsEasingModeSelected = false;
-
-
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        #endregion
+        bool IsSelected { get; set; }
+        TimeSpan Position { get; }
 
         #region Movement
 
-        private TimeSpan? _offset;
+        void SaveOffsetToKeyframe(ITimelineKeyframeViewModel source);
+        void ApplyOffsetToKeyframe(ITimelineKeyframeViewModel source);
+        void UpdatePosition(TimeSpan position);
+        void ReleaseMovement();
 
-        public void ReleaseMovement()
-        {
-            _offset = null;
-        }
+        #endregion
 
-        public void SaveOffsetToKeyframe(TimelineKeyframeViewModel keyframeViewModel)
-        {
-            if (keyframeViewModel == this)
-            {
-                _offset = null;
-                return;
-            }
+        #region Context menu actions
 
-            if (_offset != null)
-                return;
-
-            _offset = BaseLayerPropertyKeyframe.Position - keyframeViewModel.BaseLayerPropertyKeyframe.Position;
-        }
-
-        public void ApplyOffsetToKeyframe(TimelineKeyframeViewModel keyframeViewModel)
-        {
-            if (keyframeViewModel == this || _offset == null)
-                return;
-
-            UpdatePosition(keyframeViewModel.BaseLayerPropertyKeyframe.Position + _offset.Value);
-        }
-
-        public void UpdatePosition(TimeSpan position)
-        {
-            if (position < TimeSpan.Zero)
-                BaseLayerPropertyKeyframe.Position = TimeSpan.Zero;
-            else if (position > _profileEditorService.SelectedProfileElement.TimelineLength)
-                BaseLayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.TimelineLength;
-            else
-                BaseLayerPropertyKeyframe.Position = position;
-
-            Update(_pixelsPerSecond);
-        }
+        void PopulateEasingViewModels();
+        void ClearEasingViewModels();
+        void Copy();
+        void Delete();
 
         #endregion
     }

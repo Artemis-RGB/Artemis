@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.Abstract;
 
@@ -7,7 +8,7 @@ namespace Artemis.Core
     /// <summary>
     ///     An abstract class for display condition parts
     /// </summary>
-    public abstract class DisplayConditionPart
+    public abstract class DisplayConditionPart : IDisposable
     {
         private readonly List<DisplayConditionPart> _children = new List<DisplayConditionPart>();
 
@@ -60,8 +61,25 @@ namespace Artemis.Core
         /// <returns></returns>
         public abstract bool EvaluateObject(object target);
 
-        internal abstract void Initialize(IDataModelService dataModelService);
-        internal abstract void ApplyToEntity();
+        internal abstract void Save();
         internal abstract DisplayConditionPartEntity GetEntity();
+
+        #region IDisposable
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
     }
 }

@@ -30,19 +30,19 @@ namespace Artemis.Core.LayerEffects
             internal set => _properties = value;
         }
 
-        internal void InitializeProperties(IRenderElementService renderElementService)
+        internal void InitializeProperties()
         {
             Properties = Activator.CreateInstance<T>();
             Properties.LayerEffect = this;
-            Properties.InitializeProperties(renderElementService, ProfileElement, PropertyRootPath);
+            Properties.Initialize(ProfileElement, PropertyRootPath, PluginInfo);
             PropertiesInitialized = true;
 
             EnableLayerEffect();
         }
 
-        internal override void Initialize(IRenderElementService renderElementService)
+        internal override void Initialize()
         {
-            InitializeProperties(renderElementService);
+            InitializeProperties();
         }
     }
 }

@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Ninject;
+using Ninject.Parameters;
 using Serilog;
 using Stylet;
 
@@ -34,7 +35,7 @@ namespace Artemis.UI.Shared.Services
         public IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public RenderProfileElement SelectedProfileElement { get; private set; }
-        public BaseLayerProperty SelectedDataBinding { get; private set; }
+        public ILayerProperty SelectedDataBinding { get; private set; }
 
         public TimeSpan CurrentTime
         {
@@ -127,7 +128,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void ChangeSelectedDataBinding(BaseLayerProperty layerProperty)
+        public void ChangeSelectedDataBinding(ILayerProperty layerProperty)
         {
             SelectedDataBinding = layerProperty;
             OnSelectedDataBindingChanged();
@@ -195,10 +196,25 @@ namespace Artemis.UI.Shared.Services
 
         public PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel
         {
-            var viewModelType = typeof(T);
+            return RegisterPropertyInput(typeof(T), pluginInfo);
+        }
+
+        public PropertyInputRegistration RegisterPropertyInput(Type viewModelType, PluginInfo pluginInfo)
+        {
+            if (!typeof(PropertyInputViewModel).IsAssignableFrom(viewModelType))
+                throw new ArtemisSharedUIException($"Property input VM type must implement {nameof(PropertyInputViewModel)}");
+
             lock (_registeredPropertyEditors)
             {
                 var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                // If the supported type is a generic, assume there is a base type
+                if (supportedType.IsGenericParameter)
+                {
+                    if (supportedType.BaseType == null)
+                        throw new ArtemisSharedUIException($"Generic property input VM type must have a type constraint");
+                    supportedType = supportedType.BaseType;
+                }
+
                 var existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
@@ -228,7 +244,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null)
+        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null)
         {
             if (snapToSegments)
             {
@@ -253,20 +269,37 @@ namespace Artemis.UI.Shared.Services
                     return SelectedProfileElement.StartSegmentLength;
             }
 
-            if (snapToKeyframes)
+            if (snapTimes != null)
             {
-                // Get all visible keyframes
-                var keyframes = SelectedProfileElement.GetAllKeyframes()
-                    .Where(k => k != excludedKeyframe && SelectedProfileElement.IsPropertyGroupExpanded(k.BaseLayerProperty.Parent))
-                    .ToList();
-
                 // Find the closest keyframe
-                var closeKeyframe = keyframes.FirstOrDefault(k => Math.Abs(time.TotalMilliseconds - k.Position.TotalMilliseconds) < tolerance.TotalMilliseconds);
-                if (closeKeyframe != null)
-                    return closeKeyframe.Position;
+                var closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds);
+                if (closeSnapTime != TimeSpan.Zero)
+                    return closeSnapTime;
             }
 
             return time;
+        }
+
+        public PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
+        {
+            Type viewModelType = null;
+            var registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
+
+            // Check for enums if no supported type was found
+            if (registration == null && typeof(T).IsEnum)
+            {
+                // The enum VM will likely be a generic, that requires creating a generic type matching the layer property
+                registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(Enum));
+                if (registration != null && registration.ViewModelType.IsGenericType)
+                    viewModelType = registration.ViewModelType.MakeGenericType(layerProperty.GetType().GenericTypeArguments);
+            }
+            else if (registration != null)
+                viewModelType = registration.ViewModelType;
+            else
+                return null;
+
+            var parameter = new ConstructorArgument("layerProperty", layerProperty);
+            return (PropertyInputViewModel<T>) Kernel.Get(viewModelType, parameter);
         }
 
         public ProfileModule GetCurrentModule()

@@ -247,13 +247,14 @@ namespace Artemis.UI.Screens
             _colorScheme.SettingChanged -= ColorSchemeOnSettingChanged;
             _themeWatcher.ThemeChanged -= ThemeWatcherOnThemeChanged;
             SidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;
+
+            base.OnDeactivate();
         }
 
         protected override void OnClose()
         {
             SidebarViewModel.Dispose();
-
-
+            
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.
             Task.Run(async () =>
@@ -263,6 +264,8 @@ namespace Artemis.UI.Screens
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
             });
+
+            base.OnClose();
         }
 
         #endregion

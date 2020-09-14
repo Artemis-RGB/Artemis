@@ -37,7 +37,7 @@
                       HorizontalAlignment="Left">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl s:View.Model="{Binding TimelinePropertyGroupViewModel}" HorizontalContentAlignment="Left" />
+                    <ContentControl s:View.Model="{Binding TimelineGroupViewModel}" HorizontalContentAlignment="Left" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
@@ -50,7 +50,7 @@
               Y1="0"
               Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
               HorizontalAlignment="Left"
-              Visibility="{Binding StartSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
+              Visibility="{Binding LayerPropertiesViewModel.StartTimelineSegmentViewModel.SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
         <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
               Opacity="0.5"
               StrokeDashArray="4 2"
@@ -65,7 +65,7 @@
               X2="{Binding EndSegmentEndPosition}"
               Y1="0"
               Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
-              Visibility="{Binding EndSegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
+              Visibility="{Binding LayerPropertiesViewModel.EndTimelineSegmentViewModel.SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
 
         <!-- Multi-selection rectangle -->
         <Path x:Name="MultiSelectionPath"

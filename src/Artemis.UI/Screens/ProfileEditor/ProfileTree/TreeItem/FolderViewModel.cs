@@ -11,36 +11,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public FolderViewModel(ProfileElement folder,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
-            IRenderElementService renderElementService,
-            IFolderVmFactory folderVmFactory,
-            ILayerVmFactory layerVmFactory) :
-            base(null, folder, profileEditorService, dialogService, renderElementService, folderVmFactory, layerVmFactory)
-        {
-        }
-
-        public FolderViewModel(TreeItemViewModel parent,
-            ProfileElement folder,
-            IProfileEditorService profileEditorService,
-            IDialogService dialogService,
-            IRenderElementService renderElementService,
-            IFolderVmFactory folderVmFactory,
-            ILayerVmFactory layerVmFactory) :
-            base(parent, folder, profileEditorService, dialogService, renderElementService, folderVmFactory, layerVmFactory)
+            IProfileTreeVmFactory profileTreeVmFactory,
+            ILayerBrushService layerBrushService,
+            ISurfaceService surfaceService) :
+            base(folder, profileEditorService, dialogService, profileTreeVmFactory, layerBrushService, surfaceService)
         {
         }
 
         public override bool SupportsChildren => true;
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                foreach (var treeItemViewModel in Children)
-                    treeItemViewModel.Dispose();
-                Children.Clear();
-            }
-
-            base.Dispose(disposing);
-        }
     }
 }

@@ -3,11 +3,10 @@
 namespace Artemis.Core
 {
     /// <inheritdoc />
-    public class GeneralDataBindingConverter : DataBindingConverter
+    public class GeneralDataBindingConverter<T> : DataBindingConverter<T, object> where T : ILayerProperty
     {
         public GeneralDataBindingConverter()
         {
-            SupportedType = typeof(object);
             SupportsSum = false;
             SupportsInterpolate = false;
         }
@@ -22,18 +21,6 @@ namespace Artemis.Core
         public override object Interpolate(object a, object b, double progress)
         {
             throw new NotSupportedException();
-        }
-
-        /// <inheritdoc />
-        public override void ApplyValue(object value)
-        {
-            ValueSetter?.Invoke(value);
-        }
-
-        /// <inheritdoc />
-        public override object GetValue()
-        {
-            return ValueGetter?.Invoke();
         }
     }
 }

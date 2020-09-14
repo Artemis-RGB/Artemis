@@ -5,6 +5,11 @@ namespace Artemis.Core
 {
     internal class MultiplicationModifierType : DataBindingModifierType
     {
+        public MultiplicationModifierType()
+        {
+            PreferredParameterType = typeof(float);
+        }
+
         public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
 
         public override string Description => "Multiply by";

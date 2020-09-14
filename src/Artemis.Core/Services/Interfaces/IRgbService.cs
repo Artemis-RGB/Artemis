@@ -4,7 +4,10 @@ using RGB.NET.Core;
 
 namespace Artemis.Core.Services
 {
-    public interface IRgbService : IArtemisService
+    /// <summary>
+    ///     A service that allows you to manage the <see cref="RGBSurface" /> and its contents
+    /// </summary>
+    public interface IRgbService : IArtemisService, IDisposable
     {
         /// <summary>
         ///     Gets or sets the RGB surface rendering is performed on
@@ -26,7 +29,14 @@ namespace Artemis.Core.Services
         /// </summary>
         IReadOnlyCollection<IRGBDevice> LoadedDevices { get; }
 
+        /// <summary>
+        ///     Gets the update trigger that drives the render loop
+        /// </summary>
         TimerUpdateTrigger UpdateTrigger { get; }
+
+        /// <summary>
+        ///     Gets or sets whether rendering should be paused
+        /// </summary>
         bool IsRenderPaused { get; set; }
 
         /// <summary>
@@ -34,8 +44,6 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="deviceProvider"></param>
         void AddDeviceProvider(IRGBDeviceProvider deviceProvider);
-
-        void Dispose();
 
         /// <summary>
         ///     Occurs when a single device has loaded
@@ -47,6 +55,9 @@ namespace Artemis.Core.Services
         /// </summary>
         event EventHandler<DeviceEventArgs> DeviceReloaded;
 
+        /// <summary>
+        ///     Recalculates the LED group used by the <see cref="BitmapBrush" />
+        /// </summary>
         void UpdateSurfaceLedGroup();
     }
 }

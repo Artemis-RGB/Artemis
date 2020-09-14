@@ -16,46 +16,68 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
-using static Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerPropertyGroupViewModel.ViewModelType;
+using static Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree.TreeGroupViewModel.LayerPropertyGroupType;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertiesViewModel : ProfileEditorPanelViewModel, IDropTarget
+    public class LayerPropertiesViewModel : Conductor<IScreen>.Collection.AllActive, IProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
-        private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
-        private DataBindingsViewModel _dataBindingsViewModel;
-        private EffectsViewModel _effectsViewModel;
-        private TimelineSegmentViewModel _endTimelineSegmentViewModel;
-        private BindableCollection<LayerPropertyGroupViewModel> _layerPropertyGroups;
-        private TimelineSegmentViewModel _mainTimelineSegmentViewModel;
         private bool _playing;
         private int _propertyTreeIndex;
         private bool _repeatAfterLastKeyframe;
         private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
-        private TimelineSegmentViewModel _startTimelineSegmentViewModel;
-        private TimelineViewModel _timelineViewModel;
-        private TreeViewModel _treeViewModel;
 
-        public LayerPropertiesViewModel(IProfileEditorService profileEditorService, 
+        public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
             ISettingsService settingsService,
             ILayerPropertyVmFactory layerPropertyVmFactory,
-            IDataBindingsVmFactory dataBindingsVmFactory)
+            DataBindingsViewModel dataBindingsViewModel)
         {
             _layerPropertyVmFactory = layerPropertyVmFactory;
-            _dataBindingsVmFactory = dataBindingsVmFactory;
 
             ProfileEditorService = profileEditorService;
             CoreService = coreService;
             SettingsService = settingsService;
 
-            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
             LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
             PropertyChanged += HandlePropertyTreeIndexChanged;
+
+            // Left side 
+            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
+            EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
+            Items.Add(TreeViewModel);
+            Items.Add(EffectsViewModel);
+
+            // Right side
+            StartTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Start, LayerPropertyGroups);
+            MainTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Main, LayerPropertyGroups);
+            EndTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.End, LayerPropertyGroups);
+            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
+            DataBindingsViewModel = dataBindingsViewModel;
+            Items.Add(StartTimelineSegmentViewModel);
+            Items.Add(MainTimelineSegmentViewModel);
+            Items.Add(EndTimelineSegmentViewModel);
+            Items.Add(TimelineViewModel);
+            Items.Add(DataBindingsViewModel);
         }
+
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+
+
+        #region Child VMs
+
+        public TreeViewModel TreeViewModel { get; }
+        public EffectsViewModel EffectsViewModel { get; }
+        public TimelineSegmentViewModel StartTimelineSegmentViewModel { get; }
+        public TimelineSegmentViewModel MainTimelineSegmentViewModel { get; }
+        public TimelineSegmentViewModel EndTimelineSegmentViewModel { get; }
+        public TimelineViewModel TimelineViewModel { get; }
+        public DataBindingsViewModel DataBindingsViewModel { get; }
+
+        #endregion
 
         public IProfileEditorService ProfileEditorService { get; }
         public ICoreService CoreService { get; }
@@ -113,53 +135,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
 
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups
-        {
-            get => _layerPropertyGroups;
-            set => SetAndNotify(ref _layerPropertyGroups, value);
-        }
-
-        public TreeViewModel TreeViewModel
-        {
-            get => _treeViewModel;
-            set => SetAndNotify(ref _treeViewModel, value);
-        }
-
-        public EffectsViewModel EffectsViewModel
-        {
-            get => _effectsViewModel;
-            set => SetAndNotify(ref _effectsViewModel, value);
-        }
-
-        public DataBindingsViewModel DataBindingsViewModel
-        {
-            get => _dataBindingsViewModel;
-            set => SetAndNotify(ref _dataBindingsViewModel, value);
-        }
-
-        public TimelineViewModel TimelineViewModel
-        {
-            get => _timelineViewModel;
-            set => SetAndNotify(ref _timelineViewModel, value);
-        }
-
-        public TimelineSegmentViewModel StartTimelineSegmentViewModel
-        {
-            get => _startTimelineSegmentViewModel;
-            set => SetAndNotify(ref _startTimelineSegmentViewModel, value);
-        }
-
-        public TimelineSegmentViewModel MainTimelineSegmentViewModel
-        {
-            get => _mainTimelineSegmentViewModel;
-            set => SetAndNotify(ref _mainTimelineSegmentViewModel, value);
-        }
-
-        public TimelineSegmentViewModel EndTimelineSegmentViewModel
-        {
-            get => _endTimelineSegmentViewModel;
-            set => SetAndNotify(ref _endTimelineSegmentViewModel, value);
-        }
 
         #region Segments
 
@@ -195,18 +170,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
             PopulateProperties(null);
-
-            TimelineViewModel?.Dispose();
-            TimelineViewModel = null;
-            StartTimelineSegmentViewModel?.Dispose();
-            StartTimelineSegmentViewModel = null;
-            MainTimelineSegmentViewModel?.Dispose();
-            MainTimelineSegmentViewModel = null;
-            EndTimelineSegmentViewModel?.Dispose();
-            EndTimelineSegmentViewModel = null;
-            DataBindingsViewModel?.Dispose();
-            DataBindingsViewModel = null;
-
             base.OnClose();
         }
 
@@ -240,14 +203,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
         {
-            if (ProfileEditorService.SelectedDataBinding != null)
-            {
-                RightSideIndex = 1;
-                DataBindingsViewModel?.Dispose();
-                DataBindingsViewModel = _dataBindingsVmFactory.DataBindingsViewModel(ProfileEditorService.SelectedDataBinding);
-            }
-            else
-                RightSideIndex = 0;
+            RightSideIndex = ProfileEditorService.SelectedDataBinding != null ? 1 : 0;
         }
 
         #region View model managament
@@ -286,28 +242,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
 
                 // Add the built-in root groups of the layer
-                var generalAttribute = Attribute.GetCustomAttribute(
-                    SelectedLayer.GetType().GetProperty(nameof(SelectedLayer.General)),
-                    typeof(PropertyGroupDescriptionAttribute)
-                );
-                var transformAttribute = Attribute.GetCustomAttribute(
-                    SelectedLayer.GetType().GetProperty(nameof(SelectedLayer.Transform)),
-                    typeof(PropertyGroupDescriptionAttribute)
-                );
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General, (PropertyGroupDescriptionAttribute) generalAttribute));
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform, (PropertyGroupDescriptionAttribute) transformAttribute));
+                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General));
+                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform));
             }
-
-            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
-
-            TimelineViewModel?.Dispose();
-            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
-            StartTimelineSegmentViewModel?.Dispose();
-            StartTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.Start);
-            MainTimelineSegmentViewModel?.Dispose();
-            MainTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.Main);
-            EndTimelineSegmentViewModel?.Dispose();
-            EndTimelineSegmentViewModel = new TimelineSegmentViewModel(ProfileEditorService, SegmentViewModelType.End);
 
             ApplyLayerBrush();
             ApplyEffects();
@@ -343,62 +280,64 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             if (SelectedLayer.LayerBrush != null)
             {
-                // Add the rout group of the brush
+                // TODO: wat?
+                // Add the root group of the brush
                 // The root group of the brush has no attribute so let's pull one out of our sleeve
                 var brushDescription = new PropertyGroupDescriptionAttribute
                 {
                     Name = SelectedLayer.LayerBrush.Descriptor.DisplayName,
                     Description = SelectedLayer.LayerBrush.Descriptor.Description
                 };
-                _brushPropertyGroup = _layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.LayerBrush.BaseProperties, brushDescription);
+                _brushPropertyGroup = _layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.LayerBrush.BaseProperties);
                 LayerPropertyGroups.Add(_brushPropertyGroup);
             }
 
             SortProperties();
-            UpdateKeyframes();
         }
 
         private void ApplyEffects()
         {
-            RenderProfileElement renderElement;
-            if (SelectedLayer != null)
-                renderElement = SelectedLayer;
-            else if (SelectedFolder != null)
-                renderElement = SelectedFolder;
-            else
+            if (SelectedProfileElement == null)
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = LayerPropertyGroups.Where(l => l.LayerPropertyGroup.LayerEffect != null && !renderElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect)).ToList();
+            var toRemove = LayerPropertyGroups
+                .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
+                .ToList();
             LayerPropertyGroups.RemoveRange(toRemove);
             foreach (var layerPropertyGroupViewModel in toRemove)
                 layerPropertyGroupViewModel.Dispose();
 
-            foreach (var layerEffect in renderElement.LayerEffects)
+            foreach (var layerEffect in SelectedProfileElement.LayerEffects)
             {
-                if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect))
+                if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
                     continue;
 
-                // Add the rout group of the brush
+                // TODO: wat?
+                // Add the root group of the brush
                 // The root group of the brush has no attribute so let's pull one out of our sleeve
                 var brushDescription = new PropertyGroupDescriptionAttribute
                 {
                     Name = layerEffect.Descriptor.DisplayName,
                     Description = layerEffect.Descriptor.Description
                 };
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties, brushDescription));
+                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
             }
 
             SortProperties();
-            UpdateKeyframes();
         }
 
         private void SortProperties()
         {
             // Get all non-effect properties
-            var nonEffectProperties = LayerPropertyGroups.Where(l => l.GroupType != LayerEffectRoot).ToList();
+            var nonEffectProperties = LayerPropertyGroups
+                .Where(l => l.TreeGroupViewModel.GroupType != LayerEffectRoot)
+                .ToList();
             // Order the effects
-            var effectProperties = LayerPropertyGroups.Where(l => l.GroupType == LayerEffectRoot).OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order).ToList();
+            var effectProperties = LayerPropertyGroups
+                .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot)
+                .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
+                .ToList();
 
             // Put the non-effect properties in front
             for (var index = 0; index < nonEffectProperties.Count; index++)
@@ -415,11 +354,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
-        private void UpdateKeyframes()
-        {
-            TimelineViewModel.Update();
-        }
-
         #endregion
 
         #region Drag and drop
@@ -434,7 +368,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var source = dropInfo.Data as LayerPropertyGroupViewModel;
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
-            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+            if (source == target ||
+                target?.TreeGroupViewModel.GroupType != LayerEffectRoot ||
+                source?.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 return;
 
             dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
@@ -451,7 +387,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             var source = dropInfo.Data as LayerPropertyGroupViewModel;
             var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
-            if (source == target || target?.GroupType != LayerEffectRoot || source?.GroupType != LayerEffectRoot)
+            if (source == target ||
+                target?.TreeGroupViewModel.GroupType != LayerEffectRoot ||
+                source?.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 return;
 
             if (dropInfo.InsertPosition == RelativeInsertPosition.BeforeTargetItem)
@@ -480,7 +418,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void ApplyCurrentEffectsOrder()
         {
             var order = 1;
-            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.GroupType == LayerEffectRoot))
+            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
             {
                 groupViewModel.UpdateOrder(order);
                 order++;
@@ -550,16 +488,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan CalculateEndTime()
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
-                return TimeSpan.MaxValue;
-
-            var keyframes = GetKeyframes(false);
+            var keyframeViewModels = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
 
             // If there are no keyframes, don't stop at all
-            if (!keyframes.Any())
+            if (!keyframeViewModels.Any())
                 return TimeSpan.MaxValue;
             // If there are keyframes, stop after the last keyframe + 10 sec
-            return keyframes.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
+            return keyframeViewModels.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
         }
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -616,7 +551,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // If holding down shift, snap to the closest segment or keyframe
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, true);
+                    var snapTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, snapTimes);
                     ProfileEditorService.CurrentTime = snappedTime;
                     return;
                 }
@@ -631,15 +567,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
                 ProfileEditorService.CurrentTime = newTime;
             }
-        }
-
-        private List<BaseLayerPropertyKeyframe> GetKeyframes(bool visibleOnly)
-        {
-            var result = new List<BaseLayerPropertyKeyframe>();
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
-                result.AddRange(layerPropertyGroupViewModel.GetKeyframes(visibleOnly));
-
-            return result;
         }
 
         #endregion

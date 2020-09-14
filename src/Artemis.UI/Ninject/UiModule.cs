@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Services.Interfaces;
@@ -7,6 +8,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using FluentValidation;
 using Ninject.Extensions.Conventions;
+using Ninject.Extensions.Factory;
 using Ninject.Modules;
 using Stylet;
 
@@ -48,12 +50,15 @@ namespace Artemis.UI.Ninject
                     .BindToFactory();
             });
 
+            Kernel.Bind<IDataBindingsVmFactory>().ToFactory(() => new DataBindingsViewModelInstanceProvider());
+            Kernel.Bind<IPropertyVmFactory>().ToFactory(() => new LayerPropertyViewModelInstanceProvider());
+
             // Bind profile editor VMs
             Kernel.Bind(x =>
             {
                 x.FromThisAssembly()
                     .SelectAllClasses()
-                    .InheritedFrom<ProfileEditorPanelViewModel>()
+                    .InheritedFrom<IProfileEditorPanelViewModel>()
                     .BindAllBaseClasses();
             });
 

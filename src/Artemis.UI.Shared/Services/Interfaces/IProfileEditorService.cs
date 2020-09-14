@@ -10,7 +10,7 @@ namespace Artemis.UI.Shared.Services
     {
         Profile SelectedProfile { get; }
         RenderProfileElement SelectedProfileElement { get; }
-        BaseLayerProperty SelectedDataBinding { get; }
+        ILayerProperty SelectedDataBinding { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
         IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Services
         void UpdateSelectedProfile();
         void ChangeSelectedProfileElement(RenderProfileElement profileElement);
         void UpdateSelectedProfileElement();
-        void ChangeSelectedDataBinding(BaseLayerProperty layerProperty);
+        void ChangeSelectedDataBinding(ILayerProperty layerProperty);
         void UpdateProfilePreview();
         bool UndoUpdateProfile();
         bool RedoUpdateProfile();
@@ -74,6 +74,16 @@ namespace Artemis.UI.Shared.Services
         /// <returns></returns>
         PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel;
 
+        /// <summary>
+        ///     Registers a new property input view model used in the profile editor for the generic type defined in
+        ///     <see cref="PropertyInputViewModel{T}" />
+        ///     <para>Note: Registration will remove itself on plugin disable so you don't have to</para>
+        /// </summary>
+        /// <param name="viewModelType"></param>
+        /// <param name="pluginInfo"></param>
+        /// <returns></returns>
+        PropertyInputRegistration RegisterPropertyInput(Type viewModelType, PluginInfo pluginInfo);
+
         void RemovePropertyInput(PropertyInputRegistration registration);
 
         /// <summary>
@@ -84,9 +94,13 @@ namespace Artemis.UI.Shared.Services
         /// <param name="tolerance">How close the time must be to snap</param>
         /// <param name="snapToSegments">Enable snapping to timeline segments</param>
         /// <param name="snapToCurrentTime">Enable snapping to the current time of the editor</param>
-        /// <param name="snapToKeyframes">Enable snapping to visible keyframes</param>
-        /// <param name="excludedKeyframe">A keyframe to exclude during keyframe snapping</param>
+        /// <param name="snapTimes">An optional extra list of times to snap to</param>
         /// <returns></returns>
-        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, bool snapToKeyframes, BaseLayerPropertyKeyframe excludedKeyframe = null);
+        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null);
+
+        /// <summary>
+        /// If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}"/> supporting <typeparamref name="T"/>
+        /// </summary>
+        PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty);
     }
 }

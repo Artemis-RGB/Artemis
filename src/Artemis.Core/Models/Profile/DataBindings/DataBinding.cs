@@ -2,60 +2,55 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
 {
-    /// <summary>
-    ///     A data binding that binds a certain <see cref="BaseLayerProperty" /> to a value inside a <see cref="DataModel" />
-    /// </summary>
-    public class DataBinding
+    /// <inheritdoc />
+    public class DataBinding<TLayerProperty, TProperty> : IDataBinding
     {
-        private readonly List<DataBindingModifier> _modifiers = new List<DataBindingModifier>();
+        private readonly List<DataBindingModifier<TLayerProperty, TProperty>> _modifiers = new List<DataBindingModifier<TLayerProperty, TProperty>>();
 
-        private object _currentValue;
-        private object _previousValue;
+        private TProperty _currentValue;
+        private bool _disposed;
         private TimeSpan _easingProgress;
+        private TProperty _previousValue;
 
-        internal DataBinding(DataBindingRegistration dataBindingRegistration)
+        internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
             LayerProperty = dataBindingRegistration.LayerProperty;
             Entity = new DataBindingEntity();
 
             ApplyRegistration(dataBindingRegistration);
-            ApplyToEntity();
+            Save();
+            Initialize();
         }
 
-        internal DataBinding(BaseLayerProperty layerProperty, DataBindingEntity entity)
+        internal DataBinding(LayerProperty<TLayerProperty> layerProperty, DataBindingEntity entity)
         {
             LayerProperty = layerProperty;
             Entity = entity;
 
-            ApplyToDataBinding();
+            // Load will add children so be initialized before that
+            Initialize();
+            Load();
         }
-
-        /// <summary>
-        ///     Gets the layer property this data binding targets
-        /// </summary>
-        public BaseLayerProperty LayerProperty { get; }
 
         /// <summary>
         ///     Gets the data binding registration this data binding is based upon
         /// </summary>
-        public DataBindingRegistration Registration { get; private set; }
+        public DataBindingRegistration<TLayerProperty, TProperty> Registration { get; private set; }
+
+        /// <summary>
+        ///     Gets the layer property this data binding targets
+        /// </summary>
+        public LayerProperty<TLayerProperty> LayerProperty { get; }
 
         /// <summary>
         ///     Gets the converter used to apply this data binding to the <see cref="LayerProperty" />
         /// </summary>
-        public DataBindingConverter Converter { get; private set; }
-
-        /// <summary>
-        ///     Gets the property on the <see cref="LayerProperty" /> this data binding targets
-        /// </summary>
-        public PropertyInfo TargetProperty { get; private set; }
+        public DataBindingConverter<TLayerProperty, TProperty> Converter { get; private set; }
 
         /// <summary>
         ///     Gets the currently used instance of the data model that contains the source of the data binding
@@ -82,7 +77,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
-        public IReadOnlyList<DataBindingModifier> Modifiers => _modifiers.AsReadOnly();
+        public IReadOnlyList<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
 
         /// <summary>
         ///     Gets the compiled function that gets the current value of the data binding target
@@ -92,10 +87,56 @@ namespace Artemis.Core
         internal DataBindingEntity Entity { get; }
 
         /// <summary>
+        ///     Updates the smoothing progress of the data binding
+        /// </summary>
+        /// <param name="deltaTime">The time in seconds that passed since the last update</param>
+        public void Update(double deltaTime)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            // Data bindings cannot go back in time like brushes
+            deltaTime = Math.Max(0, deltaTime);
+
+            _easingProgress = _easingProgress.Add(TimeSpan.FromSeconds(deltaTime));
+            if (_easingProgress > EasingTime)
+                _easingProgress = EasingTime;
+        }
+
+        /// <inheritdoc />
+        public void Apply()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            if (Converter == null)
+                return;
+
+            var converterValue = Converter.GetValue();
+            var value = GetValue(converterValue);
+            Converter.ApplyValue(value);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            foreach (var dataBindingModifier in Modifiers)
+                dataBindingModifier.Dispose();
+        }
+
+        /// <summary>
         ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
         /// </summary>
-        public void AddModifier(DataBindingModifier modifier)
+        public void AddModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (!_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = this;
@@ -108,8 +149,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Removes a modifier from the data binding's <see cref="Modifiers" /> collection
         /// </summary>
-        public void RemoveModifier(DataBindingModifier modifier)
+        public void RemoveModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (_modifiers.Contains(modifier))
             {
                 modifier.DataBinding = null;
@@ -126,6 +170,9 @@ namespace Artemis.Core
         /// <param name="path">The path pointing to the source inside the data model</param>
         public void UpdateSource(DataModel dataModel, string path)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
             if (dataModel == null && path != null)
@@ -147,8 +194,11 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="baseValue">The base value of the property the data binding is applied to</param>
         /// <returns></returns>
-        public object GetValue(object baseValue)
+        public TProperty GetValue(TProperty baseValue)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
             if (CompiledTargetAccessor == null || Converter == null)
                 return baseValue;
 
@@ -156,8 +206,8 @@ namespace Artemis.Core
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
-            var value = Convert.ChangeType(dataBindingValue, TargetProperty.PropertyType);
-
+            TProperty value = Converter.ConvertFromObject(dataBindingValue);
+            
             // If no easing is to be applied simple return whatever the current value is
             if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
                 return value;
@@ -170,19 +220,12 @@ namespace Artemis.Core
             return GetInterpolatedValue();
         }
 
-        private void ResetEasing(object value)
-        {
-            _previousValue = GetInterpolatedValue();
-            _currentValue = value;
-            _easingProgress = TimeSpan.Zero;
-        }
-
         /// <summary>
         ///     Returns the type of the target property of this data binding
         /// </summary>
         public Type GetTargetType()
         {
-            return TargetProperty.PropertyType;
+            return Registration.PropertyExpression.ReturnType;
         }
 
         /// <summary>
@@ -193,105 +236,47 @@ namespace Artemis.Core
             return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
         }
 
-        /// <summary>
-        ///     Updates the smoothing progress of the data binding
-        /// </summary>
-        /// <param name="deltaTime">The time in seconds that passed since the last update</param>
-        public void Update(double deltaTime)
+        private void Initialize()
         {
-            // Data bindings cannot go back in time like brushes
-            deltaTime = Math.Max(0, deltaTime);
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
 
-            _easingProgress = _easingProgress.Add(TimeSpan.FromSeconds(deltaTime));
-            if (_easingProgress > EasingTime)
-                _easingProgress = EasingTime;
-        }
-
-        /// <summary>
-        ///     Updates the value on the <see cref="LayerProperty" /> according to the data binding
-        /// </summary>
-        public void ApplyToProperty()
-        {
-            if (Converter == null)
-                return;
-
-            var value = GetValue(Converter.GetValue());
-            Converter.ApplyValue(GetValue(value));
-        }
-
-        internal void ApplyToEntity()
-        {
-            // General 
-            Entity.TargetProperty = TargetProperty?.Name;
-            Entity.DataBindingMode = (int) Mode;
-            Entity.EasingTime = EasingTime;
-            Entity.EasingFunction = (int) EasingFunction;
-
-            // Data model
-            Entity.SourceDataModelGuid = SourceDataModel?.PluginInfo?.Guid;
-            Entity.SourcePropertyPath = SourcePropertyPath;
-
-            // Modifiers
-            Entity.Modifiers.Clear();
-            foreach (var dataBindingModifier in Modifiers)
-            {
-                dataBindingModifier.ApplyToEntity();
-                Entity.Modifiers.Add(dataBindingModifier.Entity);
-            }
-        }
-
-        internal void ApplyToDataBinding()
-        {
-            // General
-            ApplyRegistration(LayerProperty.DataBindingRegistrations.FirstOrDefault(p => p.Property.Name == Entity.TargetProperty));
-
-            Mode = (DataBindingMode) Entity.DataBindingMode;
-            EasingTime = Entity.EasingTime;
-            EasingFunction = (Easings.Functions) Entity.EasingFunction;
-
-            // Data model is done during Initialize
-
-            // Modifiers
-            foreach (var dataBindingModifierEntity in Entity.Modifiers)
-                _modifiers.Add(new DataBindingModifier(this, dataBindingModifierEntity));
-        }
-
-        internal void Initialize(IDataModelService dataModelService, IDataBindingService dataBindingService)
-        {
             // Source
             if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
             {
-                var dataModel = dataModelService.GetPluginDataModelByGuid(Entity.SourceDataModelGuid.Value);
+                var dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
                     UpdateSource(dataModel, Entity.SourcePropertyPath);
             }
-
-            // Modifiers
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingModifier.Initialize(dataModelService, dataBindingService);
         }
 
-        private void ApplyRegistration(DataBindingRegistration dataBindingRegistration)
+        private void ResetEasing(TProperty value)
+        {
+            _previousValue = GetInterpolatedValue();
+            _currentValue = value;
+            _easingProgress = TimeSpan.Zero;
+        }
+
+        private void ApplyRegistration(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
             if (dataBindingRegistration != null)
                 dataBindingRegistration.DataBinding = this;
 
             Converter = dataBindingRegistration?.Converter;
             Registration = dataBindingRegistration;
-            TargetProperty = dataBindingRegistration?.Property;
 
             if (GetTargetType().IsValueType)
             {
                 if (_currentValue == null)
-                    _currentValue = GetTargetType().GetDefault();
+                    _currentValue = default;
                 if (_previousValue == null)
-                    _previousValue = _currentValue;
+                    _previousValue = default;
             }
 
             Converter?.Initialize(this);
         }
 
-        private object GetInterpolatedValue()
+        private TProperty GetInterpolatedValue()
         {
             if (_easingProgress == EasingTime || !Converter.SupportsInterpolate)
                 return _currentValue;
@@ -317,6 +302,77 @@ namespace Artemis.Core
             var lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
             CompiledTargetAccessor = lambda.Compile();
         }
+
+        #region Storage
+
+        /// <inheritdoc />
+        public void Load()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+            // General
+            var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
+            ApplyRegistration(registration);
+
+            Mode = (DataBindingMode) Entity.DataBindingMode;
+            EasingTime = Entity.EasingTime;
+            EasingFunction = (Easings.Functions) Entity.EasingFunction;
+
+            // Data model is done during Initialize
+
+            // Modifiers
+            foreach (var dataBindingModifierEntity in Entity.Modifiers)
+                _modifiers.Add(new DataBindingModifier<TLayerProperty, TProperty>(this, dataBindingModifierEntity));
+        }
+
+        /// <inheritdoc />
+        public void Save()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            if (!LayerProperty.Entity.DataBindingEntities.Contains(Entity))
+                LayerProperty.Entity.DataBindingEntities.Add(Entity);
+
+            // General 
+            Entity.TargetExpression = Registration.PropertyExpression.ToString();
+            Entity.DataBindingMode = (int) Mode;
+            Entity.EasingTime = EasingTime;
+            Entity.EasingFunction = (int) EasingFunction;
+
+            // Data model
+            if (SourceDataModel != null)
+            {
+                Entity.SourceDataModelGuid = SourceDataModel.PluginInfo.Guid;
+                Entity.SourcePropertyPath = SourcePropertyPath;
+            }
+
+            // Modifiers
+            Entity.Modifiers.Clear();
+            foreach (var dataBindingModifier in Modifiers)
+                dataBindingModifier.Save();
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
+        {
+            var dataModel = e.Registration.DataModel;
+            if (dataModel.PluginInfo.Guid == Entity.SourceDataModelGuid && dataModel.ContainsPath(Entity.SourcePropertyPath))
+                UpdateSource(dataModel, Entity.SourcePropertyPath);
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
+        {
+            if (SourceDataModel != e.Registration.DataModel)
+                return;
+            SourceDataModel = null;
+            CompiledTargetAccessor = null;
+        }
+
+        #endregion
 
         #region Events
 

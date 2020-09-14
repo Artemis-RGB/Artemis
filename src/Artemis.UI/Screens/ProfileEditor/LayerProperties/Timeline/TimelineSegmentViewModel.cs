@@ -11,63 +11,71 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineSegmentViewModel : PropertyChangedBase, IDisposable
+    public class TimelineSegmentViewModel : Screen, IDisposable
     {
         private bool _draggingSegment;
         private bool _showDisableButton;
         private bool _showRepeatButton;
         private bool _showSegmentName;
+        private TimeSpan _segmentLength;
+        private double _segmentWidth;
+        private bool _segmentEnabled;
+        private double _segmentStartPosition;
 
-        public TimelineSegmentViewModel(IProfileEditorService profileEditorService, SegmentViewModelType segment)
+        public TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
+            IProfileEditorService profileEditorService)
         {
             ProfileEditorService = profileEditorService;
             Segment = segment;
-            SelectedProfileElement = ProfileEditorService.SelectedProfileElement;
+            LayerPropertyGroups = layerPropertyGroups;
 
-            switch (Segment)
-            {
-                case SegmentViewModelType.Start:
-                    ToolTip = "This segment is played when a layer starts displaying because it's conditions are met";
-                    break;
-                case SegmentViewModelType.Main:
-                    ToolTip = "This segment is played while a condition is met, either once or on a repeating loop";
-                    break;
-                case SegmentViewModelType.End:
-                    ToolTip = "This segment is played once a condition is no longer met";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(segment));
-            }
+            if (Segment == SegmentViewModelType.Start)
+                ToolTip = "This segment is played when a layer starts displaying because it's conditions are met";
+            else if (Segment == SegmentViewModelType.Main)
+                ToolTip = "This segment is played while a condition is met, either once or on a repeating loop";
+            else if (Segment == SegmentViewModelType.End)
+                ToolTip = "This segment is played once a condition is no longer met";
+            IsMainSegment = Segment == SegmentViewModelType.Main;
 
-            UpdateDisplay();
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (ProfileEditorService.SelectedProfileElement != null)
+                ProfileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+
+            Update();
         }
 
-        public RenderProfileElement SelectedProfileElement { get; }
-
+        public RenderProfileElement SelectedProfileElement => ProfileEditorService.SelectedProfileElement;
         public SegmentViewModelType Segment { get; }
+        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
         public IProfileEditorService ProfileEditorService { get; }
+
         public string ToolTip { get; }
+        public bool IsMainSegment { get; }
 
         public TimeSpan SegmentLength
         {
-            get
-            {
-                return Segment switch
-                {
-                    SegmentViewModelType.Start => SelectedProfileElement?.StartSegmentLength ?? TimeSpan.Zero,
-                    SegmentViewModelType.Main => SelectedProfileElement?.MainSegmentLength ?? TimeSpan.Zero,
-                    SegmentViewModelType.End => SelectedProfileElement?.EndSegmentLength ?? TimeSpan.Zero,
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
+            get => _segmentLength;
+            set => SetAndNotify(ref _segmentLength, value);
         }
 
-        public double SegmentWidth => ProfileEditorService.PixelsPerSecond * SegmentLength.TotalSeconds;
+        public double SegmentWidth
+        {
+            get => _segmentWidth;
+            set => SetAndNotify(ref _segmentWidth, value);
+        }
 
-        public bool SegmentEnabled => SegmentLength != TimeSpan.Zero;
-        public bool IsMainSegment => Segment == SegmentViewModelType.Main;
+        public double SegmentStartPosition
+        {
+            get => _segmentStartPosition;
+            set => SetAndNotify(ref _segmentStartPosition, value);
+        }
+
+        public bool SegmentEnabled
+        {
+            get => _segmentEnabled;
+            set => SetAndNotify(ref _segmentEnabled, value);
+        }
 
         // Only the main segment supports this, for any other segment the getter always returns false and the setter does nothing
         public bool RepeatSegment
@@ -90,20 +98,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
         }
 
-        public double SegmentStartPosition
-        {
-            get
-            {
-                return Segment switch
-                {
-                    SegmentViewModelType.Start => 0,
-                    SegmentViewModelType.Main => ProfileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds,
-                    SegmentViewModelType.End => ProfileEditorService.PixelsPerSecond * (SelectedProfileElement.StartSegmentLength.TotalSeconds + SelectedProfileElement.MainSegmentLength.TotalSeconds),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-            }
-        }
-
         public bool ShowSegmentName
         {
             get => _showSegmentName;
@@ -122,15 +116,59 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             set => SetAndNotify(ref _showDisableButton, value);
         }
 
-        public void Dispose()
+        #region Updating
+
+        private void UpdateHeader()
         {
-            ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            if (!IsMainSegment)
+                ShowSegmentName = SegmentWidth > 60;
+            else
+                ShowSegmentName = SegmentWidth > 80;
+
+            ShowRepeatButton = SegmentWidth > 45 && IsMainSegment;
+            ShowDisableButton = SegmentWidth > 25;
         }
+
+        private void Update()
+        {
+            if (SelectedProfileElement == null)
+            {
+                SegmentLength = TimeSpan.Zero;
+                SegmentStartPosition = 0;
+                SegmentWidth = 0;
+                SegmentEnabled = false;
+                return;
+            }
+
+            if (Segment == SegmentViewModelType.Start)
+            {
+                SegmentLength = SelectedProfileElement.StartSegmentLength;
+                SegmentStartPosition = 0;
+            }
+            else if (Segment == SegmentViewModelType.Main)
+            {
+                SegmentLength = SelectedProfileElement.MainSegmentLength;
+                SegmentStartPosition = ProfileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds;
+            }
+            else if (Segment == SegmentViewModelType.End)
+            {
+                SegmentLength = SelectedProfileElement.EndSegmentLength;
+                SegmentStartPosition = ProfileEditorService.PixelsPerSecond * (SelectedProfileElement.StartSegmentLength.TotalSeconds +
+                                                                               SelectedProfileElement.MainSegmentLength.TotalSeconds);
+            }
+
+            SegmentWidth = ProfileEditorService.PixelsPerSecond * SegmentLength.TotalSeconds;
+            SegmentEnabled = SegmentLength != TimeSpan.Zero;
+
+            UpdateHeader();
+        }
+
+        #endregion
+
+        #region Controls
 
         public void DisableSegment()
         {
-            var keyframes = SelectedProfileElement.GetAllKeyframes();
             var startSegmentEnd = SelectedProfileElement.StartSegmentLength;
             var mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
 
@@ -139,28 +177,25 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (Segment == SegmentViewModelType.Start)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position <= startSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(null, startSegmentEnd);
                 SelectedProfileElement.StartSegmentLength = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.Main)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > startSegmentEnd && k.Position <= mainSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(startSegmentEnd, startSegmentEnd);
                 SelectedProfileElement.MainSegmentLength = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.End)
             {
                 // Remove keyframes that fall in this segment
-                foreach (var baseLayerPropertyKeyframe in keyframes.Where(k => k.Position > mainSegmentEnd))
-                    baseLayerPropertyKeyframe.Remove();
+                WipeKeyframes(mainSegmentEnd, null);
                 SelectedProfileElement.EndSegmentLength = TimeSpan.Zero;
             }
 
-            NotifyOfPropertyChange(nameof(SegmentEnabled));
             ShiftNextSegment(SegmentLength - oldSegmentLength);
             ProfileEditorService.UpdateSelectedProfileElement();
+            Update();
         }
 
         public void EnableSegment()
@@ -173,24 +208,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else if (Segment == SegmentViewModelType.End)
                 SelectedProfileElement.EndSegmentLength = TimeSpan.FromSeconds(1);
 
-            NotifyOfPropertyChange(nameof(SegmentEnabled));
             ProfileEditorService.UpdateSelectedProfileElement();
-            UpdateDisplay();
+            Update();
         }
 
-        public void ShiftNextSegment(TimeSpan amount)
-        {
-            var segmentEnd = TimeSpan.Zero;
-            if (Segment == SegmentViewModelType.Start)
-                segmentEnd = SelectedProfileElement.StartSegmentLength;
-            else if (Segment == SegmentViewModelType.Main)
-                segmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
-            else if (Segment == SegmentViewModelType.End)
-                segmentEnd = SelectedProfileElement.TimelineLength;
+        #endregion
 
-            foreach (var baseLayerPropertyKeyframe in SelectedProfileElement.GetAllKeyframes().Where(k => k.Position > segmentEnd))
-                baseLayerPropertyKeyframe.Position += amount;
-        }
+        #region Mouse events
 
         public void SegmentMouseDown(object sender, MouseButtonEventArgs e)
         {
@@ -227,7 +251,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             // If holding down shift, snap to the closest element on the timeline
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-                newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, true);
+            {
+                var keyframeTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, keyframeTimes);
+            }
             // If holding down control, round to the closest 50ms
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
@@ -252,11 +279,34 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 SelectedProfileElement.EndSegmentLength = newTime - SelectedProfileElement.StartSegmentLength - SelectedProfileElement.MainSegmentLength;
             }
 
-            NotifyOfPropertyChange(nameof(SegmentLength));
-            NotifyOfPropertyChange(nameof(SegmentWidth));
-
             ShiftNextSegment(SegmentLength - oldSegmentLength);
-            UpdateDisplay();
+            Update();
+        }
+
+        #endregion
+
+        #region IDIsposable
+
+        public void Dispose()
+        {
+            ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (SelectedProfileElement != null)
+                SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        {
+            if (e.PreviousRenderProfileElement != null)
+                e.PreviousRenderProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+            if (e.RenderProfileElement != null)
+                e.RenderProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+
+            Update();
         }
 
         private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -264,32 +314,41 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (e.PropertyName == nameof(RenderProfileElement.StartSegmentLength) ||
                 e.PropertyName == nameof(RenderProfileElement.MainSegmentLength) ||
                 e.PropertyName == nameof(RenderProfileElement.EndSegmentLength))
-            {
-                NotifyOfPropertyChange(nameof(SegmentStartPosition));
-                NotifyOfPropertyChange(nameof(SegmentWidth));
-            }
+                Update();
             else if (e.PropertyName == nameof(RenderProfileElement.DisplayContinuously))
                 NotifyOfPropertyChange(nameof(RepeatSegment));
         }
 
-
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
         {
-            NotifyOfPropertyChange(nameof(SegmentWidth));
-            NotifyOfPropertyChange(nameof(SegmentStartPosition));
-
-            UpdateDisplay();
+            Update();
         }
 
-        private void UpdateDisplay()
-        {
-            if (!IsMainSegment)
-                ShowSegmentName = SegmentWidth > 60;
-            else
-                ShowSegmentName = SegmentWidth > 80;
+        #endregion
 
-            ShowRepeatButton = SegmentWidth > 45 && IsMainSegment;
-            ShowDisableButton = SegmentWidth > 25;
+        public void ShiftNextSegment(TimeSpan amount)
+        {
+            var segmentEnd = TimeSpan.Zero;
+            if (Segment == SegmentViewModelType.Start)
+                segmentEnd = SelectedProfileElement.StartSegmentLength;
+            else if (Segment == SegmentViewModelType.Main)
+                segmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
+            else if (Segment == SegmentViewModelType.End)
+                segmentEnd = SelectedProfileElement.TimelineLength;
+
+            ShiftKeyframes(segmentEnd, null, amount);
+        }
+
+        private void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.WipeKeyframes(start, end);
+        }
+
+        private void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
         }
     }
 

@@ -16,17 +16,19 @@ namespace Artemis.Core
             ProfileEntity = new ProfileEntity();
             EntityId = Guid.NewGuid();
 
+            Profile = this;
             Module = module;
             Name = name;
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            AddChild(new Folder(this, this, "Root folder"));
-            ApplyToEntity();
+            var _ = new Folder(this, "Root folder");
+            Save();
         }
 
         internal Profile(ProfileModule module, ProfileEntity profileEntity)
         {
+            Profile = this;
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
 
@@ -34,7 +36,7 @@ namespace Artemis.Core
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            ApplyToProfile();
+            Load();
         }
 
         public ProfileModule Module { get; }
@@ -86,7 +88,7 @@ namespace Artemis.Core
             return (Folder) Children.Single();
         }
 
-        public void ApplyToProfile()
+        internal override void Load()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Profile");
@@ -103,7 +105,9 @@ namespace Artemis.Core
                 // Populate the profile starting at the root, the rest is populated recursively
                 var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
-                    AddChild(new Folder(this, this, "Root folder"));
+                {
+                    var _ = new Folder(this, "Root folder");
+                }
                 else
                     AddChild(new Folder(this, this, rootFolder));
             }
@@ -129,7 +133,7 @@ namespace Artemis.Core
             _disposed = true;
         }
 
-        internal override void ApplyToEntity()
+        internal override void Save()
         {
             if (_disposed)
                 throw new ObjectDisposedException("Profile");
@@ -140,7 +144,7 @@ namespace Artemis.Core
             ProfileEntity.IsActive = IsActivated;
 
             foreach (var profileElement in Children)
-                profileElement.ApplyToEntity();
+                profileElement.Save();
 
             ProfileEntity.Folders.Clear();
             ProfileEntity.Folders.AddRange(GetAllFolders().Select(f => f.FolderEntity));

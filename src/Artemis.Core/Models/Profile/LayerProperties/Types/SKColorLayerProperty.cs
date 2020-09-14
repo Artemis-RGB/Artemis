@@ -7,11 +7,10 @@ namespace Artemis.Core
     {
         internal SKColorLayerProperty()
         {
-            RegisterDataBindingProperty(color => color.Alpha, new SKColorPartDataBindingConverter(SKColorPartDataBindingConverter.Channel.Alpha));
-            RegisterDataBindingProperty(color => color.Red, new SKColorPartDataBindingConverter(SKColorPartDataBindingConverter.Channel.Red));
-            RegisterDataBindingProperty(color => color.Green, new SKColorPartDataBindingConverter(SKColorPartDataBindingConverter.Channel.Green));
-            RegisterDataBindingProperty(color => color.Blue, new SKColorPartDataBindingConverter(SKColorPartDataBindingConverter.Channel.Blue));
-            RegisterDataBindingProperty(color => color.Hue, new SKColorPartDataBindingConverter(SKColorPartDataBindingConverter.Channel.Hue));
+            RegisterDataBindingProperty(color => color.Alpha, new SKColorArgbDataBindingConverter(SKColorArgbDataBindingConverter.Channel.Alpha));
+            RegisterDataBindingProperty(color => color.Red, new SKColorArgbDataBindingConverter(SKColorArgbDataBindingConverter.Channel.Red));
+            RegisterDataBindingProperty(color => color.Green, new SKColorArgbDataBindingConverter(SKColorArgbDataBindingConverter.Channel.Green));
+            RegisterDataBindingProperty(color => color.Blue, new SKColorArgbDataBindingConverter(SKColorArgbDataBindingConverter.Channel.Blue));
         }
 
         /// <summary>

@@ -12,14 +12,7 @@ namespace Artemis.UI.Shared.Services
         IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
         IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
         DataModelPropertiesViewModel GetMainDataModelVisualization();
-        DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin);
-
-        /// <summary>
-        ///     Determines whether the given plugin expands the main data model
-        /// </summary>
-        /// <param name="plugin"></param>
-        /// <returns></returns>
-        bool GetPluginExtendsDataModel(Plugin plugin);
+        DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool includeMainDataModel);
 
         DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes) where T : DataModelInputViewModel;
         DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel;

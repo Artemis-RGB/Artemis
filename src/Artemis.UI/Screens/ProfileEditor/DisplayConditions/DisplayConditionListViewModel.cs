@@ -14,7 +14,7 @@ using Humanizer;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionListViewModel : DisplayConditionViewModel
+    public class DisplayConditionListViewModel : DisplayConditionViewModel, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
@@ -30,7 +30,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IDisplayConditionsVmFactory displayConditionsVmFactory,
-            ISettingsService settingsService) : base(displayConditionList, parent)
+            ISettingsService settingsService) : base(displayConditionList)
         {
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
@@ -109,10 +109,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void Initialize()
         {
             // Get the data models
-            TargetDataModel = _dataModelUIService.GetMainDataModelVisualization();
-            if (!_dataModelUIService.GetPluginExtendsDataModel(_profileEditorService.GetCurrentModule()))
-                TargetDataModel.Children.Add(_dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule()));
-
+            TargetDataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
             TargetDataModel.UpdateRequested += TargetDataModelUpdateRequested;
 
             Update();
@@ -152,34 +149,25 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             TargetDataModel.ApplyTypeFilter(true, typeof(IList));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Children.Where(c => !DisplayConditionList.Children.Contains(c.Model)).ToList();
+            var toRemove = Items.Where(c => !DisplayConditionList.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
-            {
-                Children.Remove(displayConditionViewModel);
-                displayConditionViewModel.Dispose();
-            }
+                CloseItem(displayConditionViewModel);
 
             foreach (var childModel in Model.Children)
             {
-                if (Children.Any(c => c.Model == childModel))
+                if (Items.Any(c => c.Model == childModel))
                     continue;
                 if (!(childModel is DisplayConditionGroup displayConditionGroup))
                     continue;
 
-                var viewModel = _displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, this, true);
+                var viewModel = _displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, true);
                 viewModel.IsRootGroup = true;
-                Children.Add(viewModel);
+                ActivateItem(viewModel);
             }
 
-            foreach (var childViewModel in Children)
+            foreach (var childViewModel in Items)
                 childViewModel.Update();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _updateTimer.Stop();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
         }
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
@@ -204,6 +192,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             SelectedListProperty = dataModelListViewModel;
             ApplyList();
+        }
+
+        public void Dispose()
+        {
+            _updateTimer.Dispose();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
         }
     }
 }

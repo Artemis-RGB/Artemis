@@ -1,13 +1,10 @@
-﻿using System.Reflection;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
@@ -19,7 +16,6 @@ using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Stylet;
-using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.UI.Ninject.Factories
 {
@@ -46,15 +42,10 @@ namespace Artemis.UI.Ninject.Factories
         DeviceDebugViewModel Create(ArtemisDevice device);
     }
 
-    public interface IFolderVmFactory : IVmFactory
+    public interface IProfileTreeVmFactory : IVmFactory
     {
-        FolderViewModel Create(ProfileElement folder);
-        FolderViewModel Create(TreeItemViewModel parent, ProfileElement folder);
-    }
-
-    public interface ILayerVmFactory : IVmFactory
-    {
-        LayerViewModel Create(TreeItemViewModel parent, ProfileElement folder);
+        FolderViewModel FolderViewModel(ProfileElement folder);
+        LayerViewModel LayerViewModel(ProfileElement layer);
     }
 
     public interface IProfileLayerVmFactory : IVmFactory
@@ -72,26 +63,35 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDisplayConditionsVmFactory : IVmFactory
     {
-        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, DisplayConditionViewModel parent, bool isListGroup);
-        DisplayConditionListViewModel DisplayConditionListViewModel(DisplayConditionList displayConditionList, DisplayConditionViewModel parent);
-        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate, DisplayConditionViewModel parent);
-        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate, DisplayConditionViewModel parent);
-    }
-
-    public interface IDataBindingsVmFactory : IVmFactory
-    {
-        DataBindingsViewModel DataBindingsViewModel(BaseLayerProperty layerProperty);
-        DataBindingViewModel DataBindingViewModel(DataBindingRegistration registration);
-        DataBindingModifierViewModel DataBindingModifierViewModel(DataBindingModifier modifier);
+        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, bool isListGroup);
+        DisplayConditionListViewModel DisplayConditionListViewModel(DisplayConditionList displayConditionList);
+        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate);
+        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory
     {
-        LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, PropertyGroupDescriptionAttribute propertyGroupDescription);
+        LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
+
+        LayerPropertyGroupViewModel LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup);
+        TreeGroupViewModel TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
+        TimelineGroupViewModel TimelineGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
+
         TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
         TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
-        TreePropertyGroupViewModel TreePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel);
-        TimelinePropertyGroupViewModel TimelinePropertyGroupViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel);
+        TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+    }
+
+    public interface IDataBindingsVmFactory
+    {
+        IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
+        DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
+    }
+
+    public interface IPropertyVmFactory
+    {
+        ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
+        ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
     }
 }

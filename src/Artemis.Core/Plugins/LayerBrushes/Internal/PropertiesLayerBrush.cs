@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core.Services;
 
 namespace Artemis.Core.LayerBrushes
 {
@@ -33,11 +32,12 @@ namespace Artemis.Core.LayerBrushes
             internal set => _properties = value;
         }
 
-        internal void InitializeProperties(IRenderElementService renderElementService)
+        internal void InitializeProperties()
         {
             Properties = Activator.CreateInstance<T>();
+            Properties.GroupDescription ??= new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
             Properties.LayerBrush = this;
-            Properties.InitializeProperties(renderElementService, Layer, "LayerBrush.");
+            Properties.Initialize(Layer, "LayerBrush.", PluginInfo);
             PropertiesInitialized = true;
 
             EnableLayerBrush();

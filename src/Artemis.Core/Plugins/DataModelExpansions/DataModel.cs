@@ -22,6 +22,12 @@ namespace Artemis.Core.DataModelExpansions
         [DataModelIgnore]
         public DataModelPropertyAttribute DataModelDescription { get; internal set; }
 
+        /// <summary>
+        ///     Gets the is expansion status indicating whether this data model expands the main data model
+        /// </summary>
+        [DataModelIgnore]
+        public bool IsExpansion { get; internal set; }
+
         public bool ContainsPath(string path)
         {
             var parts = path.Split('.');

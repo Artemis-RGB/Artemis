@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.LayerEffects;
+using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
@@ -12,36 +13,33 @@ namespace Artemis.Core
 {
     public abstract class RenderProfileElement : ProfileElement
     {
-        /// <summary>
-        ///     Returns a list of all keyframes on all properties and effects of this layer
-        /// </summary>
-        public virtual List<BaseLayerPropertyKeyframe> GetAllKeyframes()
+        protected RenderProfileElement()
         {
-            var keyframes = new List<BaseLayerPropertyKeyframe>();
-            foreach (var layerEffect in LayerEffects)
-            {
-                foreach (var baseLayerProperty in layerEffect.BaseProperties.GetAllLayerProperties())
-                    keyframes.AddRange(baseLayerProperty.BaseKeyframes);
-            }
-
-            return keyframes;
+            LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
         }
 
-        protected void ApplyRenderElementDefaults()
+        internal void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
         }
 
-        protected void ApplyRenderElementEntity()
+        internal void LoadRenderElement()
         {
             StartSegmentLength = RenderElementEntity.StartSegmentLength;
             MainSegmentLength = RenderElementEntity.MainSegmentLength;
             EndSegmentLength = RenderElementEntity.EndSegmentLength;
             DisplayContinuously = RenderElementEntity.DisplayContinuously;
             AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
+
+            DisplayConditionGroup = RenderElementEntity.RootDisplayCondition != null
+                ? new DisplayConditionGroup(null, RenderElementEntity.RootDisplayCondition)
+                : new DisplayConditionGroup(null);
+
+            ActivateEffects();
         }
 
-        protected void ApplyRenderElementToEntity()
+        internal void SaveRenderElement()
         {
             RenderElementEntity.StartSegmentLength = StartSegmentLength;
             RenderElementEntity.MainSegmentLength = MainSegmentLength;
@@ -55,8 +53,8 @@ namespace Artemis.Core
                 var layerEffectEntity = new LayerEffectEntity
                 {
                     Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.PluginInfo.Guid,
-                    EffectType = layerEffect.GetType().Name,
+                    PluginGuid = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.PluginInfo.Guid,
+                    EffectType = layerEffect.GetEffectTypeName(),
                     Name = layerEffect.Name,
                     Enabled = layerEffect.Enabled,
                     HasBeenRenamed = layerEffect.HasBeenRenamed,
@@ -65,6 +63,10 @@ namespace Artemis.Core
                 RenderElementEntity.LayerEffects.Add(layerEffectEntity);
                 layerEffect.BaseProperties.ApplyToEntity();
             }
+
+            // Conditions
+            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
+            DisplayConditionGroup?.Save();
         }
 
         #region Properties
@@ -211,7 +213,6 @@ namespace Artemis.Core
             return (TimelinePosition - oldPosition).TotalSeconds;
         }
 
-
         /// <summary>
         ///     Overrides the progress of the element
         /// </summary>
@@ -221,7 +222,7 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Effects
+        #region Effect management
 
         protected List<BaseLayerEffect> _layerEffects;
 
@@ -230,13 +231,45 @@ namespace Artemis.Core
         /// </summary>
         public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
 
-        internal void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
+        /// <summary>
+        ///     Adds a the layer effect described inthe provided <paramref name="descriptor" />
+        /// </summary>
+        public void AddLayerEffect(LayerEffectDescriptor descriptor)
+        {
+            if (descriptor == null)
+                throw new ArgumentNullException(nameof(descriptor));
+
+            var entity = new LayerEffectEntity
+            {
+                Id = Guid.NewGuid(),
+                Enabled = true,
+                Order = LayerEffects.Count + 1
+            };
+            descriptor.CreateInstance(this, entity);
+
+            OrderEffects();
+            OnLayerEffectsUpdated();
+        }
+
+        /// <summary>
+        ///     Removes the provided layer
+        /// </summary>
+        /// <param name="effect"></param>
+        public void RemoveLayerEffect([NotNull] BaseLayerEffect effect)
         {
             if (effect == null) throw new ArgumentNullException(nameof(effect));
 
-            DeactivateLayerEffect(effect);
+            // Remove the effect from the layer and dispose it
+            _layerEffects.Remove(effect);
+            effect.Dispose();
 
             // Update the order on the remaining effects
+            OrderEffects();
+            OnLayerEffectsUpdated();
+        }
+
+        private void OrderEffects()
+        {
             var index = 0;
             foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
             {
@@ -244,23 +277,69 @@ namespace Artemis.Core
                 index++;
             }
 
+            _layerEffects.Sort((a, b) => a.Order.CompareTo(b.Order));
+        }
+
+        internal void ActivateEffects()
+        {
+            foreach (var layerEffectEntity in RenderElementEntity.LayerEffects)
+            {
+                // If there is a non-placeholder existing effect, skip this entity
+                var existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
+                if (existing != null && existing.Descriptor.PlaceholderFor == null)
+                    continue;
+
+                var descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
+                if (descriptor != null)
+                {
+                    // If a descriptor is found but there is an existing placeholder, remove the placeholder
+                    if (existing != null)
+                    {
+                        _layerEffects.Remove(existing);
+                        existing.Dispose();
+                    }
+
+                    // Create an instance with the descriptor
+                    descriptor.CreateInstance(this, layerEffectEntity);
+                }
+                else if (existing == null)
+                {
+                    // If no descriptor was found and there was no existing placeholder, create a placeholder
+                    descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.PluginGuid);
+                    descriptor.CreateInstance(this, layerEffectEntity);
+                }
+            }
+
+            OrderEffects();
+        }
+
+
+        internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
+        {
+            _layerEffects.Add(layerEffect);
             OnLayerEffectsUpdated();
         }
 
-        internal void AddLayerEffect([NotNull] BaseLayerEffect effect)
+        private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
         {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-            _layerEffects.Add(effect);
-            OnLayerEffectsUpdated();
+            // If effects provided by the plugin are on the element, replace them with placeholders
+            var pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
+                                                          ef.PluginInfo.Guid == e.Registration.Plugin.PluginInfo.Guid).ToList();
+            foreach (var pluginEffect in pluginEffects)
+            {
+                var entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
+                _layerEffects.Remove(pluginEffect);
+                pluginEffect.Dispose();
+
+                var descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.PluginInfo.Guid);
+                descriptor.CreateInstance(this, entity);
+            }
         }
 
-        internal void DeactivateLayerEffect([NotNull] BaseLayerEffect effect)
+        private void LayerEffectStoreOnLayerEffectAdded(object sender, LayerEffectStoreEvent e)
         {
-            if (effect == null) throw new ArgumentNullException(nameof(effect));
-
-            // Remove the effect from the layer and dispose it
-            _layerEffects.Remove(effect);
-            effect.Dispose();
+            if (RenderElementEntity.LayerEffects.Any(ef => ef.PluginGuid == e.Registration.Plugin.PluginInfo.Guid))
+                ActivateEffects();
         }
 
         #endregion
@@ -301,6 +380,21 @@ namespace Artemis.Core
 
         #endregion
 
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
+
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         #region Events
 
         public event EventHandler LayerEffectsUpdated;
@@ -311,17 +405,5 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        /// <summary>
-        /// Returns all the layer properties of this profile element
-        /// </summary>
-        public virtual List<BaseLayerProperty> GetAllLayerProperties()
-        {
-            var result = new List<BaseLayerProperty>();
-            foreach (var baseLayerEffect in LayerEffects) 
-                result.AddRange(baseLayerEffect.BaseProperties.GetAllLayerProperties());
-
-            return result;
-        }
     }
 }

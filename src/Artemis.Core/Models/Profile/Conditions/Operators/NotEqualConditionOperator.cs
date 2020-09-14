@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace Artemis.Core
 {
-    internal class NotEqualConditionOperator : DisplayConditionOperator
+    internal class NotEqualConditionOperator : ConditionOperator
     {
         public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(object)};
 

@@ -1,29 +1,32 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class TreePropertyViewModel<T> : TreePropertyViewModel
+    public class TreePropertyViewModel<T> : Screen, ITreePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
         private PropertyInputViewModel<T> _propertyInputViewModel;
 
-        public TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel, PropertyInputViewModel<T> propertyInputViewModel,
-            IProfileEditorService profileEditorService) : base(layerPropertyBaseViewModel)
+        public TreePropertyViewModel(LayerProperty<T> layerProperty, LayerPropertyViewModel layerPropertyViewModel, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
-            LayerPropertyViewModel = (LayerPropertyViewModel<T>) layerPropertyBaseViewModel;
-            PropertyInputViewModel = propertyInputViewModel;
+            LayerProperty = layerProperty;
+            LayerPropertyViewModel = layerPropertyViewModel;
 
+            PropertyInputViewModel = _profileEditorService.CreatePropertyInputViewModel(LayerProperty);
             _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
+            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
+
+            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
 
-        public LayerPropertyViewModel<T> LayerPropertyViewModel { get; }
+        public LayerProperty<T> LayerProperty { get; }
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
 
         public PropertyInputViewModel<T> PropertyInputViewModel
         {
@@ -31,59 +34,69 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             set => SetAndNotify(ref _propertyInputViewModel, value);
         }
 
+        public bool HasPropertyInputViewModel => PropertyInputViewModel != null;
+
         public bool KeyframesEnabled
         {
-            get => LayerPropertyViewModel.LayerProperty.KeyframesEnabled;
+            get => LayerProperty.KeyframesEnabled;
             set => ApplyKeyframesEnabled(value);
         }
 
         public bool DataBindingsOpen
         {
-            get => _profileEditorService.SelectedDataBinding == LayerPropertyViewModel.BaseLayerProperty;
-            set => _profileEditorService.ChangeSelectedDataBinding(value ? LayerPropertyViewModel.BaseLayerProperty : null);
+            get => _profileEditorService.SelectedDataBinding == LayerProperty;
+            set => _profileEditorService.ChangeSelectedDataBinding(value ? LayerProperty : null);
         }
 
-        public override void Dispose()
+        #region IDisposable
+
+        public void Dispose()
         {
-            PropertyInputViewModel.Dispose();
+            _propertyInputViewModel?.Dispose();
+            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
+            LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
         }
+
+        #endregion
+        
+        private void ApplyKeyframesEnabled(bool enable)
+        {
+            // If enabling keyframes for the first time, add a keyframe with the current value at the current position
+            if (enable && !LayerProperty.Keyframes.Any())
+            {
+                LayerProperty.AddKeyframe(new LayerPropertyKeyframe<T>(
+                    LayerProperty.CurrentValue,
+                    _profileEditorService.CurrentTime,
+                    Easings.Functions.Linear,
+                    LayerProperty
+                ));
+            }
+            // If disabling keyframes, set the base value to the current value
+            else if (!enable && LayerProperty.Keyframes.Any())
+                LayerProperty.BaseValue = LayerProperty.CurrentValue;
+
+            LayerProperty.KeyframesEnabled = enable;
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        #region Event handlers
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(DataBindingsOpen));
         }
 
-        private void ApplyKeyframesEnabled(bool enable)
+        private void LayerPropertyOnVisibilityChanged(object? sender, LayerPropertyEventArgs<T> e)
         {
-            // If enabling keyframes for the first time, add a keyframe with the current value at the current position
-            if (enable && !LayerPropertyViewModel.LayerProperty.Keyframes.Any())
-            {
-                LayerPropertyViewModel.LayerProperty.AddKeyframe(new LayerPropertyKeyframe<T>(
-                    LayerPropertyViewModel.LayerProperty.CurrentValue,
-                    _profileEditorService.CurrentTime,
-                    Easings.Functions.Linear,
-                    LayerPropertyViewModel.LayerProperty
-                ));
-            }
-            // If disabling keyframes, set the base value to the current value
-            else if (!enable && LayerPropertyViewModel.LayerProperty.Keyframes.Any())
-                LayerPropertyViewModel.LayerProperty.BaseValue = LayerPropertyViewModel.LayerProperty.CurrentValue;
-
-            LayerPropertyViewModel.LayerProperty.KeyframesEnabled = enable;
-
-            _profileEditorService.UpdateSelectedProfileElement();
+            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
+
+        #endregion
     }
 
-    public abstract class TreePropertyViewModel : PropertyChangedBase, IDisposable
+    public interface ITreePropertyViewModel : IScreen, IDisposable
     {
-        protected TreePropertyViewModel(LayerPropertyBaseViewModel layerPropertyBaseViewModel)
-        {
-            LayerPropertyBaseViewModel = layerPropertyBaseViewModel;
-        }
-
-        public LayerPropertyBaseViewModel LayerPropertyBaseViewModel { get; }
-
-        public abstract void Dispose();
+        bool HasPropertyInputViewModel { get; }
     }
 }

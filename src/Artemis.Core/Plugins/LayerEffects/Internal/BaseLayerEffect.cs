@@ -95,7 +95,7 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets the plugin info that defined this effect
         /// </summary>
-        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider.PluginInfo;
+        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider?.PluginInfo;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
@@ -108,7 +108,7 @@ namespace Artemis.Core.LayerEffects
         public void Dispose()
         {
             DisableLayerEffect();
-            BaseProperties.Dispose();
+            BaseProperties?.Dispose();
         }
 
         /// <summary>
@@ -147,6 +147,8 @@ namespace Artemis.Core.LayerEffects
 
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core
-        internal abstract void Initialize(IRenderElementService renderElementService);
+        internal abstract void Initialize();
+
+        internal virtual string GetEffectTypeName() => GetType().Name;
     }
 }
