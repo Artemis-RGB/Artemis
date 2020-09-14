@@ -8,6 +8,7 @@ using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services;
@@ -139,8 +140,10 @@ namespace Artemis.UI.Screens
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem) && ActiveItem != SidebarViewModel.SelectedItem)
             {
                 SidebarViewModel.IsSidebarOpen = false;
-                ActiveItemReady = false;
-
+                // Don't do a fade when selecting a module because the editor is so bulky the animation slows things down
+                if (!(SidebarViewModel.SelectedItem is ModuleRootViewModel)) 
+                    ActiveItemReady = false;
+                
                 // Allow the menu to close, it's slower but feels more responsive, funny how that works right
                 Execute.PostToUIThreadAsync(async () =>
                 {

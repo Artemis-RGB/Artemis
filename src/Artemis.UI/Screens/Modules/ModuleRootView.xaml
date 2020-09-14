@@ -5,9 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:modules="clr-namespace:Artemis.UI.Screens.Modules"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance module:ModuleRootViewModel}">
+             d:DataContext="{d:DesignInstance modules:ModuleRootViewModel}">
 
     <TabControl Margin="0 -1 0 0"
                 ItemsSource="{Binding Items}"
@@ -17,7 +18,7 @@
         <TabControl.ContentTemplate>
             <DataTemplate>
                 <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
-                    <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
+                    <ContentControl s:View.Model="{Binding IsAsync=True}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
                 </materialDesign:TransitioningContent>
             </DataTemplate>
         </TabControl.ContentTemplate>

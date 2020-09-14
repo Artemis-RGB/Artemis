@@ -102,7 +102,7 @@
                 <ContentControl s:View.Model="{Binding TreeGroupViewModel}" />
             </HierarchicalDataTemplate>
             <DataTemplate DataType="{x:Type local:LayerPropertyViewModel}">
-                <ContentControl s:View.Model="{Binding TreePropertyViewModel}" dd:DragDrop.DragSourceIgnore="True" />
+                <ContentControl s:View.Model="{Binding TreePropertyViewModel, IsAsync=True}" dd:DragDrop.DragSourceIgnore="True" />
             </DataTemplate>
         </TreeView.Resources>
     </TreeView>

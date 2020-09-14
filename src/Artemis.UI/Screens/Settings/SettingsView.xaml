@@ -22,7 +22,7 @@
                 DisplayMemberPath="DisplayName">
         <TabControl.ContentTemplate>
             <DataTemplate>
-                <ContentControl s:View.Model="{Binding}"
+                <ContentControl s:View.Model="{Binding IsAsync=True}"
                                 VerticalContentAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 IsTabStop="False"
