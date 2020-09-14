@@ -31,9 +31,15 @@ namespace Artemis.Core
         public abstract string Icon { get; }
 
         /// <summary>
-        ///     Gets or sets whether this modifier supports a parameter, defaults to true
+        ///     Gets or sets whether this modifier supports a parameter, defaults to <c>true</c>
         /// </summary>
         public bool SupportsParameter { get; protected set; } = true;
+
+        /// <summary>
+        ///     Gets or sets the preferred parameter type
+        ///     <para>If <c>null</c>, the parameter type will match the source property</para>
+        /// </summary>
+        public Type PreferredParameterType { get; protected set; } = null;
 
         /// <summary>
         ///     Returns whether the given type is supported by the modifier

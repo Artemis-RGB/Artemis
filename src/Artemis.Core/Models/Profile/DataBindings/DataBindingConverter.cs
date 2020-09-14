@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
@@ -19,7 +18,9 @@ namespace Artemis.Core
         /// <summary>
         ///     A dynamically compiled setter pointing to the data bound property
         /// </summary>
-        public Action<TLayerProperty, TProperty> SetExpression { get; private set; }
+        public Action<TProperty> ValueTypeSetExpression { get; private set; }
+
+        public Action<TLayerProperty, TProperty> ReferenceTypeSetExpression { get; private set; }
 
         /// <summary>
         ///     Gets the data binding this converter is applied to
@@ -59,12 +60,29 @@ namespace Artemis.Core
         ///     Applies the <paramref name="value" /> to the layer property
         /// </summary>
         /// <param name="value"></param>
-        public abstract void ApplyValue(TProperty value);
+        public virtual void ApplyValue(TProperty value)
+        {
+            if (ReferenceTypeSetExpression != null)
+                ReferenceTypeSetExpression(DataBinding.LayerProperty.CurrentValue, value);
+            else if (ValueTypeSetExpression != null)
+                ValueTypeSetExpression(value);
+        }
 
         /// <summary>
         ///     Returns the current base value of the data binding
         /// </summary>
-        public abstract TProperty GetValue();
+        public virtual TProperty GetValue()
+        {
+            return GetExpression(DataBinding.LayerProperty.CurrentValue);
+        }
+
+        /// <summary>
+        ///     Converts the provided object to a type of <typeparamref name="TProperty" />
+        /// </summary>
+        public virtual TProperty ConvertFromObject(object source)
+        {
+            return (TProperty) Convert.ChangeType(source, typeof(TProperty));
+        }
 
         /// <summary>
         ///     Called when the data binding converter has been initialized and the <see cref="DataBinding" /> is available
@@ -77,40 +95,76 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             GetExpression = dataBinding.Registration.PropertyExpression.Compile();
-            SetExpression = CreateValueSetter();
+            CreateSetExpression();
 
             OnInitialized();
         }
 
-        private Action<TLayerProperty, TProperty> CreateValueSetter()
+        private void CreateSetExpression()
         {
-            MethodInfo setterMethod = null;
-
-            if (DataBinding.Registration.Member != null)
+            // If the registration does not point towards a member of LayerProperty<T>.CurrentValue, assign directly to LayerProperty<T>.CurrentValue
+            if (DataBinding.Registration.Member == null)
             {
-                if (DataBinding.Registration.Member is PropertyInfo propertyInfo)
-                    setterMethod = propertyInfo.GetSetMethod();
+                CreateSetCurrentValueExpression();
+                return;
             }
 
+            // Ensure the member of LayerProperty<T>.CurrentValue has a setter
+            MethodInfo setterMethod = null;
+            if (DataBinding.Registration.Member is PropertyInfo propertyInfo)
+                setterMethod = propertyInfo.GetSetMethod();
+            // If there is no setter, the built-in data binding cannot do its job, stay null
             if (setterMethod == null)
-                return null;
+                return;
 
-            var parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
+            // If LayerProperty<T>.CurrentValue is a value type, assign it directly to LayerProperty<T>.CurrentValue after applying the changes
+            if (typeof(TLayerProperty).IsValueType)
+                CreateSetValueTypeExpression();
+            // If it is a reference type it can safely be updated by its reference
+            else
+                CreateSetReferenceTypeExpression();
+        }
+
+        private void CreateSetReferenceTypeExpression()
+        {
             var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
-
-
+            var parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
             var memberAccess = Expression.MakeMemberAccess(parameter, DataBinding.Registration.Member);
             var assignment = Expression.Assign(memberAccess, propertyValue);
-            var lambda = Expression.Lambda<Action<TLayerProperty, TProperty>>(assignment, parameter, propertyValue);
+            var referenceTypeLambda = Expression.Lambda<Action<TLayerProperty, TProperty>>(assignment, parameter, propertyValue);
 
-            if (typeof(TLayerProperty).IsValueType)
-            {
-                // var layerProperty = Expression.Constant(DataBinding.LayerProperty);
-                // var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty, DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
-                // var assingment = Expression.Assign()    
-            }
+            ReferenceTypeSetExpression = referenceTypeLambda.Compile();
+        }
 
-            return lambda.Compile();
+        private void CreateSetValueTypeExpression()
+        {
+            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
+            var variableCurrent = Expression.Variable(typeof(TLayerProperty), "current");
+            var layerProperty = Expression.Constant(DataBinding.LayerProperty);
+            var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
+                DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
+
+            var body = Expression.Block(
+                new[] {variableCurrent},
+                Expression.Assign(variableCurrent, layerPropertyMemberAccess),
+                Expression.Assign(Expression.MakeMemberAccess(variableCurrent, DataBinding.Registration.Member), propertyValue),
+                Expression.Assign(layerPropertyMemberAccess, variableCurrent)
+            );
+
+            var valueTypeLambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
+            ValueTypeSetExpression = valueTypeLambda.Compile();
+        }
+
+        private void CreateSetCurrentValueExpression()
+        {
+            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
+            var layerProperty = Expression.Constant(DataBinding.LayerProperty);
+            var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
+                DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
+
+            var body = Expression.Assign(layerPropertyMemberAccess, propertyValue);
+            var lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
+            ValueTypeSetExpression = lambda.Compile();
         }
     }
 }

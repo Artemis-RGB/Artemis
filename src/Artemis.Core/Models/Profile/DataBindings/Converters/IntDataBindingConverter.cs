@@ -37,17 +37,5 @@ namespace Artemis.Core
             var diff = b - a;
             return (int) Math.Round(a + diff * progress, InterpolationRoundingMode);
         }
-
-        /// <inheritdoc />
-        public override void ApplyValue(int value)
-        {
-            SetExpression?.Invoke(DataBinding.LayerProperty.CurrentValue, value);
-        }
-
-        /// <inheritdoc />
-        public override int GetValue()
-        {
-            return GetExpression(DataBinding.LayerProperty.CurrentValue);
-        }
     }
 }

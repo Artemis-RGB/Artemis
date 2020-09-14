@@ -18,14 +18,6 @@
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
-                    <DataTemplate x:Key="DataModelDataTemplate">
-                        <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
-                        <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
-                                <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
-                            </DataTrigger>
-                        </DataTemplate.Triggers>
-                    </DataTemplate>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -62,7 +54,6 @@
                 Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
-                Content="{Binding SelectedModifierType.Description}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding ModifierTypes}">
@@ -83,6 +74,15 @@
                     </ContextMenu.ItemContainerStyle>
                 </ContextMenu>
             </Button.ContextMenu>
+            <Grid>
+                <TextBlock Text="{Binding SelectedModifierType.Description}"
+                           Visibility="{Binding SelectedModifierType, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock FontStyle="Italic"
+                           Visibility="{Binding SelectedModifierType, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                    « Select a modifier »
+                </TextBlock>
+            </Grid>
+            
         </Button>
 
         <ContentControl Grid.Column="3" s:View.Model="{Binding DynamicSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />

@@ -206,8 +206,8 @@ namespace Artemis.Core
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
-            var value = (TProperty) Convert.ChangeType(dataBindingValue, typeof(TProperty));
-
+            TProperty value = Converter.ConvertFromObject(dataBindingValue);
+            
             // If no easing is to be applied simple return whatever the current value is
             if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
                 return value;

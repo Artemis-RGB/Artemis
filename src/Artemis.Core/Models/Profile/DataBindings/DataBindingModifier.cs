@@ -16,18 +16,20 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a new instance of the <see cref="DataBindingModifier{TLayerProperty,TProperty}" /> class
         /// </summary>
+        /// <param name="dataBinding">The data binding the modifier is to be applied to</param>
         /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
-        public DataBindingModifier(ProfileRightSideType parameterType)
+        public DataBindingModifier(DataBinding<TLayerProperty, TProperty> dataBinding, ProfileRightSideType parameterType)
         {
+            _dataBinding = dataBinding ?? throw new ArgumentNullException(nameof(dataBinding));
             ParameterType = parameterType;
             Entity = new DataBindingModifierEntity();
-            Save();
             Initialize();
+            Save();
         }
 
         internal DataBindingModifier(DataBinding<TLayerProperty, TProperty> dataBinding, DataBindingModifierEntity entity)
         {
-            DataBinding = dataBinding;
+            _dataBinding = dataBinding;
             Entity = entity;
             Load();
             Initialize();

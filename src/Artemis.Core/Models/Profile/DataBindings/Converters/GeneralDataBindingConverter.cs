@@ -22,17 +22,5 @@ namespace Artemis.Core
         {
             throw new NotSupportedException();
         }
-
-        /// <inheritdoc />
-        public override void ApplyValue(object value)
-        {
-            SetExpression?.Invoke(DataBinding.LayerProperty.CurrentValue, value);
-        }
-
-        /// <inheritdoc />
-        public override object GetValue()
-        {
-            return GetExpression(DataBinding.LayerProperty.CurrentValue);
-        }
     }
 }

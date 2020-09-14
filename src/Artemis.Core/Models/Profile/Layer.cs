@@ -682,9 +682,9 @@ namespace Artemis.Core
             }
 
             // Ensure the brush reference matches the brush
-            var current = General.BrushReference.CurrentValue;
+            var current = General.BrushReference.BaseValue;
             if (!descriptor.MatchesLayerBrushReference(current))
-                General.BrushReference.CurrentValue = new LayerBrushReference(descriptor);
+                General.BrushReference.BaseValue = new LayerBrushReference(descriptor);
 
             ActivateLayerBrush();
         }
