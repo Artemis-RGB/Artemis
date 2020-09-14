@@ -24,7 +24,7 @@ namespace Artemis.Core
         public override byte Interpolate(byte a, byte b, double progress)
         {
             var diff = b - a;
-            return ClampToByte(diff * progress);
+            return ClampToByte(a + diff * progress);
         }
 
         public override void ApplyValue(byte value)
@@ -48,21 +48,10 @@ namespace Artemis.Core
             }
         }
 
-        public override byte GetValue()
+        public override byte ConvertFromObject(object source)
         {
-            switch (_channel)
-            {
-                case Channel.Alpha:
-                    return DataBinding.LayerProperty.CurrentValue.Alpha;
-                case Channel.Red:
-                    return DataBinding.LayerProperty.CurrentValue.Red;
-                case Channel.Green:
-                    return DataBinding.LayerProperty.CurrentValue.Green;
-                case Channel.Blue:
-                    return DataBinding.LayerProperty.CurrentValue.Blue;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            var saveValue = Convert.ToDouble(source);
+            return ClampToByte(saveValue);
         }
 
         private static byte ClampToByte(double value)

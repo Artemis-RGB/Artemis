@@ -30,14 +30,14 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override float Interpolate(float a, float b, double progress)
         {
-            var diff = a - b;
+            var diff = b - a;
             return (float) (a + diff * progress);
         }
 
         /// <inheritdoc />
         public override void ApplyValue(float value)
         {
-            if (SetExpression == null)
+            if (ValueTypeSetExpression == null)
                 return;
 
             if (DataBinding.LayerProperty.PropertyDescription.MaxInputValue is float max)
@@ -45,21 +45,7 @@ namespace Artemis.Core
             if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
                 value = Math.Max(value, min);
 
-            var test = new SKSize(5,5);
-            test.Width = 10;
-
-            SetExpression(DataBinding.LayerProperty.CurrentValue, value);
-        }
-
-        private void Mehtest(ref SKSize test)
-        {
-            test.Width = 20;
-        }
-
-        /// <inheritdoc />
-        public override float GetValue()
-        {
-            return GetExpression(DataBinding.LayerProperty.CurrentValue);
+            base.ApplyValue(value);
         }
     }
 }

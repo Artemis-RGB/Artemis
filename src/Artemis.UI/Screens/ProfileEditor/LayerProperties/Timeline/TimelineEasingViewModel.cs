@@ -3,10 +3,11 @@ using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
 using Humanizer;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineEasingViewModel
+    public class TimelineEasingViewModel : PropertyChangedBase
     {
         private bool _isEasingModeSelected;
 

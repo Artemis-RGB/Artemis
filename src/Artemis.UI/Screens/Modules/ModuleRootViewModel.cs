@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Modules
             AddTabs();
             base.OnActivate();
         }
-
+        
         private void AddTabs()
         {
             // Create the profile editor and module VMs

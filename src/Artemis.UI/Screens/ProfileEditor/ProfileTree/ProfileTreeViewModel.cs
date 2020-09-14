@@ -22,6 +22,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         {
             _profileEditorService = profileEditorService;
             _profileTreeVmFactory = profileTreeVmFactory;
+
+            CreateRootFolderViewModel();
         }
 
         public TreeItemViewModel SelectedTreeItem
@@ -94,17 +96,16 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             ActiveItem?.AddLayer();
         }
 
-        protected override void OnInitialActivate()
+        protected override void OnActivate()
         {
             Subscribe();
-            CreateRootFolderViewModel();
-            base.OnInitialActivate();
+            base.OnActivate();
         }
 
-        protected override void OnClose()
+        protected override void OnDeactivate()
         {
             Unsubscribe();
-            base.OnClose();
+            base.OnDeactivate();
         }
 
         private void CreateRootFolderViewModel()
@@ -140,7 +141,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             {
                 if (parent == source)
                     return DragDropType.None;
-                parent = (TreeItemViewModel) parent.Parent;
+                parent = parent.Parent as TreeItemViewModel;
             }
 
             switch (dropInfo.InsertPosition)

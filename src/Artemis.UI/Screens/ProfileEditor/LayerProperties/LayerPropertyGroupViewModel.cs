@@ -52,6 +52,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public void Dispose()
         {
+            TimelineGroupViewModel.Dispose();
             LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
             foreach (var child in Children)
             {

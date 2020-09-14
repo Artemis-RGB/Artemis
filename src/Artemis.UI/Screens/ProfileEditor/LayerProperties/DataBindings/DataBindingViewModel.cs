@@ -6,6 +6,7 @@ using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Input;
 using Artemis.UI.Shared.Services;
+using Ninject.Planning.Targets;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
@@ -25,6 +26,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private TProperty _testInputValue;
         private TProperty _testResultValue;
         private bool _updating;
+        private bool _canAddModifier;
 
         public DataBindingViewModel(DataBindingRegistration<TLayerProperty, TProperty> registration,
             IProfileEditorService profileEditorService,
@@ -51,8 +53,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             _isDataBindingEnabled = DataBinding != null;
 
-            // Initialize async, no need to wait for it
-            Execute.PostToUIThread(Initialize);
+            Initialize();
         }
 
         public DataBindingRegistration<TLayerProperty, TProperty> Registration { get; }
@@ -116,6 +117,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
+        public bool CanAddModifier
+        {
+            get => _canAddModifier;
+            private set => SetAndNotify(ref _canAddModifier, value);
+        }
+
         public DataBinding<TLayerProperty, TProperty> DataBinding
         {
             get => _dataBinding;
@@ -169,7 +176,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (DataBinding == null)
                 return;
 
-            var modifier = new DataBindingModifier<TLayerProperty, TProperty>(ProfileRightSideType.Dynamic);
+            var modifier = new DataBindingModifier<TLayerProperty, TProperty>(DataBinding, ProfileRightSideType.Dynamic);
             DataBinding.AddModifier(modifier);
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -189,6 +196,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             if (_updating)
                 return;
+
+            CanAddModifier = IsDataBindingEnabled && DataBinding.SourceDataModel != null;
 
             if (DataBinding == null)
             {
@@ -218,9 +227,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (_updating)
                 return;
 
-            DataBinding.Mode = SelectedDataBindingMode;
-            DataBinding.EasingTime = TimeSpan.FromMilliseconds(EasingTime);
-            DataBinding.EasingFunction = SelectedEasingViewModel?.EasingFunction ?? Easings.Functions.Linear;
+            if (DataBinding != null)
+            {
+                DataBinding.Mode = SelectedDataBindingMode;
+                DataBinding.EasingTime = TimeSpan.FromMilliseconds(EasingTime);
+                DataBinding.EasingFunction = SelectedEasingViewModel?.EasingFunction ?? Easings.Functions.Linear;
+            }
 
             _profileEditorService.UpdateSelectedProfileElement();
             Update();
@@ -238,8 +250,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             var currentValue = TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
             if (currentValue == null)
                 currentValue = default(TProperty);
-
-            TestInputValue = (TProperty) Convert.ChangeType(currentValue, typeof(TProperty));
+            
+            TestInputValue = Registration.Converter.ConvertFromObject(currentValue);
             if (DataBinding != null)
                 TestResultValue = DataBinding.GetValue(TestInputValue);
             else
@@ -248,7 +260,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void UpdateModifierViewModels()
         {
+            foreach (var dataBindingModifierViewModel in ModifierViewModels) 
+                dataBindingModifierViewModel.Dispose();
             ModifierViewModels.Clear();
+
             if (DataBinding == null)
                 return;
 
@@ -269,6 +284,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private void TargetSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             DataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
+            Update();
+
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
@@ -276,8 +293,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
             TargetSelectionViewModel.PropertySelected -= TargetSelectionViewModelOnPropertySelected;
+            TargetSelectionViewModel.Dispose();
             if (DataBinding != null)
                 DataBinding.ModifiersUpdated -= DataBindingOnModifiersUpdated;
+
+            foreach (var dataBindingModifierViewModel in ModifierViewModels) 
+                dataBindingModifierViewModel.Dispose();
+            ModifierViewModels.Clear();
+            
         }
     }
 

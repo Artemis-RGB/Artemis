@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
@@ -8,7 +9,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase
+    public class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase, IDisposable
     {
         private readonly IDataBindingService _dataBindingService;
         private readonly IDataModelUIService _dataModelUIService;
@@ -34,8 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             SelectModifierTypeCommand = new DelegateCommand(ExecuteSelectModifierTypeCommand);
 
-            // Initialize async, no need to wait for it
-            Execute.PostToUIThread(Update);
+            Update();
         }
 
         public DelegateCommand SelectModifierTypeCommand { get; }
@@ -92,6 +92,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (sourceType == null)
                 throw new ArtemisUIException("Cannot use a data binding modifier VM for a data binding without a source");
 
+            if (DynamicSelectionViewModel != null)
+            {
+                DynamicSelectionViewModel.Dispose();
+                DynamicSelectionViewModel.PropertySelected -= ParameterSelectionViewModelOnPropertySelected;
+            }
+
             if (Modifier.ModifierType == null || !Modifier.ModifierType.SupportsParameter)
             {
                 StaticInputViewModel = null;
@@ -101,14 +107,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             {
                 StaticInputViewModel = null;
                 DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-                DynamicSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
-                DynamicSelectionViewModel.FilterTypes = new[] {sourceType};
+                if (DynamicSelectionViewModel != null)
+                {
+                    DynamicSelectionViewModel.PropertySelected += ParameterSelectionViewModelOnPropertySelected;
+                    DynamicSelectionViewModel.FilterTypes = new[] {sourceType};
+                }
             }
             else
             {
                 DynamicSelectionViewModel = null;
-                StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(sourceType);
-                StaticInputViewModel.ValueUpdated += StaticInputViewModelOnValueUpdated;
+                if (Modifier.ModifierType.PreferredParameterType != null && sourceType.IsCastableFrom(Modifier.ModifierType.PreferredParameterType))
+                    StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(Modifier.ModifierType.PreferredParameterType);
+                else
+                    StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(sourceType);
+
+                if (StaticInputViewModel != null)
+                    StaticInputViewModel.ValueUpdated += StaticInputViewModelOnValueUpdated;
             }
 
             // Modifier type
@@ -118,7 +132,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             // Parameter
             if (DynamicSelectionViewModel != null)
-                DynamicSelectionViewModel?.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
+                DynamicSelectionViewModel.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
             else if (StaticInputViewModel != null)
                 StaticInputViewModel.Value = Modifier.ParameterStaticValue;
         }
@@ -132,6 +146,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
+        }
+
+        public void Dispose()
+        {
+            if (DynamicSelectionViewModel != null)
+            {
+                DynamicSelectionViewModel.Dispose();
+                DynamicSelectionViewModel.PropertySelected -= ParameterSelectionViewModelOnPropertySelected;
+            }
         }
     }
 }

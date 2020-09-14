@@ -13,7 +13,7 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Input
 {
-    public class DataModelDynamicViewModel : PropertyChangedBase
+    public class DataModelDynamicViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Module _module;
@@ -127,5 +127,12 @@ namespace Artemis.UI.Shared.Input
         }
 
         #endregion
+
+        public void Dispose()
+        {
+            _updateTimer.Stop();
+            _updateTimer.Dispose();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+        }
     }
 }

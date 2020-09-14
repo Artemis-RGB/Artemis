@@ -126,7 +126,7 @@
                             FontSize="12"
                             Padding="6 4"
                             Height="22"
-                            IsEnabled="{Binding IsDataBindingEnabled}"
+                            IsEnabled="{Binding CanAddModifier}"
                             Command="{s:Action AddModifier}">
                         <StackPanel Orientation="Horizontal">
                             <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />
