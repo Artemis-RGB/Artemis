@@ -42,6 +42,7 @@ namespace Artemis.Core.Services
         private void RegisterBuiltInModifiers()
         {
             RegisterModifierType(Constants.CorePluginInfo, new MultiplicationModifierType());
+            RegisterModifierType(Constants.CorePluginInfo, new PercentageOfModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new DivideModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new FloorModifierType());
         }

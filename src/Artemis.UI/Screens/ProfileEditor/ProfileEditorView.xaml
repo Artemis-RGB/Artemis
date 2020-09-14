@@ -86,7 +86,7 @@
 
             <!-- Design area -->
             <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ProfileViewModel}" />
+                <ContentControl s:View.Model="{Binding ProfileViewModel, IsAsync=True}" />
             </materialDesign:Card>
 
             <!-- Bottom panels resize -->
@@ -96,7 +96,7 @@
             <Grid Grid.Row="3">
                 <!-- Layer elements -->
                 <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                    <ContentControl s:View.Model="{Binding LayerPropertiesViewModel}" />
+                    <ContentControl s:View.Model="{Binding LayerPropertiesViewModel, IsAsync=True}" />
                 </materialDesign:Card>
             </Grid>
         </Grid>
@@ -179,7 +179,7 @@
 
             <!-- Profile elements -->
             <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ProfileTreeViewModel}" Margin="0,-1,-0.2,1" />
+                <ContentControl s:View.Model="{Binding ProfileTreeViewModel, IsAsync=True}" Margin="0,-1,-0.2,1" />
             </materialDesign:Card>
 
             <!-- Conditions resize -->
@@ -187,7 +187,7 @@
 
             <!-- Display conditions -->
             <materialDesign:Card Grid.Row="3" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding DisplayConditionsViewModel}" />
+                <ContentControl s:View.Model="{Binding DisplayConditionsViewModel, IsAsync=True}" />
             </materialDesign:Card>
         </Grid>
     </Grid>

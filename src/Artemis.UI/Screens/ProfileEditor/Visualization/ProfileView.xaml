@@ -10,36 +10,6 @@
              mc:Ignorable="d"
              d:DesignHeight="510.9" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type visualization:ProfileViewModel}}">
-    <UserControl.Resources>
-        <Style TargetType="Grid" x:Key="InitializingFade">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsInitializing}" Value="False">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.5">
-                                    <DoubleAnimation.EasingFunction>
-                                        <QuadraticEase EasingMode="EaseInOut" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                                <ObjectAnimationUsingKeyFrames BeginTime="0:0:0.5" Storyboard.TargetProperty="Visibility">
-                                    <DiscreteObjectKeyFrame KeyTime="00:00:00" Value="{x:Static Visibility.Hidden}" />
-                                </ObjectAnimationUsingKeyFrames>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-    </UserControl.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -186,16 +156,6 @@
                     <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
                 </Button>
             </StackPanel>
-
-            <!-- Loading indicator -->
-            <Grid Background="{StaticResource MaterialDesignPaper}" Style="{StaticResource InitializingFade}" d:IsHidden="True">
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <TextBlock FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        Initializing LED visualization...
-                    </TextBlock>
-                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" />
-                </StackPanel>
-            </Grid>
         </Grid>
     </Grid>
 

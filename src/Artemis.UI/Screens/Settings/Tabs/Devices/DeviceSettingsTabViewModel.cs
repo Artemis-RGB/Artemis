@@ -6,7 +6,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
-    public class DeviceSettingsTabViewModel : Screen
+    public class DeviceSettingsTabViewModel : Conductor<DeviceSettingsViewModel>.Collection.AllActive
     {
         private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly ISurfaceService _surfaceService;
@@ -18,25 +18,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 
             _surfaceService = surfaceService;
             _settingsVmFactory = settingsVmFactory;
-
-            DeviceSettingsViewModels = new BindableCollection<DeviceSettingsViewModel>();
         }
-
-        public BindableCollection<DeviceSettingsViewModel> DeviceSettingsViewModels
-        {
-            get => _deviceSettingsViewModels;
-            set => SetAndNotify(ref _deviceSettingsViewModels, value);
-        }
-
+        
         protected override void OnActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(() =>
             {
-                DeviceSettingsViewModels.Clear();
+                Items.Clear();
                 var instances = _surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
                 foreach (var deviceSettingsViewModel in instances)
-                    DeviceSettingsViewModels.Add(deviceSettingsViewModel);
+                    Items.Add(deviceSettingsViewModel);
             });
         }
     }

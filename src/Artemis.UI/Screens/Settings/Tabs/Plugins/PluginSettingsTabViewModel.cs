@@ -6,7 +6,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
-    public class PluginSettingsTabViewModel : Screen
+    public class PluginSettingsTabViewModel : Conductor<PluginSettingsViewModel>.Collection.AllActive
     {
         private readonly IPluginService _pluginService;
         private readonly ISettingsVmFactory _settingsVmFactory;
@@ -18,26 +18,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             _pluginService = pluginService;
             _settingsVmFactory = settingsVmFactory;
-
-            Plugins = new BindableCollection<PluginSettingsViewModel>();
-        }
-
-        public BindableCollection<PluginSettingsViewModel> Plugins
-        {
-            get => _plugins;
-            set => SetAndNotify(ref _plugins, value);
         }
 
         protected override void OnActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
-            Task.Run(() =>
-            {
-                Plugins.Clear();
-                var instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
-                foreach (var pluginSettingsViewModel in instances)
-                    Plugins.Add(pluginSettingsViewModel);
-            });
+            Items.Clear();
+            var instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
+            foreach (var pluginSettingsViewModel in instances)
+                Items.Add(pluginSettingsViewModel);
         }
     }
 }
