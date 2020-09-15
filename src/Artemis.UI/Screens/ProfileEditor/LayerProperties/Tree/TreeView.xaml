@@ -96,7 +96,7 @@
                 <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
                 <Setter Property="Visibility" Value="{Binding IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
                 <Style.Triggers>
-                    <DataTrigger Binding="{Binding TreePropertyViewModel.DataBindingsOpen}" Value="True">
+                    <DataTrigger Binding="{Binding IsHighlighted, Mode=OneWay}" Value="True">
                         <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
                     </DataTrigger>
                 </Style.Triggers>

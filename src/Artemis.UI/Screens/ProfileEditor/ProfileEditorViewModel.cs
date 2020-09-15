@@ -234,7 +234,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             LoadWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = true;
@@ -246,10 +246,10 @@ namespace Artemis.UI.Screens.ProfileEditor
                 SelectedProfile = Profiles.FirstOrDefault(d => d.Id == Module.ActiveProfile.EntityId);
 
             Task.Run(async () => { await _moduleService.SetActiveModuleOverride(Module); });
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             SaveWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = false;
@@ -257,7 +257,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
             _profileEditorService.ChangeSelectedProfile(null);
             Task.Run(async () => { await _moduleService.SetActiveModuleOverride(null); });
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void RemoveProfile(ProfileDescriptor profileDescriptor)

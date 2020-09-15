@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -28,9 +27,7 @@ namespace Artemis.Core
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
 
-        /// <summary>
-        ///     Gets the description attribute applied to this property
-        /// </summary>
+        /// <inheritdoc />
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
         /// <summary>
@@ -47,6 +44,15 @@ namespace Artemis.Core
             UpdateDataBindings(deltaTime);
 
             OnUpdated();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            foreach (var dataBinding in _dataBindings)
+                dataBinding.Dispose();
         }
 
         /// <summary>
@@ -320,6 +326,20 @@ namespace Artemis.Core
         /// </summary>
         public bool DataBindingsSupported { get; protected internal set; } = true;
 
+        /// <summary>
+        ///     Gets whether the layer has any active data bindings
+        /// </summary>
+        public bool HasDataBinding => GetAllDataBindingRegistrations().Any(r => r.GetDataBinding() != null);
+
+        /// <summary>
+        ///     Gets a data binding registration by the expression used to register it
+        ///     <para>Note: The expression must exactly match the one used to register the data binding</para>
+        /// </summary>
+        public DataBindingRegistration<T, TProperty> GetDataBindingRegistration<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
+        {
+            return GetDataBindingRegistration<TProperty>(propertyExpression.ToString());
+        }
+
         public DataBindingRegistration<T, TProperty> GetDataBindingRegistration<TProperty>(string expression)
         {
             if (_disposed)
@@ -327,6 +347,7 @@ namespace Artemis.Core
 
             var match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
                                                                       registration.PropertyExpression.ToString() == expression);
+
             return (DataBindingRegistration<T, TProperty>) match;
         }
 
@@ -367,6 +388,7 @@ namespace Artemis.Core
             var dataBinding = new DataBinding<T, TProperty>(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
+            OnDataBindingEnabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
             return dataBinding;
         }
 
@@ -380,6 +402,10 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("LayerProperty");
 
             _dataBindings.Remove(dataBinding);
+
+            dataBinding.Registration.DataBinding = null;
+            dataBinding.Dispose();
+            OnDataBindingDisabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
         }
 
         private void UpdateDataBindings(double deltaTime)
@@ -532,6 +558,16 @@ namespace Artemis.Core
         /// </summary>
         public event EventHandler<LayerPropertyEventArgs<T>> KeyframeRemoved;
 
+        /// <summary>
+        ///     Occurs when a data binding has been enabled
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs<T>> DataBindingEnabled;
+
+        /// <summary>
+        ///     Occurs when a data binding has been disabled
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs<T>> DataBindingDisabled;
+
         protected virtual void OnUpdated()
         {
             Updated?.Invoke(this, new LayerPropertyEventArgs<T>(this));
@@ -562,15 +598,16 @@ namespace Artemis.Core
             KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs<T>(this));
         }
 
-        #endregion
-
-        /// <inheritdoc />
-        public void Dispose()
+        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs<T> e)
         {
-            _disposed = true;
-
-            foreach (var dataBinding in _dataBindings)
-                dataBinding.Dispose();
+            DataBindingEnabled?.Invoke(this, e);
         }
+
+        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs<T> e)
+        {
+            DataBindingDisabled?.Invoke(this, e);
+        }
+
+        #endregion
     }
 }

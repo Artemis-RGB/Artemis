@@ -8,9 +8,19 @@ namespace Artemis.UI.PropertyInput
 {
     public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
     {
+        private readonly DataBindingRegistration<float, float> _registration;
+
         public FloatPropertyInputViewModel(LayerProperty<float> layerProperty, IProfileEditorService profileEditorService, IModelValidator<FloatPropertyInputViewModel> validator)
             : base(layerProperty, profileEditorService, validator)
         {
+            _registration = layerProperty.GetDataBindingRegistration(value => value);
+        }
+
+        public bool IsEnabled => _registration.DataBinding == null;
+
+        protected override void OnDataBindingsChanged()
+        {
+            NotifyOfPropertyChange(nameof(IsEnabled));
         }
     }
 

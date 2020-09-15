@@ -40,12 +40,18 @@ namespace Artemis.Core
         ///     <para><c>null</c> if the <see cref="PropertyExpression" /> is not a member expression</para>
         /// </summary>
         public MemberInfo Member { get; }
-        
+
         /// <summary>
         ///     Gets the data binding created using this registration
         /// </summary>
         public DataBinding<TLayerProperty, TProperty> DataBinding { get; internal set; }
 
+        /// <inheritdoc />
+        public IDataBinding GetDataBinding()
+        {
+            return DataBinding;
+        }
+        
         /// <inheritdoc />
         public IDataBinding CreateDataBinding()
         {
