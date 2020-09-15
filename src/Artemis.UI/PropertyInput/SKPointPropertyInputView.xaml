@@ -15,13 +15,15 @@
                                Value="{Binding X}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                               DragEnded="{s:Action InputDragEnded}"
+                               IsEnabled="{Binding IsXEnabled}"/>
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <shared:DraggableFloat ToolTip="Y-coordinate (vertical)"
                                Value="{Binding Y}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                               DragEnded="{s:Action InputDragEnded}"
+                               IsEnabled="{Binding IsYEnabled}"/>
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

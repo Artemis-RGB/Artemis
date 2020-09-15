@@ -15,13 +15,15 @@
                                Value="{Binding Height}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                               DragEnded="{s:Action InputDragEnded}"
+                               IsEnabled="{Binding IsHeightEnabled}"/>
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <shared:DraggableFloat ToolTip="Width"
                                Value="{Binding Width}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                               DragEnded="{s:Action InputDragEnded}"
+                               IsEnabled="{Binding IsWidthEnabled}"/>
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

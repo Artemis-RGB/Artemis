@@ -16,7 +16,8 @@
         <artemis:ColorPicker Width="132"
                              Margin="0 -2 0 3"
                              Padding="0 -1"
-                             Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" />
+                             Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" 
+                             IsEnabled="{Binding IsEnabled}"/>
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

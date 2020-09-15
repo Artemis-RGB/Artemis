@@ -14,6 +14,11 @@ namespace Artemis.Core
     public interface ILayerProperty : IStorageModel, IUpdateModel, IDisposable
     {
         /// <summary>
+        ///     Gets the description attribute applied to this property
+        /// </summary>
+        public PropertyDescriptionAttribute PropertyDescription { get; }
+
+        /// <summary>
         ///     Initializes the layer property
         ///     <para>
         ///         Note: This isn't done in the constructor to keep it parameterless which is easier for implementations of

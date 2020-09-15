@@ -173,7 +173,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 .ToList();
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             ApplyActiveProfile();
 
@@ -186,10 +186,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
 
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
             _surfaceService.ActiveSurfaceConfigurationSelected -= OnActiveSurfaceConfigurationSelected;
@@ -206,7 +206,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 canvasViewModel.Dispose();
             CanvasViewModels.Clear();
 
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)

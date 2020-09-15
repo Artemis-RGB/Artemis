@@ -27,6 +27,16 @@ namespace Artemis.Core
             );
         }
 
+        public static SKColor Sum(this SKColor a, SKColor b)
+        {
+            return new SKColor(
+                ClampToByte(a.Red + b.Red),
+                ClampToByte(a.Green + b.Green),
+                ClampToByte(a.Blue + b.Blue),
+                ClampToByte(a.Alpha + b.Alpha)
+            );
+        }
+
         private static byte ClampToByte(float value)
         {
             return (byte) Math.Clamp(value, 0, 255);

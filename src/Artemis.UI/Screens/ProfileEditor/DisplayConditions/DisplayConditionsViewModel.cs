@@ -56,14 +56,16 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public bool ConditionBehaviourEnabled => RenderProfileElement != null;
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            base.OnClose();
         }
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)

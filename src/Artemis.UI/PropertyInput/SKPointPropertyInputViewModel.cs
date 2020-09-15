@@ -10,9 +10,14 @@ namespace Artemis.UI.PropertyInput
 {
     public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
+        private readonly DataBindingRegistration<SKPoint, float> _xRegistration;
+        private readonly DataBindingRegistration<SKPoint, float> _yRegistration;
+
         public SKPointPropertyInputViewModel(LayerProperty<SKPoint> layerProperty, IProfileEditorService profileEditorService,
             IModelValidator<SKPointPropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
+            _xRegistration = layerProperty.GetDataBindingRegistration(point => point.X);
+            _yRegistration = layerProperty.GetDataBindingRegistration(point => point.Y);
         }
 
         public float X
@@ -27,10 +32,19 @@ namespace Artemis.UI.PropertyInput
             set => InputValue = new SKPoint(X, value);
         }
 
+        public bool IsXEnabled => _xRegistration.DataBinding == null;
+        public bool IsYEnabled => _yRegistration.DataBinding == null;
+
         protected override void OnInputValueChanged()
         {
             NotifyOfPropertyChange(nameof(X));
             NotifyOfPropertyChange(nameof(Y));
+        }
+
+        protected override void OnDataBindingsChanged()
+        {
+            NotifyOfPropertyChange(nameof(IsXEnabled));
+            NotifyOfPropertyChange(nameof(IsYEnabled));
         }
     }
 

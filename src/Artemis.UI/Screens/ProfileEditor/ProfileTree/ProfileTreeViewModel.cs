@@ -96,16 +96,16 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             ActiveItem?.AddLayer();
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             Subscribe();
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             Unsubscribe();
-            base.OnDeactivate();
+            base.OnClose();
         }
 
         private void CreateRootFolderViewModel()

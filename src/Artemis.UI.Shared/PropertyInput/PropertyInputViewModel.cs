@@ -16,6 +16,8 @@ namespace Artemis.UI.Shared
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
             LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
+            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
             UpdateInputValue();
         }
 
@@ -25,11 +27,14 @@ namespace Artemis.UI.Shared
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
             LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
+            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
             UpdateInputValue();
         }
 
         public LayerProperty<T> LayerProperty { get; }
         public IProfileEditorService ProfileEditorService { get; }
+
         internal override object InternalGuard { get; } = null;
 
         public bool InputDragging
@@ -52,6 +57,8 @@ namespace Artemis.UI.Shared
         {
             LayerProperty.Updated -= LayerPropertyOnUpdated;
             LayerProperty.BaseValueChanged -= LayerPropertyOnUpdated;
+            LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
             Dispose(true);
             GC.SuppressFinalize(this);
         }
@@ -62,6 +69,10 @@ namespace Artemis.UI.Shared
         }
 
         protected virtual void OnInputValueChanged()
+        {
+        }
+
+        protected virtual void OnDataBindingsChanged()
         {
         }
 
@@ -121,6 +132,11 @@ namespace Artemis.UI.Shared
                 ProfileEditorService.UpdateSelectedProfileElement();
             else
                 ProfileEditorService.UpdateProfilePreview();
+        }
+
+        private void LayerPropertyOnDataBindingChange(object sender, LayerPropertyEventArgs<T> e)
+        {
+            OnDataBindingsChanged();
         }
 
         #endregion

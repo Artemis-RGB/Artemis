@@ -40,6 +40,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => SetAndNotify(ref _isVisible, value);
         }
 
+        public bool IsHighlighted => false;
+
         public bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);

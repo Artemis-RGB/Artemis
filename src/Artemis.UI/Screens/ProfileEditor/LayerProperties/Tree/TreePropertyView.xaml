@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid Height="22" Margin="-20 0 0 0">
@@ -43,15 +44,17 @@
             </ContentControl.Resources>
         </ContentControl>
 
-        <ToggleButton Grid.Column="3"
-                      Style="{StaticResource MaterialDesignFlatPrimaryToggleButton}"
+        <shared:LockableToggleButton Grid.Column="3"
+                      Style="{StaticResource MaterialDesignFlatToggleButton}"
                       ToolTip="Change the property's data binding"
                       Width="20"
                       Height="20"
                       VerticalAlignment="Center"
+                      IsLocked="True"
                       IsEnabled="{Binding LayerProperty.DataBindingsSupported}"
-                      IsChecked="{Binding DataBindingsOpen}">
+                      IsChecked="{Binding HasDataBinding, Mode=OneWay}"
+                      Click="{s:Action ActivateDataBindingViewModel}">
             <materialDesign:PackIcon Kind="VectorLink" Height="13" Width="13" />
-        </ToggleButton>
+        </shared:LockableToggleButton>
     </Grid>
 </UserControl>

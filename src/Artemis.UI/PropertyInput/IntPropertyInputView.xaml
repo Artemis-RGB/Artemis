@@ -16,7 +16,8 @@
                                materialDesign:ValidationAssist.UsePopup="True"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
                                DragStarted="{s:Action InputDragStarted}"
-                               DragEnded="{s:Action InputDragEnded}" />
+                               DragEnded="{s:Action InputDragEnded}"
+                               IsEnabled="{Binding IsEnabled}"/>
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

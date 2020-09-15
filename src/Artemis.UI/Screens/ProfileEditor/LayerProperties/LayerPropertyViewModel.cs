@@ -10,6 +10,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
     public class LayerPropertyViewModel : PropertyChangedBase, IDisposable
     {
         private bool _isVisible;
+        private bool _isHighlighted;
+        private bool _isExpanded;
 
         public LayerPropertyViewModel(ILayerProperty layerProperty, IPropertyVmFactory propertyVmFactory)
         {
@@ -29,8 +31,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => SetAndNotify(ref _isVisible, value);
         }
 
-        public bool IsExpanded => false;
-        
+        public bool IsHighlighted
+        {
+            get => _isHighlighted;
+            set => SetAndNotify(ref _isHighlighted, value);
+        }
+
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set => SetAndNotify(ref _isExpanded, value);
+        }
+
         public void Dispose()
         {
             TreePropertyViewModel?.Dispose();
