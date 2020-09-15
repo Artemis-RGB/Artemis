@@ -23,9 +23,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         protected override void OnActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
-            Task.Run(() =>
+            Task.Run(async  () =>
             {
                 Items.Clear();
+                await Task.Delay(200);
+
                 var instances = _surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
                 foreach (var deviceSettingsViewModel in instances)
                     Items.Add(deviceSettingsViewModel);

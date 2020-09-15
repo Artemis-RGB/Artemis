@@ -23,10 +23,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         protected override void OnActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
-            Items.Clear();
-            var instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
-            foreach (var pluginSettingsViewModel in instances)
-                Items.Add(pluginSettingsViewModel);
+            Task.Run(async () =>
+            {
+                Items.Clear();
+                await Task.Delay(200);
+
+                var instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
+                foreach (var pluginSettingsViewModel in instances) 
+                    Items.Add(pluginSettingsViewModel);
+            });
+
         }
     }
 }
