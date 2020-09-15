@@ -738,7 +738,7 @@ namespace Artemis.Core
 
         private void LayerBrushStoreOnLayerBrushAdded(object sender, LayerBrushStoreEvent e)
         {
-            if (LayerBrush != null)
+            if (LayerBrush != null || General.BrushReference?.CurrentValue == null)
                 return;
 
             var current = General.BrushReference.CurrentValue;

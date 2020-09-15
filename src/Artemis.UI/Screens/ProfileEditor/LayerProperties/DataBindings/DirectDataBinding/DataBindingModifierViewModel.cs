@@ -7,7 +7,7 @@ using Artemis.UI.Shared.Input;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
+namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding
 {
     public class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase, IDisposable
     {
@@ -63,13 +63,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         public void Delete()
         {
-            Modifier.DataBinding.RemoveModifier(Modifier);
+            Modifier.DirectDataBinding.RemoveModifier(Modifier);
         }
 
         public void SwapType()
         {
             if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
-                Modifier.UpdateParameter(Modifier.DataBinding.GetSourceType().GetDefault());
+                Modifier.UpdateParameter(Modifier.DirectDataBinding.GetSourceType().GetDefault());
             else
                 Modifier.UpdateParameter(null, null);
 
@@ -88,7 +88,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void Update()
         {
-            var sourceType = Modifier.DataBinding.GetSourceType();
+            var sourceType = Modifier.DirectDataBinding.GetSourceType();
             if (sourceType == null)
                 throw new ArtemisUIException("Cannot use a data binding modifier VM for a data binding without a source");
 

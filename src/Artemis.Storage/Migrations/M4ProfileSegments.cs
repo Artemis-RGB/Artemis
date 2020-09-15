@@ -1,8 +1,8 @@
-﻿using System;
-using System.Linq;
-using Artemis.Storage.Entities.Profile;
+﻿using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
+using System;
+using System.Linq;
 
 namespace Artemis.Storage.Migrations
 {
