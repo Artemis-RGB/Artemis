@@ -10,48 +10,39 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBindingModifier<TLayerProperty, TProperty> : IDataBindingModifier
     {
-        private DataBinding<TLayerProperty, TProperty> _dataBinding;
         private bool _disposed;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataBindingModifier{TLayerProperty,TProperty}" /> class
         /// </summary>
-        /// <param name="dataBinding">The data binding the modifier is to be applied to</param>
+        /// <param name="directDataBinding">The direct data binding the modifier is to be applied to</param>
         /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
-        public DataBindingModifier(DataBinding<TLayerProperty, TProperty> dataBinding, ProfileRightSideType parameterType)
+        public DataBindingModifier(DirectDataBinding<TLayerProperty, TProperty> directDataBinding, ProfileRightSideType parameterType)
         {
-            _dataBinding = dataBinding ?? throw new ArgumentNullException(nameof(dataBinding));
+            DirectDataBinding = directDataBinding ?? throw new ArgumentNullException(nameof(directDataBinding));
             ParameterType = parameterType;
             Entity = new DataBindingModifierEntity();
             Initialize();
             Save();
         }
 
-        internal DataBindingModifier(DataBinding<TLayerProperty, TProperty> dataBinding, DataBindingModifierEntity entity)
+        internal DataBindingModifier(DirectDataBinding<TLayerProperty, TProperty> directDataBinding, DataBindingModifierEntity entity)
         {
-            _dataBinding = dataBinding;
+            DirectDataBinding = directDataBinding ?? throw new ArgumentNullException(nameof(directDataBinding));
             Entity = entity;
             Load();
             Initialize();
         }
 
         /// <summary>
-        ///     Gets the data binding this modifier is applied to
-        /// </summary>
-        public DataBinding<TLayerProperty, TProperty> DataBinding
-        {
-            get => _dataBinding;
-            internal set
-            {
-                _dataBinding = value;
-                CreateExpression();
-            }
-        }
-
-        /// <summary>
         ///     Gets the type of modifier that is being applied
         /// </summary>
         public DataBindingModifierType ModifierType { get; private set; }
+
+        /// <summary>
+        /// Gets the direct data binding this modifier is applied to
+        /// </summary>
+        public DirectDataBinding<TLayerProperty, TProperty> DirectDataBinding { get; }
 
         /// <summary>
         ///     Gets the type of the parameter, can either be dynamic (based on a data model value) or static
@@ -93,8 +84,8 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");
 
-            if (!DataBinding.Entity.Modifiers.Contains(Entity))
-                DataBinding.Entity.Modifiers.Add(Entity);
+            if (!DirectDataBinding.Entity.Modifiers.Contains(Entity))
+                DirectDataBinding.Entity.Modifiers.Add(Entity);
 
             // Modifier
             if (ModifierType != null)
@@ -177,7 +168,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DataBinding.GetTargetType();
+            var targetType = DirectDataBinding.DataBinding.GetTargetType();
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -229,7 +220,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DataBinding.GetTargetType();
+            var targetType = DirectDataBinding.DataBinding.GetTargetType();
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == targetType)
@@ -271,7 +262,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DataBinding.GetTargetType();
+                var targetType = DirectDataBinding.DataBinding.GetTargetType();
                 object staticValue;
 
                 try
@@ -293,7 +284,7 @@ namespace Artemis.Core
         {
             CompiledParameterAccessor = null;
 
-            if (ModifierType == null || DataBinding == null)
+            if (ModifierType == null)
                 return;
 
             if (ParameterType == ProfileRightSideType.Dynamic && ModifierType.SupportsParameter)

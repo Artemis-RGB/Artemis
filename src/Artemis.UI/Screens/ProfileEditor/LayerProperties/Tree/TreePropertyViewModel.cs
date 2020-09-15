@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared;
@@ -58,7 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         }
 
         #endregion
-        
+
         private void ApplyKeyframesEnabled(bool enable)
         {
             // If enabling keyframes for the first time, add a keyframe with the current value at the current position
@@ -95,8 +96,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         #endregion
     }
 
-    public interface ITreePropertyViewModel : IScreen, IDisposable
+    public interface ITreePropertyViewModel : IScreen, INotifyPropertyChanged, IDisposable
     {
         bool HasPropertyInputViewModel { get; }
+        bool DataBindingsOpen { get; set; }
     }
 }

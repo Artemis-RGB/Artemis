@@ -29,6 +29,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => SetAndNotify(ref _isVisible, value);
         }
 
+        public bool IsExpanded => false;
+        
         public void Dispose()
         {
             TreePropertyViewModel?.Dispose();
