@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
@@ -24,7 +21,7 @@ namespace Artemis.Core
 
             ApplyRegistration(dataBindingRegistration);
             Save();
-            Initialize();
+            ApplyDataBindingMode();
         }
 
         internal DataBinding(LayerProperty<TLayerProperty> layerProperty, DataBindingEntity entity)
@@ -33,8 +30,8 @@ namespace Artemis.Core
             Entity = entity;
 
             // Load will add children so be initialized before that
-            Initialize();
             Load();
+            ApplyDataBindingMode();
         }
 
         /// <summary>
@@ -53,16 +50,9 @@ namespace Artemis.Core
         public DataBindingConverter<TLayerProperty, TProperty> Converter { get; private set; }
 
         /// <summary>
-        ///     Gets the currently used instance of the data model that contains the source of the data binding
+        ///     Gets the data binding mode
         /// </summary>
-        public DataModel SourceDataModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the path of the source property in the <see cref="SourceDataModel" />
-        /// </summary>
-        public string SourcePropertyPath { get; private set; }
-
-        public DataBindingMode Mode { get; set; }
+        public IDataBindingMode<TLayerProperty, TProperty> DataBindingMode { get; private set; }
 
         /// <summary>
         ///     Gets or sets the easing time of the data binding
@@ -74,15 +64,6 @@ namespace Artemis.Core
         /// </summary>
         public Easings.Functions EasingFunction { get; set; }
 
-        /// <summary>
-        ///     Gets a list of modifiers applied to this data binding
-        /// </summary>
-        public IReadOnlyList<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
-
-        /// <summary>
-        ///     Gets the compiled function that gets the current value of the data binding target
-        /// </summary>
-        public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
 
         internal DataBindingEntity Entity { get; }
 
@@ -122,72 +103,9 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingModifier.Dispose();
+            DataBindingMode?.Dispose();
         }
 
-        /// <summary>
-        ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
-        /// </summary>
-        public void AddModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
-
-            if (!_modifiers.Contains(modifier))
-            {
-                modifier.DataBinding = this;
-                _modifiers.Add(modifier);
-
-                OnModifiersUpdated();
-            }
-        }
-
-        /// <summary>
-        ///     Removes a modifier from the data binding's <see cref="Modifiers" /> collection
-        /// </summary>
-        public void RemoveModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
-
-            if (_modifiers.Contains(modifier))
-            {
-                modifier.DataBinding = null;
-                _modifiers.Remove(modifier);
-
-                OnModifiersUpdated();
-            }
-        }
-
-        /// <summary>
-        ///     Updates the source of the data binding and re-compiles the expression
-        /// </summary>
-        /// <param name="dataModel">The data model of the source</param>
-        /// <param name="path">The path pointing to the source inside the data model</param>
-        public void UpdateSource(DataModel dataModel, string path)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
-
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
-
-            if (dataModel != null)
-            {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-            }
-
-            SourceDataModel = dataModel;
-            SourcePropertyPath = path;
-            CreateExpression();
-        }
 
         /// <summary>
         ///     Gets the current value of the data binding
@@ -199,15 +117,11 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            if (CompiledTargetAccessor == null || Converter == null)
+            if (Converter == null || DataBindingMode == null)
                 return baseValue;
 
-            var dataBindingValue = CompiledTargetAccessor(SourceDataModel);
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
+            var value = DataBindingMode.GetValue(baseValue);
 
-            TProperty value = Converter.ConvertFromObject(dataBindingValue);
-            
             // If no easing is to be applied simple return whatever the current value is
             if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
                 return value;
@@ -226,28 +140,6 @@ namespace Artemis.Core
         public Type GetTargetType()
         {
             return Registration.PropertyExpression.ReturnType;
-        }
-
-        /// <summary>
-        ///     Returns the type of the source property of this data binding
-        /// </summary>
-        public Type GetSourceType()
-        {
-            return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
-        }
-
-        private void Initialize()
-        {
-            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
-
-            // Source
-            if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
-            {
-                var dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
-                if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
-                    UpdateSource(dataModel, Entity.SourcePropertyPath);
-            }
         }
 
         private void ResetEasing(TProperty value)
@@ -284,25 +176,48 @@ namespace Artemis.Core
             var easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
             return Converter.Interpolate(_previousValue, _currentValue, Easings.Interpolate(easingAmount, EasingFunction));
         }
+        
+        #region Mode management
 
-        private void CreateExpression()
+        /// <summary>
+        ///     Changes the data binding mode of the data binding to the specified <paramref name="dataBindingMode" />
+        /// </summary>
+        public void ChangeDataBindingMode(DataBindingModeType dataBindingMode)
         {
-            var listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {SourcePropertyPath} because the path contains a list");
+            switch (dataBindingMode)
+            {
+                case DataBindingModeType.Direct:
+                    Entity.DataBindingMode = new DirectDataBindingEntity();
+                    break;
+                case DataBindingModeType.Conditional:
+                    Entity.DataBindingMode = new ConditionalDataBindingEntity();
+                    break;
+                default:
+                    Entity.DataBindingMode = null;
+                    break;
+            }
 
-            var parameter = Expression.Parameter(typeof(DataModel), "targetDataModel");
-            var accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, SourceDataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
-
-            var returnValue = Expression.Convert(accessor, typeof(object));
-
-            var lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
-            CompiledTargetAccessor = lambda.Compile();
+            ApplyDataBindingMode();
         }
 
+        private void ApplyDataBindingMode()
+        {
+            DataBindingMode?.Dispose();
+            DataBindingMode = null;
+
+            switch (Entity.DataBindingMode)
+            {
+                case DirectDataBindingEntity directDataBindingEntity:
+                    DataBindingMode = new DirectDataBinding<TLayerProperty, TProperty>(this, directDataBindingEntity);
+                    break;
+                case ConditionalDataBindingEntity conditionalDataBindingEntity:
+                    DataBindingMode = new ConditionalDataBinding<TLayerProperty, TProperty>(this, conditionalDataBindingEntity);
+                    break;
+            }
+        }
+
+        #endregion
+        
         #region Storage
 
         /// <inheritdoc />
@@ -314,15 +229,10 @@ namespace Artemis.Core
             var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
             ApplyRegistration(registration);
 
-            Mode = (DataBindingMode) Entity.DataBindingMode;
             EasingTime = Entity.EasingTime;
             EasingFunction = (Easings.Functions) Entity.EasingFunction;
 
-            // Data model is done during Initialize
-
-            // Modifiers
-            foreach (var dataBindingModifierEntity in Entity.Modifiers)
-                _modifiers.Add(new DataBindingModifier<TLayerProperty, TProperty>(this, dataBindingModifierEntity));
+            DataBindingMode?.Load();
         }
 
         /// <inheritdoc />
@@ -336,54 +246,10 @@ namespace Artemis.Core
 
             // General 
             Entity.TargetExpression = Registration.PropertyExpression.ToString();
-            Entity.DataBindingMode = (int) Mode;
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;
 
-            // Data model
-            if (SourceDataModel != null)
-            {
-                Entity.SourceDataModelGuid = SourceDataModel.PluginInfo.Guid;
-                Entity.SourcePropertyPath = SourcePropertyPath;
-            }
-
-            // Modifiers
-            Entity.Modifiers.Clear();
-            foreach (var dataBindingModifier in Modifiers)
-                dataBindingModifier.Save();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
-        {
-            var dataModel = e.Registration.DataModel;
-            if (dataModel.PluginInfo.Guid == Entity.SourceDataModelGuid && dataModel.ContainsPath(Entity.SourcePropertyPath))
-                UpdateSource(dataModel, Entity.SourcePropertyPath);
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
-        {
-            if (SourceDataModel != e.Registration.DataModel)
-                return;
-            SourceDataModel = null;
-            CompiledTargetAccessor = null;
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a modifier is added or removed
-        /// </summary>
-        public event EventHandler ModifiersUpdated;
-
-        protected virtual void OnModifiersUpdated()
-        {
-            ModifiersUpdated?.Invoke(this, EventArgs.Empty);
+            DataBindingMode?.Save();
         }
 
         #endregion
@@ -392,16 +258,21 @@ namespace Artemis.Core
     /// <summary>
     ///     A mode that determines how the data binding is applied to the layer property
     /// </summary>
-    public enum DataBindingMode
+    public enum DataBindingModeType
     {
+        /// <summary>
+        /// Disables the data binding
+        /// </summary>
+        None,
+
         /// <summary>
         ///     Replaces the layer property value with the data binding value
         /// </summary>
-        Replace,
+        Direct,
 
         /// <summary>
-        ///     Adds the data binding value to the layer property value
+        ///      Replaces the layer property value with the data binding value
         /// </summary>
-        Add
+        Conditional,
     }
 }

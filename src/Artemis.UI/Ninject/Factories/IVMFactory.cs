@@ -6,6 +6,8 @@ using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
@@ -87,6 +89,8 @@ namespace Artemis.UI.Ninject.Factories
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
+        DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
+        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
     }
 
     public interface IPropertyVmFactory

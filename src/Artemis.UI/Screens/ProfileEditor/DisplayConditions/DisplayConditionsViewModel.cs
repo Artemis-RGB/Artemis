@@ -12,7 +12,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
-        private int _transitionerIndex;
+        private bool _displayStartHint;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
         {
@@ -20,12 +20,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             _displayConditionsVmFactory = displayConditionsVmFactory;
         }
 
-        public int TransitionerIndex
+        public bool DisplayStartHint
         {
-            get => _transitionerIndex;
-            set => SetAndNotify(ref _transitionerIndex, value);
+            get => _displayStartHint;
+            set => SetAndNotify(ref _displayStartHint, value);
         }
-
 
         public RenderProfileElement RenderProfileElement
         {
@@ -89,8 +88,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             ActiveItem.Update();
 
             // Only show the intro to conditions once, and only if the layer has no conditions
-            if (TransitionerIndex != 1)
-                TransitionerIndex = ActiveItem.Items.Any() ? 1 : 0;
+            DisplayStartHint = !ActiveItem.Items.Any();
         }
     }
 }

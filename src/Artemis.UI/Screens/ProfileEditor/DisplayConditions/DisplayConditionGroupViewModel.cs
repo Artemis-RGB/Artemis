@@ -131,6 +131,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             foreach (var childViewModel in Items)
                 childViewModel.Update();
+
+            if (IsRootGroup) 
+                ((DisplayConditionsViewModel) Parent).DisplayStartHint = !Items.Any();
         }
     }
 }
