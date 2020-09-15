@@ -31,6 +31,29 @@
             <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
                 <ContentControl s:View.Model="{Binding ActiveItem}" />
             </ScrollViewer>
+
+            <materialDesign:Card
+                Visibility="{Binding DisplayStartHint, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                VerticalAlignment="Top"
+                Background="{DynamicResource PrimaryHueDarkBrush}"
+                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
+                Margin="5 30 5 0"
+                Padding="8"
+                Width="315"
+                HorizontalAlignment="Left">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <materialDesign:PackIcon Kind="Redo" Margin="0 0 5 0">
+                        <materialDesign:PackIcon.RenderTransform>
+                            <RotateTransform Angle="225" CenterX="8" CenterY="8" />
+                        </materialDesign:PackIcon.RenderTransform>
+                    </materialDesign:PackIcon>
+                    <TextBlock Grid.Column="1" VerticalAlignment="Center">Click the plus icon to start using display conditions!</TextBlock>
+                </Grid>
+            </materialDesign:Card>
         </Grid>
 
         <Grid Grid.Row="3">

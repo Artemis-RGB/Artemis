@@ -1,0 +1,61 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding.DirectDataBindingModeView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid Margin="5 10 0 0">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ContentControl Grid.Row="0"
+                        s:View.Model="{Binding TargetSelectionViewModel}" 
+                        VerticalContentAlignment="Stretch" 
+                        HorizontalContentAlignment="Stretch"
+                        IsTabStop="False" />
+
+        <Button Grid.Row="0"
+                Grid.Column="1"
+                Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                HorizontalAlignment="Right"
+                FontSize="12"
+                Padding="6 4"
+                Height="22"
+                Command="{s:Action AddModifier}">
+            <StackPanel Orientation="Horizontal">
+                <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />
+                <TextBlock>
+                    Add modifier
+                </TextBlock>
+            </StackPanel>
+        </Button>
+
+        <ListBox Grid.Row="1"
+                 Grid.Column="0"
+                 Grid.ColumnSpan="2"
+                 ItemsSource="{Binding ModifierViewModels}"
+                 materialDesign:RippleAssist.IsDisabled="True"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.UseDefaultDragAdorner="True"
+                 dd:DragDrop.DropHandler="{Binding}"
+                 HorizontalContentAlignment="Stretch"
+                 Margin="0 5 0 0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+    </Grid>
+</UserControl>

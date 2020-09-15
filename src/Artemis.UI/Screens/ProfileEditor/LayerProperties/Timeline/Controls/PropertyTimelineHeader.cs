@@ -129,9 +129,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             var typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
             var formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             if (x == 0 && OffsetFirstValue)
-                drawingContext.DrawText(formattedText, new Point(2, 2));
+                drawingContext.DrawText(formattedText, new Point(2, 5));
             else
-                drawingContext.DrawText(formattedText, new Point(x - formattedText.Width / 2, 2));
+                drawingContext.DrawText(formattedText, new Point(x - formattedText.Width / 2, 5));
         }
 
         private void UpdateTimeScale()

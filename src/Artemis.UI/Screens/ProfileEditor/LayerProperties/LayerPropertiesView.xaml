@@ -78,7 +78,7 @@
         <!-- Left side -->
         <Grid Grid.Column="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="56" />
+                <RowDefinition Height="48" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -173,7 +173,7 @@
                 </materialDesign:TransitionerSlide.BackwardWipe>
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="56" />
+                        <RowDefinition Height="48" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -208,7 +208,7 @@
 
 
                             <!-- Timeline header body -->
-                            <controls:PropertyTimelineHeader Margin="0 25 0 0"
+                            <controls:PropertyTimelineHeader Margin="0 18 0 0"
                                                              Fill="{DynamicResource MaterialDesignBody}"
                                                              PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
                                                              HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
@@ -250,7 +250,7 @@
                 <materialDesign:TransitionerSlide.BackwardWipe>
                     <materialDesign:CircleWipe />
                 </materialDesign:TransitionerSlide.BackwardWipe>
-                <Grid Background="{StaticResource MaterialDesignPaper}">
+                <Grid Background="{StaticResource MaterialDesignCardBackground}">
                     <ContentControl s:View.Model="{Binding DataBindingsViewModel}" />
                 </Grid>
             </materialDesign:TransitionerSlide>
