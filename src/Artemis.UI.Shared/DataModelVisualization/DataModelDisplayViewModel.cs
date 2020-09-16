@@ -20,10 +20,12 @@ namespace Artemis.UI.Shared
         {
         }
 
-        internal override void UpdateValue(object model)
+        public override void UpdateValue(object model)
         {
             DisplayValue = model is T value ? value : default;
         }
+
+        internal override object InternalGuard => null;
     }
 
     /// <summary>
@@ -31,9 +33,11 @@ namespace Artemis.UI.Shared
     /// </summary>
     public abstract class DataModelDisplayViewModel : PropertyChangedBase
     {
+        public abstract void UpdateValue(object model);
+
         /// <summary>
         ///     Prevents this type being implemented directly, implement <see cref="DataModelDisplayViewModel{T}" /> instead.
         /// </summary>
-        internal abstract void UpdateValue(object model);
+        internal abstract object InternalGuard { get; }
     }
 }

@@ -18,6 +18,9 @@ namespace Artemis.UI.Shared
         public static readonly DependencyProperty PopupOpenProperty = DependencyProperty.Register(nameof(PopupOpen), typeof(bool), typeof(ColorPicker),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PopupOpenPropertyChangedCallback));
 
+        public static readonly DependencyProperty StaysOpenProperty = DependencyProperty.Register(nameof(StaysOpen), typeof(bool), typeof(ColorPicker),
+            new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, StaysOpenPropertyChangedCallback));
+
         internal static readonly DependencyProperty ColorOpacityProperty = DependencyProperty.Register(nameof(ColorOpacity), typeof(byte), typeof(ColorPicker),
             new FrameworkPropertyMetadata((byte) 255, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorOpacityPropertyChangedCallback));
 
@@ -52,6 +55,12 @@ namespace Artemis.UI.Shared
         {
             get => (bool) GetValue(PopupOpenProperty);
             set => SetValue(PopupOpenProperty, value);
+        }
+
+        public bool StaysOpen
+        {
+            get => (bool) GetValue(StaysOpenProperty);
+            set => SetValue(StaysOpenProperty, value);
         }
 
         internal byte ColorOpacity
@@ -92,6 +101,17 @@ namespace Artemis.UI.Shared
             colorPicker._inCallback = false;
         }
 
+        private static void StaysOpenPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var colorPicker = (ColorPicker) d;
+            if (colorPicker._inCallback)
+                return;
+
+            colorPicker._inCallback = true;
+            colorPicker.OnPropertyChanged(nameof(PopupOpen));
+            colorPicker._inCallback = false;
+        }
+
         private static void ColorOpacityPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var colorPicker = (ColorPicker) d;
@@ -112,6 +132,12 @@ namespace Artemis.UI.Shared
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             PopupOpen = !PopupOpen;
+            e.Handled = true;
+        }
+
+        private void ColorGradient_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
         }
     }
 }

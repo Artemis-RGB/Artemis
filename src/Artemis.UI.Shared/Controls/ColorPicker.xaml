@@ -92,7 +92,7 @@
                Placement="Bottom"
                CustomPopupPlacementCallback="{x:Static materialDesign:CustomPopupPlacementCallbackHelper.LargePopupCallback}"
                PlacementTarget="{Binding ElementName=ColorCodeTextBox}"
-               StaysOpen="False"
+               StaysOpen="{Binding StaysOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                PopupAnimation="Fade"
                IsOpen="{Binding PopupOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
             <materialDesign:Card Width="200" Height="200" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
@@ -101,7 +101,7 @@
                         <RowDefinition Height="160" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <materialDesign:ColorPicker Grid.Row="0" Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
+                    <materialDesign:ColorPicker Grid.Row="0" Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" MouseUp="ColorGradient_OnMouseUp" />
                     <Slider Grid.Row="1" Margin="8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"

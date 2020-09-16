@@ -1,19 +1,21 @@
 ﻿using System;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
-// Remove, annoying while working on it
-#pragma warning disable 1591
-
 namespace Artemis.UI.Shared.Input
 {
-    public class DataModelStaticViewModel : PropertyChangedBase
+    public class DataModelStaticViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly Window _rootView;
         private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private DataModelDisplayViewModel _displayViewModel;
         private DataModelInputViewModel _inputViewModel;
         private string _placeholder = "Enter a value";
         private DataModelPropertyAttribute _targetDescription;
@@ -25,6 +27,15 @@ namespace Artemis.UI.Shared.Input
         {
             TargetType = targetType;
             _dataModelUIService = dataModelUIService;
+
+            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType, true);
+
+            _rootView = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
+            if (_rootView != null)
+            {
+                _rootView.MouseUp += RootViewOnMouseUp;
+                _rootView.KeyUp += RootViewOnKeyUp;
+            }
         }
 
         public Brush ButtonBrush
@@ -37,6 +48,12 @@ namespace Artemis.UI.Shared.Input
         {
             get => _transitionIndex;
             set => SetAndNotify(ref _transitionIndex, value);
+        }
+
+        public DataModelDisplayViewModel DisplayViewModel
+        {
+            get => _displayViewModel;
+            set => SetAndNotify(ref _displayViewModel, value);
         }
 
         public DataModelInputViewModel InputViewModel
@@ -60,7 +77,11 @@ namespace Artemis.UI.Shared.Input
         public object Value
         {
             get => _value;
-            set => SetAndNotify(ref _value, value);
+            set
+            {
+                if (!SetAndNotify(ref _value, value)) return;
+                DisplayViewModel?.UpdateValue(_value);
+            }
         }
 
         public string Placeholder
@@ -68,6 +89,19 @@ namespace Artemis.UI.Shared.Input
             get => _placeholder;
             set => SetAndNotify(ref _placeholder, value);
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            if (_rootView != null)
+            {
+                _rootView.MouseUp -= RootViewOnMouseUp;
+                _rootView.KeyUp -= RootViewOnKeyUp;
+            }
+        }
+
+        #endregion
 
         public void ActivateInputViewModel()
         {
@@ -101,6 +135,30 @@ namespace Artemis.UI.Shared.Input
             InputViewModel = null;
             Value = value;
         }
+
+        #region Event handlers
+
+        private void RootViewOnKeyUp(object sender, KeyEventArgs e)
+        {
+            if (InputViewModel == null)
+                return;
+
+            if (e.Key == Key.Escape)
+                InputViewModel.Cancel();
+            else if (e.Key == Key.Enter)
+                InputViewModel.Submit();
+        }
+
+        private void RootViewOnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (InputViewModel == null)
+                return;
+
+            if (sender is FrameworkElement frameworkElement && !frameworkElement.IsDescendantOf(InputViewModel.View))
+                InputViewModel.Submit();
+        }
+
+        #endregion
 
         #region Events
 

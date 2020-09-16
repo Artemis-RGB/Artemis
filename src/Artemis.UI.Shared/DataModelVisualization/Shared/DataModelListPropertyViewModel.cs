@@ -38,8 +38,8 @@ namespace Artemis.UI.Shared
             if (DisplayValue == null)
                 return;
 
-            if (DisplayViewModel == null && dataModelUIService.RegisteredDataModelDisplays.Any(d => d.SupportedType == DisplayValue.GetType()))
-                dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType());
+            if (DisplayViewModel == null)
+                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType(), true);
 
             ListType = DisplayValue.GetType();
             UpdateDisplayParameters();

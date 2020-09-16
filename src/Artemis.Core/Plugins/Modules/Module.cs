@@ -93,7 +93,13 @@ namespace Artemis.Core.Modules
         ///     Gets whether this module's activation was due to an override, can only be true if <see cref="IsActivated" /> is
         ///     true
         /// </summary>
-        public bool IsActivatedOverride { get; set; }
+        public bool IsActivatedOverride { get; private set; }
+
+        /// <summary>
+        ///     Gets whether this module should update if <see cref="IsActivatedOverride" /> is true
+        ///     <para>Defaults to <c>true</c></para>
+        /// </summary>
+        public bool UpdateDuringActivationOverride { get; protected set; } = true;
 
         /// <summary>
         ///     A list of activation requirements
@@ -180,10 +186,11 @@ namespace Artemis.Core.Modules
 
             return false;
         }
-        
+
         internal virtual void InternalUpdate(double deltaTime)
         {
-            Update(deltaTime);
+            if (!IsActivatedOverride || UpdateDuringActivationOverride)
+                Update(deltaTime);
         }
 
         internal virtual void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)

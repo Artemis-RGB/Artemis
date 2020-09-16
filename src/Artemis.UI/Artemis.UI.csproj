@@ -315,10 +315,19 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Page Update="DataModelVisualization\Input\DoubleDataModelInputView.xaml">
+    <Page Update="DefaultTypes\DataModel\Display\SKColorDataModelDisplayView.xaml">
       <SubType>Designer</SubType>
     </Page>
-    <Page Update="DataModelVisualization\Input\IntDataModelInputView.xaml">
+    <Page Update="DefaultTypes\DataModel\Input\DoubleDataModelInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultTypes\DataModel\Input\IntDataModelInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultTypes\DataModel\Input\SKColorDataModelInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="DefaultTypes\DataModel\Input\StringDataModelInputView.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

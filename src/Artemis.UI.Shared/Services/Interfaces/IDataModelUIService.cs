@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Services
         void RemoveDataModelInput(DataModelVisualizationRegistration registration);
         void RemoveDataModelDisplay(DataModelVisualizationRegistration registration);
 
-        DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType);
+        DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType, bool fallBackToDefault = false);
         DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
 
         DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module);

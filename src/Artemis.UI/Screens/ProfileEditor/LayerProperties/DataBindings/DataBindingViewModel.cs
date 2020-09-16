@@ -13,6 +13,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IDataModelUIService _dataModelUIService;
         private DataBinding<TLayerProperty, TProperty> _dataBinding;
         private int _easingTime;
         private bool _isEasingTimeEnabled;
@@ -26,10 +27,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         public DataBindingViewModel(DataBindingRegistration<TLayerProperty, TProperty> registration,
             IProfileEditorService profileEditorService,
+            IDataModelUIService dataModelUIService,
             IDataBindingsVmFactory dataBindingsVmFactory)
         {
             Registration = registration;
             _profileEditorService = profileEditorService;
+            _dataModelUIService = dataModelUIService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
 
             if (Registration.Member != null)
@@ -39,6 +42,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             DataBindingModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(DataBindingModeType)));
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
+            TestInputValue = _dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
+            TestResultValue = _dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
 
             DataBinding = Registration.DataBinding;
 
@@ -49,6 +54,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         public BindableCollection<ValueDescription> DataBindingModes { get; }
         public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; }
+        public DataModelDisplayViewModel TestInputValue { get; }
+        public DataModelDisplayViewModel TestResultValue { get; }
 
         public DataBindingModeType SelectedDataBindingMode
         {
@@ -100,18 +107,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             get => _dataBinding;
             set => SetAndNotify(ref _dataBinding, value);
-        }
-
-        public TProperty TestInputValue
-        {
-            get => _testInputValue;
-            set => SetAndNotify(ref _testInputValue, value);
-        }
-
-        public TProperty TestResultValue
-        {
-            get => _testResultValue;
-            set => SetAndNotify(ref _testResultValue, value);
         }
 
         public void Dispose()
@@ -222,18 +217,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             if (DataBinding == null)
             {
-                TestInputValue = default;
-                TestResultValue = default;
+                TestInputValue.UpdateValue(default);
+                TestResultValue.UpdateValue(default);
                 return;
             }
 
-            var currentValue = ActiveItem?.GetTestValue() ?? default(TProperty);
+            var currentValue = Registration.Converter.ConvertFromObject(ActiveItem?.GetTestValue() ?? default(TProperty));
 
-            TestInputValue = Registration.Converter.ConvertFromObject(currentValue);
-            if (DataBinding != null)
-                TestResultValue = DataBinding.GetValue(TestInputValue);
-            else
-                TestInputValue = default;
+            TestInputValue.UpdateValue(currentValue);
+            TestResultValue.UpdateValue(DataBinding != null ? DataBinding.GetValue(currentValue) : default);
         }
 
         private void EnableDataBinding()

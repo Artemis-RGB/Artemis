@@ -1,6 +1,6 @@
 ﻿using Artemis.Core;
-using Artemis.UI.DataModelVisualization.Display;
-using Artemis.UI.DataModelVisualization.Input;
+using Artemis.UI.DefaultTypes.DataModel.Display;
+using Artemis.UI.DefaultTypes.DataModel.Input;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
@@ -36,9 +36,10 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelInputs)
                 return;
 
-            _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
-            _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
             _dataModelUIService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.FloatNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<SKColorDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
 
             _registeredBuiltInDataModelInputs = true;
         }
