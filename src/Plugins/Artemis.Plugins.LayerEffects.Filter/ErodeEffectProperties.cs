@@ -1,4 +1,5 @@
 ﻿using Artemis.Core;
+using Artemis.Core.DefaultTypes;
 
 namespace Artemis.Plugins.LayerEffects.Filter
 {

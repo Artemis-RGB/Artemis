@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.DefaultTypes;
 
 namespace Artemis.Core.Services
 {
@@ -45,6 +46,7 @@ namespace Artemis.Core.Services
             RegisterModifierType(Constants.CorePluginInfo, new PercentageOfModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new DivideModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new FloorModifierType());
+            RegisterModifierType(Constants.CorePluginInfo, new SKColorSumModifierType());
         }
     }
 }

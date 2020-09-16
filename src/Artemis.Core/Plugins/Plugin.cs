@@ -39,6 +39,20 @@ namespace Artemis.Core
         /// </summary>
         public abstract void DisablePlugin();
 
+        /// <summary>
+        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the provided
+        ///     <paramref name="interval" />
+        /// </summary>
+        /// <param name="interval">The interval at which the update should occur</param>
+        /// <param name="action">The action to call every time the interval has passed. The delta time parameter represents the time passed since the last update in seconds</param>
+        /// <returns>The resulting plugin update registration</returns>
+        public PluginUpdateRegistration AddTimedUpdate(TimeSpan interval, Action<double> action)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+            return new PluginUpdateRegistration(PluginInfo, interval, action);
+        }
+
         internal void SetEnabled(bool enable, bool isAutoEnable = false)
         {
             if (enable && !Enabled)

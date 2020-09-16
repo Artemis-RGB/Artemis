@@ -1,0 +1,7 @@
+{
+  "Guid": "ab41d601-35e0-4a73-bf0b-94509b006ab0",
+  "Name": "Test data model expansion",
+  "Description": "A data model expansion providing test data",
+  "Version": "1.0.0.0",
+  "Main": "Artemis.Plugins.DataModelExpansions.TestData.dll"
+}
