@@ -91,13 +91,13 @@ namespace Artemis.Core.Modules
 
         /// <summary>
         ///     Gets whether this module's activation was due to an override, can only be true if <see cref="IsActivated" /> is
-        ///     true
+        ///     <see langword="true" />
         /// </summary>
         public bool IsActivatedOverride { get; private set; }
 
         /// <summary>
-        ///     Gets whether this module should update if <see cref="IsActivatedOverride" /> is true
-        ///     <para>Defaults to <c>true</c></para>
+        ///     Gets whether this module should update if <see cref="IsActivatedOverride" /> is <see langword="true" />
+        ///     <para>Defaults to <see langword="true" /></para>
         /// </summary>
         public bool UpdateDuringActivationOverride { get; protected set; } = true;
 
@@ -137,6 +137,11 @@ namespace Artemis.Core.Modules
         ///     A list of custom module tabs that show in the UI
         /// </summary>
         public IEnumerable<ModuleTab> ModuleTabs { get; protected set; }
+
+        /// <summary>
+        ///     Gets whether updating this module is currently allowed
+        /// </summary>
+        public bool IsUpdateAllowed => IsActivated && (UpdateDuringActivationOverride || !IsActivatedOverride);
 
         /// <summary>
         ///     Called each frame when the module must update
@@ -189,7 +194,7 @@ namespace Artemis.Core.Modules
 
         internal virtual void InternalUpdate(double deltaTime)
         {
-            if (!IsActivatedOverride || UpdateDuringActivationOverride)
+            if (IsUpdateAllowed)
                 Update(deltaTime);
         }
 

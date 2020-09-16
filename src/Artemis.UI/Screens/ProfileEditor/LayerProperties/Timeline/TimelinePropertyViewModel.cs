@@ -10,8 +10,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
     public class TimelinePropertyViewModel<T> : Conductor<TimelineKeyframeViewModel<T>>.Collection.AllActive, ITimelinePropertyViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
-        public LayerProperty<T> LayerProperty { get; }
-        public LayerPropertyViewModel LayerPropertyViewModel { get; }
+        private double _width;
 
         public TimelinePropertyViewModel(LayerProperty<T> layerProperty, LayerPropertyViewModel layerPropertyViewModel, IProfileEditorService profileEditorService)
         {
@@ -23,50 +22,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
             LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeAdded;
             LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeRemoved;
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
             UpdateKeyframes();
         }
 
-        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
-        {
-            UpdateKeyframes();
-        }
+        public LayerProperty<T> LayerProperty { get; }
+        public LayerPropertyViewModel LayerPropertyViewModel { get; }
 
-        private void LayerPropertyOnKeyframeRemoved(object sender, LayerPropertyEventArgs<T> e)
+        public double Width
         {
-            UpdateKeyframes();
-        }
-
-        private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs<T> e)
-        {
-            UpdateKeyframes();
+            get => _width;
+            set => SetAndNotify(ref _width, value);
         }
 
         public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
             return Items.Cast<ITimelineKeyframeViewModel>().ToList();
-        }
-
-        private void UpdateKeyframes()
-        {
-            // Only show keyframes if they are enabled
-            if (LayerProperty.KeyframesEnabled)
-            {
-                var keyframes = LayerProperty.Keyframes.ToList();
-                var toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
-                foreach (var timelineKeyframeViewModel in toRemove)
-                    timelineKeyframeViewModel.Dispose();
-
-                Items.RemoveRange(toRemove);
-                Items.AddRange(keyframes
-                    .Where(k => Items.All(t => t.LayerPropertyKeyframe != k))
-                    .Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
-                );
-            }
-            else
-                Items.Clear();
-
-            foreach (var timelineKeyframeViewModel in Items)
-                timelineKeyframeViewModel.Update();
         }
 
         public void WipeKeyframes(TimeSpan? start, TimeSpan? end)
@@ -98,6 +69,50 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
             LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeAdded;
             LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeRemoved;
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+        }
+
+        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
+        {
+            UpdateKeyframes();
+        }
+
+        private void LayerPropertyOnKeyframeRemoved(object sender, LayerPropertyEventArgs<T> e)
+        {
+            UpdateKeyframes();
+        }
+
+        private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs<T> e)
+        {
+            UpdateKeyframes();
+        }
+
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
+        {
+            Width = GetAllKeyframeViewModels().Max(k => k.Position.TotalSeconds * _profileEditorService.PixelsPerSecond + 25);
+        }
+
+        private void UpdateKeyframes()
+        {
+            // Only show keyframes if they are enabled
+            if (LayerProperty.KeyframesEnabled)
+            {
+                var keyframes = LayerProperty.Keyframes.ToList();
+                var toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
+                foreach (var timelineKeyframeViewModel in toRemove)
+                    timelineKeyframeViewModel.Dispose();
+
+                Items.RemoveRange(toRemove);
+                Items.AddRange(keyframes
+                    .Where(k => Items.All(t => t.LayerPropertyKeyframe != k))
+                    .Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
+                );
+            }
+            else
+                Items.Clear();
+
+            foreach (var timelineKeyframeViewModel in Items)
+                timelineKeyframeViewModel.Update();
         }
     }
 

@@ -47,38 +47,24 @@ namespace Artemis.Core.Services
                 if (ActiveModuleOverride == overrideModule)
                     return;
 
-                // If set to null, resume regular activation
-                if (overrideModule == null)
-                {
-                    ActiveModuleOverride = null;
-                    _logger.Information("Cleared active module override");
-                    return;
-                }
-
-                // If a module was provided, activate it and deactivate everything else
+                // Always deactivate all modules whenever override is called
                 var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-                var tasks = new List<Task>();
                 foreach (var module in modules)
+                    OverrideDeactivate(module);
+
+                if (overrideModule != null)
                 {
-                    if (module != overrideModule)
-                        tasks.Add(DeactivateModule(module, true));
+                    OverrideActivate(overrideModule);
+                    _logger.Information($"Setting active module override to {overrideModule.DisplayName}");
                 }
+                else
+                    _logger.Information("Clearing active module override");
 
-                if (!overrideModule.IsActivated)
-                    tasks.Add(ActivateModule(overrideModule, true));
-
-                await Task.WhenAll(tasks);
                 ActiveModuleOverride = overrideModule;
-
-                _logger.Information($"Set active module override to {ActiveModuleOverride.DisplayName}");
             }
             finally
             {
                 ActiveModuleSemaphore.Release();
-
-                // With the semaphore released, trigger an update with the override was cleared
-                if (ActiveModuleOverride == null)
-                    await UpdateModuleActivation();
             }
         }
 
@@ -100,9 +86,9 @@ namespace Artemis.Core.Services
                 {
                     var shouldBeActivated = module.EvaluateActivationRequirements();
                     if (shouldBeActivated && !module.IsActivated)
-                        tasks.Add(ActivateModule(module, false));
+                        tasks.Add(ActivateModule(module));
                     else if (!shouldBeActivated && module.IsActivated)
-                        tasks.Add(DeactivateModule(module, false));
+                        tasks.Add(DeactivateModule(module));
                 }
 
                 await Task.WhenAll(tasks);
@@ -149,11 +135,11 @@ namespace Artemis.Core.Services
             await UpdateModuleActivation();
         }
 
-        private async Task ActivateModule(Module module, bool isOverride)
+        private async Task ActivateModule(Module module)
         {
             try
             {
-                module.Activate(isOverride);
+                module.Activate(false);
 
                 // If this is a profile module, activate the last active profile after module activation
                 if (module is ProfileModule profileModule)
@@ -166,7 +152,27 @@ namespace Artemis.Core.Services
             }
         }
 
-        private async Task DeactivateModule(Module module, bool isOverride)
+        private void OverrideActivate(Module module)
+        {
+            try
+            {
+                if (module.IsActivated)
+                    return;
+
+                module.Activate(true);
+
+                // If this is a profile module, activate the last active profile after module activation
+                if (module is ProfileModule profileModule)
+                    _profileService.ActivateLastProfile(profileModule);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to activate module and last profile.", e), "Failed to activate module and last profile");
+                throw;
+            }
+        }
+
+        private async Task DeactivateModule(Module module)
         {
             try
             {
@@ -174,7 +180,27 @@ namespace Artemis.Core.Services
                 if (module.IsActivated && module is ProfileModule profileModule)
                     await profileModule.ChangeActiveProfileAnimated(null, null);
 
-                module.Deactivate(isOverride);
+                module.Deactivate(false);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to deactivate module and last profile.", e), "Failed to deactivate module and last profile");
+                throw;
+            }
+        }
+
+        private void OverrideDeactivate(Module module)
+        {
+            try
+            {
+                if (!module.IsActivated)
+                    return;
+
+                // If this is a profile module, activate the last active profile after module activation
+                if (module is ProfileModule profileModule)
+                    profileModule.ChangeActiveProfile(null, null);
+
+                module.Deactivate(true);
             }
             catch (Exception e)
             {
