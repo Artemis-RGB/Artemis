@@ -97,21 +97,7 @@
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
 
                         <!-- Value display -->
-                        <TextBlock Grid.Column="2"
-                                   Text="{Binding DisplayValue, Mode=OneWay}"
-                                   FontFamily="Consolas"
-                                   HorizontalAlignment="Right"
-                                   Visibility="{Binding ShowToString, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                        <TextBlock Grid.Column="2"
-                                   Text="null"
-                                   FontFamily="Consolas"
-                                   HorizontalAlignment="Right"
-                                   Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                   Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                        <ContentControl Grid.Column="2"
-                                        s:View.Model="{Binding DisplayViewModel}"
-                                        FontFamily="Consolas"
-                                        Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                        <ContentControl Grid.Column="2" s:View.Model="{Binding DisplayViewModel}" FontFamily="Consolas" />
                     </Grid>
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListPropertyViewModel}">

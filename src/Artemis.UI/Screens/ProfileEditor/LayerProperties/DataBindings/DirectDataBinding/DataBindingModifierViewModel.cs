@@ -79,11 +79,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private void StaticInputViewModelOnValueUpdated(object sender, DataModelInputStaticEventArgs e)
         {
             Modifier.UpdateParameter(e.Value);
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private void Update()
@@ -154,6 +156,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             {
                 DynamicSelectionViewModel.Dispose();
                 DynamicSelectionViewModel.PropertySelected -= ParameterSelectionViewModelOnPropertySelected;
+            }
+
+            if (StaticInputViewModel != null)
+            {
+                StaticInputViewModel.Dispose();
             }
         }
     }

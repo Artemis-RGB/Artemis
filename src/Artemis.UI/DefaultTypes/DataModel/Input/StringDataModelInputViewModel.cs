@@ -1,7 +1,7 @@
 ﻿using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.DataModelVisualization.Input
+namespace Artemis.UI.DefaultTypes.DataModel.Input
 {
     public class StringDataModelInputViewModel : DataModelInputViewModel<string>
     {

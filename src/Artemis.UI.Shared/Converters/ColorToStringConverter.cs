@@ -15,7 +15,7 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value?.ToString();
+            return value?.ToString()?.ToUpper();
         }
 
         /// <inheritdoc />

@@ -5,6 +5,7 @@ using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Input;
 using Ninject;
 using Ninject.Parameters;
@@ -158,14 +159,14 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType)
+        public DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType, bool fallBackToDefault)
         {
             lock (_registeredDataModelDisplays)
             {
                 var match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
                     return (DataModelDisplayViewModel) _kernel.Get(match.ViewModelType);
-                return null;
+                return !fallBackToDefault ? null : _kernel.Get<DefaultDataModelDisplayViewModel>();
             }
         }
 

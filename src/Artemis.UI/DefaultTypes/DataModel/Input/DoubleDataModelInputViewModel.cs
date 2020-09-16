@@ -4,7 +4,7 @@ using System.Windows.Input;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared;
 
-namespace Artemis.UI.DataModelVisualization.Input
+namespace Artemis.UI.DefaultTypes.DataModel.Input
 {
     public class DoubleDataModelInputViewModel : DataModelInputViewModel<double>
     {

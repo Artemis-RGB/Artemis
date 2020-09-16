@@ -33,7 +33,7 @@
                     <TextBlock FontWeight="Light"
                                Text="{Binding TargetPropertyViewModel.PropertyDescription.Prefix}"
                                Visibility="{Binding TargetPropertyViewModel.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
-                    <TextBlock Text="{Binding Value}" />
+                    <ContentControl s:View.Model="{Binding DisplayViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                     <TextBlock FontWeight="Light" 
                                Text="{Binding TargetPropertyViewModel.PropertyDescription.Affix}"
                                Visibility="{Binding TargetPropertyViewModel.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />

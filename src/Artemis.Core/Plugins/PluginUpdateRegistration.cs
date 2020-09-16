@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Timers;
+using Artemis.Core.Modules;
 
 namespace Artemis.Core
 {
@@ -52,6 +53,13 @@ namespace Artemis.Core
 
                 if (_timer != null)
                     return;
+
+                // Don't update during override if that is disabled on the module
+                if (PluginInfo.Instance is Module module)
+                {
+                    if (module.IsActivatedOverride && !module.UpdateDuringActivationOverride)
+                        return;
+                }
 
                 _lastEvent = DateTime.Now;
                 _timer = new Timer(Interval.TotalMilliseconds);

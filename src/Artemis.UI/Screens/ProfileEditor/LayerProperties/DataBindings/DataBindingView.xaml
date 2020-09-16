@@ -105,10 +105,22 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <TextBlock Margin="0 2">Input</TextBlock>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestInputValue}" />
+                                <ContentControl Grid.Row="0"
+                                                Grid.Column="1" 
+                                                s:View.Model="{Binding TestInputValue}" 
+                                                Margin="0 2" 
+                                                FontFamily="Consolas"
+                                                VerticalAlignment="Stretch"
+                                                HorizontalAlignment="Right" />
 
                                 <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 2">Output</TextBlock>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Margin="0 2" FontFamily="Consolas" Text="{Binding TestResultValue}" />
+                                <ContentControl  Grid.Row="1"
+                                                 Grid.Column="1" 
+                                                 s:View.Model="{Binding TestResultValue}" 
+                                                 Margin="0 2"
+                                                 FontFamily="Consolas" 
+                                                 VerticalAlignment="Stretch" 
+                                                 HorizontalAlignment="Right" />
                             </Grid>
                         </Grid>
                     </materialDesign:Card>

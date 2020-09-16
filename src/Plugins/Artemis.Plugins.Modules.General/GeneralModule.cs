@@ -18,6 +18,7 @@ namespace Artemis.Plugins.Modules.General
             DisplayName = "General";
             DisplayIcon = "AllInclusive";
             ExpandsDataModel = true;
+            
             ModuleTabs = new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
         }
 
