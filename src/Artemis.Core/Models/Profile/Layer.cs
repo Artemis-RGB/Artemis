@@ -338,7 +338,6 @@ namespace Artemis.Core
             using var layerPaint = new SKPaint
             {
                 FilterQuality = SKFilterQuality.Low,
-                BlendMode = General.BlendMode.CurrentValue,
                 Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
             };
             layerCanvas.Clear();
@@ -368,7 +367,14 @@ namespace Artemis.Core
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
-            canvas.DrawBitmap(_layerBitmap, targetLocation, layerPaint);
+            using var canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
+            using var canvasPath = new SKPath(Path);
+            canvasPath.Transform(SKMatrix.MakeTranslation(
+                (canvasPath.Bounds.Left - targetLocation.X) * -1,
+                (canvasPath.Bounds.Top - targetLocation.Y) * -1)
+            );
+            canvas.ClipPath(canvasPath);
+            canvas.DrawBitmap(_layerBitmap, targetLocation, canvasPaint);
         }
 
         private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
