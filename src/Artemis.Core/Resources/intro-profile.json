@@ -35,15 +35,6 @@
         "ExpandedPropertyGroups": {
           "$type": "System.Collections.Generic.List`1[[System.String, System.Private.CoreLib]], System.Private.CoreLib",
           "$values": []
-        },
-        "RootDisplayCondition": {
-          "$type": "Artemis.Storage.Entities.Profile.DisplayConditionGroupEntity, Artemis.Storage",
-          "BooleanOperator": 0,
-          "Children": {
-            "$type":
-              "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.Abstract.DisplayConditionPartEntity, Artemis.Storage]], System.Private.CoreLib",
-            "$values": []
-          }
         }
       }
     ]
@@ -322,15 +313,6 @@
           "$values": [
             "LayerBrush"
           ]
-        },
-        "RootDisplayCondition": {
-          "$type": "Artemis.Storage.Entities.Profile.DisplayConditionGroupEntity, Artemis.Storage",
-          "BooleanOperator": 0,
-          "Children": {
-            "$type":
-              "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.Abstract.DisplayConditionPartEntity, Artemis.Storage]], System.Private.CoreLib",
-            "$values": []
-          }
         }
       },
       {
@@ -586,15 +568,6 @@
         "ExpandedPropertyGroups": {
           "$type": "System.Collections.Generic.List`1[[System.String, System.Private.CoreLib]], System.Private.CoreLib",
           "$values": []
-        },
-        "RootDisplayCondition": {
-          "$type": "Artemis.Storage.Entities.Profile.DisplayConditionGroupEntity, Artemis.Storage",
-          "BooleanOperator": 0,
-          "Children": {
-            "$type":
-              "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.Abstract.DisplayConditionPartEntity, Artemis.Storage]], System.Private.CoreLib",
-            "$values": []
-          }
         }
       },
       {
@@ -837,15 +810,6 @@
           "$values": [
             "LayerBrush"
           ]
-        },
-        "RootDisplayCondition": {
-          "$type": "Artemis.Storage.Entities.Profile.DisplayConditionGroupEntity, Artemis.Storage",
-          "BooleanOperator": 0,
-          "Children": {
-            "$type":
-              "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.Abstract.DisplayConditionPartEntity, Artemis.Storage]], System.Private.CoreLib",
-            "$values": []
-          }
         }
       }
     ]

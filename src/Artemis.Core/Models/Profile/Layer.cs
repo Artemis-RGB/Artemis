@@ -350,9 +350,7 @@ namespace Artemis.Core
             // No point rendering if the alpha was set to zero by one of the effects
             if (layerPaint.Color.Alpha == 0)
                 return;
-
-            layerCanvas.ClipPath(layerPath);
-
+            
             if (!LayerBrush.SupportsTransformation)
                 SimpleRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Normal)
