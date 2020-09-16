@@ -165,16 +165,6 @@ namespace Artemis.Core.Modules
         /// </param>
         public abstract void ModuleDeactivated(bool isOverride);
 
-        internal virtual void InternalUpdate(double deltaTime)
-        {
-            Update(deltaTime);
-        }
-
-        internal virtual void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
-        {
-            Render(deltaTime, surface, canvas, canvasInfo);
-        }
-
         /// <summary>
         ///     Evaluates the activation requirements following the <see cref="ActivationRequirementMode" /> and returns the result
         /// </summary>
@@ -189,6 +179,16 @@ namespace Artemis.Core.Modules
                 return ActivationRequirements.Any(r => r.Evaluate());
 
             return false;
+        }
+        
+        internal virtual void InternalUpdate(double deltaTime)
+        {
+            Update(deltaTime);
+        }
+
+        internal virtual void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            Render(deltaTime, surface, canvas, canvasInfo);
         }
 
         internal virtual void Activate(bool isOverride)

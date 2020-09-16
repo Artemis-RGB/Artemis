@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.DefaultTypes;
 
 namespace Artemis.Core.Services
 {

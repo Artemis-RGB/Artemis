@@ -53,7 +53,7 @@ namespace Artemis.Core
                 if (type == null)
                     return new List<DataBindingModifierTypeRegistration>(Registrations);
 
-                var candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
+                var candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t == type)).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
                 foreach (var displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Description).Where(g => g.Count() > 1).ToList())

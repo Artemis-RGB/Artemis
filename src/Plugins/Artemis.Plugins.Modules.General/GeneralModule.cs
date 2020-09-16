@@ -19,11 +19,6 @@ namespace Artemis.Plugins.Modules.General
             DisplayIcon = "AllInclusive";
             ExpandsDataModel = true;
             ModuleTabs = new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};
-
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(1)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(2)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(3)});
-            DataModel.TestTimeList.Add(new TimeDataModel {CurrentTime = DateTimeOffset.Now.AddDays(4)});
         }
 
         public override void DisablePlugin()
