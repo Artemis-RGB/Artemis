@@ -141,7 +141,7 @@ namespace Artemis.Core.Modules
 
         internal override void InternalUpdate(double deltaTime)
         {
-            if (!IsActivatedOverride || UpdateDuringActivationOverride)
+            if (IsUpdateAllowed)
                 Update(deltaTime);
 
             lock (this)

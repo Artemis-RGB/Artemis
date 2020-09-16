@@ -58,8 +58,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
 
-            // Initialize async, no need to wait for it
-            Task.Run(Initialize);
+            Initialize();
         }
 
         public DisplayConditionPredicate DisplayConditionPredicate => (DisplayConditionPredicate) Model;

@@ -15,6 +15,7 @@ namespace Artemis.Plugins.Modules.Overlay
             DisplayName = "Overlay";
             DisplayIcon = "ArrangeBringToFront";
             DefaultPriorityCategory = ModulePriorityCategory.Overlay;
+            UpdateDuringActivationOverride = false;
 
             ActivationRequirements.Add(new ProcessActivationRequirement("taskmgr"));
             ActivationRequirements.Add(new ProcessActivationRequirement("calc"));
@@ -22,6 +23,12 @@ namespace Artemis.Plugins.Modules.Overlay
             {
                 Location = Path.Combine(Directory.GetParent(Environment.GetFolderPath(Environment.SpecialFolder.System)).FullName, "System32")
             });
+
+            AddTimedUpdate(TimeSpan.FromSeconds(5), DelayedUpdate);
+        }
+
+        private void DelayedUpdate(double obj)
+        {
         }
 
         // This is the end of your plugin life cycle.

@@ -20,7 +20,6 @@ namespace Artemis.Core
 
             PluginInfo.Instance.PluginEnabled += InstanceOnPluginEnabled;
             PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
-
             if (PluginInfo.Instance.Enabled)
                 Start();
         }
@@ -54,13 +53,6 @@ namespace Artemis.Core
                 if (_timer != null)
                     return;
 
-                // Don't update during override if that is disabled on the module
-                if (PluginInfo.Instance is Module module)
-                {
-                    if (module.IsActivatedOverride && !module.UpdateDuringActivationOverride)
-                        return;
-                }
-
                 _lastEvent = DateTime.Now;
                 _timer = new Timer(Interval.TotalMilliseconds);
                 _timer.Elapsed += TimerOnElapsed;
@@ -93,6 +85,10 @@ namespace Artemis.Core
 
             var interval = DateTime.Now - _lastEvent;
             _lastEvent = DateTime.Now;
+
+            // Modules don't always want to update, honor that
+            if (PluginInfo.Instance is Module module && !module.IsUpdateAllowed)
+                return;
 
             Action(interval.TotalSeconds);
         }
