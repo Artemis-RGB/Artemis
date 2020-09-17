@@ -8,7 +8,7 @@
             KeyframesSupported = false;
             DataBindingsSupported = false;
 
-            BaseValueChanged += OnBaseValueChanged;
+            CurrentValueSet += OnCurrentValueSet;
         }
 
         /// <summary>
@@ -25,7 +25,7 @@
             throw new ArtemisCoreException("Color Gradients do not support keyframes.");
         }
 
-        private void OnBaseValueChanged(object sender, LayerPropertyEventArgs<ColorGradient> e)
+        private void OnCurrentValueSet(object sender, LayerPropertyEventArgs<ColorGradient> e)
         {
             // Don't allow color gradients to be null
             if (BaseValue == null)

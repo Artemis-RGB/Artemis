@@ -103,7 +103,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             var toRemove = Items.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
-                CloseItem(displayConditionViewModel);
+                Items.Remove(displayConditionViewModel);
 
             foreach (var childModel in Model.Children)
             {
@@ -113,18 +113,18 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 switch (childModel)
                 {
                     case DisplayConditionGroup displayConditionGroup:
-                        ActivateItem(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, IsListGroup));
+                        Items.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, IsListGroup));
                         break;
                     case DisplayConditionList displayConditionListPredicate:
-                        ActivateItem(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate));
+                        Items.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate));
                         break;
                     case DisplayConditionPredicate displayConditionPredicate:
                         if (!IsListGroup)
-                            ActivateItem(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate));
+                            Items.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate));
                         break;
                     case DisplayConditionListPredicate displayConditionListPredicate:
                         if (IsListGroup)
-                            ActivateItem(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate));
+                            Items.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate));
                         break;
                 }
             }

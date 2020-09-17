@@ -19,17 +19,14 @@ namespace Artemis.Plugins.LayerBrushes.Color
         public override void EnableLayerBrush()
         {
             Layer.RenderPropertiesUpdated += HandleShaderChange;
-            Properties.LayerPropertyBaseValueChanged += HandleShaderChange;
+            Properties.LayerPropertyOnCurrentValueSet += HandleShaderChange;
             Properties.Colors.BaseValue.PropertyChanged += BaseValueOnPropertyChanged;
         }
 
         public override void DisableLayerBrush()
         {
             Layer.RenderPropertiesUpdated -= HandleShaderChange;
-            Properties.GradientType.BaseValueChanged -= HandleShaderChange;
-            Properties.Color.BaseValueChanged -= HandleShaderChange;
-            Properties.TileMode.BaseValueChanged -= HandleShaderChange;
-            Properties.ColorsMultiplier.BaseValueChanged -= HandleShaderChange;
+            Properties.LayerPropertyOnCurrentValueSet -= HandleShaderChange;
             Properties.Colors.BaseValue.PropertyChanged -= BaseValueOnPropertyChanged;
 
             _paint?.Dispose();

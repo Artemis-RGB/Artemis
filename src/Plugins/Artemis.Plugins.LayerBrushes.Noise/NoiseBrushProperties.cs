@@ -44,12 +44,18 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         protected override void EnableProperties()
         {
-            ColorType.BaseValueChanged += (sender, args) => UpdateVisibility();
+            ColorType.CurrentValueSet += ColorTypeOnCurrentValueSet;
             UpdateVisibility();
         }
 
         protected override void DisableProperties()
         {
+            ColorType.CurrentValueSet -= ColorTypeOnCurrentValueSet;
+        }
+
+        private void ColorTypeOnCurrentValueSet(object sender, LayerPropertyEventArgs<ColorMappingType> e)
+        {
+            UpdateVisibility();
         }
 
         private void UpdateVisibility()

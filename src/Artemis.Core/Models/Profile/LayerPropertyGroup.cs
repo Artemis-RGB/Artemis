@@ -274,10 +274,10 @@ namespace Artemis.Core
         public event EventHandler PropertyGroupInitialized;
 
         /// <summary>
-        ///     Occurs when one of the base value of one of the layer properties in this group changes
+        ///     Occurs when one of the current value of one of the layer properties in this group changes by some form of input
         ///     <para>Note: Will not trigger on properties in child groups</para>
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs> LayerPropertyBaseValueChanged;
+        public event EventHandler<LayerPropertyEventArgs> LayerPropertyOnCurrentValueSet;
 
         /// <summary>
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
@@ -294,9 +294,9 @@ namespace Artemis.Core
             VisibilityChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        internal virtual void OnLayerPropertyBaseValueChanged(LayerPropertyEventArgs e)
+        internal virtual void OnLayerPropertyOnCurrentValueSet(LayerPropertyEventArgs e)
         {
-            LayerPropertyBaseValueChanged?.Invoke(this, e);
+            LayerPropertyOnCurrentValueSet?.Invoke(this, e);
         }
 
         #endregion

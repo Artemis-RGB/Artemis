@@ -49,31 +49,41 @@
             </Style.Triggers>
         </Style>
     </mde:MaterialWindow.Resources>
-    <materialDesign:DialogHost Identifier="RootDialog" DialogTheme="Inherit" SnackbarMessageQueue="{Binding MainMessageQueue}">
-        <Grid>
-            <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}">
-                <materialDesign:DrawerHost.LeftDrawerContent>
-                    <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
-                </materialDesign:DrawerHost.LeftDrawerContent>
-                <DockPanel>
-                    <mde:AppBar Type="Dense"
-                                IsNavigationDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
-                                Title="{Binding ActiveItem.DisplayName}"
-                                ShowNavigationDrawerButton="True"
-                                DockPanel.Dock="Top">
-                        <StackPanel>
-                            <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
-                            <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Open debugger" Command="{s:Action ShowDebugger}"
-                                    materialDesign:RippleAssist.RippleOnTop="True">
-                                <materialDesign:PackIcon Kind="Matrix" />
-                            </Button>
-                        </StackPanel>
-                    </mde:AppBar>
+    <materialDesign:DialogHost IsTabStop="False"
+                               Focusable="False"
+                               Identifier="RootDialog"
+                               DialogTheme="Inherit"
+                               SnackbarMessageQueue="{Binding MainMessageQueue}">
+
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}">
+            <materialDesign:DrawerHost.LeftDrawerContent>
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
+            </materialDesign:DrawerHost.LeftDrawerContent>
+            <DockPanel>
+                <mde:AppBar Type="Dense"
+                            IsNavigationDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
+                            Title="{Binding ActiveItem.DisplayName}"
+                            ShowNavigationDrawerButton="True"
+                            DockPanel.Dock="Top">
+                    <StackPanel>
+                        <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                                ToolTip="Open debugger"
+                                Command="{s:Action ShowDebugger}"
+                                materialDesign:RippleAssist.RippleOnTop="True">
+                            <materialDesign:PackIcon Kind="Matrix" />
+                        </Button>
+                    </StackPanel>
+                </mde:AppBar>
+
+                <Grid>
                     <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
-                </DockPanel>
-            </materialDesign:DrawerHost>
-            <materialDesign:Snackbar x:Name="MainSnackbar" MessageQueue="{Binding MainMessageQueue}" materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
-                                     materialDesign:SnackbarMessage.ContentMaxHeight="200" />
-        </Grid>
+                    <materialDesign:Snackbar x:Name="MainSnackbar" 
+                                             MessageQueue="{Binding MainMessageQueue}"
+                                             materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
+                                             materialDesign:SnackbarMessage.ContentMaxHeight="200" />
+                </Grid>
+            </DockPanel>
+        </materialDesign:DrawerHost>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>

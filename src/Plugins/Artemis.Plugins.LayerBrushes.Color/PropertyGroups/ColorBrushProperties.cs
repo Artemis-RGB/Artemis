@@ -38,26 +38,26 @@ namespace Artemis.Plugins.LayerBrushes.Color.PropertyGroups
 
         protected override void EnableProperties()
         {
-            GradientType.BaseValueChanged += GradientTypeOnBaseValueChanged;
+            GradientType.CurrentValueSet += GradientTypeOnCurrentValueSet;
             if (ProfileElement is Layer layer)
-                layer.General.ResizeMode.BaseValueChanged += ResizeModeOnBaseValueChanged;
+                layer.General.ResizeMode.CurrentValueSet += ResizeModeOnCurrentValueSet;
 
             UpdateVisibility();
         }
 
         protected override void DisableProperties()
         {
-            GradientType.BaseValueChanged -= GradientTypeOnBaseValueChanged;
+            GradientType.CurrentValueSet -= GradientTypeOnCurrentValueSet;
             if (ProfileElement is Layer layer)
-                layer.General.ResizeMode.BaseValueChanged -= ResizeModeOnBaseValueChanged;
+                layer.General.ResizeMode.CurrentValueSet -= ResizeModeOnCurrentValueSet;
         }
 
-        private void GradientTypeOnBaseValueChanged(object sender, LayerPropertyEventArgs<ColorType> e)
+        private void GradientTypeOnCurrentValueSet(object sender, LayerPropertyEventArgs<ColorType> e)
         {
             UpdateVisibility();
         }
 
-        private void ResizeModeOnBaseValueChanged(object sender, LayerPropertyEventArgs<LayerResizeMode> e)
+        private void ResizeModeOnCurrentValueSet(object sender, LayerPropertyEventArgs<LayerResizeMode> e)
         {
             UpdateVisibility();
         }

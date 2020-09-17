@@ -71,6 +71,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         {
             var sourceParent = (TreeItemViewModel) source.Parent;
             var parent = (TreeItemViewModel) Parent;
+
+            // If the parents are different, remove the element from the old parent and add it to the new parent
             if (source.Parent != Parent)
             {
                 sourceParent.RemoveExistingElement(source);
@@ -146,7 +148,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task RenameElement()
         {
-            var result = await _dialogService.ShowDialog<RenameViewModel>(
+            var result = await _dialogService.ShowDialogAt<RenameViewModel>(
+                "ProfileTreeDialog",
                 new Dictionary<string, object>
                 {
                     {"subject", ProfileElement is Folder ? "folder" : "layer"},
@@ -163,9 +166,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task DeleteElement()
         {
-            var result = await _dialogService.ShowConfirmDialog(
+            var result = await _dialogService.ShowConfirmDialogAt(
+                "ProfileTreeDialog",
                 "Delete profile element",
-                "Are you sure you want to delete this element? This cannot be undone."
+                "Are you sure?"
             );
 
             if (!result)
@@ -185,7 +189,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             // Remove VMs that are no longer a child
             var toRemove = Items.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
             foreach (var treeItemViewModel in toRemove)
-                DeactivateItem(treeItemViewModel);
+                Items.Remove(treeItemViewModel);
 
             // Order the children
             var vmsList = Items.OrderBy(v => v.ProfileElement.Order).ToList();
@@ -222,7 +226,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             foreach (var treeItemViewModel in newChildren)
             {
                 treeItemViewModel.UpdateProfileElements();
-                ActivateItem(treeItemViewModel);
+                Items.Add(treeItemViewModel);
             }
         }
 

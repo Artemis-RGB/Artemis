@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
             // and creating the actual data bindings
             foreach (var registration in registrations)
-                ActivateItem(_dataBindingsVmFactory.DataBindingViewModel(registration));
+                Items.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
 
             SelectedItemIndex = 0;
         }

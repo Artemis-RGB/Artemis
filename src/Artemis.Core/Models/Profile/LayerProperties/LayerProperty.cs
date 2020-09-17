@@ -15,7 +15,7 @@ namespace Artemis.Core
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public abstract class LayerProperty<T> : ILayerProperty
+    public class LayerProperty<T> : ILayerProperty
     {
         private bool _disposed;
 
@@ -120,8 +120,7 @@ namespace Artemis.Core
 
                 _baseValue = value;
                 Update(0);
-                OnBaseValueChanged();
-                LayerPropertyGroup.OnLayerPropertyBaseValueChanged(new LayerPropertyEventArgs(this));
+                OnCurrentValueSet();
             }
         }
 
@@ -165,6 +164,7 @@ namespace Artemis.Core
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
             Update(0);
+            OnCurrentValueSet();
         }
 
         /// <summary>
@@ -534,9 +534,9 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs<T>> Updated;
 
         /// <summary>
-        ///     Occurs when the base value of the layer property was updated
+        ///     Occurs when the current value of the layer property was updated by some form of input
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>> BaseValueChanged;
+        public event EventHandler<LayerPropertyEventArgs<T>> CurrentValueSet;
 
         /// <summary>
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
@@ -573,9 +573,10 @@ namespace Artemis.Core
             Updated?.Invoke(this, new LayerPropertyEventArgs<T>(this));
         }
 
-        protected virtual void OnBaseValueChanged()
+        protected virtual void OnCurrentValueSet()
         {
-            BaseValueChanged?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
         }
 
         protected virtual void OnVisibilityChanged()

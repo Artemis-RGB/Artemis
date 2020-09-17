@@ -14,6 +14,8 @@
         <shared:DraggableFloat ToolTip="X-coordinate (horizontal)"
                                Value="{Binding X}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                               Max="{Binding LayerProperty.PropertyDescription.MaxInputValue}"
+                               Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
                                IsEnabled="{Binding IsXEnabled}"/>
@@ -21,6 +23,8 @@
         <shared:DraggableFloat ToolTip="Y-coordinate (vertical)"
                                Value="{Binding Y}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                               Max="{Binding LayerProperty.PropertyDescription.MaxInputValue}"
+                               Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
                                IsEnabled="{Binding IsYEnabled}"/>
