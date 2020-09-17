@@ -15,7 +15,7 @@ namespace Artemis.UI.Shared
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
-            LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
+            LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
             LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
             UpdateInputValue();
@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
             LayerProperty.Updated += LayerPropertyOnUpdated;
-            LayerProperty.BaseValueChanged += LayerPropertyOnUpdated;
+            LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
             LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
             UpdateInputValue();
@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared
         public override void Dispose()
         {
             LayerProperty.Updated -= LayerPropertyOnUpdated;
-            LayerProperty.BaseValueChanged -= LayerPropertyOnUpdated;
+            LayerProperty.CurrentValueSet -= LayerPropertyOnUpdated;
             LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
             Dispose(true);

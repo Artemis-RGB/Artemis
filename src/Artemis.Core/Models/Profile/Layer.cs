@@ -157,7 +157,7 @@ namespace Artemis.Core
             Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
             Transform.Initialize(this, "Transform.", Constants.CorePluginInfo);
 
-            General.ShapeType.BaseValueChanged += ShapeTypeOnBaseValueChanged;
+            General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
             ActivateLayerBrush();
         }
@@ -213,7 +213,7 @@ namespace Artemis.Core
 
         #region Shape management
 
-        private void ShapeTypeOnBaseValueChanged(object sender, EventArgs e)
+        private void ShapeTypeOnCurrentValueSet(object sender, EventArgs e)
         {
             ApplyShapeType();
         }

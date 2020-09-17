@@ -36,7 +36,6 @@
               Data="{Binding ShapeGeometry, Mode=OneWay}"
               Fill="Transparent"
               Stroke="{DynamicResource PrimaryHueMidBrush}"
-              StrokeThickness="{Binding OutlineThickness}"
               StrokeDashArray="2 2"
               Cursor="/Resources/Cursors/aero_drag.cur"
               MouseDown="MoveOnMouseDown"

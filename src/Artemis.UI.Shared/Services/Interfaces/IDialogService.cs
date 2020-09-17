@@ -12,7 +12,7 @@ namespace Artemis.UI.Shared.Services
     public interface IDialogService : IArtemisSharedUIService
     {
         /// <summary>
-        ///     Shows a confirm dialog on the dialog host provided
+        ///     Shows a confirm dialog on the main dialog host
         /// </summary>
         /// <param name="header">The title of the dialog</param>
         /// <param name="text">The body text of the dialog</param>

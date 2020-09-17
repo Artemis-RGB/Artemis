@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
-using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -18,6 +16,8 @@ namespace Artemis.UI.Shared
             new FrameworkPropertyMetadata(default(float), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, FloatPropertyChangedCallback));
 
         public static readonly DependencyProperty StepSizeProperty = DependencyProperty.Register(nameof(StepSize), typeof(float), typeof(DraggableFloat));
+        public static readonly DependencyProperty MinProperty = DependencyProperty.Register(nameof(Min), typeof(float?), typeof(DraggableFloat));
+        public static readonly DependencyProperty MaxProperty = DependencyProperty.Register(nameof(Max), typeof(float?), typeof(DraggableFloat));
 
         public static readonly RoutedEvent ValueChangedEvent =
             EventManager.RegisterRoutedEvent(
@@ -47,6 +47,18 @@ namespace Artemis.UI.Shared
         {
             get => (float) GetValue(StepSizeProperty);
             set => SetValue(StepSizeProperty, value);
+        }
+
+        public float? Min
+        {
+            get => (float?) GetValue(MinProperty);
+            set => SetValue(MinProperty, value);
+        }
+
+        public float? Max
+        {
+            get => (float?) GetValue(MaxProperty);
+            set => SetValue(MaxProperty, value);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -126,7 +138,16 @@ namespace Artemis.UI.Shared
             if (stepSize == 0)
                 stepSize = 0.1m;
 
-            Value = (float) UltimateRoundingFunction(startValue + stepSize * (x - startX), stepSize, 0.5m);
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+                stepSize = stepSize * 10;
+
+            var value = (float) UltimateRoundingFunction(startValue + stepSize * (x - startX), stepSize, 0.5m);
+            if (Min != null)
+                value = Math.Max(value, Min.Value);
+            if (Max != null)
+                value = Math.Min(value, Max.Value);
+
+            Value = value;
         }
 
         private void InputLostFocus(object sender, RoutedEventArgs e)
@@ -166,9 +187,34 @@ namespace Artemis.UI.Shared
 
         private void Input_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            var seperator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            var regex = new Regex("^[" + seperator + "][-|0-9]+$|^-?[0-9]*[" + seperator + "]{0,1}[0-9]*$");
-            e.Handled = !regex.IsMatch(e.Text);
+            e.Handled = !ValidateInput(sender, e);
+        }
+
+        private void Input_OnPasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                var text = (string) e.DataObject.GetData(typeof(string));
+                if (!float.TryParse(text, out _))
+                    e.CancelCommand();
+            }
+            else
+                e.CancelCommand();
+        }
+
+        // Borrowed from https://stackoverflow.com/a/48082972/5015269 because a regex approach has bad compatibility with
+        // different locales
+        private bool ValidateInput(object sender, TextCompositionEventArgs e)
+        {
+            if (!(sender is TextBox textBox))
+                return false;
+
+            // Use SelectionStart property to find the caret position.
+            // Insert the previewed text into the existing text in the textbox.
+            var fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+
+            // If parsing is successful, set Handled to false
+            return float.TryParse(fullText, out _);
         }
 
         private static decimal UltimateRoundingFunction(decimal amountToRound, decimal nearstOf, decimal fairness)

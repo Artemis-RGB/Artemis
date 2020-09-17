@@ -13,11 +13,19 @@
         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Text="{Binding Header}" TextWrapping="Wrap" />
         <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="0 20 0 20" Text="{Binding Text}" TextWrapping="Wrap" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
-                    Command="{s:Action Cancel}" Content="{Binding CancelText}" />
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0"
-                    Command="{s:Action Confirm}" Content="{Binding ConfirmText}" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    Focusable="False" 
+                    IsCancel="True" 
+                    Command="{s:Action Cancel}" 
+                    Content="{Binding CancelText}" />
+            <Button x:Name="ConfirmButton" 
+                    Style="{StaticResource MaterialDesignFlatButton}" 
+                    IsDefault="True" 
+                    Focusable="True"
+                    Command="{s:Action Confirm}" 
+                    Content="{Binding ConfirmText}" />
         </StackPanel>
+
     </StackPanel>
 </UserControl>

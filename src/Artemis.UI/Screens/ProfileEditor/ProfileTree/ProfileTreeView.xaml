@@ -9,62 +9,67 @@
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:profileTree1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree"
-             xmlns:treeItem1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
+             xmlns:treeItem="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type profileTree1:ProfileTreeViewModel}}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <StackPanel>
-            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="10 5 0 -4">
-                Profile elements
-            </TextBlock>
-            <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
-        </StackPanel>
+    <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="ProfileTreeDialog" DialogTheme="Inherit">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="10 5 0 -4">
+                    Profile elements
+                </TextBlock>
+                <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="8 0" />
+            </StackPanel>
 
-        <TreeView Grid.Row="1"
-                  ItemsSource="{Binding ActiveItem.Items}"
-                  HorizontalContentAlignment="Stretch"
-                  dd:DragDrop.IsDragSource="True"
-                  dd:DragDrop.IsDropTarget="True"
-                  dd:DragDrop.DropHandler="{Binding}">
-            <b:Interaction.Behaviors>
-                <behaviors:TreeViewSelectionBehavior ExpandSelected="True" SelectedItem="{Binding SelectedTreeItem}" />
-            </b:Interaction.Behaviors>
-            <TreeView.Resources>
-                <HierarchicalDataTemplate DataType="{x:Type treeItem1:FolderViewModel}" ItemsSource="{Binding Items}">
-                    <ContentControl s:View.Model="{Binding}" />
-                </HierarchicalDataTemplate>
-                <!-- TODO: Ensure this item source is required -->
-                <HierarchicalDataTemplate DataType="{x:Type treeItem1:LayerViewModel}" ItemsSource="{Binding Items}">
-                    <ContentControl s:View.Model="{Binding}" />
-                </HierarchicalDataTemplate>
-            </TreeView.Resources>
-        </TreeView>
+            <TreeView Grid.Row="1"
+                      ItemsSource="{Binding ActiveItem.Items}"
+                      HorizontalContentAlignment="Stretch"
+                      dd:DragDrop.IsDragSource="True"
+                      dd:DragDrop.IsDropTarget="True"
+                      dd:DragDrop.DropHandler="{Binding}">
+                <TreeView.InputBindings>
+                    <KeyBinding Key="F2" Command="{s:Action RenameElement}" s:View.ActionTarget="{Binding SelectedTreeItem}"/>
+                    <KeyBinding Key="Delete" Command="{s:Action DeleteElement}" s:View.ActionTarget="{Binding SelectedTreeItem}"/>
+                </TreeView.InputBindings>
+                <b:Interaction.Behaviors>
+                    <behaviors:TreeViewSelectionBehavior ExpandSelected="True" SelectedItem="{Binding SelectedTreeItem}" />
+                </b:Interaction.Behaviors>
+                <TreeView.Resources>
+                    <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Items}">
+                        <ContentControl s:View.Model="{Binding}" />
+                    </HierarchicalDataTemplate>
+                    <HierarchicalDataTemplate DataType="{x:Type treeItem:LayerViewModel}">
+                        <ContentControl s:View.Model="{Binding}" />
+                    </HierarchicalDataTemplate>
+                </TreeView.Resources>
+            </TreeView>
 
-        <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
-            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                    Padding="2 0 2 0"
-                    Width="30"
-                    Height="30"
-                    materialDesign:RippleAssist.IsCentered="True"
-                    ToolTip="Add new folder to root"
-                    Command="{s:Action AddFolder}">
-                <materialDesign:PackIcon Kind="CreateNewFolder" Width="15" />
-            </Button>
-            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                    Width="30"
-                    Height="30"
-                    Padding="2 0 2 0"
-                    materialDesign:RippleAssist.IsCentered="True"
-                    ToolTip="Add new layer to root"
-                    Command="{s:Action AddLayer}">
-                <materialDesign:PackIcon Kind="LayersPlus" Width="15" />
-            </Button>
-        </StackPanel>
-    </Grid>
+            <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Padding="2 0 2 0"
+                        Width="30"
+                        Height="30"
+                        materialDesign:RippleAssist.IsCentered="True"
+                        ToolTip="Add new folder to root"
+                        Command="{s:Action AddFolder}">
+                    <materialDesign:PackIcon Kind="CreateNewFolder" Width="15" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="30"
+                        Height="30"
+                        Padding="2 0 2 0"
+                        materialDesign:RippleAssist.IsCentered="True"
+                        ToolTip="Add new layer to root"
+                        Command="{s:Action AddLayer}">
+                    <materialDesign:PackIcon Kind="LayersPlus" Width="15" />
+                </Button>
+            </StackPanel>
+        </Grid>
+    </materialDesign:DialogHost>
 </UserControl>

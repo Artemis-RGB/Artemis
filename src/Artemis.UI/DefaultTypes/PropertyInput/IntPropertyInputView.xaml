@@ -15,6 +15,8 @@
         <shared:DraggableFloat Value="{Binding InputValue}"
                                materialDesign:ValidationAssist.UsePopup="True"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
+                               Max="{Binding LayerProperty.PropertyDescription.MaxInputValue}"
+                               Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
                                IsEnabled="{Binding IsEnabled}"/>

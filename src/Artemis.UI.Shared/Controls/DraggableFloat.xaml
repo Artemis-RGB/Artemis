@@ -65,6 +65,7 @@
                  KeyDown="InputKeyDown"
                  Visibility="Collapsed"
                  RequestBringIntoView="Input_OnRequestBringIntoView"
-                 PreviewTextInput="Input_PreviewTextInput" />
+                 PreviewTextInput="Input_PreviewTextInput"
+                 DataObject.Pasting="Input_OnPasting"/>
     </Grid>
 </UserControl>

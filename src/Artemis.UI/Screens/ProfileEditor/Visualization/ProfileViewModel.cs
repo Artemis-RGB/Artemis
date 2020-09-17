@@ -31,7 +31,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
         private PluginSetting<bool> _highlightSelectedLayer;
-        private bool _isInitializing;
         private PluginSetting<bool> _onlyShowSelectedShape;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
@@ -65,12 +64,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             ActivateToolByIndex(0);
 
             eventAggregator.Subscribe(this);
-        }
-
-        public bool IsInitializing
-        {
-            get => _isInitializing;
-            private set => SetAndNotify(ref _isInitializing, value);
         }
 
         public bool CanSelectEditTool
@@ -375,11 +368,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private void OnProfileElementSelected(object sender, EventArgs e)
         {
             if (_previousSelectedLayer != null)
+            {
                 _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
+                _previousSelectedLayer.Transform.LayerPropertyOnCurrentValueSet -= TransformValueChanged;
+            }
+
             if (_profileEditorService.SelectedProfileElement is Layer layer)
             {
                 _previousSelectedLayer = layer;
                 _previousSelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
+                _previousSelectedLayer.Transform.LayerPropertyOnCurrentValueSet += TransformValueChanged;
             }
             else
                 _previousSelectedLayer = null;
@@ -392,7 +390,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             UpdateCanSelectEditTool();
         }
-
+        
+        private void TransformValueChanged(object? sender, LayerPropertyEventArgs e)
+        {
+            if (ActiveToolIndex != 1)
+                ActivateToolByIndex(1);
+        }
+        
         private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
         {
             ApplyActiveProfile();
