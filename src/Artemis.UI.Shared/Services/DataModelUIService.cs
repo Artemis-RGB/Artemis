@@ -179,6 +179,9 @@ namespace Artemis.UI.Shared.Services
                 // Fall back on a VM that supports the type through conversion
                 if (match == null)
                     match = _registeredDataModelEditors.FirstOrDefault(d => d.CompatibleConversionTypes.Contains(propertyType));
+                // Lastly try getting an enum VM if the provided type is an enum
+                if (match == null && propertyType.IsEnum)
+                    match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == typeof(Enum));
 
                 if (match != null)
                 {

@@ -169,11 +169,11 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = false;
                 return;
             }
-
+            
             if (looseMatch)
-                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType));
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType) || t == typeof(Enum) && PropertyInfo.PropertyType.IsEnum);
             else
-                IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType);
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType || t == typeof(Enum) && PropertyInfo.PropertyType.IsEnum);
         }
 
         public DataModelVisualizationViewModel GetChildForCondition(DisplayConditionPredicate predicate, DisplayConditionSide side)
@@ -241,7 +241,7 @@ namespace Artemis.UI.Shared
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, propertyInfo) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine
-            if (propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType == typeof(string))
+            if (propertyInfo.PropertyType.IsPrimitive || propertyInfo.PropertyType.IsEnum || propertyInfo.PropertyType == typeof(string))
                 return new DataModelPropertyViewModel(DataModel, this, propertyInfo) {Depth = depth};
             if (typeof(IList).IsAssignableFrom(propertyInfo.PropertyType))
                 return new DataModelListViewModel(DataModel, this, propertyInfo) {Depth = depth};

@@ -141,7 +141,7 @@ namespace Artemis.UI.Shared
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 stepSize = stepSize * 10;
 
-            var value = (float) UltimateRoundingFunction(startValue + stepSize * (x - startX), stepSize, 0.5m);
+            var value = (float) RoundToNearestOf(startValue + stepSize * (x - startX), stepSize);
             if (Min != null)
                 value = Math.Max(value, Min.Value);
             if (Max != null)
@@ -217,9 +217,15 @@ namespace Artemis.UI.Shared
             return float.TryParse(fullText, out _);
         }
 
-        private static decimal UltimateRoundingFunction(decimal amountToRound, decimal nearstOf, decimal fairness)
+        /// <summary>
+        ///     Rounds the provided decimal to the nearest value of x with a given threshold
+        ///     Source: https://stackoverflow.com/a/25922075/5015269
+        /// </summary>
+        /// <param name="input">The value to round</param>
+        /// <param name="nearestOf">The value to round down towards</param>
+        private static decimal RoundToNearestOf(decimal input, decimal nearestOf)
         {
-            return Math.Floor(amountToRound / nearstOf + fairness) * nearstOf;
+            return Math.Floor(input / nearestOf + 0.5m) * nearestOf;
         }
     }
 }
