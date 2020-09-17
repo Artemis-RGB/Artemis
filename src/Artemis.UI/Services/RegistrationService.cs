@@ -40,6 +40,8 @@ namespace Artemis.UI.Services
             _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
             _dataModelUIService.RegisterDataModelInput<SKColorDataModelInputViewModel>(Constants.CorePluginInfo, null);
             _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelUIService.RegisterDataModelInput<EnumDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelUIService.RegisterDataModelInput<BoolDataModelInputViewModel>(Constants.CorePluginInfo, null);
 
             _registeredBuiltInDataModelInputs = true;
         }
@@ -57,6 +59,7 @@ namespace Artemis.UI.Services
             _profileEditorService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePluginInfo);
             _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePluginInfo);
             _profileEditorService.RegisterPropertyInput(typeof(EnumPropertyInputViewModel<>), Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePluginInfo);
 
             _registeredBuiltInPropertyEditors = true;
         }

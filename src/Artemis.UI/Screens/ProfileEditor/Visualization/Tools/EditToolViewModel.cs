@@ -34,7 +34,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
-
+        
         public SKPath ShapePath
         {
             get => _shapePath;

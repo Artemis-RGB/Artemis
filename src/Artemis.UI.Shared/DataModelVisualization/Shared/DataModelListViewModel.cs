@@ -106,7 +106,7 @@ namespace Artemis.UI.Shared
             if (typeViewModel != null)
                 return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine
-            if (listType.IsPrimitive || listType == typeof(string))
+            if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
                 return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {ListType = listType};
             // For other value types create a child view model
             if (listType.IsClass || listType.IsStruct())

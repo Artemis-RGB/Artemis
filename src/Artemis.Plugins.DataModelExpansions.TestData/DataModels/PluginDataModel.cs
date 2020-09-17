@@ -21,6 +21,15 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
         // You can even have classes in your datamodel, just don't forget to instantiate them ;)
         [DataModelProperty(Name = "A class within the datamodel")]
         public PluginSubDataModel PluginSubDataModel { get; set; }
+
+        public Team Team { get; set; }
+        public bool IsWinning { get; set; }
+    }
+
+    public enum Team
+    {
+        Blue,
+        Orange
     }
 
     public class PluginSubDataModel
