@@ -34,7 +34,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
             profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
-        
+
         public SKPath ShapePath
         {
             get => _shapePath;
@@ -220,6 +220,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             var anchorDistance = origin == ResizeOrigin.Left
                 ? shapePath.Bounds.Left - ShapeAnchor.X
                 : shapePath.Bounds.Right - ShapeAnchor.X;
+
+            // Don't resize if the distance to the anchor is too small, that'll result in a NaN value
+            // this might happen if the anchor is at X -0.5 and the drag handle is on the left side or vice versa
+            if (Math.Abs(anchorDistance) < 0.001)
+                return _dragStartScale.Width;
+
             var anchorOffset = anchorDistance / shapePath.Bounds.Width;
 
             var pixelsToAdd = (position - dragStart).X / anchorOffset;
@@ -240,6 +246,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             var anchorDistance = origin == ResizeOrigin.Top
                 ? shapePath.Bounds.Top - ShapeAnchor.Y
                 : shapePath.Bounds.Bottom - ShapeAnchor.Y;
+
+            // Don't resize if the distance to the anchor is too small, that'll result in a NaN value
+            // this might happen if the anchor is at Y -0.5 and the drag handle is on the top side or vice versa
+            if (Math.Abs(anchorDistance) < 0.001)
+                return _dragStartScale.Width;
+
             var anchorOffset = anchorDistance / shapePath.Bounds.Height;
 
             var pixelsToAdd = (position - dragStart).Y / anchorOffset;
@@ -353,16 +365,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
             // In order to keep the mouse movement unrotated, counter-act the active rotation
             var countered = UnTransformPoints(new[] {start, current}, layer, start, true);
-            var scaled = _layerEditorService.GetScaledPoint(layer, countered[1], false);
+
+            // If shift is held down, round down to 1 decimal to allow moving the anchor in big increments
+            var decimals = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? 1 : 3;
+            var scaled = RoundPoint(_layerEditorService.GetScaledPoint(layer, countered[1], false), decimals);
 
             // Update the anchor point, this causes the shape to move
-            layer.Transform.AnchorPoint.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
+            layer.Transform.AnchorPoint.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
             // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
             var path = _layerEditorService.GetLayerPath(layer, true, true, true);
             // Calculate the (scaled) difference between the old and now position
             var difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
             // Apply the difference so that the shape effectively stays in place
-            layer.Transform.Position.SetCurrentValue(RoundPoint(layer.Transform.Position.CurrentValue + difference, 3), ProfileEditorService.CurrentTime);
+            layer.Transform.Position.SetCurrentValue(layer.Transform.Position.CurrentValue + difference, ProfileEditorService.CurrentTime);
 
             ProfileEditorService.UpdateProfilePreview();
         }

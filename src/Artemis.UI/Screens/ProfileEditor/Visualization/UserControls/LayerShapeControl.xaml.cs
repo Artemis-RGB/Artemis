@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Artemis.UI.Events;
 using SkiaSharp;
 
@@ -164,7 +165,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
             UpdateControlPosition(control, point);
         }
 
-        private void UpdateRotateDimensions(FrameworkElement rotateControl)
+        private void UpdateRotateDimensions(Shape rotateControl)
         {
             var controlSize = Math.Max(10 / Zoom, 4);
             var rotateSize = controlSize * 8;
@@ -174,13 +175,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
             rotateControl.Margin = new Thickness(rotateSize / 2 * -1, rotateSize / 2 * -1, 0, 0);
         }
 
-        private void UpdateResizeDimensions(FrameworkElement resizeControl)
+        private void UpdateResizeDimensions(Shape resizeControl)
         {
             var controlSize = Math.Max(10 / Zoom, 4);
 
             resizeControl.Width = controlSize;
             resizeControl.Height = controlSize;
             resizeControl.Margin = new Thickness(controlSize / 2 * -1, controlSize / 2 * -1, 0, 0);
+            resizeControl.StrokeThickness = controlSize / 7.5;
         }
 
         #endregion
