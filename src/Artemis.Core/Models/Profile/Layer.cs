@@ -69,6 +69,24 @@ namespace Artemis.Core
         }
 
         internal LayerEntity LayerEntity { get; set; }
+
+        /// <inheritdoc />
+        public override List<ILayerProperty> GetAllLayerProperties()
+        {
+            var result = new List<ILayerProperty>();
+            result.AddRange(General.GetAllLayerProperties());
+            result.AddRange(Transform.GetAllLayerProperties());
+            if (LayerBrush?.BaseProperties != null) 
+                result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
+            foreach (var layerEffect in LayerEffects)
+            {
+                if (layerEffect.BaseProperties != null)
+                    result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
+            }
+
+            return result;
+        }
+
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
         /// <summary>
@@ -267,6 +285,11 @@ namespace Artemis.Core
                 baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
             }
+        }
+
+        protected internal override void UpdateTimelineLength()
+        {
+            TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
         }
 
         public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)

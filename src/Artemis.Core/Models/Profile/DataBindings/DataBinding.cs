@@ -103,6 +103,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
+            Registration.DataBinding = null;
             DataBindingMode?.Dispose();
         }
 

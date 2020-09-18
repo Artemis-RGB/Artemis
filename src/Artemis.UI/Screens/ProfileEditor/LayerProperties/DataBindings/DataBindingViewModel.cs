@@ -20,8 +20,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private DataBindingModeType _selectedDataBindingMode;
         private TimelineEasingViewModel _selectedEasingViewModel;
 
-        private TProperty _testInputValue;
-        private TProperty _testResultValue;
         private bool _updating;
         private bool _isDataBindingEnabled;
 
@@ -44,8 +42,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
             TestInputValue = _dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
             TestResultValue = _dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
-
-            DataBinding = Registration.DataBinding;
 
             Initialize();
         }
@@ -103,12 +99,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
-        public DataBinding<TLayerProperty, TProperty> DataBinding
-        {
-            get => _dataBinding;
-            set => SetAndNotify(ref _dataBinding, value);
-        }
-
         public void Dispose()
         {
             _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
@@ -125,13 +115,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void CreateDataBindingModeModeViewModel()
         {
-            if (DataBinding?.DataBindingMode == null)
+            if (Registration.DataBinding?.DataBindingMode == null)
             {
                 ActiveItem = null;
                 return;
             }
 
-            switch (DataBinding.DataBindingMode)
+            switch (Registration.DataBinding.DataBindingMode)
             {
                 case DirectDataBinding<TLayerProperty, TProperty> directDataBinding:
                     ActiveItem = _dataBindingsVmFactory.DirectDataBindingModeViewModel(directDataBinding);
@@ -147,7 +137,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (_updating)
                 return;
 
-            if (DataBinding == null)
+            if (Registration.DataBinding == null)
             {
                 IsEasingTimeEnabled = false;
                 return;
@@ -156,10 +146,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _updating = true;
 
             IsDataBindingEnabled = ActiveItem != null;
-            EasingTime = (int) DataBinding.EasingTime.TotalMilliseconds;
-            SelectedEasingViewModel = EasingViewModels.First(vm => vm.EasingFunction == DataBinding.EasingFunction);
+            EasingTime = (int) Registration.DataBinding.EasingTime.TotalMilliseconds;
+            SelectedEasingViewModel = EasingViewModels.First(vm => vm.EasingFunction == Registration.DataBinding.EasingFunction);
             IsEasingTimeEnabled = EasingTime > 0;
-            switch (DataBinding.DataBindingMode)
+            switch (Registration.DataBinding.DataBindingMode)
             {
                 case DirectDataBinding<TLayerProperty, TProperty> _:
                     SelectedDataBindingMode = DataBindingModeType.Direct;
@@ -182,10 +172,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (_updating)
                 return;
 
-            if (DataBinding != null)
+            if (Registration.DataBinding != null)
             {
-                DataBinding.EasingTime = TimeSpan.FromMilliseconds(EasingTime);
-                DataBinding.EasingFunction = SelectedEasingViewModel?.EasingFunction ?? Easings.Functions.Linear;
+                Registration.DataBinding.EasingTime = TimeSpan.FromMilliseconds(EasingTime);
+                Registration.DataBinding.EasingFunction = SelectedEasingViewModel?.EasingFunction ?? Easings.Functions.Linear;
             }
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -197,17 +187,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (_updating)
                 return;
 
-            if (DataBinding != null && SelectedDataBindingMode == DataBindingModeType.None)
+            if (Registration.DataBinding != null && SelectedDataBindingMode == DataBindingModeType.None)
             {
                 RemoveDataBinding();
                 CreateDataBindingModeModeViewModel();
                 return;
             }
 
-            if (DataBinding == null && SelectedDataBindingMode != DataBindingModeType.None)
+            if (Registration.DataBinding == null && SelectedDataBindingMode != DataBindingModeType.None)
                 EnableDataBinding();
 
-            DataBinding.ChangeDataBindingMode(SelectedDataBindingMode);
+            Registration.DataBinding.ChangeDataBindingMode(SelectedDataBindingMode);
             CreateDataBindingModeModeViewModel();
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -215,7 +205,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void UpdateTestResult()
         {
-            if (DataBinding == null)
+            if (Registration.DataBinding == null)
             {
                 TestInputValue.UpdateValue(default);
                 TestResultValue.UpdateValue(default);
@@ -225,26 +215,24 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             var currentValue = Registration.Converter.ConvertFromObject(ActiveItem?.GetTestValue() ?? default(TProperty));
 
             TestInputValue.UpdateValue(currentValue);
-            TestResultValue.UpdateValue(DataBinding != null ? DataBinding.GetValue(currentValue) : default);
+            TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(currentValue) : default);
         }
 
         private void EnableDataBinding()
         {
-            if (DataBinding != null)
+            if (Registration.DataBinding != null)
                 return;
 
-            DataBinding = Registration.LayerProperty.EnableDataBinding(Registration);
+            Registration.LayerProperty.EnableDataBinding(Registration);
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private void RemoveDataBinding()
         {
-            if (DataBinding == null)
+            if (Registration.DataBinding == null)
                 return;
 
-            var toDisable = DataBinding;
-            DataBinding = null;
-            Registration.LayerProperty.DisableDataBinding(toDisable);
+            Registration.LayerProperty.DisableDataBinding(Registration.DataBinding);
             Update();
 
             _profileEditorService.UpdateSelectedProfileElement();

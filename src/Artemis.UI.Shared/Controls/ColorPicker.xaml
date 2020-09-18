@@ -40,10 +40,9 @@
                                 </Border.Background>
                             </Border>
                         </Border>
-                        <Track
-                            x:Name="PART_Track"
-                            Grid.Row="1"
-                            OpacityMask="{x:Null}">
+                        <Track x:Name="PART_Track"
+                               Grid.Row="1"
+                               OpacityMask="{x:Null}">
                             <Track.DecreaseRepeatButton>
                                 <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{DynamicResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
                             </Track.DecreaseRepeatButton>
@@ -101,13 +100,19 @@
                         <RowDefinition Height="160" />
                         <RowDefinition />
                     </Grid.RowDefinitions>
-                    <materialDesign:ColorPicker Grid.Row="0" Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" MouseUp="ColorGradient_OnMouseUp" />
+                    <materialDesign:ColorPicker Grid.Row="0" 
+                                                Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
+                                                MouseUp="ColorGradient_OnMouseUp"
+                                                PreviewMouseDown="Slider_OnMouseDown"
+                                                PreviewMouseUp="Slider_OnMouseUp"/>
                     <Slider Grid.Row="1" Margin="8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"
                             Style="{DynamicResource MaterialDesignColorSlider}"
                             Template="{StaticResource MaterialDesignOpacitySlider}"
                             Value="{Binding ColorOpacity, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                            PreviewMouseDown="Slider_OnMouseDown"
+                            PreviewMouseUp="Slider_OnMouseUp"
                             Maximum="255" />
                 </Grid>
             </materialDesign:Card>

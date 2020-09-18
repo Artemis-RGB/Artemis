@@ -19,6 +19,23 @@ namespace Artemis.Core
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
         }
 
+        public abstract List<ILayerProperty> GetAllLayerProperties();
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
+
+            foreach (var baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
         internal void ApplyRenderElementDefaults()
         {
             MainSegmentLength = TimeSpan.FromSeconds(5);
@@ -135,7 +152,13 @@ namespace Artemis.Core
         public TimeSpan StartSegmentLength
         {
             get => _startSegmentLength;
-            set => SetAndNotify(ref _startSegmentLength, value);
+            set
+            {
+                if (!SetAndNotify(ref _startSegmentLength, value)) return;
+                UpdateTimelineLength();
+                if (Parent is RenderProfileElement renderElement)
+                    renderElement.UpdateTimelineLength();
+            }
         }
 
         /// <summary>
@@ -144,7 +167,13 @@ namespace Artemis.Core
         public TimeSpan MainSegmentLength
         {
             get => _mainSegmentLength;
-            set => SetAndNotify(ref _mainSegmentLength, value);
+            set
+            {
+                if (!SetAndNotify(ref _mainSegmentLength, value)) return;
+                UpdateTimelineLength();
+                if (Parent is RenderProfileElement renderElement)
+                    renderElement.UpdateTimelineLength();
+            }
         }
 
         /// <summary>
@@ -153,7 +182,13 @@ namespace Artemis.Core
         public TimeSpan EndSegmentLength
         {
             get => _endSegmentLength;
-            set => SetAndNotify(ref _endSegmentLength, value);
+            set
+            {
+                if (!SetAndNotify(ref _endSegmentLength, value)) return;
+                UpdateTimelineLength();
+                if (Parent is RenderProfileElement renderElement)
+                    renderElement.UpdateTimelineLength();
+            }
         }
 
         /// <summary>
@@ -164,11 +199,6 @@ namespace Artemis.Core
             get => _timelinePosition;
             protected set => SetAndNotify(ref _timelinePosition, value);
         }
-
-        /// <summary>
-        ///     Gets the total combined length of all three segments
-        /// </summary>
-        public TimeSpan TimelineLength => StartSegmentLength + MainSegmentLength + EndSegmentLength;
 
         /// <summary>
         ///     Gets or sets whether main timeline should repeat itself as long as display conditions are met
@@ -188,6 +218,11 @@ namespace Artemis.Core
             set => SetAndNotify(ref _alwaysFinishTimeline, value);
         }
 
+        /// <summary>
+        ///     Gets the max length of this element and any of its children
+        /// </summary>
+        public TimeSpan TimelineLength { get; protected set; }
+
         protected double UpdateTimeline(double deltaTime)
         {
             var oldPosition = _timelinePosition;
@@ -195,7 +230,6 @@ namespace Artemis.Core
             var mainSegmentEnd = StartSegmentLength + MainSegmentLength;
 
             TimelinePosition += deltaTimeSpan;
-
             // Manage segments while the condition is met
             if (DisplayConditionMet)
             {
@@ -212,6 +246,8 @@ namespace Artemis.Core
 
             return (TimelinePosition - oldPosition).TotalSeconds;
         }
+
+        protected internal abstract void UpdateTimelineLength();
 
         /// <summary>
         ///     Overrides the progress of the element
@@ -376,21 +412,6 @@ namespace Artemis.Core
                 TimelinePosition = TimeSpan.Zero;
 
             DisplayConditionMet = conditionMet;
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
-            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
-
-            foreach (var baseLayerEffect in LayerEffects)
-                baseLayerEffect.Dispose();
-
-            base.Dispose(disposing);
         }
 
         #endregion

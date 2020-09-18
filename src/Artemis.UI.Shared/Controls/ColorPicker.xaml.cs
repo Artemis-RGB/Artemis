@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -134,10 +135,38 @@ namespace Artemis.UI.Shared
             PopupOpen = !PopupOpen;
             e.Handled = true;
         }
-
+        
         private void ColorGradient_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
         }
+
+        private void Slider_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            OnDragStarted();
+        }
+
+        private void Slider_OnMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            OnDragEnded();
+        }
+
+        #region Events
+
+        public event EventHandler DragStarted;
+        public event EventHandler DragEnded;
+
+        protected virtual void OnDragStarted()
+        {
+            DragStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnDragEnded()
+        {
+            DragEnded?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
     }
 }

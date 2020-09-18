@@ -154,23 +154,7 @@ namespace Artemis.UI.Shared.Services
             if (!undid)
                 return false;
 
-            if (SelectedProfileElement is Folder folder)
-                SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
-            else if (SelectedProfileElement is Layer layer)
-                SelectedProfileElement = SelectedProfile.GetAllLayers().FirstOrDefault(l => l.EntityId == layer.EntityId);
-
-            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
-            OnSelectedProfileElementChanged(new RenderProfileElementEventArgs(SelectedProfileElement));
-
-            if (SelectedProfileElement != null)
-            {
-                var elements = SelectedProfile.GetAllLayers().Cast<RenderProfileElement>().ToList();
-                elements.AddRange(SelectedProfile.GetAllFolders());
-                var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
-                ChangeSelectedProfileElement(element);
-            }
-
-            UpdateProfilePreview();
+            ReloadProfile();
             return true;
         }
 
@@ -180,17 +164,7 @@ namespace Artemis.UI.Shared.Services
             if (!redid)
                 return false;
 
-            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
-
-            if (SelectedProfileElement != null)
-            {
-                var elements = SelectedProfile.GetAllLayers().Cast<RenderProfileElement>().ToList();
-                elements.AddRange(SelectedProfile.GetAllFolders());
-                var element = elements.FirstOrDefault(l => l.EntityId == SelectedProfileElement.EntityId);
-                ChangeSelectedProfileElement(element);
-            }
-
-            UpdateProfilePreview();
+            ReloadProfile();
             return true;
         }
 
@@ -305,6 +279,27 @@ namespace Artemis.UI.Shared.Services
         public ProfileModule GetCurrentModule()
         {
             return SelectedProfile?.Module;
+        }
+
+        private void ReloadProfile()
+        {
+            // Trigger a profile change
+            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
+            // Trigger a selected element change
+            var previousSelectedProfileElement = SelectedProfileElement;
+            if (SelectedProfileElement is Folder folder)
+                SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
+            else if (SelectedProfileElement is Layer layer)
+                SelectedProfileElement = SelectedProfile.GetAllLayers().FirstOrDefault(l => l.EntityId == layer.EntityId);
+            OnSelectedProfileElementChanged(new RenderProfileElementEventArgs(SelectedProfileElement, previousSelectedProfileElement));
+            // Trigger selected data binding change
+            if (SelectedDataBinding != null)
+            {
+                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties()?.FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
+                OnSelectedDataBindingChanged();
+            }
+
+            UpdateProfilePreview();
         }
 
         public event EventHandler<ProfileEventArgs> ProfileSelected;
