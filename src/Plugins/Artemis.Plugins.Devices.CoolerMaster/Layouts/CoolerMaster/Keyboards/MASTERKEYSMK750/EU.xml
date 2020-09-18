@@ -1,0 +1,740 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Cooler Master MK750 (EU)</Name>
+  <Description>DE + UK Layout of Cooler Master MasterKeys MK750</Description>
+  <Type>Keyboard</Type>
+  <Lighting>Device</Lighting>
+  <Vendor>Cooler Master</Vendor>
+  <Model>MasterKeys MK750</Model>
+  <Width>438</Width>
+  <Height>130</Height>
+  <ImageBasePath>Images\CoolerMaster</ImageBasePath>
+  <DeviceImage>Keyboards\MK750.png</DeviceImage>
+  <Leds>
+    <Led Id="Keyboard_Escape">
+      <X>3</X>
+      <Y>1.4</Y>
+    </Led>
+    <Led Id="Keyboard_F1">
+      <X>+19.5</X>
+    </Led>
+    <Led Id="Keyboard_F2">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F3">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F4">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F5">
+      <X>+9.75</X>
+    </Led>
+    <Led Id="Keyboard_F6">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F7">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F8">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F9">
+      <X>+9.75</X>
+    </Led>
+    <Led Id="Keyboard_F10">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F11">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F12">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_PrintScreen">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_ScrollLock" />
+    <Led Id="Keyboard_PauseBreak" />
+    <Led Id="Keyboard_Programmable1">
+      <X>+9.3</X>
+      <Y>6.8</Y>
+      <Width>0.9</Width>
+      <Height>0.6</Height>
+    </Led>
+    <Led Id="Keyboard_Programmable2">
+      <Width>0.9</Width>
+      <Height>0.6</Height>
+    </Led>
+    <Led Id="Keyboard_Programmable3">
+      <Width>0.9</Width>
+      <Height>0.6</Height>
+    </Led>
+    <Led Id="Keyboard_Programmable4">
+      <Width>0.9</Width>
+      <Height>0.6</Height>
+    </Led>
+    <Led Id="Keyboard_GraveAccentAndTilde">
+      <X>3</X>
+      <Y>25</Y>
+    </Led>
+    <Led Id="Keyboard_1">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_2">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_3">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_4">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_5">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_6">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_7">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_8">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_9">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_0">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_MinusAndUnderscore">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_EqualsAndPlus">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_Backspace">
+      <X>+0.25</X>
+      <Width>2</Width>
+    </Led>
+    <Led Id="Keyboard_Insert">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_Home" />
+    <Led Id="Keyboard_PageUp" />
+    <Led Id="Keyboard_NumLock">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_NumSlash" />
+    <Led Id="Keyboard_NumAsterisk" />
+    <Led Id="Keyboard_NumMinus" />
+    <Led Id="Keyboard_Tab">
+      <X>3</X>
+      <Y>+</Y>
+      <Width>1.5</Width>
+    </Led>
+    <Led Id="Keyboard_Q">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_W">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_E">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_R">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_T">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_Y">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_U">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_I">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_O">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_P">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_BracketLeft">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_BracketRight">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_Enter">
+      <Shape>M0,0 L0,0.5 L0.16666666666,0.5 L0.16666666666,1 L1,1 L1,0 Z</Shape>
+      <X>+0.25</X>
+      <Width>1.5</Width>
+      <Height>2</Height>
+    </Led>
+    <Led Id="Keyboard_Delete">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_End" />
+    <Led Id="Keyboard_PageDown" />
+    <Led Id="Keyboard_Num7">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_Num8" />
+    <Led Id="Keyboard_Num9" />
+    <Led Id="Keyboard_NumPlus">
+      <Height>2</Height>
+    </Led>
+    <Led Id="Keyboard_CapsLock">
+      <X>3</X>
+      <Y>~</Y>
+      <Width>1.75</Width>
+    </Led>
+    <Led Id="Keyboard_A">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_S">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_D">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_F">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_G">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_H">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_J">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_K">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_L">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_SemicolonAndColon">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_ApostropheAndDoubleQuote">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_NonUsTilde">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_Num4">
+      <X>+92.0</X>
+    </Led>
+    <Led Id="Keyboard_Num5" />
+    <Led Id="Keyboard_Num6" />
+    <Led Id="Keyboard_LeftShift">
+      <X>3</X>
+      <Y>+</Y>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_NonUsBackslash">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_Z">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_X">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_C">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_V">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_B">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_N">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_M">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_CommaAndLessThan">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_PeriodAndBiggerThan">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_SlashAndQuestionMark">
+      <X>+0.25</X>
+    </Led>
+    <Led Id="Keyboard_RightShift">
+      <X>+0.25</X>
+      <Width>2.75</Width>
+    </Led>
+    <Led Id="Keyboard_ArrowUp">
+      <X>+24.5</X>
+    </Led>
+    <Led Id="Keyboard_Num1">
+      <X>+24.75</X>
+    </Led>
+    <Led Id="Keyboard_Num2" />
+    <Led Id="Keyboard_Num3" />
+    <Led Id="Keyboard_NumEnter">
+      <Height>2</Height>
+    </Led>
+    <Led Id="Keyboard_LeftCtrl">
+      <X>3</X>
+      <Y>~</Y>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_LeftGui">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_LeftAlt">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_Space">
+      <X>+0.25</X>
+      <Width>6.3</Width>
+    </Led>
+    <Led Id="Keyboard_RightAlt">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_RightGui">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_Application">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_RightCtrl">
+      <X>+0.25</X>
+      <Width>1.25</Width>
+    </Led>
+    <Led Id="Keyboard_ArrowLeft">
+      <X>+5.5</X>
+    </Led>
+    <Led Id="Keyboard_ArrowDown" />
+    <Led Id="Keyboard_ArrowRight" />
+    <Led Id="Keyboard_Num0">
+      <X>+6.0</X>
+      <Width>2</Width>
+    </Led>
+    <Led Id="Keyboard_NumPeriodAndDelete" />
+    <Led Id="Keyboard_Custom1">
+      <X>0</X>
+      <Y>20.4</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom2">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom3">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom4">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom5">
+      <X>20</X>
+      <Y>125.25</Y>
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom6">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom7">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom8">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom9">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom10">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom11">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom12">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom13">
+      <X>+4</X>
+      <Width>0.36825</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom14">
+      <Width>0.36825</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom15">
+      <X>+4</X>
+      <Y>125.25</Y>
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom16">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom17">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom18">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom19">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom20">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom21">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom22">
+      <Width>1.2365</Width>
+      <Height>0.15</Height>
+    </Led>
+    <Led Id="Keyboard_Custom23">
+      <X>435.15</X>
+      <Y>20.4</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom24">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom25">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+    <Led Id="Keyboard_Custom26">
+      <X>=</X>
+      <Y>+</Y>
+      <Width>0.15</Width>
+      <Height>1.31</Height>
+    </Led>
+  </Leds>
+  <LedImageLayouts>
+    <LedImageLayout Layout="DE">
+      <LedImages>
+        <LedImage Id="Keyboard_Escape" Image="Keyboards\Keys\ESC.png" />
+        <LedImage Id="Keyboard_F1" Image="Keyboards\Keys\F1.png" />
+        <LedImage Id="Keyboard_F2" Image="Keyboards\Keys\F2-Rot.png" />
+        <LedImage Id="Keyboard_F3" Image="Keyboards\Keys\F3-Gruen.png" />
+        <LedImage Id="Keyboard_F4" Image="Keyboards\Keys\F4-Blau.png" />
+        <LedImage Id="Keyboard_F5" Image="Keyboards\Keys\F5.png" />
+        <LedImage Id="Keyboard_F6" Image="Keyboards\Keys\F6.png" />
+        <LedImage Id="Keyboard_F7" Image="Keyboards\Keys\F7.png" />
+        <LedImage Id="Keyboard_F8" Image="Keyboards\Keys\F8.png" />
+        <LedImage Id="Keyboard_F9" Image="Keyboards\Keys\F9.png" />
+        <LedImage Id="Keyboard_F10" Image="Keyboards\Keys\F10.png" />
+        <LedImage Id="Keyboard_F11" Image="Keyboards\Keys\F11.png" />
+        <LedImage Id="Keyboard_F12" Image="Keyboards\Keys\F12.png" />
+        <LedImage Id="Keyboard_PrintScreen" Image="Keyboards\Keys\DRUCK-S-ABF.png" />
+        <LedImage Id="Keyboard_ScrollLock" Image="Keyboards\Keys\ROLLEN.png" />
+        <LedImage Id="Keyboard_PauseBreak" Image="Keyboards\Keys\PAUSE-UNTBR.png" />
+        <LedImage Id="Keyboard_Programmable1" Image="Keyboards\Keys\MediaMute.png" />
+        <LedImage Id="Keyboard_Programmable2" Image="Keyboards\Keys\MediaPlayPause.png" />
+        <LedImage Id="Keyboard_Programmable3" Image="Keyboards\Keys\MediaPrevious.png" />
+        <LedImage Id="Keyboard_Programmable4" Image="Keyboards\Keys\MediaNext.png" />
+        <LedImage Id="Keyboard_GraveAccentAndTilde" Image="Keyboards\Keys\Circumflex_Degree.png" />
+        <LedImage Id="Keyboard_1" Image="Keyboards\Keys\1_ExclamationMark.png" />
+        <LedImage Id="Keyboard_2" Image="Keyboards\Keys\2_QuotationMark.png" />
+        <LedImage Id="Keyboard_3" Image="Keyboards\Keys\3_3_PARAGRAPH.png" />
+        <LedImage Id="Keyboard_4" Image="Keyboards\Keys\4_DOLLAR.png" />
+        <LedImage Id="Keyboard_5" Image="Keyboards\Keys\5_PERCENT.png" />
+        <LedImage Id="Keyboard_6" Image="Keyboards\Keys\6_Ampersand.png" />
+        <LedImage Id="Keyboard_7" Image="Keyboards\Keys\7_CurlyBracketLeft_Slash.png" />
+        <LedImage Id="Keyboard_8" Image="Keyboards\Keys\8_SquareBracketLeft_BracketLeft.png" />
+        <LedImage Id="Keyboard_9" Image="Keyboards\Keys\9_SquareBracketRight_BracketRight.png" />
+        <LedImage Id="Keyboard_0" Image="Keyboards\Keys\0_CurlyBracketRight_Equals.png" />
+        <LedImage Id="Keyboard_MinusAndUnderscore" Image="Keyboards\Keys\Eszett_BackSlash_QuestionMark.png" />
+        <LedImage Id="Keyboard_EqualsAndPlus" Image="Keyboards\Keys\AccentGrave_AccentAcute.png" />
+        <LedImage Id="Keyboard_Backspace" Image="Keyboards\Keys\Backspace.png" />
+        <LedImage Id="Keyboard_Tab" Image="Keyboards\Keys\TAB.png" />
+        <LedImage Id="Keyboard_Q" Image="Keyboards\Keys\Q_At.png" />
+        <LedImage Id="Keyboard_W" Image="Keyboards\Keys\W.png" />
+        <LedImage Id="Keyboard_E" Image="Keyboards\Keys\E_EURO.png" />
+        <LedImage Id="Keyboard_R" Image="Keyboards\Keys\R.png" />
+        <LedImage Id="Keyboard_T" Image="Keyboards\Keys\T.png" />
+        <LedImage Id="Keyboard_Y" Image="Keyboards\Keys\Z.png" />
+        <LedImage Id="Keyboard_U" Image="Keyboards\Keys\U.png" />
+        <LedImage Id="Keyboard_I" Image="Keyboards\Keys\I.png" />
+        <LedImage Id="Keyboard_O" Image="Keyboards\Keys\O.png" />
+        <LedImage Id="Keyboard_P" Image="Keyboards\Keys\P.png" />
+        <LedImage Id="Keyboard_BracketLeft" Image="Keyboards\Keys\UE.png" />
+        <LedImage Id="Keyboard_BracketRight" Image="Keyboards\Keys\ASTERISK_PLUS_TILDE.png" />
+        <LedImage Id="Keyboard_CapsLock" Image="Keyboards\Keys\CAPSLK.png" />
+        <LedImage Id="Keyboard_A" Image="Keyboards\Keys\A.png" />
+        <LedImage Id="Keyboard_S" Image="Keyboards\Keys\S.png" />
+        <LedImage Id="Keyboard_D" Image="Keyboards\Keys\D.png" />
+        <LedImage Id="Keyboard_F" Image="Keyboards\Keys\F.png" />
+        <LedImage Id="Keyboard_G" Image="Keyboards\Keys\G.png" />
+        <LedImage Id="Keyboard_H" Image="Keyboards\Keys\H.png" />
+        <LedImage Id="Keyboard_J" Image="Keyboards\Keys\J.png" />
+        <LedImage Id="Keyboard_K" Image="Keyboards\Keys\K.png" />
+        <LedImage Id="Keyboard_L" Image="Keyboards\Keys\L.png" />
+        <LedImage Id="Keyboard_SemicolonAndColon" Image="Keyboards\Keys\OE.png" />
+        <LedImage Id="Keyboard_ApostropheAndDoubleQuote" Image="Keyboards\Keys\AE.png" />
+        <LedImage Id="Keyboard_NonUsTilde" Image="Keyboards\Keys\Apostrophe_Hash.png" />
+        <LedImage Id="Keyboard_Enter" Image="Keyboards\Keys\Enter.png" />
+        <LedImage Id="Keyboard_LeftShift" Image="Keyboards\Keys\SHIFTx1,25.png" />
+        <LedImage Id="Keyboard_NonUsBackslash" Image="Keyboards\Keys\GreaterThan_LessThan_Pipe.png" />
+        <LedImage Id="Keyboard_Z" Image="Keyboards\Keys\Y.png" />
+        <LedImage Id="Keyboard_X" Image="Keyboards\Keys\X.png" />
+        <LedImage Id="Keyboard_C" Image="Keyboards\Keys\C.png" />
+        <LedImage Id="Keyboard_V" Image="Keyboards\Keys\V.png" />
+        <LedImage Id="Keyboard_B" Image="Keyboards\Keys\B.png" />
+        <LedImage Id="Keyboard_N" Image="Keyboards\Keys\N.png" />
+        <LedImage Id="Keyboard_M" Image="Keyboards\Keys\M_Mu.png" />
+        <LedImage Id="Keyboard_CommaAndLessThan" Image="Keyboards\Keys\COMMA_SEMICOLON.png" />
+        <LedImage Id="Keyboard_PeriodAndBiggerThan" Image="Keyboards\Keys\DoubleDot_Dot.png" />
+        <LedImage Id="Keyboard_SlashAndQuestionMark" Image="Keyboards\Keys\MINUS_UNDERSCORE.png" />
+        <LedImage Id="Keyboard_RightShift" Image="Keyboards\Keys\SHIFTx2,75.png" />
+        <LedImage Id="Keyboard_LeftCtrl" Image="Keyboards\Keys\STRG.png" />
+        <LedImage Id="Keyboard_LeftGui" Image="Keyboards\Keys\Windows.png" />
+        <LedImage Id="Keyboard_LeftAlt" Image="Keyboards\Keys\ALT.png" />
+        <LedImage Id="Keyboard_Space" Image="Keyboards\Keys\Space.png" />
+        <LedImage Id="Keyboard_RightAlt" Image="Keyboards\Keys\ALT-GR.png" />
+        <LedImage Id="Keyboard_RightGui" Image="Keyboards\Keys\Windows.png" />
+        <LedImage Id="Keyboard_Application" Image="Keyboards\Keys\FN.png" />
+        <LedImage Id="Keyboard_RightCtrl" Image="Keyboards\Keys\STRG.png" />
+        <LedImage Id="Keyboard_Insert" Image="Keyboards\Keys\EINFG.png" />
+        <LedImage Id="Keyboard_Delete" Image="Keyboards\Keys\ENTF.png" />
+        <LedImage Id="Keyboard_Home" Image="Keyboards\Keys\POS1.png" />
+        <LedImage Id="Keyboard_End" Image="Keyboards\Keys\ENDE.png" />
+        <LedImage Id="Keyboard_PageUp" Image="Keyboards\Keys\BildAuf.png" />
+        <LedImage Id="Keyboard_PageDown" Image="Keyboards\Keys\BildAb.png" />
+        <LedImage Id="Keyboard_Num0" Image="Keyboards\Keys\NUM0_EINFG.png" />
+        <LedImage Id="Keyboard_Num1" Image="Keyboards\Keys\NUM1_ENDE.png" />
+        <LedImage Id="Keyboard_Num2" Image="Keyboards\Keys\NUM2.png" />
+        <LedImage Id="Keyboard_Num3" Image="Keyboards\Keys\NUM3_BILD.png" />
+        <LedImage Id="Keyboard_Num4" Image="Keyboards\Keys\NUM4.png" />
+        <LedImage Id="Keyboard_Num5" Image="Keyboards\Keys\NUM5.png" />
+        <LedImage Id="Keyboard_Num6" Image="Keyboards\Keys\NUM6.png" />
+        <LedImage Id="Keyboard_Num7" Image="Keyboards\Keys\NUM7_POS1.png" />
+        <LedImage Id="Keyboard_Num8" Image="Keyboards\Keys\NUM8.png" />
+        <LedImage Id="Keyboard_Num9" Image="Keyboards\Keys\NUM9_BILD.png" />
+        <LedImage Id="Keyboard_NumLock" Image="Keyboards\Keys\NUMLK.png" />
+        <LedImage Id="Keyboard_NumSlash" Image="Keyboards\Keys\Slash.png" />
+        <LedImage Id="Keyboard_NumAsterisk" Image="Keyboards\Keys\Asterisk.png" />
+        <LedImage Id="Keyboard_NumMinus" Image="Keyboards\Keys\Minus.png" />
+        <LedImage Id="Keyboard_NumPlus" Image="Keyboards\Keys\Plus.png" />
+        <LedImage Id="Keyboard_NumEnter" Image="Keyboards\Keys\EnterTall.png" />
+        <LedImage Id="Keyboard_NumPeriodAndDelete" Image="Keyboards\Keys\COMMA_ENTF.png" />
+        <LedImage Id="Keyboard_ArrowLeft" Image="Keyboards\Keys\ArrowLeft.png" />
+        <LedImage Id="Keyboard_ArrowUp" Image="Keyboards\Keys\ArrowUp.png" />
+        <LedImage Id="Keyboard_ArrowDown" Image="Keyboards\Keys\ArrowDown.png" />
+        <LedImage Id="Keyboard_ArrowRight" Image="Keyboards\Keys\ArrowRight.png" />
+        <LedImage Id="Keyboard_Custom1" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom2" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom3" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom4" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom5" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom6" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom7" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom8" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom9" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom10" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom11" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom12" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom13" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom14" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom15" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom16" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom17" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom18" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom19" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom20" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom21" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom22" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom23" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom24" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom25" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom26" Image="empty.png" />
+      </LedImages>
+    </LedImageLayout>
+    <LedImageLayout Layout="UK">
+      <LedImages>
+        <LedImage Id="Keyboard_Escape" Image="Keyboards\Keys\ESC.png" />
+        <LedImage Id="Keyboard_F1" Image="Keyboards\Keys\F1.png" />
+        <LedImage Id="Keyboard_F2" Image="Keyboards\Keys\F2-Red.png" />
+        <LedImage Id="Keyboard_F3" Image="Keyboards\Keys\F3-Green.png" />
+        <LedImage Id="Keyboard_F4" Image="Keyboards\Keys\F4-Blue.png" />
+        <LedImage Id="Keyboard_F5" Image="Keyboards\Keys\F5.png" />
+        <LedImage Id="Keyboard_F6" Image="Keyboards\Keys\F6.png" />
+        <LedImage Id="Keyboard_F7" Image="Keyboards\Keys\F7.png" />
+        <LedImage Id="Keyboard_F8" Image="Keyboards\Keys\F8.png" />
+        <LedImage Id="Keyboard_F9" Image="Keyboards\Keys\F9.png" />
+        <LedImage Id="Keyboard_F10" Image="Keyboards\Keys\F10.png" />
+        <LedImage Id="Keyboard_F11" Image="Keyboards\Keys\F11.png" />
+        <LedImage Id="Keyboard_F12" Image="Keyboards\Keys\F12.png" />
+        <LedImage Id="Keyboard_PrintScreen" Image="Keyboards\Keys\PRT-SC.png" />
+        <LedImage Id="Keyboard_ScrollLock" Image="Keyboards\Keys\SCR-LK.png" />
+        <LedImage Id="Keyboard_PauseBreak" Image="Keyboards\Keys\PAUSE.png" />
+        <LedImage Id="Keyboard_Programmable1" Image="Keyboards\Keys\MediaMute.png" />
+        <LedImage Id="Keyboard_Programmable2" Image="Keyboards\Keys\MediaPlayPause.png" />
+        <LedImage Id="Keyboard_Programmable3" Image="Keyboards\Keys\MediaPrevious.png" />
+        <LedImage Id="Keyboard_Programmable4" Image="Keyboards\Keys\MediaNext.png" />
+        <LedImage Id="Keyboard_GraveAccentAndTilde" Image="Keyboards\Keys\AccentGrave_Pipe_Negate.png" />
+        <LedImage Id="Keyboard_1" Image="Keyboards\Keys\1_ExclamationMark.png" />
+        <LedImage Id="Keyboard_2" Image="Keyboards\Keys\2_QuotationMark.png" />
+        <LedImage Id="Keyboard_3" Image="Keyboards\Keys\3_Pound.png" />
+        <LedImage Id="Keyboard_4" Image="Keyboards\Keys\4_Euro_Dollar.png" />
+        <LedImage Id="Keyboard_5" Image="Keyboards\Keys\5_Percent.png" />
+        <LedImage Id="Keyboard_6" Image="Keyboards\Keys\6_Circumflex.png" />
+        <LedImage Id="Keyboard_7" Image="Keyboards\Keys\7_Ambersand.png" />
+        <LedImage Id="Keyboard_8" Image="Keyboards\Keys\8_Asterisk.png" />
+        <LedImage Id="Keyboard_9" Image="Keyboards\Keys\9_BracketLeft.png" />
+        <LedImage Id="Keyboard_0" Image="Keyboards\Keys\0_BracketRight.png" />
+        <LedImage Id="Keyboard_MinusAndUnderscore" Image="Keyboards\Keys\Minus_Underscore.png" />
+        <LedImage Id="Keyboard_EqualsAndPlus" Image="Keyboards\Keys\Equals_Plus.png" />
+        <LedImage Id="Keyboard_Backspace" Image="Keyboards\Keys\Backspace.png" />
+        <LedImage Id="Keyboard_Tab" Image="Keyboards\Keys\TAB.png" />
+        <LedImage Id="Keyboard_Q" Image="Keyboards\Keys\Q.png" />
+        <LedImage Id="Keyboard_W" Image="Keyboards\Keys\W.png" />
+        <LedImage Id="Keyboard_E" Image="Keyboards\Keys\E.png" />
+        <LedImage Id="Keyboard_R" Image="Keyboards\Keys\R.png" />
+        <LedImage Id="Keyboard_T" Image="Keyboards\Keys\T.png" />
+        <LedImage Id="Keyboard_Y" Image="Keyboards\Keys\Y.png" />
+        <LedImage Id="Keyboard_U" Image="Keyboards\Keys\U.png" />
+        <LedImage Id="Keyboard_I" Image="Keyboards\Keys\I.png" />
+        <LedImage Id="Keyboard_O" Image="Keyboards\Keys\O.png" />
+        <LedImage Id="Keyboard_P" Image="Keyboards\Keys\P.png" />
+        <LedImage Id="Keyboard_BracketLeft" Image="Keyboards\Keys\CurlyBracketLeft_SquareBracketLeft.png" />
+        <LedImage Id="Keyboard_BracketRight" Image="Keyboards\Keys\CurlyBracketRight_SquareBracketRight.png" />
+        <LedImage Id="Keyboard_CapsLock" Image="Keyboards\Keys\CAPSLK.png" />
+        <LedImage Id="Keyboard_A" Image="Keyboards\Keys\A.png" />
+        <LedImage Id="Keyboard_S" Image="Keyboards\Keys\S.png" />
+        <LedImage Id="Keyboard_D" Image="Keyboards\Keys\D.png" />
+        <LedImage Id="Keyboard_F" Image="Keyboards\Keys\F.png" />
+        <LedImage Id="Keyboard_G" Image="Keyboards\Keys\G.png" />
+        <LedImage Id="Keyboard_H" Image="Keyboards\Keys\H.png" />
+        <LedImage Id="Keyboard_J" Image="Keyboards\Keys\J.png" />
+        <LedImage Id="Keyboard_K" Image="Keyboards\Keys\K.png" />
+        <LedImage Id="Keyboard_L" Image="Keyboards\Keys\L.png" />
+        <LedImage Id="Keyboard_SemicolonAndColon" Image="Keyboards\Keys\DoubleDot_Semicolon.png" />
+        <LedImage Id="Keyboard_ApostropheAndDoubleQuote" Image="Keyboards\Keys\At_Apostrophe.png" />
+        <LedImage Id="Keyboard_NonUsTilde" Image="Keyboards\Keys\Tilde_Hash.png" />
+        <LedImage Id="Keyboard_Enter" Image="Keyboards\Keys\Enter.png" />
+        <LedImage Id="Keyboard_LeftShift" Image="Keyboards\Keys\SHIFTx1,25.png" />
+        <LedImage Id="Keyboard_NonUsBackslash" Image="Keyboards\Keys\Pipe_BackSlash.png" />
+        <LedImage Id="Keyboard_Z" Image="Keyboards\Keys\Z.png" />
+        <LedImage Id="Keyboard_X" Image="Keyboards\Keys\X.png" />
+        <LedImage Id="Keyboard_C" Image="Keyboards\Keys\C.png" />
+        <LedImage Id="Keyboard_V" Image="Keyboards\Keys\V.png" />
+        <LedImage Id="Keyboard_B" Image="Keyboards\Keys\B.png" />
+        <LedImage Id="Keyboard_N" Image="Keyboards\Keys\N.png" />
+        <LedImage Id="Keyboard_M" Image="Keyboards\Keys\M.png" />
+        <LedImage Id="Keyboard_CommaAndLessThan" Image="Keyboards\Keys\LessThan_Comma.png" />
+        <LedImage Id="Keyboard_PeriodAndBiggerThan" Image="Keyboards\Keys\GreaterThan_Dot.png" />
+        <LedImage Id="Keyboard_SlashAndQuestionMark" Image="Keyboards\Keys\QuestionMark_Slash.png" />
+        <LedImage Id="Keyboard_RightShift" Image="Keyboards\Keys\SHIFTx2,75.png" />
+        <LedImage Id="Keyboard_LeftCtrl" Image="Keyboards\Keys\CTRL.png" />
+        <LedImage Id="Keyboard_LeftGui" Image="Keyboards\Keys\Windows.png" />
+        <LedImage Id="Keyboard_LeftAlt" Image="Keyboards\Keys\ALT.png" />
+        <LedImage Id="Keyboard_Space" Image="Keyboards\Keys\Space.png" />
+        <LedImage Id="Keyboard_RightAlt" Image="Keyboards\Keys\ALT.png" />
+        <LedImage Id="Keyboard_RightGui" Image="Keyboards\Keys\Windows.png" />
+        <LedImage Id="Keyboard_Application" Image="Keyboards\Keys\FN.png" />
+        <LedImage Id="Keyboard_RightCtrl" Image="Keyboards\Keys\CTRL.png" />
+        <LedImage Id="Keyboard_Insert" Image="Keyboards\Keys\INS.png" />
+        <LedImage Id="Keyboard_Delete" Image="Keyboards\Keys\DEL.png" />
+        <LedImage Id="Keyboard_Home" Image="Keyboards\Keys\HOME.png" />
+        <LedImage Id="Keyboard_End" Image="Keyboards\Keys\END.png" />
+        <LedImage Id="Keyboard_PageUp" Image="Keyboards\Keys\PGUP.png" />
+        <LedImage Id="Keyboard_PageDown" Image="Keyboards\Keys\PGDN.png" />
+        <LedImage Id="Keyboard_Num0" Image="Keyboards\Keys\NUM0_INS.png" />
+        <LedImage Id="Keyboard_Num1" Image="Keyboards\Keys\NUM1_END.png" />
+        <LedImage Id="Keyboard_Num2" Image="Keyboards\Keys\NUM2.png" />
+        <LedImage Id="Keyboard_Num3" Image="Keyboards\Keys\NUM3_PGDN.png" />
+        <LedImage Id="Keyboard_Num4" Image="Keyboards\Keys\NUM4.png" />
+        <LedImage Id="Keyboard_Num5" Image="Keyboards\Keys\NUM5.png" />
+        <LedImage Id="Keyboard_Num6" Image="Keyboards\Keys\NUM6.png" />
+        <LedImage Id="Keyboard_Num7" Image="Keyboards\Keys\NUM7_HOME.png" />
+        <LedImage Id="Keyboard_Num8" Image="Keyboards\Keys\NUM8.png" />
+        <LedImage Id="Keyboard_Num9" Image="Keyboards\Keys\NUM9_PGUP.png" />
+        <LedImage Id="Keyboard_NumLock" Image="Keyboards\Keys\NUMLK.png" />
+        <LedImage Id="Keyboard_NumSlash" Image="Keyboards\Keys\Slash.png" />
+        <LedImage Id="Keyboard_NumAsterisk" Image="Keyboards\Keys\Asterisk.png" />
+        <LedImage Id="Keyboard_NumMinus" Image="Keyboards\Keys\Minus.png" />
+        <LedImage Id="Keyboard_NumPlus" Image="Keyboards\Keys\Plus.png" />
+        <LedImage Id="Keyboard_NumEnter" Image="Keyboards\Keys\EnterTall.png" />
+        <LedImage Id="Keyboard_NumPeriodAndDelete" Image="Keyboards\Keys\Dot_DEL.png" />
+        <LedImage Id="Keyboard_ArrowLeft" Image="Keyboards\Keys\ArrowLeft.png" />
+        <LedImage Id="Keyboard_ArrowUp" Image="Keyboards\Keys\ArrowUp.png" />
+        <LedImage Id="Keyboard_ArrowDown" Image="Keyboards\Keys\ArrowDown.png" />
+        <LedImage Id="Keyboard_ArrowRight" Image="Keyboards\Keys\ArrowRight.png" />
+        <LedImage Id="Keyboard_Custom1" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom2" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom3" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom4" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom5" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom6" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom7" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom8" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom9" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom10" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom11" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom12" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom13" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom14" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom15" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom16" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom17" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom18" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom19" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom20" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom21" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom22" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom23" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom24" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom25" Image="empty.png" />
+        <LedImage Id="Keyboard_Custom26" Image="empty.png" />
+      </LedImages>
+    </LedImageLayout>
+  </LedImageLayouts>
+</Device>
