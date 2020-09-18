@@ -57,6 +57,20 @@ namespace Artemis.Core
         }
 
         internal FolderEntity FolderEntity { get; set; }
+
+        /// <inheritdoc />
+        public override List<ILayerProperty> GetAllLayerProperties()
+        {
+            var result = new List<ILayerProperty>();
+            foreach (var layerEffect in LayerEffects)
+            {
+                if (layerEffect.BaseProperties != null)
+                    result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
+            }
+
+            return result;
+        }
+
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
         public bool IsRootFolder => Parent == Profile;
 
@@ -86,6 +100,16 @@ namespace Artemis.Core
                 var profileElement = Children[index];
                 profileElement.Update(deltaTime);
             }
+        }
+
+        protected internal override void UpdateTimelineLength()
+        {
+            TimelineLength = !Children.Any() ? TimeSpan.Zero : Children.OfType<RenderProfileElement>().Max(c => c.TimelineLength);
+            if (StartSegmentLength + MainSegmentLength + EndSegmentLength > TimelineLength)
+                TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
+
+            if (Parent is RenderProfileElement parent)
+                parent.UpdateTimelineLength();
         }
 
         public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
@@ -201,6 +225,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.AddChild(child, order);
+            UpdateTimelineLength();
             CalculateRenderProperties();
         }
 
@@ -211,6 +236,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.RemoveChild(child);
+            UpdateTimelineLength();
             CalculateRenderProperties();
         }
 

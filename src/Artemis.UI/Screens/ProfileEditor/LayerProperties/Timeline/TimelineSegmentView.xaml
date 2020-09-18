@@ -16,11 +16,21 @@
     <StackPanel Orientation="Horizontal" Visibility="{Binding SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
         <StackPanel.ContextMenu>
             <ContextMenu>
+                <MenuItem Header="Open segment settings" Command="{s:Action OpenSettingsDialog}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Cog" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Repeat main segment"
                           IsCheckable="True"
                           IsChecked="{Binding Data.RepeatSegment, Source={StaticResource DataContextProxy}}"
                           Visibility="{Binding Data.IsMainSegment, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Source={StaticResource DataContextProxy}}" />
-                <MenuItem Header="Disable segment" Command="{s:Action DisableSegment}" />
+                <MenuItem Header="Disable segment" Command="{s:Action DisableSegment}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Close" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                
             </ContextMenu>
         </StackPanel.ContextMenu>
 

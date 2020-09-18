@@ -30,6 +30,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
+        /// <inheritdoc />
+        public string Path { get; private set; }
+
         /// <summary>
         ///     Updates the property, applying keyframes and data bindings to the current value
         /// </summary>
@@ -384,6 +387,8 @@ namespace Artemis.Core
 
             if (dataBindingRegistration.LayerProperty != this)
                 throw new ArtemisCoreException("Cannot enable a data binding using a data binding registration of a different layer property");
+            if (dataBindingRegistration.DataBinding != null)
+                throw new ArtemisCoreException("Provided data binding registration already has an enabled data binding");
 
             var dataBinding = new DataBinding<T, TProperty>(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
@@ -431,7 +436,7 @@ namespace Artemis.Core
         internal PropertyEntity Entity { get; set; }
 
         /// <inheritdoc />
-        public void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description)
+        public void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
@@ -440,6 +445,7 @@ namespace Artemis.Core
 
             ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
             LayerPropertyGroup = group ?? throw new ArgumentNullException(nameof(group));
+            Path = path;
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;

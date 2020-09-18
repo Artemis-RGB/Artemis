@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:artemis="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:propertyInput="clr-namespace:Artemis.UI.PropertyInput"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance propertyInput:SKColorPropertyInputViewModel}">
@@ -17,7 +18,9 @@
                              Margin="0 -2 0 3"
                              Padding="0 -1"
                              Color="{Binding InputValue, Converter={StaticResource SKColorToColorConverter}}" 
-                             IsEnabled="{Binding IsEnabled}"/>
+                             IsEnabled="{Binding IsEnabled}"
+                             DragStarted="{s:Action InputDragStarted}"
+                             DragEnded="{s:Action InputDragEnded}"/>
         <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

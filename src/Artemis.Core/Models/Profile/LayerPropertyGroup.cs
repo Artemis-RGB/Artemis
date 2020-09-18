@@ -207,21 +207,21 @@ namespace Artemis.Core
 
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
         {
-            var path = Path + ".";
+            var path = $"{Path}.{propertyInfo.Name}";
 
             if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
-                throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path + propertyInfo.Name}");
+                throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path}");
 
             var instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
             if (instance == null)
-                throw new ArtemisPluginException($"Failed to create instance of layer property at {path + propertyInfo.Name}");
+                throw new ArtemisPluginException($"Failed to create instance of layer property at {path}");
 
             // Ensure the description has a name, if not this is a good point to set it based on the property info
             if (string.IsNullOrWhiteSpace(propertyDescription.Name))
                 propertyDescription.Name = propertyInfo.Name.Humanize();
 
-            var entity = GetPropertyEntity(ProfileElement, path + propertyInfo.Name, out var fromStorage);
-            instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription);
+            var entity = GetPropertyEntity(ProfileElement, path, out var fromStorage);
+            instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription, path);
             propertyInfo.SetValue(this, instance);
             _layerProperties.Add(instance);
         }

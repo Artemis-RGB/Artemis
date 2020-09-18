@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.Core;
+using Artemis.UI.Screens.ProfileEditor.Dialogs;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -13,6 +17,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
     public class TimelineSegmentViewModel : Screen, IDisposable
     {
+        private readonly IDialogService _dialogService;
         private bool _draggingSegment;
         private bool _showDisableButton;
         private bool _showRepeatButton;
@@ -25,8 +30,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private double _segmentStartPosition;
 
         public TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
-            IProfileEditorService profileEditorService)
+            IProfileEditorService profileEditorService, IDialogService dialogService)
         {
+            _dialogService = dialogService;
             ProfileEditorService = profileEditorService;
             Segment = segment;
             LayerPropertyGroups = layerPropertyGroups;
@@ -128,6 +134,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             get => _showDisableButton;
             set => SetAndNotify(ref _showDisableButton, value);
+        }
+
+        public async Task OpenSettingsDialog()
+        {
+            await _dialogService.ShowDialog<TimelineSegmentDialogViewModel>(new Dictionary<string, object> {{"segment", this}});
         }
 
         #region Updating
@@ -276,6 +287,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
 
+            UpdateLength(newTime);
+        }
+
+        public void UpdateLength(TimeSpan newTime)
+        {
             var oldSegmentLength = SegmentLength;
             if (Segment == SegmentViewModelType.Start)
             {

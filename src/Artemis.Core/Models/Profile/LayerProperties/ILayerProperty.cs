@@ -19,13 +19,18 @@ namespace Artemis.Core
         public PropertyDescriptionAttribute PropertyDescription { get; }
 
         /// <summary>
+        /// Gets the unique path of the property on the layer
+        /// </summary>
+        public string Path { get; }
+
+        /// <summary>
         ///     Initializes the layer property
         ///     <para>
         ///         Note: This isn't done in the constructor to keep it parameterless which is easier for implementations of
         ///         <see cref="LayerProperty{T}" />
         ///     </para>
         /// </summary>
-        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description);
+        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup @group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
 
         /// <summary>
         ///     Returns a list off all data binding registrations
