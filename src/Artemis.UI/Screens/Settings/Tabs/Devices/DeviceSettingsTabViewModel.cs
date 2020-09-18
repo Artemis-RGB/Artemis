@@ -32,6 +32,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
                 foreach (var deviceSettingsViewModel in instances)
                     Items.Add(deviceSettingsViewModel);
             });
+
+            base.OnActivate();
         }
     }
 }

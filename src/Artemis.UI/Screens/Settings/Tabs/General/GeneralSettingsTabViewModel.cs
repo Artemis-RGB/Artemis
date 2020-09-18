@@ -214,6 +214,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         protected override void OnInitialActivate()
         {
             Task.Run(ApplyAutorun);
+            base.OnInitialActivate();
         }
 
         private void ApplyAutorun()

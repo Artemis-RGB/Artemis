@@ -18,6 +18,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private bool _showRepeatButton;
         private bool _showSegmentName;
         private TimeSpan _segmentLength;
+        private TimeSpan _segmentStart;
+        private TimeSpan _segmentEnd;
         private double _segmentWidth;
         private bool _segmentEnabled;
         private double _segmentStartPosition;
@@ -57,6 +59,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             get => _segmentLength;
             set => SetAndNotify(ref _segmentLength, value);
+        }
+
+        public TimeSpan SegmentStart
+        {
+            get => _segmentStart;
+            set => SetAndNotify(ref _segmentStart, value);
+        }
+
+        public TimeSpan SegmentEnd
+        {
+            get => _segmentEnd;
+            set => SetAndNotify(ref _segmentEnd, value);
         }
 
         public double SegmentWidth
@@ -134,6 +148,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (SelectedProfileElement == null)
             {
                 SegmentLength = TimeSpan.Zero;
+                SegmentStart = TimeSpan.Zero;
+                SegmentEnd = TimeSpan.Zero;
                 SegmentStartPosition = 0;
                 SegmentWidth = 0;
                 SegmentEnabled = false;
@@ -143,21 +159,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (Segment == SegmentViewModelType.Start)
             {
                 SegmentLength = SelectedProfileElement.StartSegmentLength;
-                SegmentStartPosition = 0;
+                SegmentStart = TimeSpan.Zero;
             }
             else if (Segment == SegmentViewModelType.Main)
             {
                 SegmentLength = SelectedProfileElement.MainSegmentLength;
-                SegmentStartPosition = ProfileEditorService.PixelsPerSecond * SelectedProfileElement.StartSegmentLength.TotalSeconds;
+                SegmentStart = SelectedProfileElement.StartSegmentLength;
             }
             else if (Segment == SegmentViewModelType.End)
             {
                 SegmentLength = SelectedProfileElement.EndSegmentLength;
-                SegmentStartPosition = ProfileEditorService.PixelsPerSecond * (SelectedProfileElement.StartSegmentLength.TotalSeconds +
-                                                                               SelectedProfileElement.MainSegmentLength.TotalSeconds);
+                SegmentStart = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
             }
 
-            SegmentWidth = ProfileEditorService.PixelsPerSecond * SegmentLength.TotalSeconds;
+            SegmentEnd = SegmentStart + SegmentLength;
+            SegmentStartPosition = SegmentStart.TotalSeconds * ProfileEditorService.PixelsPerSecond;
+            SegmentWidth = SegmentLength.TotalSeconds * ProfileEditorService.PixelsPerSecond;
             SegmentEnabled = SegmentLength != TimeSpan.Zero;
 
             UpdateHeader();

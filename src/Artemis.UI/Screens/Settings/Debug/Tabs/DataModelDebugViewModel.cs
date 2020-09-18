@@ -81,6 +81,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             _pluginService.PluginDisabled += PluginServiceOnPluginToggled;
 
             PopulateModules();
+
+            base.OnActivate();
         }
 
         protected override void OnDeactivate()
@@ -89,6 +91,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
             _pluginService.PluginEnabled -= PluginServiceOnPluginToggled;
             _pluginService.PluginDisabled -= PluginServiceOnPluginToggled;
+
+            base.OnDeactivate();
         }
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
