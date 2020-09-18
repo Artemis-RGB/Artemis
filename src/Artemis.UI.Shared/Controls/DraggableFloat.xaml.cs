@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -29,6 +31,7 @@ namespace Artemis.UI.Shared
         private bool _calledDragStarted;
 
         private bool _inCallback;
+        private readonly Regex _inputRegex = new Regex("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
         private Point _mouseDragStartPoint;
         private float _startValue;
 
@@ -41,6 +44,12 @@ namespace Artemis.UI.Shared
         {
             get => (float) GetValue(ValueProperty);
             set => SetValue(ValueProperty, value);
+        }
+
+        public string InputValue
+        {
+            get => Value.ToString("N3", CultureInfo.InvariantCulture);
+            set => UpdateValue(value);
         }
 
         public float StepSize
@@ -61,25 +70,43 @@ namespace Artemis.UI.Shared
             set => SetValue(MaxProperty, value);
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public event EventHandler DragStarted;
-        public event EventHandler DragEnded;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        private void UpdateValue(string value)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedResult))
+                return;
+
+            Value = parsedResult;
+            OnPropertyChanged(nameof(InputValue));
         }
 
-        protected virtual void OnDragStarted()
+
+        private void DisplayInput()
         {
-            DragStarted?.Invoke(this, EventArgs.Empty);
+            DragHandle.Visibility = Visibility.Collapsed;
+            DraggableFloatInputTextBox.Visibility = Visibility.Visible;
+            DraggableFloatInputTextBox.Focus();
+            DraggableFloatInputTextBox.SelectAll();
         }
 
-        protected virtual void OnDragEnded()
+        private void DisplayDragHandle()
         {
-            DragEnded?.Invoke(this, EventArgs.Empty);
+            DraggableFloatInputTextBox.Visibility = Visibility.Collapsed;
+            DragHandle.Visibility = Visibility.Visible;
         }
+
+
+        /// <summary>
+        ///     Rounds the provided decimal to the nearest value of x with a given threshold
+        ///     Source: https://stackoverflow.com/a/25922075/5015269
+        /// </summary>
+        /// <param name="input">The value to round</param>
+        /// <param name="nearestOf">The value to round down towards</param>
+        private static decimal RoundToNearestOf(decimal input, decimal nearestOf)
+        {
+            return Math.Floor(input / nearestOf + 0.5m) * nearestOf;
+        }
+
+        #region Event handlers
 
         private static void FloatPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -89,6 +116,7 @@ namespace Artemis.UI.Shared
 
             draggableFloat._inCallback = true;
             draggableFloat.OnPropertyChanged(nameof(Value));
+            draggableFloat.OnPropertyChanged(nameof(InputValue));
             draggableFloat._inCallback = false;
         }
 
@@ -166,20 +194,6 @@ namespace Artemis.UI.Shared
             }
         }
 
-        private void DisplayInput()
-        {
-            DragHandle.Visibility = Visibility.Collapsed;
-            DraggableFloatInputTextBox.Visibility = Visibility.Visible;
-            DraggableFloatInputTextBox.Focus();
-            DraggableFloatInputTextBox.SelectAll();
-        }
-
-        private void DisplayDragHandle()
-        {
-            DraggableFloatInputTextBox.Visibility = Visibility.Collapsed;
-            DragHandle.Visibility = Visibility.Visible;
-        }
-
         private void Input_OnRequestBringIntoView(object sender, RequestBringIntoViewEventArgs e)
         {
             e.Handled = true;
@@ -187,7 +201,7 @@ namespace Artemis.UI.Shared
 
         private void Input_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = !ValidateInput(sender, e);
+            e.Handled = !_inputRegex.IsMatch(e.Text);
         }
 
         private void Input_OnPasting(object sender, DataObjectPastingEventArgs e)
@@ -195,37 +209,36 @@ namespace Artemis.UI.Shared
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
                 var text = (string) e.DataObject.GetData(typeof(string));
-                if (!float.TryParse(text, out _))
+                if (!_inputRegex.IsMatch(text))
                     e.CancelCommand();
             }
             else
                 e.CancelCommand();
         }
 
-        // Borrowed from https://stackoverflow.com/a/48082972/5015269 because a regex approach has bad compatibility with
-        // different locales
-        private bool ValidateInput(object sender, TextCompositionEventArgs e)
+        #endregion
+
+        #region Events
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public event EventHandler DragStarted;
+        public event EventHandler DragEnded;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
-            if (!(sender is TextBox textBox))
-                return false;
-
-            // Use SelectionStart property to find the caret position.
-            // Insert the previewed text into the existing text in the textbox.
-            var fullText = textBox.Text.Insert(textBox.SelectionStart, e.Text);
-
-            // If parsing is successful, set Handled to false
-            return float.TryParse(fullText, out _);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        /// <summary>
-        ///     Rounds the provided decimal to the nearest value of x with a given threshold
-        ///     Source: https://stackoverflow.com/a/25922075/5015269
-        /// </summary>
-        /// <param name="input">The value to round</param>
-        /// <param name="nearestOf">The value to round down towards</param>
-        private static decimal RoundToNearestOf(decimal input, decimal nearestOf)
+        protected virtual void OnDragStarted()
         {
-            return Math.Floor(input / nearestOf + 0.5m) * nearestOf;
+            DragStarted?.Invoke(this, EventArgs.Empty);
         }
+
+        protected virtual void OnDragEnded()
+        {
+            DragEnded?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

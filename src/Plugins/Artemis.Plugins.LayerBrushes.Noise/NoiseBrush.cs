@@ -69,10 +69,10 @@ namespace Artemis.Plugins.LayerBrushes.Noise
             var hardness = Properties.Hardness.CurrentValue / 100f;
 
             var scrolledX = renderPoint.X + _x;
-            if (float.IsNaN(scrolledX))
+            if (float.IsNaN(scrolledX) || float.IsInfinity(scrolledX))
                 scrolledX = 0;
             var scrolledY = renderPoint.Y + _y;
-            if (float.IsNaN(scrolledY))
+            if (float.IsNaN(scrolledY) || float.IsInfinity(scrolledY))
                 scrolledY = 0;
 
 
