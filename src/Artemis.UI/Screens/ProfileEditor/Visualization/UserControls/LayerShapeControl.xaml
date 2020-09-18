@@ -46,7 +46,6 @@
         <Rectangle x:Name="ResizeTopCenter"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -54,7 +53,6 @@
         <Rectangle x:Name="ResizeRightCenter"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -62,7 +60,6 @@
         <Rectangle x:Name="ResizeBottomCenter"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -70,7 +67,6 @@
         <Rectangle x:Name="ResizeLeftCenter"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -79,7 +75,6 @@
         <Rectangle x:Name="ResizeTopLeft"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -87,7 +82,6 @@
         <Rectangle x:Name="ResizeTopRight"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -95,7 +89,6 @@
         <Rectangle x:Name="ResizeBottomRight"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -103,7 +96,6 @@
         <Rectangle x:Name="ResizeBottomLeft"
                    Fill="White"
                    Stroke="{DynamicResource SecondaryAccentBrush}"
-                   StrokeThickness="0.5"
                    Cursor="Hand"
                    MouseDown="ResizeOnMouseDown"
                    MouseUp="ResizeOnMouseUp"
@@ -113,10 +105,13 @@
         <Ellipse x:Name="AnchorPoint"
                  Fill="White"
                  Stroke="{DynamicResource SecondaryAccentBrush}"
-                 StrokeThickness="0.5"
                  Cursor="SizeAll"
                  MouseDown="MoveOnMouseDown"
                  MouseUp="MoveOnMouseUp"
-                 MouseMove="MoveOnMouseMove" />
+                 MouseMove="MoveOnMouseMove" RenderTransformOrigin="0.5 0.5">
+            <Ellipse.RenderTransform>
+                <ScaleTransform ScaleX="1.5" ScaleY="1.5"></ScaleTransform>
+            </Ellipse.RenderTransform>
+        </Ellipse>
     </Canvas>
 </UserControl>
