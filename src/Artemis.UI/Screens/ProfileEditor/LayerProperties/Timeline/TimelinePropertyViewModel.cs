@@ -22,7 +22,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
             LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeAdded;
             LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeRemoved;
-            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
             UpdateKeyframes();
         }
 
@@ -69,7 +68,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
             LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeAdded;
             LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeRemoved;
-            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
         }
 
         private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
@@ -85,11 +83,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs<T> e)
         {
             UpdateKeyframes();
-        }
-
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
-        {
-            Width = GetAllKeyframeViewModels().Max(k => k.Position.TotalSeconds * _profileEditorService.PixelsPerSecond + 25);
         }
 
         private void UpdateKeyframes()

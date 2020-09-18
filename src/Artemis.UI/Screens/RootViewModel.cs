@@ -230,6 +230,8 @@ namespace Artemis.UI.Screens
             SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
 
             _titleUpdateTimer.Start();
+
+            base.OnActivate();
         }
 
         protected override void OnDeactivate()

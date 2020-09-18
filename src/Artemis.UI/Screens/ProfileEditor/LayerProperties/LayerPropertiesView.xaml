@@ -10,6 +10,7 @@
     xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
     xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
     xmlns:controls="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls"
+    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
     x:Class="Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerPropertiesView"
     mc:Ignorable="d"
     d:DesignHeight="450"
@@ -112,12 +113,35 @@
                         <Button Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Next frame" Command="{s:Action GoToNextFrame}" Focusable="False">
                             <materialDesign:PackIcon Kind="SkipNext" />
                         </Button>
-                        <ToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
-                                      ToolTip="Repeat after last keyframe"
-                                      IsChecked="{Binding RepeatAfterLastKeyframe}"
-                                      Focusable="False">
-                            <materialDesign:PackIcon Kind="Repeat" Height="24" Width="24" />
-                        </ToggleButton>
+                        <shared:LockableToggleButton Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                                     IsChecked="{Binding Repeating}"
+                                                     IsLocked="True"
+                                                     Focusable="False"
+                                                     Click="{s:Action CycleRepeating}">
+                            <shared:LockableToggleButton.ToolTip>
+                                <StackPanel>
+                                    <StackPanel Visibility="{Binding Repeating, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
+                                        <TextBlock Text="Repeat entire timeline"
+                                                   Visibility="{Binding RepeatTimeline, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                        <TextBlock Text="Repeat segment"
+                                                   Visibility="{Binding RepeatSegment, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                    </StackPanel>
+                                    <TextBlock Visibility="{Binding Repeating, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">Don't repeat the timeline</TextBlock>
+                                    <TextBlock>This setting only applies to the editor and <Run Text="does not" FontWeight="Bold"/> affect the repeat mode during profile use</TextBlock>
+                                </StackPanel>
+                            </shared:LockableToggleButton.ToolTip>
+                            <Grid>
+                                <materialDesign:PackIcon Kind="Repeat"
+                                                         Height="24"
+                                                         Width="24"
+                                                         Visibility="{Binding RepeatTimeline, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                                <materialDesign:PackIcon Kind="RepeatOne"
+                                                         Height="24"
+                                                         Width="24"
+                                                         Visibility="{Binding RepeatSegment, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
+                            </Grid>
+
+                        </shared:LockableToggleButton>
                     </StackPanel>
                     <StackPanel VerticalAlignment="Center">
                         <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -337,7 +361,7 @@
                     Padding="10 0"
                     Height="20"
                     Width="110"
-                    ToolTip="Select an effect to add"
+                    ToolTip="Add a new segment to the timeline"
                     VerticalAlignment="Center"
                     Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
                     IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}">

@@ -29,6 +29,8 @@ namespace Artemis.UI.Screens.Modules.Tabs
         {
             Items.Clear();
             Items.AddRange(Module.ActivationRequirements.Select(_moduleVmFactory.CreateActivationRequirementViewModel));
+
+            base.OnActivate();
         }
     }
 }

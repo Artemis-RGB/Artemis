@@ -25,8 +25,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
         private bool _playing;
+        private bool _repeating;
+        private bool _repeatSegment;
+        private bool _repeatTimeline = true;
         private int _propertyTreeIndex;
-        private bool _repeatAfterLastKeyframe;
         private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
 
@@ -89,10 +91,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => SetAndNotify(ref _playing, value);
         }
 
-        public bool RepeatAfterLastKeyframe
+        public bool Repeating
         {
-            get => _repeatAfterLastKeyframe;
-            set => SetAndNotify(ref _repeatAfterLastKeyframe, value);
+            get => _repeating;
+            set => SetAndNotify(ref _repeating, value);
+        }
+
+        public bool RepeatSegment
+        {
+            get => _repeatSegment;
+            set => SetAndNotify(ref _repeatSegment, value);
+        }
+
+        public bool RepeatTimeline
+        {
+            get => _repeatTimeline;
+            set => SetAndNotify(ref _repeatTimeline, value);
         }
 
         public string FormattedCurrentTime => $"{Math.Floor(ProfileEditorService.CurrentTime.TotalSeconds):00}.{ProfileEditorService.CurrentTime.Milliseconds:000}";
@@ -486,6 +500,27 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
 
+        public void CycleRepeating()
+        {
+            if (!Repeating)
+            {
+                RepeatTimeline = true;
+                RepeatSegment = false;
+                Repeating = true;
+            }
+            else if (RepeatTimeline)
+            {
+                RepeatTimeline = false;
+                RepeatSegment = true;
+            }
+            else if (RepeatSegment)
+            {
+                RepeatTimeline = true;
+                RepeatSegment = false;
+                Repeating = false;
+            }
+        }
+
         private TimeSpan CalculateEndTime()
         {
             var keyframeViewModels = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
@@ -497,19 +532,50 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             return keyframeViewModels.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
         }
 
+        private TimeSpan GetCurrentSegmentStart()
+        {
+            var current = ProfileEditorService.CurrentTime;
+            if (current < StartTimelineSegmentViewModel.SegmentEnd)
+                return StartTimelineSegmentViewModel.SegmentStart;
+            if (current < MainTimelineSegmentViewModel.SegmentEnd)
+                return MainTimelineSegmentViewModel.SegmentStart;
+            if (current < EndTimelineSegmentViewModel.SegmentEnd)
+                return EndTimelineSegmentViewModel.SegmentStart;
+
+            return TimeSpan.Zero;
+        }
+
+        private TimeSpan GetCurrentSegmentEnd()
+        {
+            var current = ProfileEditorService.CurrentTime;
+            if (current < StartTimelineSegmentViewModel.SegmentEnd)
+                return StartTimelineSegmentViewModel.SegmentEnd;
+            if (current < MainTimelineSegmentViewModel.SegmentEnd)
+                return MainTimelineSegmentViewModel.SegmentEnd;
+            if (current < EndTimelineSegmentViewModel.SegmentEnd)
+                return EndTimelineSegmentViewModel.SegmentEnd;
+
+            return TimeSpan.Zero;
+        }
+
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
             Execute.PostToUIThread(() =>
             {
                 var newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
-                if (RepeatAfterLastKeyframe)
+                if (Repeating && RepeatTimeline)
                 {
-                    if (newTime > CalculateEndTime().Subtract(TimeSpan.FromSeconds(10)))
+                    if (newTime > SelectedProfileElement.TimelineLength)
                         newTime = TimeSpan.Zero;
                 }
-                else if (newTime > CalculateEndTime())
+                else if (Repeating && RepeatSegment)
                 {
-                    newTime = CalculateEndTime();
+                    if (newTime > GetCurrentSegmentEnd())
+                        newTime = GetCurrentSegmentStart();
+                }
+                else if (newTime > SelectedProfileElement.TimelineLength)
+                {
+                    newTime = SelectedProfileElement.TimelineLength;
                     Pause();
                 }
 

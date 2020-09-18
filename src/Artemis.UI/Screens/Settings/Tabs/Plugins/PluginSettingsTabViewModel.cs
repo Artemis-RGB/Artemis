@@ -33,6 +33,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     Items.Add(pluginSettingsViewModel);
             });
 
+            base.OnActivate();
         }
     }
 }

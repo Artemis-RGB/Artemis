@@ -68,9 +68,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private void Update()
         {
-            StartSegmentEndPosition = LayerPropertiesViewModel.StartTimelineSegmentViewModel.SegmentWidth;
-            MainSegmentEndPosition = StartSegmentEndPosition + LayerPropertiesViewModel.MainTimelineSegmentViewModel.SegmentWidth;
-            EndSegmentEndPosition = MainSegmentEndPosition + LayerPropertiesViewModel.EndTimelineSegmentViewModel.SegmentWidth;
+            StartSegmentEndPosition = LayerPropertiesViewModel.StartTimelineSegmentViewModel.SegmentEnd.TotalSeconds * _profileEditorService.PixelsPerSecond;
+            MainSegmentEndPosition = LayerPropertiesViewModel.MainTimelineSegmentViewModel.SegmentEnd.TotalSeconds * _profileEditorService.PixelsPerSecond;
+            EndSegmentEndPosition = LayerPropertiesViewModel.EndTimelineSegmentViewModel.SegmentEnd.TotalSeconds * _profileEditorService.PixelsPerSecond;
 
             TotalTimelineWidth = EndSegmentEndPosition;
         }

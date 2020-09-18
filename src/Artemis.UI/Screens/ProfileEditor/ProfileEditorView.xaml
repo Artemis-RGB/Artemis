@@ -140,6 +140,7 @@
                     </ComboBox.ItemsPanel>
                 </ComboBox>
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        ToolTip="Add a new profile"
                         Margin="5 0"
                         Grid.Column="1"
                         Width="26"
@@ -149,6 +150,7 @@
                     <materialDesign:PackIcon Kind="Add" Height="14" Width="14" />
                 </Button>
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                        ToolTip="Delete the current profile"
                         Margin="5 0"
                         Grid.Column="2"
                         Width="26"
@@ -158,6 +160,7 @@
                     <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" />
                 </Button>
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        ToolTip="Export the current profile"
                         Margin="5 0"
                         Grid.Column="3"
                         Width="26"
@@ -167,6 +170,7 @@
                     <materialDesign:PackIcon Kind="Export" Height="14" Width="14" />
                 </Button>
                 <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        ToolTip="Import an existing profile"
                         Margin="5 0 0 0"
                         Grid.Column="4"
                         Width="26"
