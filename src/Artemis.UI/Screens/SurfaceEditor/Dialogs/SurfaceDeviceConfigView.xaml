@@ -14,17 +14,21 @@
         <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
 
         <TextBox materialDesign:HintAssist.Hint="X-coordinate"
+                 materialDesign:TextFieldAssist.SuffixText="mm"
                  Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
         <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
+                 materialDesign:TextFieldAssist.SuffixText="mm"
                  Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
         <TextBox materialDesign:HintAssist.Hint="Scale"
+                 materialDesign:TextFieldAssist.SuffixText="times"
                  Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
         <TextBox materialDesign:HintAssist.Hint="Rotation"
+                 materialDesign:TextFieldAssist.SuffixText="deg"
                  Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
                  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                  Margin="0 10" />
