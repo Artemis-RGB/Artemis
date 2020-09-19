@@ -82,10 +82,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             }
 
             // Ensure the layer has a root display condition group
-            if (e.RenderProfileElement.DisplayConditionGroup == null)
-                e.RenderProfileElement.DisplayConditionGroup = new DisplayConditionGroup(null);
+            if (e.RenderProfileElement.DataModelConditionGroup == null)
+                e.RenderProfileElement.DataModelConditionGroup = new DataModelConditionGroup(null);
 
-            ActiveItem = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DisplayConditionGroup, false);
+            ActiveItem = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DataModelConditionGroup, false);
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
 

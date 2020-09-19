@@ -93,12 +93,12 @@ namespace Artemis.Core
             Action(interval.TotalSeconds);
         }
 
-        private void InstanceOnPluginEnabled(object? sender, EventArgs e)
+        private void InstanceOnPluginEnabled(object sender, EventArgs e)
         {
             Start();
         }
 
-        private void InstanceOnPluginDisabled(object? sender, EventArgs e)
+        private void InstanceOnPluginDisabled(object sender, EventArgs e)
         {
             Stop();
         }

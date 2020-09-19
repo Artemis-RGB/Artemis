@@ -8,6 +8,9 @@ using Stylet;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents basic info about a plugin and contains a reference to the instance of said plugin
+    /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : PropertyChangedBase
     {
@@ -17,7 +20,6 @@ namespace Artemis.Core
         private Guid _guid;
         private string _icon;
         private Plugin _instance;
-        private bool _lastEnableSuccessful;
         private Exception _loadException;
         private string _main;
         private string _name;
@@ -140,6 +142,7 @@ namespace Artemis.Core
         /// </summary>
         internal PluginEntity PluginEntity { get; set; }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{Name} v{Version} - {Guid}";

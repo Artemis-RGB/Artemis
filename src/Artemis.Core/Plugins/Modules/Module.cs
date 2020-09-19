@@ -144,13 +144,13 @@ namespace Artemis.Core.Modules
         public bool IsUpdateAllowed => IsActivated && (UpdateDuringActivationOverride || !IsActivatedOverride);
 
         /// <summary>
-        ///     Called each frame when the module must update
+        ///     Called each frame when the module should update
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
         public abstract void Update(double deltaTime);
 
         /// <summary>
-        ///     Called each frame when the module must render
+        ///     Called each frame when the module should render
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
         /// <param name="surface">The RGB Surface to render to</param>

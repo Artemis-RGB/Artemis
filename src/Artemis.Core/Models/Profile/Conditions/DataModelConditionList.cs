@@ -8,11 +8,18 @@ using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
 {
-    public class DisplayConditionList : DisplayConditionPart
+    /// <summary>
+    ///     A condition that evaluates one or more predicates inside a list
+    /// </summary>
+    public class DataModelConditionList : DataModelConditionPart
     {
         private bool _disposed;
 
-        public DisplayConditionList(DisplayConditionPart parent)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelConditionList" /> class
+        /// </summary>
+        /// <param name="parent"></param>
+        public DataModelConditionList(DataModelConditionPart parent)
         {
             Parent = parent;
             Entity = new DisplayConditionListEntity();
@@ -20,7 +27,7 @@ namespace Artemis.Core
             Initialize();
         }
 
-        public DisplayConditionList(DisplayConditionPart parent, DisplayConditionListEntity entity)
+        internal DataModelConditionList(DataModelConditionPart parent, DisplayConditionListEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -29,14 +36,29 @@ namespace Artemis.Core
             Initialize();
         }
 
-        public DisplayConditionListEntity Entity { get; set; }
+        internal DisplayConditionListEntity Entity { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the list operator
+        /// </summary>
         public ListOperator ListOperator { get; set; }
+
+        /// <summary>
+        ///     Gets the currently used instance of the list data model
+        /// </summary>
         public DataModel ListDataModel { get; private set; }
+
+        /// <summary>
+        ///     Gets the path of the list property in the <see cref="ListDataModel" />
+        /// </summary>
         public string ListPropertyPath { get; private set; }
 
-        public Func<object, IList> CompiledListAccessor { get; set; }
+        /// <summary>
+        ///     Gets the compiled function that accesses the list this condition evaluates on
+        /// </summary>
+        public Func<object, IList> CompiledListAccessor { get; private set; }
 
+        /// <inheritdoc />
         public override bool Evaluate()
         {
             if (_disposed)
@@ -48,27 +70,11 @@ namespace Artemis.Core
             return EvaluateObject(CompiledListAccessor(ListDataModel));
         }
 
-        public override bool EvaluateObject(object target)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionList");
-
-            if (!Children.Any())
-                return false;
-            if (!(target is IList list))
-                return false;
-
-            var objectList = list.Cast<object>();
-            return ListOperator switch
-            {
-                ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
-                ListOperator.All => objectList.All(o => Children[0].EvaluateObject(o)),
-                ListOperator.None => objectList.Any(o => !Children[0].EvaluateObject(o)),
-                ListOperator.Count => false,
-                _ => throw new ArgumentOutOfRangeException()
-            };
-        }
-
+        /// <summary>
+        ///     Updates the list the predicate is evaluated on
+        /// </summary>
+        /// <param name="dataModel">The data model of the list</param>
+        /// <param name="path">The path pointing to the list inside the list</param>
         public void UpdateList(DataModel dataModel, string path)
         {
             if (_disposed)
@@ -98,24 +104,49 @@ namespace Artemis.Core
                 return;
 
             // Create a new root group
-            AddChild(new DisplayConditionGroup(this));
+            AddChild(new DataModelConditionGroup(this));
             CreateExpression();
         }
 
-        public void CreateExpression()
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            foreach (var child in Children)
+                child.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        internal override bool EvaluateObject(object target)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DisplayConditionList");
 
-            var parameter = Expression.Parameter(typeof(object), "listDataModel");
-            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, ListDataModel.GetType()),
-                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+            if (!Children.Any())
+                return false;
+            if (!(target is IList list))
+                return false;
 
-            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
-            CompiledListAccessor = lambda.Compile();
+            var objectList = list.Cast<object>();
+            return ListOperator switch
+            {
+                ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
+                ListOperator.All => objectList.All(o => Children[0].EvaluateObject(o)),
+                ListOperator.None => objectList.Any(o => !Children[0].EvaluateObject(o)),
+                ListOperator.Count => false,
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
-        
+
         internal override void Save()
         {
             // Target list
@@ -159,12 +190,26 @@ namespace Artemis.Core
 
             // There should only be one child and it should be a group
             if (Entity.Children.SingleOrDefault() is DisplayConditionGroupEntity rootGroup)
-                AddChild(new DisplayConditionGroup(this, rootGroup));
+                AddChild(new DataModelConditionGroup(this, rootGroup));
             else
             {
                 Entity.Children.Clear();
-                AddChild(new DisplayConditionGroup(this));
+                AddChild(new DataModelConditionGroup(this));
             }
+        }
+
+        private void CreateExpression()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DisplayConditionList");
+
+            var parameter = Expression.Parameter(typeof(object), "listDataModel");
+            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
+                Expression.Convert(parameter, ListDataModel.GetType()),
+                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+
+            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
+            CompiledListAccessor = lambda.Compile();
         }
 
 
@@ -191,31 +236,31 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            _disposed = true;
-
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
-            foreach (var child in Children)
-                child.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
     }
 
+    /// <summary>
+    ///     Represents a list operator
+    /// </summary>
     public enum ListOperator
     {
+        /// <summary>
+        ///     Any of the list items should evaluate to true
+        /// </summary>
         Any,
+
+        /// <summary>
+        ///     All of the list items should evaluate to true
+        /// </summary>
         All,
+
+        /// <summary>
+        ///     None of the list items should evaluate to true
+        /// </summary>
         None,
+
+        /// <summary>
+        ///     A specific amount of the list items should evaluate to true
+        /// </summary>
         Count
     }
 }

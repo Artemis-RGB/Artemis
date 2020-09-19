@@ -1,8 +1,11 @@
 ﻿using System;
-using Artemis.Core.Services;
 
 namespace Artemis.Core.LayerEffects
 {
+    /// <summary>
+    ///     Represents an effect that applies preprocessing and/or postprocessing to a layer
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public abstract class LayerEffect<T> : BaseLayerEffect where T : LayerPropertyGroup
     {
         private T _properties;

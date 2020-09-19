@@ -45,6 +45,16 @@ namespace Artemis.Core.LayerBrushes
         public LayerBrushProvider LayerBrushProvider { get; }
 
         /// <summary>
+        ///     Determines whether the provided <paramref name="reference" /> references to a brush provided by this descriptor
+        /// </summary>
+        public bool MatchesLayerBrushReference(LayerBrushReference reference)
+        {
+            if (reference == null)
+                return false;
+            return LayerBrushProvider.PluginInfo.Guid == reference.BrushPluginGuid && LayerBrushType.Name == reference.BrushType;
+        }
+
+        /// <summary>
         ///     Creates an instance of the described brush and applies it to the layer
         /// </summary>
         internal void CreateInstance(Layer layer)
@@ -60,13 +70,6 @@ namespace Artemis.Core.LayerBrushes
 
             layer.LayerBrush = brush;
             layer.OnLayerBrushUpdated();
-        }
-
-        public bool MatchesLayerBrushReference(LayerBrushReference reference)
-        {
-            if (reference == null)
-                return false;
-            return LayerBrushProvider.PluginInfo.Guid == reference.BrushPluginGuid && LayerBrushType.Name == reference.BrushType;
         }
     }
 }

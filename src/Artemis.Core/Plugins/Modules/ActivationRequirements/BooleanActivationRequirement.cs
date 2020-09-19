@@ -16,6 +16,7 @@
             return ActivationMet;
         }
 
+        /// <inheritdoc />
         public string GetUserFriendlyDescription()
         {
             return "No description available";

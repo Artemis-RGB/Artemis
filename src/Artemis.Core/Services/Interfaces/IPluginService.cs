@@ -70,10 +70,10 @@ namespace Artemis.Core.Services
         List<PluginInfo> GetAllPluginInfo();
 
         /// <summary>
-        ///     Finds all enabled <see cref="Plugin" /> instances of type T
+        ///     Finds all enabled <see cref="Plugin" /> instances of <typeparamref name="T"/>
         /// </summary>
         /// <typeparam name="T">Either <see cref="Plugin" /> or a plugin type implementing <see cref="Plugin" /></typeparam>
-        /// <returns>Returns a list of plug instances of type T
+        /// <returns>Returns a list of plugin instances of <typeparamref name="T"/></returns>
         List<T> GetPluginsOfType<T>() where T : Plugin;
 
         /// <summary>

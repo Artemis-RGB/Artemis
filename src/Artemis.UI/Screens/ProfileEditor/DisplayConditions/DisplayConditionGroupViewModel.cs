@@ -17,11 +17,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private bool _isInitialized;
         private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup,
+        public DisplayConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             bool isListGroup,
             IProfileEditorService profileEditorService,
             IDisplayConditionsVmFactory displayConditionsVmFactory)
-            : base(displayConditionGroup)
+            : base(dataModelConditionGroup)
         {
             IsListGroup = isListGroup;
             _profileEditorService = profileEditorService;
@@ -38,7 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public bool IsListGroup { get; }
 
-        public DisplayConditionGroup DisplayConditionGroup => (DisplayConditionGroup) Model;
+        public DataModelConditionGroup DataModelConditionGroup => (DataModelConditionGroup) Model;
 
         public bool IsRootGroup
         {
@@ -53,12 +53,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         }
 
         public bool DisplayBooleanOperator => Items.Count > 1;
-        public string SelectedBooleanOperator => DisplayConditionGroup.BooleanOperator.Humanize();
+        public string SelectedBooleanOperator => DataModelConditionGroup.BooleanOperator.Humanize();
 
         public void SelectBooleanOperator(string type)
         {
             var enumValue = Enum.Parse<BooleanOperator>(type);
-            DisplayConditionGroup.BooleanOperator = enumValue;
+            DataModelConditionGroup.BooleanOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -69,19 +69,19 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (type == "Static")
             {
                 if (!IsListGroup)
-                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, ProfileRightSideType.Static));
+                    DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Static));
                 else
-                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, ProfileRightSideType.Static));
+                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Static));
             }
             else if (type == "Dynamic")
             {
                 if (!IsListGroup)
-                    DisplayConditionGroup.AddChild(new DisplayConditionPredicate(DisplayConditionGroup, ProfileRightSideType.Dynamic));
+                    DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
                 else
-                    DisplayConditionGroup.AddChild(new DisplayConditionListPredicate(DisplayConditionGroup, ProfileRightSideType.Dynamic));
+                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
             }
             else if (type == "List" && !IsListGroup)
-                DisplayConditionGroup.AddChild(new DisplayConditionList(DisplayConditionGroup));
+                DataModelConditionGroup.AddChild(new DataModelConditionList(DataModelConditionGroup));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -89,7 +89,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public void AddGroup()
         {
-            DisplayConditionGroup.AddChild(new DisplayConditionGroup(DisplayConditionGroup));
+            DataModelConditionGroup.AddChild(new DataModelConditionGroup(DataModelConditionGroup));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -100,7 +100,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Items.Where(c => !DisplayConditionGroup.Children.Contains(c.Model)).ToList();
+            var toRemove = Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
                 Items.Remove(displayConditionViewModel);
@@ -112,17 +112,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
                 switch (childModel)
                 {
-                    case DisplayConditionGroup displayConditionGroup:
+                    case DataModelConditionGroup displayConditionGroup:
                         Items.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, IsListGroup));
                         break;
-                    case DisplayConditionList displayConditionListPredicate:
+                    case DataModelConditionList displayConditionListPredicate:
                         Items.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate));
                         break;
-                    case DisplayConditionPredicate displayConditionPredicate:
+                    case DataModelConditionPredicate displayConditionPredicate:
                         if (!IsListGroup)
                             Items.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate));
                         break;
-                    case DisplayConditionListPredicate displayConditionListPredicate:
+                    case DataModelConditionListPredicate displayConditionListPredicate:
                         if (IsListGroup)
                             Items.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate));
                         break;

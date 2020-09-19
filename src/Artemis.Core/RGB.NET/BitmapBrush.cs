@@ -47,8 +47,19 @@ namespace Artemis.Core
         /// <inheritdoc />
         public Dictionary<BrushRenderTarget, Color> RenderedTargets { get; } = new Dictionary<BrushRenderTarget, Color>();
 
+        /// <summary>
+        ///     Gets or sets the desired scale of the bitmap brush
+        /// </summary>
         public Scale Scale { get; set; }
+
+        /// <summary>
+        ///     Gets the last rendered scale of the bitmap brush
+        /// </summary>
         public Scale RenderedScale { get; private set; }
+
+        /// <summary>
+        ///     Gets the bitmap used to sample the brush
+        /// </summary>
         public SKBitmap Bitmap { get; private set; }
 
         #endregion
@@ -148,6 +159,7 @@ namespace Artemis.Core
         {
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             lock (_disposeLock)
@@ -157,7 +169,7 @@ namespace Artemis.Core
             }
         }
 
-        public bool IsDisposed { get; set; }
+        internal bool IsDisposed { get; set; }
 
         #endregion
     }

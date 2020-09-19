@@ -65,10 +65,10 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDisplayConditionsVmFactory : IVmFactory
     {
-        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DisplayConditionGroup displayConditionGroup, bool isListGroup);
-        DisplayConditionListViewModel DisplayConditionListViewModel(DisplayConditionList displayConditionList);
-        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DisplayConditionPredicate displayConditionPredicate);
-        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DisplayConditionListPredicate displayConditionListPredicate);
+        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, bool isListGroup);
+        DisplayConditionListViewModel DisplayConditionListViewModel(DataModelConditionList dataModelConditionList);
+        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DataModelConditionPredicate dataModelConditionPredicate);
+        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

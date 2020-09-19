@@ -43,6 +43,7 @@ namespace Artemis.Core.Modules
                 : processes.Any();
         }
 
+        /// <inheritdoc />
         public string GetUserFriendlyDescription()
         {
             var description = $"Requirement met when \"{ProcessName}.exe\" is running";

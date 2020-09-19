@@ -8,43 +8,43 @@ namespace Artemis.Core
     /// <summary>
     ///     An abstract class for display condition parts
     /// </summary>
-    public abstract class DisplayConditionPart : IDisposable
+    public abstract class DataModelConditionPart : IDisposable
     {
-        private readonly List<DisplayConditionPart> _children = new List<DisplayConditionPart>();
+        private readonly List<DataModelConditionPart> _children = new List<DataModelConditionPart>();
 
         /// <summary>
         ///     Gets the parent of this part
         /// </summary>
-        public DisplayConditionPart Parent { get; internal set; }
+        public DataModelConditionPart Parent { get; internal set; }
 
         /// <summary>
         ///     Gets the children of this part
         /// </summary>
-        public IReadOnlyList<DisplayConditionPart> Children => _children.AsReadOnly();
+        public IReadOnlyList<DataModelConditionPart> Children => _children.AsReadOnly();
 
         /// <summary>
         ///     Adds a child to the display condition part's <see cref="Children" /> collection
         /// </summary>
-        /// <param name="displayConditionPart"></param>
-        public void AddChild(DisplayConditionPart displayConditionPart)
+        /// <param name="dataModelConditionPart"></param>
+        public void AddChild(DataModelConditionPart dataModelConditionPart)
         {
-            if (!_children.Contains(displayConditionPart))
+            if (!_children.Contains(dataModelConditionPart))
             {
-                displayConditionPart.Parent = this;
-                _children.Add(displayConditionPart);
+                dataModelConditionPart.Parent = this;
+                _children.Add(dataModelConditionPart);
             }
         }
 
         /// <summary>
         ///     Removes a child from the display condition part's <see cref="Children" /> collection
         /// </summary>
-        /// <param name="displayConditionPart">The child to remove</param>
-        public void RemoveChild(DisplayConditionPart displayConditionPart)
+        /// <param name="dataModelConditionPart">The child to remove</param>
+        public void RemoveChild(DataModelConditionPart dataModelConditionPart)
         {
-            if (_children.Contains(displayConditionPart))
+            if (_children.Contains(dataModelConditionPart))
             {
-                displayConditionPart.Parent = null;
-                _children.Remove(displayConditionPart);
+                dataModelConditionPart.Parent = null;
+                _children.Remove(dataModelConditionPart);
             }
         }
 
@@ -59,13 +59,16 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        public abstract bool EvaluateObject(object target);
+        internal abstract bool EvaluateObject(object target);
 
         internal abstract void Save();
         internal abstract DisplayConditionPartEntity GetEntity();
 
         #region IDisposable
 
+        /// <summary>
+        /// Disposed the condition part
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -73,6 +76,7 @@ namespace Artemis.Core
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
