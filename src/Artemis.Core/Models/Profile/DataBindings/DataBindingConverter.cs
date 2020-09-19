@@ -11,15 +11,18 @@ namespace Artemis.Core
     public abstract class DataBindingConverter<TLayerProperty, TProperty> : IDataBindingConverter
     {
         /// <summary>
-        ///     A dynamically compiled getter pointing to the data bound property
+        ///     Gets a dynamically compiled getter pointing to the data bound property
         /// </summary>
         public Func<TLayerProperty, TProperty> GetExpression { get; private set; }
 
         /// <summary>
-        ///     A dynamically compiled setter pointing to the data bound property
+        ///     Gets a dynamically compiled setter pointing to the data bound property used for value types
         /// </summary>
         public Action<TProperty> ValueTypeSetExpression { get; private set; }
 
+        /// <summary>
+        ///     Gets a dynamically compiled setter pointing to the data bound property used for reference types
+        /// </summary>
         public Action<TLayerProperty, TProperty> ReferenceTypeSetExpression { get; private set; }
 
         /// <summary>

@@ -6,6 +6,10 @@ using Stylet;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a setting tied to a plugin of type <typeparamref name="T" />
+    /// </summary>
+    /// <typeparam name="T">The value type of the setting</typeparam>
     public class PluginSetting<T> : PropertyChangedBase
     {
         // ReSharper disable once NotAccessedField.Local
@@ -78,14 +82,21 @@ namespace Artemis.Core
             _pluginRepository.SaveSetting(_pluginSettingEntity);
         }
 
+        /// <summary>
+        ///     Occurs when the value of the setting has been changed
+        /// </summary>
         public event EventHandler<EventArgs> SettingChanged;
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"{nameof(Name)}: {Name}, {nameof(Value)}: {Value}, {nameof(HasChanged)}: {HasChanged}";
         }
 
-        protected virtual void OnSettingChanged()
+        /// <summary>
+        ///     Invokes the <see cref="SettingChanged" /> event
+        /// </summary>
+        protected internal virtual void OnSettingChanged()
         {
             SettingChanged?.Invoke(this, EventArgs.Empty);
         }

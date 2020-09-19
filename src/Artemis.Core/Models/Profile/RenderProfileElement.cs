@@ -49,9 +49,9 @@ namespace Artemis.Core
             DisplayContinuously = RenderElementEntity.DisplayContinuously;
             AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
 
-            DisplayConditionGroup = RenderElementEntity.RootDisplayCondition != null
-                ? new DisplayConditionGroup(null, RenderElementEntity.RootDisplayCondition)
-                : new DisplayConditionGroup(null);
+            DataModelConditionGroup = RenderElementEntity.RootDisplayCondition != null
+                ? new DataModelConditionGroup(null, RenderElementEntity.RootDisplayCondition)
+                : new DataModelConditionGroup(null);
 
             ActivateEffects();
         }
@@ -82,8 +82,8 @@ namespace Artemis.Core
             }
 
             // Conditions
-            RenderElementEntity.RootDisplayCondition = DisplayConditionGroup?.Entity;
-            DisplayConditionGroup?.Save();
+            RenderElementEntity.RootDisplayCondition = DataModelConditionGroup?.Entity;
+            DataModelConditionGroup?.Save();
         }
 
         #region Properties
@@ -392,22 +392,22 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private DisplayConditionGroup _displayConditionGroup;
+        private DataModelConditionGroup _dataModelConditionGroup;
         private TimeSpan _timelinePosition;
         private bool _displayConditionMet;
 
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>
-        public DisplayConditionGroup DisplayConditionGroup
+        public DataModelConditionGroup DataModelConditionGroup
         {
-            get => _displayConditionGroup;
-            set => SetAndNotify(ref _displayConditionGroup, value);
+            get => _dataModelConditionGroup;
+            set => SetAndNotify(ref _dataModelConditionGroup, value);
         }
 
         public void UpdateDisplayCondition()
         {
-            var conditionMet = DisplayConditionGroup == null || DisplayConditionGroup.Evaluate();
+            var conditionMet = DataModelConditionGroup == null || DataModelConditionGroup.Evaluate();
             if (conditionMet && !DisplayConditionMet)
                 TimelinePosition = TimeSpan.Zero;
 

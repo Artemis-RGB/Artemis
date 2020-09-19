@@ -25,12 +25,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private DataModelPropertiesViewModel _targetDataModel;
 
         public DisplayConditionListViewModel(
-            DisplayConditionList displayConditionList,
+            DataModelConditionList dataModelConditionList,
             DisplayConditionViewModel parent,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IDisplayConditionsVmFactory displayConditionsVmFactory,
-            ISettingsService settingsService) : base(displayConditionList)
+            ISettingsService settingsService) : base(dataModelConditionList)
         {
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public DelegateCommand SelectListPropertyCommand { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
 
-        public DisplayConditionList DisplayConditionList => (DisplayConditionList) Model;
+        public DataModelConditionList DataModelConditionList => (DataModelConditionList) Model;
 
         public bool IsInitialized
         {
@@ -70,12 +70,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             set => SetAndNotify(ref _selectedListProperty, value);
         }
 
-        public string SelectedListOperator => DisplayConditionList.ListOperator.Humanize();
+        public string SelectedListOperator => DataModelConditionList.ListOperator.Humanize();
 
         public void SelectListOperator(string type)
         {
             var enumValue = Enum.Parse<ListOperator>(type);
-            DisplayConditionList.ListOperator = enumValue;
+            DataModelConditionList.ListOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -84,9 +84,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public void AddCondition(string type)
         {
             if (type == "Static")
-                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, ProfileRightSideType.Static));
+                DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Static));
             else if (type == "Dynamic")
-                DisplayConditionList.AddChild(new DisplayConditionPredicate(DisplayConditionList, ProfileRightSideType.Dynamic));
+                DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -94,7 +94,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public void AddGroup()
         {
-            DisplayConditionList.AddChild(new DisplayConditionGroup(DisplayConditionList));
+            DataModelConditionList.AddChild(new DataModelConditionGroup(DataModelConditionList));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -122,7 +122,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public void ApplyList()
         {
-            DisplayConditionList.UpdateList(SelectedListProperty.DataModel, SelectedListProperty.PropertyPath);
+            DataModelConditionList.UpdateList(SelectedListProperty.DataModel, SelectedListProperty.PropertyPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
@@ -136,11 +136,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             // Update the selected list property
-            if (DisplayConditionList.ListDataModel != null && DisplayConditionList.ListPropertyPath != null)
+            if (DataModelConditionList.ListDataModel != null && DataModelConditionList.ListPropertyPath != null)
             {
                 var child = TargetDataModel.GetChildByPath(
-                    DisplayConditionList.ListDataModel.PluginInfo.Guid,
-                    DisplayConditionList.ListPropertyPath
+                    DataModelConditionList.ListDataModel.PluginInfo.Guid,
+                    DataModelConditionList.ListPropertyPath
                 );
                 SelectedListProperty = child as DataModelListViewModel;
             }
@@ -149,7 +149,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             TargetDataModel.ApplyTypeFilter(true, typeof(IList));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Items.Where(c => !DisplayConditionList.Children.Contains(c.Model)).ToList();
+            var toRemove = Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
             foreach (var displayConditionViewModel in toRemove)
                 Items.Remove(displayConditionViewModel);
@@ -158,7 +158,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             {
                 if (Items.Any(c => c.Model == childModel))
                     continue;
-                if (!(childModel is DisplayConditionGroup displayConditionGroup))
+                if (!(childModel is DataModelConditionGroup displayConditionGroup))
                     continue;
 
                 var viewModel = _displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, true);

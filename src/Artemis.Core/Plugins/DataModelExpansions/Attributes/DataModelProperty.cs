@@ -2,6 +2,9 @@
 
 namespace Artemis.Core.DataModelExpansions
 {
+    /// <summary>
+    ///     Represents an attribute that describes a data model property
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
     public class DataModelPropertyAttribute : Attribute
     {

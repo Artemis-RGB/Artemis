@@ -9,17 +9,17 @@ using Newtonsoft.Json;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     A predicate in a display condition using either two data model values or one data model value and a
+    ///     A predicate in a data model condition using either two data model values or one data model value and a
     ///     static value
     /// </summary>
-    public class DisplayConditionPredicate : DisplayConditionPart
+    public class DataModelConditionPredicate : DataModelConditionPart
     {
         /// <summary>
-        ///     Creates a new instance of the <see cref="DisplayConditionPredicate" /> class
+        ///     Creates a new instance of the <see cref="DataModelConditionPredicate" /> class
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="predicateType"></param>
-        public DisplayConditionPredicate(DisplayConditionPart parent, ProfileRightSideType predicateType)
+        public DataModelConditionPredicate(DataModelConditionPart parent, ProfileRightSideType predicateType)
         {
             Parent = parent;
             PredicateType = predicateType;
@@ -28,12 +28,7 @@ namespace Artemis.Core
             Initialize();
         }
 
-        /// <summary>
-        ///     Creates a new instance of the <see cref="DisplayConditionPredicate" /> class
-        /// </summary>
-        /// <param name="parent"></param>
-        /// <param name="entity"></param>
-        public DisplayConditionPredicate(DisplayConditionPart parent, DisplayConditionPredicateEntity entity)
+        internal DataModelConditionPredicate(DataModelConditionPart parent, DisplayConditionPredicateEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -219,7 +214,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object target)
         {
             return false;
         }

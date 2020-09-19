@@ -28,7 +28,7 @@ namespace Artemis.Core.DataModelExpansions
         [DataModelIgnore]
         public bool IsExpansion { get; internal set; }
 
-        public bool ContainsPath(string path)
+        internal bool ContainsPath(string path)
         {
             var parts = path.Split('.');
             var current = GetType();
@@ -43,7 +43,7 @@ namespace Artemis.Core.DataModelExpansions
             return true;
         }
 
-        public Type GetTypeAtPath(string path)
+        internal Type GetTypeAtPath(string path)
         {
             if (!ContainsPath(path))
                 return null;
@@ -62,7 +62,7 @@ namespace Artemis.Core.DataModelExpansions
             return result;
         }
 
-        public Type GetListTypeInPath(string path)
+        internal Type GetListTypeInPath(string path)
         {
             if (!ContainsPath(path))
                 return null;
@@ -90,7 +90,7 @@ namespace Artemis.Core.DataModelExpansions
             return null;
         }
 
-        public Type GetListTypeAtPath(string path)
+        internal Type GetListTypeAtPath(string path)
         {
             if (!ContainsPath(path))
                 return null;
@@ -98,29 +98,7 @@ namespace Artemis.Core.DataModelExpansions
             var child = GetTypeAtPath(path);
             return child.GenericTypeArguments.Length > 0 ? child.GenericTypeArguments[0] : null;
         }
-
-        public string GetListInnerPath(string path)
-        {
-            if (GetListTypeInPath(path) == null)
-                throw new ArtemisCoreException($"Cannot determine inner list path at {path} because it does not contain a list");
-
-            var parts = path.Split('.');
-            var current = GetType();
-
-            for (var index = 0; index < parts.Length; index++)
-            {
-                var part = parts[index];
-                var property = current.GetProperty(part);
-
-                if (typeof(IList).IsAssignableFrom(property.PropertyType))
-                    return string.Join('.', parts.Skip(index + 1).ToList());
-
-                current = property.PropertyType;
-            }
-
-            return null;
-        }
-
+        
         /// <summary>
         ///     Returns a read-only list of all properties in this datamodel that are to be ignored
         /// </summary>

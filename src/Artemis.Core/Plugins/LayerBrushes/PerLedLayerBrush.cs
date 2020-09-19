@@ -1,15 +1,20 @@
-﻿using Artemis.Core.Services;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
 {
+    /// <summary>
+    ///     Represents a brush that renders on a per-layer basis
+    /// </summary>
+    /// <typeparam name="T">The type of brush properties</typeparam>
     public abstract class PerLedLayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="PerLedLayerBrush{T}" /> class
+        /// </summary>
         protected PerLedLayerBrush()
         {
             BrushType = LayerBrushType.Regular;
         }
-
 
         /// <summary>
         ///     The main method of rendering for this type of brush. Called once per frame for each LED in the layer

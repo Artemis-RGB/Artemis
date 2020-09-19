@@ -91,18 +91,27 @@ namespace Artemis.Core.Modules
     /// </summary>
     public abstract class ProfileModule : Module
     {
-        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
+        /// </summary>
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ProfileModule" /> class
+        /// </summary>
         protected ProfileModule()
         {
             OpacityOverride = 1;
         }
 
         /// <summary>
-        ///     Gets a list of all properties ignored at runtime using IgnoreProperty(x => x.y)
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
 
+        /// <summary>
+        ///     Gets the currently active profile
+        /// </summary>
         public Profile ActiveProfile { get; private set; }
 
         /// <summary>
@@ -225,8 +234,14 @@ namespace Artemis.Core.Modules
 
         #region Events
 
+        /// <summary>
+        ///     Occurs when the <see cref="ActiveProfile" /> has changed
+        /// </summary>
         public event EventHandler ActiveProfileChanged;
 
+        /// <summary>
+        ///     Invokes the <see cref="ActiveProfileChanged" /> event
+        /// </summary>
         protected virtual void OnActiveProfileChanged()
         {
             ActiveProfileChanged?.Invoke(this, EventArgs.Empty);

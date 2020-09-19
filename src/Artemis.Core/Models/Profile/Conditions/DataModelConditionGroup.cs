@@ -6,29 +6,29 @@ using Artemis.Storage.Entities.Profile.Conditions;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     A group containing zero to many <see cref="DisplayConditionPart" />s which it evaluates using a boolean specific
+    ///     A group containing zero to many <see cref="DataModelConditionPart" />s which it evaluates using a boolean specific
     ///     operator
     /// </summary>
-    public class DisplayConditionGroup : DisplayConditionPart
+    public class DataModelConditionGroup : DataModelConditionPart
     {
         private bool _disposed;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="DisplayConditionGroup" /> class
+        ///     Creates a new instance of the <see cref="DataModelConditionGroup" /> class
         /// </summary>
         /// <param name="parent"></param>
-        public DisplayConditionGroup(DisplayConditionPart parent)
+        public DataModelConditionGroup(DataModelConditionPart parent)
         {
             Parent = parent;
             Entity = new DisplayConditionGroupEntity();
         }
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="DisplayConditionGroup" /> class
+        ///     Creates a new instance of the <see cref="DataModelConditionGroup" /> class
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="entity"></param>
-        public DisplayConditionGroup(DisplayConditionPart parent, DisplayConditionGroupEntity entity)
+        public DataModelConditionGroup(DataModelConditionPart parent, DisplayConditionGroupEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -37,13 +37,13 @@ namespace Artemis.Core
             foreach (var childEntity in Entity.Children)
             {
                 if (childEntity is DisplayConditionGroupEntity groupEntity)
-                    AddChild(new DisplayConditionGroup(this, groupEntity));
+                    AddChild(new DataModelConditionGroup(this, groupEntity));
                 else if (childEntity is DisplayConditionListEntity listEntity)
-                    AddChild(new DisplayConditionList(this, listEntity));
+                    AddChild(new DataModelConditionList(this, listEntity));
                 else if (childEntity is DisplayConditionPredicateEntity predicateEntity)
-                    AddChild(new DisplayConditionPredicate(this, predicateEntity));
+                    AddChild(new DataModelConditionPredicate(this, predicateEntity));
                 else if (childEntity is DisplayConditionListPredicateEntity listPredicateEntity)
-                    AddChild(new DisplayConditionListPredicate(this, listPredicateEntity));
+                    AddChild(new DataModelConditionListPredicate(this, listPredicateEntity));
             }
         }
 
@@ -82,8 +82,22 @@ namespace Artemis.Core
             }
         }
 
+        #region IDisposable
+
         /// <inheritdoc />
-        public override bool EvaluateObject(object target)
+        protected override void Dispose(bool disposing)
+        {
+            _disposed = true;
+            foreach (var child in Children)
+                child.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        /// <inheritdoc />
+        internal override bool EvaluateObject(object target)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DisplayConditionGroup");
@@ -119,26 +133,31 @@ namespace Artemis.Core
         {
             return Entity;
         }
-
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            _disposed = true;
-            foreach (var child in Children)
-                child.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
     }
 
+    /// <summary>
+    ///     Represents a boolean operator
+    /// </summary>
     public enum BooleanOperator
     {
+        /// <summary>
+        ///     All the conditions in the group should evaluate to true
+        /// </summary>
         And,
+
+        /// <summary>
+        ///     Any of the conditions in the group should evaluate to true
+        /// </summary>
         Or,
+
+        /// <summary>
+        ///     All the conditions in the group should evaluate to false
+        /// </summary>
         AndNot,
+
+        /// <summary>
+        ///     Any of the conditions in the group should evaluate to false
+        /// </summary>
         OrNot
     }
 }

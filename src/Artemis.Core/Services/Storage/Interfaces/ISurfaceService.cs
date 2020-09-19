@@ -3,6 +3,9 @@ using System.Collections.ObjectModel;
 
 namespace Artemis.Core.Services
 {
+    /// <summary>
+    ///     Provides access to the device surface and its configuration
+    /// </summary>
     public interface ISurfaceService : IArtemisService
     {
         /// <summary>

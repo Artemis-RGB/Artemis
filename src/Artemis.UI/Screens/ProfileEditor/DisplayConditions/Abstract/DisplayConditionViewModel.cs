@@ -5,12 +5,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract
 {
     public abstract class DisplayConditionViewModel : Conductor<DisplayConditionViewModel>.Collection.AllActive
     {
-        protected DisplayConditionViewModel(DisplayConditionPart model)
+        protected DisplayConditionViewModel(DataModelConditionPart model)
         {
             Model = model;
         }
 
-        public DisplayConditionPart Model { get; }
+        public DataModelConditionPart Model { get; }
 
         public abstract void Update();
 

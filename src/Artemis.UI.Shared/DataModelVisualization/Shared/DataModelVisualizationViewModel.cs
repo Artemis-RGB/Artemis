@@ -176,7 +176,7 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType || t == typeof(Enum) && PropertyInfo.PropertyType.IsEnum);
         }
 
-        public DataModelVisualizationViewModel GetChildForCondition(DisplayConditionPredicate predicate, DisplayConditionSide side)
+        public DataModelVisualizationViewModel GetChildForCondition(DataModelConditionPredicate predicate, DisplayConditionSide side)
         {
             if (side == DisplayConditionSide.Left)
             {

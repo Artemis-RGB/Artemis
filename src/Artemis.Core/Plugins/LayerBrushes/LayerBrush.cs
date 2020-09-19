@@ -1,10 +1,16 @@
-﻿using Artemis.Core.Services;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
 {
+    /// <summary>
+    ///     Represents a brush that renders on a layer
+    /// </summary>
+    /// <typeparam name="T">The type of brush properties</typeparam>
     public abstract class LayerBrush<T> : PropertiesLayerBrush<T> where T : LayerPropertyGroup
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="LayerBrush{T}" /> class
+        /// </summary>
         protected LayerBrush()
         {
             BrushType = LayerBrushType.Regular;

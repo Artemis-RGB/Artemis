@@ -13,26 +13,26 @@ namespace Artemis.Core
             _logger = kernel.Get<ILogger>();
         }
 
-        public static void LogPredicateDeserializationFailure(DisplayConditionPredicate displayConditionPredicate, JsonException exception)
+        public static void LogPredicateDeserializationFailure(DataModelConditionPredicate dataModelConditionPredicate, JsonException exception)
         {
             _logger.Warning(
                 exception,
                 "Failed to deserialize display condition predicate {left} {operator} {right}",
-                displayConditionPredicate.Entity.LeftPropertyPath,
-                displayConditionPredicate.Entity.OperatorType,
-                displayConditionPredicate.Entity.RightPropertyPath
+                dataModelConditionPredicate.Entity.LeftPropertyPath,
+                dataModelConditionPredicate.Entity.OperatorType,
+                dataModelConditionPredicate.Entity.RightPropertyPath
             );
         }
 
-        public static void LogListPredicateDeserializationFailure(DisplayConditionListPredicate displayConditionPredicate, JsonException exception)
+        public static void LogListPredicateDeserializationFailure(DataModelConditionListPredicate dataModelConditionPredicate, JsonException exception)
         {
             _logger.Warning(
                 exception,
                 "Failed to deserialize display condition list predicate {list} => {left} {operator} {right}",
-                displayConditionPredicate.Entity.ListPropertyPath,
-                displayConditionPredicate.Entity.LeftPropertyPath,
-                displayConditionPredicate.Entity.OperatorType,
-                displayConditionPredicate.Entity.RightPropertyPath
+                dataModelConditionPredicate.Entity.ListPropertyPath,
+                dataModelConditionPredicate.Entity.LeftPropertyPath,
+                dataModelConditionPredicate.Entity.OperatorType,
+                dataModelConditionPredicate.Entity.RightPropertyPath
             );
         }
 

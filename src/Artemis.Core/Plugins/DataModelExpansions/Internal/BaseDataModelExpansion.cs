@@ -10,14 +10,22 @@ namespace Artemis.Core.DataModelExpansions
     /// </summary>
     public abstract class BaseDataModelExpansion : Plugin
     {
-        protected readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
+        /// </summary>
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
 
         /// <summary>
-        ///     Gets a list of all properties ignored at runtime using IgnoreProperty(x => x.y)
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
 
         internal DataModel InternalDataModel { get; set; }
+
+        /// <summary>
+        ///     Called each frame when the data model should update
+        /// </summary>
+        /// <param name="deltaTime">Time in seconds since the last update</param>
         public abstract void Update(double deltaTime);
 
         /// <summary>
