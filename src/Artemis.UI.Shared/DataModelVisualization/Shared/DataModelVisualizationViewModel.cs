@@ -176,9 +176,9 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == PropertyInfo.PropertyType || t == typeof(Enum) && PropertyInfo.PropertyType.IsEnum);
         }
 
-        public DataModelVisualizationViewModel GetChildForCondition(DataModelConditionPredicate predicate, DisplayConditionSide side)
+        public DataModelVisualizationViewModel GetChildForCondition(DataModelConditionPredicate predicate, DataModelConditionSide side)
         {
-            if (side == DisplayConditionSide.Left)
+            if (side == DataModelConditionSide.Left)
             {
                 if (predicate.LeftDataModel == null || predicate.LeftPropertyPath == null)
                     return null;
@@ -289,7 +289,7 @@ namespace Artemis.UI.Shared
         #endregion
     }
 
-    public enum DisplayConditionSide
+    public enum DataModelConditionSide
     {
         Left,
         Right

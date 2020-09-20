@@ -16,6 +16,6 @@ namespace Artemis.Storage.Entities.Profile.Abstract
         public List<PropertyEntity> PropertyEntities { get; set; }
         public List<string> ExpandedPropertyGroups { get; set; }
 
-        public DisplayConditionGroupEntity RootDisplayCondition { get; set; }
+        public DataModelConditionGroupEntity DisplayCondition { get; set; }
     }
 }

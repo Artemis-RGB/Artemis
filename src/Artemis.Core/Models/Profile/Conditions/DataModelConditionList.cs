@@ -22,12 +22,12 @@ namespace Artemis.Core
         public DataModelConditionList(DataModelConditionPart parent)
         {
             Parent = parent;
-            Entity = new DisplayConditionListEntity();
+            Entity = new DataModelConditionListEntity();
 
             Initialize();
         }
 
-        internal DataModelConditionList(DataModelConditionPart parent, DisplayConditionListEntity entity)
+        internal DataModelConditionList(DataModelConditionPart parent, DataModelConditionListEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -36,7 +36,7 @@ namespace Artemis.Core
             Initialize();
         }
 
-        internal DisplayConditionListEntity Entity { get; set; }
+        internal DataModelConditionListEntity Entity { get; set; }
 
         /// <summary>
         ///     Gets or sets the list operator
@@ -62,7 +62,7 @@ namespace Artemis.Core
         public override bool Evaluate()
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionList");
+                throw new ObjectDisposedException("DataModelConditionList");
 
             if (CompiledListAccessor == null)
                 return false;
@@ -78,7 +78,7 @@ namespace Artemis.Core
         public void UpdateList(DataModel dataModel, string path)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionList");
+                throw new ObjectDisposedException("DataModelConditionList");
 
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
@@ -129,7 +129,7 @@ namespace Artemis.Core
         internal override bool EvaluateObject(object target)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionList");
+                throw new ObjectDisposedException("DataModelConditionList");
 
             if (!Children.Any())
                 return false;
@@ -166,7 +166,7 @@ namespace Artemis.Core
                 child.Save();
         }
 
-        internal override DisplayConditionPartEntity GetEntity()
+        internal override DataModelConditionPartEntity GetEntity()
         {
             return Entity;
         }
@@ -189,7 +189,7 @@ namespace Artemis.Core
             CreateExpression();
 
             // There should only be one child and it should be a group
-            if (Entity.Children.SingleOrDefault() is DisplayConditionGroupEntity rootGroup)
+            if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)
                 AddChild(new DataModelConditionGroup(this, rootGroup));
             else
             {
@@ -201,12 +201,14 @@ namespace Artemis.Core
         private void CreateExpression()
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionList");
+                throw new ObjectDisposedException("DataModelConditionList");
 
             var parameter = Expression.Parameter(typeof(object), "listDataModel");
             var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
                 Expression.Convert(parameter, ListDataModel.GetType()),
-                (expression, s) => Expression.Convert(Expression.Property(expression, s), typeof(IList)));
+                Expression.Property
+            );
+            accessor = Expression.Convert(accessor, typeof(IList));
 
             var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
             CompiledListAccessor = lambda.Compile();

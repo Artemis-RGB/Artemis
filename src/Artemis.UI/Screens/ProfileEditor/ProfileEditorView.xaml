@@ -114,7 +114,7 @@
                 <!-- Conditions resize -->
                 <RowDefinition Height="Auto" />
                 <!-- Display conditions -->
-                <RowDefinition Height="{Binding DisplayConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
+                <RowDefinition Height="{Binding DataModelConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
             </Grid.RowDefinitions>
 
             <!-- Profile selection -->

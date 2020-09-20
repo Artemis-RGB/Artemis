@@ -201,7 +201,6 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelStaticViewModel GetStaticInputViewModel(Type targetType)
         {
-            if (targetType == null) throw new ArgumentNullException(nameof(targetType));
             return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType));
         }
 

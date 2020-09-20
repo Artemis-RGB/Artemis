@@ -23,12 +23,12 @@ namespace Artemis.Core
         {
             Parent = parent;
             PredicateType = predicateType;
-            Entity = new DisplayConditionPredicateEntity();
+            Entity = new DataModelConditionPredicateEntity();
 
             Initialize();
         }
 
-        internal DataModelConditionPredicate(DataModelConditionPart parent, DisplayConditionPredicateEntity entity)
+        internal DataModelConditionPredicate(DataModelConditionPart parent, DataModelConditionPredicateEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -83,7 +83,7 @@ namespace Artemis.Core
         /// </summary>
         public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
 
-        internal DisplayConditionPredicateEntity Entity { get; set; }
+        internal DataModelConditionPredicateEntity Entity { get; set; }
 
         /// <summary>
         ///     Updates the left side of the predicate
@@ -309,7 +309,7 @@ namespace Artemis.Core
             }
         }
 
-        internal override DisplayConditionPartEntity GetEntity()
+        internal override DataModelConditionPartEntity GetEntity()
         {
             return Entity;
         }
@@ -369,7 +369,7 @@ namespace Artemis.Core
             var rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
 
             // A conversion may be required if the types differ
-            // This can cause issues if the DisplayConditionOperator wasn't accurate in it's supported types but that is not a concern here
+            // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
@@ -391,7 +391,7 @@ namespace Artemis.Core
 
             // If the right side value is null, the constant type cannot be inferred and must be provided manually
             var rightSideConstant = RightStaticValue != null
-                ? Expression.Constant(RightStaticValue)
+                ? Expression.Constant(Convert.ChangeType(RightStaticValue, leftSideAccessor.Type))
                 : Expression.Constant(null, leftSideAccessor.Type);
 
             var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);

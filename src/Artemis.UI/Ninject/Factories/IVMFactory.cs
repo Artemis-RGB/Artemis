@@ -3,7 +3,7 @@ using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
 using Artemis.UI.Screens.ProfileEditor;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
+using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding;
@@ -63,12 +63,12 @@ namespace Artemis.UI.Ninject.Factories
         SelectionRemoveToolViewModel SelectionRemoveToolViewModel(ProfileViewModel profileViewModel);
     }
 
-    public interface IDisplayConditionsVmFactory : IVmFactory
+    public interface IDataModelConditionsVmFactory : IVmFactory
     {
-        DisplayConditionGroupViewModel DisplayConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, bool isListGroup);
-        DisplayConditionListViewModel DisplayConditionListViewModel(DataModelConditionList dataModelConditionList);
-        DisplayConditionPredicateViewModel DisplayConditionPredicateViewModel(DataModelConditionPredicate dataModelConditionPredicate);
-        DisplayConditionListPredicateViewModel DisplayConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
+        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, bool isListGroup);
+        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList);
+        DataModelConditionPredicateViewModel DataModelConditionPredicateViewModel(DataModelConditionPredicate dataModelConditionPredicate);
+        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

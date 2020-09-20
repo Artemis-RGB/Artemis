@@ -215,10 +215,10 @@
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.i.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.i.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
+    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.i.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.i.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.i.cs" />
@@ -239,8 +239,8 @@
     <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
     <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.i.cs" />
     <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionsView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DisplayConditions\DisplayConditionView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
+    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
     <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.cs" />
     <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
     <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.cs" />

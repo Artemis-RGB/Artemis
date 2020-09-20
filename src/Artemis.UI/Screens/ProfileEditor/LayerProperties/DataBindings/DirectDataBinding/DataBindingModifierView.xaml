@@ -14,7 +14,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
                 <ResourceDictionary>
                     <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
@@ -51,7 +51,7 @@
         </Button>
 
         <Button Grid.Column="2"
-                Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
+                Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
                 Click="PropertyButton_OnClick">

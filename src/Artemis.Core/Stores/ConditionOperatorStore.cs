@@ -56,13 +56,13 @@ namespace Artemis.Core
                 var candidates = Registrations.Where(r => r.ConditionOperator.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
-                foreach (var displayConditionOperators in candidates.GroupBy(r => r.ConditionOperator.Description).Where(g => g.Count() > 1).ToList())
+                foreach (var candidate in candidates.GroupBy(r => r.ConditionOperator.Description).Where(g => g.Count() > 1).ToList())
                 {
-                    var closest = displayConditionOperators.OrderByDescending(r => r.ConditionOperator.CompatibleTypes.Contains(type)).FirstOrDefault();
-                    foreach (var displayConditionOperator in displayConditionOperators)
+                    var closest = candidate.OrderByDescending(r => r.ConditionOperator.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    foreach (var conditionOperator in candidate)
                     {
-                        if (displayConditionOperator != closest)
-                            candidates.Remove(displayConditionOperator);
+                        if (conditionOperator != closest)
+                            candidates.Remove(conditionOperator);
                     }
                 }
 

@@ -72,6 +72,9 @@ namespace Artemis.Core
         {
             _disposed = true;
 
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
             foreach (var dataBindingModifier in Modifiers)
                 dataBindingModifier.Dispose();
         }
@@ -153,8 +156,7 @@ namespace Artemis.Core
         {
             return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
         }
-
-
+        
         /// <summary>
         ///     Updates the source of the data binding and re-compiles the expression
         /// </summary>

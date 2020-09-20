@@ -4,11 +4,11 @@ using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile.Conditions
 {
-    public class DisplayConditionListEntity : DisplayConditionPartEntity
+    public class DataModelConditionListEntity : DataModelConditionPartEntity
     {
-        public DisplayConditionListEntity()
+        public DataModelConditionListEntity()
         {
-            Children = new List<DisplayConditionPartEntity>();
+            Children = new List<DataModelConditionPartEntity>();
         }
 
         public Guid? ListDataModelGuid { get; set; }

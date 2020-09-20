@@ -22,15 +22,17 @@ namespace Artemis.UI.Shared.Input
         private Type _targetType;
         private int _transitionIndex;
         private object _value;
+        private bool _isEnabled;
 
         internal DataModelStaticViewModel(Type targetType, IDataModelUIService dataModelUIService)
         {
-            TargetType = targetType;
             _dataModelUIService = dataModelUIService;
-
-            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType, true);
-
             _rootView = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
+
+            TargetType = targetType;
+            IsEnabled = TargetType != null;
+            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), true);
+            
             if (_rootView != null)
             {
                 _rootView.MouseUp += RootViewOnMouseUp;
@@ -90,6 +92,12 @@ namespace Artemis.UI.Shared.Input
             set => SetAndNotify(ref _placeholder, value);
         }
 
+        public bool IsEnabled
+        {
+            get => _isEnabled;
+            private set => SetAndNotify(ref _isEnabled, value);
+        }
+
         #region IDisposable
 
         public void Dispose()
@@ -116,16 +124,26 @@ namespace Artemis.UI.Shared.Input
 
         public void UpdateTargetType(Type target)
         {
-            TargetType = target ?? throw new ArgumentNullException(nameof(target));
+            TargetType = target;
+            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), true);
+            IsEnabled = TargetType != null;
 
+            // If null, clear the input
+            if (TargetType == null)
+            {
+                ApplyFreeInput(null, true);
+                return;
+            }
+            
             // If the type changed, reset to the default type
-            if (!target.IsCastableFrom(Value.GetType()))
+            if (Value == null || !target.IsCastableFrom(Value.GetType()))
             {
                 // Force the VM to close if it was open and apply the new value
                 ApplyFreeInput(target.GetDefault(), true);
             }
-        }
 
+        }
+        
         private void ApplyFreeInput(object value, bool submitted)
         {
             if (submitted)

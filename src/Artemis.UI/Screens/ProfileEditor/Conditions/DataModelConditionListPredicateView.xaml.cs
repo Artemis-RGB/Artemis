@@ -1,14 +1,14 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
+namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
     /// <summary>
-    ///     Interaction logic for DisplayConditionPredicateView.xaml
+    ///     Interaction logic for DataModelConditionListPredicateView.xaml
     /// </summary>
-    public partial class DisplayConditionPredicateView : UserControl
+    public partial class DataModelConditionListPredicateView : UserControl
     {
-        public DisplayConditionPredicateView()
+        public DataModelConditionListPredicateView()
         {
             InitializeComponent();
         }

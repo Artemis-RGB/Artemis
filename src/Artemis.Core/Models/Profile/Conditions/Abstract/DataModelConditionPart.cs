@@ -62,7 +62,7 @@ namespace Artemis.Core
         internal abstract bool EvaluateObject(object target);
 
         internal abstract void Save();
-        internal abstract DisplayConditionPartEntity GetEntity();
+        internal abstract DataModelConditionPartEntity GetEntity();
 
         #region IDisposable
 

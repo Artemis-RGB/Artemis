@@ -3,29 +3,30 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions.Abstract;
+using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
+using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Shared.Services;
 using Humanizer;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
+namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
-    public class DisplayConditionGroupViewModel : DisplayConditionViewModel
+    public class DataModelConditionGroupViewModel : DataModelConditionViewModel
     {
-        private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
+        private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
         private bool _isRootGroup;
 
-        public DisplayConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
+        public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             bool isListGroup,
             IProfileEditorService profileEditorService,
-            IDisplayConditionsVmFactory displayConditionsVmFactory)
+            IDataModelConditionsVmFactory dataModelConditionsVmFactory)
             : base(dataModelConditionGroup)
         {
             IsListGroup = isListGroup;
             _profileEditorService = profileEditorService;
-            _displayConditionsVmFactory = displayConditionsVmFactory;
+            _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
             Items.CollectionChanged += (sender, args) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
 
@@ -71,15 +72,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 if (!IsListGroup)
                     DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Static));
                 else
-                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Static));
+                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.Static));
             }
             else if (type == "Dynamic")
             {
                 if (!IsListGroup)
                     DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
                 else
-                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.Dynamic));
             }
+            else if (type == "DynamicExternal" && IsListGroup)
+                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.DynamicExternal));
             else if (type == "List" && !IsListGroup)
                 DataModelConditionGroup.AddChild(new DataModelConditionList(DataModelConditionGroup));
 
@@ -102,8 +105,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             // Remove VMs of effects no longer applied on the layer
             var toRemove = Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
-            foreach (var displayConditionViewModel in toRemove)
-                Items.Remove(displayConditionViewModel);
+            foreach (var DataModelConditionViewModel in toRemove)
+                Items.Remove(DataModelConditionViewModel);
 
             foreach (var childModel in Model.Children)
             {
@@ -112,19 +115,19 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
                 switch (childModel)
                 {
-                    case DataModelConditionGroup displayConditionGroup:
-                        Items.Add(_displayConditionsVmFactory.DisplayConditionGroupViewModel(displayConditionGroup, IsListGroup));
+                    case DataModelConditionGroup DataModelConditionGroup:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataModelConditionGroup, IsListGroup));
                         break;
-                    case DataModelConditionList displayConditionListPredicate:
-                        Items.Add(_displayConditionsVmFactory.DisplayConditionListViewModel(displayConditionListPredicate));
+                    case DataModelConditionList DataModelConditionListPredicate:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(DataModelConditionListPredicate));
                         break;
-                    case DataModelConditionPredicate displayConditionPredicate:
+                    case DataModelConditionPredicate DataModelConditionPredicate:
                         if (!IsListGroup)
-                            Items.Add(_displayConditionsVmFactory.DisplayConditionPredicateViewModel(displayConditionPredicate));
+                            Items.Add(_dataModelConditionsVmFactory.DataModelConditionPredicateViewModel(DataModelConditionPredicate));
                         break;
-                    case DataModelConditionListPredicate displayConditionListPredicate:
+                    case DataModelConditionListPredicate DataModelConditionListPredicate:
                         if (IsListGroup)
-                            Items.Add(_displayConditionsVmFactory.DisplayConditionListPredicateViewModel(displayConditionListPredicate));
+                            Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(DataModelConditionListPredicate));
                         break;
                 }
             }
@@ -132,8 +135,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             foreach (var childViewModel in Items)
                 childViewModel.Update();
 
-            if (IsRootGroup) 
-                ((DisplayConditionsViewModel) Parent).DisplayStartHint = !Items.Any();
+            if (IsRootGroup && Parent is DisplayConditionsViewModel displayConditionsViewModel)
+                displayConditionsViewModel.DisplayStartHint = !Items.Any();
         }
     }
 }

@@ -3,7 +3,7 @@ using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile.Conditions
 {
-    public class DisplayConditionPredicateEntity : DisplayConditionPartEntity
+    public class DataModelConditionPredicateEntity : DataModelConditionPartEntity
     {
         public int PredicateType { get; set; }
         public Guid? LeftDataModelGuid { get; set; }

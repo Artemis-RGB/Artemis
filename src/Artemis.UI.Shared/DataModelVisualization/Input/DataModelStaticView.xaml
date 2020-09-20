@@ -13,7 +13,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/ResourceDictionaries/DisplayConditions.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/ResourceDictionaries/DataModelConditions.xaml" />
                 <ResourceDictionary>
                     <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                 </ResourceDictionary>
@@ -22,12 +22,13 @@
     </UserControl.Resources>
 
     <materialDesign:Transitioner SelectedIndex="{Binding TransitionIndex}" DefaultTransitionOrigin="0.5, 0.5" Margin="3 -4">
-        <Button Style="{StaticResource DisplayConditionButton}"
+        <Button Style="{StaticResource DataModelConditionButton}"
                 Background="{Binding ButtonBrush}"
                 BorderBrush="{Binding ButtonBrush}"
                 Margin="0 4"
                 Command="{s:Action ActivateInputViewModel}"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                IsEnabled="{Binding IsEnabled}">
             <Grid>
                 <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                     <TextBlock FontWeight="Light"
