@@ -3,19 +3,19 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:s="https://github.com/canton7/Stylet"
     xmlns:Converters="clr-namespace:Artemis.UI.Converters"
     xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
-    x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionGroupView"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Conditions"
+    x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionGroupView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
-    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type local:DisplayConditionGroupViewModel}}">
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type local:DataModelConditionGroupViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DisplayConditions.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         </ResourceDictionary>
@@ -46,7 +46,7 @@
         <Button Grid.Row="0"
                 Grid.Column="1"
                 ToolTip="Change the operator of the group"
-                Style="{StaticResource DisplayConditionButtonLeftClickMenu}"
+                Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
                 Background="#E74C4C"
                 BorderBrush="#E74C4C"
                 Margin="3 1"

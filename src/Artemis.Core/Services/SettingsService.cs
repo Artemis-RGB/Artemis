@@ -19,7 +19,7 @@ namespace Artemis.Core.Services
     }
 
     /// <summary>
-    ///     <para>A wrapper around plugin settings for internal use.</para>
+    ///     <para>A wrapper around plugin settings for miscellaneous use outside plugins</para>
     ///     <para>Do not inject into a plugin, for plugins inject <see cref="PluginSettings" /> instead.</para>
     /// </summary>
     public interface ISettingsService : IProtectedArtemisService

@@ -3,7 +3,7 @@ using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile.Conditions
 {
-    public class DisplayConditionListPredicateEntity : DisplayConditionPartEntity
+    public class DataModelConditionListPredicateEntity : DataModelConditionPartEntity
     {
         public int PredicateType { get; set; }
 
@@ -12,6 +12,7 @@ namespace Artemis.Storage.Entities.Profile.Conditions
 
         public string LeftPropertyPath { get; set; }
 
+        public Guid? RightDataModelGuid { get; set; }
         public string RightPropertyPath { get; set; }
 
         // Stored as a string to be able to control serialization and deserialization ourselves

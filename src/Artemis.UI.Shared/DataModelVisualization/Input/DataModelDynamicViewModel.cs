@@ -36,7 +36,7 @@ namespace Artemis.UI.Shared.Input
 
             Initialize();
         }
-        
+
         public Brush ButtonBrush
         {
             get => _buttonBrush;
@@ -75,7 +75,7 @@ namespace Artemis.UI.Shared.Input
         public DataModelVisualizationViewModel SelectedPropertyViewModel
         {
             get => _selectedPropertyViewModel;
-            private set => SetAndNotify(ref _selectedPropertyViewModel, value);
+            set => SetAndNotify(ref _selectedPropertyViewModel, value);
         }
 
         public void PopulateSelectedPropertyViewModel(DataModel datamodel, string path)
@@ -84,6 +84,17 @@ namespace Artemis.UI.Shared.Input
                 SelectedPropertyViewModel = null;
             else
                 SelectedPropertyViewModel = DataModelViewModel.GetChildByPath(datamodel.PluginInfo.Guid, path);
+        }
+
+        public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
+        {
+            if (DataModelViewModel != null)
+                DataModelViewModel.UpdateRequested -= DataModelOnUpdateRequested;
+
+            DataModelViewModel = dataModel;
+
+            if (DataModelViewModel != null)
+                DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
         }
 
         private void Initialize()

@@ -2,8 +2,8 @@
 
 namespace Artemis.Storage.Entities.Profile.Abstract
 {
-    public abstract class DisplayConditionPartEntity
+    public abstract class DataModelConditionPartEntity
     {
-        public List<DisplayConditionPartEntity> Children { get; set; }
+        public List<DataModelConditionPartEntity> Children { get; set; }
     }
 }

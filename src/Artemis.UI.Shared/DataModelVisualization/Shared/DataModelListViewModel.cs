@@ -36,7 +36,7 @@ namespace Artemis.UI.Shared
         public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
             // Create a property VM describing the type of the list
-            var viewModel = CreateListChild(dataModelUIService, List.GetType().GenericTypeArguments[0]);
+            var viewModel = CreateListChild(dataModelUIService, PropertyInfo.PropertyType.GenericTypeArguments[0]);
 
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)

@@ -3,7 +3,7 @@
                     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:dataModel="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared">
-    <Style x:Key="DisplayConditionButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
+    <Style x:Key="DataModelConditionButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
         <Setter Property="Margin" Value="3 0" />
         <Setter Property="Padding" Value="6 4" />
         <Setter Property="Height" Value="22" />
@@ -11,7 +11,7 @@
         <Setter Property="FontSize" Value="12" />
     </Style>
 
-    <Style x:Key="DisplayConditionButtonLeftClickMenu" TargetType="{x:Type Button}" BasedOn="{StaticResource DisplayConditionButton}">
+    <Style x:Key="DataModelConditionButtonLeftClickMenu" TargetType="{x:Type Button}" BasedOn="{StaticResource DataModelConditionButton}">
         <Style.Triggers>
             <EventTrigger RoutedEvent="Click">
                 <EventTrigger.Actions>

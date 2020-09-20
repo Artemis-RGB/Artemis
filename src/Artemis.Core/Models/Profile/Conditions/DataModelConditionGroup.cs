@@ -20,7 +20,7 @@ namespace Artemis.Core
         public DataModelConditionGroup(DataModelConditionPart parent)
         {
             Parent = parent;
-            Entity = new DisplayConditionGroupEntity();
+            Entity = new DataModelConditionGroupEntity();
         }
 
         /// <summary>
@@ -28,7 +28,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="entity"></param>
-        public DataModelConditionGroup(DataModelConditionPart parent, DisplayConditionGroupEntity entity)
+        public DataModelConditionGroup(DataModelConditionPart parent, DataModelConditionGroupEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -36,13 +36,13 @@ namespace Artemis.Core
 
             foreach (var childEntity in Entity.Children)
             {
-                if (childEntity is DisplayConditionGroupEntity groupEntity)
+                if (childEntity is DataModelConditionGroupEntity groupEntity)
                     AddChild(new DataModelConditionGroup(this, groupEntity));
-                else if (childEntity is DisplayConditionListEntity listEntity)
+                else if (childEntity is DataModelConditionListEntity listEntity)
                     AddChild(new DataModelConditionList(this, listEntity));
-                else if (childEntity is DisplayConditionPredicateEntity predicateEntity)
+                else if (childEntity is DataModelConditionPredicateEntity predicateEntity)
                     AddChild(new DataModelConditionPredicate(this, predicateEntity));
-                else if (childEntity is DisplayConditionListPredicateEntity listPredicateEntity)
+                else if (childEntity is DataModelConditionListPredicateEntity listPredicateEntity)
                     AddChild(new DataModelConditionListPredicate(this, listPredicateEntity));
             }
         }
@@ -52,13 +52,13 @@ namespace Artemis.Core
         /// </summary>
         public BooleanOperator BooleanOperator { get; set; }
 
-        internal DisplayConditionGroupEntity Entity { get; set; }
+        internal DataModelConditionGroupEntity Entity { get; set; }
 
         /// <inheritdoc />
         public override bool Evaluate()
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionGroup");
+                throw new ObjectDisposedException("DataModelConditionGroup");
 
             // Empty groups are always true
             if (Children.Count == 0)
@@ -100,7 +100,7 @@ namespace Artemis.Core
         internal override bool EvaluateObject(object target)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DisplayConditionGroup");
+                throw new ObjectDisposedException("DataModelConditionGroup");
 
             // Empty groups are always true
             if (Children.Count == 0)
@@ -129,7 +129,7 @@ namespace Artemis.Core
                 child.Save();
         }
 
-        internal override DisplayConditionPartEntity GetEntity()
+        internal override DataModelConditionPartEntity GetEntity()
         {
             return Entity;
         }

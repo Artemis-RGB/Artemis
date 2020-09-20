@@ -9,6 +9,9 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
         public PluginDataModel()
         {
             PluginSubDataModel = new PluginSubDataModel();
+            ListItems = new List<SomeListItem>();
+            for (var i = 0; i < 20; i++)
+                ListItems.Add(new SomeListItem {ItemName = $"Item {i + 1}", Number = i});
         }
 
         // Your datamodel can have regular properties and you can annotate them if you'd like
@@ -24,6 +27,14 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
 
         public Team Team { get; set; }
         public bool IsWinning { get; set; }
+
+        public List<SomeListItem> ListItems { get; set; }
+    }
+
+    public class SomeListItem
+    {
+        public string ItemName { get; set; }
+        public int Number { get; set; }
     }
 
     public enum Team
@@ -36,7 +47,7 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
     {
         public PluginSubDataModel()
         {
-            ListOfInts = new List<int> { 1, 2, 3, 4, 5 };
+            ListOfInts = new List<int> {1, 2, 3, 4, 5};
         }
 
         // You don't need to annotate properties, they will still show up 

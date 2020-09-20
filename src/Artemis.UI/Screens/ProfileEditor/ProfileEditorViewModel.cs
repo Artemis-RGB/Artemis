@@ -25,7 +25,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private readonly ISettingsService _settingsService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private PluginSetting<GridLength> _bottomPanelsHeight;
-        private PluginSetting<GridLength> _displayConditionsHeight;
+        private PluginSetting<GridLength> _dataModelConditionsHeight;
         private DisplayConditionsViewModel _displayConditionsViewModel;
         private PluginSetting<GridLength> _elementPropertiesWidth;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
@@ -38,7 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         public ProfileEditorViewModel(ProfileModule module,
             ProfileViewModel profileViewModel,
             ProfileTreeViewModel profileTreeViewModel,
-            DisplayConditionsViewModel displayConditionsViewModel,
+            DisplayConditionsViewModel dataModelConditionsViewModel,
             LayerPropertiesViewModel layerPropertiesViewModel,
             IProfileEditorService profileEditorService,
             IProfileService profileService,
@@ -62,12 +62,12 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Populate the panels
             ProfileViewModel = profileViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
-            DisplayConditionsViewModel = displayConditionsViewModel;
+            DisplayConditionsViewModel = dataModelConditionsViewModel;
             LayerPropertiesViewModel = layerPropertiesViewModel;
 
             Items.Add(ProfileViewModel);
             Items.Add(ProfileTreeViewModel);
-            Items.Add(DisplayConditionsViewModel);
+            Items.Add(dataModelConditionsViewModel);
             Items.Add(LayerPropertiesViewModel);
         }
 
@@ -110,10 +110,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             set => SetAndNotify(ref _sidePanelsWidth, value);
         }
 
-        public PluginSetting<GridLength> DisplayConditionsHeight
+        public PluginSetting<GridLength> DataModelConditionsHeight
         {
-            get => _displayConditionsHeight;
-            set => SetAndNotify(ref _displayConditionsHeight, value);
+            get => _dataModelConditionsHeight;
+            set => SetAndNotify(ref _dataModelConditionsHeight, value);
         }
 
         public PluginSetting<GridLength> BottomPanelsHeight
@@ -303,7 +303,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private void LoadWorkspaceSettings()
         {
             SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
-            DisplayConditionsHeight = _settingsService.GetSetting("ProfileEditor.DisplayConditionsHeight", new GridLength(345));
+            DataModelConditionsHeight = _settingsService.GetSetting("ProfileEditor.DataModelConditionsHeight", new GridLength(345));
             BottomPanelsHeight = _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
             ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
         }
@@ -311,7 +311,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         private void SaveWorkspaceSettings()
         {
             SidePanelsWidth.Save();
-            DisplayConditionsHeight.Save();
+            DataModelConditionsHeight.Save();
             BottomPanelsHeight.Save();
             ElementPropertiesWidth.Save();
         }

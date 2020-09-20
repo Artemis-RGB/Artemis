@@ -1,23 +1,24 @@
 ﻿using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionsViewModel : Conductor<DisplayConditionGroupViewModel>, IProfileEditorPanelViewModel
+    public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
-        private readonly IDisplayConditionsVmFactory _displayConditionsVmFactory;
+        private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDisplayConditionsVmFactory displayConditionsVmFactory)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _displayConditionsVmFactory = displayConditionsVmFactory;
+            _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
         }
 
         public bool DisplayStartHint
@@ -82,10 +83,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             }
 
             // Ensure the layer has a root display condition group
-            if (e.RenderProfileElement.DataModelConditionGroup == null)
-                e.RenderProfileElement.DataModelConditionGroup = new DataModelConditionGroup(null);
+            if (e.RenderProfileElement.DisplayCondition == null)
+                e.RenderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
-            ActiveItem = _displayConditionsVmFactory.DisplayConditionGroupViewModel(e.RenderProfileElement.DataModelConditionGroup, false);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, false);
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
 
