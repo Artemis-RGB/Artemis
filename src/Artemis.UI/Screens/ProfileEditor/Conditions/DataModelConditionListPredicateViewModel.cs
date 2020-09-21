@@ -18,7 +18,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     {
         private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isPrimitiveList;
         private DataModelDynamicViewModel _leftSideSelectionViewModel;
@@ -33,13 +32,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionListPredicate dataModelConditionListPredicate,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
-            IConditionOperatorService conditionOperatorService,
-            IEventAggregator eventAggregator) : base(dataModelConditionListPredicate)
+            IConditionOperatorService conditionOperatorService) : base(dataModelConditionListPredicate)
         {
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _conditionOperatorService = conditionOperatorService;
-            _eventAggregator = eventAggregator;
             _supportedInputTypes = new List<Type>();
 
             SelectOperatorCommand = new DelegateCommand(ExecuteSelectOperatorCommand);
