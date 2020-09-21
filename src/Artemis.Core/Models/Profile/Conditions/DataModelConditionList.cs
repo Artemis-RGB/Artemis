@@ -44,6 +44,16 @@ namespace Artemis.Core
         public ListOperator ListOperator { get; set; }
 
         /// <summary>
+        ///     Gets the type of the content of the list this predicate is evaluated on
+        /// </summary>
+        public Type ListType { get; set; }
+
+        /// <summary>
+        ///     Gets whether the list contains primitives
+        /// </summary>
+        public bool IsPrimitiveList { get; set; }
+
+        /// <summary>
         ///     Gets the currently used instance of the list data model
         /// </summary>
         public DataModel ListDataModel { get; private set; }
@@ -87,18 +97,20 @@ namespace Artemis.Core
 
             if (dataModel != null)
             {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-                if (dataModel.GetListTypeAtPath(path) == null)
-                    throw new ArtemisCoreException($"The path '{path}' does not contain a list");
+                var listType = dataModel.GetListTypeAtPath(path);
+                if (listType == null)
+                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{path}'");
+
+                ListType = listType;
+                IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
+
+                ListDataModel = dataModel;
+                ListPropertyPath = path;
             }
 
             // Remove the old root group that was tied to the old data model
             while (Children.Any())
                 RemoveChild(Children[0]);
-
-            ListDataModel = dataModel;
-            ListPropertyPath = path;
 
             if (dataModel == null)
                 return;
@@ -178,15 +190,24 @@ namespace Artemis.Core
             if (Entity.ListDataModelGuid == null)
                 return;
 
-            // Get the data model and ensure the path is valid
+            // Get the data model ...
             var dataModel = DataModelStore.Get(Entity.ListDataModelGuid.Value)?.DataModel;
-            if (dataModel == null || !dataModel.ContainsPath(Entity.ListPropertyPath))
+            if (dataModel == null)
+                return;
+            // ... and ensure the path is valid
+            var listType = dataModel.GetListTypeAtPath(Entity.ListPropertyPath);
+            if (listType == null)
                 return;
 
-            // Populate properties and create the accessor expression
+            ListType = listType;
+            IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
             ListDataModel = dataModel;
             ListPropertyPath = Entity.ListPropertyPath;
+
             CreateExpression();
+
+            if (ListDataModel == null)
+                return;
 
             // There should only be one child and it should be a group
             if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)

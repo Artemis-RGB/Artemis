@@ -6,10 +6,7 @@ namespace Artemis.Storage.Entities.Profile.Conditions
     public class DataModelConditionListPredicateEntity : DataModelConditionPartEntity
     {
         public int PredicateType { get; set; }
-
-        public Guid? ListDataModelGuid { get; set; }
-        public string ListPropertyPath { get; set; }
-
+        
         public string LeftPropertyPath { get; set; }
 
         public Guid? RightDataModelGuid { get; set; }

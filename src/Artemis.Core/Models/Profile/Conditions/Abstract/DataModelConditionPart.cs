@@ -84,6 +84,5 @@ namespace Artemis.Core
         }
 
         #endregion
-
     }
 }

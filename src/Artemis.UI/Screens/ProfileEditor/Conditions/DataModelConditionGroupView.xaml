@@ -45,7 +45,7 @@
         </Button>
         <Button Grid.Row="0"
                 Grid.Column="1"
-                ToolTip="Change the operator of the group"
+                ToolTip="Change the operator of the group, determining which conditions should match"
                 Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
                 Background="#E74C4C"
                 BorderBrush="#E74C4C"
@@ -54,10 +54,22 @@
                 Visibility="{Binding DisplayBooleanOperator, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="And" Command="{s:Action SelectBooleanOperator}" CommandParameter="And" />
-                    <MenuItem Header="Or" Command="{s:Action SelectBooleanOperator}" CommandParameter="Or" />
-                    <MenuItem Header="And not" Command="{s:Action SelectBooleanOperator}" CommandParameter="AndNot" />
-                    <MenuItem Header="Or not" Command="{s:Action SelectBooleanOperator}" CommandParameter="OrNot" />
+                    <MenuItem Header="And" 
+                              Command="{s:Action SelectBooleanOperator}" 
+                              CommandParameter="And" 
+                              ToolTip="All the conditions in the group should evaluate to true" />
+                    <MenuItem Header="Or" 
+                              Command="{s:Action SelectBooleanOperator}"
+                              CommandParameter="Or" 
+                              ToolTip="Any of the conditions in the group should evaluate to true"/>
+                    <MenuItem Header="And not" 
+                              Command="{s:Action SelectBooleanOperator}" 
+                              CommandParameter="AndNot" 
+                              ToolTip="All the conditions in the group should evaluate to false"/>
+                    <MenuItem Header="Or not" 
+                              Command="{s:Action SelectBooleanOperator}"
+                              CommandParameter="OrNot" 
+                              ToolTip="Any of the conditions in the group should evaluate to false"/>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
@@ -90,7 +102,7 @@
                         <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
                     </ContextMenu.Resources>
                     <MenuItem Header="Add static condition"
-                              ToolTip="A condition that compares a data model property to a static input"
+                              ToolTip="A condition that compares with a static input"
                               Command="{s:Action AddCondition}"
                               CommandParameter="Static">
                         <MenuItem.Icon>
@@ -98,18 +110,28 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Add dynamic condition"
-                              ToolTip="A condition that compares two data model properties"
+                              ToolTip="A condition that compares with a data model property"
                               Command="{s:Action AddCondition}"
                               CommandParameter="Dynamic">
                         <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="InsertLink" />
+                            <materialDesign:PackIcon Kind="Link" />
+                        </MenuItem.Icon>
+                    </MenuItem> 
+                    <MenuItem Header="Add self condition"
+                              ToolTip="A condition that compares with a property contained in the list"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="DynamicList"
+                              IsEnabled="{Binding Data.DynamicListConditionSupported, Source={StaticResource DataContextProxy}}"
+                              Visibility="{Binding Data.IsListGroup, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Source={StaticResource DataContextProxy}}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="UndoVariant" />
                         </MenuItem.Icon>
                     </MenuItem>
                     <MenuItem Header="Add list condition"
                               ToolTip="A condition that evaluates on items in a list"
                               Command="{s:Action AddCondition}"
                               CommandParameter="List"
-                              IsEnabled="{Binding Data.IsListGroup, Converter={StaticResource InverseBooleanConverter}, Source={StaticResource DataContextProxy}}">
+                              Visibility="{Binding Data.IsListGroup, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Source={StaticResource DataContextProxy}}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="FormatListBulleted" />
                         </MenuItem.Icon>

@@ -51,24 +51,9 @@ namespace Artemis.Core
         public ConditionOperator Operator { get; private set; }
 
         /// <summary>
-        ///     Gets the type of the content of the list this predicate is evaluated on
+        ///     Gets the data model condition list this predicate belongs to
         /// </summary>
-        public Type ListType { get; private set; }
-
-        /// <summary>
-        ///     Gets whether the list contains primitives
-        /// </summary>
-        public bool IsPrimitiveList { get; private set; }
-
-        /// <summary>
-        ///     Gets the currently used instance of the list data model
-        /// </summary>
-        public DataModel ListDataModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the path of the list property in the <see cref="ListDataModel" />
-        /// </summary>
-        public string ListPropertyPath { get; private set; }
+        public DataModelConditionList DataModelConditionList { get; private set; }
 
         /// <summary>
         ///     Gets the path of the left property in the <see cref="ListType" />
@@ -108,10 +93,10 @@ namespace Artemis.Core
         /// <param name="path">The path pointing to the left side value inside the list</param>
         public void UpdateLeftSide(string path)
         {
-            if (IsPrimitiveList)
+            if (DataModelConditionList.IsPrimitiveList)
                 throw new ArtemisCoreException("Cannot apply a left side to a predicate inside a primitive list");
             if (!ListContainsInnerPath(path))
-                throw new ArtemisCoreException($"List type {ListType.Name} does not contain path {path}");
+                throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
 
             LeftPropertyPath = path;
 
@@ -128,9 +113,9 @@ namespace Artemis.Core
         public void UpdateRightSideDynamic(string path)
         {
             if (!ListContainsInnerPath(path))
-                throw new ArtemisCoreException($"List type {ListType.Name} does not contain path {path}");
+                throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
 
-            PredicateType = ListRightSideType.Dynamic;
+            PredicateType = ListRightSideType.DynamicList;
             RightPropertyPath = path;
 
             CreateExpression();
@@ -155,7 +140,7 @@ namespace Artemis.Core
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
             }
 
-            PredicateType = ListRightSideType.DynamicExternal;
+            PredicateType = ListRightSideType.Dynamic;
             RightDataModel = dataModel;
             RightPropertyPath = path;
 
@@ -214,11 +199,11 @@ namespace Artemis.Core
         /// <param name="path">The path to evaluate</param>
         public bool ListContainsInnerPath(string path)
         {
-            if (ListType == null)
+            if (DataModelConditionList.ListType == null)
                 return false;
 
             var parts = path.Split('.');
-            var current = ListType;
+            var current = DataModelConditionList.ListType;
             foreach (var part in parts)
             {
                 var property = current.GetProperty(part);
@@ -236,8 +221,6 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
             ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
             ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
 
@@ -246,70 +229,13 @@ namespace Artemis.Core
 
         #endregion
 
-        internal void ApplyParentList()
-        {
-            var current = Parent;
-            while (current != null)
-            {
-                if (current is DataModelConditionList parentList)
-                {
-                    UpdateList(parentList.ListDataModel, parentList.ListPropertyPath);
-                    return;
-                }
-
-                current = current.Parent;
-            }
-        }
-
-        internal void UpdateList(DataModel dataModel, string path)
-        {
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
-
-            if (dataModel != null)
-            {
-                var listType = dataModel.GetListTypeAtPath(path);
-                if (listType == null)
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{path}'");
-
-                ListType = listType;
-                IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
-            }
-            else
-            {
-                ListType = null;
-                IsPrimitiveList = true;
-            }
-
-
-            ListDataModel = dataModel;
-            ListPropertyPath = path;
-
-            if (LeftPropertyPath != null && !ListContainsInnerPath(LeftPropertyPath))
-                LeftPropertyPath = null;
-            if (RightPropertyPath != null && !ListContainsInnerPath(RightPropertyPath))
-                RightPropertyPath = null;
-
-            CreateExpression();
-        }
-
-
-        /// <summary>
-        ///     Evaluates the condition part on the given target
-        /// </summary>
-        /// <param name="target">
-        ///     An instance of the list described in <see cref="ListDataModel" /> and
-        ///     <see cref="ListPropertyPath" />
-        /// </param>
         internal override bool EvaluateObject(object target)
         {
             if (PredicateType == ListRightSideType.Static && CompiledListPredicate != null)
                 return CompiledListPredicate(target);
-            if (PredicateType == ListRightSideType.Dynamic && CompiledListPredicate != null)
+            if (PredicateType == ListRightSideType.DynamicList && CompiledListPredicate != null)
                 return CompiledListPredicate(target);
-            if (PredicateType == ListRightSideType.DynamicExternal && CompiledExternalListPredicate != null)
+            if (PredicateType == ListRightSideType.Dynamic && CompiledExternalListPredicate != null)
                 return CompiledExternalListPredicate(target, RightDataModel);
 
             return false;
@@ -321,7 +247,7 @@ namespace Artemis.Core
                 return null;
 
             var parts = path.Split('.');
-            var current = ListType;
+            var current = DataModelConditionList.ListType;
 
             Type result = null;
             foreach (var part in parts)
@@ -337,12 +263,6 @@ namespace Artemis.Core
         internal override void Save()
         {
             Entity.PredicateType = (int) PredicateType;
-            if (ListDataModel != null)
-            {
-                Entity.ListDataModelGuid = ListDataModel.PluginInfo.Guid;
-                Entity.ListPropertyPath = ListPropertyPath;
-            }
-
             Entity.LeftPropertyPath = LeftPropertyPath;
 
             Entity.RightDataModelGuid = RightDataModel?.PluginInfo?.Guid;
@@ -361,10 +281,33 @@ namespace Artemis.Core
             return Entity;
         }
 
+        private void ApplyParentList()
+        {
+            var current = Parent;
+
+            while (current != null)
+            {
+                if (current is DataModelConditionList parentList)
+                {
+                    DataModelConditionList = parentList;
+
+                    if (LeftPropertyPath != null && !ListContainsInnerPath(LeftPropertyPath))
+                        LeftPropertyPath = null;
+                    if (RightPropertyPath != null && !ListContainsInnerPath(RightPropertyPath))
+                        RightPropertyPath = null;
+
+                    return;
+                }
+
+                current = current.Parent;
+            }
+
+            if (DataModelConditionList == null)
+                throw new ArtemisCoreException("This data model condition list predicate does not belong to a data model condition list");
+        }
+
         private void Initialize()
         {
-            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
             ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
             ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
 
@@ -381,17 +324,17 @@ namespace Artemis.Core
             }
 
             // Right side dynamic
-            if (PredicateType == ListRightSideType.Dynamic && Entity.RightPropertyPath != null)
-            {
-                if (ListContainsInnerPath(Entity.RightPropertyPath))
-                    UpdateRightSideDynamic(Entity.RightPropertyPath);
-            }
-            // Right side dynamic using an external data model
-            else if (PredicateType == ListRightSideType.Dynamic && Entity.RightDataModelGuid != null && Entity.RightPropertyPath != null)
+            if (PredicateType == ListRightSideType.Dynamic && Entity.RightDataModelGuid != null && Entity.RightPropertyPath != null)
             {
                 var dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
                     UpdateRightSideDynamic(dataModel, Entity.RightPropertyPath);
+            }
+            // Right side dynamic inside the list
+            else if (PredicateType == ListRightSideType.DynamicList && Entity.RightPropertyPath != null)
+            {
+                if (ListContainsInnerPath(Entity.RightPropertyPath))
+                    UpdateRightSideDynamic(Entity.RightPropertyPath);
             }
             // Right side static
             else if (PredicateType == ListRightSideType.Static && Entity.RightStaticValue != null)
@@ -438,10 +381,10 @@ namespace Artemis.Core
                 return;
 
             // If the operator does not support a right side, create a static expression because the right side will simply be null
-            if (PredicateType == ListRightSideType.Dynamic && Operator.SupportsRightSide)
+            if (PredicateType == ListRightSideType.DynamicList && Operator.SupportsRightSide)
+                CreateDynamicListExpression();
+            else if (PredicateType == ListRightSideType.Dynamic && Operator.SupportsRightSide)
                 CreateDynamicExpression();
-            else if (PredicateType == ListRightSideType.DynamicExternal && Operator.SupportsRightSide)
-                CreateDynamicExternalExpression();
             else
                 CreateStaticExpression();
         }
@@ -461,21 +404,21 @@ namespace Artemis.Core
             var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
             if (PredicateType == ListRightSideType.Dynamic)
             {
-                if (RightPropertyPath == null)
-                    return;
-
-                var rightSideType = GetTypeAtInnerPath(RightPropertyPath);
-                if (!leftSideType.IsCastableFrom(rightSideType))
-                    UpdateRightSideDynamic(null);
-            }
-            else if (PredicateType == ListRightSideType.DynamicExternal)
-            {
                 if (RightDataModel == null)
                     return;
 
                 var rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
                 if (!leftSideType.IsCastableFrom(rightSideType))
                     UpdateRightSideDynamic(null, null);
+            }
+            else if (PredicateType == ListRightSideType.DynamicList)
+            {
+                if (RightPropertyPath == null)
+                    return;
+
+                var rightSideType = GetTypeAtInnerPath(RightPropertyPath);
+                if (!leftSideType.IsCastableFrom(rightSideType))
+                    UpdateRightSideDynamic(null);
             }
             else
             {
@@ -509,7 +452,7 @@ namespace Artemis.Core
                 RightStaticValue = null;
         }
 
-        private void CreateDynamicExpression()
+        private void CreateDynamicListExpression()
         {
             if (LeftPropertyPath == null || RightPropertyPath == null || Operator == null)
                 return;
@@ -529,7 +472,7 @@ namespace Artemis.Core
             CompiledListPredicate = lambda.Compile();
         }
 
-        private void CreateDynamicExternalExpression()
+        private void CreateDynamicExpression()
         {
             if (LeftPropertyPath == null || RightPropertyPath == null || RightDataModel == null || Operator == null)
                 return;
@@ -551,12 +494,14 @@ namespace Artemis.Core
 
         private void CreateStaticExpression()
         {
-            if (!IsPrimitiveList && LeftPropertyPath == null || Operator == null)
+            if (!DataModelConditionList.IsPrimitiveList && LeftPropertyPath == null || Operator == null)
                 return;
 
             // List accessors share the same parameter because a list always contains one item per entry
             var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-            var leftSideAccessor = IsPrimitiveList ? Expression.Convert(leftSideParameter, ListType) : CreateListAccessor(LeftPropertyPath, leftSideParameter);
+            var leftSideAccessor = DataModelConditionList.IsPrimitiveList
+                ? Expression.Convert(leftSideParameter, DataModelConditionList.ListType)
+                : CreateListAccessor(LeftPropertyPath, leftSideParameter);
 
             // If the left side is a value type but the input is empty, this isn't a valid expression
             if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
@@ -575,7 +520,7 @@ namespace Artemis.Core
         private Expression CreateListAccessor(string path, ParameterExpression listParameter)
         {
             return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(listParameter, ListType), // Cast to the appropriate type
+                Expression.Convert(listParameter, DataModelConditionList.ListType), // Cast to the appropriate type
                 Expression.Property
             );
         }
@@ -594,31 +539,6 @@ namespace Artemis.Core
         }
 
         #region Event handlers
-
-        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
-        {
-            var dataModel = e.Registration.DataModel;
-            if (dataModel.PluginInfo.Guid == Entity.ListDataModelGuid && dataModel.ContainsPath(Entity.ListPropertyPath))
-                UpdateList(dataModel, Entity.LeftPropertyPath);
-            if (dataModel.PluginInfo.Guid == Entity.RightDataModelGuid && dataModel.ContainsPath(Entity.RightPropertyPath))
-                UpdateRightSideDynamic(dataModel, Entity.RightPropertyPath);
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
-        {
-            if (ListDataModel == e.Registration.DataModel)
-            {
-                CompiledListPredicate = null;
-                CompiledExternalListPredicate = null;
-                ListDataModel = null;
-            }
-
-            if (RightDataModel == e.Registration.DataModel)
-            {
-                CompiledExternalListPredicate = null;
-                RightDataModel = null;
-            }
-        }
 
         private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
         {
@@ -649,13 +569,13 @@ namespace Artemis.Core
         Static,
 
         /// <summary>
-        ///     A dynamic right side value based on a path in the list
+        ///     A dynamic right side value based on a path in a data model
         /// </summary>
         Dynamic,
 
         /// <summary>
-        ///     A dynamic right side value based on a path in a data model
+        ///     A dynamic right side value based on a path in the list
         /// </summary>
-        DynamicExternal
+        DynamicList
     }
 }
