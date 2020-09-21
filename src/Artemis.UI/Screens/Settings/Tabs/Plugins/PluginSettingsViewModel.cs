@@ -23,7 +23,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     public class PluginSettingsViewModel : PropertyChangedBase
     {
         private readonly IDialogService _dialogService;
-        private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginService _pluginService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
@@ -33,7 +32,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private PluginInfo _pluginInfo;
 
         public PluginSettingsViewModel(Plugin plugin,
-            IKernel kernel,
             ILogger logger,
             IWindowManager windowManager,
             IDialogService dialogService,
@@ -43,7 +41,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             Plugin = plugin;
             PluginInfo = plugin.PluginInfo;
 
-            _kernel = kernel;
             _logger = logger;
             _windowManager = windowManager;
             _dialogService = dialogService;
@@ -96,7 +93,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 var pluginParameter = constructors.First().GetParameters().First(p => typeof(Plugin).IsAssignableFrom(p.ParameterType));
                 var plugin = new ConstructorArgument(pluginParameter.Name, Plugin);
-                var viewModel = (PluginConfigurationViewModel) _kernel.Get(configurationViewModel.Type, plugin);
+                var viewModel = (PluginConfigurationViewModel) PluginInfo.Kernel.Get(configurationViewModel.Type, plugin);
                 _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
             }
             catch (Exception e)

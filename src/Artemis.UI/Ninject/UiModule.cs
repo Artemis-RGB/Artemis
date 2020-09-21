@@ -14,7 +14,6 @@ using Stylet;
 
 namespace Artemis.UI.Ninject
 {
-    // ReSharper disable once InconsistentNaming
     public class UIModule : NinjectModule
     {
         public override void Load()

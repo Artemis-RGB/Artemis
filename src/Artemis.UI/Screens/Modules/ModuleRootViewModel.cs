@@ -10,16 +10,14 @@ namespace Artemis.UI.Screens.Modules
 {
     public class ModuleRootViewModel : Conductor<Screen>.Collection.OneActive
     {
-        private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
 
-        public ModuleRootViewModel(Module module, IModuleVmFactory moduleVmFactory, IKernel kernel)
+        public ModuleRootViewModel(Module module, IModuleVmFactory moduleVmFactory)
         {
             DisplayName = module?.DisplayName;
             Module = module;
 
             _moduleVmFactory = moduleVmFactory;
-            _kernel = kernel;
         }
 
         public Module Module { get; }
@@ -47,7 +45,7 @@ namespace Artemis.UI.Screens.Modules
                     var module = new ConstructorArgument("module", Module);
                     var displayName = new ConstructorArgument("displayName", DisplayName);
 
-                    var viewModel = (ModuleViewModel) _kernel.Get(moduleTab.Type, module, displayName);
+                    var viewModel = (ModuleViewModel) Module.PluginInfo.Kernel.Get(moduleTab.Type, module, displayName);
                     Items.Add(viewModel);
                 }
             }

@@ -1,6 +1,8 @@
 ﻿using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.DataModel.Display;
 using Artemis.UI.DefaultTypes.DataModel.Input;
+using Artemis.UI.Ninject;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
@@ -11,14 +13,19 @@ namespace Artemis.UI.Services
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IPluginService _pluginService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
 
-        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService)
+        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService, IPluginService pluginService)
         {
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
+            _pluginService = pluginService;
+
+            LoadPluginModules();
+            pluginService.PluginLoaded += PluginServiceOnPluginLoaded;
         }
 
         public void RegisterBuiltInDataModelDisplays()
@@ -62,6 +69,17 @@ namespace Artemis.UI.Services
             _profileEditorService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePluginInfo);
 
             _registeredBuiltInPropertyEditors = true;
+        }
+
+        private void PluginServiceOnPluginLoaded(object? sender, PluginEventArgs e)
+        {
+            e.PluginInfo.Kernel.Load(new[] { new PluginUIModule(e.PluginInfo) });
+        }
+
+        private void LoadPluginModules()
+        {
+            foreach (var pluginInfo in _pluginService.GetAllPluginInfo())
+                pluginInfo.Kernel.Load(new[] { new PluginUIModule(pluginInfo) });
         }
     }
 

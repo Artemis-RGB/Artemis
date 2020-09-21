@@ -41,6 +41,8 @@ namespace Artemis.Core.Services
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
             Kernel = kernel;
+            Constants.CorePluginInfo.Kernel = kernel;
+
             _logger = logger;
             _pluginService = pluginService;
             _rgbService = rgbService;

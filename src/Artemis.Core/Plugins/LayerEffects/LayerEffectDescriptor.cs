@@ -46,7 +46,7 @@ namespace Artemis.Core.LayerEffects
         ///     The plugin that provided this <see cref="LayerEffectDescriptor" />
         /// </summary>
         public LayerEffectProvider LayerEffectProvider { get; }
-        
+
         /// <summary>
         ///     Gets the GUID this descriptor is acting as a placeholder for. If null, this descriptor is not a placeholder
         /// </summary>
@@ -67,7 +67,7 @@ namespace Artemis.Core.LayerEffects
                 return;
             }
 
-            var effect = (BaseLayerEffect)CoreService.Kernel.Get(LayerEffectType);
+            var effect = (BaseLayerEffect) LayerEffectProvider.PluginInfo.Kernel.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
             effect.EntityId = entity.Id;
             effect.Order = entity.Order;

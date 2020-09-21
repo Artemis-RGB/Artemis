@@ -273,7 +273,8 @@ namespace Artemis.UI.Shared.Services
                 return null;
 
             var parameter = new ConstructorArgument("layerProperty", layerProperty);
-            return (PropertyInputViewModel<T>) Kernel.Get(viewModelType, parameter);
+            var kernel = registration != null ? registration.PluginInfo.Kernel : Kernel;
+            return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 
         public ProfileModule GetCurrentModule()

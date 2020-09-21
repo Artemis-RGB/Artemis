@@ -4,6 +4,8 @@ using System.Reflection;
 using Artemis.Storage.Entities.Plugins;
 using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
+using Ninject;
+using Ninject.Extensions.ChildKernel;
 using Stylet;
 
 namespace Artemis.Core
@@ -135,13 +137,18 @@ namespace Artemis.Core
         /// <summary>
         ///     The assembly the plugin code lives in
         /// </summary>
-        internal Assembly Assembly { get; set; }
+        public Assembly Assembly { get; internal set; }
+
+        /// <summary>
+        /// The Ninject kernel of the plugin
+        /// </summary>
+        public IKernel Kernel { get; internal set; }
 
         /// <summary>
         ///     The entity representing the plugin
         /// </summary>
         internal PluginEntity PluginEntity { get; set; }
-
+        
         /// <inheritdoc />
         public override string ToString()
         {
