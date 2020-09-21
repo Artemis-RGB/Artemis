@@ -25,13 +25,15 @@
             <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
                        Stroke="{DynamicResource MaterialDesignTextBoxBorder}"
                        StrokeThickness="1"
-                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" />
+                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}" 
+                       IsHitTestVisible="False"/>
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}"
-                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center"
                        TextWrapping="Wrap"
-                       TextAlignment="Center" />
+                       TextAlignment="Center"
+                       Visibility="{Binding Device.RgbDevice.DeviceInfo.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
+                       IsHitTestVisible="False"/>
         </Grid>
 
         <!-- Selection rectangle -->

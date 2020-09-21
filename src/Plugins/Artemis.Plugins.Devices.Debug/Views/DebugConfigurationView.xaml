@@ -10,14 +10,18 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock>
+        <TextBlock TextWrapping="Wrap">
             Enter absolute paths to the device layout and choose the image layout you wish to test. <LineBreak />
             Please note that currently RGB.NET does not support changing devices on runtime and so any changes below won't be applied until you restart Artemis.
         </TextBlock>
-        <DataGrid Grid.Row="1"
+
+        <Separator Grid.Row="1" Style="{StaticResource MaterialDesignLightSeparator}" />
+
+        <DataGrid Grid.Row="2"
                   ItemsSource="{Binding Definitions}"
                   AutoGenerateColumns="False"
                   CanUserSortColumns="True"
@@ -36,7 +40,7 @@
                                                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
             </DataGrid.Columns>
         </DataGrid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0 0 5 0" Command="{s:Action Cancel}">
                 CANCEL
             </Button>

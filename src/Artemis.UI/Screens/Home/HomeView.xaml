@@ -70,9 +70,8 @@
                                 <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
                                            Foreground="{DynamicResource MaterialDesignBodyLight}"
                                            VerticalAlignment="Top">
-                                    <Run
-                                        Text="If you need help, have some feedback or have any other questions feel free to contact us through any of the following channels" />
-                                    <Run Text=". " />
+                                    If you need help, have some feedback or have any other questions feel free to contact us through any of the 
+                                    following channels.
                                 </TextBlock>
                             </StackPanel>
                             <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
@@ -86,7 +85,7 @@
                                         <Button Style="{DynamicResource MaterialDesignFlatButton}"
                                                 HorizontalAlignment="Left"
                                                 x:Name="GitHubButton" Command="{s:Action OpenUrl}"
-                                                CommandParameter="https://github.com/SpoinkyNL/Artemis">
+                                                CommandParameter="https://github.com/Artemis-RGB/Artemis">
                                             <StackPanel Orientation="Horizontal">
                                                 <materialDesign:PackIcon Kind="Github" />
                                                 <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
@@ -94,11 +93,11 @@
                                         </Button>
                                         <Button Grid.Row="0" Style="{DynamicResource MaterialDesignFlatButton}"
                                                 HorizontalAlignment="Right"
-                                                x:Name="TwitterButton" Command="{s:Action OpenUrl}"
-                                                CommandParameter="https://twitter.com/spoinkynl">
+                                                x:Name="WebsiteButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://artemis-rgb.com">
                                             <StackPanel Orientation="Horizontal">
-                                                <materialDesign:PackIcon Kind="Twitter" />
-                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Twitter</TextBlock>
+                                                <materialDesign:PackIcon Kind="Web" />
+                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
                                             </StackPanel>
                                         </Button>
                                         <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
@@ -141,9 +140,8 @@
                                 <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
                                            Foreground="{DynamicResource MaterialDesignBodyLight}"
                                            VerticalAlignment="Top">
-                                    <Run
-                                        Text="This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button, tweet or post about it" />
-                                    <Run Text=". You can also make your own modules!" />
+                                    This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button,
+                                    I like numbers. You could even make plugins, there's a full documentation on the website
                                 </TextBlock>
                             </StackPanel>
                             <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
@@ -151,18 +149,19 @@
                                 <DockPanel>
                                     <Button Style="{DynamicResource MaterialDesignFlatButton}"
                                             DockPanel.Dock="Right"
-                                            x:Name="DonateButton" Command="{s:Action OpenUrl}"
+                                            x:Name="DonateButton" 
+                                            Command="{s:Action OpenUrl}"
                                             CommandParameter="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
                                         <StackPanel Orientation="Horizontal">
                                             <materialDesign:PackIcon Kind="Gift" />
                                             <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
                                         </StackPanel>
                                     </Button>
-                                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                               TextWrapping="Wrap" Margin="16" VerticalAlignment="Center">
-                                        <Run
-                                            Text="Feel like you want to make a donation? It would be gratefully received. Click the button to donate via " />
-                                        <Run Text="Paypal" /><Run Text="." />
+                                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}" 
+                                               TextWrapping="Wrap" 
+                                               Margin="16"
+                                               VerticalAlignment="Center">
+                                        Feel like you want to make a donation? It would be gratefully received. Click the button to donate via PayPal.
                                     </TextBlock>
                                 </DockPanel>
                             </Border>

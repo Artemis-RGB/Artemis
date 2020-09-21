@@ -199,6 +199,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 _pluginService.DisablePlugin(Plugin);
 
             NotifyOfPropertyChange(nameof(IsEnabled));
+            NotifyOfPropertyChange(nameof(CanOpenSettings));
             NotifyOfPropertyChange(nameof(RequiresRestart));
             NotifyOfPropertyChange(nameof(DisplayLoadFailed));
         }

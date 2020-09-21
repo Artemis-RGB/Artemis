@@ -29,12 +29,13 @@ namespace Artemis.UI.Screens
         private readonly IEventAggregator _eventAggregator;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly ThemeWatcher _themeWatcher;
-        private readonly Timer _titleUpdateTimer;
+        private readonly Timer _frameTimeUpdateTimer;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _activeItemReady;
         private bool _lostFocus;
         private ISnackbarMessageQueue _mainMessageQueue;
         private string _windowTitle;
+        private string _frameTime;
 
         public RootViewModel(
             IEventAggregator eventAggregator,
@@ -52,7 +53,7 @@ namespace Artemis.UI.Screens
             _builtInRegistrationService = builtInRegistrationService;
             _snackbarMessageQueue = snackbarMessageQueue;
 
-            _titleUpdateTimer = new Timer(500);
+            _frameTimeUpdateTimer = new Timer(500);
 
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _windowSize = settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
@@ -62,6 +63,9 @@ namespace Artemis.UI.Screens
 
             ActiveItem = SidebarViewModel.SelectedItem;
             ActiveItemReady = true;
+
+            var versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
         }
 
         public SidebarViewModel SidebarViewModel { get; }
@@ -82,6 +86,12 @@ namespace Artemis.UI.Screens
         {
             get => _windowTitle;
             set => SetAndNotify(ref _windowTitle, value);
+        }
+
+        public string FrameTime
+        {
+            get => _frameTime;
+            set => SetAndNotify(ref _frameTime, value);
         }
 
         public void WindowDeactivated()
@@ -129,12 +139,12 @@ namespace Artemis.UI.Screens
         }
 
 
-        private void UpdateWindowTitle()
+        private void UpdateFrameTime()
         {
-            var versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} - Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
+            
+            FrameTime = $"Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
         }
-
+        
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem) && ActiveItem != SidebarViewModel.SelectedItem)
@@ -184,9 +194,9 @@ namespace Artemis.UI.Screens
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
 
-        private void OnTitleUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
+        private void OnFrameTimeUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
         {
-            UpdateWindowTitle();
+            UpdateFrameTime();
         }
 
         private void ThemeWatcherOnThemeChanged(object sender, WindowsThemeEventArgs e)
@@ -218,18 +228,18 @@ namespace Artemis.UI.Screens
         protected override void OnActivate()
         {
             MainMessageQueue = _snackbarMessageQueue;
-            UpdateWindowTitle();
+            UpdateFrameTime();
 
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
             _builtInRegistrationService.RegisterBuiltInDataModelInputs();
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
 
-            _titleUpdateTimer.Elapsed += OnTitleUpdateTimerOnElapsed;
+            _frameTimeUpdateTimer.Elapsed += OnFrameTimeUpdateTimerOnElapsed;
             _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
             _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
             SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
 
-            _titleUpdateTimer.Start();
+            _frameTimeUpdateTimer.Start();
 
             base.OnActivate();
         }
@@ -241,14 +251,14 @@ namespace Artemis.UI.Screens
             Keyboard.ClearFocus();
 
             MainMessageQueue = null;
-            _titleUpdateTimer.Stop();
+            _frameTimeUpdateTimer.Stop();
 
             var window = (MaterialWindow) View;
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(window);
             _windowSize.Save();
 
-            _titleUpdateTimer.Elapsed -= OnTitleUpdateTimerOnElapsed;
+            _frameTimeUpdateTimer.Elapsed -= OnFrameTimeUpdateTimerOnElapsed;
             _colorScheme.SettingChanged -= ColorSchemeOnSettingChanged;
             _themeWatcher.ThemeChanged -= ThemeWatcherOnThemeChanged;
             SidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;

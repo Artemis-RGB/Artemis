@@ -7,13 +7,18 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:RenderDebugViewModel}">
-    <StackPanel>
-        <TextBlock TextWrapping="Wrap">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" TextWrapping="Wrap">
             In this window you can view the inner workings of Artemis.
             Please note that having this window open can have a performance impact on your system.
         </TextBlock>
 
-        <Grid Margin="0,10,0,0">
+        <Grid Grid.Row="1" Margin="0,10,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
@@ -28,8 +33,8 @@
             <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}" />
         </Grid>
 
-        <materialDesign:Card VerticalAlignment="Stretch" Margin="0, 5,0,0">
-            <Image Source="{Binding CurrentFrame}" />
+        <materialDesign:Card Grid.Row="2" Margin="0,5,0,0" Background="{StaticResource Checkerboard}">
+            <Image Source="{Binding CurrentFrame}"  />
         </materialDesign:Card>
-    </StackPanel>
+    </Grid>
 </UserControl>

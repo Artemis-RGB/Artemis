@@ -65,7 +65,13 @@
                             Title="{Binding ActiveItem.DisplayName}"
                             ShowNavigationDrawerButton="True"
                             DockPanel.Dock="Top">
-                    <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding FrameTime}" 
+                                   VerticalAlignment="Center"
+                                   FontSize="14" 
+                                   Margin="10 0" 
+                                   ToolTip="The time the last frame took to render"/>
+
                         <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
                         <Button Style="{StaticResource MaterialDesignIconForegroundButton}" 
                                 ToolTip="Open debugger"
