@@ -54,13 +54,27 @@
                 BorderBrush="#7B7B7B"
                 Content="{Binding SelectedListOperator}"
                 Click="PropertyButton_OnClick"
-                HorizontalAlignment="Left">
+                HorizontalAlignment="Left"
+                ToolTip="Change the list operator, determining how the list contents should match">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Any" Command="{s:Action SelectListOperator}" CommandParameter="Any" />
-                    <MenuItem Header="All" Command="{s:Action SelectListOperator}" CommandParameter="All" />
-                    <MenuItem Header="None" Command="{s:Action SelectListOperator}" CommandParameter="None" />
-                    <MenuItem Header="Count (NYI)" Command="{s:Action SelectListOperator}" CommandParameter="Count" IsEnabled="False" />
+                    <MenuItem Header="Any" 
+                              Command="{s:Action SelectListOperator}" 
+                              CommandParameter="Any" 
+                              ToolTip="Any of the list items should evaluate to true"/>
+                    <MenuItem Header="All" 
+                              Command="{s:Action SelectListOperator}" 
+                              CommandParameter="All" 
+                              ToolTip="All of the list items should evaluate to true"/>
+                    <MenuItem Header="None" 
+                              Command="{s:Action SelectListOperator}" 
+                              CommandParameter="None"
+                              ToolTip="None of the list items should evaluate to true"/>
+                    <MenuItem Header="Count (NYI)" 
+                              Command="{s:Action SelectListOperator}" 
+                              CommandParameter="Count" 
+                              IsEnabled="False" 
+                              ToolTip="A specific amount of the list items should evaluate to true"/>
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>

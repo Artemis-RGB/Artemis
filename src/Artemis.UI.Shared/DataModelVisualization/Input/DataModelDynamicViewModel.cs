@@ -24,6 +24,7 @@ namespace Artemis.UI.Shared.Input
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
         private DataModelVisualizationViewModel _selectedPropertyViewModel;
+        private Type[] _filterTypes;
 
         internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
@@ -43,7 +44,6 @@ namespace Artemis.UI.Shared.Input
             set => SetAndNotify(ref _buttonBrush, value);
         }
 
-
         public string Placeholder
         {
             get => _placeholder;
@@ -56,7 +56,16 @@ namespace Artemis.UI.Shared.Input
             set => SetAndNotify(ref _isEnabled, value);
         }
 
-        public Type[] FilterTypes { get; set; }
+        public Type[] FilterTypes
+        {
+            get => _filterTypes;
+            set
+            {
+                if (!SetAndNotify(ref _filterTypes, value)) return;
+                DataModelViewModel?.ApplyTypeFilter(true, FilterTypes);
+            }
+        }
+
         public DelegateCommand SelectPropertyCommand { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
 

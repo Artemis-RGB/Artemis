@@ -25,6 +25,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             : base(dataModelConditionGroup)
         {
             IsListGroup = isListGroup;
+            if (IsListGroup)
+                DynamicListConditionSupported = !((DataModelConditionList) dataModelConditionGroup.Parent).IsPrimitiveList;
+            else
+                DynamicListConditionSupported = false;
+
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -38,7 +43,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         }
 
         public bool IsListGroup { get; }
-
+        public bool DynamicListConditionSupported { get; }
         public DataModelConditionGroup DataModelConditionGroup => (DataModelConditionGroup) Model;
 
         public bool IsRootGroup
@@ -81,8 +86,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 else
                     DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.Dynamic));
             }
-            else if (type == "DynamicExternal" && IsListGroup)
-                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.DynamicExternal));
+            else if (type == "DynamicList" && IsListGroup)
+                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.DynamicList));
             else if (type == "List" && !IsListGroup)
                 DataModelConditionGroup.AddChild(new DataModelConditionList(DataModelConditionGroup));
 

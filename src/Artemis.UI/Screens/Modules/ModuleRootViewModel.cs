@@ -24,10 +24,10 @@ namespace Artemis.UI.Screens.Modules
 
         public Module Module { get; }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             AddTabs();
-            base.OnActivate();
+            base.OnInitialActivate();
         }
         
         private void AddTabs()
