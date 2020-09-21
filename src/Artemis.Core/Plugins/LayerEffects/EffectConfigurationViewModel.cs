@@ -17,6 +17,16 @@ namespace Artemis.Core.LayerEffects
         }
 
         /// <summary>
+        ///     Creates a new instance of the <see cref="EffectConfigurationViewModel" /> class with a validator
+        /// </summary>
+        /// <param name="layerEffect"></param>
+        /// <param name="validator"></param>
+        protected EffectConfigurationViewModel(BaseLayerEffect layerEffect, IModelValidator validator) : base(validator)
+        {
+            LayerEffect = layerEffect;
+        }
+
+        /// <summary>
         ///     Gets the layer effect this view model is associated with
         /// </summary>
         public BaseLayerEffect LayerEffect { get; }

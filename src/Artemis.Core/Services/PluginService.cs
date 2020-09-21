@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
@@ -25,7 +26,6 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginRepository _pluginRepository;
         private readonly List<PluginInfo> _plugins;
-        private IKernel _childKernel;
 
         public PluginService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
         {
@@ -110,9 +110,6 @@ namespace Artemis.Core.Services
                 // Unload all currently loaded plugins first
                 UnloadPlugins();
 
-                // Create a child kernel and app domain that will only contain the plugins
-                _childKernel = new ChildKernel(_kernel);
-
                 // Load the plugin assemblies into the plugin context
                 var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
                 foreach (var subDirectory in pluginDirectory.EnumerateDirectories())
@@ -159,13 +156,6 @@ namespace Artemis.Core.Services
                 // Unload all plugins
                 while (_plugins.Count > 0)
                     UnloadPlugin(_plugins[0]);
-
-                // Dispose the child kernel and therefore any leftover plugins instantiated with it
-                if (_childKernel != null)
-                {
-                    _childKernel.Dispose();
-                    _childKernel = null;
-                }
 
                 _plugins.Clear();
             }
@@ -232,7 +222,9 @@ namespace Artemis.Core.Services
                     {
                         new Parameter("PluginInfo", pluginInfo, false)
                     };
-                    pluginInfo.Instance = (Plugin) _childKernel.Get(pluginType, constraint: null, parameters: parameters);
+                    pluginInfo.Kernel = new ChildKernel(_kernel);
+                    pluginInfo.Kernel.Load(new PluginModule(pluginInfo));
+                    pluginInfo.Instance = (Plugin) pluginInfo.Kernel.Get(pluginType, constraint: null, parameters: parameters);
                     pluginInfo.Instance.PluginInfo = pluginInfo;
                 }
                 catch (Exception e)
@@ -262,10 +254,10 @@ namespace Artemis.Core.Services
                     OnPluginDisabled(new PluginEventArgs(pluginInfo));
                 }
 
-                _childKernel.Unbind(pluginInfo.Instance.GetType());
-
                 pluginInfo.Instance.Dispose();
                 pluginInfo.PluginLoader.Dispose();
+                pluginInfo.Kernel.Dispose();
+
                 _plugins.Remove(pluginInfo);
 
                 OnPluginUnloaded(new PluginEventArgs(pluginInfo));

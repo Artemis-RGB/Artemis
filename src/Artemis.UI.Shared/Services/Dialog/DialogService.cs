@@ -11,6 +11,7 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
+    // TODO: Become plugin-aware and use plugin kernel if injected into a plugin
     internal class DialogService : IDialogService
     {
         private readonly IKernel _kernel;

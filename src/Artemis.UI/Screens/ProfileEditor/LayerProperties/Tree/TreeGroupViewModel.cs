@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
                 var brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
                 var argument = new ConstructorArgument(brushParameter.Name, layerBrush);
-                var viewModel = (BrushConfigurationViewModel) _kernel.Get(configurationViewModel.Type, argument);
+                var viewModel = (BrushConfigurationViewModel) layerBrush.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
 
                 _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(viewModel));
             }
@@ -86,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
                 var effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
                 var argument = new ConstructorArgument(effectParameter.Name, layerEffect);
-                var viewModel = (EffectConfigurationViewModel) _kernel.Get(configurationViewModel.Type, argument);
+                var viewModel = (EffectConfigurationViewModel) layerEffect.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
                 _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)

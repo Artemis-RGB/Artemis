@@ -17,6 +17,16 @@ namespace Artemis.Core.LayerBrushes
         }
 
         /// <summary>
+        ///     Creates a new instance of the <see cref="BrushConfigurationViewModel" /> class with a validator
+        /// </summary>
+        /// <param name="layerBrush"></param>
+        /// <param name="validator"></param>
+        protected BrushConfigurationViewModel(BaseLayerBrush layerBrush, IModelValidator validator) : base(validator)
+        {
+            LayerBrush = layerBrush;
+        }
+
+        /// <summary>
         ///     Gets the layer brush this view model is associated with
         /// </summary>
         public BaseLayerBrush LayerBrush { get; }

@@ -58,7 +58,7 @@ namespace Artemis.UI.Shared.Services
 
                 return mainDataModel;
             }
-            
+
             var dataModel = _dataModelService.GetPluginDataModel(plugin);
             if (dataModel == null)
                 return null;
@@ -71,7 +71,7 @@ namespace Artemis.UI.Shared.Services
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
             return viewModel;
         }
-        
+
         public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes = null) where T : DataModelInputViewModel
         {
             if (compatibleConversionTypes == null)
@@ -165,7 +165,7 @@ namespace Artemis.UI.Shared.Services
             {
                 var match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
-                    return (DataModelDisplayViewModel) _kernel.Get(match.ViewModelType);
+                    return (DataModelDisplayViewModel) match.PluginInfo.Kernel.Get(match.ViewModelType);
                 return !fallBackToDefault ? null : _kernel.Get<DefaultDataModelDisplayViewModel>();
             }
         }
@@ -222,7 +222,7 @@ namespace Artemis.UI.Shared.Services
                 new ConstructorArgument("description", description),
                 new ConstructorArgument("initialValue", initialValue)
             };
-            var viewModel = (DataModelInputViewModel) _kernel.Get(registration.ViewModelType, parameters);
+            var viewModel = (DataModelInputViewModel) registration.PluginInfo.Kernel.Get(registration.ViewModelType, parameters);
             viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
             return viewModel;
         }
