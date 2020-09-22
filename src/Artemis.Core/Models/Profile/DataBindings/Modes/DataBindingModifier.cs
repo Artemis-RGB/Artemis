@@ -12,14 +12,10 @@ namespace Artemis.Core
     {
         private bool _disposed;
 
-        /// <summary>
-        ///     Creates a new instance of the <see cref="DataBindingModifier{TLayerProperty,TProperty}" /> class
-        /// </summary>
-        /// <param name="directDataBinding">The direct data binding the modifier is to be applied to</param>
-        /// <param name="parameterType">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
-        public DataBindingModifier(DirectDataBinding<TLayerProperty, TProperty> directDataBinding, ProfileRightSideType parameterType)
+        internal DataBindingModifier(DirectDataBinding<TLayerProperty, TProperty> directDataBinding, ProfileRightSideType parameterType)
         {
             DirectDataBinding = directDataBinding ?? throw new ArgumentNullException(nameof(directDataBinding));
+            Order = directDataBinding.Modifiers.Count + 1;
             ParameterType = parameterType;
             Entity = new DataBindingModifierEntity();
             Initialize();
@@ -40,7 +36,7 @@ namespace Artemis.Core
         public DataBindingModifierType ModifierType { get; private set; }
 
         /// <summary>
-        /// Gets the direct data binding this modifier is applied to
+        ///     Gets the direct data binding this modifier is applied to
         /// </summary>
         public DirectDataBinding<TLayerProperty, TProperty> DirectDataBinding { get; }
 
@@ -121,6 +117,17 @@ namespace Artemis.Core
             ParameterType = (ProfileRightSideType) Entity.ParameterType;
 
             // Parameter is done during initialize
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            DataBindingModifierTypeStore.DataBindingModifierAdded -= DataBindingModifierTypeStoreOnDataBindingModifierAdded;
+            DataBindingModifierTypeStore.DataBindingModifierRemoved -= DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
         }
 
         /// <summary>
@@ -339,23 +346,12 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel != ParameterDataModel) 
+            if (e.Registration.DataModel != ParameterDataModel)
                 return;
             ParameterDataModel = null;
             CompiledParameterAccessor = null;
         }
 
         #endregion
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            _disposed = true;
-
-            DataBindingModifierTypeStore.DataBindingModifierAdded -= DataBindingModifierTypeStoreOnDataBindingModifierAdded;
-            DataBindingModifierTypeStore.DataBindingModifierRemoved -= DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-        }
     }
 }

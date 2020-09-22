@@ -51,7 +51,7 @@ namespace Artemis.Core
         {
             return DataBinding;
         }
-        
+
         /// <inheritdoc />
         public IDataBinding CreateDataBinding()
         {

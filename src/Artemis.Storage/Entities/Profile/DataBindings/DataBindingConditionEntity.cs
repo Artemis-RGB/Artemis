@@ -2,9 +2,10 @@
 
 namespace Artemis.Storage.Entities.Profile.DataBindings
 {
-    public class DataBindingConditionValueEntity
+    public class DataBindingConditionEntity
     {
         public string Value { get; set; }
-        public DataModelConditionGroupEntity RootGroup { get; set; }
+        public DataModelConditionGroupEntity Condition { get; set; }
+        public int Order { get; set; }
     }
 }
