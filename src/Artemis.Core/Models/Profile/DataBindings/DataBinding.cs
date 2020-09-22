@@ -177,7 +177,7 @@ namespace Artemis.Core
             var easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
             return Converter.Interpolate(_previousValue, _currentValue, Easings.Interpolate(easingAmount, EasingFunction));
         }
-        
+
         #region Mode management
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Artemis.Core
         }
 
         #endregion
-        
+
         #region Storage
 
         /// <inheritdoc />
@@ -262,7 +262,7 @@ namespace Artemis.Core
     public enum DataBindingModeType
     {
         /// <summary>
-        /// Disables the data binding
+        ///     Disables the data binding
         /// </summary>
         None,
 
@@ -272,8 +272,8 @@ namespace Artemis.Core
         Direct,
 
         /// <summary>
-        ///      Replaces the layer property value with the data binding value
+        ///     Replaces the layer property value with the data binding value
         /// </summary>
-        Conditional,
+        Conditional
     }
 }

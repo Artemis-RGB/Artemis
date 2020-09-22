@@ -6,9 +6,9 @@ namespace Artemis.Storage.Entities.Profile.DataBindings
     {
         public ConditionalDataBindingEntity()
         {
-            Values = new List<DataBindingConditionValueEntity>();
+            Values = new List<DataBindingConditionEntity>();
         }
 
-        public List<DataBindingConditionValueEntity> Values { get; set; }
+        public List<DataBindingConditionEntity> Values { get; set; }
     }
 }

@@ -24,9 +24,6 @@ namespace Artemis.Core
             Load();
         }
 
-        /// <inheritdoc />
-        public DataBinding<TLayerProperty, TProperty> DataBinding { get; }
-
         internal DirectDataBindingEntity Entity { get; }
 
         /// <summary>
@@ -50,10 +47,13 @@ namespace Artemis.Core
         public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
 
         /// <inheritdoc />
+        public DataBinding<TLayerProperty, TProperty> DataBinding { get; }
+
+        /// <inheritdoc />
         public TProperty GetValue(TProperty baseValue)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
+                throw new ObjectDisposedException("DirectDataBinding");
 
             if (CompiledTargetAccessor == null)
                 return baseValue;
@@ -91,6 +91,8 @@ namespace Artemis.Core
             // Modifiers
             foreach (var dataBindingModifierEntity in Entity.Modifiers)
                 _modifiers.Add(new DataBindingModifier<TLayerProperty, TProperty>(this, dataBindingModifierEntity));
+
+            ApplyOrder();
         }
 
         /// <inheritdoc />
@@ -156,7 +158,7 @@ namespace Artemis.Core
         {
             return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
         }
-        
+
         /// <summary>
         ///     Updates the source of the data binding and re-compiles the expression
         /// </summary>
@@ -165,7 +167,7 @@ namespace Artemis.Core
         public void UpdateSource(DataModel dataModel, string path)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
+                throw new ObjectDisposedException("DirectDataBinding");
 
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
@@ -188,34 +190,47 @@ namespace Artemis.Core
         #region Modifiers
 
         /// <summary>
-        ///     Adds a modifier to the data binding's <see cref="Modifiers" /> collection
+        ///     Adds a modifier to the direct data binding's <see cref="Modifiers" /> collection
         /// </summary>
+        /// <param name="type">The type of the parameter, can either be dynamic (based on a data model value) or static</param>
         public DataBindingModifier<TLayerProperty, TProperty> AddModifier(ProfileRightSideType type)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
+                throw new ObjectDisposedException("DirectDataBinding");
 
             var modifier = new DataBindingModifier<TLayerProperty, TProperty>(this, type);
             _modifiers.Add(modifier);
+
+            ApplyOrder();
             OnModifiersUpdated();
 
             return modifier;
         }
 
         /// <summary>
-        ///     Removes a modifier from the data binding's <see cref="Modifiers" /> collection and disposes it
+        ///     Removes a modifier from the direct data binding's <see cref="Modifiers" /> collection and disposes it
         /// </summary>
         public void RemoveModifier(DataBindingModifier<TLayerProperty, TProperty> modifier)
         {
             if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
+                throw new ObjectDisposedException("DirectDataBinding");
+            if (!_modifiers.Contains(modifier))
+                return;
 
-            if (_modifiers.Contains(modifier))
+            _modifiers.Remove(modifier);
+            modifier.Dispose();
+
+            ApplyOrder();
+            OnModifiersUpdated();
+        }
+
+        internal void ApplyOrder()
+        {
+            _modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
+            for (var index = 0; index < _modifiers.Count; index++)
             {
-                _modifiers.Remove(modifier);
-                modifier.Dispose();
-
-                OnModifiersUpdated();
+                var modifier = _modifiers[index];
+                modifier.Order = index + 1;
             }
         }
 

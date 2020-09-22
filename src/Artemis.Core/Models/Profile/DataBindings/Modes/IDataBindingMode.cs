@@ -3,7 +3,7 @@
 namespace Artemis.Core
 {
     /// <summary>
-    /// Represents a data binding mode
+    ///     Represents a data binding mode
     /// </summary>
     public interface IDataBindingMode<TLayerProperty, TProperty> : IStorageModel, IDisposable
     {
