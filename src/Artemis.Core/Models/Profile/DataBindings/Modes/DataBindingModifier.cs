@@ -300,25 +300,14 @@ namespace Artemis.Core
                     return;
 
                 // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-                var parameterAccessor = CreateAccessor(ParameterDataModel, ParameterPropertyPath, "parameter", out var rightSideParameter);
+                var parameterAccessor = ExpressionUtilities.CreateDataModelAccessor(
+                    ParameterDataModel, ParameterPropertyPath, "parameter", out var rightSideParameter
+                );
                 var lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
                 CompiledParameterAccessor = lambda.Compile();
             }
         }
-
-        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
-        {
-            var listType = dataModel.GetListTypeInPath(path);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
-
-            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
-        }
-
+        
         #region Event handlers
 
         private void DataBindingModifierTypeStoreOnDataBindingModifierAdded(object sender, DataBindingModifierTypeStoreEvent e)

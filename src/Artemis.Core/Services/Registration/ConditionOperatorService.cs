@@ -59,7 +59,11 @@ namespace Artemis.Core.Services
             RegisterConditionOperator(Constants.CorePluginInfo, new StringNotContainsConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new StringStartsWithConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new StringEndsWithConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringNullConditionOperator());
+
+            // Null checks, at the bottom
+            // TODO: Implement a priority mechanism
+            RegisterConditionOperator(Constants.CorePluginInfo, new NullConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new NotNullConditionOperator());
         }
     }
 }

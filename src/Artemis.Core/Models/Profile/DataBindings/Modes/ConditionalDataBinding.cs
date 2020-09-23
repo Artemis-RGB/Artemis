@@ -37,6 +37,8 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
             var condition = Conditions.FirstOrDefault(c => c.Evaluate());
+            if (condition != null)
+                Console.WriteLine();
             return condition == null ? baseValue : condition.Value;
         }
 
@@ -108,8 +110,7 @@ namespace Artemis.Core
         }
 
         #endregion
-
-
+        
         #region Storage
 
         /// <inheritdoc />

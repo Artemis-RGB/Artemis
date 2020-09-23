@@ -128,10 +128,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (DataModelConditionPredicate.Operator == null)
                 DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType)));
             SelectedOperator = DataModelConditionPredicate.Operator;
+            if (!SelectedOperator.SupportsRightSide)
+            {
+                DisposeRightSideStatic();
+                DisposeRightSideDynamic();
+            }
 
             // Ensure the right side has the proper VM
             var targetType = LeftSideSelectionViewModel?.SelectedPropertyViewModel?.PropertyInfo?.PropertyType;
-            if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic)
+            if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic && SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideStatic();
                 if (RightSideSelectionViewModel == null)
@@ -147,7 +152,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 );
                 RightSideSelectionViewModel.FilterTypes = new[] {targetType};
             }
-            else
+            else if (SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideDynamic();
                 if (RightSideInputViewModel == null)

@@ -1,27 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Artemis.Core.DefaultTypes
 {
     internal class StringEqualsConditionOperator : ConditionOperator
     {
-        private readonly MethodInfo _toLower;
-
-        public StringEqualsConditionOperator()
-        {
-            _toLower = typeof(string).GetMethod("ToLower", new Type[] { });
-        }
-
         public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
 
         public override string Description => "Equals";
         public override string Icon => "Equal";
 
-        public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
+        public override bool Evaluate(object a, object b)
         {
-            return Expression.Equal(Expression.Call(leftSide, _toLower), Expression.Call(rightSide, _toLower));
+            var aString = (string) a;
+            var bString = (string) b;
+
+            return string.Equals(aString, bString, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
