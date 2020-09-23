@@ -73,15 +73,8 @@ namespace Artemis.Core
         /// </summary>
         public object RightStaticValue { get; private set; }
 
-        /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it of a dynamic <see cref="PredicateType" />
-        /// </summary>
-        public Func<DataModel, DataModel, bool> CompiledDynamicPredicate { get; private set; }
-
-        /// <summary>
-        ///     Gets the compiled function that evaluates this predicate if it is of a static <see cref="PredicateType" />
-        /// </summary>
-        public Func<DataModel, bool> CompiledStaticPredicate { get; private set; }
+        public Func<object, object> LeftSideAccessor { get; set; }
+        public Func<object, object> RightSideAccessor { get; set; }
 
         internal DataModelConditionPredicateEntity Entity { get; set; }
 
@@ -109,7 +102,7 @@ namespace Artemis.Core
             ValidateOperator();
             ValidateRightSide();
 
-            CreateExpression();
+            CreateAccessors();
         }
 
         /// <summary>
@@ -134,7 +127,7 @@ namespace Artemis.Core
             RightDataModel = dataModel;
             RightPropertyPath = path;
 
-            CreateExpression();
+            CreateAccessors();
         }
 
         /// <summary>
@@ -167,7 +160,7 @@ namespace Artemis.Core
             else
                 RightStaticValue = null;
 
-            CreateExpression();
+            CreateAccessors();
         }
 
         /// <summary>
@@ -180,7 +173,7 @@ namespace Artemis.Core
             if (conditionOperator == null)
             {
                 Operator = null;
-                CreateExpression();
+                CreateAccessors();
                 return;
             }
 
@@ -199,16 +192,28 @@ namespace Artemis.Core
             }
 
             Operator = conditionOperator;
-            CreateExpression();
+            CreateAccessors();
         }
 
         /// <inheritdoc />
         public override bool Evaluate()
         {
-            if (CompiledDynamicPredicate != null)
-                return CompiledDynamicPredicate(LeftDataModel, RightDataModel);
-            if (CompiledStaticPredicate != null)
-                return CompiledStaticPredicate(LeftDataModel);
+            if (Operator == null || LeftSideAccessor == null || PredicateType != ProfileRightSideType.Static && RightSideAccessor == null)
+                return false;
+
+            // Compare with a static value
+            if (PredicateType == ProfileRightSideType.Static)
+            {
+                var leftSideValue = LeftSideAccessor(LeftDataModel);
+                if (leftSideValue.GetType().IsValueType && RightStaticValue == null)
+                    return false;
+
+                return Operator.Evaluate(leftSideValue, RightStaticValue);
+            }
+
+            // Compare with dynamic values
+            if (PredicateType == ProfileRightSideType.Dynamic)
+                return Operator.Evaluate(LeftSideAccessor(LeftDataModel), RightSideAccessor(RightDataModel));
 
             return false;
         }
@@ -314,17 +319,14 @@ namespace Artemis.Core
             return Entity;
         }
 
-        private void CreateExpression()
+        private void CreateAccessors()
         {
-            CompiledDynamicPredicate = null;
-            CompiledStaticPredicate = null;
-
             if (Operator == null)
                 return;
 
             // If the operator does not support a right side, create a static expression because the right side will simply be null
             if (PredicateType == ProfileRightSideType.Dynamic && Operator.SupportsRightSide)
-                CreateDynamicExpression();
+                CreateDynamicAccessors();
             else
                 CreateStaticExpression();
         }
@@ -360,22 +362,21 @@ namespace Artemis.Core
             }
         }
 
-        private void CreateDynamicExpression()
+        private void CreateDynamicAccessors()
         {
             if (LeftDataModel == null || RightDataModel == null || Operator == null)
                 return;
 
-            var leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
-            var rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
+            var leftSideAccessor = ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
+            var rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
-            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
-            var lambda = Expression.Lambda<Func<DataModel, DataModel, bool>>(conditionExpression, leftSideParameter, rightSideParameter);
-            CompiledDynamicPredicate = lambda.Compile();
+            LeftSideAccessor = Expression.Lambda<Func<object, object>>(leftSideAccessor, leftSideParameter).Compile();
+            RightSideAccessor = Expression.Lambda<Func<object, object>>(rightSideAccessor, rightSideParameter).Compile();
         }
 
         private void CreateStaticExpression()
@@ -383,34 +384,19 @@ namespace Artemis.Core
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var leftSideAccessor = CreateAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
+            var leftSideAccessor = Expression.Convert(
+                ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter),
+                typeof(object)
+            );
 
             // If the left side is a value type but the input is empty, this isn't a valid expression
             if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
                 return;
 
-            // If the right side value is null, the constant type cannot be inferred and must be provided manually
-            var rightSideConstant = RightStaticValue != null
-                ? Expression.Constant(Convert.ChangeType(RightStaticValue, leftSideAccessor.Type))
-                : Expression.Constant(null, leftSideAccessor.Type);
-
-            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
-            var lambda = Expression.Lambda<Func<DataModel, bool>>(conditionExpression, leftSideParameter);
-            CompiledStaticPredicate = lambda.Compile();
+            LeftSideAccessor = Expression.Lambda<Func<object, object>>(leftSideAccessor, leftSideParameter).Compile();
+            RightSideAccessor = null;
         }
 
-        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
-        {
-            var listType = dataModel.GetListTypeInPath(path);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
-
-            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
-        }
 
         #region Event handlers
 
@@ -427,13 +413,13 @@ namespace Artemis.Core
         {
             if (LeftDataModel == e.Registration.DataModel)
             {
-                CompiledDynamicPredicate = null;
+                LeftSideAccessor = null;
                 LeftDataModel = null;
             }
 
             if (RightDataModel == e.Registration.DataModel)
             {
-                CompiledDynamicPredicate = null;
+                RightSideAccessor = null;
                 RightDataModel = null;
             }
         }
@@ -451,8 +437,6 @@ namespace Artemis.Core
                 return;
 
             Operator = null;
-            CompiledStaticPredicate = null;
-            CompiledDynamicPredicate = null;
         }
 
         #endregion

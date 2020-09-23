@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Artemis.Core.DefaultTypes
 {
@@ -11,9 +10,9 @@ namespace Artemis.Core.DefaultTypes
         public override string Description => "Is less than or equal to";
         public override string Icon => "LessThanOrEqual";
 
-        public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
+        public override bool Evaluate(object a, object b)
         {
-            return Expression.LessThanOrEqual(leftSide, rightSide);
+            return Convert.ToSingle(a) <= Convert.ToSingle(b);
         }
     }
 }

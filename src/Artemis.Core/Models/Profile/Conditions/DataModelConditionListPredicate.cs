@@ -77,15 +77,8 @@ namespace Artemis.Core
         /// </summary>
         public object RightStaticValue { get; private set; }
 
-        /// <summary>
-        ///     Gets the compiled expression that evaluates this predicate
-        /// </summary>
-        public Func<object, bool> CompiledListPredicate { get; private set; }
-
-        /// <summary>
-        ///     Gets the compiled expression that evaluates this predicate on an external right-side data model
-        /// </summary>
-        public Func<object, DataModel, bool> CompiledExternalListPredicate { get; set; }
+        public Func<object, object> LeftSideAccessor { get; set; }
+        public Func<object, object> RightSideAccessor { get; set; }
 
         /// <summary>
         ///     Updates the left side of the predicate
@@ -215,28 +208,26 @@ namespace Artemis.Core
 
             return true;
         }
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
-            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
+        
         internal override bool EvaluateObject(object target)
         {
-            if (PredicateType == ListRightSideType.Static && CompiledListPredicate != null)
-                return CompiledListPredicate(target);
-            if (PredicateType == ListRightSideType.DynamicList && CompiledListPredicate != null)
-                return CompiledListPredicate(target);
-            if (PredicateType == ListRightSideType.Dynamic && CompiledExternalListPredicate != null)
-                return CompiledExternalListPredicate(target, RightDataModel);
+            if (Operator == null || LeftSideAccessor == null || PredicateType != ListRightSideType.Static && RightSideAccessor == null)
+                return false;
+
+            // Compare with a static value
+            if (PredicateType == ListRightSideType.Static)
+            {
+                if (!DataModelConditionList.ListType.IsValueType && RightStaticValue == null)
+                    return false;
+
+                return Operator.Evaluate(LeftSideAccessor(target), RightStaticValue);
+            }
+
+            // Compare with dynamic values
+            if (PredicateType == ListRightSideType.Dynamic)
+                return Operator.Evaluate(LeftSideAccessor(target), RightSideAccessor(RightDataModel));
+            if (PredicateType == ListRightSideType.DynamicList)
+                return Operator.Evaluate(LeftSideAccessor(target), RightSideAccessor(target));
 
             return false;
         }
@@ -308,6 +299,8 @@ namespace Artemis.Core
 
         private void Initialize()
         {
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
             ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
             ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
 
@@ -375,18 +368,16 @@ namespace Artemis.Core
 
         private void CreateExpression()
         {
-            CompiledListPredicate = null;
-
             if (Operator == null)
                 return;
 
             // If the operator does not support a right side, create a static expression because the right side will simply be null
             if (PredicateType == ListRightSideType.DynamicList && Operator.SupportsRightSide)
-                CreateDynamicListExpression();
+                CreateDynamicListAccessors();
             else if (PredicateType == ListRightSideType.Dynamic && Operator.SupportsRightSide)
-                CreateDynamicExpression();
+                CreateDynamicAccessors();
             else
-                CreateStaticExpression();
+                CreateStaticAccessors();
         }
 
         private void ValidateOperator()
@@ -452,7 +443,7 @@ namespace Artemis.Core
                 RightStaticValue = null;
         }
 
-        private void CreateDynamicListExpression()
+        private void CreateDynamicListAccessors()
         {
             if (LeftPropertyPath == null || RightPropertyPath == null || Operator == null)
                 return;
@@ -467,12 +458,11 @@ namespace Artemis.Core
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
-            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
-            var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
-            CompiledListPredicate = lambda.Compile();
+            LeftSideAccessor = Expression.Lambda<Func<object, object>>(leftSideAccessor, leftSideParameter).Compile();
+            RightSideAccessor = Expression.Lambda<Func<object, object>>(rightSideAccessor, leftSideParameter).Compile();
         }
 
-        private void CreateDynamicExpression()
+        private void CreateDynamicAccessors()
         {
             if (LeftPropertyPath == null || RightPropertyPath == null || RightDataModel == null || Operator == null)
                 return;
@@ -480,19 +470,18 @@ namespace Artemis.Core
             // List accessors share the same parameter because a list always contains one item per entry
             var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
             var leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
-            var rightSideAccessor = CreateAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
+            var rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
             if (rightSideAccessor.Type != leftSideAccessor.Type)
                 rightSideAccessor = Expression.Convert(rightSideAccessor, leftSideAccessor.Type);
 
-            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideAccessor);
-            var lambda = Expression.Lambda<Func<object, DataModel, bool>>(conditionExpression, leftSideParameter, rightSideParameter);
-            CompiledExternalListPredicate = lambda.Compile();
+            LeftSideAccessor = Expression.Lambda<Func<object, object>>(leftSideAccessor, leftSideParameter).Compile();
+            RightSideAccessor = Expression.Lambda<Func<object, object>>(rightSideAccessor, rightSideParameter).Compile();
         }
 
-        private void CreateStaticExpression()
+        private void CreateStaticAccessors()
         {
             if (!DataModelConditionList.IsPrimitiveList && LeftPropertyPath == null || Operator == null)
                 return;
@@ -503,42 +492,50 @@ namespace Artemis.Core
                 ? Expression.Convert(leftSideParameter, DataModelConditionList.ListType)
                 : CreateListAccessor(LeftPropertyPath, leftSideParameter);
 
-            // If the left side is a value type but the input is empty, this isn't a valid expression
-            if (leftSideAccessor.Type.IsValueType && RightStaticValue == null)
-                return;
-
-            // If the right side value is null, the constant type cannot be inferred and must be provided manually
-            var rightSideConstant = RightStaticValue != null
-                ? Expression.Constant(Convert.ChangeType(RightStaticValue, leftSideAccessor.Type))
-                : Expression.Constant(null, leftSideAccessor.Type);
-
-            var conditionExpression = Operator.CreateExpression(leftSideAccessor, rightSideConstant);
-            var lambda = Expression.Lambda<Func<object, bool>>(conditionExpression, leftSideParameter);
-            CompiledListPredicate = lambda.Compile();
+            LeftSideAccessor = Expression.Lambda<Func<object, object>>(leftSideAccessor, leftSideParameter).Compile();
+            RightSideAccessor = null;
         }
 
         private Expression CreateListAccessor(string path, ParameterExpression listParameter)
         {
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(listParameter, DataModelConditionList.ListType), // Cast to the appropriate type
-                Expression.Property
-            );
+            // Create an expression that checks every part of the path for null
+            // In the same iteration, create the accessor
+            Expression source = Expression.Convert(listParameter, DataModelConditionList.ListType);
+            return ExpressionUtilities.CreateNullCheckedAccessor(source, path);
         }
 
-        private Expression CreateAccessor(DataModel dataModel, string path, string parameterName, out ParameterExpression parameter)
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
-            var listType = dataModel.GetListTypeInPath(path);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {path} because the path contains a list");
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
 
-            parameter = Expression.Parameter(typeof(object), parameterName + "DataModel");
-            return path.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, dataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
+            base.Dispose(disposing);
         }
+
+        #endregion
 
         #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
+        {
+            var dataModel = e.Registration.DataModel;
+            if (dataModel.PluginInfo.Guid == Entity.RightDataModelGuid && dataModel.ContainsPath(Entity.RightPropertyPath))
+                UpdateRightSideDynamic(dataModel, Entity.RightPropertyPath);
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
+        {
+            if (RightDataModel == e.Registration.DataModel)
+            {
+                RightSideAccessor = null;
+                RightDataModel = null;
+            }
+        }
 
         private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
         {
@@ -552,7 +549,6 @@ namespace Artemis.Core
             if (e.Registration.ConditionOperator != Operator)
                 return;
             Operator = null;
-            CompiledListPredicate = null;
         }
 
         #endregion

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq.Expressions;
 
 namespace Artemis.Core.DefaultTypes
 {
@@ -11,9 +10,9 @@ namespace Artemis.Core.DefaultTypes
         public override string Description => "Does not equal";
         public override string Icon => "NotEqualVariant";
 
-        public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
+        public override bool Evaluate(object a, object b)
         {
-            return Expression.NotEqual(leftSide, rightSide);
+            return !Equals(a, b);
         }
     }
 }
