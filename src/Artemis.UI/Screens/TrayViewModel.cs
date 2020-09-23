@@ -2,6 +2,7 @@
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
+using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Ninject;
@@ -14,15 +15,17 @@ namespace Artemis.UI.Screens
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
+        private readonly IDebugService _debugService;
         private bool _canShowRootViewModel;
         private bool _setGradientPickerService;
         private SplashViewModel _splashViewModel;
 
-        public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, ISettingsService settingsService)
+        public TrayViewModel(IKernel kernel, IWindowManager windowManager, IEventAggregator eventAggregator, ICoreService coreService, IDebugService debugService,ISettingsService settingsService)
         {
             _kernel = kernel;
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
+            _debugService = debugService;
             CanShowRootViewModel = true;
 
             var autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -73,6 +76,11 @@ namespace Artemis.UI.Screens
         public void TrayExit()
         {
             ApplicationUtilities.Shutdown(2, false);
+        }
+
+        public void TrayOpenDebugger()
+        {
+            _debugService.ShowDebugger();
         }
 
         private void ShowSplashScreen()
