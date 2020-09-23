@@ -69,13 +69,18 @@
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.UseDefaultDragAdorner="True"
                  HorizontalContentAlignment="Stretch"
-                 ScrollViewer.CanContentScroll="False"
+                 VirtualizingPanel.ScrollUnit="Pixel"
                  Margin="0 5 0 0">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                 </DataTemplate>
             </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
         </ListBox>
     </Grid>
 </UserControl>
