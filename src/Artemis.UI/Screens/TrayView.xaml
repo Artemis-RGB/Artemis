@@ -46,6 +46,11 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
+                <MenuItem Header="Debugger" Command="{s:Action TrayOpenDebugger}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Matrix" />
+                    </MenuItem.Icon>
+                </MenuItem>
                 <MenuItem Header="Exit" Command="{s:Action TrayExit}">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="Close" />
