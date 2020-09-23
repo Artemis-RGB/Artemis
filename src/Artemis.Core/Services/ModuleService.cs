@@ -70,6 +70,9 @@ namespace Artemis.Core.Services
 
         public async Task UpdateModuleActivation()
         {
+            if (ActiveModuleSemaphore.CurrentCount == 0)
+                return;
+
             try
             {
                 await ActiveModuleSemaphore.WaitAsync();

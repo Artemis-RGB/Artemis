@@ -32,12 +32,12 @@
             <Grid>
                 <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                     <TextBlock FontWeight="Light"
-                               Text="{Binding TargetPropertyViewModel.PropertyDescription.Prefix}"
-                               Visibility="{Binding TargetPropertyViewModel.PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
+                               Text="{Binding TargetDescription.Prefix}"
+                               Visibility="{Binding TargetDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
                     <ContentControl s:View.Model="{Binding DisplayViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
                     <TextBlock FontWeight="Light" 
-                               Text="{Binding TargetPropertyViewModel.PropertyDescription.Affix}"
-                               Visibility="{Binding TargetPropertyViewModel.PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
+                               Text="{Binding TargetDescription.Affix}"
+                               Visibility="{Binding TargetDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
                 </StackPanel>
 
                 <TextBlock FontStyle="Italic" Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">

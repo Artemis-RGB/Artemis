@@ -17,6 +17,7 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             Entity = entity;
+            Load();
         }
 
         internal ConditionalDataBindingEntity Entity { get; }
@@ -90,8 +91,14 @@ namespace Artemis.Core
             OnConditionsUpdated();
         }
 
-        internal void ApplyOrder()
+        /// <summary>
+        ///     Applies the current order of conditions to the <see cref="Conditions" /> collection
+        /// </summary>
+        public void ApplyOrder()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ConditionalDataBinding");
+
             _conditions.Sort((a, b) => a.Order.CompareTo(b.Order));
             for (var index = 0; index < _conditions.Count; index++)
             {

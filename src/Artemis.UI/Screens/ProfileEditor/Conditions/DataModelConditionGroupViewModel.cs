@@ -142,6 +142,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             if (IsRootGroup && Parent is DisplayConditionsViewModel displayConditionsViewModel)
                 displayConditionsViewModel.DisplayStartHint = !Items.Any();
+
+            OnUpdated();
+        }
+
+        public event EventHandler Updated;
+
+        protected virtual void OnUpdated()
+        {
+            Updated?.Invoke(this, EventArgs.Empty);
         }
     }
 }

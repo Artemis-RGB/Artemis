@@ -33,9 +33,8 @@
                 Height="22"
                 Command="{s:Action AddModifier}">
             <StackPanel Orientation="Horizontal">
-                <materialDesign:PackIcon Margin="0 -1 4 0" Kind="Plus" />
                 <TextBlock>
-                    Add modifier
+                    ADD MODIFIER
                 </TextBlock>
             </StackPanel>
         </Button>
@@ -48,7 +47,6 @@
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"
                  dd:DragDrop.UseDefaultDragAdorner="True"
-                 dd:DragDrop.DropHandler="{Binding}"
                  HorizontalContentAlignment="Stretch"
                  Margin="0 5 0 0">
             <ListBox.ItemTemplate>

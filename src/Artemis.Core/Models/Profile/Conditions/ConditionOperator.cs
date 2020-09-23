@@ -53,5 +53,34 @@ namespace Artemis.Core
         /// <param name="rightSide">The parameter on the right side of the expression</param>
         /// <returns></returns>
         public abstract BinaryExpression CreateExpression(Expression leftSide, Expression rightSide);
+
+        /// <summary>
+        ///     Wraps the provided expression in null-checks for the left and right side
+        ///     <para>
+        ///         The resulting expression body looks like:
+        ///         <code>(a == null &amp;&amp; b == null) || ((a != null &amp;&amp; b != null) &amp;&amp; &lt;expression&gt;)</code>
+        ///     </para>
+        /// </summary>
+        /// <param name="leftSide">The left side to check for nulls</param>
+        /// <param name="rightSide">The right side to check for nulls</param>
+        /// <param name="expression">The expression to wrap</param>
+        /// <returns>The wrapped expression</returns>
+        protected BinaryExpression AddNullChecks(Expression leftSide, Expression rightSide, BinaryExpression expression)
+        {
+            var nullConst = Expression.Constant(null);
+            return Expression.OrElse(
+                Expression.AndAlso(
+                    Expression.Equal(leftSide, nullConst),
+                    Expression.Equal(rightSide, nullConst)
+                ),
+                Expression.AndAlso(
+                    Expression.AndAlso(
+                        Expression.NotEqual(leftSide, nullConst),
+                        Expression.NotEqual(rightSide, nullConst)
+                    ),
+                    expression
+                )
+            );
+        }
     }
 }

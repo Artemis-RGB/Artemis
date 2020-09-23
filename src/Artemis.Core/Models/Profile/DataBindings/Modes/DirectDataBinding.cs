@@ -224,7 +224,10 @@ namespace Artemis.Core
             OnModifiersUpdated();
         }
 
-        internal void ApplyOrder()
+        /// <summary>
+        ///     Applies the current order of conditions to the <see cref="Modifiers" /> collection
+        /// </summary>
+        public void ApplyOrder()
         {
             _modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
             for (var index = 0; index < _modifiers.Count; index++)
