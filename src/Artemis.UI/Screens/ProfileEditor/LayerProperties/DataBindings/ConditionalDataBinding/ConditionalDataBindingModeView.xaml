@@ -4,17 +4,78 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:dd="urn:gong-wpf-dragdrop" xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
-            <materialDesign:PackIcon Kind="Crane" Width="60" Height="60" HorizontalAlignment="Center" />
-            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 25">
-                Conditional data bindings not yet implemented
-            </TextBlock>
-            <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center">
-               This is where you'd provide values and their conditions.. :>
-            </TextBlock>
-        </StackPanel>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
+                <ResourceDictionary>
+                    <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="5 10 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Button Grid.Row="0"
+                Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
+                Background="{StaticResource PrimaryHueMidBrush}"
+                BorderBrush="{StaticResource PrimaryHueMidBrush}"
+                HorizontalAlignment="Right">
+            ADD CONDITION
+            <Button.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Add static condition"
+                              ToolTip="A condition that compares with a static input"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Static">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="FormTextarea" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add dynamic condition"
+                              ToolTip="A condition that compares with a data model property"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="Dynamic">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="Link" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add list condition"
+                              ToolTip="A condition that evaluates on items in a list"
+                              Command="{s:Action AddCondition}"
+                              CommandParameter="List">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="FormatListBulleted" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Button.ContextMenu>
+        </Button>
+
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding ConditionViewModels}"
+                 materialDesign:RippleAssist.IsDisabled="True"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.UseDefaultDragAdorner="True"
+                 HorizontalContentAlignment="Stretch"
+                 ScrollViewer.CanContentScroll="False"
+                 Margin="0 5 0 0">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
     </Grid>
 </UserControl>

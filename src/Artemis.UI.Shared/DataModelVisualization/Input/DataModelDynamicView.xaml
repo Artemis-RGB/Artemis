@@ -36,8 +36,7 @@
                 ToolTip="{Binding SelectedPropertyViewModel.DisplayPropertyPath}"
                 IsEnabled="{Binding IsEnabled}"
                 HorizontalAlignment="Left"
-                Click="PropertyButton_OnClick"
-                Visibility="{Binding ShowFreeInput, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding DataModelViewModel.Children}" IsOpen="{Binding IsDataModelViewModelOpen, Mode=OneWayToSource}">
                     <ContextMenu.ItemContainerStyle>

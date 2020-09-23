@@ -64,6 +64,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         public void Delete()
         {
             Modifier.DirectDataBinding.RemoveModifier(Modifier);
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void SwapType()
@@ -74,6 +75,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
                 Modifier.UpdateParameter(null, null);
 
             Update();
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)

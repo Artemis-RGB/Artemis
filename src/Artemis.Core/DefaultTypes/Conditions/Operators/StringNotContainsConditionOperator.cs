@@ -23,7 +23,11 @@ namespace Artemis.Core.DefaultTypes
 
         public override BinaryExpression CreateExpression(Expression leftSide, Expression rightSide)
         {
-            return Expression.Equal(Expression.Call(Expression.Call(leftSide, _toLower), _contains, Expression.Call(rightSide, _toLower)), Expression.Constant(false));
+            var notContains = Expression.Equal(
+                Expression.Call(Expression.Call(leftSide, _toLower), _contains, Expression.Call(rightSide, _toLower)),
+                Expression.Constant(false)
+            );
+            return AddNullChecks(leftSide, rightSide, notContains);
         }
     }
 }

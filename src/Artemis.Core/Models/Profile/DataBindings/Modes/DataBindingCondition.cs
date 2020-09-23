@@ -13,10 +13,11 @@ namespace Artemis.Core
         ///     Creates a new instance of the <see cref="DataBindingCondition{TLayerProperty,TProperty}" /> class
         /// </summary>
         /// <param name="conditionalDataBinding">The conditional data binding this condition is applied too</param>
-        public DataBindingCondition(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding)
+        internal DataBindingCondition(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding)
         {
             ConditionalDataBinding = conditionalDataBinding ?? throw new ArgumentNullException(nameof(conditionalDataBinding));
             Order = conditionalDataBinding.Conditions.Count + 1;
+            Condition = new DataModelConditionGroup(null);
             Entity = new DataBindingConditionEntity();
             Save();
         }
@@ -34,9 +35,9 @@ namespace Artemis.Core
         public ConditionalDataBinding<TLayerProperty, TProperty> ConditionalDataBinding { get; }
 
         /// <summary>
-        ///     Gets the position at which the modifier appears on the data binding
+        ///     Gets or sets the position at which the modifier appears on the data binding
         /// </summary>
-        public int Order { get; internal set; }
+        public int Order { get; set; }
 
         /// <summary>
         ///     Gets or sets the value to be applied when the condition is met
@@ -82,7 +83,7 @@ namespace Artemis.Core
                 ? new DataModelConditionGroup(null, Entity.Condition)
                 : new DataModelConditionGroup(null);
 
-            Value = JsonConvert.DeserializeObject<TProperty>(Entity.Value);
+            Value = Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value);
             Order = Entity.Order;
         }
 
@@ -92,16 +93,6 @@ namespace Artemis.Core
             _disposed = true;
 
             Condition.Dispose();
-        }
-
-        /// <summary>
-        ///     Updates the order and resorts the Conditions list in the <see cref="ConditionalDataBinding" />
-        /// </summary>
-        /// <param name="order"></param>
-        public void UpdateOrder(int order)
-        {
-            Order = order;
-            ConditionalDataBinding.ApplyOrder();
         }
     }
 }

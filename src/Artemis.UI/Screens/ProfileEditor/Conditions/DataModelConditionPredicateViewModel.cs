@@ -157,6 +157,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                     RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
                 }
 
+                RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
                 if (RightSideInputViewModel.TargetType != targetType)
                     RightSideInputViewModel.UpdateTargetType(targetType);
             }

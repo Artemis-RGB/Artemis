@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Specialized;
+using System.Linq;
 using Artemis.Core;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Input;
@@ -14,6 +17,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private DataModelDynamicViewModel _targetSelectionViewModel;
+        private bool _canAddModifier;
+        private bool _updating;
 
         public DirectDataBindingModeViewModel(DirectDataBinding<TLayerProperty, TProperty> directDataBinding,
             IProfileEditorService profileEditorService,
@@ -34,6 +39,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         public DirectDataBinding<TLayerProperty, TProperty> DirectDataBinding { get; }
         public BindableCollection<DataBindingModifierViewModel<TLayerProperty, TProperty>> ModifierViewModels { get; }
 
+        public bool CanAddModifier
+        {
+            get => _canAddModifier;
+            set => SetAndNotify(ref _canAddModifier, value);
+        }
+
         public DataModelDynamicViewModel TargetSelectionViewModel
         {
             get => _targetSelectionViewModel;
@@ -45,6 +56,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DirectDataBinding.SourceDataModel, DirectDataBinding.SourcePropertyPath);
             TargetSelectionViewModel.FilterTypes = new[] {DirectDataBinding.DataBinding.GetTargetType()};
 
+            CanAddModifier = DirectDataBinding.SourceDataModel != null;
             UpdateModifierViewModels();
         }
 
@@ -52,16 +64,32 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         {
             return TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
         }
-        
+
         private void Initialize()
         {
             DirectDataBinding.ModifiersUpdated += DirectDataBindingOnModifiersUpdated;
             TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
             TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
-
+            ModifierViewModels.CollectionChanged += ModifierViewModelsOnCollectionChanged;
             Update();
         }
-        
+
+        private void ModifierViewModelsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (_updating || e.Action != NotifyCollectionChangedAction.Add)
+                return;
+
+            for (var index = 0; index < ModifierViewModels.Count; index++)
+            {
+                var dataBindingModifierViewModel = ModifierViewModels[index];
+                dataBindingModifierViewModel.Modifier.Order = index + 1;
+            }
+
+            DirectDataBinding.ApplyOrder();
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
         #region Target
 
         private void TargetSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
@@ -73,7 +101,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         }
 
         #endregion
-        
+
         #region Modifiers
 
         public void AddModifier()
@@ -81,16 +109,30 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             DirectDataBinding.AddModifier(ProfileRightSideType.Dynamic);
             _profileEditorService.UpdateSelectedProfileElement();
         }
-
-
+        
         private void UpdateModifierViewModels()
         {
-            foreach (var dataBindingModifierViewModel in ModifierViewModels)
-                dataBindingModifierViewModel.Dispose();
-            ModifierViewModels.Clear();
+            _updating = true;
 
-            foreach (var dataBindingModifier in DirectDataBinding.Modifiers)
-                ModifierViewModels.Add(_dataBindingsVmFactory.DataBindingModifierViewModel(dataBindingModifier));
+            // Remove old VMs
+            var toRemove = ModifierViewModels.Where(m => !DirectDataBinding.Modifiers.Contains(m.Modifier)).ToList();
+            foreach (var modifierViewModel in toRemove)
+            {
+                ModifierViewModels.Remove(modifierViewModel);
+                modifierViewModel.Dispose();
+            }
+
+            // Add missing VMs
+            foreach (var modifier in DirectDataBinding.Modifiers)
+            {
+                if (ModifierViewModels.All(m => m.Modifier != modifier))
+                    ModifierViewModels.Add(_dataBindingsVmFactory.DataBindingModifierViewModel(modifier));
+            }
+
+            // Fix order
+            ModifierViewModels.Sort(m => m.Modifier.Order);
+
+            _updating = false;
         }
 
         private void DirectDataBindingOnModifiersUpdated(object sender, EventArgs e)

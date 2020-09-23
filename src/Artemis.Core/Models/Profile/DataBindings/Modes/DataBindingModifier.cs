@@ -46,9 +46,9 @@ namespace Artemis.Core
         public ProfileRightSideType ParameterType { get; private set; }
 
         /// <summary>
-        ///     Gets the position at which the modifier appears on the data binding
+        ///     Gets or sets the position at which the modifier appears on the data binding
         /// </summary>
-        public int Order { get; internal set; }
+        public int Order { get; set; }
 
         /// <summary>
         ///     Gets the currently used instance of the parameter data model
