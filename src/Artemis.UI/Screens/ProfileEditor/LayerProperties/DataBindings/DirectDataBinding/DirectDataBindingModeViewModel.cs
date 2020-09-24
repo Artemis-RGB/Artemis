@@ -38,6 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         public DirectDataBinding<TLayerProperty, TProperty> DirectDataBinding { get; }
         public BindableCollection<DataBindingModifierViewModel<TLayerProperty, TProperty>> ModifierViewModels { get; }
+        public bool SupportsTestValue => true;
 
         public bool CanAddModifier
         {

@@ -205,17 +205,23 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void UpdateTestResult()
         {
-            if (Registration.DataBinding == null)
+            if (Registration.DataBinding == null || ActiveItem == null)
             {
                 TestInputValue.UpdateValue(default);
                 TestResultValue.UpdateValue(default);
                 return;
             }
 
-            var currentValue = Registration.Converter.ConvertFromObject(ActiveItem?.GetTestValue() ?? default(TProperty));
-
-            TestInputValue.UpdateValue(currentValue);
-            TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(currentValue) : default);
+            if (ActiveItem.SupportsTestValue)
+            {
+                var currentValue = Registration.Converter.ConvertFromObject(ActiveItem?.GetTestValue() ?? default(TProperty));
+                TestInputValue.UpdateValue(currentValue);
+                TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(currentValue) : default);
+            }
+            else
+            {
+                TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(default) : default);
+            }
         }
 
         private void EnableDataBinding()

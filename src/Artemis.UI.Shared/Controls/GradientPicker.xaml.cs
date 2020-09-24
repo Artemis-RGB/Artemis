@@ -16,7 +16,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public partial class GradientPicker : UserControl, INotifyPropertyChanged
     {
-        private static IGradientPickerService _gradientPickerService;
+        private static IColorPickerService _colorPickerService;
         private bool _inCallback;
 
         public GradientPicker()
@@ -27,14 +27,13 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Used by the gradient picker to load saved gradients, do not touch or it'll just throw an exception
         /// </summary>
-        public static IGradientPickerService GradientPickerService
+        internal static IColorPickerService ColorPickerService
         {
-            private get => _gradientPickerService;
             set
             {
-                if (_gradientPickerService != null)
+                if (_colorPickerService != null)
                     throw new AccessViolationException("This is not for you to touch");
-                _gradientPickerService = value;
+                _colorPickerService = value;
             }
         }
 
@@ -93,7 +92,7 @@ namespace Artemis.UI.Shared
             Execute.OnUIThread(async () =>
             {
                 OnDialogOpened();
-                await GradientPickerService.ShowGradientPicker(ColorGradient, DialogHost);
+                await _colorPickerService.ShowGradientPicker(ColorGradient, DialogHost);
                 OnDialogClosed();
             });
         }
