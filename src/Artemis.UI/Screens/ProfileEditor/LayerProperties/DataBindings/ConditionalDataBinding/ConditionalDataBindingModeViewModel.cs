@@ -30,21 +30,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
         public ConditionalDataBinding<TLayerProperty, TProperty> ConditionalDataBinding { get; }
         public BindableCollection<DataBindingConditionViewModel<TLayerProperty, TProperty>> ConditionViewModels { get; }
+        public bool SupportsTestValue => false;
 
         public void Update()
         {
             UpdateConditionViewModels();
         }
-
+        
         public object GetTestValue()
         {
-            return ConditionalDataBinding.DataBinding.Converter.GetValue();
+            throw new NotSupportedException();
         }
 
         public void AddCondition(string type)
         {
             var condition = ConditionalDataBinding.AddCondition();
-            
+
             // Find the VM of the new condition
             var viewModel = ConditionViewModels.First(c => c.DataBindingCondition == condition);
             viewModel.ActiveItem.AddCondition(type);
@@ -58,7 +59,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
             // Remove old VMs
             var toRemove = ConditionViewModels.Where(c => !ConditionalDataBinding.Conditions.Contains(c.DataBindingCondition)).ToList();
-            foreach (var dataBindingConditionViewModel in toRemove) { 
+            foreach (var dataBindingConditionViewModel in toRemove)
+            {
                 ConditionViewModels.Remove(dataBindingConditionViewModel);
                 dataBindingConditionViewModel.Dispose();
             }
@@ -72,7 +74,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
             // Fix order
             ConditionViewModels.Sort(c => c.DataBindingCondition.Order);
-            
+
             _updating = false;
         }
 

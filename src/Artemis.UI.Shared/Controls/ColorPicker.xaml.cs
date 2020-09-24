@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
 {
@@ -13,6 +14,8 @@ namespace Artemis.UI.Shared
     /// </summary>
     public partial class ColorPicker : UserControl, INotifyPropertyChanged
     {
+        private static IColorPickerService _colorPickerService;
+
         public static readonly DependencyProperty ColorProperty = DependencyProperty.Register(nameof(Color), typeof(Color), typeof(ColorPicker),
             new FrameworkPropertyMetadata(default(Color), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorPropertyChangedCallback));
 
@@ -44,6 +47,21 @@ namespace Artemis.UI.Shared
         public ColorPicker()
         {
             InitializeComponent();
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
+        }
+
+        /// <summary>
+        ///     Used by the gradient picker to load saved gradients, do not touch or it'll just throw an exception
+        /// </summary>
+        internal static IColorPickerService ColorPickerService
+        {
+            set
+            {
+                if (_colorPickerService != null)
+                    throw new AccessViolationException("This is not for you to touch");
+                _colorPickerService = value;
+            }
         }
 
         public Color Color
@@ -87,6 +105,7 @@ namespace Artemis.UI.Shared
 
             colorPicker.SetCurrentValue(ColorOpacityProperty, ((Color) e.NewValue).A);
             colorPicker.OnPropertyChanged(nameof(Color));
+            _colorPickerService.UpdateColorDisplay(colorPicker.Color);
 
             colorPicker._inCallback = false;
         }
@@ -126,6 +145,7 @@ namespace Artemis.UI.Shared
                 color = Color.FromArgb(opacity, color.R, color.G, color.B);
             colorPicker.SetCurrentValue(ColorProperty, color);
             colorPicker.OnPropertyChanged(nameof(ColorOpacity));
+            _colorPickerService.UpdateColorDisplay(colorPicker.Color);
 
             colorPicker._inCallback = false;
         }
@@ -135,7 +155,7 @@ namespace Artemis.UI.Shared
             PopupOpen = !PopupOpen;
             e.Handled = true;
         }
-        
+
         private void ColorGradient_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
@@ -144,12 +164,38 @@ namespace Artemis.UI.Shared
         private void Slider_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             OnDragStarted();
+
+            if (_colorPickerService.PreviewSetting.Value)
+                _colorPickerService.StartColorDisplay();
         }
 
         private void Slider_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
             OnDragEnded();
+            _colorPickerService.StopColorDisplay();
         }
+
+        private void PreviewCheckBoxClick(object sender, RoutedEventArgs e)
+        {
+            _colorPickerService.PreviewSetting.Value = PreviewCheckBox.IsChecked.Value;
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            PreviewCheckBox.IsChecked = _colorPickerService.PreviewSetting.Value;
+            _colorPickerService.PreviewSetting.SettingChanged += PreviewSettingOnSettingChanged;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            _colorPickerService.PreviewSetting.SettingChanged -= PreviewSettingOnSettingChanged;
+        }
+
+        private void PreviewSettingOnSettingChanged(object sender, EventArgs e)
+        {
+            PreviewCheckBox.IsChecked = _colorPickerService.PreviewSetting.Value;
+        }
+
 
         #region Events
 
@@ -167,6 +213,5 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
-
     }
 }

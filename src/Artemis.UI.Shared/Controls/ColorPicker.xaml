@@ -94,17 +94,18 @@
                StaysOpen="{Binding StaysOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                PopupAnimation="Fade"
                IsOpen="{Binding PopupOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
-            <materialDesign:Card Width="200" Height="200" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+            <materialDesign:Card Width="200" Height="230" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="160" />
                         <RowDefinition />
+                        <RowDefinition />
                     </Grid.RowDefinitions>
-                    <materialDesign:ColorPicker Grid.Row="0" 
-                                                Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
+                    <materialDesign:ColorPicker Grid.Row="0"
+                                                Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 MouseUp="ColorGradient_OnMouseUp"
                                                 PreviewMouseDown="Slider_OnMouseDown"
-                                                PreviewMouseUp="Slider_OnMouseUp"/>
+                                                PreviewMouseUp="Slider_OnMouseUp" />
                     <Slider Grid.Row="1" Margin="8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"
@@ -114,6 +115,17 @@
                             PreviewMouseDown="Slider_OnMouseDown"
                             PreviewMouseUp="Slider_OnMouseUp"
                             Maximum="255" />
+
+                    <!-- Checkboxes don't work inside popups inside tree views, which is where the color picker is regularly used -->
+                    <shared:TreeViewPopupCompatibleCheckBox Grid.Row="2"
+                                                     x:Name="PreviewCheckBox"
+                                                     Margin="10 0"
+                                                     VerticalAlignment="Center"
+                                                     Style="{StaticResource MaterialDesignCheckBox}" 
+                                                     Click="PreviewCheckBoxClick">
+                        Preview on devices
+                    </shared:TreeViewPopupCompatibleCheckBox>
+
                 </Grid>
             </materialDesign:Card>
         </Popup>

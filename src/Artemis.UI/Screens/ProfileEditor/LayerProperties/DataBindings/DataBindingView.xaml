@@ -21,13 +21,13 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <materialDesign:Card Grid.Column="0" 
-                                 UniformCornerRadius="0" 
-                                 materialDesign:ShadowAssist.ShadowDepth="Depth3"
-                                 materialDesign:ShadowAssist.ShadowEdges="Right"
-                                 Background="{DynamicResource MaterialDesignPaper}" 
-                                 Panel.ZIndex="2">
-            <Grid Margin="10 5" >
+        <materialDesign:Card Grid.Column="0"
+                             UniformCornerRadius="0"
+                             materialDesign:ShadowAssist.ShadowDepth="Depth3"
+                             materialDesign:ShadowAssist.ShadowEdges="Right"
+                             Background="{DynamicResource MaterialDesignPaper}"
+                             Panel.ZIndex="2">
+            <Grid Margin="10 5">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="48" />
                     <RowDefinition Height="48" />
@@ -39,11 +39,10 @@
                           Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                           materialDesign:HintAssist.Hint="Data binding mode"
                           MinWidth="128"
-                          SelectedValue="{Binding SelectedDataBindingMode}" 
-                          ItemsSource="{Binding DataBindingModes}" 
+                          SelectedValue="{Binding SelectedDataBindingMode}"
+                          ItemsSource="{Binding DataBindingModes}"
                           SelectedValuePath="Value"
-                          DisplayMemberPath="Description" >
-                </ComboBox>
+                          DisplayMemberPath="Description" />
 
                 <StackPanel Grid.Row="1">
                     <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
@@ -102,23 +101,24 @@
                                 <RowDefinition />
                                 <RowDefinition />
                             </Grid.RowDefinitions>
-                            <TextBlock Margin="0 2">Input</TextBlock>
+                            <TextBlock Margin="0 2" Visibility="{Binding ActiveItem.SupportsTestValue, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">Input</TextBlock>
                             <ContentControl Grid.Row="0"
-                                                Grid.Column="1" 
-                                                s:View.Model="{Binding TestInputValue}" 
-                                                Margin="0 2" 
-                                                FontFamily="Consolas"
-                                                VerticalAlignment="Stretch"
-                                                HorizontalAlignment="Right" />
+                                            Grid.Column="1"
+                                            Visibility="{Binding ActiveItem.SupportsTestValue, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
+                                            s:View.Model="{Binding TestInputValue}"
+                                            Margin="0 2"
+                                            FontFamily="Consolas"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalAlignment="Right" />
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0 2">Output</TextBlock>
-                            <ContentControl  Grid.Row="1"
-                                                 Grid.Column="1" 
-                                                 s:View.Model="{Binding TestResultValue}" 
-                                                 Margin="0 2"
-                                                 FontFamily="Consolas" 
-                                                 VerticalAlignment="Stretch" 
-                                                 HorizontalAlignment="Right" />
+                            <ContentControl Grid.Row="1"
+                                            Grid.Column="1"
+                                            s:View.Model="{Binding TestResultValue}"
+                                            Margin="0 2"
+                                            FontFamily="Consolas"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalAlignment="Right" />
                         </Grid>
                     </Grid>
                 </materialDesign:Card>
@@ -127,10 +127,10 @@
 
         <materialDesign:Card Grid.Column="1" UniformCornerRadius="0" Background="{DynamicResource MaterialDesignToolBarBackground}" Panel.ZIndex="1">
             <Grid Margin="10 5">
-                <ContentControl s:View.Model="{Binding ActiveItem, IsAsync=True}" 
-                                    VerticalContentAlignment="Stretch" 
-                                    HorizontalContentAlignment="Stretch"
-                                    IsTabStop="False"/>
+                <ContentControl s:View.Model="{Binding ActiveItem, IsAsync=True}"
+                                VerticalContentAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                IsTabStop="False" />
             </Grid>
         </materialDesign:Card>
     </Grid>

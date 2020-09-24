@@ -48,12 +48,14 @@ namespace Artemis.Core
             get => _value;
             set
             {
-                if (!Equals(_value, value))
-                {
-                    _value = value;
-                    OnSettingChanged();
-                    NotifyOfPropertyChange(nameof(Value));
-                }
+                if (Equals(_value, value)) return;
+
+                _value = value;
+                OnSettingChanged();
+                NotifyOfPropertyChange(nameof(Value));
+
+                if (AutoSave)
+                    Save();
             }
         }
 
@@ -61,6 +63,12 @@ namespace Artemis.Core
         ///     Determines whether the setting has been changed
         /// </summary>
         public bool HasChanged => JsonConvert.SerializeObject(Value) != _pluginSettingEntity.Value;
+
+        /// <summary>
+        ///     Gets or sets whether changes must automatically be saved
+        ///     <para>Note: When set to <c>true</c> <see cref="HasChanged" /> is always <c>false</c></para>
+        /// </summary>
+        public bool AutoSave { get; set; }
 
         /// <summary>
         ///     Resets the setting to the last saved value
