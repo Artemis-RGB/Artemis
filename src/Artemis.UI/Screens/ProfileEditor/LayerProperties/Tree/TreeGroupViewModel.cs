@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
@@ -36,12 +37,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             LayerPropertyGroupViewModel = layerPropertyGroupViewModel;
             LayerPropertyGroup = LayerPropertyGroupViewModel.LayerPropertyGroup;
 
+            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
+
             DetermineGroupType();
         }
 
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
         public LayerPropertyGroup LayerPropertyGroup { get; }
         public LayerPropertyGroupType GroupType { get; set; }
+
+        public BindableCollection<PropertyChangedBase> Children =>
+            LayerPropertyGroupViewModel.IsExpanded && LayerPropertyGroupViewModel.IsVisible
+                ? LayerPropertyGroupViewModel.Children
+                : null;
 
         public void OpenBrushSettings()
         {
@@ -126,6 +134,25 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         public void EnableToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
+        }
+
+        public double GetDepth()
+        {
+            var depth = 0;
+            var current = LayerPropertyGroup.Parent;
+            while (current != null)
+            {
+                depth++;
+                current = current.Parent;
+            }
+
+            return depth;
+        }
+
+        private void LayerPropertyGroupViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(LayerPropertyGroupViewModel.IsExpanded) || e.PropertyName == nameof(LayerPropertyGroupViewModel.IsVisible))
+                NotifyOfPropertyChange(nameof(Children));
         }
 
         private void DetermineGroupType()

@@ -39,10 +39,10 @@
         </Button>
 
         <!-- Left side, the list this predicate is targeting -->
-        <ContentControl Grid.Row="0" 
+        <ContentControl Grid.Row="0"
                         Grid.Column="1"
                         s:View.Model="{Binding TargetSelectionViewModel}"
-                        VerticalContentAlignment="Stretch" 
+                        VerticalContentAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         IsTabStop="False" />
 
@@ -58,23 +58,23 @@
                 ToolTip="Change the list operator, determining how the list contents should match">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Any" 
-                              Command="{s:Action SelectListOperator}" 
-                              CommandParameter="Any" 
-                              ToolTip="Any of the list items should evaluate to true"/>
-                    <MenuItem Header="All" 
-                              Command="{s:Action SelectListOperator}" 
-                              CommandParameter="All" 
-                              ToolTip="All of the list items should evaluate to true"/>
-                    <MenuItem Header="None" 
-                              Command="{s:Action SelectListOperator}" 
+                    <MenuItem Header="Any"
+                              Command="{s:Action SelectListOperator}"
+                              CommandParameter="Any"
+                              ToolTip="Any of the list items should evaluate to true" />
+                    <MenuItem Header="All"
+                              Command="{s:Action SelectListOperator}"
+                              CommandParameter="All"
+                              ToolTip="All of the list items should evaluate to true" />
+                    <MenuItem Header="None"
+                              Command="{s:Action SelectListOperator}"
                               CommandParameter="None"
-                              ToolTip="None of the list items should evaluate to true"/>
-                    <MenuItem Header="Count (NYI)" 
-                              Command="{s:Action SelectListOperator}" 
-                              CommandParameter="Count" 
-                              IsEnabled="False" 
-                              ToolTip="A specific amount of the list items should evaluate to true"/>
+                              ToolTip="None of the list items should evaluate to true" />
+                    <MenuItem Header="Count (NYI)"
+                              Command="{s:Action SelectListOperator}"
+                              CommandParameter="Count"
+                              IsEnabled="False"
+                              ToolTip="A specific amount of the list items should evaluate to true" />
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
@@ -82,13 +82,7 @@
         <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items}" Margin="0 4 0 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <materialDesign:TransitioningContent>
-                        <materialDesign:TransitioningContent.OpeningEffects>
-                            <materialDesign:TransitionEffect Kind="FadeIn" />
-                            <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
-                        </materialDesign:TransitioningContent.OpeningEffects>
-                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-                    </materialDesign:TransitioningContent>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

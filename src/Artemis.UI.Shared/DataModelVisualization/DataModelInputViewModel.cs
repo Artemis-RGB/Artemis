@@ -84,7 +84,7 @@ namespace Artemis.UI.Shared
             // After the animation finishes attempt to focus the input field
             Task.Run(async () =>
             {
-                await Task.Delay(400);
+                await Task.Delay(50);
                 await Execute.OnUIThreadAsync(() => View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
             });
         }

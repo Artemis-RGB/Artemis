@@ -1,7 +1,10 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using Stylet;
+using Control = System.Windows.Controls.Control;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using Screen = Stylet.Screen;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {

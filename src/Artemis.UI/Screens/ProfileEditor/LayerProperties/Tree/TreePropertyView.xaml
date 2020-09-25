@@ -6,55 +6,67 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Height="22" Margin="-20 0 0 0">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <ToggleButton Grid.Column="0"
-                      Style="{StaticResource MaterialDesignFlatToggleButton}"
-                      ToolTip="Toggle key-framing"
-                      Width="18"
-                      Height="18"
-                      IsChecked="{Binding KeyframesEnabled}"
-                      IsEnabled="{Binding LayerProperty.KeyframesSupported}"
-                      VerticalAlignment="Center" Padding="-25">
-            <materialDesign:PackIcon Kind="Stopwatch" Height="13" Width="13" />
-        </ToggleButton>
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:PropertyTreeMarginConverter Length="20" x:Key="PropertyTreeMarginConverter" />
+    </UserControl.Resources>
 
-        <TextBlock Grid.Column="1"
-                   Margin="5,0,0,0"
-                   Padding="0,0,5,0"
-                   VerticalAlignment="Center"
-                   TextTrimming="CharacterEllipsis"
-                   Text="{Binding LayerProperty.PropertyDescription.Name}"
-                   ToolTip="{Binding LayerProperty.PropertyDescription.Description}"
-                   HorizontalAlignment="Left" />
+    <Border Name="Bd"
+            BorderBrush="{DynamicResource MaterialDesignDivider}"
+            BorderThickness="0,0,0,1"
+            Height="25">
+        <Grid Margin="{Binding Converter={StaticResource PropertyTreeMarginConverter}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ToggleButton Grid.Column="0"
+                          Style="{StaticResource MaterialDesignFlatToggleButton}"
+                          ToolTip="Toggle key-framing"
+                          Width="18"
+                          Height="18"
+                          IsChecked="{Binding KeyframesEnabled}"
+                          IsEnabled="{Binding LayerProperty.KeyframesSupported}"
+                          VerticalAlignment="Center" Padding="-25">
+                <materialDesign:PackIcon Kind="Stopwatch" Height="13" Width="13" />
+            </ToggleButton>
 
-        <ContentControl Grid.Column="2" Margin="20 0" s:View.Model="{Binding PropertyInputViewModel}">
-            <ContentControl.Resources>
-                <Style TargetType="TextBlock">
-                    <Setter Property="Margin" Value="0 0 5 4" />
-                    <Setter Property="VerticalAlignment" Value="Bottom" />
-                </Style>
-            </ContentControl.Resources>
-        </ContentControl>
+            <TextBlock Grid.Column="1"
+                       Margin="5,0,0,0"
+                       Padding="0,0,5,0"
+                       VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis"
+                       Text="{Binding LayerProperty.PropertyDescription.Name}"
+                       ToolTip="{Binding LayerProperty.PropertyDescription.Description}"
+                       HorizontalAlignment="Left" />
 
-        <shared:LockableToggleButton Grid.Column="3"
-                      Style="{StaticResource MaterialDesignFlatToggleButton}"
-                      ToolTip="Change the property's data binding"
-                      Width="20"
-                      Height="20"
-                      VerticalAlignment="Center"
-                      IsLocked="True"
-                      IsEnabled="{Binding LayerProperty.DataBindingsSupported}"
-                      IsChecked="{Binding HasDataBinding, Mode=OneWay}"
-                      Click="{s:Action ActivateDataBindingViewModel}">
-            <materialDesign:PackIcon Kind="VectorLink" Height="13" Width="13" />
-        </shared:LockableToggleButton>
-    </Grid>
+            <ContentControl Grid.Column="2" Margin="20 0" s:View.Model="{Binding PropertyInputViewModel, IsAsync=True}">
+                <ContentControl.Resources>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Margin" Value="0 0 5 4" />
+                        <Setter Property="VerticalAlignment" Value="Bottom" />
+                    </Style>
+                </ContentControl.Resources>
+            </ContentControl>
+
+            <shared:LockableToggleButton Grid.Column="3"
+                                         Style="{StaticResource MaterialDesignFlatToggleButton}"
+                                         ToolTip="Change the property's data binding"
+                                         Width="20"
+                                         Height="20"
+                                         VerticalAlignment="Center"
+                                         IsLocked="True"
+                                         IsEnabled="{Binding LayerProperty.DataBindingsSupported}"
+                                         IsChecked="{Binding HasDataBinding, Mode=OneWay}"
+                                         Click="{s:Action ActivateDataBindingViewModel}">
+                <materialDesign:PackIcon Kind="VectorLink" Height="13" Width="13" />
+            </shared:LockableToggleButton>
+        </Grid>
+
+    </Border>
 </UserControl>

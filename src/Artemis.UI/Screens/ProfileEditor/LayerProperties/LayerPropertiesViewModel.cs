@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -31,6 +32,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private int _propertyTreeIndex;
         private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
+        private DateTime _lastEffectsViewModelToggle;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
@@ -133,6 +135,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => SetAndNotify(ref _rightSideIndex, value);
         }
 
+        public bool CanToggleEffectsViewModel => SelectedProfileElement != null && DateTime.Now - _lastEffectsViewModelToggle > TimeSpan.FromMilliseconds(250);
+
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
 
         public RenderProfileElement SelectedProfileElement
@@ -143,6 +147,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 if (!SetAndNotify(ref _selectedProfileElement, value)) return;
                 NotifyOfPropertyChange(nameof(SelectedLayer));
                 NotifyOfPropertyChange(nameof(SelectedFolder));
+                NotifyOfPropertyChange(nameof(SelectedFolder));
+                NotifyOfPropertyChange(nameof(CanToggleEffectsViewModel));
             }
         }
 
@@ -294,14 +300,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             if (SelectedLayer.LayerBrush != null)
             {
-                // TODO: wat?
-                // Add the root group of the brush
-                // The root group of the brush has no attribute so let's pull one out of our sleeve
-                var brushDescription = new PropertyGroupDescriptionAttribute
-                {
-                    Name = SelectedLayer.LayerBrush.Descriptor.DisplayName,
-                    Description = SelectedLayer.LayerBrush.Descriptor.Description
-                };
                 _brushPropertyGroup = _layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.LayerBrush.BaseProperties);
                 LayerPropertyGroups.Add(_brushPropertyGroup);
             }
@@ -327,14 +325,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
                     continue;
 
-                // TODO: wat?
-                // Add the root group of the brush
-                // The root group of the brush has no attribute so let's pull one out of our sleeve
-                var brushDescription = new PropertyGroupDescriptionAttribute
-                {
-                    Name = layerEffect.Descriptor.DisplayName,
-                    Description = layerEffect.Descriptor.Description
-                };
                 LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
             }
 
@@ -366,6 +356,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 var layerPropertyGroupViewModel = effectProperties[index];
                 LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
+        }
+
+        public async void ToggleEffectsViewModel()
+        {
+            _lastEffectsViewModelToggle = DateTime.Now;
+            NotifyOfPropertyChange(nameof(CanToggleEffectsViewModel));
+
+            await Task.Delay(300);
+            NotifyOfPropertyChange(nameof(CanToggleEffectsViewModel));
         }
 
         #endregion

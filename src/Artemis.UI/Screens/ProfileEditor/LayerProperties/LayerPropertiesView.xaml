@@ -61,6 +61,7 @@
             </Setter>
         </Style>
     </UserControl.Resources>
+
     <UserControl.InputBindings>
         <KeyBinding Command="{s:Action Play}" Key="Space" />
         <KeyBinding Command="{s:Action PlayFromStart}" Modifiers="Shift" Key="Space" />
@@ -120,14 +121,14 @@
                                                      Click="{s:Action CycleRepeating}">
                             <shared:LockableToggleButton.ToolTip>
                                 <StackPanel>
-                                    <StackPanel Visibility="{Binding Repeating, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" >
+                                    <StackPanel Visibility="{Binding Repeating, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
                                         <TextBlock Text="Repeat entire timeline"
                                                    Visibility="{Binding RepeatTimeline, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                         <TextBlock Text="Repeat segment"
                                                    Visibility="{Binding RepeatSegment, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                     </StackPanel>
                                     <TextBlock Visibility="{Binding Repeating, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">Don't repeat the timeline</TextBlock>
-                                    <TextBlock>This setting only applies to the editor and <Run Text="does not" FontWeight="Bold"/> affect the repeat mode during profile use</TextBlock>
+                                    <TextBlock>This setting only applies to the editor and <Run Text="does not" FontWeight="Bold" /> affect the repeat mode during profile use</TextBlock>
                                 </StackPanel>
                             </shared:LockableToggleButton.ToolTip>
                             <Grid>
@@ -317,13 +318,14 @@
                     Margin="0 -2 5 -2"
                     Padding="10 0"
                     Height="20"
-                    Width="110"
+                    Width="115"
                     ToolTip="Select an effect to add"
                     VerticalAlignment="Center"
                     Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
-                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}"
                     Command="{x:Static materialDesign:Transitioner.MoveLastCommand}"
-                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}"
+                    Click="{s:Action ToggleEffectsViewModel}"
+                    IsEnabled="{Binding CanToggleEffectsViewModel}">
                 <TextBlock FontSize="11">
                     ADD EFFECT
                 </TextBlock>
@@ -333,13 +335,15 @@
                     Margin="0 -2 5 -2"
                     Padding="10 0"
                     Height="20"
-                    Width="110"
+                    Width="115"
                     ToolTip="Show the layer/folder properties"
                     VerticalAlignment="Center"
                     Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
                     Command="{x:Static materialDesign:Transitioner.MoveFirstCommand}"
-                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}">
-                <TextBlock FontSize="11">
+                    CommandTarget="{Binding ElementName=TransitionCommandAnchor}"
+                    Click="{s:Action ToggleEffectsViewModel}"
+                    IsEnabled="{Binding CanToggleEffectsViewModel}">
+                <TextBlock FontSize="10">
                     SHOW PROPERTIES
                 </TextBlock>
             </Button>
@@ -363,7 +367,6 @@
                     Width="110"
                     ToolTip="Add a new segment to the timeline"
                     VerticalAlignment="Center"
-                    Visibility="{Binding PropertyTreeVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}"
                     IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">

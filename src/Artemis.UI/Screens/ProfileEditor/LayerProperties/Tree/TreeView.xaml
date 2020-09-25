@@ -11,104 +11,19 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type tree:TreeViewModel}}">
-    <UserControl.Resources>
-        <Style x:Key="PropertyTreeStyle" TargetType="{x:Type TreeViewItem}">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderBrush" Value="{x:Null}" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBody}" />
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.PanningMode" Value="Both" />
-            <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TreeViewItem}">
-                        <ControlTemplate.Resources>
-                            <converters:LeftMarginMultiplierConverter Length="19" x:Key="lengthConverter" />
-                        </ControlTemplate.Resources>
-                        <StackPanel>
-                            <Border Name="Bd"
-                                    Background="{TemplateBinding Background}"
-                                    BorderBrush="{DynamicResource MaterialDesignDivider}"
-                                    BorderThickness="0,0,0,1"
-                                    Height="25"
-                                    Padding="{TemplateBinding Padding}">
-                                <Grid Margin="{Binding Converter={StaticResource lengthConverter}, RelativeSource={RelativeSource TemplatedParent}}">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="19" />
-                                        <ColumnDefinition />
-                                    </Grid.ColumnDefinitions>
-                                    <ToggleButton x:Name="Expander"
-                                                  Foreground="{DynamicResource MaterialDesignBody}"
-                                                  Style="{StaticResource MaterialDesignExpandCollapseToggleStyle}"
-                                                  IsChecked="{Binding Path=IsExpanded, RelativeSource={RelativeSource TemplatedParent}}"
-                                                  ClickMode="Press" />
-
-                                    <ContentPresenter x:Name="PART_Header"
-                                                      Grid.Column="1"
-                                                      ContentSource="Header"
-                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" />
-                                </Grid>
-                            </Border>
-                            <ItemsPresenter x:Name="ItemsHost" />
-                        </StackPanel>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsExpanded" Value="false">
-                                <Setter TargetName="ItemsHost" Property="Visibility" Value="Collapsed" />
-                            </Trigger>
-                            <Trigger Property="HasItems" Value="false">
-                                <Setter TargetName="Expander" Property="Visibility" Value="Hidden" />
-                            </Trigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="HasHeader" Value="false" />
-                                    <Condition Property="Width" Value="Auto" />
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="PART_Header" Property="MinWidth" Value="75" />
-                            </MultiTrigger>
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="HasHeader" Value="false" />
-                                    <Condition Property="Height" Value="Auto" />
-                                </MultiTrigger.Conditions>
-                                <Setter TargetName="PART_Header" Property="MinHeight" Value="19" />
-                            </MultiTrigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-    <TreeView ItemsSource="{Binding LayerPropertyGroups}"
-              VirtualizingStackPanel.IsVirtualizing="True"
-              VirtualizingStackPanel.VirtualizationMode="Recycling"
-              HorizontalContentAlignment="Stretch"
-              Background="{DynamicResource MaterialDesignToolBarBackground}"
-              PreviewMouseWheel="{s:Action PropertyTreePreviewMouseWheel}"
-              dd:DragDrop.IsDragSource="True"
-              dd:DragDrop.IsDropTarget="True"
-              dd:DragDrop.DropHandler="{Binding LayerPropertiesViewModel}"
-              Margin="0 -1">
-        <TreeView.ItemContainerStyle>
-            <Style TargetType="TreeViewItem" BasedOn="{StaticResource PropertyTreeStyle}">
-                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
-                <Setter Property="Visibility" Value="{Binding IsVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                <Style.Triggers>
-                    <DataTrigger Binding="{Binding IsHighlighted, Mode=OneWay}" Value="True">
-                        <Setter Property="Background" Value="{DynamicResource MaterialDesignPaper}" />
-                    </DataTrigger>
-                </Style.Triggers>
-            </Style>
-        </TreeView.ItemContainerStyle>
-        <TreeView.Resources>
+    <ItemsControl ItemsSource="{Binding LayerPropertyGroups}"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling"
+                  HorizontalContentAlignment="Stretch"
+                  HorizontalAlignment="Stretch"
+                  Background="{DynamicResource MaterialDesignToolBarBackground}"
+                  dd:DragDrop.IsDragSource="True"
+                  dd:DragDrop.IsDropTarget="True"
+                  dd:DragDrop.DropHandler="{Binding LayerPropertiesViewModel}">
+        <ItemsControl.ItemTemplate>
             <HierarchicalDataTemplate DataType="{x:Type local:LayerPropertyGroupViewModel}" ItemsSource="{Binding Children}">
                 <ContentControl s:View.Model="{Binding TreeGroupViewModel}" />
             </HierarchicalDataTemplate>
-            <DataTemplate DataType="{x:Type local:LayerPropertyViewModel}">
-                <ContentControl s:View.Model="{Binding TreePropertyViewModel, IsAsync=True}" dd:DragDrop.DragSourceIgnore="True" />
-            </DataTemplate>
-        </TreeView.Resources>
-    </TreeView>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
 </UserControl>

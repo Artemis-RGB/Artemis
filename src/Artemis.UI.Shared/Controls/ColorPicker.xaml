@@ -117,14 +117,14 @@
                             Maximum="255" />
 
                     <!-- Checkboxes don't work inside popups inside tree views, which is where the color picker is regularly used -->
-                    <shared:TreeViewPopupCompatibleCheckBox Grid.Row="2"
-                                                     x:Name="PreviewCheckBox"
-                                                     Margin="10 0"
-                                                     VerticalAlignment="Center"
-                                                     Style="{StaticResource MaterialDesignCheckBox}" 
-                                                     Click="PreviewCheckBoxClick">
+                    <CheckBox Grid.Row="2"
+                              x:Name="PreviewCheckBox"
+                              Margin="10 0"
+                              VerticalAlignment="Center"
+                              Style="{StaticResource MaterialDesignCheckBox}"
+                              Click="PreviewCheckBoxClick">
                         Preview on devices
-                    </shared:TreeViewPopupCompatibleCheckBox>
+                    </CheckBox>
 
                 </Grid>
             </materialDesign:Card>

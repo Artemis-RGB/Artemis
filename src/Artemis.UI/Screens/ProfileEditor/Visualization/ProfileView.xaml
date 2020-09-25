@@ -26,8 +26,8 @@
                     <ListBoxItem ToolTip="Pan over different parts of the surface">
                         <materialDesign:PackIcon Kind="HandLeft" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Edit shape in layer (hold SHIFT for incremental changes and X/Y snapping)" IsEnabled="{Binding CanSelectEditTool}">
-                        <materialDesign:PackIcon Kind="Edit" />
+                    <ListBoxItem ToolTip="Transform layer shape (hold SHIFT for incremental changes and X/Y snapping)" IsEnabled="{Binding CanSelectEditTool}">
+                        <materialDesign:PackIcon Kind="TransitConnectionVariant" />
                     </ListBoxItem>
                     <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection)">
                         <materialDesign:PackIcon Kind="SelectionDrag" />

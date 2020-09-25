@@ -37,6 +37,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         }
 
         public bool HasDataBinding => LayerProperty.HasDataBinding;
+        public double GetDepth()
+        {
+            var depth = 0;
+            var current = LayerProperty.LayerPropertyGroup;
+            while (current != null)
+            {
+                depth++;
+                current = current.Parent;
+            }
+
+            return depth;
+        }
 
         public bool HasPropertyInputViewModel => PropertyInputViewModel != null;
 
@@ -112,5 +124,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
     {
         bool HasPropertyInputViewModel { get; }
         bool HasDataBinding { get; }
+        double GetDepth();
     }
 }
