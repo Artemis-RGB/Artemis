@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Artemis.Storage.Entities.Profile
 {
@@ -19,5 +20,15 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<FolderEntity> Folders { get; set; }
         public List<LayerEntity> Layers { get; set; }
+
+        public void UpdateGuid(Guid guid)
+        {
+            var oldGuid = Id;
+            Id = guid;
+
+            var rootFolder = Folders.FirstOrDefault(f => f.ParentId == oldGuid);
+            if (rootFolder != null)
+                rootFolder.ParentId = Id;
+        }
     }
 }
