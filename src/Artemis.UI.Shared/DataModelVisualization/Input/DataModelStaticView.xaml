@@ -21,14 +21,15 @@
         </ResourceDictionary>
     </UserControl.Resources>
 
-    <materialDesign:Transitioner SelectedIndex="{Binding TransitionIndex}" DefaultTransitionOrigin="0.5, 0.5" Margin="3 -4">
+    <Grid Margin="3 -4">
         <Button Style="{StaticResource DataModelConditionButton}"
                 Background="{Binding ButtonBrush}"
                 BorderBrush="{Binding ButtonBrush}"
                 Margin="0 4"
                 Command="{s:Action ActivateInputViewModel}"
                 HorizontalAlignment="Left"
-                IsEnabled="{Binding IsEnabled}">
+                IsEnabled="{Binding IsEnabled}"
+                Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <Grid>
                 <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
                     <TextBlock FontWeight="Light"
@@ -47,11 +48,12 @@
         </Button>
         <Border BorderBrush="{Binding ButtonBrush}"
                 Background="{DynamicResource MaterialDesignPaper}"
+                Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}}"
                 CornerRadius="3"
                 Padding="3"
                 HorizontalAlignment="Left"
                 MinWidth="140">
             <ContentControl s:View.Model="{Binding InputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
         </Border>
-    </materialDesign:Transitioner>
+    </Grid>
 </UserControl>

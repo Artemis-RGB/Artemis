@@ -54,22 +54,22 @@
                 Visibility="{Binding DisplayBooleanOperator, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="And" 
-                              Command="{s:Action SelectBooleanOperator}" 
-                              CommandParameter="And" 
+                    <MenuItem Header="And"
+                              Command="{s:Action SelectBooleanOperator}"
+                              CommandParameter="And"
                               ToolTip="All the conditions in the group should evaluate to true" />
-                    <MenuItem Header="Or" 
+                    <MenuItem Header="Or"
                               Command="{s:Action SelectBooleanOperator}"
-                              CommandParameter="Or" 
-                              ToolTip="Any of the conditions in the group should evaluate to true"/>
-                    <MenuItem Header="And not" 
-                              Command="{s:Action SelectBooleanOperator}" 
-                              CommandParameter="AndNot" 
-                              ToolTip="All the conditions in the group should evaluate to false"/>
-                    <MenuItem Header="Or not" 
+                              CommandParameter="Or"
+                              ToolTip="Any of the conditions in the group should evaluate to true" />
+                    <MenuItem Header="And not"
                               Command="{s:Action SelectBooleanOperator}"
-                              CommandParameter="OrNot" 
-                              ToolTip="Any of the conditions in the group should evaluate to false"/>
+                              CommandParameter="AndNot"
+                              ToolTip="All the conditions in the group should evaluate to false" />
+                    <MenuItem Header="Or not"
+                              Command="{s:Action SelectBooleanOperator}"
+                              CommandParameter="OrNot"
+                              ToolTip="Any of the conditions in the group should evaluate to false" />
                 </ContextMenu>
             </Button.ContextMenu>
         </Button>
@@ -116,7 +116,7 @@
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="Link" />
                         </MenuItem.Icon>
-                    </MenuItem> 
+                    </MenuItem>
                     <MenuItem Header="Add self condition"
                               ToolTip="A condition that compares with a property contained in the list"
                               Command="{s:Action AddCondition}"
@@ -149,13 +149,7 @@
         <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
-                    <materialDesign:TransitioningContent>
-                        <materialDesign:TransitioningContent.OpeningEffects>
-                            <materialDesign:TransitionEffect Kind="FadeIn" />
-                            <materialDesign:TransitionEffect Kind="SlideInFromLeft" />
-                        </materialDesign:TransitioningContent.OpeningEffects>
-                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-                    </materialDesign:TransitioningContent>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>

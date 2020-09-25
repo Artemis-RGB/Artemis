@@ -20,7 +20,6 @@ namespace Artemis.UI.Shared.Input
         private string _placeholder = "Enter a value";
         private DataModelPropertyAttribute _targetDescription;
         private Type _targetType;
-        private int _transitionIndex;
         private object _value;
         private bool _isEnabled;
 
@@ -45,13 +44,7 @@ namespace Artemis.UI.Shared.Input
             get => _buttonBrush;
             set => SetAndNotify(ref _buttonBrush, value);
         }
-
-        public int TransitionIndex
-        {
-            get => _transitionIndex;
-            set => SetAndNotify(ref _transitionIndex, value);
-        }
-
+        
         public DataModelDisplayViewModel DisplayViewModel
         {
             get => _displayViewModel;
@@ -113,7 +106,6 @@ namespace Artemis.UI.Shared.Input
 
         public void ActivateInputViewModel()
         {
-            TransitionIndex = 1;
             InputViewModel = _dataModelUIService.GetDataModelInputViewModel(
                 TargetType,
                 TargetDescription,
@@ -149,7 +141,6 @@ namespace Artemis.UI.Shared.Input
             if (submitted)
                 OnValueUpdated(new DataModelInputStaticEventArgs(value));
 
-            TransitionIndex = 0;
             InputViewModel = null;
             Value = value;
         }
