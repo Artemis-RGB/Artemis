@@ -200,6 +200,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             {
                 Profiles.Add(descriptor);
                 Profiles.Sort(p => p.Name);
+                SelectedProfile = descriptor;
             }
         }
 

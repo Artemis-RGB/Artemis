@@ -221,7 +221,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
 
-        private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {
             RightSideIndex = ProfileEditorService.SelectedDataBinding != null ? 1 : 0;
         }
