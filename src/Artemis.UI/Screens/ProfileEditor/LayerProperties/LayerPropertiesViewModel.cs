@@ -562,20 +562,23 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             Execute.PostToUIThread(() =>
             {
                 var newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
-                if (Repeating && RepeatTimeline)
+                if (SelectedProfileElement != null)
                 {
-                    if (newTime > SelectedProfileElement.TimelineLength)
-                        newTime = TimeSpan.Zero;
-                }
-                else if (Repeating && RepeatSegment)
-                {
-                    if (newTime > GetCurrentSegmentEnd())
-                        newTime = GetCurrentSegmentStart();
-                }
-                else if (newTime > SelectedProfileElement.TimelineLength)
-                {
-                    newTime = SelectedProfileElement.TimelineLength;
-                    Pause();
+                    if (Repeating && RepeatTimeline)
+                    {
+                        if (newTime > SelectedProfileElement.TimelineLength)
+                            newTime = TimeSpan.Zero;
+                    }
+                    else if (Repeating && RepeatSegment)
+                    {
+                        if (newTime > GetCurrentSegmentEnd())
+                            newTime = GetCurrentSegmentStart();
+                    }
+                    else if (newTime > SelectedProfileElement.TimelineLength)
+                    {
+                        newTime = SelectedProfileElement.TimelineLength;
+                        Pause();
+                    }
                 }
 
                 ProfileEditorService.CurrentTime = newTime;
