@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Corsair ML RGB Fan</Name>
+  <Description>Physical layout of Corsairs ML RGB Fan</Description>
+  <Type>Fan</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Corsair</Vendor>
+  <Model>ML PRO RGB</Model>
+  <Width>140</Width>
+  <Height>140</Height>
+  <LedUnitWidth>20</LedUnitWidth>
+  <LedUnitHeight>20</LedUnitHeight>
+  <ImageBasePath>Images\Corsair\Customs</ImageBasePath>
+  <DeviceImage>MLFAN.png</DeviceImage>
+  <Leds>
+    <Led Id="Fan1">
+      <Shape>Circle</Shape>
+      <X>59.5</X>
+      <Y>40</Y>
+    </Led>
+    <Led Id="Fan4">
+      <Shape>Circle</Shape>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Fan3">
+      <Shape>Circle</Shape>
+      <X>-</X>
+      <Y>+</Y>
+    </Led>
+    <Led Id="Fan2">
+      <Shape>Circle</Shape>
+      <X>-</X>
+      <Y>-</Y>
+    </Led>
+  </Leds>
+  <LedImageLayouts />
+</Device>
