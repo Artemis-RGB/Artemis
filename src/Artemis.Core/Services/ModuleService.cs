@@ -46,12 +46,7 @@ namespace Artemis.Core.Services
 
                 if (ActiveModuleOverride == overrideModule)
                     return;
-
-                // Always deactivate all modules whenever override is called
-                var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-                foreach (var module in modules)
-                    OverrideDeactivate(module);
-
+                
                 if (overrideModule != null)
                 {
                     OverrideActivate(overrideModule);
@@ -59,6 +54,11 @@ namespace Artemis.Core.Services
                 }
                 else
                     _logger.Information("Clearing active module override");
+
+                // Always deactivate all other modules whenever override is called
+                var modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                foreach (var module in modules.Where(m => m != overrideModule))
+                    OverrideDeactivate(module);
 
                 ActiveModuleOverride = overrideModule;
             }
@@ -78,7 +78,23 @@ namespace Artemis.Core.Services
                 await ActiveModuleSemaphore.WaitAsync();
 
                 if (ActiveModuleOverride != null)
+                {
+                    // The conditions of the active module override may be matched, in that case reactivate as a non-override
+                    // the principle is different for this service but not for the module
+                    var shouldBeActivated = ActiveModuleOverride.EvaluateActivationRequirements();
+                    if (shouldBeActivated && ActiveModuleOverride.IsActivatedOverride)
+                    {
+                        ActiveModuleOverride.Deactivate(true);
+                        ActiveModuleOverride.Activate(false);
+                    }
+                    else if (!shouldBeActivated && !ActiveModuleOverride.IsActivatedOverride)
+                    {
+                        ActiveModuleOverride.Deactivate(false);
+                        ActiveModuleOverride.Activate(true);
+                    }
+
                     return;
+                }
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
