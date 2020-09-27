@@ -127,7 +127,7 @@ namespace Artemis.UI.Shared
                 if (PropertyInfo.GetGetMethod() == null)
                     return null;
 
-                return Parent == null ? null : PropertyInfo.GetValue(Parent.GetCurrentValue());
+                return Parent?.GetCurrentValue() == null ? null : PropertyInfo.GetValue(Parent.GetCurrentValue());
             }
             catch (Exception)
             {
