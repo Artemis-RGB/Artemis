@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Corsair ML RGB Fan</Name>
   <Description>Physical layout of Corsairs ML RGB Fan</Description>
@@ -7,8 +6,8 @@
   <Lighting>Key</Lighting>
   <Vendor>Corsair</Vendor>
   <Model>ML PRO RGB</Model>
-  <Width>140</Width>
-  <Height>140</Height>
+  <Width>120</Width>
+  <Height>120</Height>
   <LedUnitWidth>20</LedUnitWidth>
   <LedUnitHeight>20</LedUnitHeight>
   <ImageBasePath>Images\Corsair\Customs</ImageBasePath>
@@ -16,8 +15,8 @@
   <Leds>
     <Led Id="Fan1">
       <Shape>Circle</Shape>
-      <X>59.5</X>
-      <Y>40</Y>
+      <X>50</X>
+      <Y>30</Y>
     </Led>
     <Led Id="Fan4">
       <Shape>Circle</Shape>
@@ -34,5 +33,4 @@
       <Y>-</Y>
     </Led>
   </Leds>
-  <LedImageLayouts />
 </Device>
