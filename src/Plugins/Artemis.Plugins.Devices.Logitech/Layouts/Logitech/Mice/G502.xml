@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Logitech G502</Name>
+  <Description>Layout of the G502 mouse</Description>
+  <Type>Mouse</Type>
+  <Lighting>Key</Lighting>
+  <Vendor>Logitech</Vendor>
+  <Model>G502</Model>
+  <Width>75</Width>
+  <Height>130</Height>
+  <LedUnitWidth>15</LedUnitWidth>
+  <LedUnitHeight>15</LedUnitHeight>
+  <ImageBasePath>Images\Logitech\Mice</ImageBasePath>
+  <DeviceImage>G502.png</DeviceImage>
+  <Leds>
+    <Led Id="Mouse1">
+      <X>11</X>
+      <Y>59</Y>
+      <Width>0.3</Width>
+    </Led>
+    <Led Id="Mouse2">
+      <Shape> M0.522,0.417 L0.92,0.417 L0.92,0.812 L0.731,0.812 L0.731,0.603 L0.516,0.603z M0.52,0.06 L0.402,0.075 L0.269,0.132 L0.19,0.199 L0.13,0.278 L0.093,0.362 L0.076,0.458 L0.074,0.537 L0.079,0.596 L0.098,0.646 L0.133,0.71 L0.177,0.771 L0.237,0.831 L0.311,0.878 L0.385,0.912 L0.454,0.922 L0.516,0.925 L0.516,0.759 L0.414,0.739 L0.333,0.675 L0.283,0.586 L0.266,0.502 L0.281,0.411 L0.338,0.325 L0.422,0.268 L0.474,0.253 L0.52,0.253z</Shape>
+      <X>23</X>
+      <Y>82</Y>
+    </Led>
+  </Leds>
+</Device>
