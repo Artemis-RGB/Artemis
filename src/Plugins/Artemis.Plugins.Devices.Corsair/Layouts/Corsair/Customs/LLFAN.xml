@@ -1,14 +1,13 @@
 <?xml version="1.0"?>
-
 <Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <Name>Corsair LL RGB Fan</Name>
   <Description>Physical layout of Corsairs LL RGB Fan</Description>
   <Type>Fan</Type>
   <Lighting>Key</Lighting>
   <Vendor>Corsair</Vendor>
-  <Model>MM800 RGB</Model>
-  <Width>140</Width>
-  <Height>140</Height>
+  <Model>LL RGB</Model>
+  <Width>120</Width>
+  <Height>120</Height>
   <LedUnitWidth>20</LedUnitWidth>
   <LedUnitHeight>20</LedUnitHeight>
   <ImageBasePath>Images\Corsair\Customs</ImageBasePath>
@@ -16,8 +15,8 @@
   <Leds>
     <Led Id="Fan1">
       <Shape>Circle</Shape>
-      <X>59.5</X>
-      <Y>40</Y>
+      <X>50</X>
+      <Y>30</Y>
     </Led>
     <Led Id="Fan4">
       <Shape>Circle</Shape>
@@ -33,66 +32,65 @@
       <X>-</X>
       <Y>-</Y>
     </Led>
-
     <Led Id="Fan5">
       <Shape>Circle</Shape>
-      <X>7.9</X>
-      <Y>29.8</Y>
+      <X>6.7</X>
+      <Y>25</Y>
     </Led>
     <Led Id="Fan6">
       <Shape>Circle</Shape>
-      <X>0.4</X>
-      <Y>59.9</Y>
+      <X>0</X>
+      <Y>50</Y>
     </Led>
     <Led Id="Fan7">
       <Shape>Circle</Shape>
-      <X>8</X>
-      <Y>90.4</Y>
+      <X>6.7</X>
+      <Y>75</Y>
     </Led>
     <Led Id="Fan8">
       <Shape>Circle</Shape>
-      <X>30.7</X>
-      <Y>113.1</Y>
+      <X>25</X>
+      <Y>93.3</Y>
     </Led>
     <Led Id="Fan9">
       <Shape>Circle</Shape>
-      <X>59.5</X>
-      <Y>120.5</Y>
+      <X>50</X>
+      <Y>100</Y>
     </Led>
     <Led Id="Fan10">
       <Shape>Circle</Shape>
-      <X>90.5</X>
-      <Y>113.1</Y>
+      <X>75</X>
+      <Y>93.3</Y>
     </Led>
     <Led Id="Fan11">
       <Shape>Circle</Shape>
-      <X>113</X>
-      <Y>90.4</Y>
+      <X>93.3</X>
+      <Y>75</Y>
     </Led>
     <Led Id="Fan12">
       <Shape>Circle</Shape>
-      <X>120.5</X>
-      <Y>59.9</Y>
+      <X>100</X>
+      <Y>50</Y>
     </Led>
     <Led Id="Fan13">
       <Shape>Circle</Shape>
-      <X>113</X>
-      <Y>29.8</Y>
+      <X>93.3</X>
+      <Y>25</Y>
     </Led>
     <Led Id="Fan14">
       <Shape>Circle</Shape>
-      <X>90.5</X>
-      <Y>7.6</Y>
+      <X>75</X>
+      <Y>6.7</Y>
     </Led>
     <Led Id="Fan15">
       <Shape>Circle</Shape>
-      <X>59.5</X>
+      <X>50</X>
       <Y>0</Y>
     </Led>
     <Led Id="Fan16">
       <Shape>Circle</Shape>
-      <X>28</X>
-      <Y>7.6</Y>
+      <X>25</X>
+      <Y>6.7</Y>
     </Led>
   </Leds>
 </Device>
