@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core;
@@ -169,7 +170,7 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = false;
                 return;
             }
-            
+
             if (looseMatch)
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(PropertyInfo.PropertyType) || t == typeof(Enum) && PropertyInfo.PropertyType.IsEnum);
             else

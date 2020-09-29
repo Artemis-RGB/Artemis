@@ -32,6 +32,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             ValueViewModel.Value = DataBindingCondition.Value;
         }
 
+        public DataBindingCondition<TLayerProperty, TProperty> DataBindingCondition { get; }
+
+        public DataModelStaticViewModel ValueViewModel { get; set; }
+
+        public void Dispose()
+        {
+            ValueViewModel.Dispose();
+        }
+
         private void ActiveItemOnUpdated(object sender, EventArgs e)
         {
             if (!ActiveItem.GetChildren().Any())
@@ -42,15 +51,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         {
             DataBindingCondition.Value = (TProperty) Convert.ChangeType(e.Value, typeof(TProperty));
             _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        public DataBindingCondition<TLayerProperty, TProperty> DataBindingCondition { get; }
-
-        public DataModelStaticViewModel ValueViewModel { get; set; }
-
-        public void Dispose()
-        {
-            ValueViewModel.Dispose();
         }
     }
 }

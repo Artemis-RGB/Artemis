@@ -21,9 +21,20 @@ namespace Artemis.Core
         public abstract IReadOnlyCollection<Type> CompatibleTypes { get; }
 
         /// <summary>
-        ///     Gets or sets the description of this modifier
+        ///     Gets the supported parameter type
+        ///     <para>If <c>null</c>, the parameter type will match the source property</para>
         /// </summary>
-        public abstract string Description { get; }
+        public virtual Type ParameterType => null;
+
+        /// <summary>
+        ///     Gets or sets whether this modifier supports a parameter, defaults to <c>true</c>
+        /// </summary>
+        public virtual bool SupportsParameter => true;
+
+        /// <summary>
+        ///     Gets the name of this modifier
+        /// </summary>
+        public abstract string Name { get; }
 
         /// <summary>
         ///     Gets or sets the icon of this modifier
@@ -31,16 +42,15 @@ namespace Artemis.Core
         public abstract string Icon { get; }
 
         /// <summary>
-        ///     Gets or sets whether this modifier supports a parameter, defaults to <c>true</c>
+        ///     Gets the description of this modifier
         /// </summary>
-        public bool SupportsParameter { get; protected set; } = true;
+        public virtual string Description => null;
 
         /// <summary>
-        ///     Gets or sets the preferred parameter type
-        ///     <para>If <c>null</c>, the parameter type will match the source property</para>
+        ///     Gets the category of this modifier
         /// </summary>
-        public Type PreferredParameterType { get; protected set; } = null;
-
+        public virtual string Category => null;
+        
         /// <summary>
         ///     Returns whether the given type is supported by the modifier
         /// </summary>

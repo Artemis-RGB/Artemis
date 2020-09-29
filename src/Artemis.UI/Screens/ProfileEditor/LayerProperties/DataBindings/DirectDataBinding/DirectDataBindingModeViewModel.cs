@@ -16,8 +16,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private DataModelDynamicViewModel _targetSelectionViewModel;
         private bool _canAddModifier;
+        private DataModelDynamicViewModel _targetSelectionViewModel;
         private bool _updating;
 
         public DirectDataBindingModeViewModel(DirectDataBinding<TLayerProperty, TProperty> directDataBinding,
@@ -38,7 +38,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         public DirectDataBinding<TLayerProperty, TProperty> DirectDataBinding { get; }
         public BindableCollection<DataBindingModifierViewModel<TLayerProperty, TProperty>> ModifierViewModels { get; }
-        public bool SupportsTestValue => true;
 
         public bool CanAddModifier
         {
@@ -51,6 +50,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             get => _targetSelectionViewModel;
             private set => SetAndNotify(ref _targetSelectionViewModel, value);
         }
+
+        public bool SupportsTestValue => true;
 
         public void Update()
         {
@@ -65,6 +66,21 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         {
             return TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            TargetSelectionViewModel.PropertySelected -= TargetSelectionViewModelOnPropertySelected;
+            TargetSelectionViewModel.Dispose();
+            DirectDataBinding.ModifiersUpdated -= DirectDataBindingOnModifiersUpdated;
+
+            foreach (var dataBindingModifierViewModel in ModifierViewModels)
+                dataBindingModifierViewModel.Dispose();
+            ModifierViewModels.Clear();
+        }
+
+        #endregion
 
         private void Initialize()
         {
@@ -110,7 +126,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             DirectDataBinding.AddModifier(ProfileRightSideType.Dynamic);
             _profileEditorService.UpdateSelectedProfileElement();
         }
-        
+
         private void UpdateModifierViewModels()
         {
             _updating = true;
@@ -139,21 +155,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private void DirectDataBindingOnModifiersUpdated(object sender, EventArgs e)
         {
             UpdateModifierViewModels();
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            TargetSelectionViewModel.PropertySelected -= TargetSelectionViewModelOnPropertySelected;
-            TargetSelectionViewModel.Dispose();
-            DirectDataBinding.ModifiersUpdated -= DirectDataBindingOnModifiersUpdated;
-
-            foreach (var dataBindingModifierViewModel in ModifierViewModels)
-                dataBindingModifierViewModel.Dispose();
-            ModifierViewModels.Clear();
         }
 
         #endregion

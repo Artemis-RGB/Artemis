@@ -19,8 +19,8 @@
         </Grid.RowDefinitions>
 
         <ContentControl Grid.Row="0"
-                        s:View.Model="{Binding TargetSelectionViewModel}" 
-                        VerticalContentAlignment="Stretch" 
+                        s:View.Model="{Binding TargetSelectionViewModel}"
+                        VerticalContentAlignment="Stretch"
                         HorizontalContentAlignment="Stretch"
                         IsTabStop="False" />
 

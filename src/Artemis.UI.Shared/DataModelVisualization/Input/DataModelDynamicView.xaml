@@ -4,8 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:shared="clr-namespace:Artemis.UI.Shared"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:s="https://github.com/canton7/Stylet"
              xmlns:input="clr-namespace:Artemis.UI.Shared.Input"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -29,40 +27,35 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-
-        <Button Background="{Binding ButtonBrush}"
-                BorderBrush="{Binding ButtonBrush}"
-                Style="{StaticResource DataModelConditionButton}"
-                ToolTip="{Binding SelectedPropertyViewModel.DisplayPropertyPath}"
-                IsEnabled="{Binding IsEnabled}"
-                HorizontalAlignment="Left"
-                Click="PropertyButton_OnClick">
-            <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding DataModelViewModel.Children}" IsOpen="{Binding IsDataModelViewModelOpen, Mode=OneWayToSource}">
-                    <ContextMenu.ItemContainerStyle>
-                        <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
-                            <Setter Property="ItemsSource" Value="{Binding Children}" />
-                            <Setter Property="Command" Value="{Binding Data.SelectPropertyCommand, Source={StaticResource DataContextProxy}}" />
-                            <Setter Property="CommandParameter" Value="{Binding}" />
-                            <Setter Property="CommandTarget" Value="{Binding}" />
-                            <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
-                            <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
-                            <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
-                        </Style>
-                    </ContextMenu.ItemContainerStyle>
-                </ContextMenu>
-            </Button.ContextMenu>
-            <Grid>
-                <TextBlock Text="{Binding SelectedPropertyViewModel.PropertyDescription.Name}"
-                           Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}}" />
-                <TextBlock FontStyle="Italic"
-                           Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-                    <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
-                </TextBlock>
-            </Grid>
-        </Button>
-
-        
-    
-
+    <Button Background="{Binding ButtonBrush}"
+            BorderBrush="{Binding ButtonBrush}"
+            Style="{StaticResource DataModelConditionButton}"
+            ToolTip="{Binding SelectedPropertyViewModel.DisplayPropertyPath}"
+            IsEnabled="{Binding IsEnabled}"
+            HorizontalAlignment="Left"
+            Click="PropertyButton_OnClick">
+        <Button.ContextMenu>
+            <ContextMenu ItemsSource="{Binding DataModelViewModel.Children}" IsOpen="{Binding IsDataModelViewModelOpen, Mode=OneWayToSource}">
+                <ContextMenu.ItemContainerStyle>
+                    <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                        <Setter Property="ItemsSource" Value="{Binding Children}" />
+                        <Setter Property="Command" Value="{Binding Data.SelectPropertyCommand, Source={StaticResource DataContextProxy}}" />
+                        <Setter Property="CommandParameter" Value="{Binding}" />
+                        <Setter Property="CommandTarget" Value="{Binding}" />
+                        <Setter Property="IsEnabled" Value="{Binding IsMatchingFilteredTypes}" />
+                        <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
+                        <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
+                    </Style>
+                </ContextMenu.ItemContainerStyle>
+            </ContextMenu>
+        </Button.ContextMenu>
+        <Grid>
+            <TextBlock Text="{Binding SelectedPropertyViewModel.PropertyDescription.Name}"
+                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}}" />
+            <TextBlock FontStyle="Italic"
+                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
+            </TextBlock>
+        </Grid>
+    </Button>
 </UserControl>

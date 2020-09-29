@@ -11,8 +11,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 {
     public class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Screen, IDataBindingModeViewModel
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
+        private readonly IProfileEditorService _profileEditorService;
         private bool _updating;
 
         public ConditionalDataBindingModeViewModel(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding,
@@ -36,11 +36,24 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         {
             UpdateConditionViewModels();
         }
-        
+
         public object GetTestValue()
         {
             throw new NotSupportedException();
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            ConditionalDataBinding.ConditionsUpdated -= ConditionalDataBindingOnConditionsUpdated;
+
+            foreach (var conditionViewModel in ConditionViewModels)
+                conditionViewModel.Dispose();
+            ConditionViewModels.Clear();
+        }
+
+        #endregion
 
         public void AddCondition(string type)
         {
@@ -105,18 +118,5 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         {
             UpdateConditionViewModels();
         }
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            ConditionalDataBinding.ConditionsUpdated -= ConditionalDataBindingOnConditionsUpdated;
-
-            foreach (var conditionViewModel in ConditionViewModels)
-                conditionViewModel.Dispose();
-            ConditionViewModels.Clear();
-        }
-
-        #endregion
     }
 }
