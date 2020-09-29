@@ -96,10 +96,11 @@ namespace Artemis.Core.Modules
         public bool IsActivatedOverride { get; private set; }
 
         /// <summary>
-        ///     Gets whether this module should update if <see cref="IsActivatedOverride" /> is <see langword="true" />
-        ///     <para>Defaults to <see langword="true" /></para>
+        ///     Gets whether this module should update while <see cref="IsActivatedOverride" /> is <see langword="true" />. When
+        ///     set to <see langword="false" /> <see cref="Update" /> and any timed updates will not get called during an activation override.
+        ///     <para>Defaults to <see langword="false" /></para>
         /// </summary>
-        public bool UpdateDuringActivationOverride { get; protected set; } = true;
+        public bool UpdateDuringActivationOverride { get; protected set; }
 
         /// <summary>
         ///     A list of activation requirements

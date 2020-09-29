@@ -6,6 +6,7 @@ using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
@@ -58,7 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             DialogService = dialogService;
 
             Profiles = new BindableCollection<ProfileDescriptor>();
-            
+
             // Populate the panels
             ProfileViewModel = profileViewModel;
             ProfileTreeViewModel = profileTreeViewModel;
@@ -190,10 +191,17 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public async Task ImportProfile()
         {
-            await DialogService.ShowDialog<ProfileImportViewModel>(new Dictionary<string, object>
+            var result = await DialogService.ShowDialog<ProfileImportViewModel>(new Dictionary<string, object>
             {
                 {"profileModule", Module}
             });
+
+            if (result != null && result is ProfileDescriptor descriptor)
+            {
+                Profiles.Add(descriptor);
+                Profiles.Sort(p => p.Name);
+                SelectedProfile = descriptor;
+            }
         }
 
         public void Undo()

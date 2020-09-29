@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    <ProjectReference Include="..\..\Artemis.Core\Artemis.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

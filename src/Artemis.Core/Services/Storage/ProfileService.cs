@@ -236,7 +236,8 @@ namespace Artemis.Core.Services
             var profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
-            profileEntity.Id = Guid.NewGuid();
+            profileEntity.UpdateGuid(Guid.NewGuid());
+            profileEntity.Name = $"{profileEntity.Name} - Imported";
 
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);

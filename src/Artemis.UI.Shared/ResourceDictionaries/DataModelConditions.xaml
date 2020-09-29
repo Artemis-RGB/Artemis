@@ -31,12 +31,12 @@
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
-                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FormatListBulleted" VerticalAlignment="Center" Margin="0 0 5 0" />
-                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
@@ -54,12 +54,12 @@
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
-                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True"/>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FormatListBulleted" VerticalAlignment="Center" Margin="0 0 5 0" />
-                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True" VerticalAlignment="Center"/>
                     </StackPanel>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertyViewModel}">
@@ -70,25 +70,11 @@
                         </Grid.ColumnDefinitions>
 
                         <!-- Value description -->
-                        <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True"/>
 
                         <!-- Value display -->
                         <StackPanel Grid.Column="1">
-                            <TextBlock Text="{Binding DisplayValue, Mode=OneWay}"
-                                       FontFamily="Consolas"
-                                       HorizontalAlignment="Right"
-                                       Visibility="{Binding ShowToString, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                                       Margin="15 0.5 0 0" />
-                            <TextBlock Text="null"
-                                       FontFamily="Consolas"
-                                       HorizontalAlignment="Right"
-                                       Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
-                                       Margin="15 0.5 0 0"
-                                       Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
-                            <ContentControl s:View.Model="{Binding DisplayViewModel}"
-                                            FontFamily="Consolas"
-                                            Margin="15 0.5 0 0"
-                                            Visibility="{Binding ShowViewModel, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                            <ContentControl s:View.Model="{Binding DisplayViewModel}" FontFamily="Consolas" Margin="15 0.5 0 0"/>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
