@@ -12,16 +12,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
     public class DataBindingViewModel<TLayerProperty, TProperty> : Conductor<IDataBindingModeViewModel>, IDataBindingViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly IProfileEditorService _profileEditorService;
         private DataBinding<TLayerProperty, TProperty> _dataBinding;
         private int _easingTime;
+        private bool _isDataBindingEnabled;
         private bool _isEasingTimeEnabled;
         private DataBindingModeType _selectedDataBindingMode;
         private TimelineEasingViewModel _selectedEasingViewModel;
 
         private bool _updating;
-        private bool _isDataBindingEnabled;
 
         public DataBindingViewModel(DataBindingRegistration<TLayerProperty, TProperty> registration,
             IProfileEditorService profileEditorService,
@@ -219,9 +219,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(currentValue) : default);
             }
             else
-            {
                 TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(default) : default);
-            }
         }
 
         private void EnableDataBinding()

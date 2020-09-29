@@ -5,14 +5,10 @@ namespace Artemis.Core.DefaultTypes
 {
     internal class DivideModifierType : DataBindingModifierType
     {
-        public DivideModifierType()
-        {
-            PreferredParameterType = typeof(float);
-        }
-
         public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
+        public override Type ParameterType => typeof(float);
 
-        public override string Description => "Divide by";
+        public override string Name => "Divide by";
         public override string Icon => "Divide";
 
         public override object Apply(object currentValue, object parameterValue)

@@ -5,15 +5,13 @@ namespace Artemis.Core.DefaultTypes
 {
     internal class FloorModifierType : DataBindingModifierType
     {
-        public FloorModifierType()
-        {
-            SupportsParameter = false;
-        }
-
         public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-        public override string Description => "Floor";
-        public override string Icon => "ArrowDownDropCircleOutline";
+        public override bool SupportsParameter => false;
 
+        public override string Name => "Round down";
+        public override string Icon => "ArrowDown";
+        public override string Category => "Rounding";
+        public override string Description => "Floors the input, rounding it down to the nearest whole number";
 
         public override object Apply(object currentValue, object parameterValue)
         {

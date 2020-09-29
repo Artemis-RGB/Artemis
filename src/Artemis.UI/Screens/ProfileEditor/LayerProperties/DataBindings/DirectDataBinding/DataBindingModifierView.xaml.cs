@@ -4,7 +4,7 @@ using System.Windows.Controls;
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding
 {
     /// <summary>
-    /// Interaction logic for DataBindingModifierView.xaml
+    ///     Interaction logic for DataBindingModifierView.xaml
     /// </summary>
     public partial class DataBindingModifierView : UserControl
     {

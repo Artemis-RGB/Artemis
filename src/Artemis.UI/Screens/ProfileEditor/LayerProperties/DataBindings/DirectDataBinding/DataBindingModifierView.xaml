@@ -8,9 +8,9 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding"
+             xmlns:modifierTypes="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding.ModifierTypes"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:DataBindingModifierViewModel}">
+             d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -56,17 +56,33 @@
                 BorderBrush="#7B7B7B"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding ModifierTypes}">
+                <ContextMenu ItemsSource="{Binding ModifierTypeViewModels.Children}">
                     <ContextMenu.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="{Binding Icon}" VerticalAlignment="Center" Margin="0 0 15 0" />
-                                <TextBlock Text="{Binding Description}" VerticalAlignment="Center" />
+                            <StackPanel>
+                                <StackPanel.Resources>
+                                    <DataTemplate DataType="{x:Type modifierTypes:ModifierTypeCategoryViewModel}">
+                                        <TextBlock Text="{Binding Category}" />
+                                    </DataTemplate>
+                                    <DataTemplate DataType="{x:Type modifierTypes:ModifierTypeViewModel}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="{Binding ModifierType.Icon}" 
+                                                                     VerticalAlignment="Center" 
+                                                                     Margin="0 0 15 0" 
+                                                                     Visibility="{Binding ModifierType.Icon, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding ModifierType.Name}" 
+                                                       VerticalAlignment="Center" 
+                                                       ToolTip="{Binding ModifierType.Description}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </StackPanel.Resources>
+                                <ContentPresenter Content="{Binding}" />
                             </StackPanel>
                         </DataTemplate>
                     </ContextMenu.ItemTemplate>
                     <ContextMenu.ItemContainerStyle>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
+                            <Setter Property="ItemsSource" Value="{Binding Children}" />
                             <Setter Property="Command" Value="{Binding Data.SelectModifierTypeCommand, Source={StaticResource DataContextProxy}}" />
                             <Setter Property="CommandParameter" Value="{Binding}" />
                             <Setter Property="CommandTarget" Value="{Binding}" />
@@ -75,14 +91,14 @@
                 </ContextMenu>
             </Button.ContextMenu>
             <Grid>
-                <TextBlock Text="{Binding SelectedModifierType.Description}"
+                <TextBlock Text="{Binding SelectedModifierType.Name}"
                            Visibility="{Binding SelectedModifierType, Converter={StaticResource NullToVisibilityConverter}}" />
                 <TextBlock FontStyle="Italic"
                            Visibility="{Binding SelectedModifierType, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
                     « Select a modifier »
                 </TextBlock>
             </Grid>
-            
+
         </Button>
 
         <ContentControl Grid.Column="3" s:View.Model="{Binding DynamicSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />

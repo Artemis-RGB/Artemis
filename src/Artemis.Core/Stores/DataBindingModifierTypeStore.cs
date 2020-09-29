@@ -14,7 +14,7 @@ namespace Artemis.Core
             lock (Registrations)
             {
                 if (Registrations.Any(r => r.DataBindingModifierType == modifierType))
-                    throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{modifierType.Description}'");
+                    throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{modifierType.Name}'");
 
                 typeRegistration = new DataBindingModifierTypeRegistration(modifierType, modifierType.PluginInfo.Instance) { IsInStore = true };
                 Registrations.Add(typeRegistration);
@@ -29,7 +29,7 @@ namespace Artemis.Core
             lock (Registrations)
             {
                 if (!Registrations.Contains(typeRegistration))
-                    throw new ArtemisCoreException($"Data binding modifier type store does not contain modifier type '{typeRegistration.DataBindingModifierType.Description}'");
+                    throw new ArtemisCoreException($"Data binding modifier type store does not contain modifier type '{typeRegistration.DataBindingModifierType.Name}'");
 
                 Registrations.Remove(typeRegistration);
                 typeRegistration.IsInStore = false;
@@ -56,7 +56,7 @@ namespace Artemis.Core
                 var candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t == type)).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
-                foreach (var displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Description).Where(g => g.Count() > 1).ToList())
+                foreach (var displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Name).Where(g => g.Count() > 1).ToList())
                 {
                     var closest = displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.CompatibleTypes.Contains(type)).FirstOrDefault();
                     foreach (var displayDataBindingModifier in displayDataBindingModifiers)

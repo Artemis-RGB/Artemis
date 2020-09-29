@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.DataBindings;
@@ -227,16 +226,16 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var targetType = DirectDataBinding.DataBinding.GetTargetType();
+            var parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
 
             // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == targetType)
+            if (staticValue != null && staticValue.GetType() == parameterType)
                 ParameterStaticValue = staticValue;
             else if (staticValue != null)
-                ParameterStaticValue = Convert.ChangeType(staticValue, targetType);
+                ParameterStaticValue = Convert.ChangeType(staticValue, parameterType);
             // If null create a default instance for value types or simply make it null for reference types
-            else if (targetType.IsValueType)
-                ParameterStaticValue = Activator.CreateInstance(targetType);
+            else if (parameterType.IsValueType)
+                ParameterStaticValue = Activator.CreateInstance(parameterType);
             else
                 ParameterStaticValue = null;
 
@@ -269,18 +268,18 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var targetType = DirectDataBinding.DataBinding.GetTargetType();
+                var parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
                 object staticValue;
 
                 try
                 {
-                    staticValue = JsonConvert.DeserializeObject(Entity.ParameterStaticValue, targetType);
+                    staticValue = JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType);
                 }
                 // If deserialization fails, use the type's default
                 catch (JsonSerializationException e)
                 {
                     DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, e);
-                    staticValue = Activator.CreateInstance(targetType);
+                    staticValue = Activator.CreateInstance(parameterType);
                 }
 
                 UpdateParameter(staticValue);
@@ -307,7 +306,7 @@ namespace Artemis.Core
                 CompiledParameterAccessor = lambda.Compile();
             }
         }
-        
+
         #region Event handlers
 
         private void DataBindingModifierTypeStoreOnDataBindingModifierAdded(object sender, DataBindingModifierTypeStoreEvent e)

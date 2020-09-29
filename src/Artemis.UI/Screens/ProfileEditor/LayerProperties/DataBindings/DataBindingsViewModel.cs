@@ -26,6 +26,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             set => SetAndNotify(ref _selectedItemIndex, value);
         }
 
+        protected override void OnClose()
+        {
+            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
+            base.OnClose();
+        }
+
         private void CreateDataBindingViewModels()
         {
             Items.Clear();
@@ -42,12 +48,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 Items.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
 
             SelectedItemIndex = 0;
-        }
-
-        protected override void OnClose()
-        {
-            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
-            base.OnClose();
         }
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
