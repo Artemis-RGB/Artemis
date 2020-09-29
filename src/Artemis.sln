@@ -82,7 +82,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Plugins.Modules.Ove
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DataModelExpansions", "DataModelExpansions", "{5A5B55D7-F631-467A-A16F-B880DE4E8909}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.DataModelExpansions.TestData", "Artemis.Plugins.DataModelExpansions.TestData\Artemis.Plugins.DataModelExpansions.TestData.csproj", "{5353C9A2-2D9A-4051-8599-AFE56D54B882}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.Plugins.DataModelExpansions.TestData", "Plugins\Artemis.Plugins.DataModelExpansions.TestData\Artemis.Plugins.DataModelExpansions.TestData.csproj", "{5353C9A2-2D9A-4051-8599-AFE56D54B882}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

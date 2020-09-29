@@ -32,9 +32,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void Accept()
         {
-            _profileService.ImportProfile(Document.Text, ProfileModule);
+            var descriptor = _profileService.ImportProfile(Document.Text, ProfileModule);
             _mainMessageQueue.Enqueue("Profile imported.");
-            Session.Close();
+            Session.Close(descriptor);
         }
 
         public void Cancel()
