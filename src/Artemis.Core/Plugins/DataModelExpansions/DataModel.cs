@@ -10,6 +10,8 @@ namespace Artemis.Core.DataModelExpansions
 {
     public abstract class DataModel
     {
+        private readonly Dictionary<string, DataModel> _dynamicDataModels = new Dictionary<string, DataModel>();
+
         /// <summary>
         ///     Gets the plugin info this data model belongs to
         /// </summary>
@@ -27,6 +29,83 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         [DataModelIgnore]
         public bool IsExpansion { get; internal set; }
+
+        /// <summary>
+        ///     Gets an read-only dictionary of all dynamic data models
+        /// </summary>
+        [DataModelIgnore]
+        public ReadOnlyDictionary<string, DataModel> DynamicDataModels => new ReadOnlyDictionary<string, DataModel>(_dynamicDataModels);
+
+        /// <summary>
+        ///     Returns a read-only collection of all properties in this datamodel that are to be ignored
+        /// </summary>
+        /// <returns></returns>
+        public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
+        {
+            if (PluginInfo.Instance is ProfileModule profileModule)
+                return profileModule.HiddenProperties;
+            if (PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
+                return dataModelExpansion.HiddenProperties;
+
+            return new List<PropertyInfo>().AsReadOnly();
+        }
+
+        /// <summary>
+        ///     Adds a dynamic data model to this data model
+        /// </summary>
+        /// <param name="dynamicDataModel">The dynamic data model to add</param>
+        /// <param name="key">The key of the child, must be unique to this data model</param>
+        /// <param name="name">An optional name, if not provided the key will be used in a humanized form</param>
+        /// <param name="description">An optional description</param>
+        public void AddDynamicChild(DataModel dynamicDataModel, string key, string name = null, string description = null)
+        {
+            if (_dynamicDataModels.ContainsKey(key))
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
+                                               "because the key is already in use on this data model.");
+            }
+
+            if (_dynamicDataModels.ContainsValue(dynamicDataModel))
+            {
+                var existingKey = _dynamicDataModels.First(kvp => kvp.Value == dynamicDataModel).Key;
+                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
+                                               $"because the dynamic data model is already added with key '{existingKey}.");
+            }
+
+            _dynamicDataModels.Add(key, dynamicDataModel);
+        }
+
+        /// <summary>
+        ///     Removes a dynamic data model from the data model by its key
+        /// </summary>
+        /// <param name="key">The key of the dynamic data model to remove</param>
+        public void RemoveDynamicChildByKey(string key)
+        {
+            _dynamicDataModels.Remove(key);
+        }
+
+        /// <summary>
+        ///     Removes a dynamic data model from this data model
+        /// </summary>
+        /// <param name="dynamicDataModel">The dynamic data model to remove</param>
+        public void RemoveDynamicChild(DataModel dynamicDataModel)
+        {
+            var keys = _dynamicDataModels.Where(kvp => kvp.Value == dynamicDataModel).Select(kvp => kvp.Key).ToList();
+            foreach (var key in keys)
+                _dynamicDataModels.Remove(key);
+        }
+
+        /// <summary>
+        ///     Gets a dynamic data model of type <typeparamref name="T" /> by its key
+        /// </summary>
+        /// <typeparam name="T">The type of data model you expect</typeparam>
+        /// <param name="key">The unique key of the dynamic data model</param>
+        /// <returns>If found, the dynamic data model</returns>
+        public T GetDynamicChild<T>(string key) where T : DataModel
+        {
+            _dynamicDataModels.TryGetValue(key, out var value);
+            return value as T;
+        }
 
         internal bool ContainsPath(string path)
         {
@@ -97,20 +176,6 @@ namespace Artemis.Core.DataModelExpansions
 
             var child = GetTypeAtPath(path);
             return child.GenericTypeArguments.Length > 0 ? child.GenericTypeArguments[0] : null;
-        }
-        
-        /// <summary>
-        ///     Returns a read-only list of all properties in this datamodel that are to be ignored
-        /// </summary>
-        /// <returns></returns>
-        public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
-        {
-            if (PluginInfo.Instance is ProfileModule profileModule)
-                return profileModule.HiddenProperties;
-            if (PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
-                return dataModelExpansion.HiddenProperties;
-
-            return new List<PropertyInfo>().AsReadOnly();
         }
     }
 }
