@@ -6,12 +6,12 @@
 [![Github All Releases](https://img.shields.io/github/downloads/spoinkynl/artemis/setup.exe.svg)](https://github.com/SpoinkyNL/Artemis/releases)
 [![GitHub license](https://img.shields.io/badge/license-GPL3-blue.svg)](https://github.com/SpoinkyNL/Artemis/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/SpoinkyNL/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/stargazers)
+[![Discord](https://img.shields.io/discord/392093058352676874?logo=discord&logoColor=white)](https://discord.gg/S3MVaC9) 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
 
 Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
-**Download**: https://github.com/SpoinkyNL/Artemis/releases  
-**FAQ**: https://github.com/SpoinkyNL/Artemis/wiki/Frequently-Asked-Questions-(FAQ)  
-**Documentation**: https://artemis-rgb.com/docs/
+**Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases  
+**Plugin Documentation**: https://artemis-rgb.com/docs/
 
 ### Notice
 Artemis 2 is in development. In the meanwhile I'm no longer supporting Artemis 1.x, sorry!  
