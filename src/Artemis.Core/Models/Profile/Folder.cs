@@ -82,6 +82,10 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
+            // Disable data bindings during an override
+            var wasApplyingDataBindings = ApplyDataBindingsEnabled;
+            ApplyDataBindingsEnabled = false;
+
             UpdateDisplayCondition();
 
             // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
@@ -100,6 +104,9 @@ namespace Artemis.Core
                 var profileElement = Children[index];
                 profileElement.Update(deltaTime);
             }
+
+            // Restore the old data bindings enabled state
+            ApplyDataBindingsEnabled = wasApplyingDataBindings;
         }
 
         protected internal override void UpdateTimelineLength()

@@ -43,8 +43,10 @@ namespace Artemis.Core
 
             CurrentValue = BaseValue;
 
-            UpdateKeyframes();
-            UpdateDataBindings(deltaTime);
+            if (ProfileElement.ApplyKeyframesEnabled)
+                UpdateKeyframes();
+            if (ProfileElement.ApplyDataBindingsEnabled)
+                UpdateDataBindings(deltaTime);
 
             OnUpdated();
         }

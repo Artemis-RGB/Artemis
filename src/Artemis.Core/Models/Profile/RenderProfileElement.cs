@@ -15,6 +15,9 @@ namespace Artemis.Core
     {
         protected RenderProfileElement()
         {
+            ApplyDataBindingsEnabled = true;
+            ApplyKeyframesEnabled = true;
+
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
         }
@@ -404,6 +407,16 @@ namespace Artemis.Core
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
         }
+
+        /// <summary>
+        ///     Gets or sets whether keyframes should be applied when this profile element updates
+        /// </summary>
+        public bool ApplyKeyframesEnabled { get; set; }
+
+        /// <summary>
+        ///     Gets or sets whether data bindings should be applied when this profile element updates
+        /// </summary>
+        public bool ApplyDataBindingsEnabled { get; set; }
 
         public void UpdateDisplayCondition()
         {

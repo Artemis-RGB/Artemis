@@ -76,7 +76,7 @@ namespace Artemis.Core
             var result = new List<ILayerProperty>();
             result.AddRange(General.GetAllLayerProperties());
             result.AddRange(Transform.GetAllLayerProperties());
-            if (LayerBrush?.BaseProperties != null) 
+            if (LayerBrush?.BaseProperties != null)
                 result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
             foreach (var layerEffect in LayerEffects)
             {
@@ -300,6 +300,10 @@ namespace Artemis.Core
             if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
                 return;
 
+            // Disable data bindings during an override
+            var wasApplyingDataBindings = ApplyDataBindingsEnabled;
+            ApplyDataBindingsEnabled = false;
+
             var beginTime = TimelinePosition;
 
             if (stickToMainSegment)
@@ -330,6 +334,9 @@ namespace Artemis.Core
                 baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
             }
+
+            // Restore the old data bindings enabled state
+            ApplyDataBindingsEnabled = wasApplyingDataBindings;
         }
 
         /// <inheritdoc />
@@ -373,7 +380,7 @@ namespace Artemis.Core
             // No point rendering if the alpha was set to zero by one of the effects
             if (layerPaint.Color.Alpha == 0)
                 return;
-            
+
             if (!LayerBrush.SupportsTransformation)
                 SimpleRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Normal)
