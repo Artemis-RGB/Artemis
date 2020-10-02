@@ -79,7 +79,7 @@ namespace Artemis.Core.DataModelExpansions
             }
 
             dynamicDataModel.PluginInfo = PluginInfo;
-            dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute()
+            dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute
             {
                 Name = name ?? key.Humanize(),
                 Description = description
@@ -189,5 +189,29 @@ namespace Artemis.Core.DataModelExpansions
             var child = GetTypeAtPath(path);
             return child.GenericTypeArguments.Length > 0 ? child.GenericTypeArguments[0] : null;
         }
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when a dynamic data model has been added to this data model
+        /// </summary>
+        public event EventHandler DynamicDataBindingAdded;
+
+        /// <summary>
+        ///     Occurs when a dynamic data model has been removed from this data model
+        /// </summary>
+        public event EventHandler DynamicDataBindingRemoved;
+
+        protected virtual void OnDynamicDataBindingAdded()
+        {
+            DynamicDataBindingAdded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnDynamicDataBindingRemoved()
+        {
+            DynamicDataBindingRemoved?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }
