@@ -5,6 +5,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.Modules;
+using Humanizer;
 
 namespace Artemis.Core.DataModelExpansions
 {
@@ -59,6 +60,11 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="description">An optional description</param>
         public void AddDynamicChild(DataModel dynamicDataModel, string key, string name = null, string description = null)
         {
+            if (dynamicDataModel == null)
+                throw new ArgumentNullException(nameof(dynamicDataModel));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+
             if (_dynamicDataModels.ContainsKey(key))
             {
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
@@ -72,6 +78,12 @@ namespace Artemis.Core.DataModelExpansions
                                                $"because the dynamic data model is already added with key '{existingKey}.");
             }
 
+            dynamicDataModel.PluginInfo = PluginInfo;
+            dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute()
+            {
+                Name = name ?? key.Humanize(),
+                Description = description
+            };
             _dynamicDataModels.Add(key, dynamicDataModel);
         }
 
@@ -100,8 +112,8 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         /// <typeparam name="T">The type of data model you expect</typeparam>
         /// <param name="key">The unique key of the dynamic data model</param>
-        /// <returns>If found, the dynamic data model</returns>
-        public T GetDynamicChild<T>(string key) where T : DataModel
+        /// <returns>If found, the dynamic data model otherwise <c>null</c></returns>
+        public T DynamicChild<T>(string key) where T : DataModel
         {
             _dynamicDataModels.TryGetValue(key, out var value);
             return value as T;
