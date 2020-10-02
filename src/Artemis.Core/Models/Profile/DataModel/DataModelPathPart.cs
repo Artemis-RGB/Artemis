@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.DataModelExpansions;
@@ -10,10 +11,11 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelPathPart
     {
-        internal DataModelPathPart(DataModelPath dataModelPath, string identifier)
+        internal DataModelPathPart(DataModelPath dataModelPath, string identifier, string path)
         {
             DataModelPath = dataModelPath;
             Identifier = identifier;
+            Path = path;
         }
 
         /// <summary>
@@ -25,6 +27,11 @@ namespace Artemis.Core
         ///     Gets the identifier that is associated with this part
         /// </summary>
         public string Identifier { get; }
+
+        /// <summary>
+        ///     Gets the path that leads to this part
+        /// </summary>
+        public string Path { get; }
 
         /// <summary>
         ///     Gets the type of data model this part of the path points to
@@ -40,14 +47,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the previous part in the path
         /// </summary>
-        public DataModelPathPart Previous => DataModelPath.GetPartBefore(this);
+        public DataModelPathPart Previous => Node.Previous?.Value;
 
         /// <summary>
         ///     Gets the next part in the path
         /// </summary>
-        public DataModelPathPart Next => DataModelPath.GetPartAfter(this);
+        public DataModelPathPart Next => Node.Next?.Value;
 
         internal Func<DataModel, object> Accessor { get; set; }
+        internal LinkedListNode<DataModelPathPart> Node { get; set; }
 
         /// <summary>
         ///     Returns the current value of the path up to this part
@@ -56,6 +64,39 @@ namespace Artemis.Core
         public object GetValue()
         {
             return Type == DataModelPathPartType.Invalid ? null : Accessor(DataModelPath.DataModel);
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[{Type}] {Path}";
+        }
+
+        internal Expression Initialize(ParameterExpression parameter, Expression expression, Expression nullCondition)
+        {
+            var previousValue = Previous != null ? Previous.GetValue() : DataModelPath.DataModel;
+            if (previousValue == null)
+            {
+                Type = DataModelPathPartType.Invalid;
+                return null;
+            }
+
+            // Determine this part's type by looking for a dynamic data model with the identifier
+            if (previousValue is DataModel dataModel)
+            {
+                var hasDynamicDataModel = dataModel.DynamicDataModels.TryGetValue(Identifier, out var dynamicDataModel);
+                // If a dynamic data model is found the use that
+                if (hasDynamicDataModel)
+                    DetermineDynamicType(dynamicDataModel);
+                // Otherwise look for a static type
+                else
+                    DetermineStaticType(previousValue);
+            }
+            // Only data models can have dynamic types so if it is something else, its always going to be static
+            else
+                DetermineStaticType(previousValue);
+
+            return CreateExpression(parameter, expression, nullCondition);
         }
 
         private Expression CreateExpression(ParameterExpression parameter, Expression expression, Expression nullCondition)
@@ -81,43 +122,17 @@ namespace Artemis.Core
                 );
             }
 
-            var test = Expression.Lambda<Func<DataModel, object>>(
-                Expression.Condition(nullCondition, expression, Expression.Default(expression.Type)), // Wrap with a null check
-                parameter
-            );
             Accessor = Expression.Lambda<Func<DataModel, object>>(
-                Expression.Condition(nullCondition, expression, Expression.Default(expression.Type)), // Wrap with a null check
+                // Wrap with a null check
+                Expression.Condition(
+                    nullCondition,
+                    Expression.Convert(accessorExpression, typeof(object)),
+                    Expression.Convert(Expression.Default(accessorExpression.Type), typeof(object))
+                ),
                 parameter
             ).Compile();
 
             return accessorExpression;
-        }
-
-        internal Expression Initialize(DataModelPathPart previous, ParameterExpression parameter, Expression expression, Expression nullCondition)
-        {
-            var previousValue = previous != null ? previous.GetValue() : DataModelPath.DataModel;
-            if (previousValue == null)
-            {
-                Type = DataModelPathPartType.Invalid;
-                return null;
-            }
-
-            // Determine this part's type by looking for a dynamic data model with the identifier
-            if (previousValue is DataModel dataModel)
-            {
-                var hasDynamicDataModel = dataModel.DynamicDataModels.TryGetValue(Identifier, out var dynamicDataModel);
-                // If a dynamic data model is found the use that
-                if (hasDynamicDataModel)
-                    DetermineDynamicType(dynamicDataModel);
-                // Otherwise look for a static type
-                else
-                    DetermineStaticType(previousValue);
-            }
-            // Only data models can have dynamic types so if it is something else, its always going to be static
-            else
-                DetermineStaticType(previousValue);
-
-            return CreateExpression(parameter, expression, nullCondition);
         }
 
         private void DetermineDynamicType(DataModel dynamicDataModel)

@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Plugins.DataModelExpansions.TestData.DataModels;
 using SkiaSharp;
@@ -16,11 +15,6 @@ namespace Artemis.Plugins.DataModelExpansions.TestData
             AddTimedUpdate(TimeSpan.FromSeconds(1), TimedUpdate);
 
             DataModel.AddDynamicChild(new DynamicDataModel(), "Dynamic1", "Dynamic data model 1");
-
-            // var testPath1 = new DataModelPath(DataModel, "TemplateDataModelString");
-            var testPath2 = new DataModelPath(DataModel, "PluginSubDataModel.Number");
-            // var testPath3 = new DataModelPath(DataModel, "Dynamic1.DynamicString");
-            // var testPath4 = new DataModelPath(DataModel, "TemplateDataModelString");
         }
 
         public override void DisablePlugin()

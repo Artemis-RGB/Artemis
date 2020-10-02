@@ -11,45 +11,16 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelPath
     {
-        private readonly List<DataModelPathPart> _parts;
+        private readonly LinkedList<DataModelPathPart> _parts;
 
-        // TODO: Make internal
-        public DataModelPath(DataModel dataModel, string path)
+        internal DataModelPath(DataModel dataModel, string path)
         {
-            if (dataModel == null)
-                throw new ArgumentNullException(nameof(dataModel));
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-
-            _parts = new List<DataModelPathPart>();
-
-            DataModel = dataModel;
+            DataModel = dataModel ?? throw new ArgumentNullException(nameof(dataModel));
+            Path = path ?? throw new ArgumentNullException(nameof(path));
             DataModelGuid = dataModel.PluginInfo.Guid;
 
+            _parts = new LinkedList<DataModelPathPart>();
             Initialize(path);
-        }
-
-        private void Initialize(string path)
-        {
-            var parts = path.Split(".");
-            foreach (var identifier in parts)
-                _parts.Add(new DataModelPathPart(this, identifier));
-
-            var parameter = Expression.Parameter(typeof(DataModel), "dm");
-            Expression expression = Expression.Convert(parameter, DataModel.GetType());
-            Expression nullCondition = null;
-            DataModelPathPart previous = null;
-
-            foreach (var part in _parts)
-            {
-                var notNull = Expression.NotEqual(expression, Expression.Constant(null));
-                nullCondition = nullCondition != null ? Expression.AndAlso(nullCondition, notNull) : notNull;
-                expression = part.Initialize(previous, parameter, expression, nullCondition);
-                if (expression == null)
-                    return;
-
-                previous = part;
-            }
         }
 
         /// <summary>
@@ -58,28 +29,62 @@ namespace Artemis.Core
         public DataModel DataModel { get; }
 
         /// <summary>
+        ///     Gets a string representation of the <see cref="DataModelPath" />
+        /// </summary>
+        public string Path { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether all <see cref="Parts" /> are valid
+        /// </summary>
+        public bool IsValid => Parts.All(p => p.Type != DataModelPathPartType.Invalid);
+
+        /// <summary>
         ///     Gets a read-only list of all parts of this path
         /// </summary>
         public IReadOnlyCollection<DataModelPathPart> Parts => _parts.ToList().AsReadOnly();
 
+        internal Func<DataModel, object> Accessor { get; private set; }
+
         internal Guid DataModelGuid { get; set; }
 
-        public string GetPathToPart(DataModelPathPart part)
+        /// <inheritdoc />
+        public override string ToString()
         {
-            var endIndex = _parts.IndexOf(part);
-            return endIndex < 0 ? null : string.Join('.', _parts.Take(endIndex + 1));
+            return Path;
         }
 
-        internal DataModelPathPart GetPartBefore(DataModelPathPart dataModelPathPart)
+        private void Initialize(string path)
         {
-            var index = _parts.IndexOf(dataModelPathPart);
-            return index > 0 ? _parts[index - 1] : null;
-        }
+            var parts = path.Split(".");
+            for (var index = 0; index < parts.Length; index++)
+            {
+                var identifier = parts[index];
+                var node = _parts.AddLast(new DataModelPathPart(this, identifier, string.Join('.', parts.Take(index + 1))));
+                node.Value.Node = node;
+            }
 
-        internal DataModelPathPart GetPartAfter(DataModelPathPart dataModelPathPart)
-        {
-            var index = _parts.IndexOf(dataModelPathPart);
-            return index < _parts.Count - 1 ? _parts[index + 1] : null;
+            var parameter = Expression.Parameter(typeof(DataModel), "dm");
+            Expression expression = Expression.Convert(parameter, DataModel.GetType());
+            Expression nullCondition = null;
+
+            foreach (var part in _parts)
+            {
+                var notNull = Expression.NotEqual(expression, Expression.Constant(null));
+                nullCondition = nullCondition != null ? Expression.AndAlso(nullCondition, notNull) : notNull;
+                expression = part.Initialize(parameter, expression, nullCondition);
+                if (expression == null)
+                    return;
+            }
+
+            Accessor = Expression.Lambda<Func<DataModel, object>>(
+                // Wrap with a null check
+                Expression.Condition(
+                    nullCondition,
+                    Expression.Convert(expression, typeof(object)),
+                    Expression.Convert(Expression.Default(expression.Type), typeof(object))
+                ),
+                parameter
+            ).Compile();
         }
     }
 }

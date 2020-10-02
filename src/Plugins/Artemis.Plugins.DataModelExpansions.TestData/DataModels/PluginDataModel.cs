@@ -8,7 +8,7 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
     {
         public PluginDataModel()
         {
-            // PluginSubDataModel = new PluginSubDataModel();
+            PluginSubDataModel = new PluginSubDataModel();
             ListItems = new List<SomeListItem>();
             for (var i = 0; i < 20; i++)
                 ListItems.Add(new SomeListItem {ItemName = $"Item {i + 1}", Number = i});
