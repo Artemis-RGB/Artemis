@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 
@@ -12,7 +10,7 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertyViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
+        public DataModelListPropertyViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
         }
 

@@ -120,7 +120,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DataModelConditionPredicate.LeftDataModel,
                 DataModelConditionPredicate.LeftPropertyPath
             );
-            var leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.PropertyInfo?.PropertyType;
+            var leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
             Operators.Clear();
@@ -135,7 +135,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             // Ensure the right side has the proper VM
-            var targetType = LeftSideSelectionViewModel?.SelectedPropertyViewModel?.PropertyInfo?.PropertyType;
+            var targetType = LeftSideSelectionViewModel?.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
             if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic && SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideStatic();
@@ -172,7 +172,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             DataModelConditionPredicate.UpdateLeftSide(
                 LeftSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                LeftSideSelectionViewModel.SelectedPropertyViewModel.PropertyPath
+                LeftSideSelectionViewModel.SelectedPropertyViewModel.Path
             );
             _profileEditorService.UpdateSelectedProfileElement();
 
@@ -184,7 +184,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             DataModelConditionPredicate.UpdateRightSide(
                 RightSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                RightSideSelectionViewModel.SelectedPropertyViewModel.PropertyPath
+                RightSideSelectionViewModel.SelectedPropertyViewModel.Path
             );
             _profileEditorService.UpdateSelectedProfileElement();
 

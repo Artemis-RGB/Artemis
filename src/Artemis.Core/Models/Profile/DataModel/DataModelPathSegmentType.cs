@@ -3,7 +3,7 @@
     /// <summary>
     ///     Represents a type of data model path
     /// </summary>
-    public enum DataModelPathPartType
+    public enum DataModelPathSegmentType
     {
         /// <summary>
         ///     Represents an invalid data model type that points to a missing data model

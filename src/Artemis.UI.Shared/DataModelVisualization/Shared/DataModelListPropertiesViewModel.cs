@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Linq;
-using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 
@@ -12,7 +11,7 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
+        public DataModelListPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
         }
 
@@ -34,9 +33,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _displayValue, value);
         }
 
-        public override string PropertyPath => null;
-
-        public override string DisplayPropertyPath => null;
+        public override string DisplayPath => null;
 
         public override void Update(IDataModelUIService dataModelUIService)
         {
@@ -53,19 +50,6 @@ namespace Artemis.UI.Shared
         public override object GetCurrentValue()
         {
             return DisplayValue;
-        }
-
-        private void PopulateProperties(IDataModelUIService dataModelUIService)
-        {
-            if (Children.Any())
-                return;
-
-            foreach (var propertyInfo in ListType.GetProperties())
-            {
-                var child = CreateChild(dataModelUIService, propertyInfo, GetChildDepth());
-                if (child != null)
-                    Children.Add(child);
-            }
         }
     }
 }

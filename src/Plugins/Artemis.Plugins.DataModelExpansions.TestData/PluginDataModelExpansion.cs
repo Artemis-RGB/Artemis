@@ -13,8 +13,6 @@ namespace Artemis.Plugins.DataModelExpansions.TestData
         {
             _rand = new Random();
             AddTimedUpdate(TimeSpan.FromSeconds(1), TimedUpdate);
-
-            DataModel.AddDynamicChild(new DynamicDataModel(), "Dynamic1", "Dynamic data model 1");
         }
 
         public override void DisablePlugin()
@@ -25,9 +23,6 @@ namespace Artemis.Plugins.DataModelExpansions.TestData
         {
             // You can access your data model here and update it however you like
             DataModel.TemplateDataModelString = $"The last delta time was {deltaTime} seconds";
-
-            var dynamic = DataModel.DynamicChild<DynamicDataModel>("Dynamic1")?.DynamicString;
-            var dynamic2 = DataModel.DynamicChild<DynamicDataModel>("Dynamic2")?.DynamicString;
         }
 
         private void TimedUpdate(double deltaTime)

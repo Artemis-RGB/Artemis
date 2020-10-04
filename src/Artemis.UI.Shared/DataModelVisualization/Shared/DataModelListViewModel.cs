@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
@@ -15,7 +13,7 @@ namespace Artemis.UI.Shared
         private IList _list;
         private DataModelVisualizationViewModel _listTypePropertyViewModel;
 
-        internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
+        internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
             ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
         }
@@ -36,8 +34,12 @@ namespace Artemis.UI.Shared
 
         public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
+            var type = DataModelPath.GetPropertyType();
+            if (type == null)
+                return null;
+
             // Create a property VM describing the type of the list
-            var viewModel = CreateListChild(dataModelUIService, PropertyInfo.PropertyType.GenericTypeArguments[0]);
+            var viewModel = CreateListChild(dataModelUIService, type.GenericTypeArguments[0]);
 
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
@@ -73,7 +75,7 @@ namespace Artemis.UI.Shared
                 DataModelVisualizationViewModel child;
                 if (ListChildren.Count <= index)
                 {
-                    child = CreateListChild(dataModelUIService, item.GetType());
+                    child = CreateListChild(dataModelUIService, item);
                     ListChildren.Add(child);
                 }
                 else
@@ -100,18 +102,21 @@ namespace Artemis.UI.Shared
             Count = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
         }
 
-        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
+        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, object listItem)
         {
+            var listType = listItem.GetType();
+            var path = new DataModelPath(listItem, "");
+
             // If a display VM was found, prefer to use that in any case
             var typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
             if (typeViewModel != null)
-                return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {DisplayViewModel = typeViewModel};
+                return new DataModelListPropertyViewModel(DataModel, this, path) {DisplayViewModel = typeViewModel};
             // For primitives, create a property view model, it may be null that is fine
             if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
-                return new DataModelListPropertyViewModel(DataModel, this, PropertyInfo) {ListType = listType};
+                return new DataModelListPropertyViewModel(DataModel, this, path) {ListType = listType};
             // For other value types create a child view model
             if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(DataModel, this, PropertyInfo) {ListType = listType};
+                return new DataModelListPropertiesViewModel(DataModel, this, path) {ListType = listType};
 
             return null;
         }

@@ -97,7 +97,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             DataModelConditionList.UpdateList(
                 TargetSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                TargetSelectionViewModel.SelectedPropertyViewModel.PropertyPath
+                TargetSelectionViewModel.SelectedPropertyViewModel.Path
             );
             _profileEditorService.UpdateSelectedProfileElement();
 

@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void TargetSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
-            DirectDataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
+            DirectDataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.Path);
             Update();
 
             _profileEditorService.UpdateSelectedProfileElement();

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 
@@ -11,8 +9,9 @@ namespace Artemis.UI.Shared
     {
         private object _displayValue;
         private DataModelDisplayViewModel _displayViewModel;
+        private Type _displayValueType;
 
-        internal DataModelPropertyViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, PropertyInfo propertyInfo) : base(dataModel, parent, propertyInfo)
+        internal DataModelPropertyViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
         }
 
@@ -20,6 +19,12 @@ namespace Artemis.UI.Shared
         {
             get => _displayValue;
             set => SetAndNotify(ref _displayValue, value);
+        }
+
+        public Type DisplayValueType
+        {
+            get => _displayValueType;
+            set => SetAndNotify(ref _displayValueType, value);
         }
 
         public DataModelDisplayViewModel DisplayViewModel
@@ -34,12 +39,13 @@ namespace Artemis.UI.Shared
                 return;
 
             if (DisplayViewModel == null)
-                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(PropertyInfo.PropertyType, true);
+                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DataModelPath.GetPropertyType(), true);
 
             DisplayValue = GetCurrentValue();
+            DisplayValueType = DataModelPath.GetPropertyType();
             UpdateDisplayParameters();
         }
-
+        
         protected void UpdateDisplayParameters()
         {
             DisplayViewModel?.UpdateValue(DisplayValue);
