@@ -89,7 +89,7 @@
 
                         <!-- Value description -->
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
-                            <Run>[</Run><Run Text="{Binding PropertyInfo.PropertyType.Name, Mode=OneWay}" /><Run>]</Run>
+                            <Run>[</Run><Run Text="{Binding DisplayValueType.Name, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
 

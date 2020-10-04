@@ -135,7 +135,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             var leftSideType = _isPrimitiveList
                 ? DataModelConditionListPredicate.DataModelConditionList.ListType
-                : LeftSideSelectionViewModel.SelectedPropertyViewModel?.PropertyInfo?.PropertyType;
+                : LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
             Operators.Clear();
@@ -192,7 +192,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
-            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.SelectedPropertyViewModel.PropertyPath);
+            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.SelectedPropertyViewModel.Path);
             _profileEditorService.UpdateSelectedProfileElement();
 
             SelectedOperator = DataModelConditionListPredicate.Operator;
@@ -205,12 +205,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             {
                 DataModelConditionListPredicate.UpdateRightSideDynamic(
                     RightSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                    RightSideSelectionViewModel.SelectedPropertyViewModel.PropertyPath
+                    RightSideSelectionViewModel.SelectedPropertyViewModel.Path
                 );
             }
             else if (DataModelConditionListPredicate.PredicateType == ListRightSideType.DynamicList)
             {
-                DataModelConditionListPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.SelectedPropertyViewModel.PropertyPath);
+                DataModelConditionListPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.SelectedPropertyViewModel.Path);
             }
 
             _profileEditorService.UpdateSelectedProfileElement();

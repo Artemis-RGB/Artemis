@@ -104,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
-            Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.PropertyPath);
+            Modifier.UpdateParameter(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.Path);
             _profileEditorService.UpdateSelectedProfileElement();
         }
 

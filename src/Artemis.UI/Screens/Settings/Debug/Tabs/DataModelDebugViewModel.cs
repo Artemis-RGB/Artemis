@@ -97,7 +97,10 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
         {
-            MainDataModel.Update(_dataModelUIService);
+            lock (MainDataModel)
+            {
+                MainDataModel.Update(_dataModelUIService);
+            }
         }
 
         private void GetDataModel()

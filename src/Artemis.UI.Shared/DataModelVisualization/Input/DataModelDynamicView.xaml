@@ -30,7 +30,7 @@
     <Button Background="{Binding ButtonBrush}"
             BorderBrush="{Binding ButtonBrush}"
             Style="{StaticResource DataModelConditionButton}"
-            ToolTip="{Binding SelectedPropertyViewModel.DisplayPropertyPath}"
+            ToolTip="{Binding SelectedPropertyViewModel.DisplayPath}"
             IsEnabled="{Binding IsEnabled}"
             HorizontalAlignment="Left"
             Click="PropertyButton_OnClick">

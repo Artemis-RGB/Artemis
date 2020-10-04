@@ -68,7 +68,7 @@ namespace Artemis.Core.DataModelExpansions
             if (_dynamicDataModels.ContainsKey(key))
             {
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
-                                               "because the key is already in use on this data model.");
+                                               "because the key is already in use on by another dynamic property this data model.");
             }
 
             if (_dynamicDataModels.ContainsValue(dynamicDataModel))
@@ -76,6 +76,12 @@ namespace Artemis.Core.DataModelExpansions
                 var existingKey = _dynamicDataModels.First(kvp => kvp.Value == dynamicDataModel).Key;
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
                                                $"because the dynamic data model is already added with key '{existingKey}.");
+            }
+
+            if (GetType().GetProperty(key) != null)
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
+                                               "because the key is already in use by a static property on this data model.");
             }
 
             dynamicDataModel.PluginInfo = PluginInfo;
