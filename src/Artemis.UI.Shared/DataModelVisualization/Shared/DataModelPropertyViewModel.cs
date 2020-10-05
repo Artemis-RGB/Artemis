@@ -39,13 +39,16 @@ namespace Artemis.UI.Shared
                 return;
 
             if (DisplayViewModel == null)
+            {
                 DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DataModelPath.GetPropertyType(), true);
+                DisplayViewModel.PropertyDescription = DataModelPath.GetPropertyDescription();
+            }
 
             DisplayValue = GetCurrentValue();
             DisplayValueType = DataModelPath.GetPropertyType();
             UpdateDisplayParameters();
         }
-        
+
         protected void UpdateDisplayParameters()
         {
             DisplayViewModel?.UpdateValue(DisplayValue);
