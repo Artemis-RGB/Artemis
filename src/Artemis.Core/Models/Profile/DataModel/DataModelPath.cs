@@ -111,24 +111,24 @@ namespace Artemis.Core
 
         private void Initialize(string path)
         {
-            var startSegment = new DataModelPathSegment(this, "target", "target");
+            DataModelPathSegment startSegment = new DataModelPathSegment(this, "target", "target");
             startSegment.Node = _segments.AddFirst(startSegment);
 
-            var segments = path.Split(".");
-            for (var index = 0; index < segments.Length; index++)
+            string[] segments = path.Split(".");
+            for (int index = 0; index < segments.Length; index++)
             {
-                var identifier = segments[index];
-                var node = _segments.AddLast(new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1))));
+                string identifier = segments[index];
+                LinkedListNode<DataModelPathSegment> node = _segments.AddLast(new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1))));
                 node.Value.Node = node;
             }
 
-            var parameter = Expression.Parameter(typeof(object), "t");
+            ParameterExpression parameter = Expression.Parameter(typeof(object), "t");
             Expression expression = Expression.Convert(parameter, Target.GetType());
             Expression nullCondition = null;
 
-            foreach (var segment in _segments)
+            foreach (DataModelPathSegment segment in _segments)
             {
-                var notNull = Expression.NotEqual(expression, Expression.Default(expression.Type));
+                BinaryExpression notNull = Expression.NotEqual(expression, Expression.Default(expression.Type));
                 nullCondition = nullCondition != null ? Expression.AndAlso(nullCondition, notNull) : notNull;
                 expression = segment.Initialize(parameter, expression, nullCondition);
                 if (expression == null)
