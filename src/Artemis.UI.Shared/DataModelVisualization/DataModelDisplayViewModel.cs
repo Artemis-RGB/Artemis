@@ -1,4 +1,5 @@
-﻿using Stylet;
+﻿using Artemis.Core.DataModelExpansions;
+using Stylet;
 
 namespace Artemis.UI.Shared
 {
@@ -16,16 +17,16 @@ namespace Artemis.UI.Shared
             }
         }
 
-        protected virtual void OnDisplayValueUpdated()
-        {
-        }
+        internal override object InternalGuard => null;
 
         public override void UpdateValue(object model)
         {
             DisplayValue = model is T value ? value : default;
         }
 
-        internal override object InternalGuard => null;
+        protected virtual void OnDisplayValueUpdated()
+        {
+        }
     }
 
     /// <summary>
@@ -33,11 +34,22 @@ namespace Artemis.UI.Shared
     /// </summary>
     public abstract class DataModelDisplayViewModel : PropertyChangedBase
     {
-        public abstract void UpdateValue(object model);
+        private DataModelPropertyAttribute _propertyDescription;
+
+        /// <summary>
+        ///     Gets the property description of this value
+        /// </summary>
+        public DataModelPropertyAttribute PropertyDescription
+        {
+            get => _propertyDescription;
+            internal set => SetAndNotify(ref _propertyDescription, value);
+        }
 
         /// <summary>
         ///     Prevents this type being implemented directly, implement <see cref="DataModelDisplayViewModel{T}" /> instead.
         /// </summary>
         internal abstract object InternalGuard { get; }
+
+        public abstract void UpdateValue(object model);
     }
 }
