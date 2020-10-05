@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -89,8 +90,8 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             if (!((IInputElement) sender).IsMouseCaptured)
                 return;
 
-            var parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
-            var position = e.GetPosition(parent);
+            Canvas parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
+            Point position = e.GetPosition(parent);
             if (position.Y > 50)
             {
                 WillRemoveColorStop = true;
@@ -99,11 +100,11 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
             WillRemoveColorStop = false;
 
-            var minValue = 0.0;
-            var maxValue = _gradientEditorViewModel.PreviewWidth;
-            var stops = _gradientEditorViewModel.ColorGradient.Stops.OrderBy(s => s.Position).ToList();
-            var previous = stops.IndexOf(ColorStop) >= 1 ? stops[stops.IndexOf(ColorStop) - 1] : null;
-            var next = stops.IndexOf(ColorStop) + 1 < stops.Count ? stops[stops.IndexOf(ColorStop) + 1] : null;
+            double minValue = 0.0;
+            double maxValue = _gradientEditorViewModel.PreviewWidth;
+            List<ColorGradientStop> stops = _gradientEditorViewModel.ColorGradient.Stops.OrderBy(s => s.Position).ToList();
+            ColorGradientStop previous = stops.IndexOf(ColorStop) >= 1 ? stops[stops.IndexOf(ColorStop) - 1] : null;
+            ColorGradientStop next = stops.IndexOf(ColorStop) + 1 < stops.Count ? stops[stops.IndexOf(ColorStop) + 1] : null;
             if (previous != null)
                 minValue = previous.Position * _gradientEditorViewModel.PreviewWidth;
             if (next != null)

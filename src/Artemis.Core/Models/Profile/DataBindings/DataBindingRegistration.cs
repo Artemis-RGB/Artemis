@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
 {
@@ -58,7 +59,7 @@ namespace Artemis.Core
             if (DataBinding != null)
                 return DataBinding;
 
-            var dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == PropertyExpression.ToString());
+            DataBindingEntity dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == PropertyExpression.ToString());
             if (dataBinding == null)
                 return null;
 

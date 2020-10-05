@@ -37,7 +37,7 @@ namespace Artemis.Core.DefaultTypes
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            var diff = NextKeyframe.Value - CurrentKeyframe.Value;
+            int diff = NextKeyframe.Value - CurrentKeyframe.Value;
             CurrentValue = (int) Math.Round(CurrentKeyframe.Value + diff * keyframeProgressEased, MidpointRounding.AwayFromZero);
         }
     }

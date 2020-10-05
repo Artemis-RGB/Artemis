@@ -197,10 +197,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void DisableSegment()
         {
-            var startSegmentEnd = SelectedProfileElement.StartSegmentLength;
-            var mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
+            TimeSpan startSegmentEnd = SelectedProfileElement.StartSegmentLength;
+            TimeSpan mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
 
-            var oldSegmentLength = SegmentLength;
+            TimeSpan oldSegmentLength = SegmentLength;
 
             if (Segment == SegmentViewModelType.Start)
             {
@@ -264,10 +264,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 return;
 
             // Get the parent scroll viewer, need that for our position
-            var parent = VisualTreeUtilities.FindParent<ScrollViewer>((DependencyObject) sender, "TimelineHeaderScrollViewer");
+            ScrollViewer parent = VisualTreeUtilities.FindParent<ScrollViewer>((DependencyObject) sender, "TimelineHeaderScrollViewer");
 
-            var x = Math.Max(0, e.GetPosition(parent).X);
-            var newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
+            double x = Math.Max(0, e.GetPosition(parent).X);
+            TimeSpan newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
 
             // Round the time to something that fits the current zoom level
             if (ProfileEditorService.PixelsPerSecond < 200)
@@ -280,7 +280,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // If holding down shift, snap to the closest element on the timeline
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
-                var keyframeTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                List<TimeSpan> keyframeTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
                 newTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), false, true, keyframeTimes);
             }
             // If holding down control, round to the closest 50ms
@@ -292,7 +292,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void UpdateLength(TimeSpan newTime)
         {
-            var oldSegmentLength = SegmentLength;
+            TimeSpan oldSegmentLength = SegmentLength;
             if (Segment == SegmentViewModelType.Start)
             {
                 if (newTime < TimeSpan.FromMilliseconds(100))
@@ -361,7 +361,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void ShiftNextSegment(TimeSpan amount)
         {
-            var segmentEnd = TimeSpan.Zero;
+            TimeSpan segmentEnd = TimeSpan.Zero;
             if (Segment == SegmentViewModelType.Start)
                 segmentEnd = SelectedProfileElement.StartSegmentLength;
             else if (Segment == SegmentViewModelType.Main)
@@ -374,13 +374,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private void WipeKeyframes(TimeSpan? start, TimeSpan? end)
         {
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.WipeKeyframes(start, end);
         }
 
         private void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
         {
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
         }
     }

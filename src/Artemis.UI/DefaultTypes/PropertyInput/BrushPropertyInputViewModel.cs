@@ -39,7 +39,7 @@ namespace Artemis.UI.PropertyInput
 
         public void UpdateEnumValues()
         {
-            var layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
+            List<LayerBrushProvider> layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
             Descriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             NotifyOfPropertyChange(nameof(SelectedDescriptor));
         }

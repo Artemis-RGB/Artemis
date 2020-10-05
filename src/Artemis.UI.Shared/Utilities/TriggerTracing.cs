@@ -71,20 +71,20 @@ namespace Artemis.UI.Shared
 
                 if (format.StartsWith("Storyboard has begun;"))
                 {
-                    var storyboard = args[1] as TriggerTraceStoryboard;
+                    TriggerTraceStoryboard storyboard = args[1] as TriggerTraceStoryboard;
                     if (storyboard != null)
                     {
                         // add a breakpoint here to see when your trigger has been
                         // entered or exited
 
                         // the element being acted upon
-                        var targetElement = args[5];
+                        object targetElement = args[5];
 
                         // the namescope of the element being acted upon
-                        var namescope = (INameScope) args[7];
+                        INameScope namescope = (INameScope) args[7];
 
-                        var triggerBase = storyboard.TriggerBase;
-                        var triggerName = GetTriggerName(storyboard.TriggerBase);
+                        TriggerBase triggerBase = storyboard.TriggerBase;
+                        string triggerName = GetTriggerName(storyboard.TriggerBase);
 
                         Debug.WriteLine("Element: {0}, {1}: {2}: {3}", targetElement, triggerBase.GetType().Name, triggerName, storyboard.StoryboardType);
                     }
@@ -164,7 +164,7 @@ namespace Artemis.UI.Shared
 
         private static void OnTraceEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var triggerBase = d as TriggerBase;
+            TriggerBase triggerBase = d as TriggerBase;
 
             if (triggerBase == null)
                 return;
@@ -176,7 +176,7 @@ namespace Artemis.UI.Shared
             {
                 // insert dummy story-boards which can later be traced using WPF animation tracing
 
-                var storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Enter);
+                TriggerTraceStoryboard storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Enter);
                 triggerBase.EnterActions.Insert(0, new BeginStoryboard {Storyboard = storyboard});
 
                 storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Exit);
@@ -186,11 +186,11 @@ namespace Artemis.UI.Shared
             {
                 // remove the dummy storyboards
 
-                foreach (var actionCollection in new[] {triggerBase.EnterActions, triggerBase.ExitActions})
+                foreach (TriggerActionCollection actionCollection in new[] {triggerBase.EnterActions, triggerBase.ExitActions})
                 {
-                    foreach (var triggerAction in actionCollection)
+                    foreach (TriggerAction triggerAction in actionCollection)
                     {
-                        var bsb = triggerAction as BeginStoryboard;
+                        BeginStoryboard bsb = triggerAction as BeginStoryboard;
 
                         if (bsb != null && bsb.Storyboard != null && bsb.Storyboard is TriggerTraceStoryboard)
                         {

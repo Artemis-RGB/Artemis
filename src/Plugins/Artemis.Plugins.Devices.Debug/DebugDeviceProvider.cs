@@ -31,11 +31,11 @@ namespace Artemis.Plugins.Devices.Debug
             ConfigurationDialog = new PluginConfigurationDialog<DebugConfigurationViewModel>();
             PathHelper.ResolvingAbsolutePath += PathHelperOnResolvingAbsolutePath;
 
-            var definitions = _settings.GetSetting("DeviceDefinitions", new List<DeviceDefinition>());
+            PluginSetting<List<DeviceDefinition>> definitions = _settings.GetSetting("DeviceDefinitions", new List<DeviceDefinition>());
             if (definitions.Value == null)
                 definitions.Value = new List<DeviceDefinition>();
 
-            foreach (var deviceDefinition in definitions.Value)
+            foreach (DeviceDefinition deviceDefinition in definitions.Value)
                 RGB.NET.Devices.Debug.DebugDeviceProvider.Instance.AddFakeDeviceDefinition(deviceDefinition.Layout, deviceDefinition.ImageLayout);
 
             try
@@ -59,7 +59,7 @@ namespace Artemis.Plugins.Devices.Debug
             {
                 if (debugRgbDevice.LayoutPath.Contains("\\Layouts\\"))
                 {
-                    var rootDirectory = debugRgbDevice.LayoutPath.Split("\\Layouts")[0];
+                    string rootDirectory = debugRgbDevice.LayoutPath.Split("\\Layouts")[0];
                     e.FinalPath = Path.Combine(rootDirectory, e.RelativePath);
                 }
             }

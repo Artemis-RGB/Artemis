@@ -76,7 +76,7 @@ namespace Artemis.Core
         public void UpdateScale(double value)
         {
             Scale = value;
-            foreach (var device in Devices)
+            foreach (ArtemisDevice device in Devices)
                 device.CalculateRenderProperties();
 
             OnScaleChanged();
@@ -89,7 +89,7 @@ namespace Artemis.Core
             SurfaceEntity.IsActive = IsActive;
 
             // Add missing device entities, don't remove old ones in case they come back later
-            foreach (var deviceEntity in Devices.Select(d => d.DeviceEntity).ToList())
+            foreach (DeviceEntity deviceEntity in Devices.Select(d => d.DeviceEntity).ToList())
             {
                 if (!SurfaceEntity.DeviceEntities.Contains(deviceEntity))
                     SurfaceEntity.DeviceEntities.Add(deviceEntity);

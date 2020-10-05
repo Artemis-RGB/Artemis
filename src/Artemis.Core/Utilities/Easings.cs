@@ -106,7 +106,7 @@ namespace Artemis.Core
         /// </summary>
         public static double CubicEaseOut(double p)
         {
-            var f = p - 1;
+            double f = p - 1;
             return f * f * f + 1;
         }
 
@@ -119,7 +119,7 @@ namespace Artemis.Core
         {
             if (p < 0.5)
                 return 4 * p * p * p;
-            var f = 2 * p - 2;
+            double f = 2 * p - 2;
             return 0.5 * f * f * f + 1;
         }
 
@@ -136,7 +136,7 @@ namespace Artemis.Core
         /// </summary>
         public static double QuarticEaseOut(double p)
         {
-            var f = p - 1;
+            double f = p - 1;
             return f * f * f * (1 - p) + 1;
         }
 
@@ -149,7 +149,7 @@ namespace Artemis.Core
         {
             if (p < 0.5)
                 return 8 * p * p * p * p;
-            var f = p - 1;
+            double f = p - 1;
             return -8 * f * f * f * f + 1;
         }
 
@@ -166,7 +166,7 @@ namespace Artemis.Core
         /// </summary>
         public static double QuinticEaseOut(double p)
         {
-            var f = p - 1;
+            double f = p - 1;
             return f * f * f * f * f + 1;
         }
 
@@ -179,7 +179,7 @@ namespace Artemis.Core
         {
             if (p < 0.5)
                 return 16 * p * p * p * p * p;
-            var f = 2 * p - 2;
+            double f = 2 * p - 2;
             return 0.5 * f * f * f * f * f + 1;
         }
 
@@ -306,7 +306,7 @@ namespace Artemis.Core
         /// </summary>
         public static double BackEaseOut(double p)
         {
-            var f = 1 - p;
+            double f = 1 - p;
             return 1 - (f * f * f - f * Math.Sin(f * PI));
         }
 
@@ -319,12 +319,12 @@ namespace Artemis.Core
         {
             if (p < 0.5)
             {
-                var f = 2 * p;
+                double f = 2 * p;
                 return 0.5 * (f * f * f - f * Math.Sin(f * PI));
             }
             else
             {
-                var f = 1 - (2 * p - 1);
+                double f = 1 - (2 * p - 1);
                 return 0.5 * (1 - (f * f * f - f * Math.Sin(f * PI))) + 0.5;
             }
         }

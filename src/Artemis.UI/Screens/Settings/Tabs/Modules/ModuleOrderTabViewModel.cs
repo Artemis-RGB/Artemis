@@ -44,9 +44,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
             if (dropInfo.TargetItem == dropInfo.Data)
                 return;
 
-            var viewModel = (ModuleOrderModuleViewModel) dropInfo.Data;
-            var targetCollection = (BindableCollection<ModuleOrderModuleViewModel>) dropInfo.TargetCollection;
-            var insertIndex = dropInfo.InsertIndex;
+            ModuleOrderModuleViewModel viewModel = (ModuleOrderModuleViewModel) dropInfo.Data;
+            BindableCollection<ModuleOrderModuleViewModel> targetCollection = (BindableCollection<ModuleOrderModuleViewModel>) dropInfo.TargetCollection;
+            int insertIndex = dropInfo.InsertIndex;
 
             ModulePriorityCategory category;
             if (targetCollection == NormalModules)
@@ -76,7 +76,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
             OverlayModules.Clear();
             OverlayModules.AddRange(_modules.Where(m => m.Module.PriorityCategory == ModulePriorityCategory.Overlay).OrderBy(m => m.Module.Priority));
 
-            foreach (var moduleOrderModuleViewModel in _modules)
+            foreach (ModuleOrderModuleViewModel moduleOrderModuleViewModel in _modules)
                 moduleOrderModuleViewModel.Update();
         }
     }

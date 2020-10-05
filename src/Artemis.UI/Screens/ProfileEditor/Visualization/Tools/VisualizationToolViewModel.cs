@@ -73,7 +73,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         protected Rect GetSquareRectBetweenPoints(Point start, Point end)
         {
             // Find the shortest side
-            var size = Math.Min(Math.Abs(start.X - end.X), Math.Abs(start.Y - end.Y));
+            double size = Math.Min(Math.Abs(start.X - end.X), Math.Abs(start.Y - end.Y));
 
             // There's probably a very elegant way to do this, and this is not it
             if (end.X < start.X && end.Y < start.Y)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -37,7 +38,7 @@ namespace Artemis.Core.Modules
             if (ProcessName == null && Location == null)
                 return false;
 
-            var processes = ProcessName != null ? Process.GetProcessesByName(ProcessName).Where(p => !p.HasExited) : Process.GetProcesses().Where(p => !p.HasExited);
+            IEnumerable<Process> processes = ProcessName != null ? Process.GetProcessesByName(ProcessName).Where(p => !p.HasExited) : Process.GetProcesses().Where(p => !p.HasExited);
             return Location != null
                 ? processes.Any(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.CurrentCultureIgnoreCase))
                 : processes.Any();
@@ -46,7 +47,7 @@ namespace Artemis.Core.Modules
         /// <inheritdoc />
         public string GetUserFriendlyDescription()
         {
-            var description = $"Requirement met when \"{ProcessName}.exe\" is running";
+            string description = $"Requirement met when \"{ProcessName}.exe\" is running";
             if (Location != null)
                 description += $" from \"{Location}\"";
 

@@ -79,7 +79,7 @@ namespace Artemis.Core.Services
             if (IsInitialized)
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
-            var versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
             ApplyLoggingLevel();
 
@@ -89,7 +89,7 @@ namespace Artemis.Core.Services
             _pluginService.CopyBuiltInPlugins();
             _pluginService.LoadPlugins(StartupArguments.Contains("--ignore-plugin-lock"));
 
-            var surfaceConfig = _surfaceService.ActiveSurface;
+            ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
                 _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
             else
@@ -123,7 +123,7 @@ namespace Artemis.Core.Services
                     _introAnimation.Render(args.DeltaTime, args.Canvas, _rgbService.BitmapBrush.Bitmap.Info);
             }
 
-            var introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.TimelineLength);
+            TimeSpan introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.TimelineLength);
 
             // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
             Task.Run(async () =>
@@ -167,7 +167,7 @@ namespace Artemis.Core.Services
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules
-                    foreach (var dataModelExpansion in _dataModelExpansions)
+                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions)
                         dataModelExpansion.Update(args.DeltaTime);
                 }
 
@@ -181,7 +181,7 @@ namespace Artemis.Core.Services
                 }
 
                 // Update all active modules
-                foreach (var module in modules)
+                foreach (Module module in modules)
                     module.InternalUpdate(args.DeltaTime);
 
                 // If there is no ready bitmap brush, skip the frame
@@ -194,12 +194,12 @@ namespace Artemis.Core.Services
                         return;
 
                     // Render all active modules
-                    using var canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
+                    using SKCanvas canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)
                     {
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
-                        foreach (var module in modules.Where(m => m.IsActivated))
+                        foreach (Module module in modules.Where(m => m.IsActivated))
                             module.InternalRender(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                     }
 

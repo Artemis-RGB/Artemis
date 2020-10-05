@@ -102,7 +102,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // if (e.LeftButton == MouseButtonState.Released)
             //     return;
 
-            var viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
+            ITimelineKeyframeViewModel viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
             if (viewModel == null)
                 return;
 
@@ -153,15 +153,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         public void Copy(ITimelineKeyframeViewModel viewModel)
         {
             // viewModel.Copy();
-            var keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.Copy();
         }
 
         public void Delete(ITimelineKeyframeViewModel viewModel)
         {
-            var keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.Delete();
         }
 
@@ -170,8 +170,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private TimeSpan GetCursorTime(Point position)
         {
             // Get the parent grid, need that for our position
-            var x = Math.Max(0, position.X);
-            var time = TimeSpan.FromSeconds(x / _profileEditorService.PixelsPerSecond);
+            double x = Math.Max(0, position.X);
+            TimeSpan time = TimeSpan.FromSeconds(x / _profileEditorService.PixelsPerSecond);
 
             // Round the time to something that fits the current zoom level
             if (_profileEditorService.PixelsPerSecond < 200)
@@ -185,7 +185,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // Take a tolerance of 5 pixels (half a keyframe width)
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
-                var tolerance = 1000f / _profileEditorService.PixelsPerSecond * 5;
+                float tolerance = 1000f / _profileEditorService.PixelsPerSecond * 5;
                 if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
                     time = _profileEditorService.CurrentTime;
                 else if (Math.Abs(_profileEditorService.SelectedProfileElement.StartSegmentLength.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
@@ -204,8 +204,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // Ensure the selection rectangle doesn't show, the view isn't aware of different types of dragging
             SelectionRectangle.Rect = new Rect();
 
-            var keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.SaveOffsetToKeyframe(sourceKeyframeViewModel);
 
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
@@ -221,7 +221,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             sourceKeyframeViewModel.UpdatePosition(cursorTime);
 
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.ApplyOffsetToKeyframe(sourceKeyframeViewModel);
 
             _profileEditorService.UpdateProfilePreview();
@@ -230,8 +230,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void ReleaseSelectedKeyframes()
         {
-            var keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (var keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
                 keyframeViewModel.ReleaseMovement();
         }
 
@@ -266,13 +266,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (!_mouseDragging)
                 return;
 
-            var position = e.GetPosition((IInputElement) sender);
-            var selectedRect = new Rect(_mouseDragStartPoint, position);
+            Point position = e.GetPosition((IInputElement) sender);
+            Rect selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
-            var keyframeViewModels = GetAllKeyframeViewModels();
-            var selectedKeyframes = HitTestUtilities.GetHitViewModels<ITimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
-            foreach (var keyframeViewModel in keyframeViewModels)
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
+            List<ITimelineKeyframeViewModel> selectedKeyframes = HitTestUtilities.GetHitViewModels<ITimelineKeyframeViewModel>((Visual) sender, SelectionRectangle);
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.IsSelected = selectedKeyframes.Contains(keyframeViewModel);
 
             _mouseDragging = false;
@@ -284,8 +284,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             if (_mouseDragging && e.LeftButton == MouseButtonState.Pressed)
             {
-                var position = e.GetPosition((IInputElement) sender);
-                var selectedRect = new Rect(_mouseDragStartPoint, position);
+                Point position = e.GetPosition((IInputElement) sender);
+                Rect selectedRect = new Rect(_mouseDragStartPoint, position);
                 SelectionRectangle.Rect = selectedRect;
                 e.Handled = true;
             }
@@ -293,10 +293,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void SelectKeyframe(ITimelineKeyframeViewModel clicked, bool selectBetween, bool toggle)
         {
-            var keyframeViewModels = GetAllKeyframeViewModels();
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
             if (selectBetween)
             {
-                var selectedIndex = keyframeViewModels.FindIndex(k => k.IsSelected);
+                int selectedIndex = keyframeViewModels.FindIndex(k => k.IsSelected);
                 // If nothing is selected, select only the clicked
                 if (selectedIndex == -1)
                 {
@@ -304,18 +304,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                     return;
                 }
 
-                foreach (var keyframeViewModel in keyframeViewModels)
+                foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels)
                     keyframeViewModel.IsSelected = false;
 
-                var clickedIndex = keyframeViewModels.IndexOf(clicked);
+                int clickedIndex = keyframeViewModels.IndexOf(clicked);
                 if (clickedIndex < selectedIndex)
                 {
-                    foreach (var keyframeViewModel in keyframeViewModels.Skip(clickedIndex).Take(selectedIndex - clickedIndex + 1))
+                    foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Skip(clickedIndex).Take(selectedIndex - clickedIndex + 1))
                         keyframeViewModel.IsSelected = true;
                 }
                 else
                 {
-                    foreach (var keyframeViewModel in keyframeViewModels.Skip(selectedIndex).Take(clickedIndex - selectedIndex + 1))
+                    foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Skip(selectedIndex).Take(clickedIndex - selectedIndex + 1))
                         keyframeViewModel.IsSelected = true;
                 }
             }
@@ -327,7 +327,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else
             {
                 // Only select the clicked keyframe
-                foreach (var keyframeViewModel in keyframeViewModels)
+                foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels)
                     keyframeViewModel.IsSelected = false;
                 clicked.IsSelected = true;
             }
@@ -335,8 +335,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
-            var viewModels = new List<ITimelineKeyframeViewModel>();
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+            List<ITimelineKeyframeViewModel> viewModels = new List<ITimelineKeyframeViewModel>();
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
                 viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
 
             return viewModels;

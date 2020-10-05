@@ -97,9 +97,9 @@ namespace Artemis.UI.Shared
                 return;
 
             // Determine the scale required to fit the desired size of the control
-            var measureSize = MeasureDevice();
-            var scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
-            var scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
+            Size measureSize = MeasureDevice();
+            double scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
+            Rect scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
 
             // Center and scale the visualization in the desired bounding box
             if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
@@ -109,7 +109,7 @@ namespace Artemis.UI.Shared
             }
 
             // Determine the offset required to rotate within bounds
-            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            Rect rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
             // Apply device rotation
@@ -123,7 +123,7 @@ namespace Artemis.UI.Shared
             if (_deviceImage != null)
                 drawingContext.DrawImage(_deviceImage, new Rect(0, 0, Device.RgbDevice.Size.Width, Device.RgbDevice.Size.Height));
 
-            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                 deviceVisualizerLed.RenderImage(drawingContext);
 
             drawingContext.DrawDrawing(_backingStore);
@@ -135,7 +135,7 @@ namespace Artemis.UI.Shared
             if (Device == null)
                 return Size.Empty;
 
-            var deviceSize = MeasureDevice();
+            Size deviceSize = MeasureDevice();
             if (deviceSize.Width <= 0 || deviceSize.Height <= 0)
                 return Size.Empty;
 
@@ -162,7 +162,7 @@ namespace Artemis.UI.Shared
             if (Device == null)
                 return Size.Empty;
 
-            var rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            Rect rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
             return rotationRect.Size;
@@ -198,13 +198,13 @@ namespace Artemis.UI.Shared
 
         private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var deviceVisualizer = (DeviceVisualizer) d;
+            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
             deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
         }
 
         private static void ShowColorsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var deviceVisualizer = (DeviceVisualizer) d;
+            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
             deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
         }
 
@@ -228,7 +228,7 @@ namespace Artemis.UI.Shared
                 _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
 
             // Create all the LEDs
-            foreach (var artemisLed in Device.Leds)
+            foreach (ArtemisLed artemisLed in Device.Leds)
                 _deviceVisualizerLeds.Add(new DeviceVisualizerLed(artemisLed));
 
             if (!ShowColors)
@@ -238,16 +238,16 @@ namespace Artemis.UI.Shared
             }
 
             // Create the opacity drawing group
-            var opacityDrawingGroup = new DrawingGroup();
-            var drawingContext = opacityDrawingGroup.Open();
-            foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+            DrawingGroup opacityDrawingGroup = new DrawingGroup();
+            DrawingContext drawingContext = opacityDrawingGroup.Open();
+            foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                 deviceVisualizerLed.RenderOpacityMask(drawingContext);
             drawingContext.Close();
 
             // Render the store as a bitmap 
-            var drawingImage = new DrawingImage(opacityDrawingGroup);
-            var image = new Image {Source = drawingImage};
-            var bitmap = new RenderTargetBitmap(
+            DrawingImage drawingImage = new DrawingImage(opacityDrawingGroup);
+            Image image = new Image {Source = drawingImage};
+            RenderTargetBitmap bitmap = new RenderTargetBitmap(
                 Math.Max(1, (int) (opacityDrawingGroup.Bounds.Width * 2.5)),
                 Math.Max(1, (int) (opacityDrawingGroup.Bounds.Height * 2.5)),
                 96,
@@ -259,7 +259,7 @@ namespace Artemis.UI.Shared
             bitmap.Freeze();
 
             // Set the bitmap as the opacity mask for the colors backing store
-            var bitmapBrush = new ImageBrush(bitmap);
+            ImageBrush bitmapBrush = new ImageBrush(bitmap);
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
 
@@ -275,16 +275,16 @@ namespace Artemis.UI.Shared
 
         private void Render()
         {
-            var drawingContext = _backingStore.Open();
+            DrawingContext drawingContext = _backingStore.Open();
 
             if (HighlightedLeds != null && HighlightedLeds.Any())
             {
-                foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
             }
             else
             {
-                foreach (var deviceVisualizerLed in _deviceVisualizerLeds)
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, false);
             }
 

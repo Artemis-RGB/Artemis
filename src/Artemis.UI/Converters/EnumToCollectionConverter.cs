@@ -28,12 +28,12 @@ namespace Artemis.UI.Converters
 
         private static string Description(Enum value)
         {
-            var attributes = value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
+            object[] attributes = value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
             if (attributes.Any())
                 return (attributes.First() as DescriptionAttribute)?.Description;
 
             // If no description is found, the least we can do is replace underscores with spaces
-            var ti = CultureInfo.CurrentCulture.TextInfo;
+            TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
             return ti.ToTitleCase(ti.ToLower(value.ToString().Replace("_", " ")));
         }
 

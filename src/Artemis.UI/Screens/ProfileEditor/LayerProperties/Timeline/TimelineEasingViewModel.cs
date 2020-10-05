@@ -19,10 +19,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Description = easingFunction.Humanize();
 
             EasingPoints = new PointCollection();
-            for (var i = 1; i <= 10; i++)
+            for (int i = 1; i <= 10; i++)
             {
-                var x = i;
-                var y = Easings.Interpolate(i / 10.0, EasingFunction) * 10;
+                int x = i;
+                double y = Easings.Interpolate(i / 10.0, EasingFunction) * 10;
                 EasingPoints.Add(new Point(x, y));
             }
         }

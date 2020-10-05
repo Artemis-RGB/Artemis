@@ -97,7 +97,7 @@ namespace Artemis.UI.Shared
 
         private static void ColorPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var colorPicker = (ColorPicker) d;
+            ColorPicker colorPicker = (ColorPicker) d;
             if (colorPicker._inCallback)
                 return;
 
@@ -112,7 +112,7 @@ namespace Artemis.UI.Shared
 
         private static void PopupOpenPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var colorPicker = (ColorPicker) d;
+            ColorPicker colorPicker = (ColorPicker) d;
             if (colorPicker._inCallback)
                 return;
 
@@ -123,7 +123,7 @@ namespace Artemis.UI.Shared
 
         private static void StaysOpenPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var colorPicker = (ColorPicker) d;
+            ColorPicker colorPicker = (ColorPicker) d;
             if (colorPicker._inCallback)
                 return;
 
@@ -134,13 +134,13 @@ namespace Artemis.UI.Shared
 
         private static void ColorOpacityPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var colorPicker = (ColorPicker) d;
+            ColorPicker colorPicker = (ColorPicker) d;
             if (colorPicker._inCallback)
                 return;
 
             colorPicker._inCallback = true;
 
-            var color = colorPicker.Color;
+            Color color = colorPicker.Color;
             if (e.NewValue is byte opacity)
                 color = Color.FromArgb(opacity, color.R, color.G, color.B);
             colorPicker.SetCurrentValue(ColorProperty, color);

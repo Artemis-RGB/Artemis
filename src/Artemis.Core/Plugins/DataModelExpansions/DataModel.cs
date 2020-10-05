@@ -74,7 +74,7 @@ namespace Artemis.Core.DataModelExpansions
 
             if (_dynamicDataModels.ContainsValue(dynamicDataModel))
             {
-                var existingKey = _dynamicDataModels.First(kvp => kvp.Value == dynamicDataModel).Key;
+                string existingKey = _dynamicDataModels.First(kvp => kvp.Value == dynamicDataModel).Key;
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
                                                $"because the dynamic data model is already added with key '{existingKey}.");
             }
@@ -111,8 +111,8 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="dynamicDataModel">The dynamic data model to remove</param>
         public void RemoveDynamicChild(DataModel dynamicDataModel)
         {
-            var keys = _dynamicDataModels.Where(kvp => kvp.Value == dynamicDataModel).Select(kvp => kvp.Key).ToList();
-            foreach (var key in keys)
+            List<string> keys = _dynamicDataModels.Where(kvp => kvp.Value == dynamicDataModel).Select(kvp => kvp.Key).ToList();
+            foreach (string key in keys)
                 _dynamicDataModels.Remove(key);
         }
 
@@ -124,17 +124,17 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns>If found, the dynamic data model otherwise <c>null</c></returns>
         public T DynamicChild<T>(string key) where T : DataModel
         {
-            _dynamicDataModels.TryGetValue(key, out var value);
+            _dynamicDataModels.TryGetValue(key, out DataModel value);
             return value as T;
         }
 
         internal bool ContainsPath(string path)
         {
-            var parts = path.Split('.');
-            var current = GetType();
-            foreach (var part in parts)
+            string[] parts = path.Split('.');
+            Type current = GetType();
+            foreach (string part in parts)
             {
-                var property = current?.GetProperty(part);
+                PropertyInfo? property = current?.GetProperty(part);
                 current = property?.PropertyType;
                 if (property == null)
                     return false;
@@ -148,13 +148,13 @@ namespace Artemis.Core.DataModelExpansions
             if (!ContainsPath(path))
                 return null;
 
-            var parts = path.Split('.');
-            var current = GetType();
+            string[] parts = path.Split('.');
+            Type current = GetType();
 
             Type result = null;
-            foreach (var part in parts)
+            foreach (string part in parts)
             {
-                var property = current.GetProperty(part);
+                PropertyInfo? property = current.GetProperty(part);
                 current = property.PropertyType;
                 result = property.PropertyType;
             }
@@ -167,17 +167,17 @@ namespace Artemis.Core.DataModelExpansions
             if (!ContainsPath(path))
                 return null;
 
-            var parts = path.Split('.');
-            var current = GetType();
+            string[] parts = path.Split('.');
+            Type current = GetType();
 
-            var index = 0;
-            foreach (var part in parts)
+            int index = 0;
+            foreach (string part in parts)
             {
                 // Only return a type if the path CONTAINS a list, not if it points TO a list
                 if (index == parts.Length - 1)
                     return null;
 
-                var property = current.GetProperty(part);
+                PropertyInfo? property = current.GetProperty(part);
 
                 // For lists, look into the list type instead of the list itself
                 if (typeof(IList).IsAssignableFrom(property.PropertyType))
@@ -195,7 +195,7 @@ namespace Artemis.Core.DataModelExpansions
             if (!ContainsPath(path))
                 return null;
 
-            var child = GetTypeAtPath(path);
+            Type child = GetTypeAtPath(path);
             return child.GenericTypeArguments.Length > 0 ? child.GenericTypeArguments[0] : null;
         }
 

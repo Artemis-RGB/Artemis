@@ -12,7 +12,7 @@ namespace Artemis.UI.Shared
             if (Initialized)
                 return;
 
-            var colorPickerService = kernel.Get<IColorPickerService>();
+            IColorPickerService colorPickerService = kernel.Get<IColorPickerService>();
             GradientPicker.ColorPickerService = colorPickerService;
             ColorPicker.ColorPickerService = colorPickerService;
 

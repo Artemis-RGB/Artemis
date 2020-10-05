@@ -61,8 +61,8 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
-            var result = new List<ILayerProperty>();
-            foreach (var layerEffect in LayerEffects)
+            List<ILayerProperty> result = new List<ILayerProperty>();
+            foreach (BaseLayerEffect layerEffect in LayerEffects)
             {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
@@ -83,7 +83,7 @@ namespace Artemis.Core
                 return;
 
             // Disable data bindings during an override
-            var wasApplyingDataBindings = ApplyDataBindingsEnabled;
+            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
             ApplyDataBindingsEnabled = false;
 
             UpdateDisplayCondition();
@@ -92,16 +92,16 @@ namespace Artemis.Core
             // to it's start
             UpdateTimeline(deltaTime);
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
             }
 
             // Iterate the children in reverse because that's how they must be rendered too
-            for (var index = Children.Count - 1; index > -1; index--)
+            for (int index = Children.Count - 1; index > -1; index--)
             {
-                var profileElement = Children[index];
+                ProfileElement profileElement = Children[index];
                 profileElement.Update(deltaTime);
             }
 
@@ -127,19 +127,19 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
-            var beginTime = TimelinePosition;
+            TimeSpan beginTime = TimelinePosition;
 
             if (stickToMainSegment)
             {
                 if (!DisplayContinuously)
                 {
-                    var position = timeOverride + StartSegmentLength;
+                    TimeSpan position = timeOverride + StartSegmentLength;
                     if (position > StartSegmentLength + EndSegmentLength)
                         TimelinePosition = StartSegmentLength + EndSegmentLength;
                 }
                 else
                 {
-                    var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
+                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
                     if (progress > 0)
                         TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
                     else
@@ -149,9 +149,9 @@ namespace Artemis.Core
             else
                 TimelinePosition = timeOverride;
 
-            var delta = (TimelinePosition - beginTime).TotalSeconds;
+            double delta = (TimelinePosition - beginTime).TotalSeconds;
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
@@ -178,24 +178,24 @@ namespace Artemis.Core
                 _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
 
-            using var folderPath = new SKPath(Path);
-            using var folderCanvas = new SKCanvas(_folderBitmap);
-            using var folderPaint = new SKPaint();
+            using SKPath folderPath = new SKPath(Path);
+            using SKCanvas folderCanvas = new SKCanvas(_folderBitmap);
+            using SKPaint folderPaint = new SKPaint();
             folderCanvas.Clear();
 
             folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
 
-            var targetLocation = Path.Bounds.Location;
+            SKPoint targetLocation = Path.Bounds.Location;
             if (Parent is Folder parentFolder)
                 targetLocation -= parentFolder.Path.Bounds.Location;
 
             canvas.Save();
 
-            using var clipPath = new SKPath(folderPath);
+            using SKPath clipPath = new SKPath(folderPath);
             clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
             canvas.ClipPath(clipPath);
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
 
             // No point rendering if the alpha was set to zero by one of the effects
@@ -203,10 +203,10 @@ namespace Artemis.Core
                 return;
 
             // Iterate the children in reverse because the first layer must be rendered last to end up on top
-            for (var index = Children.Count - 1; index > -1; index--)
+            for (int index = Children.Count - 1; index > -1; index--)
             {
                 folderCanvas.Save();
-                var profileElement = Children[index];
+                ProfileElement profileElement = Children[index];
                 profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
@@ -214,11 +214,11 @@ namespace Artemis.Core
             // If required, apply the opacity override of the module to the root folder
             if (IsRootFolder && Profile.Module.OpacityOverride < 1)
             {
-                var multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
+                double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
                 folderPaint.Color = folderPaint.Color.WithAlpha((byte) (folderPaint.Color.Alpha * multiplier));
             }
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
             canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
 
@@ -257,8 +257,8 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Folder");
 
-            var path = new SKPath {FillType = SKPathFillType.Winding};
-            foreach (var child in Children)
+            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (ProfileElement child in Children)
             {
                 if (child is RenderProfileElement effectChild && effectChild.Path != null)
                     path.AddPath(effectChild.Path);
@@ -277,7 +277,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            foreach (var profileElement in Children)
+            foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
 
             _folderBitmap?.Dispose();
@@ -289,15 +289,15 @@ namespace Artemis.Core
             _expandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
 
             // Load child folders
-            foreach (var childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
+            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
                 ChildrenList.Add(new Folder(Profile, this, childFolder));
             // Load child layers
-            foreach (var childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
+            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
                 ChildrenList.Add(new Layer(Profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
             ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
-            for (var index = 0; index < ChildrenList.Count; index++)
+            for (int index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index + 1;
 
             LoadRenderElement();

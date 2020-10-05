@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -36,15 +38,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             Items.Clear();
 
-            var layerProperty = _profileEditorService.SelectedDataBinding;
+            ILayerProperty layerProperty = _profileEditorService.SelectedDataBinding;
             if (layerProperty == null)
                 return;
 
-            var registrations = layerProperty.GetAllDataBindingRegistrations();
+            List<IDataBindingRegistration> registrations = layerProperty.GetAllDataBindingRegistrations();
 
             // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
             // and creating the actual data bindings
-            foreach (var registration in registrations)
+            foreach (IDataBindingRegistration registration in registrations)
                 Items.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
 
             SelectedItemIndex = 0;

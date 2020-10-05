@@ -22,7 +22,7 @@ namespace Artemis.Core
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            var _ = new Folder(this, "Root folder");
+            Folder _ = new Folder(this, "Root folder");
             Save();
         }
 
@@ -61,7 +61,7 @@ namespace Artemis.Core
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot update inactive profile: {this}");
 
-                foreach (var profileElement in Children)
+                foreach (ProfileElement profileElement in Children)
                     profileElement.Update(deltaTime);
             }
         }
@@ -75,7 +75,7 @@ namespace Artemis.Core
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
-                foreach (var profileElement in Children)
+                foreach (ProfileElement profileElement in Children)
                     profileElement.Render(deltaTime, canvas, canvasInfo);
             }
         }
@@ -98,15 +98,15 @@ namespace Artemis.Core
             lock (ChildrenList)
             {
                 // Remove the old profile tree
-                foreach (var profileElement in Children)
+                foreach (ProfileElement profileElement in Children)
                     profileElement.Dispose();
                 ChildrenList.Clear();
 
                 // Populate the profile starting at the root, the rest is populated recursively
-                var rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
+                FolderEntity rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
                 {
-                    var _ = new Folder(this, "Root folder");
+                    Folder _ = new Folder(this, "Root folder");
                 }
                 else
                     AddChild(new Folder(this, this, rootFolder));
@@ -125,7 +125,7 @@ namespace Artemis.Core
 
             OnDeactivating();
 
-            foreach (var profileElement in Children)
+            foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
             ChildrenList.Clear();
 
@@ -143,7 +143,7 @@ namespace Artemis.Core
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
 
-            foreach (var profileElement in Children)
+            foreach (ProfileElement profileElement in Children)
                 profileElement.Save();
 
             ProfileEntity.Folders.Clear();
@@ -173,7 +173,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Profile");
 
-            foreach (var layer in GetAllLayers())
+            foreach (Layer layer in GetAllLayers())
                 layer.PopulateLeds(surface);
         }
 

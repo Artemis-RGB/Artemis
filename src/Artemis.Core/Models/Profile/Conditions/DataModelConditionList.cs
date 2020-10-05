@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Core.DataModelExpansions;
@@ -97,7 +98,7 @@ namespace Artemis.Core
 
             if (dataModel != null)
             {
-                var listType = dataModel.GetListTypeAtPath(path);
+                Type listType = dataModel.GetListTypeAtPath(path);
                 if (listType == null)
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{path}'");
 
@@ -130,7 +131,7 @@ namespace Artemis.Core
             DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
 
-            foreach (var child in Children)
+            foreach (DataModelConditionPart child in Children)
                 child.Dispose();
 
             base.Dispose(disposing);
@@ -148,7 +149,7 @@ namespace Artemis.Core
             if (!(target is IList list))
                 return false;
 
-            var objectList = list.Cast<object>();
+            IEnumerable<object> objectList = list.Cast<object>();
             return ListOperator switch
             {
                 ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
@@ -174,7 +175,7 @@ namespace Artemis.Core
             // Children
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
-            foreach (var child in Children)
+            foreach (DataModelConditionPart child in Children)
                 child.Save();
         }
 
@@ -191,11 +192,11 @@ namespace Artemis.Core
                 return;
 
             // Get the data model ...
-            var dataModel = DataModelStore.Get(Entity.ListDataModelGuid.Value)?.DataModel;
+            DataModel dataModel = DataModelStore.Get(Entity.ListDataModelGuid.Value)?.DataModel;
             if (dataModel == null)
                 return;
             // ... and ensure the path is valid
-            var listType = dataModel.GetListTypeAtPath(Entity.ListPropertyPath);
+            Type listType = dataModel.GetListTypeAtPath(Entity.ListPropertyPath);
             if (listType == null)
                 return;
 
@@ -224,14 +225,14 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionList");
 
-            var parameter = Expression.Parameter(typeof(object), "listDataModel");
-            var accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
+            ParameterExpression parameter = Expression.Parameter(typeof(object), "listDataModel");
+            Expression accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
                 Expression.Convert(parameter, ListDataModel.GetType()),
                 Expression.Property
             );
             accessor = Expression.Convert(accessor, typeof(IList));
 
-            var lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
+            Expression<Func<object, IList>> lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
             CompiledListAccessor = lambda.Compile();
         }
 
@@ -240,7 +241,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
         {
-            var dataModel = e.Registration.DataModel;
+            DataModel dataModel = e.Registration.DataModel;
             if (dataModel.PluginInfo.Guid == Entity.ListDataModelGuid && dataModel.ContainsPath(Entity.ListPropertyPath))
             {
                 ListDataModel = dataModel;

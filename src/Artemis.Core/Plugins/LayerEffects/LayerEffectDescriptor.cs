@@ -67,7 +67,7 @@ namespace Artemis.Core.LayerEffects
                 return;
             }
 
-            var effect = (BaseLayerEffect) LayerEffectProvider.PluginInfo.Kernel.Get(LayerEffectType);
+            BaseLayerEffect effect = (BaseLayerEffect) LayerEffectProvider.PluginInfo.Kernel.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
             effect.EntityId = entity.Id;
             effect.Order = entity.Order;
@@ -83,7 +83,7 @@ namespace Artemis.Core.LayerEffects
 
         private void CreatePlaceHolderInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
         {
-            var effect = new PlaceholderLayerEffect(entity, PlaceholderFor.Value) {ProfileElement = renderElement, Descriptor = this};
+            PlaceholderLayerEffect effect = new PlaceholderLayerEffect(entity, PlaceholderFor.Value) {ProfileElement = renderElement, Descriptor = this};
             effect.Initialize();
             renderElement.ActivateLayerEffect(effect);
         }

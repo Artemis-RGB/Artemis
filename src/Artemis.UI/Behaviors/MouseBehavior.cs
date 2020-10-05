@@ -22,16 +22,16 @@ namespace Artemis.UI.Behaviors
 
         private static void MouseUpCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var element = (FrameworkElement) d;
+            FrameworkElement element = (FrameworkElement) d;
 
             element.MouseUp += element_MouseUp;
         }
 
         private static void element_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            var element = (FrameworkElement) sender;
+            FrameworkElement element = (FrameworkElement) sender;
 
-            var command = GetMouseUpCommand(element);
+            ICommand command = GetMouseUpCommand(element);
 
             command.Execute(e);
         }

@@ -106,7 +106,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
             LeftSideSelectionViewModel.PropertySelected += LeftSideOnPropertySelected;
             // Determine which types are currently supported
-            var editors = _dataModelUIService.RegisteredDataModelEditors;
+            IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
 
@@ -120,7 +120,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DataModelConditionPredicate.LeftDataModel,
                 DataModelConditionPredicate.LeftPropertyPath
             );
-            var leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
+            Type leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
             Operators.Clear();
@@ -135,7 +135,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             // Ensure the right side has the proper VM
-            var targetType = LeftSideSelectionViewModel?.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
+            Type targetType = LeftSideSelectionViewModel?.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
             if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic && SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideStatic();

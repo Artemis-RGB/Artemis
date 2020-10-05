@@ -22,8 +22,8 @@ namespace Artemis.Core.DefaultTypes
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            var widthDiff = NextKeyframe.Value.Width - CurrentKeyframe.Value.Width;
-            var heightDiff = NextKeyframe.Value.Height - CurrentKeyframe.Value.Height;
+            float widthDiff = NextKeyframe.Value.Width - CurrentKeyframe.Value.Width;
+            float heightDiff = NextKeyframe.Value.Height - CurrentKeyframe.Value.Height;
             CurrentValue = new SKSize(CurrentKeyframe.Value.Width + widthDiff * keyframeProgressEased, CurrentKeyframe.Value.Height + heightDiff * keyframeProgressEased);
         }
     }

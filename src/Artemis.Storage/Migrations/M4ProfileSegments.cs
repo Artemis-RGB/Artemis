@@ -2,6 +2,7 @@
 using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Artemis.Storage.Migrations
@@ -12,10 +13,10 @@ namespace Artemis.Storage.Migrations
 
         public void Apply(LiteRepository repository)
         {
-            var profiles = repository.Query<ProfileEntity>().ToList();
-            foreach (var profileEntity in profiles)
+            List<ProfileEntity> profiles = repository.Query<ProfileEntity>().ToList();
+            foreach (ProfileEntity profileEntity in profiles)
             {
-                foreach (var folder in profileEntity.Folders.Where(f => f.MainSegmentLength == TimeSpan.Zero))
+                foreach (FolderEntity folder in profileEntity.Folders.Where(f => f.MainSegmentLength == TimeSpan.Zero))
                 {
                     if (folder.PropertyEntities.Any(p => p.KeyframeEntities.Any()))
                         folder.MainSegmentLength = folder.PropertyEntities.Where(p => p.KeyframeEntities.Any()).Max(p => p.KeyframeEntities.Max(k => k.Position));
@@ -25,7 +26,7 @@ namespace Artemis.Storage.Migrations
                     folder.DisplayContinuously = true;
                 }
 
-                foreach (var layer in profileEntity.Layers.Where(l => l.MainSegmentLength == TimeSpan.Zero))
+                foreach (LayerEntity layer in profileEntity.Layers.Where(l => l.MainSegmentLength == TimeSpan.Zero))
                 {
                     if (layer.PropertyEntities.Any(p => p.KeyframeEntities.Any()))
                         layer.MainSegmentLength = layer.PropertyEntities.Where(p => p.KeyframeEntities.Any()).Max(p => p.KeyframeEntities.Max(k => k.Position));

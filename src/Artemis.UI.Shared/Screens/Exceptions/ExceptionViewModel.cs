@@ -14,7 +14,7 @@ namespace Artemis.UI.Shared.Screens.Exceptions
             Header = message;
             Exceptions = new List<DialogException>();
 
-            var currentException = exception;
+            Exception currentException = exception;
             while (currentException != null)
             {
                 Exceptions.Add(new DialogException(currentException));

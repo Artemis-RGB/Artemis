@@ -83,7 +83,7 @@ namespace Artemis.UI.Behaviors
 
         private static void OnSelectedItemChanged(DependencyObject sender, DependencyPropertyChangedEventArgs args)
         {
-            var behavior = (TreeViewSelectionBehavior) sender;
+            TreeViewSelectionBehavior behavior = (TreeViewSelectionBehavior) sender;
             if (behavior._modelHandled) return;
 
             if (behavior.AssociatedObject == null)
@@ -98,7 +98,7 @@ namespace Artemis.UI.Behaviors
         private void UpdateTreeViewItem(TreeViewItem item, bool recurse)
         {
 //            if (SelectedItem == null) return;
-            var model = item.DataContext;
+            object model = item.DataContext;
 
             // If the selected item is this model and is not yet selected - select and return
             if (SelectedItem == model && !item.IsSelected)
@@ -110,7 +110,7 @@ namespace Artemis.UI.Behaviors
             // If the selected item is a parent of this model - expand
             else
             {
-                var isParentOfModel = HierarchyPredicate?.Invoke(SelectedItem, model) ?? true;
+                bool isParentOfModel = HierarchyPredicate?.Invoke(SelectedItem, model) ?? true;
                 if (isParentOfModel)
                     item.IsExpanded = true;
             }
@@ -118,9 +118,9 @@ namespace Artemis.UI.Behaviors
             // Recurse into children
             if (recurse)
             {
-                foreach (var subitem in item.Items)
+                foreach (object? subitem in item.Items)
                 {
-                    var tvi = item.ItemContainerGenerator.ContainerFromItem(subitem) as TreeViewItem;
+                    TreeViewItem tvi = item.ItemContainerGenerator.ContainerFromItem(subitem) as TreeViewItem;
                     if (tvi != null)
                         UpdateTreeViewItem(tvi, true);
                 }
@@ -130,10 +130,10 @@ namespace Artemis.UI.Behaviors
         // Update state of all items
         private void UpdateAllTreeViewItems()
         {
-            var treeView = AssociatedObject;
-            foreach (var item in treeView.Items)
+            TreeView treeView = AssociatedObject;
+            foreach (object? item in treeView.Items)
             {
-                var tvi = treeView.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                TreeViewItem tvi = treeView.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
                 if (tvi != null)
                     UpdateTreeViewItem(tvi, true);
             }

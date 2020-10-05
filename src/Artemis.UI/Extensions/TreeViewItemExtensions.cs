@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace Artemis.UI.Extensions
@@ -15,7 +16,7 @@ namespace Artemis.UI.Extensions
 
         private static TreeViewItem GetParent(TreeViewItem item)
         {
-            var parent = VisualTreeHelper.GetParent(item);
+            DependencyObject parent = VisualTreeHelper.GetParent(item);
             while (!(parent is TreeViewItem || parent is TreeView))
                 parent = VisualTreeHelper.GetParent(parent);
             return parent as TreeViewItem;

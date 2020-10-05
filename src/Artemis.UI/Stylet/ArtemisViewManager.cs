@@ -10,7 +10,7 @@ namespace Artemis.UI.Stylet
 
         protected override string ViewTypeNameForModelTypeName(string modelTypeName)
         {
-            var cleaned = modelTypeName.Split('`')[0];
+            string cleaned = modelTypeName.Split('`')[0];
             return base.ViewTypeNameForModelTypeName(cleaned);
         }
     }

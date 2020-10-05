@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
@@ -17,6 +18,7 @@ using Ninject;
 using Ninject.Parameters;
 using Serilog;
 using Stylet;
+using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
@@ -80,20 +82,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public void OpenSettings()
         {
-            var configurationViewModel = Plugin.ConfigurationDialog;
+            PluginConfigurationDialog configurationViewModel = Plugin.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
                 // Limit to one constructor, there's no need to have more and it complicates things anyway
-                var constructors = configurationViewModel.Type.GetConstructors();
+                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
                 if (constructors.Length != 1)
                     throw new ArtemisUIException("Plugin configuration dialogs must have exactly one constructor");
 
-                var pluginParameter = constructors.First().GetParameters().First(p => typeof(Plugin).IsAssignableFrom(p.ParameterType));
-                var plugin = new ConstructorArgument(pluginParameter.Name, Plugin);
-                var viewModel = (PluginConfigurationViewModel) PluginInfo.Kernel.Get(configurationViewModel.Type, plugin);
+                ParameterInfo pluginParameter = constructors.First().GetParameters().First(p => typeof(Plugin).IsAssignableFrom(p.ParameterType));
+                ConstructorArgument plugin = new ConstructorArgument(pluginParameter.Name, Plugin);
+                PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) PluginInfo.Kernel.Get(configurationViewModel.Type, plugin);
                 _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
             }
             catch (Exception e)
@@ -136,7 +138,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             if (PluginInfo.Icon != null)
             {
-                var parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out var iconEnum);
+                bool parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out PackIconKind iconEnum);
                 if (parsedIcon)
                     return iconEnum;
             }
@@ -203,10 +205,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private async Task DisableDeviceProvider()
         {
-            var restart = false;
+            bool restart = false;
 
             // If any plugin already requires a restart, don't ask the user again
-            var restartQueued = _pluginService.GetAllPluginInfo().Any(p => p.Instance != null && !p.Enabled && p.Instance.Enabled);
+            bool restartQueued = _pluginService.GetAllPluginInfo().Any(p => p.Instance != null && !p.Enabled && p.Instance.Enabled);
             // If the plugin isn't enabled (load failed), it can be disabled without a restart
             if (!restartQueued && Plugin.Enabled)
             {

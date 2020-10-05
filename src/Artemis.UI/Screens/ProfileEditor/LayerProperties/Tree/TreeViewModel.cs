@@ -27,12 +27,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 return;
 
             e.Handled = true;
-            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            MouseWheelEventArgs eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
             {
                 RoutedEvent = UIElement.MouseWheelEvent,
                 Source = sender
             };
-            var parent = ((Control) sender).Parent as UIElement;
+            UIElement parent = ((Control) sender).Parent as UIElement;
             parent?.RaiseEvent(eventArg);
         }
     }

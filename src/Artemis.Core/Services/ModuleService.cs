@@ -28,11 +28,11 @@ namespace Artemis.Core.Services
             _profileService = profileService;
             _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
 
-            var activationUpdateTimer = new Timer(2000);
+            Timer activationUpdateTimer = new Timer(2000);
             activationUpdateTimer.Start();
             activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
 
-            foreach (var module in _pluginService.GetPluginsOfType<Module>())
+            foreach (Module module in _pluginService.GetPluginsOfType<Module>())
                 InitialiseOrApplyPriority(module);
         }
 
@@ -56,8 +56,8 @@ namespace Artemis.Core.Services
                     _logger.Information("Clearing active module override");
 
                 // Always deactivate all other modules whenever override is called
-                var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-                foreach (var module in modules.Where(m => m != overrideModule))
+                List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                foreach (Module module in modules.Where(m => m != overrideModule))
                     OverrideDeactivate(module);
 
                 ActiveModuleOverride = overrideModule;
@@ -81,7 +81,7 @@ namespace Artemis.Core.Services
                 {
                     // The conditions of the active module override may be matched, in that case reactivate as a non-override
                     // the principle is different for this service but not for the module
-                    var shouldBeActivated = ActiveModuleOverride.EvaluateActivationRequirements();
+                    bool shouldBeActivated = ActiveModuleOverride.EvaluateActivationRequirements();
                     if (shouldBeActivated && ActiveModuleOverride.IsActivatedOverride)
                     {
                         ActiveModuleOverride.Deactivate(true);
@@ -96,14 +96,14 @@ namespace Artemis.Core.Services
                     return;
                 }
 
-                var stopwatch = new Stopwatch();
+                Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-                var tasks = new List<Task>();
-                foreach (var module in modules)
+                List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                List<Task> tasks = new List<Task>();
+                foreach (Module module in modules)
                 {
-                    var shouldBeActivated = module.EvaluateActivationRequirements();
+                    bool shouldBeActivated = module.EvaluateActivationRequirements();
                     if (shouldBeActivated && !module.IsActivated)
                         tasks.Add(ActivateModule(module));
                     else if (!shouldBeActivated && module.IsActivated)
@@ -127,7 +127,7 @@ namespace Artemis.Core.Services
             if (module.PriorityCategory == category && module.Priority == priority)
                 return;
 
-            var modules = _pluginService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
+            List<Module> modules = _pluginService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
             if (modules.Contains(module))
                 modules.Remove(module);
 
@@ -135,9 +135,9 @@ namespace Artemis.Core.Services
             modules.Insert(priority, module);
 
             module.PriorityCategory = category;
-            for (var index = 0; index < modules.Count; index++)
+            for (int index = 0; index < modules.Count; index++)
             {
-                var categoryModule = modules[index];
+                Module categoryModule = modules[index];
                 categoryModule.Priority = index;
 
                 // Don't save modules whose priority hasn't been initialized yet
@@ -236,8 +236,8 @@ namespace Artemis.Core.Services
 
         private void InitialiseOrApplyPriority(Module module)
         {
-            var category = module.DefaultPriorityCategory;
-            var priority = 1;
+            ModulePriorityCategory category = module.DefaultPriorityCategory;
+            int priority = 1;
 
             module.Entity = _moduleRepository.GetByPluginGuid(module.PluginInfo.Guid);
             if (module.Entity != null)

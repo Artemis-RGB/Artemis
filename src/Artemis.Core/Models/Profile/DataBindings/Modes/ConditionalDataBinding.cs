@@ -36,7 +36,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
-            var condition = Conditions.FirstOrDefault(c => c.Evaluate());
+            DataBindingCondition<TLayerProperty, TProperty> condition = Conditions.FirstOrDefault(c => c.Evaluate());
             if (condition != null)
                 Console.WriteLine();
             return condition == null ? baseValue : condition.Value;
@@ -49,7 +49,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            foreach (var dataBindingCondition in Conditions)
+            foreach (DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition in Conditions)
                 dataBindingCondition.Dispose();
         }
 
@@ -66,7 +66,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
-            var condition = new DataBindingCondition<TLayerProperty, TProperty>(this);
+            DataBindingCondition<TLayerProperty, TProperty> condition = new DataBindingCondition<TLayerProperty, TProperty>(this);
             _conditions.Add(condition);
 
             ApplyOrder();
@@ -102,9 +102,9 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
             _conditions.Sort((a, b) => a.Order.CompareTo(b.Order));
-            for (var index = 0; index < _conditions.Count; index++)
+            for (int index = 0; index < _conditions.Count; index++)
             {
-                var condition = _conditions[index];
+                DataBindingCondition<TLayerProperty, TProperty> condition = _conditions[index];
                 condition.Order = index + 1;
             }
         }
@@ -116,7 +116,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
-            foreach (var dataBindingConditionEntity in Entity.Values)
+            foreach (DataBindingConditionEntity dataBindingConditionEntity in Entity.Values)
                 _conditions.Add(new DataBindingCondition<TLayerProperty, TProperty>(this, dataBindingConditionEntity));
 
             ApplyOrder();
@@ -126,7 +126,7 @@ namespace Artemis.Core
         public void Save()
         {
             Entity.Values.Clear();
-            foreach (var dataBindingCondition in Conditions)
+            foreach (DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition in Conditions)
                 dataBindingCondition.Save();
         }
 

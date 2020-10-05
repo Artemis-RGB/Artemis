@@ -19,10 +19,10 @@ namespace Artemis.UI.Shared
         /// <returns></returns>
         public static List<T> GetHitViewModels<T>(Visual container, RectangleGeometry rectangleGeometry)
         {
-            var result = new List<T>();
-            var hitTestParams = new GeometryHitTestParameters(rectangleGeometry);
-            var resultCallback = new HitTestResultCallback(r => HitTestResultBehavior.Continue);
-            var filterCallback = new HitTestFilterCallback(e =>
+            List<T> result = new List<T>();
+            GeometryHitTestParameters hitTestParams = new GeometryHitTestParameters(rectangleGeometry);
+            HitTestResultCallback resultCallback = new HitTestResultCallback(r => HitTestResultBehavior.Continue);
+            HitTestFilterCallback filterCallback = new HitTestFilterCallback(e =>
             {
                 if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context))
                     result.Add(context);

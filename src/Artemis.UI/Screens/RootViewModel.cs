@@ -64,7 +64,7 @@ namespace Artemis.UI.Screens
             ActiveItem = SidebarViewModel.SelectedItem;
             ActiveItemReady = true;
 
-            var versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            AssemblyInformationalVersionAttribute? versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
         }
 
@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens
 
         public void WindowDeactivated()
         {
-            var windowState = ((Window) View).WindowState;
+            WindowState windowState = ((Window) View).WindowState;
             if (windowState == WindowState.Minimized)
                 return;
 
@@ -185,12 +185,12 @@ namespace Artemis.UI.Screens
 
         private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
         {
-            var paletteHelper = new PaletteHelper();
-            var theme = paletteHelper.GetTheme();
+            PaletteHelper paletteHelper = new PaletteHelper();
+            ITheme theme = paletteHelper.GetTheme();
             theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
             paletteHelper.SetTheme(theme);
 
-            var extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
+            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
 
@@ -213,7 +213,7 @@ namespace Artemis.UI.Screens
 
         protected override void OnViewLoaded()
         {
-            var window = (MaterialWindow) View;
+            MaterialWindow window = (MaterialWindow) View;
             if (_windowSize.Value != null)
                 _windowSize.Value.ApplyToWindow(window);
             else
@@ -253,7 +253,7 @@ namespace Artemis.UI.Screens
             MainMessageQueue = null;
             _frameTimeUpdateTimer.Stop();
 
-            var window = (MaterialWindow) View;
+            MaterialWindow window = (MaterialWindow) View;
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(window);
             _windowSize.Save();

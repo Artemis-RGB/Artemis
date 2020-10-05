@@ -78,7 +78,7 @@ namespace Artemis.Core
                 return true;
             if (PrimitiveTypeConversions.ContainsKey(to) && PrimitiveTypeConversions[to].Contains(from))
                 return true;
-            var castable = from.GetMethods(BindingFlags.Public | BindingFlags.Static)
+            bool castable = from.GetMethods(BindingFlags.Public | BindingFlags.Static)
                 .Any(
                     m => m.ReturnType == to &&
                          (m.Name == "op_Implicit" ||

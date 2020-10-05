@@ -15,7 +15,7 @@ namespace Artemis.Core.DefaultTypes
 
         public override object Apply(object currentValue, object parameterValue)
         {
-            var floatValue = Convert.ToSingle(currentValue);
+            float floatValue = Convert.ToSingle(currentValue);
             return Math.Ceiling(floatValue);
         }
     }

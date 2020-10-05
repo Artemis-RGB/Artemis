@@ -34,7 +34,7 @@ namespace Artemis.Core
             Entity = entity;
             BooleanOperator = (BooleanOperator) Entity.BooleanOperator;
 
-            foreach (var childEntity in Entity.Children)
+            foreach (DataModelConditionPartEntity childEntity in Entity.Children)
             {
                 if (childEntity is DataModelConditionGroupEntity groupEntity)
                     AddChild(new DataModelConditionGroup(this, groupEntity));
@@ -88,7 +88,7 @@ namespace Artemis.Core
         protected override void Dispose(bool disposing)
         {
             _disposed = true;
-            foreach (var child in Children)
+            foreach (DataModelConditionPart child in Children)
                 child.Dispose();
 
             base.Dispose(disposing);
@@ -125,7 +125,7 @@ namespace Artemis.Core
 
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
-            foreach (var child in Children)
+            foreach (DataModelConditionPart child in Children)
                 child.Save();
         }
 

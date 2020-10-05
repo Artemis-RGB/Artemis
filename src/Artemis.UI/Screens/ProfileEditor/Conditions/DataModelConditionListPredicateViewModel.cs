@@ -99,7 +99,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void Initialize()
         {
-            var listDataModel = GetListDataModel();
+            DataModelVisualizationViewModel listDataModel = GetListDataModel();
             if (listDataModel.Children.Count == 1 && listDataModel.Children.First() is DataModelListPropertyViewModel)
                 _isPrimitiveList = true;
             else
@@ -114,7 +114,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             // Determine which types are currently supported
-            var editors = _dataModelUIService.RegisteredDataModelEditors;
+            IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
 
@@ -123,7 +123,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Update()
         {
-            var listDataModelGuid = DataModelConditionListPredicate.DataModelConditionList.ListDataModel.PluginInfo.Guid;
+            Guid listDataModelGuid = DataModelConditionListPredicate.DataModelConditionList.ListDataModel.PluginInfo.Guid;
             if (!_isPrimitiveList)
             {
                 LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
@@ -133,7 +133,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 );
             }
 
-            var leftSideType = _isPrimitiveList
+            Type leftSideType = _isPrimitiveList
                 ? DataModelConditionListPredicate.DataModelConditionList.ListType
                 : LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
 
@@ -235,8 +235,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         private DataModelVisualizationViewModel GetListDataModel()
         {
-            var dataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
-            var listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
+            DataModelPropertiesViewModel dataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
+            DataModelListViewModel listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
                 DataModelConditionListPredicate.DataModelConditionList.ListDataModel.PluginInfo.Guid,
                 DataModelConditionListPredicate.DataModelConditionList.ListPropertyPath
             );

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -63,7 +64,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void SelectBooleanOperator(string type)
         {
-            var enumValue = Enum.Parse<BooleanOperator>(type);
+            BooleanOperator enumValue = Enum.Parse<BooleanOperator>(type);
             DataModelConditionGroup.BooleanOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
@@ -108,12 +109,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList();
+            List<DataModelConditionViewModel> toRemove = Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
-            foreach (var DataModelConditionViewModel in toRemove)
+            foreach (DataModelConditionViewModel DataModelConditionViewModel in toRemove)
                 Items.Remove(DataModelConditionViewModel);
 
-            foreach (var childModel in Model.Children)
+            foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))
                     continue;
@@ -137,7 +138,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 }
             }
 
-            foreach (var childViewModel in Items)
+            foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
 
             if (IsRootGroup && Parent is DisplayConditionsViewModel displayConditionsViewModel)

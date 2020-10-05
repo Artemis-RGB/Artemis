@@ -25,7 +25,7 @@ namespace Artemis.UI.Shared
             if (string.IsNullOrWhiteSpace((string) value))
                 return SKColor.Empty;
 
-            return SKColor.TryParse((string) value, out var color) ? color : SKColor.Empty;
+            return SKColor.TryParse((string) value, out SKColor color) ? color : SKColor.Empty;
         }
     }
 }

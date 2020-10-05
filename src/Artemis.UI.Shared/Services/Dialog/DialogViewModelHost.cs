@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using System.Windows;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Shared.Services
@@ -17,7 +18,7 @@ namespace Artemis.UI.Shared.Services
 
         public void OpenDialog(DialogViewModelBase viewModel, string dialogIdentifier)
         {
-            var view = _viewManager.CreateViewForModel(viewModel);
+            UIElement view = _viewManager.CreateViewForModel(viewModel);
             DialogHost.Show(view, dialogIdentifier, viewModel.OnDialogClosed);
             viewModel.DialogViewModelHost = this;
 

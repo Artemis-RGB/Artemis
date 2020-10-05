@@ -9,9 +9,9 @@ namespace Artemis.Core
     {
         public static string GetProcessFilename(this Process p)
         {
-            var capacity = 2000;
-            var builder = new StringBuilder(capacity);
-            var ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
+            int capacity = 2000;
+            StringBuilder builder = new StringBuilder(capacity);
+            IntPtr ptr = OpenProcess(ProcessAccessFlags.QueryLimitedInformation, false, p.Id);
             if (!QueryFullProcessImageName(ptr, 0, builder, ref capacity)) return string.Empty;
 
             return builder.ToString();

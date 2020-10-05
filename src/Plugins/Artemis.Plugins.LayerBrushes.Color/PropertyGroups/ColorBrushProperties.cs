@@ -64,7 +64,7 @@ namespace Artemis.Plugins.LayerBrushes.Color.PropertyGroups
 
         private void UpdateVisibility()
         {
-            var normalRender = false;
+            bool normalRender = false;
             if (ProfileElement is Layer layer)
                 normalRender = layer.General.ResizeMode.CurrentValue == LayerResizeMode.Normal;
 

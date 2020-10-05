@@ -18,12 +18,12 @@ namespace Artemis.Core.Ninject
 
         protected override PluginSettings CreateInstance(IContext context)
         {
-            var parentRequest = context.Request.ParentRequest;
+            IRequest parentRequest = context.Request.ParentRequest;
             if (parentRequest == null)
                 throw new ArtemisCoreException("PluginSettings couldn't be injected, failed to get the injection parent request");
 
             // First try by PluginInfo parameter
-            var pluginInfo = parentRequest.Parameters.FirstOrDefault(p => p.Name == "PluginInfo")?.GetValue(context, null) as PluginInfo;
+            PluginInfo pluginInfo = parentRequest.Parameters.FirstOrDefault(p => p.Name == "PluginInfo")?.GetValue(context, null) as PluginInfo;
             if (pluginInfo == null)
                 pluginInfo = _pluginService.GetPluginByAssembly(parentRequest.Service.Assembly)?.PluginInfo;
             // Fall back to assembly based detection

@@ -72,7 +72,7 @@ namespace Artemis.UI.Shared.Services
             if (_overlayOpacity > 1f)
                 _overlayOpacity = 1f;
 
-            using var overlayPaint = new SKPaint {Color = new SKColor(0, 0, 0, (byte) (255 * _overlayOpacity))};
+            using SKPaint overlayPaint = new SKPaint {Color = new SKColor(0, 0, 0, (byte) (255 * _overlayOpacity))};
             overlayPaint.Color = _overlayColor.WithAlpha((byte) (_overlayColor.Alpha * _overlayOpacity));
             e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
         }

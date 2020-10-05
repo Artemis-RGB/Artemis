@@ -53,13 +53,13 @@ namespace Artemis.Core
                 if (type == null)
                     return new List<DataBindingModifierTypeRegistration>(Registrations);
 
-                var candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t == type)).ToList();
+                List<DataBindingModifierTypeRegistration> candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t == type)).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
-                foreach (var displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Name).Where(g => g.Count() > 1).ToList())
+                foreach (IGrouping<string, DataBindingModifierTypeRegistration> displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Name).Where(g => g.Count() > 1).ToList())
                 {
-                    var closest = displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.CompatibleTypes.Contains(type)).FirstOrDefault();
-                    foreach (var displayDataBindingModifier in displayDataBindingModifiers)
+                    DataBindingModifierTypeRegistration closest = displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    foreach (DataBindingModifierTypeRegistration displayDataBindingModifier in displayDataBindingModifiers)
                     {
                         if (displayDataBindingModifier != closest)
                             candidates.Remove(displayDataBindingModifier);

@@ -127,8 +127,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             Execute.PostToUIThread(() =>
             {
-                var bounds = _layerEditorService.GetLayerBounds(Layer);
-                var shapeGeometry = Geometry.Empty;
+                Rect bounds = _layerEditorService.GetLayerBounds(Layer);
+                Geometry shapeGeometry = Geometry.Empty;
                 switch (Layer.LayerShape)
                 {
                     case EllipseShape _:
@@ -159,22 +159,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private Geometry CreateRectangleGeometry(ArtemisLed led)
         {
-            var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
             return new RectangleGeometry(rect);
         }
 
         private Geometry CreateCircleGeometry(ArtemisLed led)
         {
-            var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
             return new EllipseGeometry(rect);
         }
 
         private Geometry CreateCustomGeometry(ArtemisLed led, double deflateAmount)
         {
-            var rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
             try
             {
-                var geometry = Geometry.Combine(
+                PathGeometry geometry = Geometry.Combine(
                     Geometry.Empty,
                     Geometry.Parse(led.RgbLed.ShapeData),
                     GeometryCombineMode.Union,

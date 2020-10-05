@@ -55,8 +55,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public List<TreeItemViewModel> GetAllChildren()
         {
-            var children = new List<TreeItemViewModel>();
-            foreach (var childFolder in Items)
+            List<TreeItemViewModel> children = new List<TreeItemViewModel>();
+            foreach (TreeItemViewModel childFolder in Items)
             {
                 // Add all children in this element
                 children.Add(childFolder);
@@ -69,8 +69,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void SetElementInFront(TreeItemViewModel source)
         {
-            var sourceParent = (TreeItemViewModel) source.Parent;
-            var parent = (TreeItemViewModel) Parent;
+            TreeItemViewModel sourceParent = (TreeItemViewModel) source.Parent;
+            TreeItemViewModel parent = (TreeItemViewModel) Parent;
 
             // If the parents are different, remove the element from the old parent and add it to the new parent
             if (source.Parent != Parent)
@@ -89,8 +89,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void SetElementBehind(TreeItemViewModel source)
         {
-            var sourceParent = (TreeItemViewModel) source.Parent;
-            var parent = (TreeItemViewModel) Parent;
+            TreeItemViewModel sourceParent = (TreeItemViewModel) source.Parent;
+            TreeItemViewModel parent = (TreeItemViewModel) Parent;
             if (source.Parent != Parent)
             {
                 sourceParent.RemoveExistingElement(source);
@@ -129,7 +129,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a folder to a profile element of type " + ProfileElement.GetType().Name);
 
-            var _ = new Folder(ProfileElement, "New folder");
+            Folder _ = new Folder(ProfileElement, "New folder");
             _profileEditorService.UpdateSelectedProfile();
         }
 
@@ -138,7 +138,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            var layer = new Layer(ProfileElement, "New layer");
+            Layer layer = new Layer(ProfileElement, "New layer");
             layer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
             layer.AddLeds(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds));
             _profileEditorService.UpdateSelectedProfile();
@@ -148,7 +148,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task RenameElement()
         {
-            var result = await _dialogService.ShowDialogAt<RenameViewModel>(
+            object result = await _dialogService.ShowDialogAt<RenameViewModel>(
                 "ProfileTreeDialog",
                 new Dictionary<string, object>
                 {
@@ -166,7 +166,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         // ReSharper disable once UnusedMember.Global - Called from view
         public async Task DeleteElement()
         {
-            var result = await _dialogService.ShowConfirmDialogAt(
+            bool result = await _dialogService.ShowConfirmDialogAt(
                 "ProfileTreeDialog",
                 "Delete profile element",
                 "Are you sure?"
@@ -176,7 +176,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 return;
 
             // Farewell, cruel world
-            var parent = (TreeItemViewModel) Parent;
+            TreeItemViewModel parent = (TreeItemViewModel) Parent;
             ProfileElement.Parent?.RemoveChild(ProfileElement);
             parent.RemoveExistingElement(this);
 
@@ -187,15 +187,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public void UpdateProfileElements()
         {
             // Remove VMs that are no longer a child
-            var toRemove = Items.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
-            foreach (var treeItemViewModel in toRemove)
+            List<TreeItemViewModel> toRemove = Items.Where(c => c.ProfileElement.Parent != ProfileElement).ToList();
+            foreach (TreeItemViewModel treeItemViewModel in toRemove)
                 Items.Remove(treeItemViewModel);
 
             // Order the children
-            var vmsList = Items.OrderBy(v => v.ProfileElement.Order).ToList();
-            for (var index = 0; index < vmsList.Count; index++)
+            List<TreeItemViewModel> vmsList = Items.OrderBy(v => v.ProfileElement.Order).ToList();
+            for (int index = 0; index < vmsList.Count; index++)
             {
-                var profileElementViewModel = vmsList[index];
+                TreeItemViewModel profileElementViewModel = vmsList[index];
                 if (Items.IndexOf(profileElementViewModel) != index)
                     ((BindableCollection<TreeItemViewModel>) Items).Move(Items.IndexOf(profileElementViewModel), index);
             }
@@ -204,8 +204,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (ProfileElement.Children == null)
                 return;
 
-            var newChildren = new List<TreeItemViewModel>();
-            foreach (var profileElement in ProfileElement.Children.OrderBy(c => c.Order))
+            List<TreeItemViewModel> newChildren = new List<TreeItemViewModel>();
+            foreach (ProfileElement profileElement in ProfileElement.Children.OrderBy(c => c.Order))
             {
                 if (profileElement is Folder folder)
                 {
@@ -223,7 +223,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 return;
 
             // Add the new children in one call, prevent extra UI events
-            foreach (var treeItemViewModel in newChildren)
+            foreach (TreeItemViewModel treeItemViewModel in newChildren)
             {
                 treeItemViewModel.UpdateProfileElements();
                 Items.Add(treeItemViewModel);

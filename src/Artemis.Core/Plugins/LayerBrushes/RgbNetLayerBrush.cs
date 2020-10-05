@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Services;
 using RGB.NET.Core;
@@ -39,8 +40,8 @@ namespace Artemis.Core.LayerBrushes
             // TODO: This simply renders it on top of the rest, get a ZIndex based on layer position
             LedGroup.ZIndex = 1;
 
-            var missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
-            var extraLeds = LedGroup.GetLeds().Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
+            List<Led> missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
+            List<Led> extraLeds = LedGroup.GetLeds().Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
             LedGroup.AddLeds(missingLeds);
             LedGroup.RemoveLeds(extraLeds);
             LedGroup.Brush = GetBrush();

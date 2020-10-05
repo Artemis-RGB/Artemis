@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
@@ -48,7 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         {
             ConditionalDataBinding.ConditionsUpdated -= ConditionalDataBindingOnConditionsUpdated;
 
-            foreach (var conditionViewModel in ConditionViewModels)
+            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel in ConditionViewModels)
                 conditionViewModel.Dispose();
             ConditionViewModels.Clear();
         }
@@ -57,10 +58,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
         public void AddCondition(string type)
         {
-            var condition = ConditionalDataBinding.AddCondition();
+            DataBindingCondition<TLayerProperty, TProperty> condition = ConditionalDataBinding.AddCondition();
 
             // Find the VM of the new condition
-            var viewModel = ConditionViewModels.First(c => c.DataBindingCondition == condition);
+            DataBindingConditionViewModel<TLayerProperty, TProperty> viewModel = ConditionViewModels.First(c => c.DataBindingCondition == condition);
             viewModel.ActiveItem.AddCondition(type);
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -71,15 +72,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _updating = true;
 
             // Remove old VMs
-            var toRemove = ConditionViewModels.Where(c => !ConditionalDataBinding.Conditions.Contains(c.DataBindingCondition)).ToList();
-            foreach (var dataBindingConditionViewModel in toRemove)
+            List<DataBindingConditionViewModel<TLayerProperty, TProperty>> toRemove = ConditionViewModels.Where(c => !ConditionalDataBinding.Conditions.Contains(c.DataBindingCondition)).ToList();
+            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> dataBindingConditionViewModel in toRemove)
             {
                 ConditionViewModels.Remove(dataBindingConditionViewModel);
                 dataBindingConditionViewModel.Dispose();
             }
 
             // Add missing VMs
-            foreach (var condition in ConditionalDataBinding.Conditions)
+            foreach (DataBindingCondition<TLayerProperty, TProperty> condition in ConditionalDataBinding.Conditions)
             {
                 if (ConditionViewModels.All(c => c.DataBindingCondition != condition))
                     ConditionViewModels.Add(_dataBindingsVmFactory.DataBindingConditionViewModel(condition));
@@ -103,9 +104,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             if (_updating || e.Action != NotifyCollectionChangedAction.Add)
                 return;
 
-            for (var index = 0; index < ConditionViewModels.Count; index++)
+            for (int index = 0; index < ConditionViewModels.Count; index++)
             {
-                var conditionViewModel = ConditionViewModels[index];
+                DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel = ConditionViewModels[index];
                 conditionViewModel.DataBindingCondition.Order = index + 1;
             }
 

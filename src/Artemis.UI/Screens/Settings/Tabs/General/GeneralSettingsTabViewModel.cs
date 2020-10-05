@@ -36,17 +36,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
             RenderScales = new List<Tuple<string, double>> {new Tuple<string, double>("10%", 0.1)};
-            for (var i = 25; i <= 100; i += 25)
+            for (int i = 25; i <= 100; i += 25)
                 RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
 
             TargetFrameRates = new List<Tuple<string, int>>();
-            for (var i = 10; i <= 30; i += 5)
+            for (int i = 10; i <= 30; i += 5)
                 TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
 
             // Anything else is kinda broken right now
             SampleSizes = new List<int> {1, 9};
 
-            var layerBrushProviders = pluginService.GetPluginsOfType<LayerBrushProvider>();
+            List<LayerBrushProvider> layerBrushProviders = pluginService.GetPluginsOfType<LayerBrushProvider>();
 
             LayerBrushDescriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
@@ -221,8 +221,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         {
             try
             {
-                var autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-                var executableFile = Constants.ExecutablePath;
+                string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
+                string executableFile = Constants.ExecutablePath;
 
                 if (File.Exists(autoRunFile))
                     File.Delete(autoRunFile);

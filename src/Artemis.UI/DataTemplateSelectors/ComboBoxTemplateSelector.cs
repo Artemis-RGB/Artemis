@@ -16,7 +16,7 @@ namespace Artemis.UI.DataTemplateSelectors
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            var itemToCheck = container;
+            DependencyObject itemToCheck = container;
 
             // Search up the visual tree, stopping at either a ComboBox or
             // a ComboBoxItem (or null). This will determine which template to use
@@ -24,7 +24,7 @@ namespace Artemis.UI.DataTemplateSelectors
                 itemToCheck = VisualTreeHelper.GetParent(itemToCheck);
 
             // If you stopped at a ComboBoxItem, you're in the dropdown
-            var inDropDown = itemToCheck is ComboBoxItem;
+            bool inDropDown = itemToCheck is ComboBoxItem;
 
             return inDropDown
                 ? DropdownItemsTemplate ?? DropdownItemsTemplateSelector?.SelectTemplate(item, container)

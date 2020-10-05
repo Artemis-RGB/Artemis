@@ -39,9 +39,9 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
-            var r = Led.RgbLed.Color.GetR();
-            var g = Led.RgbLed.Color.GetG();
-            var b = Led.RgbLed.Color.GetB();
+            byte r = Led.RgbLed.Color.GetR();
+            byte g = Led.RgbLed.Color.GetG();
+            byte b = Led.RgbLed.Color.GetB();
 
             drawingContext.DrawRectangle(isDimmed
                 ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
@@ -61,9 +61,9 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
-            var fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            SolidColorBrush fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
             fillBrush.Freeze();
-            var penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            SolidColorBrush penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
             penBrush.Freeze();
 
             // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size

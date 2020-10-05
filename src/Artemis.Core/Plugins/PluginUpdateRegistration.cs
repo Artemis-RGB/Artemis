@@ -83,7 +83,7 @@ namespace Artemis.Core
             if (!PluginInfo.Instance.Enabled)
                 return;
 
-            var interval = DateTime.Now - _lastEvent;
+            TimeSpan interval = DateTime.Now - _lastEvent;
             _lastEvent = DateTime.Now;
 
             // Modules don't always want to update, honor that

@@ -93,8 +93,8 @@ namespace Artemis.Core
             if (Converter == null)
                 return;
 
-            var converterValue = Converter.GetValue();
-            var value = GetValue(converterValue);
+            TProperty converterValue = Converter.GetValue();
+            TProperty value = GetValue(converterValue);
             Converter.ApplyValue(value);
         }
 
@@ -121,7 +121,7 @@ namespace Artemis.Core
             if (Converter == null || DataBindingMode == null)
                 return baseValue;
 
-            var value = DataBindingMode.GetValue(baseValue);
+            TProperty value = DataBindingMode.GetValue(baseValue);
 
             // If no easing is to be applied simple return whatever the current value is
             if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
@@ -175,7 +175,7 @@ namespace Artemis.Core
             if (_easingProgress == EasingTime || !Converter.SupportsInterpolate)
                 return _currentValue;
 
-            var easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
+            double easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
             return Converter.Interpolate(_previousValue, _currentValue, Easings.Interpolate(easingAmount, EasingFunction));
         }
 
@@ -229,7 +229,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             // General
-            var registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
+            DataBindingRegistration<TLayerProperty, TProperty> registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
             if (registration != null)
                 ApplyRegistration(registration);
 

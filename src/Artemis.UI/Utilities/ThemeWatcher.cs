@@ -20,8 +20,8 @@ namespace Artemis.UI.Utilities
 
         public void WatchTheme()
         {
-            var currentUser = WindowsIdentity.GetCurrent();
-            var query = string.Format(
+            WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
+            string query = string.Format(
                 CultureInfo.InvariantCulture,
                 @"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS' AND KeyPath = '{0}\\{1}' AND ValueName = '{2}'",
                 currentUser.User.Value,
@@ -30,10 +30,10 @@ namespace Artemis.UI.Utilities
 
             try
             {
-                var watcher = new ManagementEventWatcher(query);
+                ManagementEventWatcher watcher = new ManagementEventWatcher(query);
                 watcher.EventArrived += (sender, args) =>
                 {
-                    var newWindowsTheme = GetWindowsTheme();
+                    WindowsTheme newWindowsTheme = GetWindowsTheme();
                     OnThemeChanged(new WindowsThemeEventArgs(newWindowsTheme));
                 };
 
@@ -48,12 +48,12 @@ namespace Artemis.UI.Utilities
 
         public WindowsTheme GetWindowsTheme()
         {
-            using (var key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath))
+            using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath))
             {
-                var registryValueObject = key?.GetValue(RegistryValueName);
+                object registryValueObject = key?.GetValue(RegistryValueName);
                 if (registryValueObject == null) return WindowsTheme.Light;
 
-                var registryValue = (int) registryValueObject;
+                int registryValue = (int) registryValueObject;
 
                 return registryValue > 0 ? WindowsTheme.Light : WindowsTheme.Dark;
             }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Core;
@@ -50,7 +51,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void SelectListOperator(string type)
         {
-            var enumValue = Enum.Parse<ListOperator>(type);
+            ListOperator enumValue = Enum.Parse<ListOperator>(type);
             DataModelConditionList.ListOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
@@ -110,24 +111,24 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList();
+            List<DataModelConditionViewModel> toRemove = Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList();
             // Using RemoveRange breaks our lovely animations
-            foreach (var conditionViewModel in toRemove)
+            foreach (DataModelConditionViewModel conditionViewModel in toRemove)
                 Items.Remove(conditionViewModel);
 
-            foreach (var childModel in Model.Children)
+            foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))
                     continue;
                 if (!(childModel is DataModelConditionGroup dataModelConditionGroup))
                     continue;
 
-                var viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, true);
+                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, true);
                 viewModel.IsRootGroup = true;
                 Items.Add(viewModel);
             }
 
-            foreach (var childViewModel in Items)
+            foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
         }
 

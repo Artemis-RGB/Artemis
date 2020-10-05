@@ -20,12 +20,12 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var colorGradients = (BindableCollection<ColorGradientStop>) value;
-            var collection = new GradientStopCollection();
+            BindableCollection<ColorGradientStop> colorGradients = (BindableCollection<ColorGradientStop>) value;
+            GradientStopCollection collection = new GradientStopCollection();
             if (colorGradients == null)
                 return collection;
 
-            foreach (var c in colorGradients.OrderBy(s => s.Position))
+            foreach (ColorGradientStop c in colorGradients.OrderBy(s => s.Position))
                 collection.Add(new GradientStop(Color.FromArgb(c.Color.Alpha, c.Color.Red, c.Color.Green, c.Color.Blue), c.Position));
             return collection;
         }
@@ -33,12 +33,12 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var collection = (GradientStopCollection) value;
-            var colorGradients = new BindableCollection<ColorGradientStop>();
+            GradientStopCollection collection = (GradientStopCollection) value;
+            BindableCollection<ColorGradientStop> colorGradients = new BindableCollection<ColorGradientStop>();
             if (collection == null)
                 return colorGradients;
 
-            foreach (var c in collection.OrderBy(s => s.Offset))
+            foreach (GradientStop c in collection.OrderBy(s => s.Offset))
                 colorGradients.Add(new ColorGradientStop(new SKColor(c.Color.R, c.Color.G, c.Color.B, c.Color.A), (float) c.Offset));
             return colorGradients;
         }

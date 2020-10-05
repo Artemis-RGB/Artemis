@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyKeyframe.PropertyChanged -= LayerPropertyKeyframeOnPropertyChanged;
 
-            foreach (var timelineEasingViewModel in EasingViewModels)
+            foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
                 timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
         }
 
@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 .Cast<Easings.Functions>()
                 .Select(e => new TimelineEasingViewModel(e, e == LayerPropertyKeyframe.EasingFunction)));
 
-            foreach (var timelineEasingViewModel in EasingViewModels)
+            foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
                 timelineEasingViewModel.EasingModeSelected += TimelineEasingViewModelOnEasingModeSelected;
         }
 
@@ -105,7 +105,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             LayerPropertyKeyframe.EasingFunction = easingViewModel.EasingFunction;
             // Set every selection to false except on the VM that made the change
-            foreach (var propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
+            foreach (TimelineEasingViewModel propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
                 propertyTrackEasingViewModel.IsEasingModeSelected = false;
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -162,14 +162,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void Copy()
         {
-            var newKeyframe = new LayerPropertyKeyframe<T>(
+            LayerPropertyKeyframe<T> newKeyframe = new LayerPropertyKeyframe<T>(
                 LayerPropertyKeyframe.Value,
                 LayerPropertyKeyframe.Position,
                 LayerPropertyKeyframe.EasingFunction,
                 LayerPropertyKeyframe.LayerProperty
             );
             // If possible, shift the keyframe to the right by 11 pixels
-            var desiredPosition = newKeyframe.Position + TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
+            TimeSpan desiredPosition = newKeyframe.Position + TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
             if (desiredPosition <= newKeyframe.LayerProperty.ProfileElement.TimelineLength)
                 newKeyframe.Position = desiredPosition;
             // Otherwise if possible shift it to the left by 11 pixels

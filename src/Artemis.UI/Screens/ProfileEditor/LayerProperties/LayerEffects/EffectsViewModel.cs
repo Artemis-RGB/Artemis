@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
@@ -34,14 +35,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 
         public void PopulateDescriptors()
         {
-            var layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
-            var descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
+            List<LayerEffectProvider> layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
+            List<LayerEffectDescriptor> descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
             Items.AddRange(descriptors.Except(Items));
             Items.RemoveRange(Items.Except(descriptors));
 
             // Sort by display name
-            var index = 0;
-            foreach (var layerEffectDescriptor in Items.OrderBy(d => d.DisplayName).ToList())
+            int index = 0;
+            foreach (LayerEffectDescriptor layerEffectDescriptor in Items.OrderBy(d => d.DisplayName).ToList())
             {
                 if (Items.IndexOf(layerEffectDescriptor) != index)
                     ((BindableCollection<LayerEffectDescriptor>) Items).Move(Items.IndexOf(layerEffectDescriptor), index);

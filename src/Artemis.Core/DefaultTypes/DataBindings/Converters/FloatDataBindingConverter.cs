@@ -29,7 +29,7 @@ namespace Artemis.Core.DefaultTypes
         /// <inheritdoc />
         public override float Interpolate(float a, float b, double progress)
         {
-            var diff = b - a;
+            float diff = b - a;
             return (float) (a + diff * progress);
         }
 

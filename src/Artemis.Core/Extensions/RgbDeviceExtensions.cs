@@ -7,7 +7,7 @@ namespace Artemis.Core
     {
         public static string GetDeviceIdentifier(this IRGBDevice rgbDevice)
         {
-            var builder = new StringBuilder();
+            StringBuilder builder = new StringBuilder();
             builder.Append(rgbDevice.DeviceInfo.DeviceName);
             builder.Append('-');
             builder.Append(rgbDevice.DeviceInfo.Manufacturer);

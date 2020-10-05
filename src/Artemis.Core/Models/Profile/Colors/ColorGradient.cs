@@ -37,10 +37,10 @@ namespace Artemis.Core
             if (timesToRepeat == 0)
                 return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
 
-            var colors = Stops.OrderBy(c => c.Position).Select(c => c.Color).ToList();
-            var result = new List<SKColor>();
+            List<SKColor> colors = Stops.OrderBy(c => c.Position).Select(c => c.Color).ToList();
+            List<SKColor> result = new List<SKColor>();
 
-            for (var i = 0; i <= timesToRepeat; i++)
+            for (int i = 0; i <= timesToRepeat; i++)
                 result.AddRange(colors);
 
             return result.ToArray();
@@ -60,13 +60,13 @@ namespace Artemis.Core
                 return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
 
             // Create stops and a list of divided stops
-            var stops = Stops.OrderBy(c => c.Position).Select(c => c.Position / (timesToRepeat + 1)).ToList();
-            var result = new List<float>();
+            List<float> stops = Stops.OrderBy(c => c.Position).Select(c => c.Position / (timesToRepeat + 1)).ToList();
+            List<float> result = new List<float>();
 
             // For each repeat cycle, add the base stops to the end result
-            for (var i = 0; i <= timesToRepeat; i++)
+            for (int i = 0; i <= timesToRepeat; i++)
             {
-                var localStops = stops.Select(s => s + result.LastOrDefault()).ToList();
+                List<float> localStops = stops.Select(s => s + result.LastOrDefault()).ToList();
                 result.AddRange(localStops);
             }
 
@@ -90,11 +90,11 @@ namespace Artemis.Core
             if (!Stops.Any())
                 return SKColor.Empty;
 
-            var stops = Stops.OrderBy(x => x.Position).ToArray();
+            ColorGradientStop[] stops = Stops.OrderBy(x => x.Position).ToArray();
             if (position <= 0) return stops[0].Color;
             if (position >= 1) return stops[^1].Color;
             ColorGradientStop left = stops[0], right = null;
-            foreach (var stop in stops)
+            foreach (ColorGradientStop stop in stops)
             {
                 if (stop.Position >= position)
                 {
@@ -109,10 +109,10 @@ namespace Artemis.Core
                 return left.Color;
 
             position = (float) Math.Round((position - left.Position) / (right.Position - left.Position), 2);
-            var a = (byte) ((right.Color.Alpha - left.Color.Alpha) * position + left.Color.Alpha);
-            var r = (byte) ((right.Color.Red - left.Color.Red) * position + left.Color.Red);
-            var g = (byte) ((right.Color.Green - left.Color.Green) * position + left.Color.Green);
-            var b = (byte) ((right.Color.Blue - left.Color.Blue) * position + left.Color.Blue);
+            byte a = (byte) ((right.Color.Alpha - left.Color.Alpha) * position + left.Color.Alpha);
+            byte r = (byte) ((right.Color.Red - left.Color.Red) * position + left.Color.Red);
+            byte g = (byte) ((right.Color.Green - left.Color.Green) * position + left.Color.Green);
+            byte b = (byte) ((right.Color.Blue - left.Color.Blue) * position + left.Color.Blue);
             return new SKColor(r, g, b, a);
         }
 
@@ -122,10 +122,10 @@ namespace Artemis.Core
         /// <returns></returns>
         public static ColorGradient GetUnicornBarf()
         {
-            var gradient = new ColorGradient();
-            for (var i = 0; i < 9; i++)
+            ColorGradient gradient = new ColorGradient();
+            for (int i = 0; i < 9; i++)
             {
-                var color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
+                SKColor color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
                 gradient.Stops.Add(new ColorGradientStop(color, 0.125f * i));
             }
 

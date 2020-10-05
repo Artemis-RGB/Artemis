@@ -20,9 +20,9 @@ namespace Artemis.Core
             // Create an expression that checks every part of the path for null
             // In the same iteration, create the accessor
             Expression condition = null;
-            foreach (var memberName in path.Split('.'))
+            foreach (string memberName in path.Split('.'))
             {
-                var notNull = Expression.NotEqual(source, Expression.Constant(null));
+                BinaryExpression notNull = Expression.NotEqual(source, Expression.Constant(null));
                 condition = condition != null ? Expression.AndAlso(condition, notNull) : notNull;
                 source = Expression.PropertyOrField(source, memberName);
             }

@@ -73,12 +73,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
-            var result = new List<ILayerProperty>();
+            List<ILayerProperty> result = new List<ILayerProperty>();
             result.AddRange(General.GetAllLayerProperties());
             result.AddRange(Transform.GetAllLayerProperties());
             if (LayerBrush?.BaseProperties != null)
                 result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
-            foreach (var layerEffect in LayerEffects)
+            foreach (BaseLayerEffect layerEffect in LayerEffects)
             {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
@@ -162,11 +162,11 @@ namespace Artemis.Core
             LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
 
             // Layers have two hardcoded property groups, instantiate them
-            var generalAttribute = Attribute.GetCustomAttribute(
+            Attribute? generalAttribute = Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(General)),
                 typeof(PropertyGroupDescriptionAttribute)
             );
-            var transformAttribute = Attribute.GetCustomAttribute(
+            Attribute? transformAttribute = Attribute.GetCustomAttribute(
                 GetType().GetProperty(nameof(Transform)),
                 typeof(PropertyGroupDescriptionAttribute)
             );
@@ -214,9 +214,9 @@ namespace Artemis.Core
 
             // LEDs
             LayerEntity.Leds.Clear();
-            foreach (var artemisLed in Leds)
+            foreach (ArtemisLed artemisLed in Leds)
             {
-                var ledEntity = new LedEntity
+                LedEntity ledEntity = new LedEntity
                 {
                     DeviceIdentifier = artemisLed.Device.RgbDevice.GetDeviceIdentifier(),
                     LedName = artemisLed.RgbLed.Id.ToString()
@@ -280,7 +280,7 @@ namespace Artemis.Core
             LayerBrush.BaseProperties?.Update(deltaTime);
             LayerBrush.Update(deltaTime);
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(deltaTime);
                 baseLayerEffect.Update(deltaTime);
@@ -301,10 +301,10 @@ namespace Artemis.Core
                 return;
 
             // Disable data bindings during an override
-            var wasApplyingDataBindings = ApplyDataBindingsEnabled;
+            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
             ApplyDataBindingsEnabled = false;
 
-            var beginTime = TimelinePosition;
+            TimeSpan beginTime = TimelinePosition;
 
             if (stickToMainSegment)
             {
@@ -312,7 +312,7 @@ namespace Artemis.Core
                     TimelinePosition = StartSegmentLength + timeOverride;
                 else
                 {
-                    var progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
+                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
                     if (progress > 0)
                         TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
                     else
@@ -322,14 +322,14 @@ namespace Artemis.Core
             else
                 TimelinePosition = timeOverride;
 
-            var delta = (TimelinePosition - beginTime).TotalSeconds;
+            double delta = (TimelinePosition - beginTime).TotalSeconds;
 
             General.Update(delta);
             Transform.Update(delta);
             LayerBrush.BaseProperties?.Update(delta);
             LayerBrush.Update(delta);
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(delta);
                 baseLayerEffect.Update(delta);
@@ -363,9 +363,9 @@ namespace Artemis.Core
                 _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
 
-            using var layerPath = new SKPath(Path);
-            using var layerCanvas = new SKCanvas(_layerBitmap);
-            using var layerPaint = new SKPaint
+            using SKPath layerPath = new SKPath(Path);
+            using SKCanvas layerCanvas = new SKCanvas(_layerBitmap);
+            using SKPaint layerPaint = new SKPaint
             {
                 FilterQuality = SKFilterQuality.Low,
                 Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
@@ -374,7 +374,7 @@ namespace Artemis.Core
 
             layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
 
             // No point rendering if the alpha was set to zero by one of the effects
@@ -388,15 +388,15 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
-            foreach (var baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
 
-            var targetLocation = new SKPoint(0, 0);
+            SKPoint targetLocation = new SKPoint(0, 0);
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
-            using var canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
-            using var canvasPath = new SKPath(Path);
+            using SKPaint canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
+            using SKPath canvasPath = new SKPath(Path);
             canvasPath.Transform(SKMatrix.MakeTranslation(
                 (canvasPath.Bounds.Left - targetLocation.X) * -1,
                 (canvasPath.Bounds.Top - targetLocation.Y) * -1)
@@ -407,46 +407,46 @@ namespace Artemis.Core
 
         private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
         {
-            using var renderPath = new SKPath(LayerShape.Path);
+            using SKPath renderPath = new SKPath(LayerShape.Path);
             LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
         {
             // Apply transformations
-            var sizeProperty = Transform.Scale.CurrentValue;
-            var rotationProperty = Transform.Rotation.CurrentValue;
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(layerPath);
-            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+            SKPoint anchorPosition = GetLayerAnchorPosition(layerPath);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
-            var y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
+            float x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
+            float y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
 
             // Apply these before translation because anchorPosition takes translation into account
             canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
             canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
             canvas.Translate(x, y);
 
-            using var renderPath = new SKPath(LayerShape.Path);
+            using SKPath renderPath = new SKPath(LayerShape.Path);
             LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
         }
 
         private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
         {
             // Apply transformation
-            var sizeProperty = Transform.Scale.CurrentValue;
-            var rotationProperty = Transform.Rotation.CurrentValue;
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(layerPath);
-            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+            SKPoint anchorPosition = GetLayerAnchorPosition(layerPath);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
-            var y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
+            float x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
+            float y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
 
-            using var clipPath = new SKPath(LayerShape.Path);
+            using SKPath clipPath = new SKPath(LayerShape.Path);
             clipPath.Transform(SKMatrix.MakeTranslation(x, y));
             clipPath.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
             clipPath.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
@@ -457,13 +457,13 @@ namespace Artemis.Core
 
             // Render the layer in the largest required bounds, this still creates stretching in some situations
             // but the only alternative I see right now is always forcing brushes to render on the entire canvas
-            var boundsRect = new SKRect(
+            SKRect boundsRect = new SKRect(
                 Math.Min(clipPath.Bounds.Left - x, Bounds.Left - x),
                 Math.Min(clipPath.Bounds.Top - y, Bounds.Top - y),
                 Math.Max(clipPath.Bounds.Right - x, Bounds.Right - x),
                 Math.Max(clipPath.Bounds.Bottom - y, Bounds.Bottom - y)
             );
-            using var renderPath = new SKPath();
+            using SKPath renderPath = new SKPath();
             renderPath.AddRect(boundsRect);
 
             LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
@@ -478,8 +478,8 @@ namespace Artemis.Core
                 Path = new SKPath();
             else
             {
-                var path = new SKPath {FillType = SKPathFillType.Winding};
-                foreach (var artemisLed in Leds)
+                SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+                foreach (ArtemisLed artemisLed in Leds)
                     path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
                 Path = path;
@@ -501,10 +501,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            var positionProperty = Transform.Position.CurrentValue;
+            SKPoint positionProperty = Transform.Position.CurrentValue;
 
             // Start at the center of the shape
-            var position = zeroBased
+            SKPoint position = zeroBased
                 ? new SKPoint(layerPath.Bounds.MidX - layerPath.Bounds.Left, layerPath.Bounds.MidY - layerPath.Bounds.Top)
                 : new SKPoint(layerPath.Bounds.MidX, layerPath.Bounds.MidY);
 
@@ -525,15 +525,15 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            var sizeProperty = Transform.Scale.CurrentValue;
-            var rotationProperty = Transform.Rotation.CurrentValue;
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
             if (General.ResizeMode == LayerResizeMode.Normal)
             {
@@ -557,18 +557,18 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            var sizeProperty = Transform.Scale.CurrentValue;
-            var rotationProperty = Transform.Rotation.CurrentValue;
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
-            var reversedXScale = 1f / (sizeProperty.Width / 100f);
-            var reversedYScale = 1f / (sizeProperty.Height / 100f);
+            float reversedXScale = 1f / (sizeProperty.Width / 100f);
+            float reversedYScale = 1f / (sizeProperty.Height / 100f);
 
             if (General.ResizeMode == LayerResizeMode.Normal)
             {
@@ -593,18 +593,18 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            var sizeProperty = Transform.Scale.CurrentValue;
-            var rotationProperty = Transform.Rotation.CurrentValue;
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
 
-            var anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            var anchorProperty = Transform.AnchorPoint.CurrentValue;
+            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
-            var x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            var y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
-            var reversedXScale = 1f / (sizeProperty.Width / 100f);
-            var reversedYScale = 1f / (sizeProperty.Height / 100f);
+            float reversedXScale = 1f / (sizeProperty.Width / 100f);
+            float reversedYScale = 1f / (sizeProperty.Height / 100f);
 
             if (General.ResizeMode == LayerResizeMode.Normal)
             {
@@ -680,14 +680,14 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            var leds = new List<ArtemisLed>();
+            List<ArtemisLed> leds = new List<ArtemisLed>();
 
             // Get the surface LEDs for this layer
-            var availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
-            foreach (var ledEntity in LayerEntity.Leds)
+            List<ArtemisLed> availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
+            foreach (LedEntity ledEntity in LayerEntity.Leds)
             {
-                var match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
-                                                              a.RgbLed.Id.ToString() == ledEntity.LedName);
+                ArtemisLed match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
+                                                                     a.RgbLed.Id.ToString() == ledEntity.LedName);
                 if (match != null)
                     leds.Add(match);
             }
@@ -710,13 +710,13 @@ namespace Artemis.Core
 
             if (LayerBrush != null)
             {
-                var brush = LayerBrush;
+                BaseLayerBrush brush = LayerBrush;
                 LayerBrush = null;
                 brush.Dispose();
             }
 
             // Ensure the brush reference matches the brush
-            var current = General.BrushReference.BaseValue;
+            LayerBrushReference current = General.BrushReference.BaseValue;
             if (!descriptor.MatchesLayerBrushReference(current))
                 General.BrushReference.BaseValue = new LayerBrushReference(descriptor);
 
@@ -731,18 +731,18 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 return;
 
-            var brush = LayerBrush;
+            BaseLayerBrush brush = LayerBrush;
             DeactivateLayerBrush();
             LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
         }
 
         internal void ActivateLayerBrush()
         {
-            var current = General.BrushReference.CurrentValue;
+            LayerBrushReference current = General.BrushReference.CurrentValue;
             if (current == null)
                 return;
 
-            var descriptor = LayerBrushStore.Get(current.BrushPluginGuid, current.BrushType)?.LayerBrushDescriptor;
+            LayerBrushDescriptor descriptor = LayerBrushStore.Get(current.BrushPluginGuid, current.BrushType)?.LayerBrushDescriptor;
             descriptor?.CreateInstance(this);
 
             OnLayerBrushUpdated();
@@ -753,7 +753,7 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 return;
 
-            var brush = LayerBrush;
+            BaseLayerBrush brush = LayerBrush;
             LayerBrush = null;
             brush.Dispose();
 
@@ -775,7 +775,7 @@ namespace Artemis.Core
             if (LayerBrush != null || General.BrushReference?.CurrentValue == null)
                 return;
 
-            var current = General.BrushReference.CurrentValue;
+            LayerBrushReference current = General.BrushReference.CurrentValue;
             if (e.Registration.Plugin.PluginInfo.Guid == current.BrushPluginGuid &&
                 e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();

@@ -23,10 +23,10 @@ namespace Artemis.Storage.Entities.Profile
 
         public void UpdateGuid(Guid guid)
         {
-            var oldGuid = Id;
+            Guid oldGuid = Id;
             Id = guid;
 
-            var rootFolder = Folders.FirstOrDefault(f => f.ParentId == oldGuid);
+            FolderEntity rootFolder = Folders.FirstOrDefault(f => f.ParentId == oldGuid);
             if (rootFolder != null)
                 rootFolder.ParentId = Id;
         }

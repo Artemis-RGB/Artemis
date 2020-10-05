@@ -1,4 +1,5 @@
-﻿using Ninject.Activation;
+﻿using System;
+using Ninject.Activation;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -21,7 +22,7 @@ namespace Artemis.Core.Ninject
 
         protected override ILogger CreateInstance(IContext context)
         {
-            var requestingType = context.Request.ParentContext?.Plan?.Type;
+            Type requestingType = context.Request.ParentContext?.Plan?.Type;
             if (requestingType != null)
                 return Logger.ForContext(requestingType);
             return Logger;

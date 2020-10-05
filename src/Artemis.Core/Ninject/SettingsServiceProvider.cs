@@ -16,7 +16,7 @@ namespace Artemis.Core.Ninject
 
         protected override ISettingsService CreateInstance(IContext context)
         {
-            var parentRequest = context.Request.ParentRequest;
+            IRequest parentRequest = context.Request.ParentRequest;
             if (parentRequest == null || typeof(Plugin).IsAssignableFrom(parentRequest.Service))
                 throw new ArtemisPluginException($"SettingsService can not be injected into a plugin. Inject {nameof(PluginSettings)} instead.");
 

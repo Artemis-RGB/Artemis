@@ -119,12 +119,12 @@ namespace Artemis.Core
             if (IsStartSegment)
                 return null;
 
-            var propertyInfo = GetPropertyInfo();
+            PropertyInfo propertyInfo = GetPropertyInfo();
             if (propertyInfo == null)
                 return null;
 
             // Static types may have one as an attribute
-            var attribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
+            DataModelPropertyAttribute attribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
             if (attribute != null)
             {
                 if (string.IsNullOrWhiteSpace(attribute.Name))
@@ -145,12 +145,12 @@ namespace Artemis.Core
                 return DataModelPath.Target.GetType();
 
             // Prefer basing the type on the property info
-            var propertyInfo = GetPropertyInfo();
-            var type = propertyInfo?.PropertyType;
+            PropertyInfo propertyInfo = GetPropertyInfo();
+            Type type = propertyInfo?.PropertyType;
             // Property info is not available on dynamic paths though, so fall back on the current value
             if (propertyInfo == null)
             {
-                var currentValue = GetValue();
+                object currentValue = GetValue();
                 if (currentValue != null)
                     type = currentValue.GetType();
             }
@@ -166,7 +166,7 @@ namespace Artemis.Core
                 return CreateExpression(parameter, expression, nullCondition);
             }
 
-            var previousType = Previous.GetPropertyType();
+            Type previousType = Previous.GetPropertyType();
             if (previousType == null)
             {
                 Type = DataModelPathSegmentType.Invalid;
@@ -179,13 +179,13 @@ namespace Artemis.Core
             // If no static type could be found, check if this is a data model and if so, look for a dynamic type
             if (Type == DataModelPathSegmentType.Invalid && typeof(DataModel).IsAssignableFrom(previousType))
             {
-                var dataModel = (DataModel) Previous.GetValue();
+                DataModel dataModel = (DataModel) Previous.GetValue();
                 // Cannot determine a dynamic type on a null data model, leave the segment invalid
                 if (dataModel == null)
                     return CreateExpression(parameter, expression, nullCondition);
 
                 // If a dynamic data model is found the use that
-                var hasDynamicDataModel = dataModel.DynamicDataModels.TryGetValue(Identifier, out var dynamicDataModel);
+                bool hasDynamicDataModel = dataModel.DynamicDataModels.TryGetValue(Identifier, out DataModel dynamicDataModel);
                 if (hasDynamicDataModel)
                     DetermineDynamicType(dynamicDataModel);
             }
@@ -241,7 +241,7 @@ namespace Artemis.Core
 
         private void DetermineStaticType(Type previousType)
         {
-            var property = previousType.GetProperty(Identifier, BindingFlags.Public | BindingFlags.Instance);
+            PropertyInfo? property = previousType.GetProperty(Identifier, BindingFlags.Public | BindingFlags.Instance);
             Type = property == null ? DataModelPathSegmentType.Invalid : DataModelPathSegmentType.Static;
         }
     }

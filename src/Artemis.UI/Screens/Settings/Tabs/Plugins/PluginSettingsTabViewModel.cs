@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
@@ -28,8 +29,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 Items.Clear();
                 await Task.Delay(200);
 
-                var instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
-                foreach (var pluginSettingsViewModel in instances) 
+                List<PluginSettingsViewModel> instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
+                foreach (PluginSettingsViewModel pluginSettingsViewModel in instances) 
                     Items.Add(pluginSettingsViewModel);
             });
 

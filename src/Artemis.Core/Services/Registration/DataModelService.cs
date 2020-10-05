@@ -11,9 +11,9 @@ namespace Artemis.Core.Services
         public DataModelService(IPluginService pluginService)
         {
             // Add data models of already loaded plugins
-            foreach (var module in pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled))
+            foreach (Module module in pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled))
                 AddModuleDataModel(module);
-            foreach (var dataModelExpansion in pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled))
+            foreach (BaseDataModelExpansion dataModelExpansion in pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled))
                 AddDataModelExpansionDataModel(dataModelExpansion);
 
             // Add data models of new plugins when they get enabled

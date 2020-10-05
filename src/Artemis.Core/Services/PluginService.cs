@@ -44,26 +44,26 @@ namespace Artemis.Core.Services
         public void CopyBuiltInPlugins()
         {
             OnCopyingBuildInPlugins();
-            var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
 
             // Iterate built-in plugins
-            var builtInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
-            foreach (var subDirectory in builtInPluginDirectory.EnumerateDirectories())
+            DirectoryInfo builtInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            foreach (DirectoryInfo subDirectory in builtInPluginDirectory.EnumerateDirectories())
             {
                 // Load the metadata
-                var builtInMetadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
+                string builtInMetadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
                 if (!File.Exists(builtInMetadataFile))
                     throw new ArtemisPluginException("Couldn't find the built-in plugins metadata file at " + builtInMetadataFile);
 
-                var builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(builtInMetadataFile));
+                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(builtInMetadataFile));
 
                 // Find the matching plugin in the plugin folder
-                var match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == subDirectory.Name);
+                DirectoryInfo match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == subDirectory.Name);
                 if (match == null)
                     CopyBuiltInPlugin(subDirectory);
                 else
                 {
-                    var metadataFile = Path.Combine(match.FullName, "plugin.json");
+                    string metadataFile = Path.Combine(match.FullName, "plugin.json");
                     if (!File.Exists(metadataFile))
                     {
                         _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
@@ -74,7 +74,7 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Compare versions, copy if the same when debugging
-                            var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+                            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
                             #if DEBUG
                             if (builtInPluginInfo.Version >= pluginInfo.Version)
                             {
@@ -111,17 +111,17 @@ namespace Artemis.Core.Services
                 UnloadPlugins();
 
                 // Load the plugin assemblies into the plugin context
-                var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
-                foreach (var subDirectory in pluginDirectory.EnumerateDirectories())
+                DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+                foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
                 {
                     try
                     {
                         // Load the metadata
-                        var metadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
+                        string metadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
                         if (!File.Exists(metadataFile)) _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
 
                         // Locate the main entry
-                        var pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+                        PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
                         pluginInfo.Directory = subDirectory;
 
                         LoadPlugin(pluginInfo);
@@ -133,7 +133,7 @@ namespace Artemis.Core.Services
                 }
 
                 // Activate plugins after they are all loaded
-                foreach (var pluginInfo in _plugins.Where(p => p.Enabled))
+                foreach (PluginInfo pluginInfo in _plugins.Where(p => p.Enabled))
                 {
                     try
                     {
@@ -172,14 +172,14 @@ namespace Artemis.Core.Services
                 if (_plugins.Contains(pluginInfo))
                     UnloadPlugin(pluginInfo);
 
-                var pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
+                PluginEntity pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
                 if (pluginEntity == null)
                     pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true};
 
                 pluginInfo.PluginEntity = pluginEntity;
                 pluginInfo.Enabled = pluginEntity.IsEnabled;
 
-                var mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
+                string mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
                 if (!File.Exists(mainFile))
                     throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
 
@@ -215,10 +215,10 @@ namespace Artemis.Core.Services
                 if (pluginTypes.Count == 0)
                     throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of Plugin");
 
-                var pluginType = pluginTypes.Single();
+                Type pluginType = pluginTypes.Single();
                 try
                 {
-                    var parameters = new IParameter[]
+                    IParameter[] parameters = new IParameter[]
                     {
                         new Parameter("PluginInfo", pluginInfo, false)
                     };
@@ -365,8 +365,8 @@ namespace Artemis.Core.Services
 
         private static void CopyBuiltInPlugin(DirectoryInfo builtInPluginDirectory)
         {
-            var pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", builtInPluginDirectory.Name));
-            var createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
+            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", builtInPluginDirectory.Name));
+            bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
             if (Directory.Exists(pluginDirectory.FullName))

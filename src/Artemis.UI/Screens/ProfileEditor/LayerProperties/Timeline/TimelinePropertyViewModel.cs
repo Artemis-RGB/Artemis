@@ -44,8 +44,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             start ??= TimeSpan.Zero;
             end ??= TimeSpan.MaxValue;
 
-            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
-            foreach (var keyframe in toShift)
+            List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
+            foreach (LayerPropertyKeyframe<T> keyframe in toShift)
                 LayerProperty.RemoveKeyframe(keyframe);
 
             UpdateKeyframes();
@@ -56,8 +56,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             start ??= TimeSpan.Zero;
             end ??= TimeSpan.MaxValue;
 
-            var toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
-            foreach (var keyframe in toShift)
+            List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
+            foreach (LayerPropertyKeyframe<T> keyframe in toShift)
                 keyframe.Position += amount;
 
             UpdateKeyframes();
@@ -90,9 +90,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // Only show keyframes if they are enabled
             if (LayerProperty.KeyframesEnabled)
             {
-                var keyframes = LayerProperty.Keyframes.ToList();
-                var toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
-                foreach (var timelineKeyframeViewModel in toRemove)
+                List<LayerPropertyKeyframe<T>> keyframes = LayerProperty.Keyframes.ToList();
+                List<TimelineKeyframeViewModel<T>> toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
+                foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in toRemove)
                     timelineKeyframeViewModel.Dispose();
 
                 Items.RemoveRange(toRemove);
@@ -104,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else
                 Items.Clear();
 
-            foreach (var timelineKeyframeViewModel in Items)
+            foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in Items)
                 timelineKeyframeViewModel.Update();
         }
     }

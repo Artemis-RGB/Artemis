@@ -53,13 +53,13 @@ namespace Artemis.Core
                 if (type == null)
                     return new List<ConditionOperatorRegistration>(Registrations);
 
-                var candidates = Registrations.Where(r => r.ConditionOperator.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
+                List<ConditionOperatorRegistration> candidates = Registrations.Where(r => r.ConditionOperator.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
-                foreach (var candidate in candidates.GroupBy(r => r.ConditionOperator.Description).Where(g => g.Count() > 1).ToList())
+                foreach (IGrouping<string, ConditionOperatorRegistration> candidate in candidates.GroupBy(r => r.ConditionOperator.Description).Where(g => g.Count() > 1).ToList())
                 {
-                    var closest = candidate.OrderByDescending(r => r.ConditionOperator.CompatibleTypes.Contains(type)).FirstOrDefault();
-                    foreach (var conditionOperator in candidate)
+                    ConditionOperatorRegistration closest = candidate.OrderByDescending(r => r.ConditionOperator.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    foreach (ConditionOperatorRegistration conditionOperator in candidate)
                     {
                         if (conditionOperator != closest)
                             candidates.Remove(conditionOperator);

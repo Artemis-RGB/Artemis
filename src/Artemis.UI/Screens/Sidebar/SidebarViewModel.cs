@@ -117,8 +117,8 @@ namespace Artemis.UI.Screens.Sidebar
             // Add all activated modules
             SidebarItems.Add(new DividerNavigationItem());
             SidebarItems.Add(new SubheaderNavigationItem {Subheader = "Modules"});
-            var modules = _pluginService.GetPluginsOfType<Module>().ToList();
-            foreach (var module in modules)
+            List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+            foreach (Module module in modules)
                 AddModule(module);
 
             // Select the top item, which will be one of the defaults
@@ -149,13 +149,13 @@ namespace Artemis.UI.Screens.Sidebar
             else
             {
                 // Icon is provided as string to avoid having to reference MaterialDesignThemes
-                var parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out var iconEnum);
+                bool parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out PackIconKind iconEnum);
                 if (parsedIcon == false)
                     iconEnum = PackIconKind.QuestionMarkCircle;
                 icon = iconEnum;
             }
 
-            var sidebarItem = new FirstLevelNavigationItem {Icon = icon, Label = module.DisplayName};
+            FirstLevelNavigationItem sidebarItem = new FirstLevelNavigationItem {Icon = icon, Label = module.DisplayName};
             SidebarItems.Add(sidebarItem);
             SidebarModules.Add(sidebarItem, module);
         }
@@ -166,7 +166,7 @@ namespace Artemis.UI.Screens.Sidebar
             if (SidebarModules.All(io => io.Value != module))
                 return;
 
-            var existing = SidebarModules.First(io => io.Value == module);
+            KeyValuePair<INavigationItem, Module> existing = SidebarModules.First(io => io.Value == module);
             SidebarItems.Remove(existing.Key);
             SidebarModules.Remove(existing.Key);
         }
@@ -176,7 +176,7 @@ namespace Artemis.UI.Screens.Sidebar
             if (!IsSidebarOpen)
                 return;
 
-            var activeModules = SidebarModules.Count(m => m.Value.IsActivated);
+            int activeModules = SidebarModules.Count(m => m.Value.IsActivated);
             ActiveModules = activeModules == 1 ? "1 active module" : $"{activeModules} active modules";
         }
 

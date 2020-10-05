@@ -21,12 +21,12 @@ namespace Artemis.Core
         public static void Shutdown(int delay, bool restart)
         {
             // Always kill the process after the delay has passed, with all the plugins a graceful shutdown cannot be guaranteed
-            var arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill()}";
+            string arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill()}";
             // If restart is required, start the executable again after the process was killed 
             if (restart)
                 arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '" + Process.GetCurrentProcess().MainModule.FileName + "'}\"";
 
-            var info = new ProcessStartInfo
+            ProcessStartInfo info = new ProcessStartInfo
             {
                 Arguments = arguments,
                 WindowStyle = ProcessWindowStyle.Hidden,

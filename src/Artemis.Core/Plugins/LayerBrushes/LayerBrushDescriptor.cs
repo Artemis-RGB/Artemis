@@ -62,7 +62,7 @@ namespace Artemis.Core.LayerBrushes
             if (layer.LayerBrush != null)
                 throw new ArtemisCoreException("Layer already has an instantiated layer brush");
 
-            var brush = (BaseLayerBrush) LayerBrushProvider.PluginInfo.Kernel.Get(LayerBrushType);
+            BaseLayerBrush brush = (BaseLayerBrush) LayerBrushProvider.PluginInfo.Kernel.Get(LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = this;
             brush.Initialize();

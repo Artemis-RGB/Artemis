@@ -32,15 +32,15 @@ namespace Artemis.UI.Behaviors
 
         private static void OnLoaded(object sender, RoutedEventArgs e)
         {
-            var frameworkElement = (FrameworkElement) sender;
+            FrameworkElement frameworkElement = (FrameworkElement) sender;
 
-            var window = Window.GetWindow(frameworkElement);
+            Window window = Window.GetWindow(frameworkElement);
             if (window == null) return;
 
             // Move input bindings from the FrameworkElement to the window.
-            for (var i = frameworkElement.InputBindings.Count - 1; i >= 0; i--)
+            for (int i = frameworkElement.InputBindings.Count - 1; i >= 0; i--)
             {
-                var inputBinding = frameworkElement.InputBindings[i];
+                InputBinding inputBinding = frameworkElement.InputBindings[i];
                 window.InputBindings.Add(inputBinding);
                 frameworkElement.InputBindings.Remove(inputBinding);
 
@@ -50,10 +50,10 @@ namespace Artemis.UI.Behaviors
 
         private static void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            var frameworkElement = (FrameworkElement) sender;
+            FrameworkElement frameworkElement = (FrameworkElement) sender;
 
-            var toRemove = _movedInputBindings.Where(m => m.Item1 == frameworkElement).ToList();
-            foreach (var (_, window, inputBinding) in toRemove)
+            List<Tuple<FrameworkElement, Window, InputBinding>> toRemove = _movedInputBindings.Where(m => m.Item1 == frameworkElement).ToList();
+            foreach ((FrameworkElement _, Window window, InputBinding inputBinding) in toRemove)
             {
                 if (window.InputBindings.Contains(inputBinding))
                     window.InputBindings.Remove(inputBinding);

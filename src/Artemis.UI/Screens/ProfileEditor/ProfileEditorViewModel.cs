@@ -144,24 +144,24 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public ProfileDescriptor CreateProfile(string name)
         {
-            var profile = _profileService.CreateProfileDescriptor(Module, name);
+            ProfileDescriptor profile = _profileService.CreateProfileDescriptor(Module, name);
             Profiles.Add(profile);
             return profile;
         }
 
         public async Task AddProfile()
         {
-            var result = await DialogService.ShowDialog<ProfileCreateViewModel>();
+            object result = await DialogService.ShowDialog<ProfileCreateViewModel>();
             if (result is string name)
             {
-                var newProfile = CreateProfile(name);
+                ProfileDescriptor newProfile = CreateProfile(name);
                 SelectedProfile = newProfile;
             }
         }
 
         public async Task DeleteProfile(ProfileDescriptor profileDescriptor)
         {
-            var result = await DialogService.ShowConfirmDialog(
+            bool result = await DialogService.ShowConfirmDialog(
                 "Delete profile",
                 $"Are you sure you want to delete '{profileDescriptor.Name}'? This cannot be undone."
             );
@@ -172,7 +172,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public async Task DeleteActiveProfile()
         {
-            var result = await DialogService.ShowConfirmDialog(
+            bool result = await DialogService.ShowConfirmDialog(
                 "Delete active profile",
                 "Are you sure you want to delete your currently active profile? This cannot be undone."
             );
@@ -191,7 +191,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public async Task ImportProfile()
         {
-            var result = await DialogService.ShowDialog<ProfileImportViewModel>(new Dictionary<string, object>
+            object result = await DialogService.ShowDialog<ProfileImportViewModel>(new Dictionary<string, object>
             {
                 {"profileModule", Module}
             });
@@ -207,8 +207,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         public void Undo()
         {
             // Expanded status is also undone because undoing works a bit crude, that's annoying
-            var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
-            var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+            List<LayerPropertyGroupViewModel> beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
+            List<string> expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
             if (!_profileEditorService.UndoUpdateProfile())
             {
@@ -217,7 +217,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             }
 
             // Restore the expanded status
-            foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
+            foreach (LayerPropertyGroupViewModel allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
 
             _snackbarMessageQueue.Enqueue("Undid profile update", "REDO", Redo);
@@ -226,8 +226,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         public void Redo()
         {
             // Expanded status is also undone because undoing works a bit crude, that's annoying
-            var beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
-            var expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+            List<LayerPropertyGroupViewModel> beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
+            List<string> expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
 
             if (!_profileEditorService.RedoUpdateProfile())
             {
@@ -236,7 +236,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             }
 
             // Restore the expanded status
-            foreach (var allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
+            foreach (LayerPropertyGroupViewModel allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
 
             _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
@@ -273,10 +273,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             if (SelectedProfile == profileDescriptor && !CanDeleteActiveProfile)
                 return;
 
-            var index = Profiles.IndexOf(profileDescriptor);
+            int index = Profiles.IndexOf(profileDescriptor);
 
             // Get a new active profile
-            var newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
+            ProfileDescriptor newActiveProfile = index - 1 > -1 ? Profiles[index - 1] : Profiles[index + 1];
 
             // Activate the new active profile
             SelectedProfile = newActiveProfile;
@@ -293,9 +293,9 @@ namespace Artemis.UI.Screens.ProfileEditor
                 if (SelectedProfile == null)
                     return;
 
-                var changeTask = _profileService.ActivateProfileAnimated(SelectedProfile);
+                Task<Profile> changeTask = _profileService.ActivateProfileAnimated(SelectedProfile);
                 _profileEditorService.ChangeSelectedProfile(null);
-                var profile = await changeTask;
+                Profile profile = await changeTask;
                 _profileEditorService.ChangeSelectedProfile(profile);
             });
         }
