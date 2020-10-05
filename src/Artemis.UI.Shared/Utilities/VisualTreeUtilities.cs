@@ -27,10 +27,10 @@ namespace Artemis.UI.Shared
 
             T foundChild = null;
 
-            var childrenCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (var i = 0; i < childrenCount; i++)
+            int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childrenCount; i++)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
                 // If the child is not of the request child type child
                 if (!(child is T))
                 {
@@ -75,7 +75,7 @@ namespace Artemis.UI.Shared
         public static T FindParent<T>(DependencyObject child, string parentName) where T : DependencyObject
         {
             // Get parent item
-            var parentObject = VisualTreeHelper.GetParent(child);
+            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
 
             // We've reached the end of the tree
             if (parentObject == null)

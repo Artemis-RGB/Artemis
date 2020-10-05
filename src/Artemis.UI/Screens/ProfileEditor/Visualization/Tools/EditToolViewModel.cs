@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
             Execute.PostToUIThread(() =>
             {
-                var shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerBounds(layer))
+                RectangleGeometry shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerBounds(layer))
                 {
                     Transform = _layerEditorService.GetLayerTransformGroup(layer)
                 };
@@ -99,15 +99,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             if (!_rotating || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var previousDragAngle = _previousDragAngle;
-            var newRotation = CalculateAngle(layer, sender, e.MouseEventArgs);
+            float previousDragAngle = _previousDragAngle;
+            float newRotation = CalculateAngle(layer, sender, e.MouseEventArgs);
             _previousDragAngle = newRotation;
 
             // Allow the user to rotate the shape in increments of 5
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 newRotation = (float) Math.Round(newRotation / 5f) * 5f;
 
-            var difference = newRotation - previousDragAngle;
+            float difference = newRotation - previousDragAngle;
             if (difference < -350)
                 difference += 360;
             else if (difference > 350)
@@ -136,7 +136,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             if (_isResizing || !(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+            SKPoint dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
             _dragOffset = _layerEditorService.GetDragOffset(layer, dragStart);
             _dragStart = dragStart + _dragOffset;
             _dragStartScale = layer.Transform.Scale.CurrentValue;
@@ -156,7 +156,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                 return;
 
             float width, height;
-            var position = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint() + _dragOffset;
+            SKPoint position = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint() + _dragOffset;
             switch (e.ShapeControlPoint)
             {
                 case ShapeControlPoint.TopLeft:
@@ -198,8 +198,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             // Make the sides even if shift is held down
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) && e.ShapeControlPoint < ShapeControlPoint.TopCenter)
             {
-                var bounds = _layerEditorService.GetLayerBounds(layer);
-                var smallestSide = Math.Min(bounds.Width * width, bounds.Height * height);
+                Rect bounds = _layerEditorService.GetLayerBounds(layer);
+                double smallestSide = Math.Min(bounds.Width * width, bounds.Height * height);
                 width = (float) Math.Round(1.0 / bounds.Width * smallestSide, 2, MidpointRounding.AwayFromZero);
                 height = (float) Math.Round(1.0 / bounds.Height * smallestSide, 2, MidpointRounding.AwayFromZero);
             }
@@ -211,13 +211,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private float HorizontalResize(Layer layer, SKPoint position, ResizeOrigin origin)
         {
             // Apply rotation to the mouse
-            var points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
+            SKPoint[] points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
             position = points[0];
-            var dragStart = points[1];
+            SKPoint dragStart = points[1];
 
-            var shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
-            var scalePerPixel = 1f / shapePath.Bounds.Width;
-            var anchorDistance = origin == ResizeOrigin.Left
+            SKPath shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
+            float scalePerPixel = 1f / shapePath.Bounds.Width;
+            float anchorDistance = origin == ResizeOrigin.Left
                 ? shapePath.Bounds.Left - ShapeAnchor.X
                 : shapePath.Bounds.Right - ShapeAnchor.X;
 
@@ -226,10 +226,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             if (Math.Abs(anchorDistance) < 0.001)
                 return _dragStartScale.Width;
 
-            var anchorOffset = anchorDistance / shapePath.Bounds.Width;
+            float anchorOffset = anchorDistance / shapePath.Bounds.Width;
 
-            var pixelsToAdd = (position - dragStart).X / anchorOffset;
-            var scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
+            float pixelsToAdd = (position - dragStart).X / anchorOffset;
+            float scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
 
             return (float) Math.Round(Math.Max(0, _dragStartScale.Width + scaleToAdd), 2, MidpointRounding.AwayFromZero);
         }
@@ -237,13 +237,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private float VerticalResize(Layer layer, SKPoint position, ResizeOrigin origin)
         {
             // Apply rotation to the mouse
-            var points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
+            SKPoint[] points = UnTransformPoints(new[] {position, _dragStart}, layer, ShapeAnchor, false);
             position = points[0];
-            var dragStart = points[1];
+            SKPoint dragStart = points[1];
 
-            var shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
-            var scalePerPixel = 1f / shapePath.Bounds.Height;
-            var anchorDistance = origin == ResizeOrigin.Top
+            SKPath shapePath = _layerEditorService.GetLayerPath(layer, true, false, false);
+            float scalePerPixel = 1f / shapePath.Bounds.Height;
+            float anchorDistance = origin == ResizeOrigin.Top
                 ? shapePath.Bounds.Top - ShapeAnchor.Y
                 : shapePath.Bounds.Bottom - ShapeAnchor.Y;
 
@@ -252,10 +252,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             if (Math.Abs(anchorDistance) < 0.001)
                 return _dragStartScale.Width;
 
-            var anchorOffset = anchorDistance / shapePath.Bounds.Height;
+            float anchorOffset = anchorDistance / shapePath.Bounds.Height;
 
-            var pixelsToAdd = (position - dragStart).Y / anchorOffset;
-            var scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
+            float pixelsToAdd = (position - dragStart).Y / anchorOffset;
+            float scaleToAdd = scalePerPixel * pixelsToAdd * 100f;
 
             return (float) Math.Round(Math.Max(0, _dragStartScale.Height + scaleToAdd), 2, MidpointRounding.AwayFromZero);
         }
@@ -277,18 +277,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
             if (e.ShapeControlPoint == ShapeControlPoint.LayerShape)
             {
-                var dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+                SKPoint dragStart = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
                 _dragOffset = _layerEditorService.GetDragOffset(layer, dragStart);
                 _dragStart = dragStart + _dragOffset;
                 _movingShape = true;
             }
             else if (e.ShapeControlPoint == ShapeControlPoint.Anchor)
             {
-                var dragStartPosition = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
+                SKPoint dragStartPosition = GetRelativePosition(sender, e.MouseEventArgs).ToSKPoint();
 
                 // Mouse doesn't care about rotation so get the layer path without rotation
-                var path = _layerEditorService.GetLayerPath(layer, true, true, false);
-                var topLeft = path.Points[0];
+                SKPath path = _layerEditorService.GetLayerPath(layer, true, true, false);
+                SKPoint topLeft = path.Points[0];
                 // Measure from the top-left of the shape (without rotation)
                 _dragOffset = topLeft + (dragStartPosition - topLeft);
                 // Get the absolute layer anchor and make it relative to the unrotated shape
@@ -320,7 +320,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
                 return;
 
-            var position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
+            SKPoint position = GetRelativePosition(sender, e).ToSKPoint() + _dragOffset;
             // Allow the user to move the shape only horizontally or vertically when holding down shift
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
             {
@@ -347,7 +347,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             }
 
             // Scale down the resulting position and make it relative
-            var scaled = _layerEditorService.GetScaledPoint(layer, position, true);
+            SKPoint scaled = _layerEditorService.GetScaledPoint(layer, position, true);
             // Round and update the position property
             layer.Transform.Position.SetCurrentValue(RoundPoint(scaled, 3), ProfileEditorService.CurrentTime);
 
@@ -360,22 +360,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                 return;
 
             // The start anchor is relative to an unrotated version of the shape
-            var start = _dragStartAnchor;
+            SKPoint start = _dragStartAnchor;
             // Add the current position to the start anchor to determine the new position
-            var current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
+            SKPoint current = start + (GetRelativePosition(sender, e).ToSKPoint() - _dragOffset);
             // In order to keep the mouse movement unrotated, counter-act the active rotation
-            var countered = UnTransformPoints(new[] {start, current}, layer, start, true);
+            SKPoint[] countered = UnTransformPoints(new[] {start, current}, layer, start, true);
 
             // If shift is held down, round down to 1 decimal to allow moving the anchor in big increments
-            var decimals = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? 1 : 3;
-            var scaled = RoundPoint(_layerEditorService.GetScaledPoint(layer, countered[1], false), decimals);
+            int decimals = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift) ? 1 : 3;
+            SKPoint scaled = RoundPoint(_layerEditorService.GetScaledPoint(layer, countered[1], false), decimals);
 
             // Update the anchor point, this causes the shape to move
             layer.Transform.AnchorPoint.SetCurrentValue(scaled, ProfileEditorService.CurrentTime);
             // TopLeft is not updated yet and acts as a snapshot of the top-left before changing the anchor
-            var path = _layerEditorService.GetLayerPath(layer, true, true, true);
+            SKPath path = _layerEditorService.GetLayerPath(layer, true, true, true);
             // Calculate the (scaled) difference between the old and now position
-            var difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
+            SKPoint difference = _layerEditorService.GetScaledPoint(layer, _topLeft - path.Points[0], false);
             // Apply the difference so that the shape effectively stays in place
             layer.Transform.Position.SetCurrentValue(layer.Transform.Position.CurrentValue + difference, ProfileEditorService.CurrentTime);
 
@@ -393,7 +393,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
         {
-            using var counterRotatePath = new SKPath();
+            using SKPath counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.Transform.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)
@@ -404,18 +404,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
         {
-            var parent = VisualTreeHelper.GetParent((DependencyObject) sender);
+            DependencyObject parent = VisualTreeHelper.GetParent((DependencyObject) sender);
             return mouseEventArgs.GetPosition((IInputElement) parent);
         }
 
         private float CalculateAngle(Layer layer, object mouseEventSender, MouseEventArgs mouseEvent)
         {
-            var layerBounds = _layerEditorService.GetLayerBounds(layer);
-            var start = _layerEditorService.GetLayerAnchorPosition(layer);
-            var arrival = GetRelativePosition(mouseEventSender, mouseEvent);
+            Rect layerBounds = _layerEditorService.GetLayerBounds(layer);
+            Point start = _layerEditorService.GetLayerAnchorPosition(layer);
+            Point arrival = GetRelativePosition(mouseEventSender, mouseEvent);
 
-            var radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
-            var angle = radian * (180f / (float) Math.PI);
+            float radian = (float) Math.Atan2(start.Y - arrival.Y, start.X - arrival.X);
+            float angle = radian * (180f / (float) Math.PI);
             if (angle < 0f)
                 angle += 360f;
 

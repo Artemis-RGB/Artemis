@@ -39,13 +39,13 @@ namespace Artemis.UI.Screens.Modules
 
             if (Module.ModuleTabs != null)
             {
-                var moduleTabs = new List<ModuleTab>(Module.ModuleTabs);
-                foreach (var moduleTab in moduleTabs.Where(m => m != null))
+                List<ModuleTab> moduleTabs = new List<ModuleTab>(Module.ModuleTabs);
+                foreach (ModuleTab moduleTab in moduleTabs.Where(m => m != null))
                 {
-                    var module = new ConstructorArgument("module", Module);
-                    var displayName = new ConstructorArgument("displayName", DisplayName);
+                    ConstructorArgument module = new ConstructorArgument("module", Module);
+                    ConstructorArgument displayName = new ConstructorArgument("displayName", DisplayName);
 
-                    var viewModel = (ModuleViewModel) Module.PluginInfo.Kernel.Get(moduleTab.Type, module, displayName);
+                    ModuleViewModel viewModel = (ModuleViewModel) Module.PluginInfo.Kernel.Get(moduleTab.Type, module, displayName);
                     Items.Add(viewModel);
                 }
             }

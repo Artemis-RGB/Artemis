@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
                 return;
 
-            foreach (var dataModelVisualizationViewModel in Children)
+            foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update(dataModelUIService);
         }
 

@@ -56,7 +56,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            foreach (var dataBinding in _dataBindings)
+            foreach (IDataBinding dataBinding in _dataBindings)
                 dataBinding.Dispose();
         }
 
@@ -158,7 +158,7 @@ namespace Artemis.Core
             else
             {
                 // If on a keyframe, update the keyframe
-                var currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
+                LayerPropertyKeyframe<T> currentKeyframe = Keyframes.FirstOrDefault(k => k.Position == time.Value);
                 // Create a new keyframe if none found
                 if (currentKeyframe == null)
                     AddKeyframe(new LayerPropertyKeyframe<T>(value, time.Value, Easings.Functions.Linear, this));
@@ -256,7 +256,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            var newKeyframe = new LayerPropertyKeyframe<T>(
+            LayerPropertyKeyframe<T> newKeyframe = new LayerPropertyKeyframe<T>(
                 keyframe.Value,
                 keyframe.Position,
                 keyframe.EasingFunction,
@@ -301,7 +301,7 @@ namespace Artemis.Core
             // The current keyframe is the last keyframe before the current time
             CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
-            var nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
+            int nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
             NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
 
             // No need to update the current value if either of the keyframes are null
@@ -312,9 +312,9 @@ namespace Artemis.Core
             // Only determine progress and current value if both keyframes are present
             else
             {
-                var timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                var keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
-                var keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
+                TimeSpan timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
+                float keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                float keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
         }
@@ -350,8 +350,8 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            var match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                      registration.PropertyExpression.ToString() == expression);
+            IDataBindingRegistration match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
+                                                                                           registration.PropertyExpression.ToString() == expression);
 
             return (DataBindingRegistration<T, TProperty>) match;
         }
@@ -392,7 +392,7 @@ namespace Artemis.Core
             if (dataBindingRegistration.DataBinding != null)
                 throw new ArtemisCoreException("Provided data binding registration already has an enabled data binding");
 
-            var dataBinding = new DataBinding<T, TProperty>(dataBindingRegistration);
+            DataBinding<T, TProperty> dataBinding = new DataBinding<T, TProperty>(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
             OnDataBindingEnabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
@@ -417,7 +417,7 @@ namespace Artemis.Core
 
         private void UpdateDataBindings(double deltaTime)
         {
-            foreach (var dataBinding in _dataBindings)
+            foreach (IDataBinding dataBinding in _dataBindings)
             {
                 dataBinding.Update(deltaTime);
                 dataBinding.Apply();
@@ -497,9 +497,9 @@ namespace Artemis.Core
             }
 
             _dataBindings.Clear();
-            foreach (var dataBindingRegistration in _dataBindingRegistrations)
+            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations)
             {
-                var dataBinding = dataBindingRegistration.CreateDataBinding();
+                IDataBinding dataBinding = dataBindingRegistration.CreateDataBinding();
                 if (dataBinding != null)
                     _dataBindings.Add(dataBinding);
             }
@@ -528,7 +528,7 @@ namespace Artemis.Core
             }));
 
             Entity.DataBindingEntities.Clear();
-            foreach (var dataBinding in _dataBindings)
+            foreach (IDataBinding dataBinding in _dataBindings)
                 dataBinding.Save();
         }
 

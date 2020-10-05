@@ -41,7 +41,7 @@ namespace Artemis.Core.LayerBrushes
             if (!Enabled)
                 throw new ArtemisPluginException(PluginInfo, "Can only add a layer brush descriptor when the plugin is enabled");
 
-            var descriptor = new LayerBrushDescriptor(displayName, description, icon, typeof(T), this);
+            LayerBrushDescriptor descriptor = new LayerBrushDescriptor(displayName, description, icon, typeof(T), this);
             _layerBrushDescriptors.Add(descriptor);
             LayerBrushStore.Add(descriptor);
         }

@@ -16,7 +16,7 @@ namespace Artemis.Core.Services
         private void BlinkDevice(ArtemisDevice device, int blinkCount)
         {
             // Create a LED group way at the top
-            var ledGroup = new ListLedGroup(device.Leds.Select(l => l.RgbLed))
+            ListLedGroup ledGroup = new ListLedGroup(device.Leds.Select(l => l.RgbLed))
             {
                 Brush = new SolidColorBrush(new Color(255, 255, 255)), 
                 ZIndex = 999

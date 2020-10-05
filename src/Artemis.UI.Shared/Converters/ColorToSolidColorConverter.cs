@@ -16,7 +16,7 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var color = (Color) value;
+            Color color = (Color) value;
             return Color.FromRgb(color.R, color.G, color.B);
         }
 

@@ -1,4 +1,5 @@
-﻿using Artemis.Core.Modules;
+﻿using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using ICSharpCode.AvalonEdit.Document;
@@ -32,7 +33,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void Accept()
         {
-            var descriptor = _profileService.ImportProfile(Document.Text, ProfileModule);
+            ProfileDescriptor descriptor = _profileService.ImportProfile(Document.Text, ProfileModule);
             _mainMessageQueue.Enqueue("Profile imported.");
             Session.Close(descriptor);
         }

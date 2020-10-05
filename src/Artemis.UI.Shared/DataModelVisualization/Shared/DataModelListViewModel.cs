@@ -34,12 +34,12 @@ namespace Artemis.UI.Shared
 
         public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
-            var type = DataModelPath.GetPropertyType();
+            Type type = DataModelPath.GetPropertyType();
             if (type == null)
                 return null;
 
             // Create a property VM describing the type of the list
-            var viewModel = CreateListChild(dataModelUIService, type.GenericTypeArguments[0]);
+            DataModelVisualizationViewModel viewModel = CreateListChild(dataModelUIService, type.GenericTypeArguments[0]);
 
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
@@ -52,7 +52,7 @@ namespace Artemis.UI.Shared
             if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
             {
                 dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
-                var wrapper = new DataModelPropertiesViewModel(null, null, null);
+                DataModelPropertiesViewModel wrapper = new DataModelPropertiesViewModel(null, null, null);
                 wrapper.Children.Add(dataModelListPropertyViewModel);
                 return wrapper;
             }
@@ -69,8 +69,8 @@ namespace Artemis.UI.Shared
             if (List == null)
                 return;
 
-            var index = 0;
-            foreach (var item in List)
+            int index = 0;
+            foreach (object? item in List)
             {
                 DataModelVisualizationViewModel child;
                 if (ListChildren.Count <= index)
@@ -104,10 +104,10 @@ namespace Artemis.UI.Shared
 
         protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, object listItem)
         {
-            var listType = listItem.GetType();
+            Type listType = listItem.GetType();
 
             // If a display VM was found, prefer to use that in any case
-            var typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
+            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
             if (typeViewModel != null)
                 return new DataModelListPropertyViewModel(DataModel, listItem, typeViewModel);
             // For primitives, create a property view model, it may be null that is fine

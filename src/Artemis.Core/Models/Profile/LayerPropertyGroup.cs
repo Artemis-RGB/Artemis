@@ -95,9 +95,9 @@ namespace Artemis.Core
             _disposed = true;
             DisableProperties();
 
-            foreach (var layerProperty in _layerProperties)
+            foreach (ILayerProperty layerProperty in _layerProperties)
                 layerProperty.Dispose();
-            foreach (var layerPropertyGroup in _layerPropertyGroups)
+            foreach (LayerPropertyGroup layerPropertyGroup in _layerPropertyGroups)
                 layerPropertyGroup.Dispose();
         }
 
@@ -114,8 +114,8 @@ namespace Artemis.Core
             if (!PropertiesInitialized)
                 return new List<ILayerProperty>();
 
-            var result = new List<ILayerProperty>(LayerProperties);
-            foreach (var layerPropertyGroup in LayerPropertyGroups)
+            List<ILayerProperty> result = new List<ILayerProperty>(LayerProperties);
+            foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
                 result.AddRange(layerPropertyGroup.GetAllLayerProperties());
 
             return result.AsReadOnly();
@@ -161,14 +161,14 @@ namespace Artemis.Core
             Path = path.TrimEnd('.');
 
             // Get all properties with a PropertyDescriptionAttribute
-            foreach (var propertyInfo in GetType().GetProperties())
+            foreach (PropertyInfo propertyInfo in GetType().GetProperties())
             {
-                var propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
+                Attribute? propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 if (propertyDescription != null)
                     InitializeProperty(propertyInfo, (PropertyDescriptionAttribute) propertyDescription);
                 else
                 {
-                    var propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
+                    Attribute? propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
                     if (propertyGroupDescription != null)
                         InitializeChildGroup(propertyInfo, (PropertyGroupDescriptionAttribute) propertyGroupDescription);
                 }
@@ -178,7 +178,7 @@ namespace Artemis.Core
             PopulateDefaults();
 
             // Load the layer properties after defaults have been applied
-            foreach (var layerProperty in _layerProperties)
+            foreach (ILayerProperty layerProperty in _layerProperties)
                 layerProperty.Load();
 
             EnableProperties();
@@ -191,10 +191,10 @@ namespace Artemis.Core
             if (!PropertiesInitialized)
                 return;
 
-            foreach (var layerProperty in LayerProperties)
+            foreach (ILayerProperty layerProperty in LayerProperties)
                 layerProperty.Save();
 
-            foreach (var layerPropertyGroup in LayerPropertyGroups)
+            foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
                 layerPropertyGroup.ApplyToEntity();
         }
 
@@ -207,12 +207,12 @@ namespace Artemis.Core
 
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
         {
-            var path = $"{Path}.{propertyInfo.Name}";
+            string path = $"{Path}.{propertyInfo.Name}";
 
             if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
                 throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path}");
 
-            var instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
+            ILayerProperty instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
             if (instance == null)
                 throw new ArtemisPluginException($"Failed to create instance of layer property at {path}");
 
@@ -220,7 +220,7 @@ namespace Artemis.Core
             if (string.IsNullOrWhiteSpace(propertyDescription.Name))
                 propertyDescription.Name = propertyInfo.Name.Humanize();
 
-            var entity = GetPropertyEntity(ProfileElement, path, out var fromStorage);
+            PropertyEntity entity = GetPropertyEntity(ProfileElement, path, out bool fromStorage);
             instance.Initialize(ProfileElement, this, entity, fromStorage, propertyDescription, path);
             propertyInfo.SetValue(this, instance);
             _layerProperties.Add(instance);
@@ -228,12 +228,12 @@ namespace Artemis.Core
 
         private void InitializeChildGroup(PropertyInfo propertyInfo, PropertyGroupDescriptionAttribute propertyGroupDescription)
         {
-            var path = Path + ".";
+            string path = Path + ".";
 
             if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
                 throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
 
-            var instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
+            LayerPropertyGroup instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
             if (instance == null)
                 throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
 
@@ -253,7 +253,7 @@ namespace Artemis.Core
 
         private PropertyEntity GetPropertyEntity(RenderProfileElement profileElement, string path, out bool fromStorage)
         {
-            var entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == PluginInfo.Guid && p.Path == path);
+            PropertyEntity entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == PluginInfo.Guid && p.Path == path);
             fromStorage = entity != null;
             if (entity == null)
             {

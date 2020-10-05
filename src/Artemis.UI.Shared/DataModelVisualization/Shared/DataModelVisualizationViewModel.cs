@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
@@ -109,7 +110,7 @@ namespace Artemis.UI.Shared
             // If the VM has children, its own type is not relevant
             if (Children.Any())
             {
-                foreach (var child in Children)
+                foreach (DataModelVisualizationViewModel child in Children)
                     child?.ApplyTypeFilter(looseMatch, filteredTypes);
 
                 IsMatchingFilteredTypes = true;
@@ -124,7 +125,7 @@ namespace Artemis.UI.Shared
             }
 
             // If the type couldn't be retrieved either way, assume false
-            var type = DataModelPath.GetPropertyType();
+            Type type = DataModelPath.GetPropertyType();
             if (type == null)
             {
                 IsMatchingFilteredTypes = false;
@@ -154,14 +155,14 @@ namespace Artemis.UI.Shared
                 IsVisualizationExpanded = false;
             }
 
-            foreach (var child in Children)
+            foreach (DataModelVisualizationViewModel child in Children)
             {
                 // Try the child itself first
                 if (child.Path == propertyPath)
                     return child;
 
                 // Try a child on the child next, this will go recursive
-                var match = child.GetChildByPath(dataModelGuid, propertyPath);
+                DataModelVisualizationViewModel match = child.GetChildByPath(dataModelGuid, propertyPath);
                 if (match != null)
                     return match;
             }
@@ -188,15 +189,15 @@ namespace Artemis.UI.Shared
                 modelType = DataModelPath.GetPropertyType();
 
             // Add missing static children
-            foreach (var propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                var childPath = Path != null ? $"{Path}.{propertyInfo.Name}" : propertyInfo.Name;
+                string childPath = Path != null ? $"{Path}.{propertyInfo.Name}" : propertyInfo.Name;
                 if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                     continue;
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                     continue;
 
-                var child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
+                DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
                 if (child != null)
                     Children.Add(child);
             }
@@ -207,10 +208,10 @@ namespace Artemis.UI.Shared
                 hiddenProperties = overrideValueDataModel.GetHiddenProperties();
             else
                 hiddenProperties = DataModel.GetHiddenProperties();
-            foreach (var hiddenProperty in hiddenProperties)
+            foreach (PropertyInfo hiddenProperty in hiddenProperties)
             {
-                var childPath = Path != null ? $"{Path}.{hiddenProperty.Name}" : hiddenProperty.Name;
-                var toRemove = Children.FirstOrDefault(c => c.Path != null && c.Path == childPath);
+                string childPath = Path != null ? $"{Path}.{hiddenProperty.Name}" : hiddenProperty.Name;
+                DataModelVisualizationViewModel toRemove = Children.FirstOrDefault(c => c.Path != null && c.Path == childPath);
                 if (toRemove != null)
                     Children.Remove(toRemove);
             }
@@ -223,20 +224,20 @@ namespace Artemis.UI.Shared
                 value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
             {
-                foreach (var kvp in dataModel.DynamicDataModels)
+                foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
                 {
-                    var childPath = Path != null ? $"{Path}.{kvp.Key}" : kvp.Key;
+                    string childPath = Path != null ? $"{Path}.{kvp.Key}" : kvp.Key;
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
-                    var child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
+                    DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
                     if (child != null)
                         Children.Add(child);
                 }
             }
 
             // Remove dynamic children that have been removed from the data model
-            var toRemoveDynamic = Children.Where(c => !c.DataModelPath.IsValid).ToList();
+            List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => !c.DataModelPath.IsValid).ToList();
             if (toRemoveDynamic.Any())
                 Children.RemoveRange(toRemoveDynamic);
         }
@@ -246,12 +247,12 @@ namespace Artemis.UI.Shared
             if (depth > MaxDepth)
                 return null;
 
-            var dataModelPath = new DataModelPath(overrideValue ?? DataModel, path);
+            DataModelPath dataModelPath = new DataModelPath(overrideValue ?? DataModel, path);
             if (!dataModelPath.IsValid)
                 return null;
 
-            var propertyInfo = dataModelPath.GetPropertyInfo();
-            var propertyType = dataModelPath.GetPropertyType();
+            PropertyInfo propertyInfo = dataModelPath.GetPropertyInfo();
+            Type propertyType = dataModelPath.GetPropertyType();
 
             // Skip properties decorated with DataModelIgnore
             if (propertyInfo != null && Attribute.IsDefined(propertyInfo, typeof(DataModelIgnoreAttribute)))
@@ -261,7 +262,7 @@ namespace Artemis.UI.Shared
                 return null;
 
             // If a display VM was found, prefer to use that in any case
-            var typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType);
+            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType);
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine

@@ -156,11 +156,11 @@ namespace Artemis.Core
             if (!Leds.Any())
                 return;
 
-            foreach (var led in Leds)
+            foreach (ArtemisLed led in Leds)
                 led.CalculateRenderRectangle();
 
-            var path = new SKPath {FillType = SKPathFillType.Winding};
-            foreach (var artemisLed in Leds)
+            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (ArtemisLed artemisLed in Leds)
                 path.AddRect(artemisLed.AbsoluteRenderRectangle);
 
             RenderPath = path;

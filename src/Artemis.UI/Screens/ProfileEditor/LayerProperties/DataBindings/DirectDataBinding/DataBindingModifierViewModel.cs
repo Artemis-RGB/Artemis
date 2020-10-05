@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -92,7 +93,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         {
             if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
             {
-                var sourceType = Modifier.DirectDataBinding.GetSourceType();
+                Type sourceType = Modifier.DirectDataBinding.GetSourceType();
                 Modifier.UpdateParameter((Modifier.ModifierType.ParameterType ?? sourceType).GetDefault());
             }
             else
@@ -116,7 +117,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void Update()
         {
-            var sourceType = Modifier.DirectDataBinding.GetSourceType();
+            Type sourceType = Modifier.DirectDataBinding.GetSourceType();
             if (sourceType == null)
                 throw new ArtemisUIException("Cannot use a data binding modifier VM for a data binding without a source");
 
@@ -150,11 +151,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             }
 
             // Modifier type
-            var root = new ModifierTypeCategoryViewModel(null, null);
-            var modifierTypes = _dataBindingService.GetCompatibleModifierTypes(sourceType).GroupBy(t => t.Category);
-            foreach (var dataBindingModifierTypes in modifierTypes)
+            ModifierTypeCategoryViewModel root = new ModifierTypeCategoryViewModel(null, null);
+            IEnumerable<IGrouping<string, DataBindingModifierType>> modifierTypes = _dataBindingService.GetCompatibleModifierTypes(sourceType).GroupBy(t => t.Category);
+            foreach (IGrouping<string, DataBindingModifierType> dataBindingModifierTypes in modifierTypes)
             {
-                var viewModels = dataBindingModifierTypes.Select(t => new ModifierTypeViewModel(t));
+                IEnumerable<ModifierTypeViewModel> viewModels = dataBindingModifierTypes.Select(t => new ModifierTypeViewModel(t));
                 if (dataBindingModifierTypes.Key == null)
                     root.Children.AddRange(viewModels);
                 else

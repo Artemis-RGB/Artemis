@@ -38,13 +38,13 @@ namespace Artemis.Core.Services
 
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
-            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
         }
 
         public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
-            var profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
+            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
             _profileRepository.Add(profileEntity);
 
             return new ProfileDescriptor(module, profileEntity);
@@ -52,14 +52,14 @@ namespace Artemis.Core.Services
 
         public void ActivateLastProfile(ProfileModule profileModule)
         {
-            var activeProfile = GetLastActiveProfile(profileModule);
+            ProfileDescriptor activeProfile = GetLastActiveProfile(profileModule);
             if (activeProfile != null)
                 ActivateProfile(activeProfile);
         }
 
         public async Task ActivateLastProfileAnimated(ProfileModule profileModule)
         {
-            var activeProfile = GetLastActiveProfile(profileModule);
+            ProfileDescriptor activeProfile = GetLastActiveProfile(profileModule);
             if (activeProfile != null)
                 await ActivateProfileAnimated(activeProfile);
         }
@@ -69,11 +69,11 @@ namespace Artemis.Core.Services
             if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
                 return profileDescriptor.ProfileModule.ActiveProfile;
 
-            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
 
-            var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            Profile profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
@@ -87,11 +87,11 @@ namespace Artemis.Core.Services
             if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
                 return profileDescriptor.ProfileModule.ActiveProfile;
 
-            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
 
-            var profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            Profile profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             void ActivatingProfileSurfaceUpdate(object sender, SurfaceConfigurationEventArgs e)
@@ -146,23 +146,23 @@ namespace Artemis.Core.Services
 
         public void DeleteProfile(ProfileDescriptor profileDescriptor)
         {
-            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
             _profileRepository.Remove(profileEntity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
             _logger.Debug("Updating profile " + profile);
-            var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);
 
             profile.Save();
             if (includeChildren)
             {
-                foreach (var folder in profile.GetAllFolders())
+                foreach (Folder folder in profile.GetAllFolders())
                     folder.Save();
-                foreach (var layer in profile.GetAllLayers())
+                foreach (Layer layer in profile.GetAllLayers())
                     layer.Save();
             }
 
@@ -180,8 +180,8 @@ namespace Artemis.Core.Services
                     return false;
                 }
 
-                var top = profile.UndoStack.Pop();
-                var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                string top = profile.UndoStack.Pop();
+                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
                 profile.RedoStack.Push(memento);
                 profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
 
@@ -204,8 +204,8 @@ namespace Artemis.Core.Services
                     return false;
                 }
 
-                var top = profile.RedoStack.Pop();
-                var memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                string top = profile.RedoStack.Pop();
+                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
                 profile.UndoStack.Push(memento);
                 profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
 
@@ -224,7 +224,7 @@ namespace Artemis.Core.Services
 
         public string ExportProfile(ProfileDescriptor profileDescriptor)
         {
-            var profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
 
@@ -233,7 +233,7 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule)
         {
-            var profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
+            ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             profileEntity.UpdateGuid(Guid.NewGuid());
@@ -245,11 +245,11 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
         {
-            var moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
             if (!moduleProfiles.Any())
                 return CreateProfileDescriptor(module, "Default");
 
-            var profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
+            ProfileEntity profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
             return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
         }
 
@@ -258,8 +258,8 @@ namespace Artemis.Core.Services
             if (module.ActiveProfile == null)
                 return;
 
-            var profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
-            foreach (var profileEntity in profileEntities)
+            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            foreach (ProfileEntity profileEntity in profileEntities)
             {
                 profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
                 _profileRepository.Save(profileEntity);
@@ -272,8 +272,8 @@ namespace Artemis.Core.Services
         /// <param name="surface"></param>
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
-            var profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
-            foreach (var profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
+            List<ProfileModule> profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
+            foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }
 

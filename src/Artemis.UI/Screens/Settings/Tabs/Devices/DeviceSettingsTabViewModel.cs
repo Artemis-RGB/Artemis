@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
@@ -28,8 +29,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
                 Items.Clear();
                 await Task.Delay(200);
 
-                var instances = _surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
-                foreach (var deviceSettingsViewModel in instances)
+                List<DeviceSettingsViewModel> instances = _surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
+                foreach (DeviceSettingsViewModel deviceSettingsViewModel in instances)
                     Items.Add(deviceSettingsViewModel);
             });
 

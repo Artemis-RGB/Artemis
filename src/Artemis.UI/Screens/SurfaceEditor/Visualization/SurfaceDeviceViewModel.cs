@@ -53,8 +53,8 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         public void UpdateMouseDrag(Point mousePosition)
         {
-            var roundedX = Math.Round((mousePosition.X + _dragOffsetX) / 10, 0, MidpointRounding.AwayFromZero) * 10;
-            var roundedY = Math.Round((mousePosition.Y + _dragOffsetY) / 10, 0, MidpointRounding.AwayFromZero) * 10;
+            double roundedX = Math.Round((mousePosition.X + _dragOffsetX) / 10, 0, MidpointRounding.AwayFromZero) * 10;
+            double roundedY = Math.Round((mousePosition.Y + _dragOffsetY) / 10, 0, MidpointRounding.AwayFromZero) * 10;
             Device.X = Math.Max(0, roundedX);
             Device.Y = Math.Max(0, roundedY);
         }

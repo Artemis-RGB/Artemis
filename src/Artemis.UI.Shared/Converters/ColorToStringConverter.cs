@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
                 if (string.IsNullOrWhiteSpace((string) value))
                     return default(Color);
 
-                var color = ColorConverter.ConvertFromString((string) value);
+                object color = ColorConverter.ConvertFromString((string) value);
                 if (color is Color c)
                     return c;
 

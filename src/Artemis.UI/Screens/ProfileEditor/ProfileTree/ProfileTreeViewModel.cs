@@ -43,7 +43,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         public void DragOver(IDropInfo dropInfo)
         {
-            var dragDropType = GetDragDropType(dropInfo);
+            DragDropType dragDropType = GetDragDropType(dropInfo);
 
             switch (dragDropType)
             {
@@ -61,10 +61,10 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         public void Drop(IDropInfo dropInfo)
         {
-            var source = (TreeItemViewModel) dropInfo.Data;
-            var target = (TreeItemViewModel) dropInfo.TargetItem;
+            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
+            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
 
-            var dragDropType = GetDragDropType(dropInfo);
+            DragDropType dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
             {
                 case DragDropType.Add:
@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         private void CreateRootFolderViewModel()
         {
             _updatingTree = true;
-            var firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
+            ProfileElement firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
             if (!(firstChild is Folder folder))
             {
                 ActivateItem(null);
@@ -131,12 +131,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
-            var source = (TreeItemViewModel) dropInfo.Data;
-            var target = (TreeItemViewModel) dropInfo.TargetItem;
+            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
+            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
             if (source == target)
                 return DragDropType.None;
 
-            var parent = target;
+            TreeItemViewModel parent = target;
             while (parent != null)
             {
                 if (parent == source)
@@ -190,7 +190,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 SelectedTreeItem = null;
             else
             {
-                var match = ActiveItem.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);
+                TreeItemViewModel match = ActiveItem.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);
                 if (match != null)
                     SelectedTreeItem = match;
             }

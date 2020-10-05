@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -171,7 +172,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var leftType = GetTypeAtInnerPath(LeftPropertyPath);
+            Type leftType = GetTypeAtInnerPath(LeftPropertyPath);
             if (conditionOperator.SupportsType(leftType))
                 Operator = conditionOperator;
 
@@ -195,11 +196,11 @@ namespace Artemis.Core
             if (DataModelConditionList.ListType == null)
                 return false;
 
-            var parts = path.Split('.');
-            var current = DataModelConditionList.ListType;
-            foreach (var part in parts)
+            string[] parts = path.Split('.');
+            Type current = DataModelConditionList.ListType;
+            foreach (string part in parts)
             {
-                var property = current.GetProperty(part);
+                PropertyInfo? property = current.GetProperty(part);
                 current = property?.PropertyType;
 
                 if (property == null)
@@ -237,13 +238,13 @@ namespace Artemis.Core
             if (!ListContainsInnerPath(path))
                 return null;
 
-            var parts = path.Split('.');
-            var current = DataModelConditionList.ListType;
+            string[] parts = path.Split('.');
+            Type current = DataModelConditionList.ListType;
 
             Type result = null;
-            foreach (var part in parts)
+            foreach (string part in parts)
             {
-                var property = current.GetProperty(part);
+                PropertyInfo? property = current.GetProperty(part);
                 current = property.PropertyType;
                 result = property.PropertyType;
             }
@@ -274,7 +275,7 @@ namespace Artemis.Core
 
         private void ApplyParentList()
         {
-            var current = Parent;
+            DataModelConditionPart current = Parent;
 
             while (current != null)
             {
@@ -311,7 +312,7 @@ namespace Artemis.Core
             // Operator
             if (Entity.OperatorPluginGuid != null)
             {
-                var conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
+                ConditionOperator conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
@@ -319,7 +320,7 @@ namespace Artemis.Core
             // Right side dynamic
             if (PredicateType == ListRightSideType.Dynamic && Entity.RightDataModelGuid != null && Entity.RightPropertyPath != null)
             {
-                var dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
+                DataModel dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
                     UpdateRightSideDynamic(dataModel, Entity.RightPropertyPath);
             }
@@ -337,7 +338,7 @@ namespace Artemis.Core
                     if (LeftPropertyPath != null)
                     {
                         // Use the left side type so JSON.NET has a better idea what to do
-                        var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+                        Type leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
                         object rightSideValue;
 
                         try
@@ -385,20 +386,20 @@ namespace Artemis.Core
             if (LeftPropertyPath == null || Operator == null)
                 return;
 
-            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+            Type leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
             if (!Operator.SupportsType(leftSideType))
                 Operator = null;
         }
 
         private void ValidateRightSide()
         {
-            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+            Type leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
             if (PredicateType == ListRightSideType.Dynamic)
             {
                 if (RightDataModel == null)
                     return;
 
-                var rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
+                Type rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
                 if (!leftSideType.IsCastableFrom(rightSideType))
                     UpdateRightSideDynamic(null, null);
             }
@@ -407,7 +408,7 @@ namespace Artemis.Core
                 if (RightPropertyPath == null)
                     return;
 
-                var rightSideType = GetTypeAtInnerPath(RightPropertyPath);
+                Type rightSideType = GetTypeAtInnerPath(RightPropertyPath);
                 if (!leftSideType.IsCastableFrom(rightSideType))
                     UpdateRightSideDynamic(null);
             }
@@ -429,7 +430,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
+            Type leftSideType = GetTypeAtInnerPath(LeftPropertyPath);
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == leftSideType)
@@ -449,9 +450,9 @@ namespace Artemis.Core
                 return;
 
             // List accessors share the same parameter because a list always contains one item per entry
-            var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-            var leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
-            var rightSideAccessor = CreateListAccessor(RightPropertyPath, leftSideParameter);
+            ParameterExpression leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+            Expression leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
+            Expression rightSideAccessor = CreateListAccessor(RightPropertyPath, leftSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
@@ -468,9 +469,9 @@ namespace Artemis.Core
                 return;
 
             // List accessors share the same parameter because a list always contains one item per entry
-            var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-            var leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
-            var rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
+            ParameterExpression leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+            Expression leftSideAccessor = CreateListAccessor(LeftPropertyPath, leftSideParameter);
+            Expression rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out ParameterExpression rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
@@ -487,8 +488,8 @@ namespace Artemis.Core
                 return;
 
             // List accessors share the same parameter because a list always contains one item per entry
-            var leftSideParameter = Expression.Parameter(typeof(object), "listItem");
-            var leftSideAccessor = DataModelConditionList.IsPrimitiveList
+            ParameterExpression leftSideParameter = Expression.Parameter(typeof(object), "listItem");
+            Expression leftSideAccessor = DataModelConditionList.IsPrimitiveList
                 ? Expression.Convert(leftSideParameter, DataModelConditionList.ListType)
                 : CreateListAccessor(LeftPropertyPath, leftSideParameter);
 
@@ -523,7 +524,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
         {
-            var dataModel = e.Registration.DataModel;
+            DataModel dataModel = e.Registration.DataModel;
             if (dataModel.PluginInfo.Guid == Entity.RightDataModelGuid && dataModel.ContainsPath(Entity.RightPropertyPath))
                 UpdateRightSideDynamic(dataModel, Entity.RightPropertyPath);
         }
@@ -539,7 +540,7 @@ namespace Artemis.Core
 
         private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
         {
-            var conditionOperator = e.Registration.ConditionOperator;
+            ConditionOperator conditionOperator = e.Registration.ConditionOperator;
             if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
                 UpdateOperator(conditionOperator);
         }

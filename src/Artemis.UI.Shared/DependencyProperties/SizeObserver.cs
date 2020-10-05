@@ -55,7 +55,7 @@ namespace Artemis.UI.Shared
 
         private static void OnObserveChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)
         {
-            var frameworkElement = (FrameworkElement) dependencyObject;
+            FrameworkElement frameworkElement = (FrameworkElement) dependencyObject;
 
             if ((bool) e.NewValue)
             {

@@ -36,14 +36,14 @@ namespace Artemis.Core.LayerBrushes
             if (Layer.General.ResizeMode == LayerResizeMode.Normal)
             {
                 // Apply a translated version of the shape as the clipping mask
-                var shapePath = new SKPath(Layer.LayerShape.Path);
+                SKPath shapePath = new SKPath(Layer.LayerShape.Path);
                 Layer.IncludePathInTranslation(shapePath, true);
                 canvas.ClipPath(shapePath);
             }
 
-            using var pointsPath = new SKPath();
-            using var ledPaint = new SKPaint();
-            foreach (var artemisLed in Layer.Leds)
+            using SKPath pointsPath = new SKPath();
+            using SKPaint ledPaint = new SKPaint();
+            foreach (ArtemisLed artemisLed in Layer.Leds)
             {
                 pointsPath.AddPoly(new[]
                 {
@@ -53,18 +53,18 @@ namespace Artemis.Core.LayerBrushes
             }
 
             Layer.ExcludePathFromTranslation(pointsPath, true);
-            var points = pointsPath.Points;
-            for (var index = 0; index < Layer.Leds.Count; index++)
+            SKPoint[] points = pointsPath.Points;
+            for (int index = 0; index < Layer.Leds.Count; index++)
             {
-                var artemisLed = Layer.Leds[index];
-                var renderPoint = points[index * 2 + 1];
+                ArtemisLed artemisLed = Layer.Leds[index];
+                SKPoint renderPoint = points[index * 2 + 1];
                 if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
                     continue;
 
                 // Let the brush determine the color
                 ledPaint.Color = GetColor(artemisLed, renderPoint);
 
-                var ledRectangle = SKRect.Create(
+                SKRect ledRectangle = SKRect.Create(
                     artemisLed.AbsoluteRenderRectangle.Left - Layer.Bounds.Left,
                     artemisLed.AbsoluteRenderRectangle.Top - Layer.Bounds.Top,
                     artemisLed.AbsoluteRenderRectangle.Width,

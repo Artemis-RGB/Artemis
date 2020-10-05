@@ -14,7 +14,7 @@ namespace Artemis.UI.Ninject.InstanceProviders
                 return base.GetType(methodInfo, arguments);
 
             // Find LayerProperty type
-            var descriptionPropertyType = arguments[0].GetType();
+            Type descriptionPropertyType = arguments[0].GetType();
             while (descriptionPropertyType != null && (!descriptionPropertyType.IsGenericType || descriptionPropertyType.GetGenericTypeDefinition() != typeof(DataBindingRegistration<,>)))
                 descriptionPropertyType = descriptionPropertyType.BaseType;
             if (descriptionPropertyType == null)

@@ -130,43 +130,43 @@ namespace Artemis.Core
 
         private void CreateSetReferenceTypeExpression()
         {
-            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
-            var parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
-            var memberAccess = Expression.MakeMemberAccess(parameter, DataBinding.Registration.Member);
-            var assignment = Expression.Assign(memberAccess, propertyValue);
-            var referenceTypeLambda = Expression.Lambda<Action<TLayerProperty, TProperty>>(assignment, parameter, propertyValue);
+            ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
+            ParameterExpression parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
+            MemberExpression memberAccess = Expression.MakeMemberAccess(parameter, DataBinding.Registration.Member);
+            BinaryExpression assignment = Expression.Assign(memberAccess, propertyValue);
+            Expression<Action<TLayerProperty, TProperty>> referenceTypeLambda = Expression.Lambda<Action<TLayerProperty, TProperty>>(assignment, parameter, propertyValue);
 
             ReferenceTypeSetExpression = referenceTypeLambda.Compile();
         }
 
         private void CreateSetValueTypeExpression()
         {
-            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
-            var variableCurrent = Expression.Variable(typeof(TLayerProperty), "current");
-            var layerProperty = Expression.Constant(DataBinding.LayerProperty);
-            var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
+            ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
+            ParameterExpression variableCurrent = Expression.Variable(typeof(TLayerProperty), "current");
+            ConstantExpression layerProperty = Expression.Constant(DataBinding.LayerProperty);
+            MemberExpression layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
                 DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
 
-            var body = Expression.Block(
+            BlockExpression body = Expression.Block(
                 new[] {variableCurrent},
                 Expression.Assign(variableCurrent, layerPropertyMemberAccess),
                 Expression.Assign(Expression.MakeMemberAccess(variableCurrent, DataBinding.Registration.Member), propertyValue),
                 Expression.Assign(layerPropertyMemberAccess, variableCurrent)
             );
 
-            var valueTypeLambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
+            Expression<Action<TProperty>> valueTypeLambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
             ValueTypeSetExpression = valueTypeLambda.Compile();
         }
 
         private void CreateSetCurrentValueExpression()
         {
-            var propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
-            var layerProperty = Expression.Constant(DataBinding.LayerProperty);
-            var layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
+            ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
+            ConstantExpression layerProperty = Expression.Constant(DataBinding.LayerProperty);
+            MemberExpression layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
                 DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
 
-            var body = Expression.Assign(layerPropertyMemberAccess, propertyValue);
-            var lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
+            BinaryExpression body = Expression.Assign(layerPropertyMemberAccess, propertyValue);
+            Expression<Action<TProperty>> lambda = Expression.Lambda<Action<TProperty>>(body, propertyValue);
             ValueTypeSetExpression = lambda.Compile();
         }
     }

@@ -14,10 +14,10 @@ namespace Artemis.Core
 
         public static SKColor Interpolate(this SKColor from, SKColor to, float progress)
         {
-            var redDiff = to.Red - from.Red;
-            var greenDiff = to.Green - from.Green;
-            var blueDiff = to.Blue - from.Blue;
-            var alphaDiff = to.Alpha - from.Alpha;
+            int redDiff = to.Red - from.Red;
+            int greenDiff = to.Green - from.Green;
+            int blueDiff = to.Blue - from.Blue;
+            int alphaDiff = to.Alpha - from.Alpha;
 
             return new SKColor(
                 ClampToByte(from.Red + redDiff * progress),

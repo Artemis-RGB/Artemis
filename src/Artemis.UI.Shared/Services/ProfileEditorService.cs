@@ -75,7 +75,7 @@ namespace Artemis.UI.Shared.Services
                 _logger.Verbose("ChangeSelectedProfile {profile}", profile);
                 ChangeSelectedProfileElement(null);
 
-                var profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
+                ProfileEventArgs profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
 
                 // Ensure there is never a deactivated profile as the selected profile
                 if (SelectedProfile != null)
@@ -109,7 +109,7 @@ namespace Artemis.UI.Shared.Services
                     return;
 
                 _logger.Verbose("ChangeSelectedProfileElement {profile}", profileElement);
-                var profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
+                RenderProfileElementEventArgs profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
                 SelectedProfileElement = profileElement;
                 OnSelectedProfileElementChanged(profileElementEvent);
 
@@ -140,9 +140,9 @@ namespace Artemis.UI.Shared.Services
                 return;
 
             // Stick to the main segment for any element that is not currently selected
-            foreach (var folder in SelectedProfile.GetAllFolders())
+            foreach (Folder folder in SelectedProfile.GetAllFolders())
                 folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);
-            foreach (var layer in SelectedProfile.GetAllLayers())
+            foreach (Layer layer in SelectedProfile.GetAllLayers())
                 layer.OverrideProgress(CurrentTime, layer != SelectedProfileElement);
 
             OnProfilePreviewUpdated();
@@ -150,7 +150,7 @@ namespace Artemis.UI.Shared.Services
 
         public bool UndoUpdateProfile()
         {
-            var undid = _profileService.UndoUpdateProfile(SelectedProfile);
+            bool undid = _profileService.UndoUpdateProfile(SelectedProfile);
             if (!undid)
                 return false;
 
@@ -160,7 +160,7 @@ namespace Artemis.UI.Shared.Services
 
         public bool RedoUpdateProfile()
         {
-            var redid = _profileService.RedoUpdateProfile(SelectedProfile);
+            bool redid = _profileService.RedoUpdateProfile(SelectedProfile);
             if (!redid)
                 return false;
 
@@ -180,7 +180,7 @@ namespace Artemis.UI.Shared.Services
 
             lock (_registeredPropertyEditors)
             {
-                var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                Type supportedType = viewModelType.BaseType.GetGenericArguments()[0];
                 // If the supported type is a generic, assume there is a base type
                 if (supportedType.IsGenericParameter)
                 {
@@ -189,7 +189,7 @@ namespace Artemis.UI.Shared.Services
                     supportedType = supportedType.BaseType;
                 }
 
-                var existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
+                PropertyInputRegistration existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
@@ -198,7 +198,7 @@ namespace Artemis.UI.Shared.Services
                 }
 
                 Kernel.Bind(viewModelType).ToSelf();
-                var registration = new PropertyInputRegistration(this, pluginInfo, supportedType, viewModelType);
+                PropertyInputRegistration registration = new PropertyInputRegistration(this, pluginInfo, supportedType, viewModelType);
                 _registeredPropertyEditors.Add(registration);
                 return registration;
             }
@@ -227,7 +227,7 @@ namespace Artemis.UI.Shared.Services
                     return SelectedProfileElement.StartSegmentLength;
 
                 // Snap to the end of the main segment
-                var mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
+                TimeSpan mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
                 if (Math.Abs(time.TotalMilliseconds - mainSegmentEnd.TotalMilliseconds) < tolerance.TotalMilliseconds)
                     return mainSegmentEnd;
 
@@ -246,7 +246,7 @@ namespace Artemis.UI.Shared.Services
             if (snapTimes != null)
             {
                 // Find the closest keyframe
-                var closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds);
+                TimeSpan closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds);
                 if (closeSnapTime != TimeSpan.Zero)
                     return closeSnapTime;
             }
@@ -257,7 +257,7 @@ namespace Artemis.UI.Shared.Services
         public PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
         {
             Type viewModelType = null;
-            var registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
+            PropertyInputRegistration registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
 
             // Check for enums if no supported type was found
             if (registration == null && typeof(T).IsEnum)
@@ -272,8 +272,8 @@ namespace Artemis.UI.Shared.Services
             else
                 return null;
 
-            var parameter = new ConstructorArgument("layerProperty", layerProperty);
-            var kernel = registration != null ? registration.PluginInfo.Kernel : Kernel;
+            ConstructorArgument parameter = new ConstructorArgument("layerProperty", layerProperty);
+            IKernel kernel = registration != null ? registration.PluginInfo.Kernel : Kernel;
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 
@@ -287,7 +287,7 @@ namespace Artemis.UI.Shared.Services
             // Trigger a profile change
             OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
             // Trigger a selected element change
-            var previousSelectedProfileElement = SelectedProfileElement;
+            RenderProfileElement previousSelectedProfileElement = SelectedProfileElement;
             if (SelectedProfileElement is Folder folder)
                 SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
             else if (SelectedProfileElement is Layer layer)

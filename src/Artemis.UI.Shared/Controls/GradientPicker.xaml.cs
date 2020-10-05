@@ -78,7 +78,7 @@ namespace Artemis.UI.Shared
 
         private static void ColorGradientPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var gradientPicker = (GradientPicker) d;
+            GradientPicker gradientPicker = (GradientPicker) d;
             if (gradientPicker._inCallback)
                 return;
 

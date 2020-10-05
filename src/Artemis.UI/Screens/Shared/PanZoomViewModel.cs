@@ -84,9 +84,9 @@ namespace Artemis.UI.Screens.Shared
 
         public void ProcessMouseScroll(object sender, MouseWheelEventArgs e)
         {
-            var relative = GetRelativeMousePosition(sender, e);
-            var absoluteX = relative.X * Zoom + PanX;
-            var absoluteY = relative.Y * Zoom + PanY;
+            Point relative = GetRelativeMousePosition(sender, e);
+            double absoluteX = relative.X * Zoom + PanX;
+            double absoluteY = relative.Y * Zoom + PanY;
 
             if (e.Delta > 0)
                 Zoom *= 1.1;
@@ -120,8 +120,8 @@ namespace Artemis.UI.Screens.Shared
             if (LastPanPosition == null)
                 LastPanPosition = e.GetPosition((IInputElement) sender);
 
-            var position = e.GetPosition((IInputElement) sender);
-            var delta = LastPanPosition - position;
+            Point position = e.GetPosition((IInputElement) sender);
+            Vector? delta = LastPanPosition - position;
 
             if (LimitToZero)
             {
@@ -152,7 +152,7 @@ namespace Artemis.UI.Screens.Shared
         public Rect TransformContainingRect(Rect rect)
         {
             // Create the same transform group the view is using
-            var transformGroup = new TransformGroup();
+            TransformGroup transformGroup = new TransformGroup();
             transformGroup.Children.Add(new ScaleTransform(Zoom, Zoom));
             transformGroup.Children.Add(new TranslateTransform(PanX, PanY));
 
@@ -168,7 +168,7 @@ namespace Artemis.UI.Screens.Shared
 
         private void SetZoomFromPercentage(double value)
         {
-            var newZoom = value / 100;
+            double newZoom = value / 100;
             // Focus towards the center of the zoomed area
             PanX += newZoom - Zoom;
             PanY += newZoom - Zoom;

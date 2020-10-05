@@ -75,7 +75,7 @@ namespace Artemis.Core
                     // Allow up to 15 seconds for plugins to activate.
                     // This means plugins that need more time should do their long running tasks in a background thread, which is intentional
                     // Little meh: Running this from a different thread could cause deadlocks
-                    var enableTask = Task.Run(InternalEnablePlugin);
+                    Task enableTask = Task.Run(InternalEnablePlugin);
                     if (!enableTask.Wait(TimeSpan.FromSeconds(15)))
                         throw new ArtemisPluginException(PluginInfo, "Plugin load timeout");
 

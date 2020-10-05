@@ -13,7 +13,7 @@ namespace Artemis.UI.DefaultTypes.DataModel.Input
 
         public void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
-            var regex = new Regex("[^0-9]+");
+            Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
     }

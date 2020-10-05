@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
@@ -230,8 +231,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public List<LayerPropertyGroupViewModel> GetAllLayerPropertyGroupViewModels()
         {
-            var groups = LayerPropertyGroups.ToList();
-            var toAdd = groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
+            List<LayerPropertyGroupViewModel> groups = LayerPropertyGroups.ToList();
+            List<LayerPropertyGroupViewModel> toAdd = groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
             groups.AddRange(toAdd);
             return groups;
         }
@@ -245,7 +246,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
             // Clear old properties
-            foreach (var layerPropertyGroupViewModel in LayerPropertyGroups)
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
                 layerPropertyGroupViewModel.Dispose();
             LayerPropertyGroups.Clear();
             _brushPropertyGroup = null;
@@ -285,7 +286,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (SelectedLayer == null)
                 return;
 
-            var hideRenderRelatedProperties = SelectedLayer?.LayerBrush != null && !SelectedLayer.LayerBrush.SupportsTransformation;
+            bool hideRenderRelatedProperties = SelectedLayer?.LayerBrush != null && !SelectedLayer.LayerBrush.SupportsTransformation;
 
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.ResizeMode.IsHidden = hideRenderRelatedProperties;
@@ -313,14 +314,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            var toRemove = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> toRemove = LayerPropertyGroups
                 .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
                 .ToList();
             LayerPropertyGroups.RemoveRange(toRemove);
-            foreach (var layerPropertyGroupViewModel in toRemove)
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in toRemove)
                 layerPropertyGroupViewModel.Dispose();
 
-            foreach (var layerEffect in SelectedProfileElement.LayerEffects)
+            foreach (BaseLayerEffect layerEffect in SelectedProfileElement.LayerEffects)
             {
                 if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
                     continue;
@@ -334,26 +335,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void SortProperties()
         {
             // Get all non-effect properties
-            var nonEffectProperties = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> nonEffectProperties = LayerPropertyGroups
                 .Where(l => l.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 .ToList();
             // Order the effects
-            var effectProperties = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> effectProperties = LayerPropertyGroups
                 .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot)
                 .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
                 .ToList();
 
             // Put the non-effect properties in front
-            for (var index = 0; index < nonEffectProperties.Count; index++)
+            for (int index = 0; index < nonEffectProperties.Count; index++)
             {
-                var layerPropertyGroupViewModel = nonEffectProperties[index];
+                LayerPropertyGroupViewModel layerPropertyGroupViewModel = nonEffectProperties[index];
                 LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index);
             }
 
             // Put the effect properties after, sorted by their order
-            for (var index = 0; index < effectProperties.Count; index++)
+            for (int index = 0; index < effectProperties.Count; index++)
             {
-                var layerPropertyGroupViewModel = effectProperties[index];
+                LayerPropertyGroupViewModel layerPropertyGroupViewModel = effectProperties[index];
                 LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
         }
@@ -378,8 +379,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (dropInfo.InsertIndex == 1)
                 return;
 
-            var source = dropInfo.Data as LayerPropertyGroupViewModel;
-            var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
+            LayerPropertyGroupViewModel source = dropInfo.Data as LayerPropertyGroupViewModel;
+            LayerPropertyGroupViewModel target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
             if (source == target ||
                 target?.TreeGroupViewModel.GroupType != LayerEffectRoot ||
@@ -397,8 +398,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (dropInfo.InsertIndex == 1)
                 return;
 
-            var source = dropInfo.Data as LayerPropertyGroupViewModel;
-            var target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
+            LayerPropertyGroupViewModel source = dropInfo.Data as LayerPropertyGroupViewModel;
+            LayerPropertyGroupViewModel target = dropInfo.TargetItem as LayerPropertyGroupViewModel;
 
             if (source == target ||
                 target?.TreeGroupViewModel.GroupType != LayerEffectRoot ||
@@ -430,8 +431,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void ApplyCurrentEffectsOrder()
         {
-            var order = 1;
-            foreach (var groupViewModel in LayerPropertyGroups.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
+            int order = 1;
+            foreach (LayerPropertyGroupViewModel groupViewModel in LayerPropertyGroups.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
             {
                 groupViewModel.UpdateOrder(order);
                 order++;
@@ -486,15 +487,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public void GoToPreviousFrame()
         {
-            var frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
-            var newTime = Math.Max(0, Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds - frameTime) / frameTime) * frameTime);
+            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            double newTime = Math.Max(0, Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds - frameTime) / frameTime) * frameTime);
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
 
         public void GoToNextFrame()
         {
-            var frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
-            var newTime = Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
+            double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
+            double newTime = Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
             newTime = Math.Min(newTime, CalculateEndTime().TotalMilliseconds);
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
@@ -522,7 +523,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan CalculateEndTime()
         {
-            var keyframeViewModels = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
+            List<ITimelineKeyframeViewModel> keyframeViewModels = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
 
             // If there are no keyframes, don't stop at all
             if (!keyframeViewModels.Any())
@@ -533,7 +534,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan GetCurrentSegmentStart()
         {
-            var current = ProfileEditorService.CurrentTime;
+            TimeSpan current = ProfileEditorService.CurrentTime;
             if (current < StartTimelineSegmentViewModel.SegmentEnd)
                 return StartTimelineSegmentViewModel.SegmentStart;
             if (current < MainTimelineSegmentViewModel.SegmentEnd)
@@ -546,7 +547,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan GetCurrentSegmentEnd()
         {
-            var current = ProfileEditorService.CurrentTime;
+            TimeSpan current = ProfileEditorService.CurrentTime;
             if (current < StartTimelineSegmentViewModel.SegmentEnd)
                 return StartTimelineSegmentViewModel.SegmentEnd;
             if (current < MainTimelineSegmentViewModel.SegmentEnd)
@@ -561,7 +562,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             Execute.PostToUIThread(() =>
             {
-                var newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
+                TimeSpan newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
                 if (SelectedProfileElement != null)
                 {
                     if (Repeating && RepeatTimeline)
@@ -604,9 +605,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 // Get the parent grid, need that for our position
-                var parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
-                var x = Math.Max(0, e.GetPosition(parent).X);
-                var newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
+                IInputElement parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
+                double x = Math.Max(0, e.GetPosition(parent).X);
+                TimeSpan newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
 
                 // Round the time to something that fits the current zoom level
                 if (ProfileEditorService.PixelsPerSecond < 200)
@@ -619,8 +620,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // If holding down shift, snap to the closest segment or keyframe
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    var snapTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
-                    var snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, snapTimes);
+                    List<TimeSpan> snapTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                    TimeSpan snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, snapTimes);
                     ProfileEditorService.CurrentTime = snappedTime;
                     return;
                 }
@@ -628,7 +629,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // If holding down control, round to the closest 50ms
                 if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
                 {
-                    var roundedTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
+                    TimeSpan roundedTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
                     ProfileEditorService.CurrentTime = roundedTime;
                     return;
                 }

@@ -72,7 +72,7 @@ namespace Artemis.UI.Shared
 
         private void UpdateValue(string value)
         {
-            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out var parsedResult))
+            if (!float.TryParse(value, NumberStyles.Float, CultureInfo.InvariantCulture, out float parsedResult))
                 return;
 
             Value = parsedResult;
@@ -110,7 +110,7 @@ namespace Artemis.UI.Shared
 
         private static void FloatPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var draggableFloat = (DraggableFloat) d;
+            DraggableFloat draggableFloat = (DraggableFloat) d;
             if (draggableFloat._inCallback)
                 return;
 
@@ -133,7 +133,7 @@ namespace Artemis.UI.Shared
         {
             e.Handled = true;
 
-            var position = e.GetPosition((IInputElement) sender);
+            Point position = e.GetPosition((IInputElement) sender);
             if (position == _mouseDragStartPoint)
                 DisplayInput();
             else
@@ -159,17 +159,17 @@ namespace Artemis.UI.Shared
             }
 
             // Use decimals for everything to avoid floating point errors
-            var startValue = new decimal(_startValue);
-            var startX = new decimal(_mouseDragStartPoint.X);
-            var x = new decimal(e.GetPosition((IInputElement) sender).X);
-            var stepSize = new decimal(StepSize);
+            decimal startValue = new decimal(_startValue);
+            decimal startX = new decimal(_mouseDragStartPoint.X);
+            decimal x = new decimal(e.GetPosition((IInputElement) sender).X);
+            decimal stepSize = new decimal(StepSize);
             if (stepSize == 0)
                 stepSize = 0.1m;
 
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 stepSize = stepSize * 10;
 
-            var value = (float) RoundToNearestOf(startValue + stepSize * (x - startX), stepSize);
+            float value = (float) RoundToNearestOf(startValue + stepSize * (x - startX), stepSize);
             if (Min != null)
                 value = Math.Max(value, Min.Value);
             if (Max != null)
@@ -208,7 +208,7 @@ namespace Artemis.UI.Shared
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                var text = (string) e.DataObject.GetData(typeof(string));
+                string text = (string) e.DataObject.GetData(typeof(string));
                 if (!_inputRegex.IsMatch(text))
                     e.CancelCommand();
             }

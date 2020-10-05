@@ -7,8 +7,8 @@ namespace Artemis.Plugins.Modules.General.Utilities
     {
         public static int GetActiveProcessId()
         {
-            var hWnd = GetForegroundWindow(); // Get foreground window handle
-            GetWindowThreadProcessId(hWnd, out var processId);
+            IntPtr hWnd = GetForegroundWindow(); // Get foreground window handle
+            GetWindowThreadProcessId(hWnd, out uint processId);
             return (int) processId;
         }
 

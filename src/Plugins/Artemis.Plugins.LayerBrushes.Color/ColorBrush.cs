@@ -49,7 +49,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
         {
             if (Layer.General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
             {
-                var layerBounds = new SKRect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height);
+                SKRect layerBounds = new SKRect(0, 0, Layer.Bounds.Width, Layer.Bounds.Height);
                 if (layerBounds != _shaderBounds)
                 {
                     _shaderBounds = layerBounds;
@@ -119,7 +119,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateLinearGradient()
         {
-            var repeat = Properties.ColorsMultiplier.CurrentValue;
+            int repeat = Properties.ColorsMultiplier.CurrentValue;
             _linearGradientRotation = Properties.LinearGradientRotation.CurrentValue;
 
             _shader?.Dispose();
@@ -136,7 +136,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateRadialGradient()
         {
-            var repeat = Properties.ColorsMultiplier.CurrentValue;
+            int repeat = Properties.ColorsMultiplier.CurrentValue;
 
             _shader?.Dispose();
             _shader = SKShader.CreateRadialGradient(
@@ -151,7 +151,7 @@ namespace Artemis.Plugins.LayerBrushes.Color
 
         private void CreateSweepGradient()
         {
-            var repeat = Properties.ColorsMultiplier.CurrentValue;
+            int repeat = Properties.ColorsMultiplier.CurrentValue;
 
             _shader?.Dispose();
             _shader = SKShader.CreateSweepGradient(

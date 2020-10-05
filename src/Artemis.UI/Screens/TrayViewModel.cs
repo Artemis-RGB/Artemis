@@ -25,8 +25,8 @@ namespace Artemis.UI.Screens
             _debugService = debugService;
             CanShowRootViewModel = true;
 
-            var autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
-            var showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
+            bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
+            bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
             if (!autoRunning || showOnAutoRun)
             {
                 ShowSplashScreen();
@@ -54,7 +54,7 @@ namespace Artemis.UI.Screens
             {
                 _splashViewModel?.RequestClose();
                 _splashViewModel = null;
-                var rootViewModel = _kernel.Get<RootViewModel>();
+                RootViewModel rootViewModel = _kernel.Get<RootViewModel>();
                 rootViewModel.Closed += RootViewModelOnClosed;
                 _windowManager.ShowWindow(rootViewModel);
             });

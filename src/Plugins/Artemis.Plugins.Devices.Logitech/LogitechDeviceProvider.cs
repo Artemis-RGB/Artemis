@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Artemis.Core;
@@ -37,9 +38,9 @@ namespace Artemis.Plugins.Devices.Logitech
 
         private void LogDeviceIds()
         {
-            var devices = DeviceList.Local.GetHidDevices(VENDOR_ID).DistinctBy(d => d.ProductID).ToList();
+            List<HidDevice> devices = DeviceList.Local.GetHidDevices(VENDOR_ID).DistinctBy(d => d.ProductID).ToList();
             _logger.Debug("Found {count} Logitech device(s)", devices.Count);
-            foreach (var hidDevice in devices)
+            foreach (HidDevice hidDevice in devices)
             {
                 try
                 {

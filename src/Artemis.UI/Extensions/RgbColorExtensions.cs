@@ -7,7 +7,7 @@ namespace Artemis.UI.Extensions
     {
         public static Color ToMediaColor(this RGB.NET.Core.Color color)
         {
-            var (_, r, g, b) = color.GetRGBBytes();
+            (_, byte r, byte g, byte b) = color.GetRGBBytes();
             return Color.FromRgb(r, g, b);
         }
     }

@@ -64,7 +64,7 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            foreach (var surfaceDevice in deviceProvider.Devices)
+            foreach (IRGBDevice surfaceDevice in deviceProvider.Devices)
             {
                 _logger.Debug("Device provider {deviceProvider} added {deviceName}",
                     deviceProvider.GetType().Name, surfaceDevice.DeviceInfo?.DeviceName);

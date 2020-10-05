@@ -23,7 +23,7 @@ namespace Artemis.Storage
 
         public void ApplyPendingMigrations()
         {
-            foreach (var storageMigration in _migrations.OrderBy(m => m.UserVersion))
+            foreach (IStorageMigration storageMigration in _migrations.OrderBy(m => m.UserVersion))
             {
                 if (_repository.Database.UserVersion >= storageMigration.UserVersion)
                     continue;

@@ -78,7 +78,7 @@ namespace Artemis.UI.Services
 
         private void LoadPluginModules()
         {
-            foreach (var pluginInfo in _pluginService.GetAllPluginInfo())
+            foreach (PluginInfo pluginInfo in _pluginService.GetAllPluginInfo())
                 pluginInfo.Kernel.Load(new[] { new PluginUIModule(pluginInfo) });
         }
     }

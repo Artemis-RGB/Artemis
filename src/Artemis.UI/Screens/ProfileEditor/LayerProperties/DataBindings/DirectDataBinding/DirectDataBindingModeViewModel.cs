@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
@@ -75,7 +76,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             TargetSelectionViewModel.Dispose();
             DirectDataBinding.ModifiersUpdated -= DirectDataBindingOnModifiersUpdated;
 
-            foreach (var dataBindingModifierViewModel in ModifierViewModels)
+            foreach (DataBindingModifierViewModel<TLayerProperty, TProperty> dataBindingModifierViewModel in ModifierViewModels)
                 dataBindingModifierViewModel.Dispose();
             ModifierViewModels.Clear();
         }
@@ -96,9 +97,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             if (_updating || e.Action != NotifyCollectionChangedAction.Add)
                 return;
 
-            for (var index = 0; index < ModifierViewModels.Count; index++)
+            for (int index = 0; index < ModifierViewModels.Count; index++)
             {
-                var dataBindingModifierViewModel = ModifierViewModels[index];
+                DataBindingModifierViewModel<TLayerProperty, TProperty> dataBindingModifierViewModel = ModifierViewModels[index];
                 dataBindingModifierViewModel.Modifier.Order = index + 1;
             }
 
@@ -132,15 +133,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             _updating = true;
 
             // Remove old VMs
-            var toRemove = ModifierViewModels.Where(m => !DirectDataBinding.Modifiers.Contains(m.Modifier)).ToList();
-            foreach (var modifierViewModel in toRemove)
+            List<DataBindingModifierViewModel<TLayerProperty, TProperty>> toRemove = ModifierViewModels.Where(m => !DirectDataBinding.Modifiers.Contains(m.Modifier)).ToList();
+            foreach (DataBindingModifierViewModel<TLayerProperty, TProperty> modifierViewModel in toRemove)
             {
                 ModifierViewModels.Remove(modifierViewModel);
                 modifierViewModel.Dispose();
             }
 
             // Add missing VMs
-            foreach (var modifier in DirectDataBinding.Modifiers)
+            foreach (DataBindingModifier<TLayerProperty, TProperty> modifier in DirectDataBinding.Modifiers)
             {
                 if (ModifierViewModels.All(m => m.Modifier != modifier))
                     ModifierViewModels.Add(_dataBindingsVmFactory.DataBindingModifierViewModel(modifier));

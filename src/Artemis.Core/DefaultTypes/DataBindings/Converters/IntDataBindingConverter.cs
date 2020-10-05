@@ -34,7 +34,7 @@ namespace Artemis.Core.DefaultTypes
         /// <inheritdoc />
         public override int Interpolate(int a, int b, double progress)
         {
-            var diff = b - a;
+            int diff = b - a;
             return (int) Math.Round(a + diff * progress, InterpolationRoundingMode);
         }
     }

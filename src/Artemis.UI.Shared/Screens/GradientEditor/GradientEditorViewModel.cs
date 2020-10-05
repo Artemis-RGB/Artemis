@@ -50,14 +50,14 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public void AddColorStop(object sender, MouseEventArgs e)
         {
-            var child = VisualTreeUtilities.FindChild<Canvas>((DependencyObject) sender, null);
-            var position = (float) (e.GetPosition(child).X / PreviewWidth);
-            var stop = new ColorGradientStop(ColorGradient.GetColor(position), position);
+            Canvas child = VisualTreeUtilities.FindChild<Canvas>((DependencyObject) sender, null);
+            float position = (float) (e.GetPosition(child).X / PreviewWidth);
+            ColorGradientStop stop = new ColorGradientStop(ColorGradient.GetColor(position), position);
             ColorGradient.Stops.Add(stop);
             ColorGradient.OnColorValuesUpdated();
 
-            var index = ColorGradient.Stops.OrderBy(s => s.Position).ToList().IndexOf(stop);
-            var viewModel = new ColorStopViewModel(this, stop);
+            int index = ColorGradient.Stops.OrderBy(s => s.Position).ToList().IndexOf(stop);
+            ColorStopViewModel viewModel = new ColorStopViewModel(this, stop);
             ColorStopViewModels.Insert(index, viewModel);
 
             SelectColorStop(viewModel);
@@ -74,14 +74,14 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public Point GetPositionInPreview(object sender, MouseEventArgs e)
         {
-            var parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
+            Canvas parent = VisualTreeUtilities.FindParent<Canvas>((DependencyObject) sender, null);
             return e.GetPosition(parent);
         }
 
         public void SelectColorStop(ColorStopViewModel colorStopViewModel)
         {
             SelectedColorStopViewModel = colorStopViewModel;
-            foreach (var stopViewModel in ColorStopViewModels)
+            foreach (ColorStopViewModel stopViewModel in ColorStopViewModels)
                 stopViewModel.IsSelected = stopViewModel == SelectedColorStopViewModel;
         }
 
@@ -105,7 +105,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         private void UpdateColorStopViewModels(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(PreviewWidth)) return;
-            foreach (var colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
+            foreach (ColorGradientStop colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
                 ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
         }
     }

@@ -9,18 +9,18 @@ namespace Artemis.Storage.Migrations
 
         public void Apply(LiteRepository repository)
         {
-            var collection = repository.Database.GetCollection("ProfileEntity");
-            foreach (var bsonDocument in collection.FindAll())
+            ILiteCollection<BsonDocument> collection = repository.Database.GetCollection("ProfileEntity");
+            foreach (BsonDocument bsonDocument in collection.FindAll())
             {
-                foreach (var bsonLayer in bsonDocument["Layers"].AsArray)
+                foreach (BsonValue bsonLayer in bsonDocument["Layers"].AsArray)
                 {
-                    foreach (var bsonPropertyEntity in bsonLayer["PropertyEntities"].AsArray)
+                    foreach (BsonValue bsonPropertyEntity in bsonLayer["PropertyEntities"].AsArray)
                         bsonPropertyEntity["DataBindingEntities"].AsArray.Clear();
                 }
 
-                foreach (var bsonLayer in bsonDocument["Folders"].AsArray)
+                foreach (BsonValue bsonLayer in bsonDocument["Folders"].AsArray)
                 {
-                    foreach (var bsonPropertyEntity in bsonLayer["PropertyEntities"].AsArray)
+                    foreach (BsonValue bsonPropertyEntity in bsonLayer["PropertyEntities"].AsArray)
                         bsonPropertyEntity["DataBindingEntities"].AsArray.Clear();
                 }
 

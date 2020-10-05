@@ -24,7 +24,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void Accept()
         {
-            var encoded = _profileService.ExportProfile(ProfileDescriptor);
+            string encoded = _profileService.ExportProfile(ProfileDescriptor);
             Clipboard.SetText(encoded);
             _mainMessageQueue.Enqueue("Profile contents exported to clipboard.");
 

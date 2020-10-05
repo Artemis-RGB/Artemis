@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ILayerBrushService layerBrushService) : base(profileViewModel, profileEditorService)
         {
             _layerBrushService = layerBrushService;
-            using (var stream = new MemoryStream(Resources.aero_crosshair))
+            using (MemoryStream stream = new MemoryStream(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
             }
@@ -36,11 +36,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         {
             base.MouseUp(sender, e);
 
-            var position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            var selectedRect = new Rect(MouseDownStartPosition, position);
+            Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Rect selectedRect = new Rect(MouseDownStartPosition, position);
 
             // Get selected LEDs
-            var selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
+            List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
             // Apply the selection to the selected layer layer
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             // If no folder selected, apply it to a new layer in the root folder
             else
             {
-                var rootFolder = ProfileEditorService.SelectedProfile.GetRootFolder();
+                Folder rootFolder = ProfileEditorService.SelectedProfile.GetRootFolder();
                 CreateLayer(rootFolder, selectedLeds);
             }
         }
@@ -76,9 +76,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                 return;
             }
 
-            var position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            var selectedRect = new Rect(MouseDownStartPosition, position);
-            var selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
+            Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Rect selectedRect = new Rect(MouseDownStartPosition, position);
+            List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
             // Unless shift is held down, clear the current selection
             if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
@@ -90,7 +90,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private void CreateLayer(Folder folder, List<ArtemisLed> selectedLeds)
         {
-            var newLayer = new Layer(folder, "New layer");
+            Layer newLayer = new Layer(folder, "New layer");
             newLayer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
             newLayer.AddLeds(selectedLeds);
             ProfileEditorService.ChangeSelectedProfileElement(newLayer);

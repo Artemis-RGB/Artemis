@@ -125,7 +125,7 @@ namespace Artemis.Core
                 // Shift everything after the given order
                 else
                 {
-                    foreach (var profileElement in ChildrenList.Where(c => c.Order >= order).ToList())
+                    foreach (ProfileElement profileElement in ChildrenList.Where(c => c.Order >= order).ToList())
                         profileElement.Order++;
 
                     int targetIndex;
@@ -160,7 +160,7 @@ namespace Artemis.Core
                 ChildrenList.Remove(child);
 
                 // Shift everything after the given order
-                foreach (var profileElement in ChildrenList.Where(c => c.Order > child.Order).ToList())
+                foreach (ProfileElement profileElement in ChildrenList.Where(c => c.Order > child.Order).ToList())
                     profileElement.Order--;
 
                 child.Parent = null;
@@ -178,8 +178,8 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            var folders = new List<Folder>();
-            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
+            List<Folder> folders = new List<Folder>();
+            foreach (Folder childFolder in Children.Where(c => c is Folder).Cast<Folder>())
             {
                 // Add all folders in this element
                 folders.Add(childFolder);
@@ -199,13 +199,13 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            var layers = new List<Layer>();
+            List<Layer> layers = new List<Layer>();
 
             // Add all layers in this element
             layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());
 
             // Add all layers in folders inside this element
-            foreach (var childFolder in Children.Where(c => c is Folder).Cast<Folder>())
+            foreach (Folder childFolder in Children.Where(c => c is Folder).Cast<Folder>())
                 layers.AddRange(childFolder.GetAllLayers());
 
             return layers;

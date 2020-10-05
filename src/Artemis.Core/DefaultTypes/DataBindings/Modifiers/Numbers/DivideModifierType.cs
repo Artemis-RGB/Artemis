@@ -13,7 +13,7 @@ namespace Artemis.Core.DefaultTypes
 
         public override object Apply(object currentValue, object parameterValue)
         {
-            var parameter = Convert.ToSingle(parameterValue);
+            float parameter = Convert.ToSingle(parameterValue);
             // Ye ye none of that
             if (parameter == 0)
                 return 0;

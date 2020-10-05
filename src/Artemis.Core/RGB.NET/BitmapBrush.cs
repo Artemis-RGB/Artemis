@@ -94,9 +94,9 @@ namespace Artemis.Core
 
         private void TakeCenter(IEnumerable<BrushRenderTarget> renderTargets)
         {
-            foreach (var renderTarget in renderTargets)
+            foreach (BrushRenderTarget renderTarget in renderTargets)
             {
-                var scaledLocation = renderTarget.Point * Scale;
+                Point scaledLocation = renderTarget.Point * Scale;
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
                     RenderedTargets[renderTarget] = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
             }
@@ -104,35 +104,35 @@ namespace Artemis.Core
 
         private void TakeSamples(IEnumerable<BrushRenderTarget> renderTargets)
         {
-            var sampleSize = _sampleSizeSetting.Value;
-            var sampleDepth = Math.Sqrt(sampleSize).RoundToInt();
+            int sampleSize = _sampleSizeSetting.Value;
+            int sampleDepth = Math.Sqrt(sampleSize).RoundToInt();
 
-            var bitmapWidth = Bitmap.Width;
-            var bitmapHeight = Bitmap.Height;
+            int bitmapWidth = Bitmap.Width;
+            int bitmapHeight = Bitmap.Height;
 
-            using var pixmap = Bitmap.PeekPixels();
-            foreach (var renderTarget in renderTargets)
+            using SKPixmap pixmap = Bitmap.PeekPixels();
+            foreach (BrushRenderTarget renderTarget in renderTargets)
             {
                 // SKRect has all the good stuff we need
-                var left = (int) ((renderTarget.Rectangle.Location.X + 4) * Scale.Horizontal);
-                var top = (int) ((renderTarget.Rectangle.Location.Y + 4) * Scale.Vertical);
-                var width = (int) ((renderTarget.Rectangle.Size.Width - 8) * Scale.Horizontal);
-                var height = (int) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical);
+                int left = (int) ((renderTarget.Rectangle.Location.X + 4) * Scale.Horizontal);
+                int top = (int) ((renderTarget.Rectangle.Location.Y + 4) * Scale.Vertical);
+                int width = (int) ((renderTarget.Rectangle.Size.Width - 8) * Scale.Horizontal);
+                int height = (int) ((renderTarget.Rectangle.Size.Height - 8) * Scale.Vertical);
 
-                var verticalSteps = height / (sampleDepth - 1);
-                var horizontalSteps = width / (sampleDepth - 1);
+                int verticalSteps = height / (sampleDepth - 1);
+                int horizontalSteps = width / (sampleDepth - 1);
 
                 int a = 0, r = 0, g = 0, b = 0;
-                for (var horizontalStep = 0; horizontalStep < sampleDepth; horizontalStep++)
+                for (int horizontalStep = 0; horizontalStep < sampleDepth; horizontalStep++)
                 {
-                    for (var verticalStep = 0; verticalStep < sampleDepth; verticalStep++)
+                    for (int verticalStep = 0; verticalStep < sampleDepth; verticalStep++)
                     {
-                        var x = left + horizontalSteps * horizontalStep;
-                        var y = top + verticalSteps * verticalStep;
+                        int x = left + horizontalSteps * horizontalStep;
+                        int y = top + verticalSteps * verticalStep;
                         if (x < 0 || x >= bitmapWidth || y < 0 || y >= bitmapHeight)
                             continue;
 
-                        var color = pixmap.GetPixelColor(x, y);
+                        SKColor color = pixmap.GetPixelColor(x, y);
                         a += color.Alpha;
                         r += color.Red;
                         g += color.Green;
@@ -149,8 +149,8 @@ namespace Artemis.Core
 
         private void CreateBitmap(Rectangle rectangle)
         {
-            var width = Math.Min((rectangle.Location.X + rectangle.Size.Width) * Scale.Horizontal, 4096);
-            var height = Math.Min((rectangle.Location.Y + rectangle.Size.Height) * Scale.Vertical, 4096);
+            double width = Math.Min((rectangle.Location.X + rectangle.Size.Width) * Scale.Horizontal, 4096);
+            double height = Math.Min((rectangle.Location.Y + rectangle.Size.Height) * Scale.Vertical, 4096);
             Bitmap = new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt(), SKColorType.Rgb888x));
         }
 

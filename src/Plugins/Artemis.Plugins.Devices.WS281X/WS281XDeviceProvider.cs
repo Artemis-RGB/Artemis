@@ -26,11 +26,11 @@ namespace Artemis.Plugins.Devices.WS281X
         {
             ConfigurationDialog = new PluginConfigurationDialog<WS281XConfigurationViewModel>();
 
-            var definitions = _settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
+            PluginSetting<List<DeviceDefinition>> definitions = _settings.GetSetting<List<DeviceDefinition>>("DeviceDefinitions");
             if (definitions.Value == null)
                 definitions.Value = new List<DeviceDefinition>();
 
-            foreach (var deviceDefinition in definitions.Value)
+            foreach (DeviceDefinition deviceDefinition in definitions.Value)
             {
                 switch (deviceDefinition.Type)
                 {

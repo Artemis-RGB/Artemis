@@ -101,7 +101,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
-            var config = _surfaceService.CreateSurfaceConfiguration(name);
+            ArtemisSurface config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.PostToUIThread(() => SurfaceConfigurations.Add(config));
             return config;
         }
@@ -119,10 +119,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private void LoadSurfaceConfigurations()
         {
             // Get surface configs
-            var configs = _surfaceService.SurfaceConfigurations.ToList();
+            List<ArtemisSurface> configs = _surfaceService.SurfaceConfigurations.ToList();
 
             // Get the active config, if empty, create a default config
-            var activeConfig = _surfaceService.ActiveSurface;
+            ArtemisSurface activeConfig = _surfaceService.ActiveSurface;
             if (activeConfig == null)
             {
                 activeConfig = CreateSurfaceConfiguration("Default");
@@ -134,7 +134,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 // Populate the UI collection
                 SurfaceConfigurations.Clear();
-                foreach (var surfaceConfiguration in configs)
+                foreach (ArtemisSurface surfaceConfiguration in configs)
                     SurfaceConfigurations.Add(surfaceConfiguration);
 
                 // Set the active config
@@ -149,14 +149,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 lock (Devices)
                 {
-                    var existing = Devices.ToList();
-                    var deviceViewModels = new List<SurfaceDeviceViewModel>();
+                    List<SurfaceDeviceViewModel> existing = Devices.ToList();
+                    List<SurfaceDeviceViewModel> deviceViewModels = new List<SurfaceDeviceViewModel>();
 
                     // Add missing/update existing
-                    foreach (var surfaceDeviceConfiguration in SelectedSurface.Devices.OrderBy(d => d.ZIndex).ToList())
+                    foreach (ArtemisDevice surfaceDeviceConfiguration in SelectedSurface.Devices.OrderBy(d => d.ZIndex).ToList())
                     {
                         // Create VMs for missing devices
-                        var viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
+                        SurfaceDeviceViewModel viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
                         if (viewModel == null)
                             viewModel = new SurfaceDeviceViewModel(surfaceDeviceConfiguration);
                         // Update existing devices
@@ -195,7 +195,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public async Task DeleteSurfaceConfiguration(ArtemisSurface surface)
         {
-            var result = await _dialogService.ShowConfirmDialogAt(
+            bool result = await _dialogService.ShowConfirmDialogAt(
                 "SurfaceListDialogHost",
                 "Delete surface configuration",
                 "Are you sure you want to delete\nthis surface configuration?"
@@ -209,7 +209,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public async Task AddSurfaceConfiguration()
         {
-            var result = await _dialogService.ShowDialogAt<SurfaceCreateViewModel>("SurfaceListDialogHost");
+            object result = await _dialogService.ShowDialogAt<SurfaceCreateViewModel>("SurfaceListDialogHost");
             if (result is string name)
                 CreateSurfaceConfiguration(name);
         }
@@ -226,9 +226,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public void BringToFront(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
             Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), Devices.Count - 1);
-            for (var i = 0; i < Devices.Count; i++)
+            for (int i = 0; i < Devices.Count; i++)
             {
-                var deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
@@ -237,13 +237,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
-            var newIndex = Math.Min(currentIndex + 1, Devices.Count - 1);
+            int currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
+            int newIndex = Math.Min(currentIndex + 1, Devices.Count - 1);
             Devices.Move(currentIndex, newIndex);
 
-            for (var i = 0; i < Devices.Count; i++)
+            for (int i = 0; i < Devices.Count; i++)
             {
-                var deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
@@ -253,9 +253,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
             Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), 0);
-            for (var i = 0; i < Devices.Count; i++)
+            for (int i = 0; i < Devices.Count; i++)
             {
-                var deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
@@ -264,12 +264,12 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
-            var newIndex = Math.Max(currentIndex - 1, 0);
+            int currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
+            int newIndex = Math.Max(currentIndex - 1, 0);
             Devices.Move(currentIndex, newIndex);
-            for (var i = 0; i < Devices.Count; i++)
+            for (int i = 0; i < Devices.Count; i++)
             {
-                var deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = Devices[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
@@ -278,7 +278,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            var madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(new Dictionary<string, object>
+            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(new Dictionary<string, object>
             {
                 {"surfaceDeviceViewModel", surfaceDeviceViewModel}
             });
@@ -305,8 +305,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (IsPanKeyDown() || e.ChangedButton == MouseButton.Right)
                 return;
 
-            var position = e.GetPosition((IInputElement) sender);
-            var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Point position = e.GetPosition((IInputElement) sender);
+            Point relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (e.LeftButton == MouseButtonState.Pressed)
                 StartMouseDrag(position, relative);
             else
@@ -324,8 +324,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 return;
             }
 
-            var position = e.GetPosition((IInputElement) sender);
-            var relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Point position = e.GetPosition((IInputElement) sender);
+            Point relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (_mouseDragStatus == MouseDragStatus.Dragging)
                 MoveSelected(relative);
             else if (_mouseDragStatus == MouseDragStatus.Selecting)
@@ -335,7 +335,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private void StartMouseDrag(Point position, Point relative)
         {
             // If drag started on top of a device, initialise dragging
-            var device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
+            SurfaceDeviceViewModel device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
             if (device != null)
             {
                 _rgbService.IsRenderPaused = true;
@@ -345,14 +345,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 {
                     if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                     {
-                        foreach (var others in Devices)
+                        foreach (SurfaceDeviceViewModel others in Devices)
                             others.SelectionStatus = SelectionStatus.None;
                     }
 
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
 
-                foreach (var selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+                foreach (SurfaceDeviceViewModel selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                     selectedDevice.StartMouseDrag(relative);
             }
             // Start multi-selection
@@ -370,8 +370,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             if (_mouseDragStatus != MouseDragStatus.Dragging)
             {
-                var selectedRect = new Rect(_mouseDragStartPoint, position);
-                foreach (var device in Devices)
+                Rect selectedRect = new Rect(_mouseDragStartPoint, position);
+                foreach (SurfaceDeviceViewModel device in Devices)
                 {
                     if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                         device.SelectionStatus = SelectionStatus.Selected;
@@ -391,10 +391,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (IsPanKeyDown())
                 return;
 
-            var selectedRect = new Rect(_mouseDragStartPoint, position);
+            Rect selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
-            foreach (var device in Devices)
+            foreach (SurfaceDeviceViewModel device in Devices)
             {
                 if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
                     device.SelectionStatus = SelectionStatus.Selected;
@@ -405,7 +405,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private void MoveSelected(Point position)
         {
-            foreach (var device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+            foreach (SurfaceDeviceViewModel device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                 device.UpdateMouseDrag(position);
         }
 

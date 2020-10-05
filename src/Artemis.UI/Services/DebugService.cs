@@ -43,7 +43,7 @@ namespace Artemis.UI.Services
 
         private void BringDebuggerToForeground()
         {
-            var materialWindow = (MaterialWindow) _debugViewModel.View;
+            MaterialWindow materialWindow = (MaterialWindow) _debugViewModel.View;
 
             // Not as straightforward as you might think, this ensures the window always shows, even if it's behind another window etc.
             // https://stackoverflow.com/a/4831839/5015269

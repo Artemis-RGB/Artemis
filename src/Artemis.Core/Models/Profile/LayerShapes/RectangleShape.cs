@@ -14,7 +14,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void CalculateRenderProperties()
         {
-            var path = new SKPath();
+            SKPath path = new SKPath();
             path.AddRect(SKRect.Create(Layer.Bounds.Width, Layer.Bounds.Height));
             Path = path;
         }

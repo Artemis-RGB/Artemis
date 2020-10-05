@@ -40,10 +40,10 @@ namespace Artemis.Core
             try
             {
                 // Load the intro profile from JSON into a ProfileEntity
-                var json = File.ReadAllText(Path.Combine(Constants.ApplicationFolder, "Resources", "intro-profile.json"));
-                var profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json);
+                string json = File.ReadAllText(Path.Combine(Constants.ApplicationFolder, "Resources", "intro-profile.json"));
+                ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json);
                 // Inject every LED on the surface into each layer
-                foreach (var profileEntityLayer in profileEntity.Layers)
+                foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
                 {
                     profileEntityLayer.Leds.AddRange(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Select(l => new LedEntity
                     {
@@ -52,7 +52,7 @@ namespace Artemis.Core
                     }));
                 }
 
-                var profile = new Profile(new DummyModule(), profileEntity);
+                Profile profile = new Profile(new DummyModule(), profileEntity);
                 profile.Activate(_surfaceService.ActiveSurface);
 
                 _profileService.InstantiateProfile(profile);

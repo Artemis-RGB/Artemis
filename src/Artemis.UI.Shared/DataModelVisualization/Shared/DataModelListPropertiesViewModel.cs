@@ -45,7 +45,7 @@ namespace Artemis.UI.Shared
 
             ListType = DisplayValue.GetType();
             PopulateProperties(dataModelUIService, DisplayValue);
-            foreach (var dataModelVisualizationViewModel in Children)
+            foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update(dataModelUIService);
         }
 

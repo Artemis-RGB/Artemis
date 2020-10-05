@@ -36,7 +36,7 @@ namespace Artemis.UI.Shared
                 return;
             _closed = true;
 
-            foreach (var sourceUpdatingBinding in BindingOperations.GetSourceUpdatingBindings(View))
+            foreach (BindingExpressionBase sourceUpdatingBinding in BindingOperations.GetSourceUpdatingBindings(View))
                 sourceUpdatingBinding.UpdateSource();
 
             OnSubmit();

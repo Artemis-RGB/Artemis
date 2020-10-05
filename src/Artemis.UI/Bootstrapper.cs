@@ -39,8 +39,8 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            var logger = Kernel.Get<ILogger>();
-            var viewManager = Kernel.Get<IViewManager>();
+            ILogger logger = Kernel.Get<ILogger>();
+            IViewManager viewManager = Kernel.Get<IViewManager>();
 
             StartupArguments = Args.ToList();
             CreateDataDirectory(logger);
@@ -99,10 +99,10 @@ namespace Artemis.UI
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            var logger = Kernel.Get<ILogger>();
+            ILogger logger = Kernel.Get<ILogger>();
             logger.Fatal(e.Exception, "Unhandled exception");
 
-            var dialogService = Kernel.Get<IDialogService>();
+            IDialogService dialogService = Kernel.Get<IDialogService>();
             try
             {
                 dialogService.ShowExceptionDialog("Artemis encountered an error", e.Exception);
@@ -127,8 +127,8 @@ namespace Artemis.UI
 
             // During creation ensure all local users can access the data folder
             // This is needed when later running Artemis as a different user or when Artemis is first run as admin
-            var directoryInfo = new DirectoryInfo(Constants.DataFolder);
-            var accessControl = directoryInfo.GetAccessControl();
+            DirectoryInfo directoryInfo = new DirectoryInfo(Constants.DataFolder);
+            DirectorySecurity accessControl = directoryInfo.GetAccessControl();
             accessControl.AddAccessRule(new FileSystemAccessRule(
                 new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
                 FileSystemRights.FullControl,

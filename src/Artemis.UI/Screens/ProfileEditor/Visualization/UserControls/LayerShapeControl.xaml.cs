@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private static void ZoomChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var layerShapeControl = (LayerShapeControl) d;
+            LayerShapeControl layerShapeControl = (LayerShapeControl) d;
 
             layerShapeControl.SetCurrentValue(ZoomProperty, e.NewValue);
             layerShapeControl.UpdateDimensions();
@@ -95,7 +95,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private static void ShapePathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var layerShapeControl = (LayerShapeControl) d;
+            LayerShapeControl layerShapeControl = (LayerShapeControl) d;
 
             layerShapeControl.SetCurrentValue(ShapePathProperty, e.NewValue);
             layerShapeControl.UpdatePositions();
@@ -103,7 +103,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private static void ShapeAnchorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var layerShapeControl = (LayerShapeControl) d;
+            LayerShapeControl layerShapeControl = (LayerShapeControl) d;
 
             layerShapeControl.SetCurrentValue(ShapeAnchorProperty, e.NewValue);
             layerShapeControl.UpdateShapeAnchor();
@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private static void ShapeGeometryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var layerShapeControl = (LayerShapeControl) d;
+            LayerShapeControl layerShapeControl = (LayerShapeControl) d;
 
             layerShapeControl.SetCurrentValue(ShapeGeometryProperty, e.NewValue);
             layerShapeControl.UpdateShapeGeometry();
@@ -161,14 +161,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private void UpdateControlPosition(UIElement control, SKPoint point1, SKPoint point2)
         {
-            var point = new SKPoint((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
+            SKPoint point = new SKPoint((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
             UpdateControlPosition(control, point);
         }
 
         private void UpdateRotateDimensions(Shape rotateControl)
         {
-            var controlSize = Math.Max(10 / Zoom, 4);
-            var rotateSize = controlSize * 8;
+            double controlSize = Math.Max(10 / Zoom, 4);
+            double rotateSize = controlSize * 8;
 
             rotateControl.Width = rotateSize;
             rotateControl.Height = rotateSize;
@@ -177,7 +177,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private void UpdateResizeDimensions(Shape resizeControl)
         {
-            var controlSize = Math.Max(10 / Zoom, 4);
+            double controlSize = Math.Max(10 / Zoom, 4);
 
             resizeControl.Width = controlSize;
             resizeControl.Height = controlSize;

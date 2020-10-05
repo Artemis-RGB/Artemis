@@ -71,23 +71,23 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             base.OnRender(drawingContext);
             UpdateTimeScale();
 
-            var linePen = new Pen(Fill, 1);
-            var width = HorizontalOffset + VisibleWidth;
-            var frameStart = 0;
+            Pen linePen = new Pen(Fill, 1);
+            double width = HorizontalOffset + VisibleWidth;
+            int frameStart = 0;
 
-            var units = PixelsPerSecond / _subd1;
-            var offsetUnits = frameStart * PixelsPerSecond % units;
+            double units = PixelsPerSecond / _subd1;
+            double offsetUnits = frameStart * PixelsPerSecond % units;
 
             // Labels
-            var count = (width + offsetUnits) / units;
-            for (var i = 0; i < count; i++)
+            double count = (width + offsetUnits) / units;
+            for (int i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits;
+                double x = i * units - offsetUnits;
                 // Add a 100px margin to allow the text to partially render when needed
                 if (x < HorizontalOffset - 100 || x > HorizontalOffset + width)
                     continue;
 
-                var t = TimeSpan.FromSeconds((i * units - offsetUnits) / PixelsPerSecond + frameStart);
+                TimeSpan t = TimeSpan.FromSeconds((i * units - offsetUnits) / PixelsPerSecond + frameStart);
                 // 0.00 is always formatted as 0.00
                 if (t == TimeSpan.Zero)
                     RenderLabel(drawingContext, "0.00", x);
@@ -102,9 +102,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             // Large ticks
             units = PixelsPerSecond / _subd2;
             count = (width + offsetUnits) / units;
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
-                var x = i * units - offsetUnits;
+                double x = i * units - offsetUnits;
                 if (x == 0 && OffsetFirstValue)
                     drawingContext.DrawLine(linePen, new Point(1, 20), new Point(1, 30));
                 else if (x > HorizontalOffset && x < HorizontalOffset + width)
@@ -112,13 +112,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             }
 
             // Small ticks
-            var mul = _subd3 / _subd2;
+            double mul = _subd3 / _subd2;
             units = PixelsPerSecond / _subd3;
             count = (width + offsetUnits) / units;
-            for (var i = 0; i < count; i++)
+            for (int i = 0; i < count; i++)
             {
                 if (Math.Abs(i % mul) < 0.001) continue;
-                var x = i * units - offsetUnits;
+                double x = i * units - offsetUnits;
                 if (x > HorizontalOffset && x < HorizontalOffset + width)
                     drawingContext.DrawLine(linePen, new Point(x, 25), new Point(x, 30));
             }
@@ -126,8 +126,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
 
         private void RenderLabel(DrawingContext drawingContext, string text, double x)
         {
-            var typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
-            var formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            Typeface typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
+            FormattedText formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             if (x == 0 && OffsetFirstValue)
                 drawingContext.DrawText(formattedText, new Point(2, 5));
             else

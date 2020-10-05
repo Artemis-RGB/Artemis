@@ -54,7 +54,7 @@ namespace Artemis.Core.DeviceProviders
                 else if (e.RelativePath != null)
                     e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePath);
 
-                var deviceInfo = ((IRGBDevice) sender).DeviceInfo;
+                IRGBDeviceInfo deviceInfo = ((IRGBDevice) sender).DeviceInfo;
                 if (e.FileName != null && !File.Exists(e.FinalPath))
                 {
                     Logger?.Information("Couldn't find a layout for device {deviceName}, model {deviceModel} at {filePath}",

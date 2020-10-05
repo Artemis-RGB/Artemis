@@ -195,7 +195,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             OnlyShowSelectedShape.Save();
             HighlightSelectedLayer.Save();
 
-            foreach (var canvasViewModel in CanvasViewModels)
+            foreach (CanvasViewModel canvasViewModel in CanvasViewModels)
                 canvasViewModel.Dispose();
             CanvasViewModels.Clear();
 
@@ -209,19 +209,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void ApplyActiveProfile()
         {
-            var layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
-            var layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
+            List<ProfileLayerViewModel> layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
+            List<Layer> layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
 
             // Add new layers missing a VM
-            foreach (var layer in layers)
+            foreach (Layer layer in layers)
             {
                 if (layerViewModels.All(vm => vm.Layer != layer))
                     CanvasViewModels.Add(_profileLayerVmFactory.Create(layer, this));
             }
 
             // Remove layers that no longer exist
-            var toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
-            foreach (var profileLayerViewModel in toRemove)
+            IEnumerable<ProfileLayerViewModel> toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
+            foreach (ProfileLayerViewModel profileLayerViewModel in toRemove)
             {
                 profileLayerViewModel.Dispose();
                 CanvasViewModels.Remove(profileLayerViewModel);
@@ -341,7 +341,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         public void InverseSelection()
         {
-            var current = SelectedLeds.ToList();
+            List<ArtemisLed> current = SelectedLeds.ToList();
             SelectedLeds.Clear();
             SelectedLeds.AddRange(Devices.SelectMany(d => d.Leds).Except(current));
         }

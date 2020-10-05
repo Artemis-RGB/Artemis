@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
@@ -56,7 +57,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             TimelineGroupViewModel.Dispose();
             LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
-            foreach (var child in Children)
+            foreach (PropertyChangedBase child in Children)
             {
                 if (child is IDisposable disposableChild)
                     disposableChild.Dispose();
@@ -71,11 +72,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
         {
-            var result = new List<ITimelineKeyframeViewModel>();
+            List<ITimelineKeyframeViewModel> result = new List<ITimelineKeyframeViewModel>();
             if (expandedOnly && !IsExpanded)
                 return result;
 
-            foreach (var child in Children)
+            foreach (PropertyChangedBase child in Children)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
                     result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
@@ -94,7 +95,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         /// <param name="end">The position at which to start removing keyframes, if null this will end at the last keyframe</param>
         public virtual void WipeKeyframes(TimeSpan? start, TimeSpan? end)
         {
-            foreach (var child in Children)
+            foreach (PropertyChangedBase child in Children)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
                     layerPropertyViewModel.TimelinePropertyViewModel.WipeKeyframes(start, end);
@@ -114,7 +115,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         /// <param name="amount">The amount to shift the keyframes for</param>
         public void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
         {
-            foreach (var child in Children)
+            foreach (PropertyChangedBase child in Children)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
                     layerPropertyViewModel.TimelinePropertyViewModel.ShiftKeyframes(start, end, amount);
@@ -134,16 +135,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             // Get all properties and property groups and create VMs for them
             // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
-            foreach (var propertyInfo in LayerPropertyGroup.GetType().GetProperties())
+            foreach (PropertyInfo propertyInfo in LayerPropertyGroup.GetType().GetProperties())
             {
-                var propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
-                var groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                var value = propertyInfo.GetValue(LayerPropertyGroup);
+                PropertyDescriptionAttribute propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
+                PropertyGroupDescriptionAttribute groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
+                object? value = propertyInfo.GetValue(LayerPropertyGroup);
 
                 // Create VMs for properties on the group
                 if (propertyAttribute != null && value is ILayerProperty layerProperty)
                 {
-                    var layerPropertyViewModel = _layerPropertyVmFactory.LayerPropertyViewModel(layerProperty);
+                    LayerPropertyViewModel layerPropertyViewModel = _layerPropertyVmFactory.LayerPropertyViewModel(layerProperty);
                     // After creation ensure a supported input VM was found, if not, discard the VM
                     if (!layerPropertyViewModel.TreePropertyViewModel.HasPropertyInputViewModel)
                         layerPropertyViewModel.Dispose();

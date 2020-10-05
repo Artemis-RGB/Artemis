@@ -62,25 +62,25 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         public override SKColor GetColor(ArtemisLed led, SKPoint renderPoint)
         {
-            var mainColor = Properties.MainColor.CurrentValue;
-            var secondColor = Properties.SecondaryColor.CurrentValue;
-            var gradientColor = Properties.GradientColor.CurrentValue;
-            var scale = Properties.Scale.CurrentValue;
-            var hardness = Properties.Hardness.CurrentValue / 100f;
+            SKColor mainColor = Properties.MainColor.CurrentValue;
+            SKColor secondColor = Properties.SecondaryColor.CurrentValue;
+            ColorGradient gradientColor = Properties.GradientColor.CurrentValue;
+            SKSize scale = Properties.Scale.CurrentValue;
+            float hardness = Properties.Hardness.CurrentValue / 100f;
 
-            var scrolledX = renderPoint.X + _x;
+            float scrolledX = renderPoint.X + _x;
             if (float.IsNaN(scrolledX) || float.IsInfinity(scrolledX))
                 scrolledX = 0;
-            var scrolledY = renderPoint.Y + _y;
+            float scrolledY = renderPoint.Y + _y;
             if (float.IsNaN(scrolledY) || float.IsInfinity(scrolledY))
                 scrolledY = 0;
 
 
-            var evalX = scrolledX * (scale.Width * -1) / 1000f;
-            var evalY = scrolledY * (scale.Height * -1) / 1000f;
+            float evalX = scrolledX * (scale.Width * -1) / 1000f;
+            float evalY = scrolledY * (scale.Height * -1) / 1000f;
 
-            var v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
-            var amount = Math.Max(0f, Math.Min(1f, v));
+            float v = (float) _noise.Evaluate(evalX, evalY, _z) * hardness;
+            float amount = Math.Max(0f, Math.Min(1f, v));
 
             if (Properties.ColorType.BaseValue == ColorMappingType.Simple)
                 return mainColor.Interpolate(secondColor, amount);
@@ -177,8 +177,8 @@ namespace Artemis.Plugins.LayerBrushes.Noise
 
         private void CreateColorMap()
         {
-            var colorMap = new SKColor[101];
-            for (var i = 0; i < 101; i++)
+            SKColor[] colorMap = new SKColor[101];
+            for (int i = 0; i < 101; i++)
                 colorMap[i] = Properties.GradientColor.BaseValue.GetColor(i / 100f);
 
             _colorMap = colorMap;

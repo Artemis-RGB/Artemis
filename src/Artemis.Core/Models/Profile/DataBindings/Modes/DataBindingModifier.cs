@@ -147,7 +147,7 @@ namespace Artemis.Core
 
             if (ParameterType == ProfileRightSideType.Dynamic && CompiledParameterAccessor != null)
             {
-                var value = CompiledParameterAccessor(ParameterDataModel);
+                object value = CompiledParameterAccessor(ParameterDataModel);
                 return ModifierType.Apply(currentValue, value);
             }
 
@@ -174,7 +174,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var targetType = DirectDataBinding.DataBinding.GetTargetType();
+            Type targetType = DirectDataBinding.DataBinding.GetTargetType();
             if (!modifierType.SupportsType(targetType))
             {
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
@@ -226,7 +226,7 @@ namespace Artemis.Core
             ParameterDataModel = null;
             ParameterPropertyPath = null;
 
-            var parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+            Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == parameterType)
@@ -252,7 +252,7 @@ namespace Artemis.Core
             // Modifier type
             if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
             {
-                var modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
+                DataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
                 if (modifierType != null)
                     UpdateModifierType(modifierType);
             }
@@ -260,7 +260,7 @@ namespace Artemis.Core
             // Dynamic parameter
             if (ParameterType == ProfileRightSideType.Dynamic && Entity.ParameterDataModelGuid != null && ParameterDataModel == null)
             {
-                var dataModel = DataModelStore.Get(Entity.ParameterDataModelGuid.Value)?.DataModel;
+                DataModel dataModel = DataModelStore.Get(Entity.ParameterDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.ParameterPropertyPath))
                     UpdateParameter(dataModel, Entity.ParameterPropertyPath);
             }
@@ -268,7 +268,7 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                var parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+                Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
                 object staticValue;
 
                 try
@@ -299,10 +299,10 @@ namespace Artemis.Core
                     return;
 
                 // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-                var parameterAccessor = ExpressionUtilities.CreateDataModelAccessor(
-                    ParameterDataModel, ParameterPropertyPath, "parameter", out var rightSideParameter
+                Expression parameterAccessor = ExpressionUtilities.CreateDataModelAccessor(
+                    ParameterDataModel, ParameterPropertyPath, "parameter", out ParameterExpression rightSideParameter
                 );
-                var lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
+                Expression<Func<DataModel, object>> lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
                 CompiledParameterAccessor = lambda.Compile();
             }
         }
@@ -314,7 +314,7 @@ namespace Artemis.Core
             if (ModifierType != null)
                 return;
 
-            var modifierType = e.TypeRegistration.DataBindingModifierType;
+            DataBindingModifierType modifierType = e.TypeRegistration.DataBindingModifierType;
             if (modifierType.PluginInfo.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
                 UpdateModifierType(modifierType);
         }
@@ -327,7 +327,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
         {
-            var dataModel = e.Registration.DataModel;
+            DataModel dataModel = e.Registration.DataModel;
             if (dataModel.PluginInfo.Guid == Entity.ParameterDataModelGuid && dataModel.ContainsPath(Entity.ParameterPropertyPath))
                 UpdateParameter(dataModel, Entity.ParameterPropertyPath);
         }

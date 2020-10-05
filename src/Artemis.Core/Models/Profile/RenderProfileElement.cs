@@ -31,7 +31,7 @@ namespace Artemis.Core
             LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
 
-            foreach (var baseLayerEffect in LayerEffects)
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
 
             base.Dispose(disposing);
@@ -68,9 +68,9 @@ namespace Artemis.Core
             RenderElementEntity.AlwaysFinishTimeline = AlwaysFinishTimeline;
 
             RenderElementEntity.LayerEffects.Clear();
-            foreach (var layerEffect in LayerEffects)
+            foreach (BaseLayerEffect layerEffect in LayerEffects)
             {
-                var layerEffectEntity = new LayerEffectEntity
+                LayerEffectEntity layerEffectEntity = new LayerEffectEntity
                 {
                     Id = layerEffect.EntityId,
                     PluginGuid = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.PluginInfo.Guid,
@@ -228,9 +228,9 @@ namespace Artemis.Core
 
         protected double UpdateTimeline(double deltaTime)
         {
-            var oldPosition = _timelinePosition;
-            var deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
-            var mainSegmentEnd = StartSegmentLength + MainSegmentLength;
+            TimeSpan oldPosition = _timelinePosition;
+            TimeSpan deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
+            TimeSpan mainSegmentEnd = StartSegmentLength + MainSegmentLength;
 
             TimelinePosition += deltaTimeSpan;
             // Manage segments while the condition is met
@@ -278,7 +278,7 @@ namespace Artemis.Core
             if (descriptor == null)
                 throw new ArgumentNullException(nameof(descriptor));
 
-            var entity = new LayerEffectEntity
+            LayerEffectEntity entity = new LayerEffectEntity
             {
                 Id = Guid.NewGuid(),
                 Enabled = true,
@@ -309,8 +309,8 @@ namespace Artemis.Core
 
         private void OrderEffects()
         {
-            var index = 0;
-            foreach (var baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
+            int index = 0;
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.OrderBy(e => e.Order))
             {
                 baseLayerEffect.Order = Order = index + 1;
                 index++;
@@ -321,14 +321,14 @@ namespace Artemis.Core
 
         internal void ActivateEffects()
         {
-            foreach (var layerEffectEntity in RenderElementEntity.LayerEffects)
+            foreach (LayerEffectEntity layerEffectEntity in RenderElementEntity.LayerEffects)
             {
                 // If there is a non-placeholder existing effect, skip this entity
-                var existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
+                BaseLayerEffect existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
                 if (existing != null && existing.Descriptor.PlaceholderFor == null)
                     continue;
 
-                var descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
+                LayerEffectDescriptor descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
                 if (descriptor != null)
                 {
                     // If a descriptor is found but there is an existing placeholder, remove the placeholder
@@ -362,15 +362,15 @@ namespace Artemis.Core
         private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
-            var pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
-                                                          ef.PluginInfo.Guid == e.Registration.Plugin.PluginInfo.Guid).ToList();
-            foreach (var pluginEffect in pluginEffects)
+            List<BaseLayerEffect> pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
+                                                                            ef.PluginInfo.Guid == e.Registration.Plugin.PluginInfo.Guid).ToList();
+            foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
-                var entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
+                LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
                 _layerEffects.Remove(pluginEffect);
                 pluginEffect.Dispose();
 
-                var descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.PluginInfo.Guid);
+                LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.PluginInfo.Guid);
                 descriptor.CreateInstance(this, entity);
             }
         }
@@ -420,7 +420,7 @@ namespace Artemis.Core
 
         public void UpdateDisplayCondition()
         {
-            var conditionMet = DisplayCondition == null || DisplayCondition.Evaluate();
+            bool conditionMet = DisplayCondition == null || DisplayCondition.Evaluate();
             if (conditionMet && !DisplayConditionMet)
                 TimelinePosition = TimeSpan.Zero;
 

@@ -147,7 +147,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            Type leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
 
             // If not null ensure the types match and if not, convert it
             if (staticValue != null && staticValue.GetType() == leftSideType)
@@ -184,7 +184,7 @@ namespace Artemis.Core
                 return;
             }
 
-            var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            Type leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (!conditionOperator.SupportsType(leftType))
             {
                 throw new ArtemisCoreException($"Cannot apply operator {conditionOperator.GetType().Name} to this predicate because " +
@@ -204,7 +204,7 @@ namespace Artemis.Core
             // Compare with a static value
             if (PredicateType == ProfileRightSideType.Static)
             {
-                var leftSideValue = LeftSideAccessor(LeftDataModel);
+                object leftSideValue = LeftSideAccessor(LeftDataModel);
                 if (leftSideValue.GetType().IsValueType && RightStaticValue == null)
                     return false;
 
@@ -256,7 +256,7 @@ namespace Artemis.Core
             // Left side
             if (Entity.LeftDataModelGuid != null)
             {
-                var dataModel = DataModelStore.Get(Entity.LeftDataModelGuid.Value)?.DataModel;
+                DataModel dataModel = DataModelStore.Get(Entity.LeftDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.LeftPropertyPath))
                     UpdateLeftSide(dataModel, Entity.LeftPropertyPath);
             }
@@ -264,7 +264,7 @@ namespace Artemis.Core
             // Operator
             if (Entity.OperatorPluginGuid != null)
             {
-                var conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
+                ConditionOperator conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
@@ -272,7 +272,7 @@ namespace Artemis.Core
             // Right side dynamic
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightDataModelGuid != null)
             {
-                var dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
+                DataModel dataModel = DataModelStore.Get(Entity.RightDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.RightPropertyPath))
                     UpdateRightSide(dataModel, Entity.RightPropertyPath);
             }
@@ -284,7 +284,7 @@ namespace Artemis.Core
                     if (LeftDataModel != null)
                     {
                         // Use the left side type so JSON.NET has a better idea what to do
-                        var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+                        Type leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
                         object rightSideValue;
 
                         try
@@ -336,20 +336,20 @@ namespace Artemis.Core
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            Type leftType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (!Operator.SupportsType(leftType))
                 Operator = null;
         }
 
         private void ValidateRightSide()
         {
-            var leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
+            Type leftSideType = LeftDataModel.GetTypeAtPath(LeftPropertyPath);
             if (PredicateType == ProfileRightSideType.Dynamic)
             {
                 if (RightDataModel == null)
                     return;
 
-                var rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
+                Type rightSideType = RightDataModel.GetTypeAtPath(RightPropertyPath);
                 if (!leftSideType.IsCastableFrom(rightSideType))
                     UpdateRightSide(null, null);
             }
@@ -367,8 +367,8 @@ namespace Artemis.Core
             if (LeftDataModel == null || RightDataModel == null || Operator == null)
                 return;
 
-            var leftSideAccessor = ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter);
-            var rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out var rightSideParameter);
+            Expression leftSideAccessor = ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out ParameterExpression leftSideParameter);
+            Expression rightSideAccessor = ExpressionUtilities.CreateDataModelAccessor(RightDataModel, RightPropertyPath, "right", out ParameterExpression rightSideParameter);
 
             // A conversion may be required if the types differ
             // This can cause issues if the DataModelConditionOperator wasn't accurate in it's supported types but that is not a concern here
@@ -384,8 +384,8 @@ namespace Artemis.Core
             if (LeftDataModel == null || Operator == null)
                 return;
 
-            var leftSideAccessor = Expression.Convert(
-                ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out var leftSideParameter),
+            UnaryExpression leftSideAccessor = Expression.Convert(
+                ExpressionUtilities.CreateDataModelAccessor(LeftDataModel, LeftPropertyPath, "left", out ParameterExpression leftSideParameter),
                 typeof(object)
             );
 
@@ -402,7 +402,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
         {
-            var dataModel = e.Registration.DataModel;
+            DataModel dataModel = e.Registration.DataModel;
             if (dataModel.PluginInfo.Guid == Entity.LeftDataModelGuid && dataModel.ContainsPath(Entity.LeftPropertyPath))
                 UpdateLeftSide(dataModel, Entity.LeftPropertyPath);
             if (dataModel.PluginInfo.Guid == Entity.RightDataModelGuid && dataModel.ContainsPath(Entity.RightPropertyPath))
@@ -426,7 +426,7 @@ namespace Artemis.Core
 
         private void ConditionOperatorStoreOnConditionOperatorAdded(object sender, ConditionOperatorStoreEvent e)
         {
-            var conditionOperator = e.Registration.ConditionOperator;
+            ConditionOperator conditionOperator = e.Registration.ConditionOperator;
             if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
                 UpdateOperator(conditionOperator);
         }

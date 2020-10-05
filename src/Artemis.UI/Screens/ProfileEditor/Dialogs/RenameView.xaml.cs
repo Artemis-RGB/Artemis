@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         private void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
         {
-            var textBox = (TextBox) sender;
+            TextBox textBox = (TextBox) sender;
             Keyboard.Focus(textBox);
             textBox.SelectAll();
         }

@@ -6,9 +6,9 @@ namespace Artemis.Core
     {
         public static void CopyFilesRecursively(this DirectoryInfo source, DirectoryInfo target)
         {
-            foreach (var dir in source.GetDirectories())
+            foreach (DirectoryInfo dir in source.GetDirectories())
                 CopyFilesRecursively(dir, target.CreateSubdirectory(dir.Name));
-            foreach (var file in source.GetFiles())
+            foreach (FileInfo file in source.GetFiles())
                 file.CopyTo(Path.Combine(target.FullName, file.Name));
         }
 
@@ -17,10 +17,10 @@ namespace Artemis.Core
             if (!baseDir.Exists)
                 return;
 
-            foreach (var dir in baseDir.EnumerateDirectories())
+            foreach (DirectoryInfo dir in baseDir.EnumerateDirectories())
                 DeleteRecursively(dir);
-            var files = baseDir.GetFiles();
-            foreach (var file in files)
+            FileInfo[] files = baseDir.GetFiles();
+            foreach (FileInfo file in files)
             {
                 file.IsReadOnly = false;
                 file.Delete();

@@ -6,7 +6,7 @@ namespace Artemis.Plugins.Devices.DMX.ViewModels
     {
         public DMXConfigurationViewModel(Plugin plugin) : base(plugin)
         {
-            var dmxInstance = RGB.NET.Devices.DMX.DMXDeviceProvider.Instance;
+            RGB.NET.Devices.DMX.DMXDeviceProvider dmxInstance = RGB.NET.Devices.DMX.DMXDeviceProvider.Instance;
         }
     }
 }

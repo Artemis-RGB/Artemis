@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
 using Artemis.UI.Shared.Screens.Dialogs;
 using Artemis.UI.Shared.Screens.Exceptions;
 using MaterialDesignThemes.Wpf;
@@ -27,27 +28,27 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            var arguments = new IParameter[]
+            IParameter[] arguments = new IParameter[]
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
                 new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
-            var result = await ShowDialog<ConfirmDialogViewModel>(arguments);
+            object result = await ShowDialog<ConfirmDialogViewModel>(arguments);
             return (bool) result;
         }
 
         public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            var arguments = new IParameter[]
+            IParameter[] arguments = new IParameter[]
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
                 new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
-            var result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
+            object result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
             return (bool) result;
         }
 
@@ -61,7 +62,7 @@ namespace Artemis.UI.Shared.Services
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            var paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
+            IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
             return ShowDialog<T>(paramsArray);
         }
 
@@ -81,7 +82,7 @@ namespace Artemis.UI.Shared.Services
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
 
-            var paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
+            IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
             return await ShowDialogAt<T>(identifier, paramsArray);
         }
 
@@ -101,7 +102,7 @@ namespace Artemis.UI.Shared.Services
             Task<object> result = null;
             await Execute.OnUIThreadAsync(() =>
             {
-                var view = _viewManager.CreateViewForModel(viewModel);
+                UIElement view = _viewManager.CreateViewForModel(viewModel);
                 _viewManager.BindViewToModel(view, viewModel);
 
                 if (identifier == null)

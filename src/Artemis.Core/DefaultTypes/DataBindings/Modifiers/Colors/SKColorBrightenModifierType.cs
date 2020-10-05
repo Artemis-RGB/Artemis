@@ -15,7 +15,7 @@ namespace Artemis.Core.DefaultTypes
 
         public override object Apply(object currentValue, object parameterValue)
         {
-            ((SKColor) currentValue).ToHsl(out var h, out var s, out var l);
+            ((SKColor) currentValue).ToHsl(out float h, out float s, out float l);
             l *= (Convert.ToSingle(parameterValue) + 100f) / 100f;
 
             return SKColor.FromHsl(h, s, l);

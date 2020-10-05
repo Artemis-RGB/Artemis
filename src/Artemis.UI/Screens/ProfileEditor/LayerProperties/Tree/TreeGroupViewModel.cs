@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -53,22 +54,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public void OpenBrushSettings()
         {
-            var layerBrush = LayerPropertyGroup.LayerBrush;
-            var configurationViewModel = layerBrush.ConfigurationDialog;
+            BaseLayerBrush layerBrush = LayerPropertyGroup.LayerBrush;
+            LayerBrushConfigurationDialog configurationViewModel = layerBrush.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
                 // Limit to one constructor, there's no need to have more and it complicates things anyway
-                var constructors = configurationViewModel.Type.GetConstructors();
+                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
                 if (constructors.Length != 1)
                     throw new ArtemisUIException("Brush configuration dialogs must have exactly one constructor");
 
                 // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
-                var brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
-                var argument = new ConstructorArgument(brushParameter.Name, layerBrush);
-                var viewModel = (BrushConfigurationViewModel) layerBrush.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
+                ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
+                ConstructorArgument argument = new ConstructorArgument(brushParameter.Name, layerBrush);
+                BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
 
                 _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(viewModel));
             }
@@ -80,21 +81,21 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public void OpenEffectSettings()
         {
-            var layerEffect = LayerPropertyGroup.LayerEffect;
-            var configurationViewModel = layerEffect.ConfigurationDialog;
+            BaseLayerEffect layerEffect = LayerPropertyGroup.LayerEffect;
+            LayerEffectConfigurationDialog configurationViewModel = layerEffect.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
                 // Limit to one constructor, there's no need to have more and it complicates things anyway
-                var constructors = configurationViewModel.Type.GetConstructors();
+                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
                 if (constructors.Length != 1)
                     throw new ArtemisUIException("Effect configuration dialogs must have exactly one constructor");
 
-                var effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
-                var argument = new ConstructorArgument(effectParameter.Name, layerEffect);
-                var viewModel = (EffectConfigurationViewModel) layerEffect.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
+                ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
+                ConstructorArgument argument = new ConstructorArgument(effectParameter.Name, layerEffect);
+                EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
                 _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
@@ -106,7 +107,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public async void RenameEffect()
         {
-            var result = await _dialogService.ShowDialogAt<RenameViewModel>(
+            object result = await _dialogService.ShowDialogAt<RenameViewModel>(
                 "PropertyTreeDialogHost",
                 new Dictionary<string, object>
                 {
@@ -138,8 +139,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public double GetDepth()
         {
-            var depth = 0;
-            var current = LayerPropertyGroup.Parent;
+            int depth = 0;
+            LayerPropertyGroup current = LayerPropertyGroup.Parent;
             while (current != null)
             {
                 depth++;

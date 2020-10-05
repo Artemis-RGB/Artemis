@@ -55,7 +55,7 @@ namespace Artemis.Core.Modules
         /// <param name="propertyLambda">A lambda expression pointing to the property to ignore</param>
         public void HideProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
         {
-            var propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            PropertyInfo propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
             if (!HiddenPropertiesList.Any(p => p.Equals(propertyInfo)))
                 HiddenPropertiesList.Add(propertyInfo);
         }
@@ -67,7 +67,7 @@ namespace Artemis.Core.Modules
         /// <param name="propertyLambda">A lambda expression pointing to the property to stop ignoring</param>
         public void ShowProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
         {
-            var propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            PropertyInfo propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
             HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
         }
 
@@ -227,7 +227,7 @@ namespace Artemis.Core.Modules
         {
             base.Deactivate(isOverride);
 
-            var profile = ActiveProfile;
+            Profile profile = ActiveProfile;
             ActiveProfile = null;
             profile?.Dispose();
         }

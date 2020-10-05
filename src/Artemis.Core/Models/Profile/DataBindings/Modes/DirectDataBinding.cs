@@ -58,8 +58,8 @@ namespace Artemis.Core
             if (CompiledTargetAccessor == null)
                 return baseValue;
 
-            var dataBindingValue = CompiledTargetAccessor(SourceDataModel);
-            foreach (var dataBindingModifier in Modifiers)
+            object dataBindingValue = CompiledTargetAccessor(SourceDataModel);
+            foreach (DataBindingModifier<TLayerProperty, TProperty> dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
             return DataBinding.Converter.ConvertFromObject(dataBindingValue);
@@ -75,7 +75,7 @@ namespace Artemis.Core
             DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
 
-            foreach (var dataBindingModifier in Modifiers)
+            foreach (DataBindingModifier<TLayerProperty, TProperty> dataBindingModifier in Modifiers)
                 dataBindingModifier.Dispose();
         }
 
@@ -89,7 +89,7 @@ namespace Artemis.Core
             // Data model is done during Initialize
 
             // Modifiers
-            foreach (var dataBindingModifierEntity in Entity.Modifiers)
+            foreach (DataBindingModifierEntity dataBindingModifierEntity in Entity.Modifiers)
                 _modifiers.Add(new DataBindingModifier<TLayerProperty, TProperty>(this, dataBindingModifierEntity));
 
             ApplyOrder();
@@ -107,7 +107,7 @@ namespace Artemis.Core
 
             // Modifiers
             Entity.Modifiers.Clear();
-            foreach (var dataBindingModifier in Modifiers)
+            foreach (DataBindingModifier<TLayerProperty, TProperty> dataBindingModifier in Modifiers)
                 dataBindingModifier.Save();
         }
 
@@ -123,7 +123,7 @@ namespace Artemis.Core
             // Source
             if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
             {
-                var dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
+                DataModel dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
                 if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
                     UpdateSource(dataModel, Entity.SourcePropertyPath);
             }
@@ -131,19 +131,19 @@ namespace Artemis.Core
 
         private void CreateExpression()
         {
-            var listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
+            Type listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
             if (listType != null)
                 throw new ArtemisCoreException($"Cannot create a regular accessor at path {SourcePropertyPath} because the path contains a list");
 
-            var parameter = Expression.Parameter(typeof(DataModel), "targetDataModel");
-            var accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
+            ParameterExpression parameter = Expression.Parameter(typeof(DataModel), "targetDataModel");
+            Expression accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
                 Expression.Convert(parameter, SourceDataModel.GetType()), // Cast to the appropriate type
                 Expression.Property
             );
 
-            var returnValue = Expression.Convert(accessor, typeof(object));
+            UnaryExpression returnValue = Expression.Convert(accessor, typeof(object));
 
-            var lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
+            Expression<Func<DataModel, object>> lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
             CompiledTargetAccessor = lambda.Compile();
         }
 
@@ -198,7 +198,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DirectDataBinding");
 
-            var modifier = new DataBindingModifier<TLayerProperty, TProperty>(this, type);
+            DataBindingModifier<TLayerProperty, TProperty> modifier = new DataBindingModifier<TLayerProperty, TProperty>(this, type);
             _modifiers.Add(modifier);
 
             ApplyOrder();
@@ -230,9 +230,9 @@ namespace Artemis.Core
         public void ApplyOrder()
         {
             _modifiers.Sort((a, b) => a.Order.CompareTo(b.Order));
-            for (var index = 0; index < _modifiers.Count; index++)
+            for (int index = 0; index < _modifiers.Count; index++)
             {
-                var modifier = _modifiers[index];
+                DataBindingModifier<TLayerProperty, TProperty> modifier = _modifiers[index];
                 modifier.Order = index + 1;
             }
         }
@@ -243,7 +243,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
         {
-            var dataModel = e.Registration.DataModel;
+            DataModel dataModel = e.Registration.DataModel;
             if (dataModel.PluginInfo.Guid == Entity.SourceDataModelGuid && dataModel.ContainsPath(Entity.SourcePropertyPath))
                 UpdateSource(dataModel, Entity.SourcePropertyPath);
         }

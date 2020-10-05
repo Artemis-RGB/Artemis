@@ -32,8 +32,8 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
-            var viewModel = new DataModelPropertiesViewModel(null, null, null);
-            foreach (var dataModelExpansion in _dataModelService.GetDataModels())
+            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels())
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, null));
 
             // Update to populate children
@@ -46,24 +46,24 @@ namespace Artemis.UI.Shared.Services
         {
             if (includeMainDataModel)
             {
-                var mainDataModel = GetMainDataModelVisualization();
+                DataModelPropertiesViewModel mainDataModel = GetMainDataModelVisualization();
 
                 // If the main data model already includes the plugin data model we're done
                 if (mainDataModel.Children.Any(c => c.DataModel.PluginInfo.Instance == plugin))
                     return mainDataModel;
                 // Otherwise get just the plugin data model and add it
-                var pluginDataModel = GetPluginDataModelVisualization(plugin, false);
+                DataModelPropertiesViewModel pluginDataModel = GetPluginDataModelVisualization(plugin, false);
                 if (pluginDataModel != null)
                     mainDataModel.Children.Add(pluginDataModel);
 
                 return mainDataModel;
             }
 
-            var dataModel = _dataModelService.GetPluginDataModel(plugin);
+            DataModel dataModel = _dataModelService.GetPluginDataModel(plugin);
             if (dataModel == null)
                 return null;
 
-            var viewModel = new DataModelPropertiesViewModel(null, null, null);
+            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
             viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, null));
 
             // Update to populate children
@@ -76,11 +76,11 @@ namespace Artemis.UI.Shared.Services
         {
             if (compatibleConversionTypes == null)
                 compatibleConversionTypes = new List<Type>();
-            var viewModelType = typeof(T);
+            Type viewModelType = typeof(T);
             lock (_registeredDataModelEditors)
             {
-                var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
-                var existing = _registeredDataModelEditors.FirstOrDefault(r => r.SupportedType == supportedType);
+                Type supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                DataModelVisualizationRegistration existing = _registeredDataModelEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
@@ -95,7 +95,7 @@ namespace Artemis.UI.Shared.Services
                 _kernel.Bind(viewModelType).ToSelf();
 
                 // Create the registration
-                var registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, pluginInfo, supportedType, viewModelType)
+                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, pluginInfo, supportedType, viewModelType)
                 {
                     // Apply the compatible conversion types to the registration
                     CompatibleConversionTypes = compatibleConversionTypes
@@ -108,11 +108,11 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel
         {
-            var viewModelType = typeof(T);
+            Type viewModelType = typeof(T);
             lock (_registeredDataModelDisplays)
             {
-                var supportedType = viewModelType.BaseType.GetGenericArguments()[0];
-                var existing = _registeredDataModelDisplays.FirstOrDefault(r => r.SupportedType == supportedType);
+                Type supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                DataModelVisualizationRegistration existing = _registeredDataModelDisplays.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
                     if (existing.PluginInfo != pluginInfo)
@@ -125,7 +125,7 @@ namespace Artemis.UI.Shared.Services
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
-                var registration = new DataModelVisualizationRegistration(this, RegistrationType.Display, pluginInfo, supportedType, viewModelType);
+                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Display, pluginInfo, supportedType, viewModelType);
                 _registeredDataModelDisplays.Add(registration);
                 return registration;
             }
@@ -163,7 +163,7 @@ namespace Artemis.UI.Shared.Services
         {
             lock (_registeredDataModelDisplays)
             {
-                var match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
+                DataModelVisualizationRegistration match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
                     return (DataModelDisplayViewModel) match.PluginInfo.Kernel.Get(match.ViewModelType);
                 return !fallBackToDefault ? null : _kernel.Get<DefaultDataModelDisplayViewModel>();
@@ -175,7 +175,7 @@ namespace Artemis.UI.Shared.Services
             lock (_registeredDataModelEditors)
             {
                 // Prefer a VM that natively supports the type
-                var match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == propertyType);
+                DataModelVisualizationRegistration match = _registeredDataModelEditors.FirstOrDefault(d => d.SupportedType == propertyType);
                 // Fall back on a VM that supports the type through conversion
                 if (match == null)
                     match = _registeredDataModelEditors.FirstOrDefault(d => d.CompatibleConversionTypes.Contains(propertyType));
@@ -185,7 +185,7 @@ namespace Artemis.UI.Shared.Services
 
                 if (match != null)
                 {
-                    var viewModel = InstantiateDataModelInputViewModel(match, description, initialValue);
+                    DataModelInputViewModel viewModel = InstantiateDataModelInputViewModel(match, description, initialValue);
                     viewModel.UpdateCallback = updateCallback;
                     return viewModel;
                 }
@@ -217,12 +217,12 @@ namespace Artemis.UI.Shared.Services
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
-            var parameters = new IParameter[]
+            IParameter[] parameters = new IParameter[]
             {
                 new ConstructorArgument("description", description),
                 new ConstructorArgument("initialValue", initialValue)
             };
-            var viewModel = (DataModelInputViewModel) registration.PluginInfo.Kernel.Get(registration.ViewModelType, parameters);
+            DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.PluginInfo.Kernel.Get(registration.ViewModelType, parameters);
             viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
             return viewModel;
         }

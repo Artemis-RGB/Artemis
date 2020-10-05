@@ -80,8 +80,8 @@ namespace Artemis.Core
 
             IEnumerable<TSource> _()
             {
-                var knownKeys = new HashSet<TKey>(comparer);
-                foreach (var element in source)
+                HashSet<TKey> knownKeys = new HashSet<TKey>(comparer);
+                foreach (TSource element in source)
                 {
                     if (knownKeys.Add(keySelector(element)))
                         yield return element;

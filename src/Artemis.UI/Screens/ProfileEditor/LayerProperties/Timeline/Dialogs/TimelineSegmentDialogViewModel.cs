@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs
 
         public static TimeSpan CreateTime(string s)
         {
-            var parts = s.Split(".");
+            string[] parts = s.Split(".");
 
             // Only seconds provided
             if (parts.Length == 1)
