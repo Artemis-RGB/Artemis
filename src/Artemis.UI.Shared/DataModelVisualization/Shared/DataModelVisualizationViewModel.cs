@@ -81,7 +81,7 @@ namespace Artemis.UI.Shared
             }
         }
 
-        public virtual string DisplayPath => Path.Replace(".", " › ");
+        public virtual string DisplayPath => Path?.Replace(".", " › ");
 
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
