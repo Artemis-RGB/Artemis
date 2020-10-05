@@ -15,13 +15,11 @@ namespace Artemis.Core.DefaultTypes
 
         public override object Apply(object currentValue, object parameterValue)
         {
-            ((SKColor) currentValue).ToHsl(out var h, out var s, out var l);
+            ((SKColor) currentValue).ToHsl(out float h, out float s, out float l);
 
             h += (float)parameterValue;
 
-            var a =  SKColor.FromHsl(h % 360, s, l);
-
-            return a;
+            return SKColor.FromHsl(h % 360, s, l);
         }
     }
 }
