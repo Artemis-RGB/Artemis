@@ -105,6 +105,12 @@ namespace Artemis.Core
                 InternalDisablePlugin();
                 OnPluginDisabled();
             }
+            // A failed load is still enabled in plugin info (to avoid disabling it permanently after a fail)
+            // update even that when manually disabling
+            else if (!enable && !Enabled)
+            {
+                PluginInfo.Enabled = false;
+            }
         }
 
         internal virtual void InternalEnablePlugin()

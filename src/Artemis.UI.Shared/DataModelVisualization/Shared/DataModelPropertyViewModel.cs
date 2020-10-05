@@ -50,5 +50,11 @@ namespace Artemis.UI.Shared
         {
             DisplayViewModel?.UpdateValue(DisplayValue);
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[{DisplayValueType.Name}] {DisplayPath ?? Path} - {DisplayValue}";
+        }
     }
 }

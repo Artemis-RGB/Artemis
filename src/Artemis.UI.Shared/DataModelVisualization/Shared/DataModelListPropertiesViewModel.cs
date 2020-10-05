@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
 
@@ -11,8 +10,11 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
+        public DataModelListPropertiesViewModel(DataModel dataModel, object listItem) : base(null, null, null)
         {
+            DataModel = dataModel;
+            ListType = listItem.GetType();
+            DisplayValue = listItem;
         }
 
         public int Index
@@ -42,7 +44,7 @@ namespace Artemis.UI.Shared
                 return;
 
             ListType = DisplayValue.GetType();
-            PopulateProperties(dataModelUIService);
+            PopulateProperties(dataModelUIService, DisplayValue);
             foreach (var dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update(dataModelUIService);
         }
@@ -50,6 +52,12 @@ namespace Artemis.UI.Shared
         public override object GetCurrentValue()
         {
             return DisplayValue;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[List item {Index}] {DisplayPath ?? Path}";
         }
     }
 }

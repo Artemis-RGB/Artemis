@@ -64,7 +64,8 @@ namespace Artemis.Core.DataModelExpansions
                 throw new ArgumentNullException(nameof(dynamicDataModel));
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
-
+            if (key.Contains('.'))
+                throw new ArtemisCoreException("The provided key contains an illegal character (.)");
             if (_dynamicDataModels.ContainsKey(key))
             {
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
@@ -87,7 +88,7 @@ namespace Artemis.Core.DataModelExpansions
             dynamicDataModel.PluginInfo = PluginInfo;
             dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute
             {
-                Name = name ?? key.Humanize(),
+                Name = string.IsNullOrWhiteSpace(name) ? key.Humanize() : name,
                 Description = description
             };
             _dynamicDataModels.Add(key, dynamicDataModel);

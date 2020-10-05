@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core;
@@ -136,21 +137,6 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
         }
 
-        public DataModelVisualizationViewModel GetChildForCondition(DataModelConditionPredicate predicate, DataModelConditionSide side)
-        {
-            if (side == DataModelConditionSide.Left)
-            {
-                if (predicate.LeftDataModel == null || predicate.LeftPropertyPath == null)
-                    return null;
-
-                return GetChildByPath(predicate.LeftDataModel.PluginInfo.Guid, predicate.LeftPropertyPath);
-            }
-
-            if (predicate.RightDataModel == null || predicate.RightPropertyPath == null)
-                return null;
-            return GetChildByPath(predicate.RightDataModel.PluginInfo.Guid, predicate.RightPropertyPath);
-        }
-
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
         {
             if (DataModel.PluginInfo.Guid != dataModelGuid)
@@ -183,31 +169,44 @@ namespace Artemis.UI.Shared
             return null;
         }
 
-        protected virtual int GetChildDepth()
+        internal virtual int GetChildDepth()
         {
             return 0;
         }
 
-        protected void PopulateProperties(IDataModelUIService dataModelUIService)
+        internal void PopulateProperties(IDataModelUIService dataModelUIService, object overrideValue)
         {
-            if (IsRootViewModel)
+            if (IsRootViewModel && overrideValue == null)
                 return;
 
+            Type modelType;
+            if (overrideValue != null)
+                modelType = overrideValue.GetType();
+            else if (Parent.IsRootViewModel)
+                modelType = DataModel.GetType();
+            else
+                modelType = DataModelPath.GetPropertyType();
+
             // Add missing static children
-            var modelType = Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
             foreach (var propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 var childPath = Path != null ? $"{Path}.{propertyInfo.Name}" : propertyInfo.Name;
                 if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                     continue;
+                if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
+                    continue;
 
-                var child = CreateChild(dataModelUIService, childPath, GetChildDepth());
+                var child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
                 if (child != null)
                     Children.Add(child);
             }
 
             // Remove static children that should be hidden
-            var hiddenProperties = DataModel.GetHiddenProperties();
+            ReadOnlyCollection<PropertyInfo> hiddenProperties;
+            if (overrideValue != null && overrideValue is DataModel overrideValueDataModel)
+                hiddenProperties = overrideValueDataModel.GetHiddenProperties();
+            else
+                hiddenProperties = DataModel.GetHiddenProperties();
             foreach (var hiddenProperty in hiddenProperties)
             {
                 var childPath = Path != null ? $"{Path}.{hiddenProperty.Name}" : hiddenProperty.Name;
@@ -217,7 +216,11 @@ namespace Artemis.UI.Shared
             }
 
             // Add missing dynamic children
-            var value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
+            object value;
+            if (overrideValue != null)
+                value = overrideValue;
+            else
+                value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
             {
                 foreach (var kvp in dataModel.DynamicDataModels)
@@ -226,7 +229,7 @@ namespace Artemis.UI.Shared
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
-                    var child = CreateChild(dataModelUIService, childPath, GetChildDepth());
+                    var child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
                     if (child != null)
                         Children.Add(child);
                 }
@@ -238,12 +241,12 @@ namespace Artemis.UI.Shared
                 Children.RemoveRange(toRemoveDynamic);
         }
 
-        protected DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
+        private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth, object overrideValue)
         {
             if (depth > MaxDepth)
                 return null;
 
-            var dataModelPath = new DataModelPath(DataModel, path);
+            var dataModelPath = new DataModelPath(overrideValue ?? DataModel, path);
             if (!dataModelPath.IsValid)
                 return null;
 

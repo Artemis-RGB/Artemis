@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -13,16 +14,17 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelPath
     {
+        private Expression<Func<object, object>> _accessorLambda;
         private readonly LinkedList<DataModelPathSegment> _segments;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelPath" /> class
         /// </summary>
-        /// <param name="dataModel">The data model at which this path starts</param>
+        /// <param name="target">The target at which this path starts</param>
         /// <param name="path">A string representation of the <see cref="DataModelPath" /></param>
-        public DataModelPath(object dataModel, string path)
+        public DataModelPath(object target, string path)
         {
-            Target = dataModel ?? throw new ArgumentNullException(nameof(dataModel));
+            Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = path ?? throw new ArgumentNullException(nameof(path));
 
             if (string.IsNullOrWhiteSpace(Path))
@@ -53,34 +55,25 @@ namespace Artemis.Core
         public IReadOnlyCollection<DataModelPathSegment> Segments => _segments.ToList().AsReadOnly();
 
         /// <summary>
-        ///     Gets a boolean indicating whether this data model path can have an inner path because it points to a list
+        ///     Gets a boolean indicating whether this data model path points to a list
         /// </summary>
-        public bool CanHaveInnerPath => Segments.LastOrDefault()?.GetPropertyType()?.IsAssignableFrom(typeof(IList)) ?? false;
-
-        /// <summary>
-        ///     Gets the inner path of this path, only available if this path points to a list
-        /// </summary>
-        public DataModelPath InnerPath { get; internal set; }
+        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null &&
+                                    typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
 
         internal Func<object, object> Accessor { get; private set; }
-
-        public void SetInnerPath(string path)
-        {
-            if (!CanHaveInnerPath)
-            {
-                var type = Segments.LastOrDefault()?.GetPropertyType();
-                throw new ArtemisCoreException($"Cannot set an inner path on a data model path if it does not point to a list (value is of type: {type?.Name})");
-            }
-
-            InnerPath = new DataModelPath(GetValue(), path);
-        }
 
         /// <summary>
         ///     Gets the current value of the path
         /// </summary>
         public object GetValue()
         {
-            return Accessor?.Invoke(Target);
+            if (_accessorLambda == null)
+                return null;
+
+            // If the accessor has not yet been compiled do it now that it's first required
+            if (Accessor == null)
+                Accessor = _accessorLambda.Compile();
+            return Accessor(Target);
         }
 
         /// <summary>
@@ -89,8 +82,6 @@ namespace Artemis.Core
         /// <returns>If static, the property info. If dynamic, <c>null</c></returns>
         public PropertyInfo GetPropertyInfo()
         {
-            if (InnerPath != null)
-                return InnerPath.GetPropertyInfo();
             return Segments.LastOrDefault()?.GetPropertyInfo();
         }
 
@@ -100,8 +91,6 @@ namespace Artemis.Core
         /// <returns>If possible, the property type</returns>
         public Type GetPropertyType()
         {
-            if (InnerPath != null)
-                return InnerPath.GetPropertyType();
             return Segments.LastOrDefault()?.GetPropertyType();
         }
 
@@ -111,21 +100,20 @@ namespace Artemis.Core
         /// <returns>If found, the data model property description</returns>
         public DataModelPropertyAttribute GetPropertyDescription()
         {
-            if (InnerPath != null)
-                return InnerPath.GetPropertyDescription();
             return Segments.LastOrDefault()?.GetPropertyDescription();
         }
 
         /// <inheritdoc />
         public override string ToString()
         {
-            if (InnerPath != null)
-                return $"{Path} > {InnerPath}";
             return Path;
         }
 
         private void Initialize(string path)
         {
+            var startSegment = new DataModelPathSegment(this, "target", "target");
+            startSegment.Node = _segments.AddFirst(startSegment);
+
             var segments = path.Split(".");
             for (var index = 0; index < segments.Length; index++)
             {
@@ -147,7 +135,7 @@ namespace Artemis.Core
                     return;
             }
 
-            Accessor = Expression.Lambda<Func<object, object>>(
+            _accessorLambda = Expression.Lambda<Func<object, object>>(
                 // Wrap with a null check
                 Expression.Condition(
                     nullCondition,
@@ -155,7 +143,8 @@ namespace Artemis.Core
                     Expression.Convert(Expression.Default(expression.Type), typeof(object))
                 ),
                 parameter
-            ).Compile();
+            );
+            Accessor = null;
         }
     }
 }
