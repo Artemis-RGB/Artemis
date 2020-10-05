@@ -13,7 +13,7 @@ namespace Artemis.UI.Shared
         public override void Update(IDataModelUIService dataModelUIService)
         {
             // Always populate properties
-            PopulateProperties(dataModelUIService);
+            PopulateProperties(dataModelUIService, null);
 
             // Only update children if the parent is expanded
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
@@ -28,9 +28,15 @@ namespace Artemis.UI.Shared
             return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
         }
 
-        protected override int GetChildDepth()
+        internal override int GetChildDepth()
         {
             return PropertyDescription != null && !PropertyDescription.ResetsDepth ? Depth + 1 : 1;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return DisplayPath ?? Path;
         }
     }
 }
