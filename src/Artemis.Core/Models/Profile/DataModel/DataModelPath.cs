@@ -56,7 +56,7 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
-        internal DataModelPath(object target, DataModelPathEntity entity)
+        internal DataModelPath(object? target, DataModelPathEntity entity)
         {
             Target = target!;
             Path = entity.Path;
