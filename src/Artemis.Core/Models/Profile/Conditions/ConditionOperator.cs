@@ -50,6 +50,6 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="a">The parameter on the left side of the expression</param>
         /// <param name="b">The parameter on the right side of the expression</param>
-        public abstract bool Evaluate(object a, object b);
+        public abstract bool Evaluate(object? a, object? b);
     }
 }
