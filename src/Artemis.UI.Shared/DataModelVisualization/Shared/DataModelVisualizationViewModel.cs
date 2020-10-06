@@ -39,12 +39,12 @@ namespace Artemis.UI.Shared
         public DataModelPath DataModelPath { get; }
         public string Path => DataModelPath?.Path;
 
-        public int Depth { get; set; }
+        public int Depth { get; private set; }
 
         public DataModel DataModel
         {
             get => _dataModel;
-            set => SetAndNotify(ref _dataModel, value);
+            protected set => SetAndNotify(ref _dataModel, value);
         }
 
         public DataModelPropertyAttribute PropertyDescription
@@ -140,12 +140,15 @@ namespace Artemis.UI.Shared
 
         public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
         {
-            if (DataModel.PluginInfo.Guid != dataModelGuid)
-                return null;
-            if (propertyPath == null)
-                return null;
-            if (Path.StartsWith(propertyPath))
-                return null;
+            if (!IsRootViewModel)
+            {
+                if (DataModel.PluginInfo.Guid != dataModelGuid)
+                    return null;
+                if (propertyPath == null)
+                    return null;
+                if (Path.StartsWith(propertyPath, StringComparison.OrdinalIgnoreCase))
+                    return null;
+            }
 
             // Ensure children are populated by requesting an update
             if (!IsVisualizationExpanded)
@@ -191,7 +194,7 @@ namespace Artemis.UI.Shared
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
-                string childPath = Path != null ? $"{Path}.{propertyInfo.Name}" : propertyInfo.Name;
+                string childPath = AppendToPath(propertyInfo.Name);
                 if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                     continue;
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
@@ -210,7 +213,7 @@ namespace Artemis.UI.Shared
                 hiddenProperties = DataModel.GetHiddenProperties();
             foreach (PropertyInfo hiddenProperty in hiddenProperties)
             {
-                string childPath = Path != null ? $"{Path}.{hiddenProperty.Name}" : hiddenProperty.Name;
+                string childPath = AppendToPath(hiddenProperty.Name);
                 DataModelVisualizationViewModel toRemove = Children.FirstOrDefault(c => c.Path != null && c.Path == childPath);
                 if (toRemove != null)
                     Children.Remove(toRemove);
@@ -226,7 +229,7 @@ namespace Artemis.UI.Shared
             {
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
                 {
-                    string childPath = Path != null ? $"{Path}.{kvp.Key}" : kvp.Key;
+                    string childPath = AppendToPath(kvp.Key);
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
@@ -277,6 +280,11 @@ namespace Artemis.UI.Shared
             return null;
         }
 
+        private string AppendToPath(string toAppend)
+        {
+            return !string.IsNullOrEmpty(Path) ? $"{Path}.{toAppend}" : toAppend;
+        }
+
         private void RequestUpdate()
         {
             Parent?.RequestUpdate();
@@ -293,11 +301,5 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
-    }
-
-    public enum DataModelConditionSide
-    {
-        Left,
-        Right
     }
 }
