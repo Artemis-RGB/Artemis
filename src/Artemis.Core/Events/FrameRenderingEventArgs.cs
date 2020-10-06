@@ -6,9 +6,12 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data about frame rendered related events
+    /// </summary>
     public class FrameRenderingEventArgs : EventArgs
     {
-        public FrameRenderingEventArgs(List<Module> modules, SKCanvas canvas, double deltaTime, RGBSurface rgbSurface)
+        internal FrameRenderingEventArgs(List<Module> modules, SKCanvas canvas, double deltaTime, RGBSurface rgbSurface)
         {
             Modules = modules;
             Canvas = canvas;

@@ -2,9 +2,12 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data about surface configuration related events
+    /// </summary>
     public class SurfaceConfigurationEventArgs : EventArgs
     {
-        public SurfaceConfigurationEventArgs(ArtemisSurface surface)
+        internal SurfaceConfigurationEventArgs(ArtemisSurface surface)
         {
             Surface = surface;
         }

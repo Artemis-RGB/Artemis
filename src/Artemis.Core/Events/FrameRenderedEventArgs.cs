@@ -3,9 +3,12 @@ using RGB.NET.Core;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data about frame rendering related events
+    /// </summary>
     public class FrameRenderedEventArgs : EventArgs
     {
-        public FrameRenderedEventArgs(BitmapBrush bitmapBrush, RGBSurface rgbSurface)
+        internal FrameRenderedEventArgs(BitmapBrush bitmapBrush, RGBSurface rgbSurface)
         {
             BitmapBrush = bitmapBrush;
             RgbSurface = rgbSurface;

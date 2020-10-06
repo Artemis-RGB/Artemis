@@ -1,21 +1,21 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.DataModelExpansions;
+using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a path that points to a property in data model
     /// </summary>
-    public class DataModelPath
+    public class DataModelPath : IStorageModel, IDisposable
     {
-        private Expression<Func<object, object>> _accessorLambda;
         private readonly LinkedList<DataModelPathSegment> _segments;
+        private Expression<Func<object, object>>? _accessorLambda;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelPath" /> class pointing directly to the target
@@ -25,9 +25,15 @@ namespace Artemis.Core
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = "";
+            Entity = new DataModelPathEntity();
+            if (Target is DataModel dataModel)
+                DataModelGuid = dataModel.PluginInfo.Guid;
 
             _segments = new LinkedList<DataModelPathSegment>();
-            Initialize(Path);
+
+            Save();
+            Initialize();
+            SubscribeToDataModelStore();
         }
 
         /// <summary>
@@ -39,25 +45,51 @@ namespace Artemis.Core
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = path ?? throw new ArgumentNullException(nameof(path));
+            Entity = new DataModelPathEntity();
+            if (Target is DataModel dataModel)
+                DataModelGuid = dataModel.PluginInfo.Guid;
 
             _segments = new LinkedList<DataModelPathSegment>();
-            Initialize(Path);
+
+            Save();
+            Initialize();
+            SubscribeToDataModelStore();
+        }
+
+        internal DataModelPath(object target, DataModelPathEntity entity)
+        {
+            Target = target!;
+            Path = entity.Path;
+            Entity = entity;
+
+            _segments = new LinkedList<DataModelPathSegment>();
+
+            Load();
+            Initialize();
+            SubscribeToDataModelStore();
         }
 
         /// <summary>
         ///     Gets the data model at which this path starts
         /// </summary>
-        public object Target { get; }
+        public object? Target { get; private set; }
+
+        internal DataModelPathEntity Entity { get; }
+
+        /// <summary>
+        ///     Gets the data model GUID of the <see cref="Target" /> if it is a <see cref="DataModel" />
+        /// </summary>
+        public Guid? DataModelGuid { get; private set; }
 
         /// <summary>
         ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
         /// </summary>
-        public string Path { get; }
+        public string Path { get; private set; }
 
         /// <summary>
         ///     Gets a boolean indicating whether all <see cref="Segments" /> are valid
         /// </summary>
-        public bool IsValid => Segments.All(p => p.Type != DataModelPathSegmentType.Invalid);
+        public bool IsValid => Segments.Any() && Segments.All(p => p.Type != DataModelPathSegmentType.Invalid);
 
         /// <summary>
         ///     Gets a read-only list of all segments of this path
@@ -67,17 +99,16 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether this data model path points to a list
         /// </summary>
-        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null &&
-                                    typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
+        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null && typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
 
-        internal Func<object, object> Accessor { get; private set; }
+        internal Func<object, object>? Accessor { get; private set; }
 
         /// <summary>
         ///     Gets the current value of the path
         /// </summary>
-        public object GetValue()
+        public object? GetValue()
         {
-            if (_accessorLambda == null)
+            if (_accessorLambda == null || Target == null)
                 return null;
 
             // If the accessor has not yet been compiled do it now that it's first required
@@ -90,7 +121,7 @@ namespace Artemis.Core
         ///     Gets the property info of the property this path points to
         /// </summary>
         /// <returns>If static, the property info. If dynamic, <c>null</c></returns>
-        public PropertyInfo GetPropertyInfo()
+        public PropertyInfo? GetPropertyInfo()
         {
             return Segments.LastOrDefault()?.GetPropertyInfo();
         }
@@ -99,7 +130,7 @@ namespace Artemis.Core
         ///     Gets the type of the property this path points to
         /// </summary>
         /// <returns>If possible, the property type</returns>
-        public Type GetPropertyType()
+        public Type? GetPropertyType()
         {
             return Segments.LastOrDefault()?.GetPropertyType();
         }
@@ -108,7 +139,7 @@ namespace Artemis.Core
         ///     Gets the property description of the property this path points to
         /// </summary>
         /// <returns>If found, the data model property description</returns>
-        public DataModelPropertyAttribute GetPropertyDescription()
+        public DataModelPropertyAttribute? GetPropertyDescription()
         {
             return Segments.LastOrDefault()?.GetPropertyDescription();
         }
@@ -119,15 +150,30 @@ namespace Artemis.Core
             return string.IsNullOrWhiteSpace(Path) ? "this" : Path;
         }
 
-        private void Initialize(string path)
+        internal void Invalidate()
         {
+            foreach (DataModelPathSegment dataModelPathSegment in _segments)
+                dataModelPathSegment.Dispose();
+            _segments.Clear();
+
+            _accessorLambda = null;
+            Accessor = null;
+        }
+
+        internal void Initialize()
+        {
+            Invalidate();
+
+            if (Target == null)
+                return;
+
             DataModelPathSegment startSegment = new DataModelPathSegment(this, "target", "target");
             startSegment.Node = _segments.AddFirst(startSegment);
 
             // On an empty path don't bother processing segments
-            if (!string.IsNullOrWhiteSpace(path))
+            if (!string.IsNullOrWhiteSpace(Path))
             {
-                string[] segments = path.Split(".");
+                string[] segments = Path.Split(".");
                 for (int index = 0; index < segments.Length; index++)
                 {
                     string identifier = segments[index];
@@ -137,8 +183,8 @@ namespace Artemis.Core
             }
 
             ParameterExpression parameter = Expression.Parameter(typeof(object), "t");
-            Expression expression = Expression.Convert(parameter, Target.GetType());
-            Expression nullCondition = null;
+            Expression? expression = Expression.Convert(parameter, Target.GetType());
+            Expression? nullCondition = null;
 
             foreach (DataModelPathSegment segment in _segments)
             {
@@ -149,6 +195,9 @@ namespace Artemis.Core
                     return;
             }
 
+            if (nullCondition == null)
+                return;
+
             _accessorLambda = Expression.Lambda<Func<object, object>>(
                 // Wrap with a null check
                 Expression.Condition(
@@ -158,7 +207,68 @@ namespace Artemis.Core
                 ),
                 parameter
             );
-            Accessor = null;
         }
+
+        private void SubscribeToDataModelStore()
+        {
+            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
+        }
+
+        #region Storage
+
+        /// <inheritdoc />
+        public void Load()
+        {
+            Path = Entity.Path;
+            DataModelGuid = Entity.DataModelGuid;
+
+            if (Target == null && Entity.DataModelGuid != null) 
+                Target = DataModelStore.Get(Entity.DataModelGuid.Value);
+        }
+
+        /// <inheritdoc />
+        public void Save()
+        {
+            Entity.Path = Path;
+            Entity.DataModelGuid = DataModelGuid;
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            Invalidate();
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
+        {
+            if (e.Registration.DataModel.PluginInfo.Guid != DataModelGuid)
+                return;
+
+            Target = e.Registration.DataModel;
+            Initialize();
+        }
+
+        private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
+        {
+            if (e.Registration.DataModel.PluginInfo.Guid != DataModelGuid)
+                return;
+
+            Target = null;
+            Invalidate();
+        }
+
+        #endregion
     }
 }

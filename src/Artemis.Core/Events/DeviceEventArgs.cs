@@ -3,9 +3,12 @@ using RGB.NET.Core;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data about device related events
+    /// </summary>
     public class DeviceEventArgs : EventArgs
     {
-        public DeviceEventArgs(IRGBDevice device)
+        internal DeviceEventArgs(IRGBDevice device)
         {
             Device = device;
         }

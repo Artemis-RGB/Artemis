@@ -93,6 +93,7 @@ namespace Artemis.Core.DataModelExpansions
             };
             _dynamicDataModels.Add(key, dynamicDataModel);
 
+            OnDynamicDataModelAdded(new DynamicDataModelEventArgs(dynamicDataModel, key));
             return dynamicDataModel;
         }
 
@@ -102,7 +103,12 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="key">The key of the dynamic data model to remove</param>
         public void RemoveDynamicChildByKey(string key)
         {
+            _dynamicDataModels.TryGetValue(key, out DataModel? childDataModel);
+            if (childDataModel == null)
+                return;
+
             _dynamicDataModels.Remove(key);
+            OnDynamicDataModelRemoved(new DynamicDataModelEventArgs(childDataModel, key));
         }
 
         /// <summary>
@@ -113,7 +119,10 @@ namespace Artemis.Core.DataModelExpansions
         {
             List<string> keys = _dynamicDataModels.Where(kvp => kvp.Value == dynamicDataModel).Select(kvp => kvp.Key).ToList();
             foreach (string key in keys)
+            {
                 _dynamicDataModels.Remove(key);
+                OnDynamicDataModelRemoved(new DynamicDataModelEventArgs(dynamicDataModel, key));
+            }
         }
 
         /// <summary>
@@ -204,21 +213,21 @@ namespace Artemis.Core.DataModelExpansions
         /// <summary>
         ///     Occurs when a dynamic data model has been added to this data model
         /// </summary>
-        public event EventHandler DynamicDataBindingAdded;
+        public event EventHandler<DynamicDataModelEventArgs>? DynamicDataModelAdded;
 
         /// <summary>
         ///     Occurs when a dynamic data model has been removed from this data model
         /// </summary>
-        public event EventHandler DynamicDataBindingRemoved;
+        public event EventHandler<DynamicDataModelEventArgs>? DynamicDataModelRemoved;
 
-        protected virtual void OnDynamicDataBindingAdded()
+        protected virtual void OnDynamicDataModelAdded(DynamicDataModelEventArgs e)
         {
-            DynamicDataBindingAdded?.Invoke(this, EventArgs.Empty);
+            DynamicDataModelAdded?.Invoke(this, e);
         }
 
-        protected virtual void OnDynamicDataBindingRemoved()
+        protected virtual void OnDynamicDataModelRemoved(DynamicDataModelEventArgs e)
         {
-            DynamicDataBindingRemoved?.Invoke(this, EventArgs.Empty);
+            DynamicDataModelRemoved?.Invoke(this, e);
         }
 
         #endregion

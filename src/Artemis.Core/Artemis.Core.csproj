@@ -24,6 +24,7 @@
     <NrtRemoveTagV>true</NrtRemoveTagV>
     <NrtRequiredVcs>git</NrtRequiredVcs>
     <NrtShowRevision>true</NrtShowRevision>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
