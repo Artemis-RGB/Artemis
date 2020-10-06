@@ -1,10 +1,7 @@
 ﻿using System.Windows;
-using System.Windows.Forms;
+using System.Windows.Controls;
 using System.Windows.Input;
 using Stylet;
-using Control = System.Windows.Controls.Control;
-using KeyEventArgs = System.Windows.Input.KeyEventArgs;
-using Screen = Stylet.Screen;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
@@ -27,12 +24,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 return;
 
             e.Handled = true;
-            MouseWheelEventArgs eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
             {
                 RoutedEvent = UIElement.MouseWheelEvent,
                 Source = sender
             };
-            UIElement parent = ((Control) sender).Parent as UIElement;
+            var parent = ((Control) sender).Parent as UIElement;
             parent?.RaiseEvent(eventArg);
         }
     }

@@ -388,14 +388,14 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
+            using SKPaint canvasPaint = new SKPaint { BlendMode = General.BlendMode.CurrentValue };
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
+                baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
 
             SKPoint targetLocation = new SKPoint(0, 0);
             if (Parent is Folder parentFolder)
                 targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
 
-            using SKPaint canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
             using SKPath canvasPath = new SKPath(Path);
             canvasPath.Transform(SKMatrix.MakeTranslation(
                 (canvasPath.Bounds.Left - targetLocation.X) * -1,

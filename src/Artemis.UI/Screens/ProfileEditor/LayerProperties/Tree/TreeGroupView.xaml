@@ -227,7 +227,8 @@
         <ItemsControl ItemsSource="{Binding Children}"
                       Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
-                      HorizontalContentAlignment="Stretch">
+                      HorizontalContentAlignment="Stretch"
+                      dd:DragDrop.DragSourceIgnore="True">
             <ItemsControl.ItemContainerStyle>
                 <Style TargetType="ContentPresenter">
                     <Setter Property="VerticalAlignment" Value="Stretch" />
