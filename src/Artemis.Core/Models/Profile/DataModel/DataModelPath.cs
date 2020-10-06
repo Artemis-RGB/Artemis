@@ -18,20 +18,30 @@ namespace Artemis.Core
         private readonly LinkedList<DataModelPathSegment> _segments;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="DataModelPath" /> class
+        ///     Creates a new instance of the <see cref="DataModelPath" /> class pointing directly to the target
         /// </summary>
         /// <param name="target">The target at which this path starts</param>
-        /// <param name="path">A string representation of the <see cref="DataModelPath" /></param>
+        public DataModelPath(object target)
+        {
+            Target = target ?? throw new ArgumentNullException(nameof(target));
+            Path = "";
+
+            _segments = new LinkedList<DataModelPathSegment>();
+            Initialize(Path);
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelPath" /> class pointing to the provided path
+        /// </summary>
+        /// <param name="target">The target at which this path starts</param>
+        /// <param name="path">A point-separated path</param>
         public DataModelPath(object target, string path)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = path ?? throw new ArgumentNullException(nameof(path));
 
-            if (string.IsNullOrWhiteSpace(Path))
-                throw new ArgumentException("Path cannot be empty");
-
             _segments = new LinkedList<DataModelPathSegment>();
-            Initialize(path);
+            Initialize(Path);
         }
 
         /// <summary>
@@ -40,7 +50,7 @@ namespace Artemis.Core
         public object Target { get; }
 
         /// <summary>
-        ///     Gets a string representation of the <see cref="DataModelPath" />
+        ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
         /// </summary>
         public string Path { get; }
 
@@ -106,7 +116,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override string ToString()
         {
-            return Path;
+            return string.IsNullOrWhiteSpace(Path) ? "this" : Path;
         }
 
         private void Initialize(string path)
@@ -114,12 +124,16 @@ namespace Artemis.Core
             DataModelPathSegment startSegment = new DataModelPathSegment(this, "target", "target");
             startSegment.Node = _segments.AddFirst(startSegment);
 
-            string[] segments = path.Split(".");
-            for (int index = 0; index < segments.Length; index++)
+            // On an empty path don't bother processing segments
+            if (!string.IsNullOrWhiteSpace(path))
             {
-                string identifier = segments[index];
-                LinkedListNode<DataModelPathSegment> node = _segments.AddLast(new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1))));
-                node.Value.Node = node;
+                string[] segments = path.Split(".");
+                for (int index = 0; index < segments.Length; index++)
+                {
+                    string identifier = segments[index];
+                    LinkedListNode<DataModelPathSegment> node = _segments.AddLast(new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1))));
+                    node.Value.Node = node;
+                }
             }
 
             ParameterExpression parameter = Expression.Parameter(typeof(object), "t");

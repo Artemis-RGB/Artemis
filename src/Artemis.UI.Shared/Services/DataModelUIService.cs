@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared.Services
         {
             DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
             foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels())
-                viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, null));
+                viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
             viewModel.Update(this);
