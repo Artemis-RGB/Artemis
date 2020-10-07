@@ -21,13 +21,11 @@ namespace Artemis.Core
         ///     Creates a new instance of the <see cref="DataModelPath" /> class pointing directly to the target
         /// </summary>
         /// <param name="target">The target at which this path starts</param>
-        public DataModelPath(object target)
+        public DataModelPath(DataModel target)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = "";
             Entity = new DataModelPathEntity();
-            if (Target is DataModel dataModel)
-                DataModelGuid = dataModel.PluginInfo.Guid;
 
             _segments = new LinkedList<DataModelPathSegment>();
 
@@ -41,13 +39,11 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="target">The target at which this path starts</param>
         /// <param name="path">A point-separated path</param>
-        public DataModelPath(object target, string path)
+        public DataModelPath(DataModel target, string path)
         {
             Target = target ?? throw new ArgumentNullException(nameof(target));
             Path = path ?? throw new ArgumentNullException(nameof(path));
             Entity = new DataModelPathEntity();
-            if (Target is DataModel dataModel)
-                DataModelGuid = dataModel.PluginInfo.Guid;
 
             _segments = new LinkedList<DataModelPathSegment>();
 
@@ -56,9 +52,9 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
-        internal DataModelPath(object? target, DataModelPathEntity entity)
+        internal DataModelPath(DataModel? target, DataModelPathEntity entity)
         {
-            Target = target!;
+            Target = target;
             Path = entity.Path;
             Entity = entity;
 
@@ -72,14 +68,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data model at which this path starts
         /// </summary>
-        public object? Target { get; private set; }
+        public DataModel? Target { get; private set; }
 
         internal DataModelPathEntity Entity { get; }
 
         /// <summary>
         ///     Gets the data model GUID of the <see cref="Target" /> if it is a <see cref="DataModel" />
         /// </summary>
-        public Guid? DataModelGuid { get; private set; }
+        public Guid? DataModelGuid => Target?.PluginInfo.Guid;
 
         /// <summary>
         ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
@@ -221,10 +217,9 @@ namespace Artemis.Core
         public void Load()
         {
             Path = Entity.Path;
-            DataModelGuid = Entity.DataModelGuid;
 
-            if (Target == null && Entity.DataModelGuid != null) 
-                Target = DataModelStore.Get(Entity.DataModelGuid.Value);
+            if (Target == null && Entity.DataModelGuid != null)
+                Target = DataModelStore.Get(Entity.DataModelGuid.Value)?.DataModel;
         }
 
         /// <inheritdoc />
@@ -253,7 +248,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.PluginInfo.Guid != DataModelGuid)
+            if (e.Registration.DataModel.PluginInfo.Guid != Entity.DataModelGuid)
                 return;
 
             Target = e.Registration.DataModel;
@@ -262,7 +257,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.PluginInfo.Guid != DataModelGuid)
+            if (e.Registration.DataModel.PluginInfo.Guid != Entity.DataModelGuid)
                 return;
 
             Target = null;
