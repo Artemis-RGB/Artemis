@@ -15,7 +15,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the parent of this part
         /// </summary>
-        public DataModelConditionPart Parent { get; internal set; }
+        public DataModelConditionPart? Parent { get; internal set; }
 
         /// <summary>
         ///     Gets the children of this part
