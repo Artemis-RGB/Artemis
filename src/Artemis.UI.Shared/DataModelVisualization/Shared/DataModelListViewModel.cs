@@ -11,8 +11,7 @@ namespace Artemis.UI.Shared
     {
         private string _count;
         private IList _list;
-        private DataModelVisualizationViewModel _listTypePropertyViewModel;
-
+        
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
             ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
@@ -44,8 +43,6 @@ namespace Artemis.UI.Shared
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
             {
-                dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
-                dataModelListClassViewModel.Update(dataModelUIService);
                 return dataModelListClassViewModel;
             }
 
@@ -109,13 +106,13 @@ namespace Artemis.UI.Shared
             // If a display VM was found, prefer to use that in any case
             DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
             if (typeViewModel != null)
-                return new DataModelListPropertyViewModel(DataModel, listItem, typeViewModel);
+                return new DataModelListPropertyViewModel(listItem, typeViewModel);
             // For primitives, create a property view model, it may be null that is fine
             if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
-                return new DataModelListPropertyViewModel(DataModel, listItem);
+                return new DataModelListPropertyViewModel(listItem);
             // For other value types create a child view model
             if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(DataModel, listItem);
+                return new DataModelListPropertiesViewModel(listItem);
 
             return null;
         }

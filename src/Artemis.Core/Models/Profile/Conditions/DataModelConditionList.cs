@@ -95,6 +95,7 @@ namespace Artemis.Core
                 if (!typeof(IList).IsAssignableFrom(listType))
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{newPath}'");
 
+                ListPath = newPath;
                 ListType = listType;
                 IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
             }

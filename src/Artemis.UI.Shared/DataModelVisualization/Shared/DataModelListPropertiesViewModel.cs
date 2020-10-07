@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
@@ -10,9 +10,9 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertiesViewModel(DataModel dataModel, object listItem) : base(null, null, null)
+        public DataModelListPropertiesViewModel(object listItem) : base(null, null, null)
         {
-            DataModel = dataModel;
+            DataModel = ListPredicateWrapperDataModel.Create(listItem.GetType());
             ListType = listItem.GetType();
             DisplayValue = listItem;
         }
@@ -44,7 +44,7 @@ namespace Artemis.UI.Shared
                 return;
 
             ListType = DisplayValue.GetType();
-            PopulateProperties(dataModelUIService, DisplayValue);
+            PopulateProperties(dataModelUIService);
             foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
                 dataModelVisualizationViewModel.Update(dataModelUIService);
         }

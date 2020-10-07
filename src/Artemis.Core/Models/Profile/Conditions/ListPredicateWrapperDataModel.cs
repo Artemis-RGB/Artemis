@@ -1,9 +1,24 @@
-﻿using Artemis.Core.DataModelExpansions;
+﻿using System;
+using Artemis.Core.DataModelExpansions;
 
 namespace Artemis.Core
 {
-    internal class ListPredicateWrapperDataModel : DataModel
+    internal class ListPredicateWrapperDataModel<T> : ListPredicateWrapperDataModel
     {
-        public object Value { get; set; }
+        public T Value => (UntypedValue is T typedValue ? typedValue : default)!;
+    }
+
+    public abstract class ListPredicateWrapperDataModel : DataModel
+    {
+        public object? UntypedValue { get; set; }
+
+        public static ListPredicateWrapperDataModel Create(Type type)
+        {
+            object? instance = Activator.CreateInstance(typeof(ListPredicateWrapperDataModel<>).MakeGenericType(type));
+            if (instance == null)
+                throw new ArtemisCoreException($"Failed to create an instance of ListPredicateWrapperDataModel<T> for type {type.Name}");
+
+            return (ListPredicateWrapperDataModel) instance;
+        }
     }
 }

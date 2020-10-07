@@ -125,7 +125,7 @@ namespace Artemis.UI.Shared
             }
 
             // If the type couldn't be retrieved either way, assume false
-            Type type = DataModelPath.GetPropertyType();
+            Type type = DataModelPath?.GetPropertyType();
             if (type == null)
             {
                 IsMatchingFilteredTypes = false;
@@ -178,18 +178,12 @@ namespace Artemis.UI.Shared
             return 0;
         }
 
-        internal void PopulateProperties(IDataModelUIService dataModelUIService, object overrideValue)
+        internal void PopulateProperties(IDataModelUIService dataModelUIService)
         {
-            if (IsRootViewModel && overrideValue == null)
+            if (IsRootViewModel)
                 return;
 
-            Type modelType;
-            if (overrideValue != null)
-                modelType = overrideValue.GetType();
-            else if (Parent.IsRootViewModel)
-                modelType = DataModel.GetType();
-            else
-                modelType = DataModelPath.GetPropertyType();
+            Type modelType = Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
 
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -200,17 +194,13 @@ namespace Artemis.UI.Shared
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                     continue;
 
-                DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
+                DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }
 
             // Remove static children that should be hidden
-            ReadOnlyCollection<PropertyInfo> hiddenProperties;
-            if (overrideValue != null && overrideValue is DataModel overrideValueDataModel)
-                hiddenProperties = overrideValueDataModel.GetHiddenProperties();
-            else
-                hiddenProperties = DataModel.GetHiddenProperties();
+            ReadOnlyCollection<PropertyInfo> hiddenProperties = DataModel.GetHiddenProperties();
             foreach (PropertyInfo hiddenProperty in hiddenProperties)
             {
                 string childPath = AppendToPath(hiddenProperty.Name);
@@ -220,11 +210,7 @@ namespace Artemis.UI.Shared
             }
 
             // Add missing dynamic children
-            object value;
-            if (overrideValue != null)
-                value = overrideValue;
-            else
-                value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
+            object value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
             {
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
@@ -233,7 +219,7 @@ namespace Artemis.UI.Shared
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
-                    DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth(), overrideValue);
+                    DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth());
                     if (child != null)
                         Children.Add(child);
                 }
@@ -245,12 +231,12 @@ namespace Artemis.UI.Shared
                 Children.RemoveRange(toRemoveDynamic);
         }
 
-        private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth, object overrideValue)
+        private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
         {
             if (depth > MaxDepth)
                 return null;
 
-            DataModelPath dataModelPath = new DataModelPath(overrideValue ?? DataModel, path);
+            DataModelPath dataModelPath = new DataModelPath(DataModel, path);
             if (!dataModelPath.IsValid)
                 return null;
 

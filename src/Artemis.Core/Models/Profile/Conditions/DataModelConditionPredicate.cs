@@ -240,8 +240,11 @@ namespace Artemis.Core
 
             Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
 
-            Entity.OperatorPluginGuid = Operator?.PluginInfo?.Guid;
-            Entity.OperatorType = Operator?.GetType().Name;
+            if (Operator != null)
+            {
+                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
+                Entity.OperatorType = Operator.GetType().Name;
+            }
         }
 
         internal void Initialize()
@@ -250,7 +253,8 @@ namespace Artemis.Core
             ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
 
             // Left side
-            if (Entity.LeftPath != null) LeftPath = new DataModelPath(null, Entity.LeftPath);
+            if (Entity.LeftPath != null) 
+                LeftPath = new DataModelPath(null, Entity.LeftPath);
 
             // Operator
             if (Entity.OperatorPluginGuid != null)

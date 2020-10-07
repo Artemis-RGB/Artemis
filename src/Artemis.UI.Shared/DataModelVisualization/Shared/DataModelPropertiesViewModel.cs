@@ -13,7 +13,7 @@ namespace Artemis.UI.Shared
         public override void Update(IDataModelUIService dataModelUIService)
         {
             // Always populate properties
-            PopulateProperties(dataModelUIService, null);
+            PopulateProperties(dataModelUIService);
 
             // Only update children if the parent is expanded
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
