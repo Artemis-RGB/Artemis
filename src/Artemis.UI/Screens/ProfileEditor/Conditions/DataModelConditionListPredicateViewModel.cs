@@ -123,13 +123,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Update()
         {
-            Guid listDataModelGuid = DataModelConditionListPredicate.DataModelConditionList.ListDataModel.PluginInfo.Guid;
+            Guid? listDataModelGuid = DataModelConditionListPredicate.DataModelConditionList.ListPath.DataModelGuid;
+            if (listDataModelGuid == null)
+                return;
+
             if (!_isPrimitiveList)
             {
                 LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
                 LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
                 LeftSideSelectionViewModel.SelectedPropertyViewModel = LeftSideSelectionViewModel.DataModelViewModel.GetChildByPath(
-                    listDataModelGuid, DataModelConditionListPredicate.LeftPropertyPath
+                    listDataModelGuid.Value, DataModelConditionListPredicate.LeftPropertyPath
                 );
             }
 
@@ -170,7 +173,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 else
                 {
                     RightSideSelectionViewModel.SelectedPropertyViewModel = RightSideSelectionViewModel.DataModelViewModel.GetChildByPath(
-                        listDataModelGuid, DataModelConditionListPredicate.RightPropertyPath
+                        listDataModelGuid.Value, DataModelConditionListPredicate.RightPropertyPath
                     );
                 }
             }
@@ -236,9 +239,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private DataModelVisualizationViewModel GetListDataModel()
         {
             DataModelPropertiesViewModel dataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
+            if (DataModelConditionListPredicate.DataModelConditionList.ListPath.DataModelGuid == null)
+                return null;
+
             DataModelListViewModel listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
-                DataModelConditionListPredicate.DataModelConditionList.ListDataModel.PluginInfo.Guid,
-                DataModelConditionListPredicate.DataModelConditionList.ListPropertyPath
+                DataModelConditionListPredicate.DataModelConditionList.ListPath.DataModelGuid.Value,
+                DataModelConditionListPredicate.DataModelConditionList.ListPath.Path
             );
 
             return listDataModel.GetListTypeViewModel(_dataModelUIService);

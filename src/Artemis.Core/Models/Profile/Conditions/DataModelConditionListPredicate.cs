@@ -25,6 +25,7 @@ namespace Artemis.Core
             PredicateType = predicateType;
             Entity = new DataModelConditionListPredicateEntity();
 
+            DataModelConditionList = null!;
             ApplyParentList();
             Initialize();
         }
@@ -35,6 +36,7 @@ namespace Artemis.Core
             Entity = entity;
             PredicateType = (ListRightSideType) entity.PredicateType;
 
+            DataModelConditionList = null!;
             ApplyParentList();
             Initialize();
         }
@@ -49,37 +51,22 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the operator
         /// </summary>
-        public ConditionOperator Operator { get; private set; }
+        public ConditionOperator? Operator { get; private set; }
 
         /// <summary>
         ///     Gets the data model condition list this predicate belongs to
         /// </summary>
         public DataModelConditionList DataModelConditionList { get; private set; }
 
-        /// <summary>
-        ///     Gets the path of the left property in the <see cref="ListType" />
-        /// </summary>
-        public string LeftPropertyPath { get; private set; }
+        public DataModelPath? LeftPath { get; set; }
 
-        /// <summary>
-        ///     Gets the currently used instance of the right side data model
-        ///     <para>Note: This is null when using a path inside the list</para>
-        /// </summary>
-        public DataModel RightDataModel { get; set; }
-
-        /// <summary>
-        ///     Gets the path of the right property in the <see cref="ListType" />
-        /// </summary>
-        public string RightPropertyPath { get; private set; }
+        public DataModelPath? RightPath { get; set; }
 
         /// <summary>
         ///     Gets the right static value, only used it <see cref="PredicateType" /> is
         ///     <see cref="ListRightSideType.Static" />
         /// </summary>
-        public object RightStaticValue { get; private set; }
-
-        public Func<object, object> LeftSideAccessor { get; set; }
-        public Func<object, object> RightSideAccessor { get; set; }
+        public object? RightStaticValue { get; private set; }
 
         /// <summary>
         ///     Updates the left side of the predicate
@@ -92,7 +79,8 @@ namespace Artemis.Core
             if (!ListContainsInnerPath(path))
                 throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
 
-            LeftPropertyPath = path;
+            LeftPath?.Dispose();
+            LeftPath = new DataModelPath(new ListPredicateWrapperDataModel(), path);
 
             ValidateOperator();
             ValidateRightSide();
@@ -110,7 +98,8 @@ namespace Artemis.Core
                 throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
 
             PredicateType = ListRightSideType.DynamicList;
-            RightPropertyPath = path;
+            RightPath?.Dispose();
+            RightPath = new DataModelPath(new ListPredicateWrapperDataModel(), path);
 
             CreateExpression();
         }
@@ -135,8 +124,8 @@ namespace Artemis.Core
             }
 
             PredicateType = ListRightSideType.Dynamic;
-            RightDataModel = dataModel;
-            RightPropertyPath = path;
+            RightPath?.Dispose();
+            RightPath = new DataModelPath(dataModel, path);
 
             CreateExpression();
         }
@@ -148,7 +137,8 @@ namespace Artemis.Core
         public void UpdateRightSideStatic(object staticValue)
         {
             PredicateType = ListRightSideType.Static;
-            RightPropertyPath = null;
+            RightPath?.Dispose();
+            RightPath = null;
 
             SetStaticValue(staticValue);
             CreateExpression();
@@ -166,13 +156,18 @@ namespace Artemis.Core
                 return;
             }
 
-            if (LeftPropertyPath == null)
+            // No need to clear compiled expressions, without a left data model they are already null
+            if (LeftPath == null || !LeftPath.IsValid)
             {
                 Operator = conditionOperator;
                 return;
             }
 
-            Type leftType = GetTypeAtInnerPath(LeftPropertyPath);
+            Type leftType = LeftPath.GetPropertyType()!;
+            if (!conditionOperator.SupportsType(leftType))
+                throw new ArtemisCoreException($"Cannot apply operator {conditionOperator.GetType().Name} to this predicate because " +
+                                               $"it does not support left side type {leftType.Name}");
+
             if (conditionOperator.SupportsType(leftType))
                 Operator = conditionOperator;
 
@@ -209,26 +204,30 @@ namespace Artemis.Core
 
             return true;
         }
-        
+
         internal override bool EvaluateObject(object target)
         {
-            if (Operator == null || LeftSideAccessor == null || PredicateType != ListRightSideType.Static && RightSideAccessor == null)
+            if (Operator == null || LeftPath == null || !LeftPath.IsValid)
                 return false;
 
             // Compare with a static value
             if (PredicateType == ListRightSideType.Static)
             {
-                if (!DataModelConditionList.ListType.IsValueType && RightStaticValue == null)
+                object? leftSideValue = GetListPathValue(LeftPath, target);
+                if (leftSideValue != null && leftSideValue.GetType().IsValueType && RightStaticValue == null)
                     return false;
 
-                return Operator.Evaluate(LeftSideAccessor(target), RightStaticValue);
+                return Operator.Evaluate(leftSideValue, RightStaticValue);
             }
+
+            if (RightPath == null || !RightPath.IsValid)
+                return false;
 
             // Compare with dynamic values
             if (PredicateType == ListRightSideType.Dynamic)
-                return Operator.Evaluate(LeftSideAccessor(target), RightSideAccessor(RightDataModel));
+                return Operator.Evaluate(GetListPathValue(LeftPath, target), RightPath.GetValue());
             if (PredicateType == ListRightSideType.DynamicList)
-                return Operator.Evaluate(LeftSideAccessor(target), RightSideAccessor(target));
+                return Operator.Evaluate(GetListPathValue(LeftPath, target), GetListPathValue(RightPath, target));
 
             return false;
         }
@@ -444,6 +443,15 @@ namespace Artemis.Core
                 RightStaticValue = null;
         }
 
+        private object? GetListPathValue(DataModelPath path, object target)
+        {
+            if (!(path.Target is ListPredicateWrapperDataModel wrapper))
+                throw new ArtemisCoreException("Data model condition list predicate has a path with an invalid target");
+
+            wrapper.Value = target;
+            return path.GetValue();
+        }
+
         private void CreateDynamicListAccessors()
         {
             if (LeftPropertyPath == null || RightPropertyPath == null || Operator == null)
@@ -514,6 +522,9 @@ namespace Artemis.Core
             DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
             ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
             ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
+
+            LeftPath?.Dispose();
+            RightPath?.Dispose();
 
             base.Dispose(disposing);
         }

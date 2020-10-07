@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
@@ -117,8 +118,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                DataModelConditionPredicate.LeftDataModel,
-                DataModelConditionPredicate.LeftPropertyPath
+                DataModelConditionPredicate.LeftPath.Target as DataModel,
+                DataModelConditionPredicate.LeftPath.Path
             );
             Type leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
 
@@ -147,8 +148,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 }
 
                 RightSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                    DataModelConditionPredicate.RightDataModel,
-                    DataModelConditionPredicate.RightPropertyPath
+                    DataModelConditionPredicate.RightPath.Target as DataModel, 
+                    DataModelConditionPredicate.RightPath.Path
                 );
                 RightSideSelectionViewModel.FilterTypes = new[] {targetType};
             }

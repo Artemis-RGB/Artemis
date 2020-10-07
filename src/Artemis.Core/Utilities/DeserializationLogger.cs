@@ -18,9 +18,9 @@ namespace Artemis.Core
             _logger.Warning(
                 exception,
                 "Failed to deserialize display condition predicate {left} {operator} {right}",
-                dataModelConditionPredicate.Entity.LeftPropertyPath,
+                dataModelConditionPredicate.Entity.LeftPath?.Path,
                 dataModelConditionPredicate.Entity.OperatorType,
-                dataModelConditionPredicate.Entity.RightPropertyPath
+                dataModelConditionPredicate.Entity.RightPath?.Path
             );
         }
 
