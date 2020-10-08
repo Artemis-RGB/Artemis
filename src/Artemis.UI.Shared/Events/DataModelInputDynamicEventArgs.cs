@@ -1,14 +1,15 @@
 ﻿using System;
+using Artemis.Core;
 
 namespace Artemis.UI.Shared
 {
     public class DataModelInputDynamicEventArgs : EventArgs
     {
-        public DataModelVisualizationViewModel DataModelVisualizationViewModel { get; }
+        public DataModelPath DataModelPath { get; }
 
-        public DataModelInputDynamicEventArgs(DataModelVisualizationViewModel dataModelVisualizationViewModel)
+        public DataModelInputDynamicEventArgs(DataModelPath dataModelPath)
         {
-            DataModelVisualizationViewModel = dataModelVisualizationViewModel;
+            DataModelPath = dataModelPath;
         }
     }
 }

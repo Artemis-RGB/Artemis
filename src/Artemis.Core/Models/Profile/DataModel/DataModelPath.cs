@@ -65,6 +65,19 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
+        internal DataModelPath(DataModelPath dataModelPath)
+        {
+            Target = dataModelPath.Target;
+            Path = dataModelPath.Path;
+            Entity = new DataModelPathEntity();
+
+            _segments = new LinkedList<DataModelPathSegment>();
+
+            Save();
+            Initialize();
+            SubscribeToDataModelStore();
+        }
+
         /// <summary>
         ///     Gets the data model at which this path starts
         /// </summary>

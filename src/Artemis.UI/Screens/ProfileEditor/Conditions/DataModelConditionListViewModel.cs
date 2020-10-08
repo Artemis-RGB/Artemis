@@ -96,10 +96,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyList()
         {
-            DataModelConditionList.UpdateList(
-                TargetSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                TargetSelectionViewModel.SelectedPropertyViewModel.Path
-            );
+            DataModelConditionList.UpdateList(TargetSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
@@ -107,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Update()
         {
-            TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DataModelConditionList.ListPath?.Target, DataModelConditionList.ListPath?.Path);
+            TargetSelectionViewModel.DataModelPath = DataModelConditionList.ListPath;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             // Remove VMs of effects no longer applied on the layer
