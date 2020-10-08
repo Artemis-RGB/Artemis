@@ -90,13 +90,10 @@ namespace Artemis.Core
         ///     and re-compiles the expression
         /// </summary>
         /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamic(string? path)
+        public void UpdateRightSideDynamicList(DataModelPath? path)
         {
             RightPath?.Dispose();
-            if (path != null && DataModelConditionList.ListType != null)
-                RightPath = new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path);
-            else
-                RightPath = null;
+            RightPath = path;
 
             PredicateType = ListRightSideType.DynamicList;
         }
@@ -105,27 +102,11 @@ namespace Artemis.Core
         ///     Updates the right side of the predicate using path to a value in a data model, makes the predicate dynamic and
         ///     re-compiles the expression
         /// </summary>
-        /// <param name="dataModel"></param>
         /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamic(DataModel? dataModel, string? path)
+        public void UpdateRightSideDynamic(DataModelPath? path)
         {
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
-
             RightPath?.Dispose();
-            if (dataModel != null)
-            {
-                DataModelPath newPath = new DataModelPath(dataModel, path);
-                if (!newPath.IsValid)
-                    throw new ArtemisCoreException($"New right path '{newPath}' is invalid");
-                RightPath = newPath;
-            }
-            else
-            {
-                RightPath = null;
-            }
+            RightPath = path;
 
             PredicateType = ListRightSideType.Dynamic;
         }
@@ -391,7 +372,7 @@ namespace Artemis.Core
 
                 Type rightSideType = RightPath.GetPropertyType()!;
                 if (leftType != null && !leftType.IsCastableFrom(rightSideType))
-                    UpdateRightSideDynamic(null, null);
+                    UpdateRightSideDynamic(null);
             }
             else if (PredicateType == ListRightSideType.DynamicList)
             {
@@ -400,7 +381,7 @@ namespace Artemis.Core
 
                 Type rightSideType = RightPath.GetPropertyType()!;
                 if (leftType != null && !leftType.IsCastableFrom(rightSideType))
-                    UpdateRightSideDynamic(null);
+                    UpdateRightSideDynamicList(null);
             }
             else
             {

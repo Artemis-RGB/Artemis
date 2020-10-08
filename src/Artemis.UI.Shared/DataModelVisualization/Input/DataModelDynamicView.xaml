@@ -50,10 +50,10 @@
             </ContextMenu>
         </Button.ContextMenu>
         <Grid>
-            <TextBlock Text="{Binding SelectedPropertyViewModel.PropertyDescription.Name}"
-                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}}" />
+            <TextBlock Text="{Binding DisplayValue}"
+                       Visibility="{Binding DataModelPath, Converter={StaticResource NullToVisibilityConverter}}" />
             <TextBlock FontStyle="Italic"
-                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                       Visibility="{Binding DataModelPath, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
                 <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
             </TextBlock>
         </Grid>

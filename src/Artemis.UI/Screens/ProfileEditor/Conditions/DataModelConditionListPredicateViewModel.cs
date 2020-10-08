@@ -120,15 +120,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 // Lists use a different color
                 LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
                 LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
-                LeftSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                    DataModelConditionListPredicate.LeftPath?.Target,
-                    DataModelConditionListPredicate.LeftPath?.Path
-                );
+                LeftSideSelectionViewModel.DataModelPath = DataModelConditionListPredicate.LeftPath;
             }
 
             Type leftSideType = _isPrimitiveList
                 ? DataModelConditionListPredicate.DataModelConditionList.ListType
-                : LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
+                : LeftSideSelectionViewModel.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
             Operators.Clear();
@@ -158,10 +155,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 }
 
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
-                RightSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                    DataModelConditionListPredicate.RightPath?.Target,
-                    DataModelConditionListPredicate.RightPath?.Path
-                );
+                LeftSideSelectionViewModel.DataModelPath = DataModelConditionListPredicate.RightPath;
             }
             else if (SelectedOperator.SupportsRightSide)
             {
@@ -181,7 +175,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
-            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.SelectedPropertyViewModel.Path);
+            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath.Path);
             _profileEditorService.UpdateSelectedProfileElement();
 
             SelectedOperator = DataModelConditionListPredicate.Operator;
@@ -191,12 +185,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public void ApplyRightSideDynamic()
         {
             if (DataModelConditionListPredicate.PredicateType == ListRightSideType.Dynamic)
-                DataModelConditionListPredicate.UpdateRightSideDynamic(
-                    RightSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                    RightSideSelectionViewModel.SelectedPropertyViewModel.Path
-                );
+                DataModelConditionListPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.DataModelPath);
             else if (DataModelConditionListPredicate.PredicateType == ListRightSideType.DynamicList)
-                DataModelConditionListPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.SelectedPropertyViewModel.Path);
+                DataModelConditionListPredicate.UpdateRightSideDynamicList(RightSideSelectionViewModel.DataModelPath);
 
             _profileEditorService.UpdateSelectedProfileElement();
             Update();

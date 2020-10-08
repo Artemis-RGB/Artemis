@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -73,47 +72,36 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the list the predicate is evaluated on
         /// </summary>
-        /// <param name="dataModel">The data model of the list</param>
         /// <param name="path">The path pointing to the list inside the list</param>
-        public void UpdateList(DataModel? dataModel, string? path)
+        public void UpdateList(DataModelPath? path)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionList");
 
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update list to an invalid path");
 
             ListPath?.Dispose();
-            if (dataModel != null && path != null)
-            {
-                DataModelPath newPath = new DataModelPath(dataModel, path);
-                if (!newPath.IsValid)
-                    throw new ArtemisCoreException($"New left path '{newPath}' is invalid");
-                Type listType = newPath.GetPropertyType()!;
-                if (!typeof(IList).IsAssignableFrom(listType))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{newPath}'");
+            ListPath = path;
 
-                ListPath = newPath;
+            // Remove the old root group that was tied to the old data model
+            while (Children.Any())
+                RemoveChild(Children[0]);
+
+            if (path != null)
+            {
+                Type listType = path.GetPropertyType()!;
                 ListType = listType.GetGenericArguments()[0];
                 IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+
+                // Create a new root group
+                AddChild(new DataModelConditionGroup(this));
             }
             else
             {
                 ListPath = null;
                 ListType = null;
             }
-
-            // Remove the old root group that was tied to the old data model
-            while (Children.Any())
-                RemoveChild(Children[0]);
-
-            if (dataModel == null)
-                return;
-
-            // Create a new root group
-            AddChild(new DataModelConditionGroup(this));
         }
 
         #region IDisposable
