@@ -70,18 +70,17 @@ namespace Artemis.Core
         ///     Updates the left side of the predicate
         /// </summary>
         /// <param name="path">The path pointing to the left side value inside the list</param>
-        public void UpdateLeftSide(string path)
+        public void UpdateLeftSide(string? path)
         {
             if (DataModelConditionList.IsPrimitiveList)
                 throw new ArtemisCoreException("Cannot apply a left side to a predicate inside a primitive list");
-            if (!ListContainsInnerPath(path))
-                throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
 
             LeftPath?.Dispose();
-            LeftPath = DataModelConditionList.ListType != null
-                ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path)
-                : null;
-
+            if (path != null && DataModelConditionList.ListType != null)
+                LeftPath = new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path);
+            else
+                LeftPath = null;
+            
             ValidateOperator();
             ValidateRightSide();
         }
@@ -91,16 +90,15 @@ namespace Artemis.Core
         ///     and re-compiles the expression
         /// </summary>
         /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamic(string path)
+        public void UpdateRightSideDynamic(string? path)
         {
-            if (!ListContainsInnerPath(path))
-                throw new ArtemisCoreException($"List type {DataModelConditionList.ListType.Name} does not contain path {path}");
+            RightPath?.Dispose();
+            if (path != null && DataModelConditionList.ListType != null)
+                RightPath = new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path);
+            else
+                RightPath = null;
 
             PredicateType = ListRightSideType.DynamicList;
-            RightPath?.Dispose();
-            RightPath = DataModelConditionList.ListType != null
-                ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path)
-                : null;
         }
 
         /// <summary>
@@ -109,20 +107,27 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="dataModel"></param>
         /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamic(DataModel dataModel, string path)
+        public void UpdateRightSideDynamic(DataModel? dataModel, string? path)
         {
             if (dataModel != null && path == null)
                 throw new ArtemisCoreException("If a data model is provided, a path is also required");
             if (dataModel == null && path != null)
                 throw new ArtemisCoreException("If path is provided, a data model is also required");
 
+            RightPath?.Dispose();
             if (dataModel != null)
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
+            {
+                DataModelPath newPath = new DataModelPath(dataModel, path);
+                if (!newPath.IsValid)
+                    throw new ArtemisCoreException($"New right path '{newPath}' is invalid");
+                RightPath = newPath;
+            }
+            else
+            {
+                RightPath = null;
+            }
 
             PredicateType = ListRightSideType.Dynamic;
-            RightPath?.Dispose();
-            RightPath = new DataModelPath(dataModel, path);
         }
 
         /// <summary>

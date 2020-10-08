@@ -76,7 +76,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("If path is provided, a data model is also required");
 
             LeftPath?.Dispose();
-            if (dataModel != null && path != null)
+            if (dataModel != null)
             {
                 DataModelPath newPath = new DataModelPath(dataModel, path);
                 if (!newPath.IsValid)
@@ -105,7 +105,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("If path is provided, a data model is also required");
 
             RightPath?.Dispose();
-            if (dataModel != null && path != null)
+            if (dataModel != null)
             {
                 DataModelPath newPath = new DataModelPath(dataModel, path);
                 if (!newPath.IsValid)

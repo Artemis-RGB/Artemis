@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
 
@@ -10,11 +11,12 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertiesViewModel(object listItem) : base(null, null, null)
+        public DataModelListPropertiesViewModel(Type listType) : base(null, null, null)
         {
-            DataModel = ListPredicateWrapperDataModel.Create(listItem.GetType());
-            ListType = listItem.GetType();
-            DisplayValue = listItem;
+            DataModel = ListPredicateWrapperDataModel.Create(listType);
+            ListType = listType;
+
+            IsRootViewModel = false;
         }
 
         public int Index
@@ -35,18 +37,21 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _displayValue, value);
         }
 
+        public DataModelVisualizationViewModel DisplayViewModel => Children.FirstOrDefault();
+
         public override string DisplayPath => null;
 
         public override void Update(IDataModelUIService dataModelUIService)
         {
-            // Display value gets updated by parent, don't do anything if it is null
-            if (DisplayValue == null)
+            ((ListPredicateWrapperDataModel) DataModel).UntypedValue = DisplayValue;
+
+            PopulateProperties(dataModelUIService);
+            if (DisplayViewModel == null)
                 return;
 
-            ListType = DisplayValue.GetType();
-            PopulateProperties(dataModelUIService);
-            foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
-                dataModelVisualizationViewModel.Update(dataModelUIService);
+            if (IsVisualizationExpanded && !DisplayViewModel.IsVisualizationExpanded)
+                DisplayViewModel.IsVisualizationExpanded = IsVisualizationExpanded;
+            DisplayViewModel.Update(dataModelUIService);
         }
 
         public override object GetCurrentValue()

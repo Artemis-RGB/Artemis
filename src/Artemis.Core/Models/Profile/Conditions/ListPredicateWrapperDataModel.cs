@@ -10,6 +10,12 @@ namespace Artemis.Core
 
     public abstract class ListPredicateWrapperDataModel : DataModel
     {
+        internal ListPredicateWrapperDataModel()
+        {
+            PluginInfo = Constants.CorePluginInfo;
+        }
+
+        [DataModelIgnore]
         public object? UntypedValue { get; set; }
 
         public static ListPredicateWrapperDataModel Create(Type type)

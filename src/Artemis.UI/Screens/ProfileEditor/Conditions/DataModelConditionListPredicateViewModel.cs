@@ -117,10 +117,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             if (!_isPrimitiveList)
             {
-                LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
+                // Lists use a different color
                 LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
-                LeftSideSelectionViewModel.SelectedPropertyViewModel = LeftSideSelectionViewModel.DataModelViewModel.GetChildByPath(
-                    listDataModelGuid.Value, DataModelConditionListPredicate.DataModelConditionList.ListPath.Path
+                LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
+                LeftSideSelectionViewModel.PopulateSelectedPropertyViewModel(
+                    DataModelConditionListPredicate.LeftPath?.Target,
+                    DataModelConditionListPredicate.LeftPath?.Path
                 );
             }
 
@@ -141,9 +143,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             // Ensure the right side has the proper VM
-            if ((DataModelConditionListPredicate.PredicateType == ListRightSideType.Dynamic ||
-                 DataModelConditionListPredicate.PredicateType == ListRightSideType.DynamicList) &&
-                SelectedOperator.SupportsRightSide)
+            ListRightSideType type = DataModelConditionListPredicate.PredicateType;
+            if ((type == ListRightSideType.Dynamic || type == ListRightSideType.DynamicList) && SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideStatic();
                 if (RightSideSelectionViewModel == null)
@@ -157,15 +158,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 }
 
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
-                if (DataModelConditionListPredicate.PredicateType == ListRightSideType.Dynamic)
-                    RightSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                        DataModelConditionListPredicate.RightPath?.Target,
-                        DataModelConditionListPredicate.RightPath?.Path
-                    );
-                else
-                    RightSideSelectionViewModel.SelectedPropertyViewModel = RightSideSelectionViewModel.DataModelViewModel.GetChildByPath(
-                        listDataModelGuid.Value, DataModelConditionListPredicate.RightPath?.Path
-                    );
+                RightSideSelectionViewModel.PopulateSelectedPropertyViewModel(
+                    DataModelConditionListPredicate.RightPath?.Target,
+                    DataModelConditionListPredicate.RightPath?.Path
+                );
             }
             else if (SelectedOperator.SupportsRightSide)
             {
