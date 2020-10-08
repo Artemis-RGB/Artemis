@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared
                 PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel.DataModelDescription;
         }
 
-        public bool IsRootViewModel { get; }
+        public bool IsRootViewModel { get; protected set; }
         public DataModelPath DataModelPath { get; }
         public string Path => DataModelPath?.Path;
 
@@ -81,7 +81,7 @@ namespace Artemis.UI.Shared
             }
         }
 
-        public virtual string DisplayPath => Path?.Replace(".", " › ");
+        public virtual string DisplayPath => string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
 
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
@@ -146,7 +146,7 @@ namespace Artemis.UI.Shared
                     return null;
                 if (propertyPath == null)
                     return null;
-                if (Path.StartsWith(propertyPath, StringComparison.OrdinalIgnoreCase))
+                if (Path != null && Path.StartsWith(propertyPath, StringComparison.OrdinalIgnoreCase))
                     return null;
             }
 
@@ -183,7 +183,7 @@ namespace Artemis.UI.Shared
             if (IsRootViewModel)
                 return;
 
-            Type modelType = Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
+            Type modelType = Parent == null || Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
 
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
@@ -210,7 +210,7 @@ namespace Artemis.UI.Shared
             }
 
             // Add missing dynamic children
-            object value = Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
+            object value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
             {
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)

@@ -96,8 +96,8 @@ namespace Artemis.Core
                     throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{newPath}'");
 
                 ListPath = newPath;
-                ListType = listType;
-                IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
+                ListType = listType.GetGenericArguments()[0];
+                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
             }
             else
             {
@@ -182,10 +182,13 @@ namespace Artemis.Core
 
             // Ensure the list path is valid and points to a list
             DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
-            if (!listPath.IsValid || !typeof(IList).IsAssignableFrom(listPath.GetPropertyType()))
+            Type listType = listPath.GetPropertyType()!;
+            if (!listPath.IsValid || !typeof(IList).IsAssignableFrom(listType))
                 return;
 
             ListPath = listPath;
+            ListType = listType.GetGenericArguments()[0];
+            IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
 
             // There should only be one child and it should be a group
             if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)

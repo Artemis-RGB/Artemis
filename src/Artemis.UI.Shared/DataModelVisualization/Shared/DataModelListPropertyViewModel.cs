@@ -9,19 +9,17 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type _listType;
 
-        public DataModelListPropertyViewModel(object listItem, DataModelDisplayViewModel displayViewModel) : base(null, null, null)
+        public DataModelListPropertyViewModel(Type listType, DataModelDisplayViewModel displayViewModel) : base(null, null, null)
         {
-            DataModel = ListPredicateWrapperDataModel.Create(listItem.GetType());
-            ListType = listItem.GetType();
-            DisplayValue = listItem;
+            DataModel = ListPredicateWrapperDataModel.Create(listType);
+            ListType = listType;
             DisplayViewModel = displayViewModel;
         }
 
-        public DataModelListPropertyViewModel(object listItem) : base(null, null, null)
+        public DataModelListPropertyViewModel(Type listType) : base(null, null, null)
         {
-            DataModel = ListPredicateWrapperDataModel.Create(listItem.GetType());
-            ListType = listItem.GetType();
-            DisplayValue = listItem;
+            DataModel = ListPredicateWrapperDataModel.Create(listType);
+            ListType = listType;
         }
 
         public int Index
@@ -46,6 +44,8 @@ namespace Artemis.UI.Shared
             // Display value gets updated by parent, don't do anything if it is null
             if (DisplayValue == null)
                 return;
+
+            ((ListPredicateWrapperDataModel)DataModel).UntypedValue = DisplayValue;
 
             if (DisplayViewModel == null)
                 DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType(), true);
