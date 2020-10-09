@@ -42,8 +42,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             DataBindingModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(DataBindingModeType)));
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
-            TestInputValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
-            TestResultValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), true);
+            TestInputValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
+            TestResultValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
 
             Initialize();
         }

@@ -48,7 +48,7 @@ namespace Artemis.UI.Shared
             ((ListPredicateWrapperDataModel)DataModel).UntypedValue = DisplayValue;
 
             if (DisplayViewModel == null)
-                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType(), true);
+                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DisplayValue.GetType(), PropertyDescription, true);
 
             ListType = DisplayValue.GetType();
             UpdateDisplayParameters();

@@ -43,7 +43,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the path of the list property
         /// </summary>
-        public DataModelPath? ListPath { get; set; }
+        public DataModelPath? ListPath { get; private set; }
 
         /// <summary>
         ///     Gets the type of the content of the list this predicate is evaluated on
@@ -82,15 +82,15 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("Cannot update list to an invalid path");
 
             ListPath?.Dispose();
-            ListPath = path;
+            ListPath = path != null ? new DataModelPath(path) : null;
 
             // Remove the old root group that was tied to the old data model
             while (Children.Any())
                 RemoveChild(Children[0]);
 
-            if (path != null)
+            if (ListPath != null)
             {
-                Type listType = path.GetPropertyType()!;
+                Type listType = ListPath.GetPropertyType()!;
                 ListType = listType.GetGenericArguments()[0];
                 IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
 
@@ -99,7 +99,6 @@ namespace Artemis.Core
             }
             else
             {
-                ListPath = null;
                 ListType = null;
             }
         }
@@ -171,12 +170,21 @@ namespace Artemis.Core
             // Ensure the list path is valid and points to a list
             DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
             Type listType = listPath.GetPropertyType()!;
-            if (!listPath.IsValid || !typeof(IList).IsAssignableFrom(listType))
+            // Can't check this on an invalid list, if it becomes valid later lets hope for the best
+            if (listPath.IsValid && !typeof(IList).IsAssignableFrom(listType))
                 return;
 
             ListPath = listPath;
-            ListType = listType.GetGenericArguments()[0];
-            IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+            if (ListPath.IsValid)
+            {
+                ListType = listType.GetGenericArguments()[0];
+                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+            }
+            else
+            {
+                ListType = null;
+                IsPrimitiveList = false;
+            }
 
             // There should only be one child and it should be a group
             if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)

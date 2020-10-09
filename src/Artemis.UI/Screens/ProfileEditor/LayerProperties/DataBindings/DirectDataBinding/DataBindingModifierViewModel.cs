@@ -145,7 +145,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             else
             {
                 DynamicSelectionViewModel = null;
-                StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(Modifier.ModifierType.ParameterType ?? sourceType);
+                StaticInputViewModel = _dataModelUIService.GetStaticInputViewModel(Modifier.ModifierType.ParameterType ?? sourceType, null);
                 if (StaticInputViewModel != null)
                     StaticInputViewModel.ValueUpdated += StaticInputViewModelOnValueUpdated;
             }
@@ -166,10 +166,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             SelectedModifierType = Modifier.ModifierType;
 
             // Parameter
-            if (DynamicSelectionViewModel != null)
-                DynamicSelectionViewModel.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
-            else if (StaticInputViewModel != null)
-                StaticInputViewModel.Value = Modifier.ParameterStaticValue;
+            throw new NotImplementedException();
+            // if (DynamicSelectionViewModel != null)
+            //     DynamicSelectionViewModel.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
+            // else if (StaticInputViewModel != null)
+            //     StaticInputViewModel.Value = Modifier.ParameterStaticValue;
         }
 
         private void ExecuteSelectModifierTypeCommand(object context)

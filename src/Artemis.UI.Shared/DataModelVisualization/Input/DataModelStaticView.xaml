@@ -32,13 +32,7 @@
                 Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <Grid>
                 <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
-                    <TextBlock FontWeight="Light"
-                               Text="{Binding TargetDescription.Prefix}"
-                               Visibility="{Binding TargetDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" />
                     <ContentControl s:View.Model="{Binding DisplayViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                    <TextBlock FontWeight="Light" 
-                               Text="{Binding TargetDescription.Affix}"
-                               Visibility="{Binding TargetDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" />
                 </StackPanel>
 
                 <TextBlock FontStyle="Italic" Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">

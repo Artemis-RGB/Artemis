@@ -104,15 +104,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Update()
         {
-            TargetSelectionViewModel.DataModelPath = DataModelConditionList.ListPath;
+            TargetSelectionViewModel.ChangeDataModelPath(DataModelConditionList.ListPath);
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
             // Remove VMs of effects no longer applied on the layer
-            List<DataModelConditionViewModel> toRemove = Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList();
-            // Using RemoveRange breaks our lovely animations
-            foreach (DataModelConditionViewModel conditionViewModel in toRemove)
-                Items.Remove(conditionViewModel);
+            Items.RemoveRange(Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList());
+            
+            if (DataModelConditionList.ListPath == null || !DataModelConditionList.ListPath.IsValid)
+                return;
 
+            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
             foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))
@@ -122,8 +123,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
                 DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, true);
                 viewModel.IsRootGroup = true;
-                Items.Add(viewModel);
+                viewModels.Add(viewModel);
             }
+            if (viewModels.Any())
+                Items.AddRange(viewModels);
 
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();

@@ -6,9 +6,15 @@
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <TextBox VerticalAlignment="Center" Text="{Binding InputValue}" PreviewTextInput="{s:Action NumberValidationTextBox}" LostFocus="{s:Action Submit}" Width="140">
+    <TextBox VerticalAlignment="Center" 
+             Text="{Binding InputValue}" 
+             PreviewTextInput="{s:Action NumberValidationTextBox}" 
+             materialDesign:TextFieldAssist.SuffixText="{Binding TargetDescription.Suffix}"
+             LostFocus="{s:Action Submit}" 
+             Width="140">
         <b:Interaction.Behaviors>
             <shared:PutCursorAtEndTextBoxBehavior />
         </b:Interaction.Behaviors>

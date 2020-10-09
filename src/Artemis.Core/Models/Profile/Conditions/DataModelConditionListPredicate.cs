@@ -54,9 +54,15 @@ namespace Artemis.Core
         /// </summary>
         public DataModelConditionList DataModelConditionList { get; private set; }
 
-        public DataModelPath? LeftPath { get; set; }
+        /// <summary>
+        ///     Gets the path of the left property
+        /// </summary>
+        public DataModelPath? LeftPath { get; private set; }
 
-        public DataModelPath? RightPath { get; set; }
+        /// <summary>
+        ///     Gets the path of the right property
+        /// </summary>
+        public DataModelPath? RightPath { get; private set; }
 
         /// <summary>
         ///     Gets the right static value, only used it <see cref="PredicateType" /> is
@@ -70,17 +76,17 @@ namespace Artemis.Core
         ///     Updates the left side of the predicate
         /// </summary>
         /// <param name="path">The path pointing to the left side value inside the list</param>
-        public void UpdateLeftSide(string? path)
+        public void UpdateLeftSide(DataModelPath? path)
         {
             if (DataModelConditionList.IsPrimitiveList)
                 throw new ArtemisCoreException("Cannot apply a left side to a predicate inside a primitive list");
 
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update left side of predicate to an invalid path");
+
             LeftPath?.Dispose();
-            if (path != null && DataModelConditionList.ListType != null)
-                LeftPath = new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), path);
-            else
-                LeftPath = null;
-            
+            LeftPath = path != null ? new DataModelPath(path) : null;
+
             ValidateOperator();
             ValidateRightSide();
         }
@@ -92,8 +98,11 @@ namespace Artemis.Core
         /// <param name="path">The path pointing to the right side value inside the list</param>
         public void UpdateRightSideDynamicList(DataModelPath? path)
         {
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update right side of predicate to an invalid path");
+
             RightPath?.Dispose();
-            RightPath = path;
+            RightPath = path != null ? new DataModelPath(path) : null;
 
             PredicateType = ListRightSideType.DynamicList;
         }
