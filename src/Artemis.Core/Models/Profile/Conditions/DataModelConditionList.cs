@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -37,37 +35,27 @@ namespace Artemis.Core
             Initialize();
         }
 
-        internal DataModelConditionListEntity Entity { get; set; }
-
         /// <summary>
         ///     Gets or sets the list operator
         /// </summary>
         public ListOperator ListOperator { get; set; }
 
         /// <summary>
+        ///     Gets the path of the list property
+        /// </summary>
+        public DataModelPath? ListPath { get; private set; }
+
+        /// <summary>
         ///     Gets the type of the content of the list this predicate is evaluated on
         /// </summary>
-        public Type ListType { get; set; }
+        public Type? ListType { get; set; }
 
         /// <summary>
         ///     Gets whether the list contains primitives
         /// </summary>
         public bool IsPrimitiveList { get; set; }
 
-        /// <summary>
-        ///     Gets the currently used instance of the list data model
-        /// </summary>
-        public DataModel ListDataModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the path of the list property in the <see cref="ListDataModel" />
-        /// </summary>
-        public string ListPropertyPath { get; private set; }
-
-        /// <summary>
-        ///     Gets the compiled function that accesses the list this condition evaluates on
-        /// </summary>
-        public Func<object, IList> CompiledListAccessor { get; private set; }
+        internal DataModelConditionListEntity Entity { get; set; }
 
         /// <inheritdoc />
         public override bool Evaluate()
@@ -75,50 +63,44 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionList");
 
-            if (CompiledListAccessor == null)
+            if (ListPath == null || !ListPath.IsValid)
                 return false;
 
-            return EvaluateObject(CompiledListAccessor(ListDataModel));
+            return EvaluateObject(ListPath.GetValue());
         }
 
         /// <summary>
         ///     Updates the list the predicate is evaluated on
         /// </summary>
-        /// <param name="dataModel">The data model of the list</param>
         /// <param name="path">The path pointing to the list inside the list</param>
-        public void UpdateList(DataModel dataModel, string path)
+        public void UpdateList(DataModelPath? path)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionList");
 
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update list to an invalid path");
 
-            if (dataModel != null)
-            {
-                Type listType = dataModel.GetListTypeAtPath(path);
-                if (listType == null)
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a list at path '{path}'");
-
-                ListType = listType;
-                IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
-
-                ListDataModel = dataModel;
-                ListPropertyPath = path;
-            }
+            ListPath?.Dispose();
+            ListPath = path != null ? new DataModelPath(path) : null;
 
             // Remove the old root group that was tied to the old data model
             while (Children.Any())
                 RemoveChild(Children[0]);
 
-            if (dataModel == null)
-                return;
+            if (ListPath != null)
+            {
+                Type listType = ListPath.GetPropertyType()!;
+                ListType = listType.GetGenericArguments()[0];
+                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
 
-            // Create a new root group
-            AddChild(new DataModelConditionGroup(this));
-            CreateExpression();
+                // Create a new root group
+                AddChild(new DataModelConditionGroup(this));
+            }
+            else
+            {
+                ListType = null;
+            }
         }
 
         #region IDisposable
@@ -128,8 +110,7 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+            ListPath?.Dispose();
 
             foreach (DataModelConditionPart child in Children)
                 child.Dispose();
@@ -139,7 +120,7 @@ namespace Artemis.Core
 
         #endregion
 
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionList");
@@ -163,11 +144,8 @@ namespace Artemis.Core
         internal override void Save()
         {
             // Target list
-            if (ListDataModel != null)
-            {
-                Entity.ListDataModelGuid = ListDataModel.PluginInfo.Guid;
-                Entity.ListPropertyPath = ListPropertyPath;
-            }
+            ListPath?.Save();
+            Entity.ListPath = ListPath?.Entity;
 
             // Operator
             Entity.ListOperator = (int) ListOperator;
@@ -186,80 +164,39 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
-            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
-            if (Entity.ListDataModelGuid == null)
+            if (Entity.ListPath == null)
                 return;
 
-            // Get the data model ...
-            DataModel dataModel = DataModelStore.Get(Entity.ListDataModelGuid.Value)?.DataModel;
-            if (dataModel == null)
-                return;
-            // ... and ensure the path is valid
-            Type listType = dataModel.GetListTypeAtPath(Entity.ListPropertyPath);
-            if (listType == null)
+            // Ensure the list path is valid and points to a list
+            DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
+            Type listType = listPath.GetPropertyType()!;
+            // Can't check this on an invalid list, if it becomes valid later lets hope for the best
+            if (listPath.IsValid && !typeof(IList).IsAssignableFrom(listType))
                 return;
 
-            ListType = listType;
-            IsPrimitiveList = listType.IsPrimitive || listType.IsEnum || listType == typeof(string);
-            ListDataModel = dataModel;
-            ListPropertyPath = Entity.ListPropertyPath;
-
-            CreateExpression();
-
-            if (ListDataModel == null)
-                return;
+            ListPath = listPath;
+            if (ListPath.IsValid)
+            {
+                ListType = listType.GetGenericArguments()[0];
+                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+            }
+            else
+            {
+                ListType = null;
+                IsPrimitiveList = false;
+            }
 
             // There should only be one child and it should be a group
             if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)
+            {
                 AddChild(new DataModelConditionGroup(this, rootGroup));
+            }
             else
             {
                 Entity.Children.Clear();
                 AddChild(new DataModelConditionGroup(this));
             }
         }
-
-        private void CreateExpression()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataModelConditionList");
-
-            ParameterExpression parameter = Expression.Parameter(typeof(object), "listDataModel");
-            Expression accessor = ListPropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, ListDataModel.GetType()),
-                Expression.Property
-            );
-            accessor = Expression.Convert(accessor, typeof(IList));
-
-            Expression<Func<object, IList>> lambda = Expression.Lambda<Func<object, IList>>(accessor, parameter);
-            CompiledListAccessor = lambda.Compile();
-        }
-
-
-        #region Event handlers
-
-        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
-        {
-            DataModel dataModel = e.Registration.DataModel;
-            if (dataModel.PluginInfo.Guid == Entity.ListDataModelGuid && dataModel.ContainsPath(Entity.ListPropertyPath))
-            {
-                ListDataModel = dataModel;
-                ListPropertyPath = Entity.ListPropertyPath;
-                CreateExpression();
-            }
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
-        {
-            if (ListDataModel != e.Registration.DataModel)
-                return;
-
-            ListDataModel = null;
-            CompiledListAccessor = null;
-        }
-
-        #endregion
     }
 
     /// <summary>

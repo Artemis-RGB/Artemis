@@ -190,7 +190,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="dataModel">The data model of the parameter</param>
         /// <param name="path">The path pointing to the parameter inside the data model</param>
-        public void UpdateParameter(DataModel dataModel, string path)
+        public void UpdateParameter(DataModel? dataModel, string? path)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");

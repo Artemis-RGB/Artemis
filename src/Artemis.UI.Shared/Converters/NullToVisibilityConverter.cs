@@ -15,16 +15,12 @@ namespace Artemis.UI.Shared
             else
                 direction = (Parameters) Enum.Parse(typeof(Parameters), (string) parameter);
 
-            if (direction == Parameters.Normal)
-            {
-                if (value == null)
-                    return Visibility.Collapsed;
-                return Visibility.Visible;
-            }
+            if (value is string stringValue && string.IsNullOrWhiteSpace(stringValue))
+                value = null;
 
-            if (value == null)
-                return Visibility.Visible;
-            return Visibility.Collapsed;
+            if (direction == Parameters.Normal)
+                return value == null ? Visibility.Collapsed : Visibility.Visible;
+            return value == null ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

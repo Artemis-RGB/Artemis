@@ -11,8 +11,7 @@ namespace Artemis.UI.Shared
     {
         private string _count;
         private IList _list;
-        private DataModelVisualizationViewModel _listTypePropertyViewModel;
-
+        
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
             ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
@@ -34,21 +33,19 @@ namespace Artemis.UI.Shared
 
         public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
-            Type type = DataModelPath.GetPropertyType();
-            if (type == null)
+            Type listType = DataModelPath.GetPropertyType()?.GenericTypeArguments[0];
+            if (listType == null)
                 return null;
 
             // Create a property VM describing the type of the list
-            DataModelVisualizationViewModel viewModel = CreateListChild(dataModelUIService, type.GenericTypeArguments[0]);
+            DataModelVisualizationViewModel viewModel = CreateListChild(dataModelUIService, listType);
+            viewModel.Update(dataModelUIService);
 
             // Put an empty value into the list type property view model
             if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
             {
-                dataModelListClassViewModel.DisplayValue = Activator.CreateInstance(dataModelListClassViewModel.ListType);
-                dataModelListClassViewModel.Update(dataModelUIService);
                 return dataModelListClassViewModel;
             }
-
             if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
             {
                 dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
@@ -70,12 +67,15 @@ namespace Artemis.UI.Shared
                 return;
 
             int index = 0;
-            foreach (object? item in List)
+            foreach (object item in List)
             {
+                if (item == null)
+                    continue;
+                
                 DataModelVisualizationViewModel child;
                 if (ListChildren.Count <= index)
                 {
-                    child = CreateListChild(dataModelUIService, item);
+                    child = CreateListChild(dataModelUIService, item.GetType());
                     ListChildren.Add(child);
                 }
                 else
@@ -102,20 +102,18 @@ namespace Artemis.UI.Shared
             Count = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
         }
 
-        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, object listItem)
+        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
         {
-            Type listType = listItem.GetType();
-
             // If a display VM was found, prefer to use that in any case
-            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
+            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
             if (typeViewModel != null)
-                return new DataModelListPropertyViewModel(DataModel, listItem, typeViewModel);
+                return new DataModelListPropertyViewModel(listType, typeViewModel);
             // For primitives, create a property view model, it may be null that is fine
             if (listType.IsPrimitive || listType.IsEnum || listType == typeof(string))
-                return new DataModelListPropertyViewModel(DataModel, listItem);
+                return new DataModelListPropertyViewModel(listType);
             // For other value types create a child view model
             if (listType.IsClass || listType.IsStruct())
-                return new DataModelListPropertiesViewModel(DataModel, listItem);
+                return new DataModelListPropertiesViewModel(listType);
 
             return null;
         }

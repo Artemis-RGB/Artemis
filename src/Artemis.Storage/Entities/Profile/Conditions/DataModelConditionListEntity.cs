@@ -11,9 +11,7 @@ namespace Artemis.Storage.Entities.Profile.Conditions
             Children = new List<DataModelConditionPartEntity>();
         }
 
-        public Guid? ListDataModelGuid { get; set; }
-        public string ListPropertyPath { get; set; }
-
+        public DataModelPathEntity ListPath { get; set; }
         public int ListOperator { get; set; }
     }
 }

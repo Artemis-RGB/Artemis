@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Timers;
 using System.Windows.Media;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
@@ -19,12 +19,12 @@ namespace Artemis.UI.Shared.Input
         private readonly Module _module;
         private readonly Timer _updateTimer;
         private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private DataModelPath _dataModelPath;
         private DataModelPropertiesViewModel _dataModelViewModel;
+        private Type[] _filterTypes;
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
-        private DataModelVisualizationViewModel _selectedPropertyViewModel;
-        private Type[] _filterTypes;
 
         internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
@@ -81,18 +81,31 @@ namespace Artemis.UI.Shared.Input
             set => SetAndNotify(ref _isDataModelViewModelOpen, value);
         }
 
-        public DataModelVisualizationViewModel SelectedPropertyViewModel
+        public DataModelPath DataModelPath
         {
-            get => _selectedPropertyViewModel;
-            set => SetAndNotify(ref _selectedPropertyViewModel, value);
+            get => _dataModelPath;
+            private set
+            {
+                if (!SetAndNotify(ref _dataModelPath, value)) return;
+                NotifyOfPropertyChange(nameof(IsValid));
+                NotifyOfPropertyChange(nameof(DisplayValue));
+                NotifyOfPropertyChange(nameof(DisplayPath));
+            }
         }
 
-        public void PopulateSelectedPropertyViewModel(DataModel datamodel, string path)
+        public bool IsValid => DataModelPath?.IsValid ?? true;
+        public string DisplayValue => DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+
+        public string DisplayPath
         {
-            if (datamodel == null)
-                SelectedPropertyViewModel = null;
-            else
-                SelectedPropertyViewModel = DataModelViewModel.GetChildByPath(datamodel.PluginInfo.Guid, path);
+            get
+            {
+                if (DataModelPath == null)
+                    return "Click to select a property";
+                if (!DataModelPath.IsValid)
+                    return "Invalid path";
+                return string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
+            }
         }
 
         public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
@@ -104,6 +117,12 @@ namespace Artemis.UI.Shared.Input
 
             if (DataModelViewModel != null)
                 DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
+        }
+
+        public void ChangeDataModelPath(DataModelPath dataModelPath)
+        {
+            DataModelPath?.Dispose();
+            DataModelPath = dataModelPath != null ? new DataModelPath(dataModelPath) : null;
         }
 
         private void Initialize()
@@ -132,10 +151,18 @@ namespace Artemis.UI.Shared.Input
             if (!(context is DataModelVisualizationViewModel selected))
                 return;
 
-            SelectedPropertyViewModel = selected;
-            OnPropertySelected(new DataModelInputDynamicEventArgs(selected));
+            ChangeDataModelPath(selected.DataModelPath);
+            OnPropertySelected(new DataModelInputDynamicEventArgs(DataModelPath));
         }
 
+        public void Dispose()
+        {
+            _updateTimer.Stop();
+            _updateTimer.Dispose();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+
+            DataModelPath?.Dispose();
+        }
 
         #region Events
 
@@ -147,12 +174,5 @@ namespace Artemis.UI.Shared.Input
         }
 
         #endregion
-
-        public void Dispose()
-        {
-            _updateTimer.Stop();
-            _updateTimer.Dispose();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-        }
     }
 }
