@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:shared="clr-namespace:Artemis.UI.Shared"
              xmlns:input="clr-namespace:Artemis.UI.Shared.Input"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance input:DataModelDynamicViewModel}">
@@ -30,7 +31,7 @@
     <Button Background="{Binding ButtonBrush}"
             BorderBrush="{Binding ButtonBrush}"
             Style="{StaticResource DataModelConditionButton}"
-            ToolTip="{Binding SelectedPropertyViewModel.DisplayPath}"
+            ToolTip="{Binding DisplayPath}"
             IsEnabled="{Binding IsEnabled}"
             HorizontalAlignment="Left"
             Click="PropertyButton_OnClick">
@@ -50,11 +51,17 @@
             </ContextMenu>
         </Button.ContextMenu>
         <Grid>
-            <TextBlock Text="{Binding SelectedPropertyViewModel.PropertyDescription.Name}"
-                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}}" />
+            <Grid Visibility="{Binding IsValid,Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                <TextBlock Text="{Binding DisplayValue}"
+                           Visibility="{Binding DataModelPath, Converter={StaticResource NullToVisibilityConverter}}" />
+                <TextBlock FontStyle="Italic"
+                           Visibility="{Binding DataModelPath, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                    <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
+                </TextBlock>
+            </Grid>
             <TextBlock FontStyle="Italic"
-                       Visibility="{Binding SelectedPropertyViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-                <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
+                       Visibility="{Binding IsValid, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                « Invalid »
             </TextBlock>
         </Grid>
     </Button>

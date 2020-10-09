@@ -27,7 +27,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             ActiveItem.Update();
             ActiveItem.Updated += ActiveItemOnUpdated;
 
-            ValueViewModel = dataModelUIService.GetStaticInputViewModel(typeof(TProperty));
+            ValueViewModel = dataModelUIService.GetStaticInputViewModel(typeof(TProperty), null);
             ValueViewModel.ValueUpdated += ValueViewModelOnValueUpdated;
             ValueViewModel.Value = DataBindingCondition.Value;
         }

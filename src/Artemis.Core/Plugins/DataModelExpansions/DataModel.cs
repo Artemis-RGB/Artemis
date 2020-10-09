@@ -137,10 +137,12 @@ namespace Artemis.Core.DataModelExpansions
             return value as T;
         }
 
-        internal bool ContainsPath(string path)
+        internal bool ContainsPath(string? path)
         {
+            if (path == null)
+                return false;
             string[] parts = path.Split('.');
-            Type current = GetType();
+            Type? current = GetType();
             foreach (string part in parts)
             {
                 PropertyInfo? property = current?.GetProperty(part);
