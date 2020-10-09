@@ -14,6 +14,7 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelPath : IStorageModel, IDisposable
     {
+        private bool _disposed;
         private readonly LinkedList<DataModelPathSegment> _segments;
         private Expression<Func<object, object>>? _accessorLambda;
 
@@ -52,6 +53,26 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelPath" /> class based on an existing path
+        /// </summary>
+        /// <param name="dataModelPath">The path to base the new instance on</param>
+        public DataModelPath(DataModelPath dataModelPath)
+        {
+            if (dataModelPath == null) 
+                throw new ArgumentNullException(nameof(dataModelPath));
+
+            Target = dataModelPath.Target;
+            Path = dataModelPath.Path;
+            Entity = new DataModelPathEntity();
+
+            _segments = new LinkedList<DataModelPathSegment>();
+
+            Save();
+            Initialize();
+            SubscribeToDataModelStore();
+        }
+
         internal DataModelPath(DataModel? target, DataModelPathEntity entity)
         {
             Target = target;
@@ -65,25 +86,10 @@ namespace Artemis.Core
             SubscribeToDataModelStore();
         }
 
-        internal DataModelPath(DataModelPath dataModelPath)
-        {
-            Target = dataModelPath.Target;
-            Path = dataModelPath.Path;
-            Entity = new DataModelPathEntity();
-
-            _segments = new LinkedList<DataModelPathSegment>();
-
-            Save();
-            Initialize();
-            SubscribeToDataModelStore();
-        }
-
         /// <summary>
         ///     Gets the data model at which this path starts
         /// </summary>
         public DataModel? Target { get; private set; }
-
-        internal DataModelPathEntity Entity { get; }
 
         /// <summary>
         ///     Gets the data model GUID of the <see cref="Target" /> if it is a <see cref="DataModel" />
@@ -108,7 +114,10 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether this data model path points to a list
         /// </summary>
-        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null && typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
+        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null &&
+                                    typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
+
+        internal DataModelPathEntity Entity { get; }
 
         internal Func<object, object>? Accessor { get; private set; }
 
@@ -117,6 +126,9 @@ namespace Artemis.Core
         /// </summary>
         public object? GetValue()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataModelPath");
+
             if (_accessorLambda == null || Target == null)
                 return null;
 
@@ -132,6 +144,9 @@ namespace Artemis.Core
         /// <returns>If static, the property info. If dynamic, <c>null</c></returns>
         public PropertyInfo? GetPropertyInfo()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataModelPath");
+
             return Segments.LastOrDefault()?.GetPropertyInfo();
         }
 
@@ -141,6 +156,9 @@ namespace Artemis.Core
         /// <returns>If possible, the property type</returns>
         public Type? GetPropertyType()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataModelPath");
+
             return Segments.LastOrDefault()?.GetPropertyType();
         }
 
@@ -150,6 +168,9 @@ namespace Artemis.Core
         /// <returns>If found, the data model property description</returns>
         public DataModelPropertyAttribute? GetPropertyDescription()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("DataModelPath");
+
             return Segments.LastOrDefault()?.GetPropertyDescription();
         }
 
@@ -186,7 +207,9 @@ namespace Artemis.Core
                 for (int index = 0; index < segments.Length; index++)
                 {
                     string identifier = segments[index];
-                    LinkedListNode<DataModelPathSegment> node = _segments.AddLast(new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1))));
+                    LinkedListNode<DataModelPathSegment> node = _segments.AddLast(
+                        new DataModelPathSegment(this, identifier, string.Join('.', segments.Take(index + 1)))
+                    );
                     node.Value.Node = node;
                 }
             }
@@ -224,6 +247,21 @@ namespace Artemis.Core
             DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
         }
 
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+
+            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+            Invalidate();
+        }
+
+        #endregion
+
         #region Storage
 
         /// <inheritdoc />
@@ -238,21 +276,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Save()
         {
+            // Do not save an invalid state
+            if (!IsValid)
+                return;
+
             Entity.Path = Path;
             Entity.DataModelGuid = DataModelGuid;
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
-            Invalidate();
         }
 
         #endregion

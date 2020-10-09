@@ -159,14 +159,24 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType, bool fallBackToDefault)
+        public DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType, DataModelPropertyAttribute description, bool fallBackToDefault)
         {
             lock (_registeredDataModelDisplays)
             {
+                DataModelDisplayViewModel result;
+
                 DataModelVisualizationRegistration match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
-                    return (DataModelDisplayViewModel) match.PluginInfo.Kernel.Get(match.ViewModelType);
-                return !fallBackToDefault ? null : _kernel.Get<DefaultDataModelDisplayViewModel>();
+                    result = (DataModelDisplayViewModel) match.PluginInfo.Kernel.Get(match.ViewModelType);
+                else if (!fallBackToDefault)
+                    result = null;
+                else
+                    result = _kernel.Get<DefaultDataModelDisplayViewModel>();
+
+                if (result != null) 
+                    result.PropertyDescription = description;
+
+                return result;
             }
         }
 
@@ -199,9 +209,9 @@ namespace Artemis.UI.Shared.Services
             return _kernel.Get<DataModelDynamicViewModel>(new ConstructorArgument("module", module));
         }
 
-        public DataModelStaticViewModel GetStaticInputViewModel(Type targetType)
+        public DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription)
         {
-            return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType));
+            return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType), new ConstructorArgument("targetDescription", targetDescription));
         }
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
@@ -219,7 +229,7 @@ namespace Artemis.UI.Shared.Services
 
             IParameter[] parameters = new IParameter[]
             {
-                new ConstructorArgument("description", description),
+                new ConstructorArgument("targetDescription", description),
                 new ConstructorArgument("initialValue", initialValue)
             };
             DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.PluginInfo.Kernel.Get(registration.ViewModelType, parameters);

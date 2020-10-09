@@ -56,7 +56,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         public void Update()
         {
-            TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DirectDataBinding.SourceDataModel, DirectDataBinding.SourcePropertyPath);
+            throw new NotImplementedException();
+            // TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DirectDataBinding.SourceDataModel, DirectDataBinding.SourcePropertyPath);
             TargetSelectionViewModel.FilterTypes = new[] {DirectDataBinding.DataBinding.GetTargetType()};
 
             CanAddModifier = DirectDataBinding.SourceDataModel != null;
@@ -65,7 +66,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         public object GetTestValue()
         {
-            return TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
+            throw new NotImplementedException();
+            // return TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
         }
 
         #region IDisposable
@@ -112,7 +114,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void TargetSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
-            DirectDataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.Path);
+            throw new NotImplementedException();
+            // DirectDataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.Path);
             Update();
 
             _profileEditorService.UpdateSelectedProfileElement();

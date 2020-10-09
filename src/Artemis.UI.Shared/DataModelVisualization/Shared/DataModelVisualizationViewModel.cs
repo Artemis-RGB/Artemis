@@ -251,7 +251,7 @@ namespace Artemis.UI.Shared
                 return null;
 
             // If a display VM was found, prefer to use that in any case
-            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType);
+            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType, PropertyDescription);
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine

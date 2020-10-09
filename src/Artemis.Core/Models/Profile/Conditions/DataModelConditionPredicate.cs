@@ -48,12 +48,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the path of the left property
         /// </summary>
-        public DataModelPath? LeftPath { get; set; }
+        public DataModelPath? LeftPath { get; private set; }
 
         /// <summary>
         ///     Gets the path of the right property
         /// </summary>
-        public DataModelPath? RightPath { get; set; }
+        public DataModelPath? RightPath { get; private set; }
 
         /// <summary>
         ///     Gets the right static value, only used it <see cref="PredicateType" /> is
@@ -66,27 +66,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the left side of the predicate
         /// </summary>
-        /// <param name="dataModel">The data model of the left side value</param>
         /// <param name="path">The path pointing to the left side value inside the data model</param>
-        public void UpdateLeftSide(DataModel? dataModel, string? path)
+        public void UpdateLeftSide(DataModelPath? path)
         {
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update left side of predicate to an invalid path");
 
             LeftPath?.Dispose();
-            if (dataModel != null)
-            {
-                DataModelPath newPath = new DataModelPath(dataModel, path);
-                if (!newPath.IsValid)
-                    throw new ArtemisCoreException($"New left path '{newPath}' is invalid");
-                LeftPath = newPath;
-            }
-            else
-            {
-                LeftPath = null;
-            }
+            LeftPath = path != null ? new DataModelPath(path) : null;
 
             ValidateOperator();
             ValidateRightSide();
@@ -95,27 +82,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the right side of the predicate, makes the predicate dynamic and re-compiles the expression
         /// </summary>
-        /// <param name="dataModel">The data model of the right side value</param>
         /// <param name="path">The path pointing to the right side value inside the data model</param>
-        public void UpdateRightSide(DataModel? dataModel, string? path)
+        public void UpdateRightSideDynamic(DataModelPath? path)
         {
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update right side of predicate to an invalid path");
 
             RightPath?.Dispose();
-            if (dataModel != null)
-            {
-                DataModelPath newPath = new DataModelPath(dataModel, path);
-                if (!newPath.IsValid)
-                    throw new ArtemisCoreException($"New right path '{newPath}' is invalid");
-                RightPath = newPath;
-            }
-            else
-            {
-                RightPath = null;
-            }
+            RightPath = path != null ? new DataModelPath(path) : null;
 
             PredicateType = ProfileRightSideType.Dynamic;
         }
@@ -124,7 +98,7 @@ namespace Artemis.Core
         ///     Updates the right side of the predicate, makes the predicate static and re-compiles the expression
         /// </summary>
         /// <param name="staticValue">The right side value to use</param>
-        public void UpdateRightSide(object? staticValue)
+        public void UpdateRightSideStatic(object? staticValue)
         {
             PredicateType = ProfileRightSideType.Static;
             RightPath?.Dispose();
@@ -253,7 +227,7 @@ namespace Artemis.Core
             ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
 
             // Left side
-            if (Entity.LeftPath != null) 
+            if (Entity.LeftPath != null)
                 LeftPath = new DataModelPath(null, Entity.LeftPath);
 
             // Operator
@@ -288,12 +262,12 @@ namespace Artemis.Core
                             rightSideValue = Activator.CreateInstance(leftSideType);
                         }
 
-                        UpdateRightSide(rightSideValue);
+                        UpdateRightSideStatic(rightSideValue);
                     }
                     else
                     {
                         // Hope for the best...
-                        UpdateRightSide(JsonConvert.DeserializeObject(Entity.RightStaticValue));
+                        UpdateRightSideStatic(JsonConvert.DeserializeObject(Entity.RightStaticValue));
                     }
                 }
                 catch (JsonReaderException)
@@ -328,14 +302,14 @@ namespace Artemis.Core
 
                 Type rightSideType = RightPath.GetPropertyType()!;
                 if (leftType != null && !leftType.IsCastableFrom(rightSideType))
-                    UpdateRightSide(null, null);
+                    UpdateRightSideDynamic(null);
             }
             else
             {
                 if (RightStaticValue != null && (leftType == null || leftType.IsCastableFrom(RightStaticValue.GetType())))
-                    UpdateRightSide(RightStaticValue);
+                    UpdateRightSideStatic(RightStaticValue);
                 else
-                    UpdateRightSide(null);
+                    UpdateRightSideStatic(null);
             }
         }
 

@@ -120,7 +120,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 // Lists use a different color
                 LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
                 LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
-                LeftSideSelectionViewModel.DataModelPath = DataModelConditionListPredicate.LeftPath;
+                LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionListPredicate.LeftPath);
             }
 
             Type leftSideType = _isPrimitiveList
@@ -155,14 +155,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 }
 
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
-                LeftSideSelectionViewModel.DataModelPath = DataModelConditionListPredicate.RightPath;
+                RightSideSelectionViewModel.ChangeDataModelPath(DataModelConditionListPredicate.RightPath);
             }
             else if (SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideDynamic();
                 if (RightSideInputViewModel == null)
                 {
-                    RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType);
+                    RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
                     RightSideInputViewModel.Value = DataModelConditionListPredicate.RightStaticValue;
                     RightSideInputViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
                     RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
@@ -175,7 +175,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
-            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath.Path);
+            DataModelConditionListPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             SelectedOperator = DataModelConditionListPredicate.Operator;

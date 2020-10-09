@@ -117,11 +117,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Update()
         {
             LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
-            LeftSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                DataModelConditionPredicate.LeftPath?.Target,
-                DataModelConditionPredicate.LeftPath?.Path
-            );
-            Type leftSideType = LeftSideSelectionViewModel.SelectedPropertyViewModel?.DataModelPath?.GetPropertyType();
+            LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.LeftPath);
+            
+            Type leftSideType = LeftSideSelectionViewModel.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
             Operators.Clear();
@@ -146,10 +144,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                     RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;
                 }
 
-                RightSideSelectionViewModel.PopulateSelectedPropertyViewModel(
-                    DataModelConditionPredicate.RightPath?.Target,
-                    DataModelConditionPredicate.RightPath?.Path
-                );
+                RightSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.RightPath);
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
             }
             else if (SelectedOperator.SupportsRightSide)
@@ -157,7 +152,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DisposeRightSideDynamic();
                 if (RightSideInputViewModel == null)
                 {
-                    RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType);
+                    RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
                     RightSideInputViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
                     RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
                 }
@@ -170,10 +165,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
-            DataModelConditionPredicate.UpdateLeftSide(
-                LeftSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                LeftSideSelectionViewModel.SelectedPropertyViewModel.Path
-            );
+            DataModelConditionPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             SelectedOperator = DataModelConditionPredicate.Operator;
@@ -182,10 +174,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyRightSideDynamic()
         {
-            DataModelConditionPredicate.UpdateRightSide(
-                RightSideSelectionViewModel.SelectedPropertyViewModel.DataModel,
-                RightSideSelectionViewModel.SelectedPropertyViewModel.Path
-            );
+            DataModelConditionPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
@@ -193,7 +182,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyRightSideStatic(object value)
         {
-            DataModelConditionPredicate.UpdateRightSide(value);
+            DataModelConditionPredicate.UpdateRightSideStatic(value);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();

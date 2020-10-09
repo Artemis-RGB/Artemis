@@ -23,14 +23,15 @@ namespace Artemis.UI.Shared.Input
         private object _value;
         private bool _isEnabled;
 
-        internal DataModelStaticViewModel(Type targetType, IDataModelUIService dataModelUIService)
+        internal DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
             _dataModelUIService = dataModelUIService;
             _rootView = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
 
             TargetType = targetType;
+            TargetDescription = targetDescription;
             IsEnabled = TargetType != null;
-            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), true);
+            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), TargetDescription, true);
             
             if (_rootView != null)
             {
@@ -117,7 +118,7 @@ namespace Artemis.UI.Shared.Input
         public void UpdateTargetType(Type target)
         {
             TargetType = target;
-            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), true);
+            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), TargetDescription, true);
             IsEnabled = TargetType != null;
 
             // If null, clear the input

@@ -105,7 +105,7 @@ namespace Artemis.UI.Shared
         protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
         {
             // If a display VM was found, prefer to use that in any case
-            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType);
+            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
             if (typeViewModel != null)
                 return new DataModelListPropertyViewModel(listType, typeViewModel);
             // For primitives, create a property view model, it may be null that is fine

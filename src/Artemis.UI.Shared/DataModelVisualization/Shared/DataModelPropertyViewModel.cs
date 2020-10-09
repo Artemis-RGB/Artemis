@@ -40,7 +40,7 @@ namespace Artemis.UI.Shared
 
             if (DisplayViewModel == null)
             {
-                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DataModelPath.GetPropertyType(), true);
+                DisplayViewModel = dataModelUIService.GetDataModelDisplayViewModel(DataModelPath.GetPropertyType(), PropertyDescription, true);
                 DisplayViewModel.PropertyDescription = DataModelPath.GetPropertyDescription();
             }
 

@@ -83,15 +83,30 @@ namespace Artemis.UI.Shared.Input
 
         public DataModelPath DataModelPath
         {
-            private get => _dataModelPath;
-            set
+            get => _dataModelPath;
+            private set
             {
                 if (!SetAndNotify(ref _dataModelPath, value)) return;
+                NotifyOfPropertyChange(nameof(IsValid));
                 NotifyOfPropertyChange(nameof(DisplayValue));
+                NotifyOfPropertyChange(nameof(DisplayPath));
             }
         }
 
-        public string DisplayValue => DataModelPath.GetPropertyDescription()?.Name ?? DataModelPath.Segments.LastOrDefault()?.Identifier;
+        public bool IsValid => DataModelPath?.IsValid ?? true;
+        public string DisplayValue => DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+
+        public string DisplayPath
+        {
+            get
+            {
+                if (DataModelPath == null)
+                    return "Click to select a property";
+                if (!DataModelPath.IsValid)
+                    return "Invalid path";
+                return string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
+            }
+        }
 
         public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
         {
@@ -102,6 +117,12 @@ namespace Artemis.UI.Shared.Input
 
             if (DataModelViewModel != null)
                 DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
+        }
+
+        public void ChangeDataModelPath(DataModelPath dataModelPath)
+        {
+            DataModelPath?.Dispose();
+            DataModelPath = dataModelPath != null ? new DataModelPath(dataModelPath) : null;
         }
 
         private void Initialize()
@@ -130,7 +151,7 @@ namespace Artemis.UI.Shared.Input
             if (!(context is DataModelVisualizationViewModel selected))
                 return;
 
-            DataModelPath = selected.DataModelPath;
+            ChangeDataModelPath(selected.DataModelPath);
             OnPropertySelected(new DataModelInputDynamicEventArgs(DataModelPath));
         }
 
@@ -139,6 +160,8 @@ namespace Artemis.UI.Shared.Input
             _updateTimer.Stop();
             _updateTimer.Dispose();
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+
+            DataModelPath?.Dispose();
         }
 
         #region Events
