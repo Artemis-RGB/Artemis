@@ -13,6 +13,7 @@ namespace Artemis.Core
     public class DataModelConditionList : DataModelConditionPart
     {
         private bool _disposed;
+        private bool _reinitializing;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionList" /> class
@@ -83,6 +84,7 @@ namespace Artemis.Core
 
             ListPath?.Dispose();
             ListPath = path != null ? new DataModelPath(path) : null;
+            SubscribeToListPath();
 
             // Remove the old root group that was tied to the old data model
             while (Children.Any())
@@ -143,6 +145,10 @@ namespace Artemis.Core
 
         internal override void Save()
         {
+            // Don't save an invalid state
+            if (ListPath != null && !ListPath.IsValid)
+                return;
+
             // Target list
             ListPath?.Save();
             Entity.ListPath = ListPath?.Entity;
@@ -164,6 +170,9 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
+            while (Children.Any())
+                RemoveChild(Children[0]);
+
             if (Entity.ListPath == null)
                 return;
 
@@ -175,6 +184,7 @@ namespace Artemis.Core
                 return;
 
             ListPath = listPath;
+            SubscribeToListPath();
             if (ListPath.IsValid)
             {
                 ListType = listType.GetGenericArguments()[0];
@@ -187,7 +197,7 @@ namespace Artemis.Core
             }
 
             // There should only be one child and it should be a group
-            if (Entity.Children.SingleOrDefault() is DataModelConditionGroupEntity rootGroup)
+            if (Entity.Children.FirstOrDefault() is DataModelConditionGroupEntity rootGroup)
             {
                 AddChild(new DataModelConditionGroup(this, rootGroup));
             }
@@ -197,6 +207,39 @@ namespace Artemis.Core
                 AddChild(new DataModelConditionGroup(this));
             }
         }
+
+        private void SubscribeToListPath()
+        {
+            if (ListPath == null) return;
+            ListPath.PathValidated += ListPathOnPathValidated;
+            ListPath.PathInvalidated += ListPathOnPathInvalidated;
+        }
+
+        #region Event handlers
+
+        private void ListPathOnPathValidated(object? sender, EventArgs e)
+        {
+            if (_reinitializing)
+                return;
+
+            _reinitializing = true;
+            ListPath?.Dispose();
+            Initialize();
+            _reinitializing = false;
+        }
+
+        private void ListPathOnPathInvalidated(object? sender, EventArgs e)
+        {
+            if (_reinitializing)
+                return;
+
+            _reinitializing = true;
+            ListPath?.Dispose();
+            Initialize();
+            _reinitializing = false;
+        }
+
+        #endregion
     }
 
     /// <summary>
