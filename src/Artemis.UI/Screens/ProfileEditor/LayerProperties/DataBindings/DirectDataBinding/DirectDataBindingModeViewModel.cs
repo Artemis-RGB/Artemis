@@ -56,18 +56,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         public void Update()
         {
-            throw new NotImplementedException();
-            // TargetSelectionViewModel.PopulateSelectedPropertyViewModel(DirectDataBinding.SourceDataModel, DirectDataBinding.SourcePropertyPath);
+            TargetSelectionViewModel.ChangeDataModelPath(DirectDataBinding.SourcePath);
             TargetSelectionViewModel.FilterTypes = new[] {DirectDataBinding.DataBinding.GetTargetType()};
 
-            CanAddModifier = DirectDataBinding.SourceDataModel != null;
+            CanAddModifier = DirectDataBinding.SourcePath != null && DirectDataBinding.SourcePath.IsValid;
             UpdateModifierViewModels();
         }
 
         public object GetTestValue()
         {
-            throw new NotImplementedException();
-            // return TargetSelectionViewModel.SelectedPropertyViewModel?.GetCurrentValue();
+            return DirectDataBinding.SourcePath?.GetValue();
         }
 
         #region IDisposable
@@ -114,8 +112,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void TargetSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
-            throw new NotImplementedException();
-            // DirectDataBinding.UpdateSource(e.DataModelVisualizationViewModel.DataModel, e.DataModelVisualizationViewModel.Path);
+            DirectDataBinding.UpdateSource(e.DataModelPath);
             Update();
 
             _profileEditorService.UpdateSelectedProfileElement();
@@ -142,6 +139,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
                 ModifierViewModels.Remove(modifierViewModel);
                 modifierViewModel.Dispose();
             }
+
+            // Don't create children without a source or with an invalid source
+            if (DirectDataBinding.SourcePath == null || !DirectDataBinding.SourcePath.IsValid)
+                return;
 
             // Add missing VMs
             foreach (DataBindingModifier<TLayerProperty, TProperty> modifier in DirectDataBinding.Modifiers)

@@ -14,9 +14,9 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelPath : IStorageModel, IDisposable
     {
-        private bool _disposed;
         private readonly LinkedList<DataModelPathSegment> _segments;
         private Expression<Func<object, object>>? _accessorLambda;
+        private bool _disposed;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelPath" /> class pointing directly to the target
@@ -59,7 +59,7 @@ namespace Artemis.Core
         /// <param name="dataModelPath">The path to base the new instance on</param>
         public DataModelPath(DataModelPath dataModelPath)
         {
-            if (dataModelPath == null) 
+            if (dataModelPath == null)
                 throw new ArgumentNullException(nameof(dataModelPath));
 
             Target = dataModelPath.Target;
@@ -188,6 +188,8 @@ namespace Artemis.Core
 
             _accessorLambda = null;
             Accessor = null;
+
+            OnPathInvalidated();
         }
 
         internal void Initialize()
@@ -239,6 +241,9 @@ namespace Artemis.Core
                 ),
                 parameter
             );
+
+            if (IsValid)
+                OnPathValidated();
         }
 
         private void SubscribeToDataModelStore()
@@ -304,6 +309,30 @@ namespace Artemis.Core
 
             Target = null;
             Invalidate();
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs whenever the path becomes invalid
+        /// </summary>
+        public event EventHandler PathInvalidated;
+
+        /// <summary>
+        ///     Occurs whenever the path becomes valid
+        /// </summary>
+        public event EventHandler PathValidated;
+
+        protected virtual void OnPathValidated()
+        {
+            PathValidated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPathInvalidated()
+        {
+            PathInvalidated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
