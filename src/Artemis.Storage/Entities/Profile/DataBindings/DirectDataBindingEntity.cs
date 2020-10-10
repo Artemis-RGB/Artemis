@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Artemis.Storage.Entities.Profile.DataBindings
 {
@@ -10,9 +9,7 @@ namespace Artemis.Storage.Entities.Profile.DataBindings
             Modifiers = new List<DataBindingModifierEntity>();
         }
 
-        public Guid? SourceDataModelGuid { get; set; }
-        public string SourcePropertyPath { get; set; }
-
+        public DataModelPathEntity SourcePath { get; set; }
         public List<DataBindingModifierEntity> Modifiers { get; set; }
     }
 }

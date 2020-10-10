@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
@@ -20,31 +17,20 @@ namespace Artemis.Core
             DataBinding = dataBinding;
             Entity = entity;
 
-            Initialize();
             Load();
         }
 
-        internal DirectDataBindingEntity Entity { get; }
-
         /// <summary>
-        ///     Gets the currently used instance of the data model that contains the source of the data binding
+        ///     Gets the path of the source property
         /// </summary>
-        public DataModel SourceDataModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the path of the source property in the <see cref="SourceDataModel" />
-        /// </summary>
-        public string SourcePropertyPath { get; private set; }
+        public DataModelPath? SourcePath { get; private set; }
 
         /// <summary>
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
         public IReadOnlyList<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
 
-        /// <summary>
-        ///     Gets the compiled function that gets the current value of the data binding target
-        /// </summary>
-        public Func<DataModel, object> CompiledTargetAccessor { get; private set; }
+        internal DirectDataBindingEntity Entity { get; }
 
         /// <inheritdoc />
         public DataBinding<TLayerProperty, TProperty> DataBinding { get; }
@@ -55,10 +41,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DirectDataBinding");
 
-            if (CompiledTargetAccessor == null)
+            if (SourcePath == null || !SourcePath.IsValid)
                 return baseValue;
 
-            object dataBindingValue = CompiledTargetAccessor(SourceDataModel);
+            object? dataBindingValue = SourcePath.GetValue();
             foreach (DataBindingModifier<TLayerProperty, TProperty> dataBindingModifier in Modifiers)
                 dataBindingValue = dataBindingModifier.Apply(dataBindingValue);
 
@@ -72,11 +58,10 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
             foreach (DataBindingModifier<TLayerProperty, TProperty> dataBindingModifier in Modifiers)
                 dataBindingModifier.Dispose();
+
+            SourcePath?.Dispose();
         }
 
         #endregion
@@ -86,7 +71,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
-            // Data model is done during Initialize
+            // Source
+            if (Entity.SourcePath != null)
+                SourcePath = new DataModelPath(null, Entity.SourcePath);
 
             // Modifiers
             foreach (DataBindingModifierEntity dataBindingModifierEntity in Entity.Modifiers)
@@ -98,12 +85,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Save()
         {
-            // Data model
-            if (SourceDataModel != null)
-            {
-                Entity.SourceDataModelGuid = SourceDataModel.PluginInfo.Guid;
-                Entity.SourcePropertyPath = SourcePropertyPath;
-            }
+            // Don't save an invalid state
+            if (SourcePath != null && !SourcePath.IsValid)
+                return;
+
+            SourcePath?.Save();
+            Entity.SourcePath = SourcePath?.Entity;
 
             // Modifiers
             Entity.Modifiers.Clear();
@@ -113,76 +100,30 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Initialization
-
-        private void Initialize()
-        {
-            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
-
-            // Source
-            if (Entity.SourceDataModelGuid != null && SourceDataModel == null)
-            {
-                DataModel dataModel = DataModelStore.Get(Entity.SourceDataModelGuid.Value)?.DataModel;
-                if (dataModel != null && dataModel.ContainsPath(Entity.SourcePropertyPath))
-                    UpdateSource(dataModel, Entity.SourcePropertyPath);
-            }
-        }
-
-        private void CreateExpression()
-        {
-            Type listType = SourceDataModel.GetListTypeInPath(SourcePropertyPath);
-            if (listType != null)
-                throw new ArtemisCoreException($"Cannot create a regular accessor at path {SourcePropertyPath} because the path contains a list");
-
-            ParameterExpression parameter = Expression.Parameter(typeof(DataModel), "targetDataModel");
-            Expression accessor = SourcePropertyPath.Split('.').Aggregate<string, Expression>(
-                Expression.Convert(parameter, SourceDataModel.GetType()), // Cast to the appropriate type
-                Expression.Property
-            );
-
-            UnaryExpression returnValue = Expression.Convert(accessor, typeof(object));
-
-            Expression<Func<DataModel, object>> lambda = Expression.Lambda<Func<DataModel, object>>(returnValue, parameter);
-            CompiledTargetAccessor = lambda.Compile();
-        }
-
-        #endregion
-
         #region Source
 
         /// <summary>
         ///     Returns the type of the source property of this data binding
         /// </summary>
-        public Type GetSourceType()
+        public Type? GetSourceType()
         {
-            return SourceDataModel?.GetTypeAtPath(SourcePropertyPath);
+            return SourcePath?.GetPropertyType();
         }
 
         /// <summary>
-        ///     Updates the source of the data binding and re-compiles the expression
+        ///     Updates the source of the data binding
         /// </summary>
-        /// <param name="dataModel">The data model of the source</param>
-        /// <param name="path">The path pointing to the source inside the data model</param>
-        public void UpdateSource(DataModel dataModel, string path)
+        /// <param name="path">The path pointing to the source</param>
+        public void UpdateSource(DataModelPath? path)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DirectDataBinding");
 
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update source of data binding to an invalid path");
 
-            if (dataModel != null)
-            {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-            }
-
-            SourceDataModel = dataModel;
-            SourcePropertyPath = path;
-            CreateExpression();
+            SourcePath?.Dispose();
+            SourcePath = path != null ? new DataModelPath(path) : null;
         }
 
         #endregion
@@ -239,31 +180,12 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Event handlers
-
-        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
-        {
-            DataModel dataModel = e.Registration.DataModel;
-            if (dataModel.PluginInfo.Guid == Entity.SourceDataModelGuid && dataModel.ContainsPath(Entity.SourcePropertyPath))
-                UpdateSource(dataModel, Entity.SourcePropertyPath);
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
-        {
-            if (SourceDataModel != e.Registration.DataModel)
-                return;
-            SourceDataModel = null;
-            CompiledTargetAccessor = null;
-        }
-
-        #endregion
-
         #region Events
 
         /// <summary>
         ///     Occurs when a modifier is added or removed
         /// </summary>
-        public event EventHandler ModifiersUpdated;
+        public event EventHandler? ModifiersUpdated;
 
         protected virtual void OnModifiersUpdated()
         {

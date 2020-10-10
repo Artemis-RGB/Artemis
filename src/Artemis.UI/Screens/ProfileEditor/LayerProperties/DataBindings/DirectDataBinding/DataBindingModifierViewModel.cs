@@ -94,10 +94,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
             {
                 Type sourceType = Modifier.DirectDataBinding.GetSourceType();
-                Modifier.UpdateParameter((Modifier.ModifierType.ParameterType ?? sourceType).GetDefault());
+                Modifier.UpdateParameterStatic((Modifier.ModifierType.ParameterType ?? sourceType).GetDefault());
             }
             else
-                Modifier.UpdateParameter(null, null);
+                Modifier.UpdateParameterDynamic(null);
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -105,13 +105,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
-            Modifier.UpdateParameter(e.DataModelPath.Target, e.DataModelPath.Path);
+            Modifier.UpdateParameterDynamic(e.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private void StaticInputViewModelOnValueUpdated(object sender, DataModelInputStaticEventArgs e)
         {
-            Modifier.UpdateParameter(e.Value);
+            Modifier.UpdateParameterStatic(e.Value);
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
@@ -166,11 +166,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             SelectedModifierType = Modifier.ModifierType;
 
             // Parameter
-            throw new NotImplementedException();
-            // if (DynamicSelectionViewModel != null)
-            //     DynamicSelectionViewModel.PopulateSelectedPropertyViewModel(Modifier.ParameterDataModel, Modifier.ParameterPropertyPath);
-            // else if (StaticInputViewModel != null)
-            //     StaticInputViewModel.Value = Modifier.ParameterStaticValue;
+            if (DynamicSelectionViewModel != null)
+                DynamicSelectionViewModel.ChangeDataModelPath(Modifier.ParameterPath);
+            else if (StaticInputViewModel != null)
+                StaticInputViewModel.Value = Modifier.ParameterStaticValue;
         }
 
         private void ExecuteSelectModifierTypeCommand(object context)

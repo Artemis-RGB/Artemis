@@ -82,7 +82,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Converts the provided object to a type of <typeparamref name="TProperty" />
         /// </summary>
-        public virtual TProperty ConvertFromObject(object source)
+        public virtual TProperty ConvertFromObject(object? source)
         {
             return (TProperty) Convert.ChangeType(source, typeof(TProperty));
         }

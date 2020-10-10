@@ -10,8 +10,7 @@ namespace Artemis.Storage.Entities.Profile.DataBindings
         public int Order { get; set; }
         public int ParameterType { get; set; }
 
-        public Guid? ParameterDataModelGuid { get; set; }
-        public string ParameterPropertyPath { get; set; }
+        public DataModelPathEntity ParameterPath { get; set; }
 
         // Stored as a string to be able to control serialization and deserialization ourselves
         public string ParameterStaticValue { get; set; }

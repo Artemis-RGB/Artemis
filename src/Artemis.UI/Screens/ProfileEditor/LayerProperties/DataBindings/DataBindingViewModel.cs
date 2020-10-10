@@ -20,10 +20,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private bool _isEasingTimeEnabled;
         private DataBindingModeType _selectedDataBindingMode;
         private TimelineEasingViewModel _selectedEasingViewModel;
-
-        private bool _updating;
         private bool _applyTestResultToLayer;
 
+        private bool _updating;
+        private bool _updatingTestResult;
 
         public DataBindingViewModel(DataBindingRegistration<TLayerProperty, TProperty> registration,
             IProfileEditorService profileEditorService,
@@ -74,7 +74,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         public bool ApplyTestResultToLayer
         {
             get => _applyTestResultToLayer;
-            set => SetAndNotify(ref _applyTestResultToLayer, value);
+            set
+            {
+                if (!SetAndNotify(ref _applyTestResultToLayer, value)) return;
+                _profileEditorService.UpdateProfilePreview();
+            }
         }
 
         public TimelineEasingViewModel SelectedEasingViewModel
@@ -111,6 +115,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             _updateTimer.Dispose();
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+
+            Registration.LayerProperty.Updated -= LayerPropertyOnUpdated;
         }
 
         private void Initialize()
@@ -119,6 +125,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
+            Registration.LayerProperty.Updated += LayerPropertyOnUpdated;
 
             CreateDataBindingModeModeViewModel();
             Update();
@@ -216,14 +223,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         private void UpdateTestResult()
         {
+            if (_updating || _updatingTestResult)
+                return;
+
+            _updatingTestResult = true;
+
             if (Registration.DataBinding == null || ActiveItem == null)
             {
                 TestInputValue.UpdateValue(default);
                 TestResultValue.UpdateValue(default);
+                _updatingTestResult = false;
                 return;
             }
 
+            // While playing in preview data bindings aren't updated
             Registration.DataBinding.Update(0.04);
+
             if (ActiveItem.SupportsTestValue)
             {
                 TProperty currentValue = Registration.Converter.ConvertFromObject(ActiveItem?.GetTestValue() ?? default(TProperty));
@@ -235,11 +250,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             if (ApplyTestResultToLayer)
             {
-                Registration.DataBinding.Apply();
-                _profileEditorService.UpdateProfilePreview();
+                // TODO: A bit crappy, the ProfileEditorService should really be doing this
+                bool playing = ((Parent as Screen)?.Parent as LayerPropertiesViewModel)?.Playing ?? true;
+                if (!playing)
+                    _profileEditorService.UpdateProfilePreview();
             }
+
+            _updatingTestResult = false;
         }
-        
+
         private void EnableDataBinding()
         {
             if (Registration.DataBinding != null)
@@ -263,6 +282,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             UpdateTestResult();
+        }
+
+        private void LayerPropertyOnUpdated(object? sender, LayerPropertyEventArgs<TLayerProperty> e)
+        {
+            if (ApplyTestResultToLayer) 
+                Registration.DataBinding?.Apply();
         }
     }
 
