@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Linq.Expressions;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.DataBindings;
 using Newtonsoft.Json;
 
@@ -50,14 +48,9 @@ namespace Artemis.Core
         public int Order { get; set; }
 
         /// <summary>
-        ///     Gets the currently used instance of the parameter data model
+        ///     Gets the path of the parameter property
         /// </summary>
-        public DataModel ParameterDataModel { get; private set; }
-
-        /// <summary>
-        ///     Gets the path of the parameter property in the <see cref="ParameterDataModel" />
-        /// </summary>
-        public string ParameterPropertyPath { get; private set; }
+        public DataModelPath? ParameterPath { get; set; }
 
         /// <summary>
         ///     Gets the parameter static value, only used it <see cref="ParameterType" /> is
@@ -65,19 +58,154 @@ namespace Artemis.Core
         /// </summary>
         public object ParameterStaticValue { get; private set; }
 
-        /// <summary>
-        ///     A compiled expression tree that when given a matching data model returns the value of the modifiers parameter
-        /// </summary>
-        public Func<DataModel, object> CompiledParameterAccessor { get; set; }
-
         internal DataBindingModifierEntity Entity { get; set; }
 
+        /// <summary>
+        ///     Applies the modifier to the provided value
+        /// </summary>
+        /// <param name="currentValue">The value to apply the modifier to, should be of the same type as the data binding target</param>
+        /// <returns>The modified value</returns>
+        public object Apply(object? currentValue)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBindingModifier");
+
+            if (ModifierType == null)
+                return currentValue;
+
+            if (!ModifierType.SupportsParameter)
+                return ModifierType.Apply(currentValue, null);
+
+            if (ParameterType == ProfileRightSideType.Dynamic && ParameterPath != null && ParameterPath.IsValid)
+            {
+                object? value = ParameterPath.GetValue();
+                return ModifierType.Apply(currentValue, value);
+            }
+
+            if (ParameterType == ProfileRightSideType.Static)
+                return ModifierType.Apply(currentValue, ParameterStaticValue);
+
+            return currentValue;
+        }
+
+        /// <summary>
+        ///     Updates the modifier type of the modifier and re-compiles the expression
+        /// </summary>
+        /// <param name="modifierType"></param>
+        public void UpdateModifierType(DataBindingModifierType modifierType)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBindingModifier");
+
+            // Calling CreateExpression will clear compiled expressions
+            if (modifierType == null)
+            {
+                ModifierType = null;
+                return;
+            }
+
+            Type targetType = DirectDataBinding.DataBinding.GetTargetType();
+            if (!modifierType.SupportsType(targetType))
+                throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
+                                               $"it does not support this data binding's type {targetType.Name}");
+
+            ModifierType = modifierType;
+        }
+
+        /// <summary>
+        ///     Updates the parameter of the modifier and makes the modifier dynamic
+        /// </summary>
+        /// <param name="path">The path pointing to the parameter</param>
+        public void UpdateParameterDynamic(DataModelPath? path)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBindingModifier");
+
+            if (path != null && !path.IsValid)
+                throw new ArtemisCoreException("Cannot update parameter of data binding modifier to an invalid path");
+
+            ParameterPath?.Dispose();
+            ParameterPath = path != null ? new DataModelPath(path) : null;
+
+            ParameterType = ProfileRightSideType.Dynamic;
+        }
+
+        /// <summary>
+        ///     Updates the parameter of the modifier, makes the modifier static and re-compiles the expression
+        /// </summary>
+        /// <param name="staticValue">The static value to use as a parameter</param>
+        public void UpdateParameterStatic(object staticValue)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBindingModifier");
+
+            ParameterType = ProfileRightSideType.Static;
+            ParameterPath?.Dispose();
+            ParameterPath = null;
+
+            Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+
+            // If not null ensure the types match and if not, convert it
+            if (staticValue != null && staticValue.GetType() == parameterType)
+                ParameterStaticValue = staticValue;
+            else if (staticValue != null)
+                ParameterStaticValue = Convert.ChangeType(staticValue, parameterType);
+            // If null create a default instance for value types or simply make it null for reference types
+            else if (parameterType.IsValueType)
+                ParameterStaticValue = Activator.CreateInstance(parameterType);
+            else
+                ParameterStaticValue = null;
+        }
+
+        private void Initialize()
+        {
+            DataBindingModifierTypeStore.DataBindingModifierAdded += DataBindingModifierTypeStoreOnDataBindingModifierAdded;
+            DataBindingModifierTypeStore.DataBindingModifierRemoved += DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
+
+            // Modifier type
+            if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
+            {
+                DataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
+                if (modifierType != null)
+                    UpdateModifierType(modifierType);
+            }
+
+            // Dynamic parameter
+            if (ParameterType == ProfileRightSideType.Dynamic && Entity.ParameterPath != null)
+            {
+                ParameterPath = new DataModelPath(null, Entity.ParameterPath);
+            }
+            // Static parameter
+            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
+            {
+                // Use the target type so JSON.NET has a better idea what to do
+                Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+                object staticValue;
+
+                try
+                {
+                    staticValue = JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType);
+                }
+                // If deserialization fails, use the type's default
+                catch (JsonSerializationException e)
+                {
+                    DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, e);
+                    staticValue = Activator.CreateInstance(parameterType);
+                }
+
+                UpdateParameterStatic(staticValue);
+            }
+        }
 
         /// <inheritdoc />
         public void Save()
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");
+
+            // Don't save an invalid state
+            if (ParameterPath != null && !ParameterPath.IsValid)
+                return;
 
             if (!DirectDataBinding.Entity.Modifiers.Contains(Entity))
                 DirectDataBinding.Entity.Modifiers.Add(Entity);
@@ -94,11 +222,8 @@ namespace Artemis.Core
             Entity.ParameterType = (int) ParameterType;
 
             // Parameter
-            if (ParameterDataModel != null)
-            {
-                Entity.ParameterDataModelGuid = ParameterDataModel.PluginInfo.Guid;
-                Entity.ParameterPropertyPath = ParameterPropertyPath;
-            }
+            ParameterPath?.Save();
+            Entity.ParameterPath = ParameterPath?.Entity;
 
             Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue);
         }
@@ -125,186 +250,8 @@ namespace Artemis.Core
 
             DataBindingModifierTypeStore.DataBindingModifierAdded -= DataBindingModifierTypeStoreOnDataBindingModifierAdded;
             DataBindingModifierTypeStore.DataBindingModifierRemoved -= DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-        }
 
-        /// <summary>
-        ///     Applies the modifier to the provided value
-        /// </summary>
-        /// <param name="currentValue">The value to apply the modifier to, should be of the same type as the data binding target</param>
-        /// <returns>The modified value</returns>
-        public object Apply(object currentValue)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBindingModifier");
-
-            if (ModifierType == null)
-                return currentValue;
-
-            if (!ModifierType.SupportsParameter)
-                return ModifierType.Apply(currentValue, null);
-
-            if (ParameterType == ProfileRightSideType.Dynamic && CompiledParameterAccessor != null)
-            {
-                object value = CompiledParameterAccessor(ParameterDataModel);
-                return ModifierType.Apply(currentValue, value);
-            }
-
-            if (ParameterType == ProfileRightSideType.Static)
-                return ModifierType.Apply(currentValue, ParameterStaticValue);
-
-            return currentValue;
-        }
-
-        /// <summary>
-        ///     Updates the modifier type of the modifier and re-compiles the expression
-        /// </summary>
-        /// <param name="modifierType"></param>
-        public void UpdateModifierType(DataBindingModifierType modifierType)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBindingModifier");
-
-            // Calling CreateExpression will clear compiled expressions
-            if (modifierType == null)
-            {
-                ModifierType = null;
-                CreateExpression();
-                return;
-            }
-
-            Type targetType = DirectDataBinding.DataBinding.GetTargetType();
-            if (!modifierType.SupportsType(targetType))
-            {
-                throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
-                                               $"it does not support this data binding's type {targetType.Name}");
-            }
-
-            ModifierType = modifierType;
-            CreateExpression();
-        }
-
-        /// <summary>
-        ///     Updates the parameter of the modifier, makes the modifier dynamic and re-compiles the expression
-        /// </summary>
-        /// <param name="dataModel">The data model of the parameter</param>
-        /// <param name="path">The path pointing to the parameter inside the data model</param>
-        public void UpdateParameter(DataModel? dataModel, string? path)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBindingModifier");
-
-            if (dataModel != null && path == null)
-                throw new ArtemisCoreException("If a data model is provided, a path is also required");
-            if (dataModel == null && path != null)
-                throw new ArtemisCoreException("If path is provided, a data model is also required");
-
-            if (dataModel != null)
-            {
-                if (!dataModel.ContainsPath(path))
-                    throw new ArtemisCoreException($"Data model of type {dataModel.GetType().Name} does not contain a property at path '{path}'");
-            }
-
-            ParameterType = ProfileRightSideType.Dynamic;
-            ParameterDataModel = dataModel;
-            ParameterPropertyPath = path;
-
-            CreateExpression();
-        }
-
-        /// <summary>
-        ///     Updates the parameter of the modifier, makes the modifier static and re-compiles the expression
-        /// </summary>
-        /// <param name="staticValue">The static value to use as a parameter</param>
-        public void UpdateParameter(object staticValue)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBindingModifier");
-
-            ParameterType = ProfileRightSideType.Static;
-            ParameterDataModel = null;
-            ParameterPropertyPath = null;
-
-            Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
-
-            // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == parameterType)
-                ParameterStaticValue = staticValue;
-            else if (staticValue != null)
-                ParameterStaticValue = Convert.ChangeType(staticValue, parameterType);
-            // If null create a default instance for value types or simply make it null for reference types
-            else if (parameterType.IsValueType)
-                ParameterStaticValue = Activator.CreateInstance(parameterType);
-            else
-                ParameterStaticValue = null;
-
-            CreateExpression();
-        }
-
-        private void Initialize()
-        {
-            DataBindingModifierTypeStore.DataBindingModifierAdded += DataBindingModifierTypeStoreOnDataBindingModifierAdded;
-            DataBindingModifierTypeStore.DataBindingModifierRemoved += DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
-            DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
-
-            // Modifier type
-            if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
-            {
-                DataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
-                if (modifierType != null)
-                    UpdateModifierType(modifierType);
-            }
-
-            // Dynamic parameter
-            if (ParameterType == ProfileRightSideType.Dynamic && Entity.ParameterDataModelGuid != null && ParameterDataModel == null)
-            {
-                DataModel dataModel = DataModelStore.Get(Entity.ParameterDataModelGuid.Value)?.DataModel;
-                if (dataModel != null && dataModel.ContainsPath(Entity.ParameterPropertyPath))
-                    UpdateParameter(dataModel, Entity.ParameterPropertyPath);
-            }
-            // Static parameter
-            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
-            {
-                // Use the target type so JSON.NET has a better idea what to do
-                Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
-                object staticValue;
-
-                try
-                {
-                    staticValue = JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType);
-                }
-                // If deserialization fails, use the type's default
-                catch (JsonSerializationException e)
-                {
-                    DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, e);
-                    staticValue = Activator.CreateInstance(parameterType);
-                }
-
-                UpdateParameter(staticValue);
-            }
-        }
-
-        private void CreateExpression()
-        {
-            CompiledParameterAccessor = null;
-
-            if (ModifierType == null)
-                return;
-
-            if (ParameterType == ProfileRightSideType.Dynamic && ModifierType.SupportsParameter)
-            {
-                if (ParameterDataModel == null)
-                    return;
-
-                // If the right side value is null, the constant type cannot be inferred and must be provided based on the data binding target
-                Expression parameterAccessor = ExpressionUtilities.CreateDataModelAccessor(
-                    ParameterDataModel, ParameterPropertyPath, "parameter", out ParameterExpression rightSideParameter
-                );
-                Expression<Func<DataModel, object>> lambda = Expression.Lambda<Func<DataModel, object>>(Expression.Convert(parameterAccessor, typeof(object)), rightSideParameter);
-                CompiledParameterAccessor = lambda.Compile();
-            }
+            ParameterPath?.Dispose();
         }
 
         #region Event handlers
@@ -323,21 +270,6 @@ namespace Artemis.Core
         {
             if (e.TypeRegistration.DataBindingModifierType == ModifierType)
                 UpdateModifierType(null);
-        }
-
-        private void DataModelStoreOnDataModelAdded(object sender, DataModelStoreEvent e)
-        {
-            DataModel dataModel = e.Registration.DataModel;
-            if (dataModel.PluginInfo.Guid == Entity.ParameterDataModelGuid && dataModel.ContainsPath(Entity.ParameterPropertyPath))
-                UpdateParameter(dataModel, Entity.ParameterPropertyPath);
-        }
-
-        private void DataModelStoreOnDataModelRemoved(object sender, DataModelStoreEvent e)
-        {
-            if (e.Registration.DataModel != ParameterDataModel)
-                return;
-            ParameterDataModel = null;
-            CompiledParameterAccessor = null;
         }
 
         #endregion

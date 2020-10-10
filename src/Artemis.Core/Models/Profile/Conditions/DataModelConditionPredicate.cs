@@ -205,6 +205,10 @@ namespace Artemis.Core
 
         internal override void Save()
         {
+            // Don't save an invalid state
+            if (LeftPath != null && !LeftPath.IsValid || RightPath != null && !RightPath.IsValid)
+                return;
+
             Entity.PredicateType = (int) PredicateType;
 
             LeftPath?.Save();

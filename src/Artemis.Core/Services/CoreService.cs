@@ -166,8 +166,8 @@ namespace Artemis.Core.Services
                 _frameStopWatch.Restart();
                 lock (_dataModelExpansions)
                 {
-                    // Update all active modules
-                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions)
+                    // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
+                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.Enabled)) 
                         dataModelExpansion.Update(args.DeltaTime);
                 }
 
