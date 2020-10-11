@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
 
@@ -24,6 +25,19 @@ namespace Artemis.Core
                 Start();
         }
 
+        internal PluginUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Func<double, Task> asyncAction)
+        {
+            PluginInfo = pluginInfo;
+            Interval = interval;
+            AsyncAction = asyncAction;
+            
+            PluginInfo.Instance.PluginEnabled += InstanceOnPluginEnabled;
+            PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
+            if (PluginInfo.Instance.Enabled)
+                Start();
+        }
+
+
         /// <summary>
         ///     Gets the plugin info of the plugin this registration is associated with
         /// </summary>
@@ -40,7 +54,12 @@ namespace Artemis.Core
         public Action<double> Action { get; }
 
         /// <summary>
-        ///     Starts calling the <see cref="Action" /> at the configured <see cref="Interval" />
+        ///     Gets the task that gets called each time the update event fires
+        /// </summary>
+        public Func<double, Task> AsyncAction { get; }
+
+        /// <summary>
+        ///     Starts calling the <see cref="Action" /> or <see cref="AsyncAction"/> at the configured <see cref="Interval" />
         ///     <para>Note: Called automatically when the plugin enables</para>
         /// </summary>
         public void Start()
@@ -61,7 +80,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Stops calling the <see cref="Action" /> at the configured <see cref="Interval" />
+        ///     Stops calling the <see cref="Action" /> or <see cref="AsyncAction"/> at the configured <see cref="Interval" />
         ///     <para>Note: Called automatically when the plugin disables</para>
         /// </summary>
         public void Stop()
@@ -90,7 +109,13 @@ namespace Artemis.Core
             if (PluginInfo.Instance is Module module && !module.IsUpdateAllowed)
                 return;
 
-            Action(interval.TotalSeconds);
+            if (Action != null)
+                Action(interval.TotalSeconds);
+            else if (AsyncAction != null)
+            {
+                Task task = AsyncAction(interval.TotalSeconds);
+                task.Wait();
+            }
         }
 
         private void InstanceOnPluginEnabled(object sender, EventArgs e)

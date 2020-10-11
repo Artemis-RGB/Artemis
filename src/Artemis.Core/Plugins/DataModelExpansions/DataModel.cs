@@ -67,10 +67,8 @@ namespace Artemis.Core.DataModelExpansions
             if (key.Contains('.'))
                 throw new ArtemisCoreException("The provided key contains an illegal character (.)");
             if (_dynamicDataModels.ContainsKey(key))
-            {
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
                                                "because the key is already in use on by another dynamic property this data model.");
-            }
 
             if (_dynamicDataModels.ContainsValue(dynamicDataModel))
             {
@@ -80,10 +78,8 @@ namespace Artemis.Core.DataModelExpansions
             }
 
             if (GetType().GetProperty(key) != null)
-            {
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
                                                "because the key is already in use by a static property on this data model.");
-            }
 
             dynamicDataModel.PluginInfo = PluginInfo;
             dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute
@@ -123,6 +119,15 @@ namespace Artemis.Core.DataModelExpansions
                 _dynamicDataModels.Remove(key);
                 OnDynamicDataModelRemoved(new DynamicDataModelEventArgs(dynamicDataModel, key));
             }
+        }
+
+        /// <summary>
+        ///     Removes all dynamic data models from this data model
+        /// </summary>
+        public void ClearDynamicChildren()
+        {
+            while (_dynamicDataModels.Any())
+                RemoveDynamicChildByKey(_dynamicDataModels.First().Key);
         }
 
         /// <summary>

@@ -57,7 +57,9 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"[{DisplayValueType.Name}] {DisplayPath ?? Path} - {DisplayValue}";
+            if (DisplayValueType != null)
+                return $"[{DisplayValueType.Name}] {DisplayPath ?? Path} - {DisplayValue}";
+            return $"{DisplayPath ?? Path} - {DisplayValue}";
         }
     }
 }
