@@ -193,6 +193,9 @@ namespace Artemis.UI.Shared
                     continue;
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                     continue;
+                MethodInfo getMethod = propertyInfo.GetGetMethod();
+                if (getMethod == null || getMethod.GetParameters().Any())
+                    continue;
 
                 DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth());
                 if (child != null)

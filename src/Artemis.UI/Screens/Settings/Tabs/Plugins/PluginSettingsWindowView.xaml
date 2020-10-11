@@ -18,13 +18,18 @@
                          d:DesignWidth="800"
                          d:DataContext="{d:DesignInstance local:PluginSettingsWindowViewModel}"
                          Icon="/Resources/Images/Logo/logo-512.png">
-    <DockPanel>
-        <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.Plugin.PluginInfo.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
-            <controls:AppBar.AppIcon>
-                <materialDesign:PackIcon Kind="{Binding Icon}" Width="20" Height="28" />
-            </controls:AppBar.AppIcon>
-        </controls:AppBar>
+    <materialDesign:DialogHost IsTabStop="False"
+                               Focusable="False"
+                               Identifier="PluginSettingsDialog"
+                               DialogTheme="Inherit">
+        <DockPanel>
+            <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.Plugin.PluginInfo.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
+                <controls:AppBar.AppIcon>
+                    <materialDesign:PackIcon Kind="{Binding Icon}" Width="20" Height="28" />
+                </controls:AppBar.AppIcon>
+            </controls:AppBar>
 
-        <ContentControl s:View.Model="{Binding ActiveItem}" />
-    </DockPanel>
+            <ContentControl s:View.Model="{Binding ActiveItem}" />
+        </DockPanel>
+    </materialDesign:DialogHost>
 </controls:MaterialWindow>

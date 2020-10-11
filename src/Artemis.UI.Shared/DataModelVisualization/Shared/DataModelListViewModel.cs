@@ -121,7 +121,7 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public override string ToString()
         {
-            return $"[List] {DisplayPath ?? Path} - {List.Count} item(s)";
+            return $"[List] {DisplayPath ?? Path} - {List?.Count ?? 0} item(s)";
         }
     }
 }

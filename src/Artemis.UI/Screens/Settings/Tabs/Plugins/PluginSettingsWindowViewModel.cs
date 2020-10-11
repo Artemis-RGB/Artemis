@@ -7,12 +7,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginSettingsWindowViewModel : Conductor<PluginConfigurationViewModel>
     {
+        private readonly PluginConfigurationViewModel _configurationViewModel;
+
         public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, PackIconKind icon)
         {
+            _configurationViewModel = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
             Icon = icon;
-            ActiveItem = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
+        }
 
+        protected override void OnInitialActivate()
+        {
+            ActiveItem = _configurationViewModel;
             ActiveItem.Closed += ActiveItemOnClosed;
+
+            base.OnInitialActivate();
         }
 
         public PackIconKind Icon { get; }
