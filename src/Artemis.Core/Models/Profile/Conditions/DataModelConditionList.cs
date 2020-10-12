@@ -93,7 +93,7 @@ namespace Artemis.Core
             if (ListPath != null)
             {
                 Type listType = ListPath.GetPropertyType()!;
-                ListType = listType.GetGenericArguments()[0];
+                ListType = listType.GetGenericEnumerableType();
                 IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
 
                 // Create a new root group
@@ -129,10 +129,10 @@ namespace Artemis.Core
 
             if (!Children.Any())
                 return false;
-            if (!(target is IList list))
+            if (!(target is IEnumerable enumerable))
                 return false;
 
-            IEnumerable<object> objectList = list.Cast<object>();
+            IEnumerable<object> objectList = enumerable.Cast<object>();
             return ListOperator switch
             {
                 ListOperator.Any => objectList.Any(o => Children[0].EvaluateObject(o)),
@@ -180,14 +180,14 @@ namespace Artemis.Core
             DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
             Type listType = listPath.GetPropertyType()!;
             // Can't check this on an invalid list, if it becomes valid later lets hope for the best
-            if (listPath.IsValid && !typeof(IList).IsAssignableFrom(listType))
+            if (listPath.IsValid && !listPath.PointsToList)
                 return;
 
             ListPath = listPath;
             SubscribeToListPath();
             if (ListPath.IsValid)
             {
-                ListType = listType.GetGenericArguments()[0];
+                ListType = listType.GetGenericEnumerableType();
                 IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
             }
             else

@@ -69,12 +69,10 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
-                            [List]
-                        </TextBlock>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold" Text="[List]"/>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
-                                   Text="{Binding Count, Mode=OneWay}"
+                                   Text="{Binding CountDisplay, Mode=OneWay}"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Right" />
                     </Grid>
