@@ -114,8 +114,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether this data model path points to a list
         /// </summary>
-        public bool PointsToList => Segments.LastOrDefault()?.GetPropertyType() != null &&
-                                    typeof(IList).IsAssignableFrom(Segments.LastOrDefault()?.GetPropertyType());
+        public bool PointsToList
+        {
+            get
+            {
+                Type? type = GetPropertyType();
+                return type?.IsGenericEnumerable() ?? false;
+            }
+        }
 
         internal DataModelPathEntity Entity { get; }
 

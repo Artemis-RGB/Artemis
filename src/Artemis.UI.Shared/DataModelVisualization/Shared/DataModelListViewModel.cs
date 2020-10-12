@@ -9,31 +9,38 @@ namespace Artemis.UI.Shared
 {
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
-        private string _count;
-        private IList _list;
-        
+        private string _countDisplay;
+        private IEnumerable _list;
+        private int _listCount;
+
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
             ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
-        public IList List
+        public IEnumerable List
         {
             get => _list;
             set => SetAndNotify(ref _list, value);
         }
 
-        public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
-
-        public string Count
+        public int ListCount
         {
-            get => _count;
-            set => SetAndNotify(ref _count, value);
+            get => _listCount;
+            set => SetAndNotify(ref _listCount, value);
         }
+
+        public string CountDisplay
+        {
+            get => _countDisplay;
+            set => SetAndNotify(ref _countDisplay, value);
+        }
+
+        public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
 
         public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
         {
-            Type listType = DataModelPath.GetPropertyType()?.GenericTypeArguments[0];
+            Type listType = DataModelPath.GetPropertyType()?.GetGenericEnumerableType();
             if (listType == null)
                 return null;
 
@@ -42,10 +49,8 @@ namespace Artemis.UI.Shared
             viewModel.Update(dataModelUIService);
 
             // Put an empty value into the list type property view model
-            if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel)
-            {
-                return dataModelListClassViewModel;
-            }
+            if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel) return dataModelListClassViewModel;
+
             if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
             {
                 dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
@@ -62,7 +67,7 @@ namespace Artemis.UI.Shared
             if (Parent != null && !Parent.IsVisualizationExpanded)
                 return;
 
-            List = GetCurrentValue() as IList;
+            List = GetCurrentValue() as IEnumerable;
             if (List == null)
                 return;
 
@@ -71,7 +76,7 @@ namespace Artemis.UI.Shared
             {
                 if (item == null)
                     continue;
-                
+
                 DataModelVisualizationViewModel child;
                 if (ListChildren.Count <= index)
                 {
@@ -79,7 +84,9 @@ namespace Artemis.UI.Shared
                     ListChildren.Add(child);
                 }
                 else
+                {
                     child = ListChildren[index];
+                }
 
                 if (child is DataModelListPropertiesViewModel dataModelListClassViewModel)
                 {
@@ -96,10 +103,18 @@ namespace Artemis.UI.Shared
                 index++;
             }
 
-            while (ListChildren.Count > List.Count)
+            ListCount = index + 1;
+
+            while (ListChildren.Count > ListCount)
                 ListChildren.RemoveAt(ListChildren.Count - 1);
 
-            Count = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
+            CountDisplay = $"{ListChildren.Count} {(ListChildren.Count == 1 ? "item" : "items")}";
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[List] {DisplayPath ?? Path} - {ListCount} item(s)";
         }
 
         protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
@@ -116,12 +131,6 @@ namespace Artemis.UI.Shared
                 return new DataModelListPropertiesViewModel(listType);
 
             return null;
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"[List] {DisplayPath ?? Path} - {List?.Count ?? 0} item(s)";
         }
     }
 }

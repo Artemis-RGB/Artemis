@@ -86,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public void Initialize()
         {
             TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-            TargetSelectionViewModel.FilterTypes = new[] {typeof(IList)};
+            TargetSelectionViewModel.FilterTypes = new[] {typeof(IEnumerable<>)};
             TargetSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
             TargetSelectionViewModel.Placeholder = "Select a list";
             TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
