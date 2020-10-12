@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
@@ -83,19 +82,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public DelegateCommand SelectOperatorCommand { get; }
 
-        public void Dispose()
-        {
-            if (LeftSideSelectionViewModel != null)
-            {
-                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
-                LeftSideSelectionViewModel.Dispose();
-                LeftSideSelectionViewModel = null;
-            }
-
-            DisposeRightSideStatic();
-            DisposeRightSideDynamic();
-        }
-
         public override void Delete()
         {
             base.Delete();
@@ -118,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             LeftSideSelectionViewModel.FilterTypes = _supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.LeftPath);
-            
+
             Type leftSideType = LeftSideSelectionViewModel.DataModelPath?.GetPropertyType();
 
             // Get the supported operators
@@ -238,6 +224,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 RightSideSelectionViewModel.Dispose();
                 RightSideSelectionViewModel = null;
             }
+        }
+
+        public void Dispose()
+        {
+            if (LeftSideSelectionViewModel != null)
+            {
+                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
+                LeftSideSelectionViewModel.Dispose();
+                LeftSideSelectionViewModel = null;
+            }
+
+            DisposeRightSideStatic();
+            DisposeRightSideDynamic();
         }
     }
 }

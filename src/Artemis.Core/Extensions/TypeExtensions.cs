@@ -88,11 +88,33 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Returns the default value of the given type
+        ///     Returns the default value of the given type
         /// </summary>
         public static object GetDefault(this Type type)
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
+        }
+
+        /// <summary>
+        ///     Determines whether the given type is a generic enumerable
+        /// </summary>
+        public static bool IsGenericEnumerable(this Type type)
+        {
+            return type.GetInterfaces().Any(x =>
+                x.IsGenericType &&
+                x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        }
+
+        /// <summary>
+        ///     Determines the type of the provided generic enumerable type
+        /// </summary>
+        public static Type? GetGenericEnumerableType(this Type type)
+        {
+            Type enumerableType = type.GetInterfaces().FirstOrDefault(x =>
+                x.IsGenericType &&
+                x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+            return enumerableType?.GenericTypeArguments[0];
         }
     }
 }

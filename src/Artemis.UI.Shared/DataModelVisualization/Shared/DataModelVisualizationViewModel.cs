@@ -133,7 +133,9 @@ namespace Artemis.UI.Shared
             }
 
             if (looseMatch)
-                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) || t == typeof(Enum) && type.IsEnum);
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) || 
+                                                                 t == typeof(Enum) && type.IsEnum ||
+                                                                 t == typeof(IEnumerable<>) && type.IsGenericEnumerable());
             else
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
         }
@@ -260,12 +262,12 @@ namespace Artemis.UI.Shared
             // For primitives, create a property view model, it may be null that is fine
             if (propertyType.IsPrimitive || propertyType.IsEnum || propertyType == typeof(string))
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {Depth = depth};
-            if (typeof(IList).IsAssignableFrom(propertyType))
+            if (propertyType.IsGenericEnumerable())
                 return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
             // For other value types create a child view model
             if (propertyType.IsClass || propertyType.IsStruct())
                 return new DataModelPropertiesViewModel(DataModel, this, dataModelPath) {Depth = depth};
-
+            
             return null;
         }
 
