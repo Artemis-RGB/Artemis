@@ -88,12 +88,18 @@ namespace Artemis.Core
 
             _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
             _pluginRepository.SaveSetting(_pluginSettingEntity);
+            OnSettingSaved();
         }
 
         /// <summary>
         ///     Occurs when the value of the setting has been changed
         /// </summary>
-        public event EventHandler<EventArgs> SettingChanged;
+        public event EventHandler SettingChanged;
+
+        /// <summary>
+        ///     Occurs when the value of the setting has been saved
+        /// </summary>
+        public event EventHandler SettingSaved;
 
         /// <inheritdoc />
         public override string ToString()
@@ -107,6 +113,14 @@ namespace Artemis.Core
         protected internal virtual void OnSettingChanged()
         {
             SettingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="OnSettingSaved" /> event
+        /// </summary>
+        protected internal virtual void OnSettingSaved()
+        {
+            SettingSaved?.Invoke(this, EventArgs.Empty);
         }
     }
 }
