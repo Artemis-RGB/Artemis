@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -188,7 +188,7 @@ namespace Artemis.UI.Shared
             Type modelType = Parent == null || Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
 
             // Add missing static children
-            foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance))
+            foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {
                 string childPath = AppendToPath(propertyInfo.Name);
                 if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))

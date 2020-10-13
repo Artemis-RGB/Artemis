@@ -136,7 +136,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <typeparam name="T">The type of data model you expect</typeparam>
         /// <param name="key">The unique key of the dynamic data model</param>
         /// <returns>If found, the dynamic data model otherwise <c>null</c></returns>
-        public T DynamicChild<T>(string key) where T : DataModel
+        public T? DynamicChild<T>(string key) where T : DataModel
         {
             _dynamicDataModels.TryGetValue(key, out DataModel value);
             return value as T;
