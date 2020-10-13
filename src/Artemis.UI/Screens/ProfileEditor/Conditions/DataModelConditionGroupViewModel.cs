@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
@@ -26,11 +27,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             : base(dataModelConditionGroup)
         {
             IsListGroup = isListGroup;
-            if (IsListGroup)
-                DynamicListConditionSupported = !((DataModelConditionList) dataModelConditionGroup.Parent).IsPrimitiveList;
-            else
-                DynamicListConditionSupported = false;
-
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -44,7 +40,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         }
 
         public bool IsListGroup { get; }
-        public bool DynamicListConditionSupported { get; }
         public DataModelConditionGroup DataModelConditionGroup => (DataModelConditionGroup) Model;
 
         public bool IsRootGroup
@@ -71,26 +66,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public void AddCondition(string type)
+        public void AddCondition()
         {
-            if (type == "Static")
-            {
-                if (!IsListGroup)
-                    DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Static));
-                else
-                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.Static));
-            }
-            else if (type == "Dynamic")
-            {
-                if (!IsListGroup)
-                    DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
-                else
-                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.Dynamic));
-            }
-            else if (type == "DynamicList" && IsListGroup)
-                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ListRightSideType.DynamicList));
-            else if (type == "List" && !IsListGroup)
-                DataModelConditionGroup.AddChild(new DataModelConditionList(DataModelConditionGroup));
+            if (!IsListGroup)
+                DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+            else
+                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -135,8 +116,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                         break;
                 }
             }
+
             if (viewModels.Any())
                 Items.AddRange(viewModels);
+
+            // Ensure the items are in the same order as on the model
+            ((BindableCollection<DataModelConditionViewModel>) Items).Sort(i => Model.Children.IndexOf(i.Model));
 
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
@@ -145,6 +130,36 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 displayConditionsViewModel.DisplayStartHint = !Items.Any();
 
             OnUpdated();
+        }
+
+        public void ConvertToConditionList(DataModelConditionPredicateViewModel predicateViewModel)
+        {
+            // Store the old index and remove the old predicate
+            int index = DataModelConditionGroup.Children.IndexOf(predicateViewModel.Model);
+            DataModelConditionGroup.RemoveChild(predicateViewModel.Model);
+
+            // Insert a list in the same position
+            DataModelConditionList list = new DataModelConditionList(DataModelConditionGroup);
+            list.UpdateList(predicateViewModel.LeftSideSelectionViewModel.DataModelPath);
+            DataModelConditionGroup.AddChild(list, index);
+
+            // Update to switch the VMs
+            Update();
+        }
+
+        public void ConvertToPredicate(DataModelConditionListViewModel listViewModel)
+        {
+            // Store the old index and remove the old predicate
+            int index = DataModelConditionGroup.Children.IndexOf(listViewModel.Model);
+            DataModelConditionGroup.RemoveChild(listViewModel.Model);
+
+            // Insert a list in the same position
+            DataModelConditionPredicate predicate = new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
+            predicate.UpdateLeftSide(listViewModel.TargetSelectionViewModel.DataModelPath);
+            DataModelConditionGroup.AddChild(predicate, index);
+
+            // Update to switch the VMs
+            Update();
         }
 
         public event EventHandler Updated;

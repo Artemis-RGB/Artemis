@@ -57,7 +57,7 @@
 
         <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}">
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="220" ClipToBounds="False" />
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="280" ClipToBounds="False" />
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
                 <mde:AppBar Type="Dense"

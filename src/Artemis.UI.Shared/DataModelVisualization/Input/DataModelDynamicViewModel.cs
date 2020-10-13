@@ -25,6 +25,7 @@ namespace Artemis.UI.Shared.Input
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
+        private bool _displaySwitchButton;
 
         internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
@@ -54,6 +55,12 @@ namespace Artemis.UI.Shared.Input
         {
             get => _isEnabled;
             set => SetAndNotify(ref _isEnabled, value);
+        }
+
+        public bool DisplaySwitchButton
+        {
+            get => _displaySwitchButton;
+            set => SetAndNotify(ref _displaySwitchButton, value);
         }
 
         public Type[] FilterTypes
@@ -125,6 +132,13 @@ namespace Artemis.UI.Shared.Input
             DataModelPath = dataModelPath != null ? new DataModelPath(dataModelPath) : null;
         }
 
+        public void SwitchToStatic()
+        {
+            ChangeDataModelPath(null);
+            OnPropertySelected(new DataModelInputDynamicEventArgs(null));
+            OnSwitchToStaticRequested();
+        }
+
         private void Initialize()
         {
             // Get the data models
@@ -167,10 +181,16 @@ namespace Artemis.UI.Shared.Input
         #region Events
 
         public event EventHandler<DataModelInputDynamicEventArgs> PropertySelected;
+        public event EventHandler SwitchToStaticRequested;
 
         protected virtual void OnPropertySelected(DataModelInputDynamicEventArgs e)
         {
             PropertySelected?.Invoke(this, e);
+        }
+
+        protected virtual void OnSwitchToStaticRequested()
+        {
+            SwitchToStaticRequested?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

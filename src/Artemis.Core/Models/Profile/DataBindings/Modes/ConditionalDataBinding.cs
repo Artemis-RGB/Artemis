@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
@@ -25,7 +26,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a list of conditions applied to this data binding
         /// </summary>
-        public IReadOnlyList<DataBindingCondition<TLayerProperty, TProperty>> Conditions => _conditions.AsReadOnly();
+        public ReadOnlyCollection<DataBindingCondition<TLayerProperty, TProperty>> Conditions => _conditions.AsReadOnly();
 
         /// <inheritdoc />
         public DataBinding<TLayerProperty, TProperty> DataBinding { get; }

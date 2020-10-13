@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.Services;
+using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core
@@ -20,18 +20,22 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the children of this part
         /// </summary>
-        public IReadOnlyList<DataModelConditionPart> Children => _children.AsReadOnly();
+        public ReadOnlyCollection<DataModelConditionPart> Children => _children.AsReadOnly();
 
         /// <summary>
         ///     Adds a child to the display condition part's <see cref="Children" /> collection
         /// </summary>
         /// <param name="dataModelConditionPart"></param>
-        public void AddChild(DataModelConditionPart dataModelConditionPart)
+        /// <param name="index">An optional index at which to insert the condition</param>
+        public void AddChild(DataModelConditionPart dataModelConditionPart, int? index = null)
         {
             if (!_children.Contains(dataModelConditionPart))
             {
                 dataModelConditionPart.Parent = this;
-                _children.Add(dataModelConditionPart);
+                if (index != null)
+                    _children.Insert(index.Value, dataModelConditionPart);
+                else
+                    _children.Add(dataModelConditionPart);
             }
         }
 

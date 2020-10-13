@@ -58,12 +58,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public void AddCondition(string type)
+        public void AddCondition()
         {
-            if (type == "Static")
-                DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Static));
-            else if (type == "Dynamic")
-                DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
+            DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -86,16 +83,28 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public void Initialize()
         {
             TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-            TargetSelectionViewModel.FilterTypes = new[] {typeof(IEnumerable<>)};
+            TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
+
+            IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
+            List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
+            supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
+            supportedInputTypes.Add(typeof(IEnumerable<>));
+            TargetSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
+
             TargetSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
             TargetSelectionViewModel.Placeholder = "Select a list";
-            TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
 
             Update();
         }
 
         public void ApplyList()
         {
+            if (!TargetSelectionViewModel.DataModelPath.GetPropertyType().IsGenericEnumerable())
+            {
+                if (Parent is DataModelConditionGroupViewModel groupViewModel)
+                    groupViewModel.ConvertToPredicate(this);
+                return;
+            }
             DataModelConditionList.UpdateList(TargetSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
@@ -109,7 +118,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             // Remove VMs of effects no longer applied on the layer
             Items.RemoveRange(Items.Where(c => !DataModelConditionList.Children.Contains(c.Model)).ToList());
-            
+
             if (DataModelConditionList.ListPath == null || !DataModelConditionList.ListPath.IsValid)
                 return;
 
@@ -125,6 +134,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 viewModel.IsRootGroup = true;
                 viewModels.Add(viewModel);
             }
+
             if (viewModels.Any())
                 Items.AddRange(viewModels);
 

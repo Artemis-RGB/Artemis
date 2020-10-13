@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
@@ -32,7 +33,7 @@ namespace Artemis.UI.Shared.Services
         }
 
         public IKernel Kernel { get; }
-        public IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
+        public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public RenderProfileElement SelectedProfileElement { get; private set; }
         public ILayerProperty SelectedDataBinding { get; private set; }
