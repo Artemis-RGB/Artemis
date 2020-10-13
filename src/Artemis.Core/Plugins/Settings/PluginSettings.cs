@@ -11,16 +11,20 @@ namespace Artemis.Core
     /// </summary>
     public class PluginSettings
     {
-        private readonly PluginInfo _pluginInfo;
         private readonly IPluginRepository _pluginRepository;
         private readonly Dictionary<string, object> _settingEntities;
 
         internal PluginSettings(PluginInfo pluginInfo, IPluginRepository pluginRepository)
         {
-            _pluginInfo = pluginInfo;
+            PluginInfo = pluginInfo;
             _pluginRepository = pluginRepository;
             _settingEntities = new Dictionary<string, object>();
         }
+
+        /// <summary>
+        ///     Gets the info of the plugin this setting belongs to
+        /// </summary>
+        public PluginInfo PluginInfo { get; }
 
         /// <summary>
         ///     Gets the setting with the provided name. If the setting does not exist yet, it is created.
@@ -37,15 +41,15 @@ namespace Artemis.Core
                 if (_settingEntities.ContainsKey(name))
                     return (PluginSetting<T>) _settingEntities[name];
                 // Try to find in database
-                PluginSettingEntity settingEntity = _pluginRepository.GetSettingByNameAndGuid(name, _pluginInfo.Guid);
+                PluginSettingEntity settingEntity = _pluginRepository.GetSettingByNameAndGuid(name, PluginInfo.Guid);
                 // If not found, create a new one
                 if (settingEntity == null)
                 {
-                    settingEntity = new PluginSettingEntity {Name = name, PluginGuid = _pluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
+                    settingEntity = new PluginSettingEntity {Name = name, PluginGuid = PluginInfo.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
                     _pluginRepository.AddSetting(settingEntity);
                 }
 
-                PluginSetting<T> pluginSetting = new PluginSetting<T>(_pluginInfo, _pluginRepository, settingEntity);
+                PluginSetting<T> pluginSetting = new PluginSetting<T>(PluginInfo, _pluginRepository, settingEntity);
 
                 // This overrides null with the default value, I'm not sure if that's desirable because you
                 // might expect something to go null and you might not

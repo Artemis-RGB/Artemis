@@ -102,19 +102,22 @@ namespace Artemis.Core
             if (!PluginInfo.Instance.Enabled)
                 return;
 
-            TimeSpan interval = DateTime.Now - _lastEvent;
-            _lastEvent = DateTime.Now;
-
-            // Modules don't always want to update, honor that
-            if (PluginInfo.Instance is Module module && !module.IsUpdateAllowed)
-                return;
-
-            if (Action != null)
-                Action(interval.TotalSeconds);
-            else if (AsyncAction != null)
+            lock (this)
             {
-                Task task = AsyncAction(interval.TotalSeconds);
-                task.Wait();
+                TimeSpan interval = DateTime.Now - _lastEvent;
+                _lastEvent = DateTime.Now;
+
+                // Modules don't always want to update, honor that
+                if (PluginInfo.Instance is Module module && !module.IsUpdateAllowed)
+                    return;
+
+                if (Action != null)
+                    Action(interval.TotalSeconds);
+                else if (AsyncAction != null)
+                {
+                    Task task = AsyncAction(interval.TotalSeconds);
+                    task.Wait();
+                }
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.Services;
 using Artemis.Storage.Repositories.Interfaces;
 using Ninject.Activation;
@@ -7,6 +8,7 @@ namespace Artemis.Core.Ninject
 {
     internal class PluginSettingsProvider : Provider<PluginSettings>
     {
+        private static readonly List<PluginSettings> PluginSettings = new List<PluginSettings>();
         private readonly IPluginRepository _pluginRepository;
         private readonly IPluginService _pluginService;
 
@@ -28,12 +30,19 @@ namespace Artemis.Core.Ninject
                 pluginInfo = _pluginService.GetPluginByAssembly(parentRequest.Service.Assembly)?.PluginInfo;
             // Fall back to assembly based detection
             if (pluginInfo == null)
-            {
                 throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +
                                                "or into a class defined in a plugin assembly");
-            }
 
-            return new PluginSettings(pluginInfo, _pluginRepository);
+            lock (PluginSettings)
+            {
+                PluginSettings? existingSettings = PluginSettings.FirstOrDefault(p => p.PluginInfo == pluginInfo);
+                if (existingSettings != null)
+                    return existingSettings;
+
+                PluginSettings? settings = new PluginSettings(pluginInfo, _pluginRepository);
+                PluginSettings.Add(settings);
+                return settings;
+            }
         }
     }
 }
