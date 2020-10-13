@@ -56,17 +56,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
         #endregion
 
-        public void AddCondition(string type)
-        {
-            DataBindingCondition<TLayerProperty, TProperty> condition = ConditionalDataBinding.AddCondition();
-
-            // Find the VM of the new condition
-            DataBindingConditionViewModel<TLayerProperty, TProperty> viewModel = ConditionViewModels.First(c => c.DataBindingCondition == condition);
-            viewModel.ActiveItem.AddCondition(type);
-
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
         private void UpdateConditionViewModels()
         {
             _updating = true;
