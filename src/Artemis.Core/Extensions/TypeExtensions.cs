@@ -100,6 +100,13 @@ namespace Artemis.Core
         /// </summary>
         public static bool IsGenericEnumerable(this Type type)
         {
+            // String is an IEnumerable to be fair, but not for us
+            if (type == typeof(string))
+                return false;
+            // It may actually be one instead of implementing one ;)
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return true;
+
             return type.GetInterfaces().Any(x =>
                 x.IsGenericType &&
                 x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
@@ -110,6 +117,10 @@ namespace Artemis.Core
         /// </summary>
         public static Type? GetGenericEnumerableType(this Type type)
         {
+            // It may actually be one instead of implementing one ;)
+            if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                return type.GenericTypeArguments[0];
+
             Type enumerableType = type.GetInterfaces().FirstOrDefault(x =>
                 x.IsGenericType &&
                 x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
