@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Linq.Expressions;
 using Artemis.Storage.Entities.Profile;
@@ -215,7 +216,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
         /// </summary>
-        public IReadOnlyList<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
+        public ReadOnlyCollection<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
 
         /// <summary>
         ///     Gets the current keyframe in the timeline according to the current progress

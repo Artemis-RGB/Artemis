@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Timers;
 using System.Windows.Media;
@@ -21,6 +22,7 @@ namespace Artemis.UI.Shared.Input
         private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
         private DataModelPath _dataModelPath;
         private DataModelPropertiesViewModel _dataModelViewModel;
+        private bool _displaySwitchButton;
         private Type[] _filterTypes;
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
@@ -32,6 +34,7 @@ namespace Artemis.UI.Shared.Input
             _dataModelUIService = dataModelUIService;
             _updateTimer = new Timer(500);
 
+            ExtraDataModelViewModels = new BindableCollection<DataModelPropertiesViewModel>();
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
             SelectPropertyCommand = new DelegateCommand(ExecuteSelectPropertyCommand);
 
@@ -56,6 +59,12 @@ namespace Artemis.UI.Shared.Input
             set => SetAndNotify(ref _isEnabled, value);
         }
 
+        public bool DisplaySwitchButton
+        {
+            get => _displaySwitchButton;
+            set => SetAndNotify(ref _displaySwitchButton, value);
+        }
+
         public Type[] FilterTypes
         {
             get => _filterTypes;
@@ -65,6 +74,9 @@ namespace Artemis.UI.Shared.Input
                 DataModelViewModel?.ApplyTypeFilter(true, FilterTypes);
             }
         }
+
+        public BindableCollection<DataModelPropertiesViewModel> ExtraDataModelViewModels { get; }
+        public bool HasExtraDataModels => ExtraDataModelViewModels.Any();
 
         public DelegateCommand SelectPropertyCommand { get; }
         public PluginSetting<bool> ShowDataModelValues { get; }
@@ -125,25 +137,21 @@ namespace Artemis.UI.Shared.Input
             DataModelPath = dataModelPath != null ? new DataModelPath(dataModelPath) : null;
         }
 
+        public void SwitchToStatic()
+        {
+            ChangeDataModelPath(null);
+            OnPropertySelected(new DataModelInputDynamicEventArgs(null));
+            OnSwitchToStaticRequested();
+        }
+
         private void Initialize()
         {
             // Get the data models
             DataModelViewModel = _dataModelUIService.GetPluginDataModelVisualization(_module, true);
             DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
-
+            ExtraDataModelViewModels.CollectionChanged += ExtraDataModelViewModelsOnCollectionChanged;
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
-        }
-
-        private void DataModelOnUpdateRequested(object sender, EventArgs e)
-        {
-            DataModelViewModel.ApplyTypeFilter(true, FilterTypes);
-        }
-
-        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
-        {
-            if (IsDataModelViewModelOpen)
-                DataModelViewModel.Update(_dataModelUIService);
         }
 
         private void ExecuteSelectPropertyCommand(object context)
@@ -164,13 +172,45 @@ namespace Artemis.UI.Shared.Input
             DataModelPath?.Dispose();
         }
 
+        #region Event handlers
+
+        private void DataModelOnUpdateRequested(object sender, EventArgs e)
+        {
+            DataModelViewModel.ApplyTypeFilter(true, FilterTypes);
+            foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
+                extraDataModelViewModel.ApplyTypeFilter(true, FilterTypes);
+        }
+
+        private void ExtraDataModelViewModelsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(HasExtraDataModels));
+        }
+
+        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            if (!IsDataModelViewModelOpen)
+                return;
+
+            DataModelViewModel.Update(_dataModelUIService);
+            foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
+                extraDataModelViewModel.Update(_dataModelUIService);
+        }
+
+        #endregion
+
         #region Events
 
         public event EventHandler<DataModelInputDynamicEventArgs> PropertySelected;
+        public event EventHandler SwitchToStaticRequested;
 
         protected virtual void OnPropertySelected(DataModelInputDynamicEventArgs e)
         {
             PropertySelected?.Invoke(this, e);
+        }
+
+        protected virtual void OnSwitchToStaticRequested()
+        {
+            SwitchToStaticRequested?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

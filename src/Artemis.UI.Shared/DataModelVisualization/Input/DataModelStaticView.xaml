@@ -22,24 +22,39 @@
     </UserControl.Resources>
 
     <Grid Margin="3 -4">
-        <Button Style="{StaticResource DataModelConditionButton}"
-                Background="{Binding ButtonBrush}"
-                BorderBrush="{Binding ButtonBrush}"
-                Margin="0 4"
-                Command="{s:Action ActivateInputViewModel}"
-                HorizontalAlignment="Left"
-                IsEnabled="{Binding IsEnabled}"
-                Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-            <Grid>
-                <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
-                    <ContentControl s:View.Model="{Binding DisplayViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
-                </StackPanel>
+        <StackPanel Orientation="Horizontal" Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+            <Button Style="{StaticResource MaterialDesignFlatDarkBgButton}"
+                    Height="22"
+                    Padding="0"
+                    Width="22"
+                    FontSize="12"
+                    materialDesign:ButtonAssist.CornerRadius="2 0 0 2"
+                    Margin="0 0 -3 0"
+                    HorizontalAlignment="Left"
+                    ToolTip="Switch to data model value"
+                    Command="{s:Action SwitchToDynamic}">
+                <materialDesign:PackIcon Kind="SwapHorizontal" />
+            </Button>
+            <Button Style="{StaticResource DataModelConditionButton}"
+                    materialDesign:ButtonAssist.CornerRadius="0 2 2 0"
+                    Background="{Binding ButtonBrush}"
+                    BorderBrush="{Binding ButtonBrush}"
+                    Command="{s:Action ActivateInputViewModel}"
+                    HorizontalAlignment="Left"
+                    IsEnabled="{Binding IsEnabled}"
+                    ToolTip="Click to edit value">
+                <Grid>
+                    <StackPanel Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}}" Orientation="Horizontal">
+                        <ContentControl s:View.Model="{Binding DisplayViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
+                    </StackPanel>
 
-                <TextBlock FontStyle="Italic" Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-                    <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
-                </TextBlock>
-            </Grid>
-        </Button>
+                    <TextBlock FontStyle="Italic" Visibility="{Binding Value, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                        <Run Text="« " /><Run Text="{Binding Placeholder}" /><Run Text=" »" />
+                    </TextBlock>
+                </Grid>
+            </Button>
+        </StackPanel>
+        
         <Border BorderBrush="{Binding ButtonBrush}"
                 Background="{DynamicResource MaterialDesignPaper}"
                 Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}}"

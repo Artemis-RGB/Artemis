@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Ninject;
@@ -13,7 +14,7 @@ namespace Artemis.UI.Shared.Services
         ILayerProperty SelectedDataBinding { get; }
         TimeSpan CurrentTime { get; set; }
         int PixelsPerSecond { get; set; }
-        IReadOnlyList<PropertyInputRegistration> RegisteredPropertyEditors { get; }
+        ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors { get; }
         IKernel Kernel { get; }
         void ChangeSelectedProfile(Profile profile);
         void UpdateSelectedProfile();

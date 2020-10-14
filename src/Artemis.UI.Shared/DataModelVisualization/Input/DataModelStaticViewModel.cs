@@ -17,11 +17,11 @@ namespace Artemis.UI.Shared.Input
         private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
         private DataModelDisplayViewModel _displayViewModel;
         private DataModelInputViewModel _inputViewModel;
+        private bool _isEnabled;
         private string _placeholder = "Enter a value";
         private DataModelPropertyAttribute _targetDescription;
         private Type _targetType;
         private object _value;
-        private bool _isEnabled;
 
         internal DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
@@ -32,7 +32,7 @@ namespace Artemis.UI.Shared.Input
             TargetDescription = targetDescription;
             IsEnabled = TargetType != null;
             DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), TargetDescription, true);
-            
+
             if (_rootView != null)
             {
                 _rootView.MouseUp += RootViewOnMouseUp;
@@ -45,7 +45,7 @@ namespace Artemis.UI.Shared.Input
             get => _buttonBrush;
             set => SetAndNotify(ref _buttonBrush, value);
         }
-        
+
         public DataModelDisplayViewModel DisplayViewModel
         {
             get => _displayViewModel;
@@ -92,19 +92,6 @@ namespace Artemis.UI.Shared.Input
             private set => SetAndNotify(ref _isEnabled, value);
         }
 
-        #region IDisposable
-
-        public void Dispose()
-        {
-            if (_rootView != null)
-            {
-                _rootView.MouseUp -= RootViewOnMouseUp;
-                _rootView.KeyUp -= RootViewOnKeyUp;
-            }
-        }
-
-        #endregion
-
         public void ActivateInputViewModel()
         {
             InputViewModel = _dataModelUIService.GetDataModelInputViewModel(
@@ -127,16 +114,21 @@ namespace Artemis.UI.Shared.Input
                 ApplyFreeInput(null, true);
                 return;
             }
-            
-            // If the type changed, reset to the default type
-            if (Value == null || !target.IsCastableFrom(Value.GetType()))
-            {
-                // Force the VM to close if it was open and apply the new value
-                ApplyFreeInput(target.GetDefault(), true);
-            }
 
+            // If the type changed, reset to the default type
+            if (Value == null || !TargetType.IsCastableFrom(Value.GetType()))
+                // Force the VM to close if it was open and apply the new value
+                ApplyFreeInput(TargetType.GetDefault(), true);
         }
-        
+
+        public void SwitchToDynamic()
+        {
+            InputViewModel?.Cancel();
+            ApplyFreeInput(TargetType.GetDefault(), true);
+
+            OnSwitchToDynamicRequested();
+        }
+
         private void ApplyFreeInput(object value, bool submitted)
         {
             if (submitted)
@@ -145,6 +137,19 @@ namespace Artemis.UI.Shared.Input
             InputViewModel = null;
             Value = value;
         }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            if (_rootView != null)
+            {
+                _rootView.MouseUp -= RootViewOnMouseUp;
+                _rootView.KeyUp -= RootViewOnKeyUp;
+            }
+        }
+
+        #endregion
 
         #region Event handlers
 
@@ -173,10 +178,16 @@ namespace Artemis.UI.Shared.Input
         #region Events
 
         public event EventHandler<DataModelInputStaticEventArgs> ValueUpdated;
+        public event EventHandler SwitchToDynamicRequested;
 
         protected virtual void OnValueUpdated(DataModelInputStaticEventArgs e)
         {
             ValueUpdated?.Invoke(this, e);
+        }
+
+        protected virtual void OnSwitchToDynamicRequested()
+        {
+            SwitchToDynamicRequested?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

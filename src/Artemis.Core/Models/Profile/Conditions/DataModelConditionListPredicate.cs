@@ -17,7 +17,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="predicateType"></param>
-        public DataModelConditionListPredicate(DataModelConditionPart parent, ListRightSideType predicateType)
+        public DataModelConditionListPredicate(DataModelConditionPart parent, ProfileRightSideType predicateType)
         {
             Parent = parent;
             PredicateType = predicateType;
@@ -32,7 +32,7 @@ namespace Artemis.Core
         {
             Parent = parent;
             Entity = entity;
-            PredicateType = (ListRightSideType) entity.PredicateType;
+            PredicateType = (ProfileRightSideType) entity.PredicateType;
 
             DataModelConditionList = null!;
             ApplyParentList();
@@ -42,7 +42,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the predicate type
         /// </summary>
-        public ListRightSideType PredicateType { get; set; }
+        public ProfileRightSideType PredicateType { get; set; }
 
         /// <summary>
         ///     Gets the operator
@@ -66,7 +66,7 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Gets the right static value, only used it <see cref="PredicateType" /> is
-        ///     <see cref="ListRightSideType.Static" />
+        ///     <see cref="ProfileRightSideType.Static" />
         /// </summary>
         public object? RightStaticValue { get; private set; }
 
@@ -92,11 +92,10 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Updates the right side of the predicate using a path to a value inside the list item, makes the predicate dynamic
-        ///     and re-compiles the expression
+        ///     Updates the right side of the predicate using a path and makes the predicate dynamic
         /// </summary>
-        /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamicList(DataModelPath? path)
+        /// <param name="path">The path pointing to the right side value</param>
+        public void UpdateRightSideDynamic(DataModelPath? path)
         {
             if (path != null && !path.IsValid)
                 throw new ArtemisCoreException("Cannot update right side of predicate to an invalid path");
@@ -104,20 +103,7 @@ namespace Artemis.Core
             RightPath?.Dispose();
             RightPath = path != null ? new DataModelPath(path) : null;
 
-            PredicateType = ListRightSideType.DynamicList;
-        }
-
-        /// <summary>
-        ///     Updates the right side of the predicate using path to a value in a data model, makes the predicate dynamic and
-        ///     re-compiles the expression
-        /// </summary>
-        /// <param name="path">The path pointing to the right side value inside the list</param>
-        public void UpdateRightSideDynamic(DataModelPath? path)
-        {
-            RightPath?.Dispose();
-            RightPath = path;
-
-            PredicateType = ListRightSideType.Dynamic;
+            PredicateType = ProfileRightSideType.Dynamic;
         }
 
         /// <summary>
@@ -126,7 +112,7 @@ namespace Artemis.Core
         /// <param name="staticValue">The right side value to use</param>
         public void UpdateRightSideStatic(object? staticValue)
         {
-            PredicateType = ListRightSideType.Static;
+            PredicateType = ProfileRightSideType.Static;
             RightPath?.Dispose();
             RightPath = null;
 
@@ -214,7 +200,7 @@ namespace Artemis.Core
                 return false;
 
             // Compare with a static value
-            if (PredicateType == ListRightSideType.Static)
+            if (PredicateType == ProfileRightSideType.Static)
             {
                 object? leftSideValue = GetListPathValue(LeftPath, target);
                 if (leftSideValue != null && leftSideValue.GetType().IsValueType && RightStaticValue == null)
@@ -227,10 +213,13 @@ namespace Artemis.Core
                 return false;
 
             // Compare with dynamic values
-            if (PredicateType == ListRightSideType.Dynamic)
+            if (PredicateType == ProfileRightSideType.Dynamic)
+            {
+                // If the path targets a property inside the list, evaluate on the list path value instead of the right path value
+                if (RightPath.Target is ListPredicateWrapperDataModel)
+                    return Operator.Evaluate(GetListPathValue(LeftPath, target), GetListPathValue(RightPath, target));
                 return Operator.Evaluate(GetListPathValue(LeftPath, target), RightPath.GetValue());
-            if (PredicateType == ListRightSideType.DynamicList)
-                return Operator.Evaluate(GetListPathValue(LeftPath, target), GetListPathValue(RightPath, target));
+            }
 
             return false;
         }
@@ -317,17 +306,22 @@ namespace Artemis.Core
             }
 
             // Right side dynamic
-            if (PredicateType == ListRightSideType.Dynamic && Entity.RightPath != null)
-                RightPath = new DataModelPath(null, Entity.RightPath);
-            // Right side dynamic inside the list
-            else if (PredicateType == ListRightSideType.DynamicList && Entity.RightPath != null)
+            if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)
             {
-                RightPath = DataModelConditionList.ListType != null
-                    ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), Entity.RightPath)
-                    : null;
+                // Right side dynamic inside the list
+                // TODO: Come up with a general wrapper solution because this will clash with events
+                if (Entity.RightPath.DataModelGuid == Constants.CorePluginInfo.Guid)
+                {
+                    RightPath = DataModelConditionList.ListType != null
+                        ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), Entity.RightPath)
+                        : null;
+                }
+                // Right side dynamic
+                else
+                    RightPath = new DataModelPath(null, Entity.RightPath);
             }
             // Right side static
-            else if (PredicateType == ListRightSideType.Static && Entity.RightStaticValue != null)
+            else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
                 try
                 {
                     if (LeftPath != null && LeftPath.IsValid)
@@ -374,7 +368,7 @@ namespace Artemis.Core
         private void ValidateRightSide()
         {
             Type? leftType = LeftPath?.GetPropertyType();
-            if (PredicateType == ListRightSideType.Dynamic)
+            if (PredicateType == ProfileRightSideType.Dynamic)
             {
                 if (RightPath == null || !RightPath.IsValid)
                     return;
@@ -382,15 +376,6 @@ namespace Artemis.Core
                 Type rightSideType = RightPath.GetPropertyType()!;
                 if (leftType != null && !leftType.IsCastableFrom(rightSideType))
                     UpdateRightSideDynamic(null);
-            }
-            else if (PredicateType == ListRightSideType.DynamicList)
-            {
-                if (RightPath == null || !RightPath.IsValid)
-                    return;
-
-                Type rightSideType = RightPath.GetPropertyType()!;
-                if (leftType != null && !leftType.IsCastableFrom(rightSideType))
-                    UpdateRightSideDynamicList(null);
             }
             else
             {
@@ -454,26 +439,5 @@ namespace Artemis.Core
         }
 
         #endregion
-    }
-
-    /// <summary>
-    ///     An enum defining the right side type of a profile entity
-    /// </summary>
-    public enum ListRightSideType
-    {
-        /// <summary>
-        ///     A static right side value
-        /// </summary>
-        Static,
-
-        /// <summary>
-        ///     A dynamic right side value based on a path in a data model
-        /// </summary>
-        Dynamic,
-
-        /// <summary>
-        ///     A dynamic right side value based on a path in the list
-        /// </summary>
-        DynamicList
     }
 }

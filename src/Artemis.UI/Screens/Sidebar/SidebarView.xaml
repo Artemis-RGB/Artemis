@@ -12,17 +12,29 @@
              d:DataContext="{d:DesignInstance sidebar:SidebarViewModel}">
     <Grid>
         <Grid.RowDefinitions>
-            <!-- no idea why this has to be 0 -->
-            <RowDefinition Height="0" />
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0" Grid.RowSpan="2" Source="/Resources/Images/Sidebar/sidebar-header.png" Stretch="Uniform" VerticalAlignment="Top" />
-        <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="15" materialDesign:ShadowAssist.ShadowDepth="Depth1" Text="{Binding ActiveModules}" />
+        <Image Grid.Row="0"
+               Grid.RowSpan="2"
+               Source="/Resources/Images/Sidebar/sidebar-header.png"
+               Stretch="None"
+               VerticalAlignment="Top" Height="120" />
+        <TextBlock Grid.Row="1"
+                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                   Margin="15"
+                   materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                   Text="{Binding ActiveModules}"
+                   VerticalAlignment="Bottom" />
 
-        <controls:SideNavigation Grid.Row="3" Items="{Binding SidebarItems}" SelectedItem="{Binding SelectedItem}" WillSelectNavigationItemCommand="{s:Action SelectItem}" Margin="0 5 0 0" />
+        <controls:SideNavigation Grid.Row="3"
+                                 Items="{Binding SidebarItems}"
+                                 SelectedItem="{Binding SelectedItem}"
+                                 WillSelectNavigationItemCommand="{s:Action SelectItem}"
+                                 Margin="0 5 0 0" />
     </Grid>
 
 </UserControl>

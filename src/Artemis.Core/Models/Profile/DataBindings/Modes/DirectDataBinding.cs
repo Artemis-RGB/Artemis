@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
@@ -28,7 +29,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
-        public IReadOnlyList<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
+        public ReadOnlyCollection<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
 
         internal DirectDataBindingEntity Entity { get; }
 
