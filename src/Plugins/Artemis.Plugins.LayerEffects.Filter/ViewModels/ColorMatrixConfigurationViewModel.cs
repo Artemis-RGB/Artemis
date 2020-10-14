@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Windows.Navigation;
+using Artemis.Core;
 using Artemis.Core.LayerEffects;
 
 namespace Artemis.Plugins.LayerEffects.Filter.ViewModels
@@ -12,12 +13,9 @@ namespace Artemis.Plugins.LayerEffects.Filter.ViewModels
 
         public ColorMatrixEffectProperties Properties { get; set; }
 
-        public void OpenGuide()
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo("cmd", "/c start https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/graphics/skiasharp/effects/color-filters")
-            {
-                CreateNoWindow = true
-            });
+            Utilities.OpenUrl(e.Uri.AbsoluteUri);
         }
     }
 }

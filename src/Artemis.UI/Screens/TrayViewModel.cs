@@ -68,7 +68,7 @@ namespace Artemis.UI.Screens
 
         public void TrayExit()
         {
-            ApplicationUtilities.Shutdown(2, false);
+            Core.Utilities.Shutdown(2, false);
         }
 
         public void TrayOpenDebugger()
