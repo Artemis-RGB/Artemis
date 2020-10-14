@@ -5,6 +5,7 @@ namespace Artemis.Core
 {
     internal class ListPredicateWrapperDataModel<T> : ListPredicateWrapperDataModel
     {
+        [DataModelProperty(Name = "List item", Description = "The current item in the list")]
         public T Value => (UntypedValue is T typedValue ? typedValue : default)!;
     }
 

@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void Initialize()
         {
-            DataModelVisualizationViewModel listDataModel = GetListDataModel();
+            DataModelPropertiesViewModel listDataModel = GetListDataModel();
             if (listDataModel.Children.Count == 1 && listDataModel.Children.First() is DataModelListPropertyViewModel)
                 _isPrimitiveList = true;
             else
@@ -97,7 +97,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (!_isPrimitiveList)
             {
                 LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-                LeftSideSelectionViewModel.ChangeDataModel((DataModelPropertiesViewModel) listDataModel);
+                LeftSideSelectionViewModel.ChangeDataModel(listDataModel);
                 LeftSideSelectionViewModel.PropertySelected += LeftSideOnPropertySelected;
             }
 
@@ -194,7 +194,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        private DataModelVisualizationViewModel GetListDataModel()
+        private DataModelPropertiesViewModel GetListDataModel()
         {
             if (DataModelConditionListPredicate.DataModelConditionList.ListPath?.DataModelGuid == null)
                 throw new ArtemisUIException("Failed to retrieve the list data model VM for this list predicate because it has no list path");
@@ -273,6 +273,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             RightSideSelectionViewModel.DisplaySwitchButton = true;
             RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;
             RightSideSelectionViewModel.SwitchToStaticRequested += RightSideSelectionViewModelOnSwitchToStaticRequested;
+
+            // Add an extra data model to the selection VM to allow self-referencing the current item
+            // The safe cast prevents adding this extra VM on primitive lists where they serve no purpose
+            if (GetListDataModel()?.Children?.FirstOrDefault() is DataModelPropertiesViewModel listValue) 
+                RightSideSelectionViewModel.ExtraDataModelViewModels.Add(listValue);
         }
 
         private void CreateRightSideInputViewModel(Type leftSideType)

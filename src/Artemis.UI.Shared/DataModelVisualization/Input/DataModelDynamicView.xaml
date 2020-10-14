@@ -61,8 +61,8 @@
                 HorizontalAlignment="Left"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
-                <ContextMenu ItemsSource="{Binding DataModelViewModel.Children}" IsOpen="{Binding IsDataModelViewModelOpen, Mode=OneWayToSource}">
-                    <ContextMenu.ItemContainerStyle>
+                <ContextMenu IsOpen="{Binding IsDataModelViewModelOpen, Mode=OneWayToSource}">
+                    <ContextMenu.Resources>
                         <Style TargetType="{x:Type MenuItem}" BasedOn="{StaticResource MaterialDesignMenuItem}">
                             <Setter Property="ItemsSource" Value="{Binding Children}" />
                             <Setter Property="Command" Value="{Binding Data.SelectPropertyCommand, Source={StaticResource DataContextProxy}}" />
@@ -72,7 +72,14 @@
                             <Setter Property="IsSubmenuOpen" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
                             <Setter Property="HeaderTemplate" Value="{StaticResource DataModelDataTemplate}" />
                         </Style>
-                    </ContextMenu.ItemContainerStyle>
+                    </ContextMenu.Resources>
+                    <ContextMenu.ItemsSource>
+                        <CompositeCollection>
+                            <CollectionContainer Collection="{Binding Data.ExtraDataModelViewModels, Source={StaticResource DataContextProxy}}" />
+                            <Separator Visibility="{Binding Data.HasExtraDataModels, Source={StaticResource DataContextProxy}, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
+                            <CollectionContainer Collection="{Binding Data.DataModelViewModel.Children, Source={StaticResource DataContextProxy}}" />
+                        </CompositeCollection>
+                    </ContextMenu.ItemsSource>
                 </ContextMenu>
             </Button.ContextMenu>
             <Grid>
