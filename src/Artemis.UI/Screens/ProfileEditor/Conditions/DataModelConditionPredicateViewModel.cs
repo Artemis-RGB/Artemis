@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
-
+            _supportedInputTypes.Add(typeof(IEnumerable<>));
             Update();
         }
 
@@ -115,33 +115,25 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             SelectedOperator = DataModelConditionPredicate.Operator;
             if (SelectedOperator == null || !SelectedOperator.SupportsRightSide)
             {
-                DisposeRightSideStatic();
-                DisposeRightSideDynamic();
+                DisposeRightSideStaticViewModel();
+                DisposeRightSideDynamicViewModel();
             }
 
             // Ensure the right side has the proper VM
             if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic && SelectedOperator.SupportsRightSide)
             {
-                DisposeRightSideStatic();
+                DisposeRightSideStaticViewModel();
                 if (RightSideSelectionViewModel == null)
-                {
-                    RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-                    RightSideSelectionViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
-                    RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;
-                }
+                    CreateRightSideSelectionViewModel();
 
                 RightSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.RightPath);
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
             }
             else if (SelectedOperator.SupportsRightSide)
             {
-                DisposeRightSideDynamic();
+                DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
-                {
-                    RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
-                    RightSideInputViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
-                    RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
-                }
+                    CreateRightSideInputViewModel(leftSideType);
 
                 RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
                 if (RightSideInputViewModel.TargetType != leftSideType)
@@ -151,6 +143,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
+            if (LeftSideSelectionViewModel.DataModelPath.GetPropertyType().IsGenericEnumerable())
+            {
+                if (Parent is DataModelConditionGroupViewModel groupViewModel)
+                    groupViewModel.ConvertToConditionList(this);
+                return;
+            }
+
             DataModelConditionPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
@@ -182,6 +181,75 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
+        private void ExecuteSelectOperatorCommand(object context)
+        {
+            if (!(context is ConditionOperator DataModelConditionOperator))
+                return;
+
+            SelectedOperator = DataModelConditionOperator;
+            ApplyOperator();
+        }
+
+        #region IDisposable
+
+        public void Dispose()
+        {
+            if (LeftSideSelectionViewModel != null)
+            {
+                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
+                LeftSideSelectionViewModel.Dispose();
+                LeftSideSelectionViewModel = null;
+            }
+
+            DisposeRightSideStaticViewModel();
+            DisposeRightSideDynamicViewModel();
+        }
+
+        #endregion
+
+        #region View model creation
+
+        private void CreateRightSideSelectionViewModel()
+        {
+            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            RightSideSelectionViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
+            RightSideSelectionViewModel.DisplaySwitchButton = true;
+            RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;
+            RightSideSelectionViewModel.SwitchToStaticRequested += RightSideSelectionViewModelOnSwitchToStaticRequested;
+        }
+
+        private void CreateRightSideInputViewModel(Type leftSideType)
+        {
+            RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
+            RightSideInputViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
+            RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
+            RightSideInputViewModel.SwitchToDynamicRequested += RightSideInputViewModelOnSwitchToDynamicRequested;
+        }
+
+        private void DisposeRightSideStaticViewModel()
+        {
+            if (RightSideInputViewModel == null)
+                return;
+            RightSideInputViewModel.ValueUpdated -= RightSideOnValueEntered;
+            RightSideInputViewModel.SwitchToDynamicRequested -= RightSideInputViewModelOnSwitchToDynamicRequested;
+            RightSideInputViewModel.Dispose();
+            RightSideInputViewModel = null;
+        }
+
+        private void DisposeRightSideDynamicViewModel()
+        {
+            if (RightSideSelectionViewModel == null)
+                return;
+            RightSideSelectionViewModel.PropertySelected -= RightSideOnPropertySelected;
+            RightSideSelectionViewModel.SwitchToStaticRequested -= RightSideSelectionViewModelOnSwitchToStaticRequested;
+            RightSideSelectionViewModel.Dispose();
+            RightSideSelectionViewModel = null;
+        }
+
+        #endregion
+
+        #region Event handlers
+
         private void LeftSideOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             ApplyLeftSide();
@@ -197,46 +265,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             ApplyRightSideStatic(e.Value);
         }
 
-        private void ExecuteSelectOperatorCommand(object context)
+        private void RightSideSelectionViewModelOnSwitchToStaticRequested(object sender, EventArgs e)
         {
-            if (!(context is ConditionOperator DataModelConditionOperator))
-                return;
-
-            SelectedOperator = DataModelConditionOperator;
-            ApplyOperator();
+            DataModelConditionPredicate.PredicateType = ProfileRightSideType.Static;
+            Update();
         }
 
-        private void DisposeRightSideStatic()
+
+        private void RightSideInputViewModelOnSwitchToDynamicRequested(object? sender, EventArgs e)
         {
-            if (RightSideInputViewModel != null)
-            {
-                RightSideInputViewModel.ValueUpdated -= RightSideOnValueEntered;
-                RightSideInputViewModel.Dispose();
-                RightSideInputViewModel = null;
-            }
+            DataModelConditionPredicate.PredicateType = ProfileRightSideType.Dynamic;
+            Update();
         }
 
-        private void DisposeRightSideDynamic()
-        {
-            if (RightSideSelectionViewModel != null)
-            {
-                RightSideSelectionViewModel.PropertySelected -= RightSideOnPropertySelected;
-                RightSideSelectionViewModel.Dispose();
-                RightSideSelectionViewModel = null;
-            }
-        }
-
-        public void Dispose()
-        {
-            if (LeftSideSelectionViewModel != null)
-            {
-                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
-                LeftSideSelectionViewModel.Dispose();
-                LeftSideSelectionViewModel = null;
-            }
-
-            DisposeRightSideStatic();
-            DisposeRightSideDynamic();
-        }
+        #endregion
     }
 }
