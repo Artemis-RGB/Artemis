@@ -16,7 +16,7 @@
         <TextBlock TextWrapping="Wrap" Margin="0 25">
             If you are still not deterred,
             <Hyperlink NavigateUri="https://docs.microsoft.com/en-us/xamarin/xamarin-forms/user-interface/graphics/skiasharp/effects/color-filters"
-                       RequestNavigate="{s:Action OpenGuide}">
+                       RequestNavigate="{s:Action OpenHyperlink}">
                 click here
             </Hyperlink>
             for a full explanation of color transforms in SkiaSharp, the rendering library Artemis uses.
