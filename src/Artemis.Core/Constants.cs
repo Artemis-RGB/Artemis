@@ -17,7 +17,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The full path to the Artemis executable
         /// </summary>
-        public static readonly string ExecutablePath = ApplicationUtilities.GetCurrentLocation();
+        public static readonly string ExecutablePath = Utilities.GetCurrentLocation();
 
         /// <summary>
         ///     The full path to the Artemis data folder

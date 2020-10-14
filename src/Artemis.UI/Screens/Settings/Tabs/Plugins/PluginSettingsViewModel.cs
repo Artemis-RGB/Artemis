@@ -131,7 +131,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             // Give the logger a chance to write, might not always be enough but oh well
             await Task.Delay(500);
-            ApplicationUtilities.Shutdown(2, true);
+            Core.Utilities.Shutdown(2, true);
         }
 
         private PackIconKind GetIconKind()
@@ -227,7 +227,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 // Give the logger a chance to write, might not always be enough but oh well
                 await Task.Delay(500);
-                ApplicationUtilities.Shutdown(2, true);
+                Core.Utilities.Shutdown(2, true);
             }
 
             NotifyOfPropertyChange(nameof(IsEnabled));

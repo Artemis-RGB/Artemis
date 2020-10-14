@@ -5,9 +5,9 @@ using Stylet;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Provides utilities to manage the application
+    ///     Provides a few general utilities for ease of use
     /// </summary>
-    public static class ApplicationUtilities
+    public static class Utilities
     {
         /// <summary>
         ///     Attempts to gracefully shut down the application with a delayed kill to ensure the application shut down
@@ -37,6 +37,21 @@ namespace Artemis.Core
 
             // Also attempt a graceful shutdown on the UI thread
             Execute.OnUIThread(() => Application.Current.Shutdown());
+        }
+
+        /// <summary>
+        /// Opens the provided URL in the default web browser
+        /// </summary>
+        /// <param name="url">The URL to open</param>
+        /// <returns>The process created to open the URL</returns>
+        public static Process OpenUrl(string url)
+        {
+            ProcessStartInfo processInfo = new ProcessStartInfo
+            {
+                FileName = url,
+                UseShellExecute = true
+            };
+            return Process.Start(processInfo);
         }
 
         /// <summary>
