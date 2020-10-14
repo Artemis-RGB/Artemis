@@ -88,6 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+    <Resource Include="Resources\Images\Logo\bow.svg" />
     <Resource Include="Resources\Images\Logo\logo-512.ico" />
     <Resource Include="Resources\Images\Logo\logo-512.png" />
   </ItemGroup>
@@ -304,6 +305,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+    <None Remove="Resources\Images\Logo\bow.svg" />
     <None Remove="Resources\Images\Logo\logo-512.ico" />
     <None Remove="Resources\Images\Sidebar\sidebar-header.png" />
   </ItemGroup>
