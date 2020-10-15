@@ -12,11 +12,16 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
             ListItems = new List<SomeListItem>();
             for (int i = 0; i < 20; i++)
                 ListItems.Add(new SomeListItem {ItemName = $"Item {i + 1}", Number = i});
+
+            GenericTest = new Test<string> {Value = "Generic string value"};
         }
 
         // Your datamodel can have regular properties and you can annotate them if you'd like
         [DataModelProperty(Name = "A test string", Description = "It doesn't do much, but it's there.")]
         public string TemplateDataModelString { get; set; }
+
+        public int? NullableInt { get; set; }
+        public Test<string> GenericTest { get; set; }
 
         public SKColor TestColorA { get; set; }
         public SKColor TestColorB { get; set; }
@@ -29,6 +34,11 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
         public bool IsWinning { get; set; }
 
         public List<SomeListItem> ListItems { get; set; }
+    }
+
+    public class Test<T>
+    {
+        public T Value { get; set; }
     }
 
     public class SomeListItem

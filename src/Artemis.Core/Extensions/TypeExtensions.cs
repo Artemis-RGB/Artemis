@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Humanizer;
 
 namespace Artemis.Core
 {
@@ -62,6 +63,25 @@ namespace Artemis.Core
                    || value is double
                    || value is decimal;
         }
+
+        private static readonly Dictionary<Type, string> TypeKeywords = new Dictionary<Type, string>()
+        {
+            {typeof(bool), "bool"},
+            {typeof(byte), "byte"},
+            {typeof(sbyte), "sbyte"},
+            {typeof(char), "char"},
+            {typeof(decimal), "decimal"},
+            {typeof(double), "double"},
+            {typeof(float), "float"},
+            {typeof(int), "int"},
+            {typeof(uint), "uint"},
+            {typeof(long), "long"},
+            {typeof(ulong), "ulong"},
+            {typeof(short), "short"},
+            {typeof(ushort), "ushort"},
+            {typeof(object), "object"},
+            {typeof(string), "string"},
+        };
 
         // From https://stackoverflow.com/a/2224421/5015269 but inverted and renamed to match similar framework methods
         /// <summary>
@@ -126,6 +146,28 @@ namespace Artemis.Core
                 x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 
             return enumerableType?.GenericTypeArguments[0];
+        }
+
+        /// <summary>
+        /// Determines a display name for the given type
+        /// </summary>
+        /// <param name="type">The type to determine the name for</param>
+        /// <param name="humanize">Whether or not to humanize the result, defaults to false</param>
+        /// <returns></returns>
+        public static string GetDisplayName(this Type type, bool humanize = false)
+        {
+            if (!type.IsGenericType)
+            {
+                string displayValue = TypeKeywords.TryGetValue(type, out string? keyword) ? keyword! : type.Name;
+                return humanize ? displayValue.Humanize() : displayValue;
+            }
+
+            Type genericTypeDefinition = type.GetGenericTypeDefinition();
+            if (genericTypeDefinition == typeof(Nullable<>))
+                return type.GenericTypeArguments[0].GetDisplayName(humanize) + "?";
+
+            string stripped = genericTypeDefinition.Name.Split('`')[0];
+            return $"{stripped}<{string.Join(", ", type.GenericTypeArguments.Select(t => t.GetDisplayName(humanize)))}>";
         }
     }
 }
