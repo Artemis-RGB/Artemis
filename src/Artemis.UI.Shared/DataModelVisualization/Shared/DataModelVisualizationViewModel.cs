@@ -260,7 +260,7 @@ namespace Artemis.UI.Shared
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine
-            if (propertyType.IsPrimitive || propertyType.IsEnum || propertyType == typeof(string))
+            if (propertyType.IsPrimitive || propertyType.IsEnum || propertyType == typeof(string) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {Depth = depth};
             if (propertyType.IsGenericEnumerable())
                 return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
