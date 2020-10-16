@@ -81,7 +81,9 @@ namespace Artemis.UI.Shared
             }
         }
 
-        public virtual string DisplayPath => string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
+        public virtual string DisplayPath => DataModelPath != null
+            ? string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier))
+            : null;
 
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
@@ -133,7 +135,7 @@ namespace Artemis.UI.Shared
             }
 
             if (looseMatch)
-                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) || 
+                IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
                                                                  t == typeof(Enum) && type.IsEnum ||
                                                                  t == typeof(IEnumerable<>) && type.IsGenericEnumerable());
             else
@@ -267,7 +269,7 @@ namespace Artemis.UI.Shared
             // For other value types create a child view model
             if (propertyType.IsClass || propertyType.IsStruct())
                 return new DataModelPropertiesViewModel(DataModel, this, dataModelPath) {Depth = depth};
-            
+
             return null;
         }
 

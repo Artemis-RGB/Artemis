@@ -12,6 +12,7 @@ namespace Artemis.UI.Shared
         private string _countDisplay;
         private IEnumerable _list;
         private int _listCount;
+        private Type _displayValueType;
 
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
@@ -28,6 +29,12 @@ namespace Artemis.UI.Shared
         {
             get => _listCount;
             set => SetAndNotify(ref _listCount, value);
+        }
+
+        public Type DisplayValueType
+        {
+            get => _displayValueType;
+            set => SetAndNotify(ref _displayValueType, value);
         }
 
         public string CountDisplay
@@ -68,6 +75,7 @@ namespace Artemis.UI.Shared
                 return;
 
             List = GetCurrentValue() as IEnumerable;
+            DisplayValueType = List?.GetType();
             if (List == null)
                 return;
 

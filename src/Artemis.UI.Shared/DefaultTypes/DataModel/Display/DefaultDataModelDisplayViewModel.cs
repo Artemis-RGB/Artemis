@@ -5,6 +5,11 @@
         private bool _showNull;
         private bool _showToString;
 
+        public DefaultDataModelDisplayViewModel()
+        {
+            ShowNull = true;
+        }
+
         public bool ShowToString
         {
             get => _showToString;

@@ -10,6 +10,9 @@
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
+    <UserControl.Resources>
+        <dataModel:TypeToStringConverter x:Key="TypeToStringConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -60,7 +63,17 @@
                     <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
                 </Style>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
-                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                            <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                    </Grid>
+                    
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{Binding ListChildren}">
                     <Grid>
@@ -69,7 +82,9 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold" Text="[List]"/>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                            <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
+                        </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
                         <TextBlock Grid.Column="2"
                                    Text="{Binding CountDisplay, Mode=OneWay}"
@@ -87,7 +102,7 @@
 
                         <!-- Value description -->
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
-                            <Run>[</Run><Run Text="{Binding DisplayValueType.Name, Mode=OneWay}" /><Run>]</Run>
+                            <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
 
@@ -105,7 +120,7 @@
 
                         <!-- Value description -->
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
-                            <Run>[</Run><Run Text="{Binding ListType.Name, Mode=OneWay}" /><Run>]</Run>
+                            <Run>[</Run><Run Text="{Binding ListType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1" ToolTip="{Binding PropertyDescription.Description}">
                             <Run>List item [</Run><Run Text="{Binding Index, Mode=OneWay}" /><Run>]</Run>

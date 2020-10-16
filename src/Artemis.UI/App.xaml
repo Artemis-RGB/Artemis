@@ -24,9 +24,11 @@
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignExtensions;component/Themes/MaterialDesignLightTheme.xaml" />
 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Scrollbar.xaml" />
-
+                
                 <!-- Shared UI -->
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/Resources/ArtemisShared.xaml" />
+
+                <ResourceDictionary Source="ResourceDictionaries/SideNavigation.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
             <!-- Some general convertes etc. -->
