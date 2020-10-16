@@ -16,7 +16,7 @@ namespace Artemis.Plugins.Modules.General
         public override void EnablePlugin()
         {
             DisplayName = "General";
-            DisplayIcon = "AllInclusive";
+            DisplayIcon = "Images/bow.svg";
             ExpandsDataModel = true;
             
             ModuleTabs = new List<ModuleTab> {new ModuleTab<GeneralViewModel>("General")};

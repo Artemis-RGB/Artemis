@@ -15,6 +15,7 @@ using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Shared;
 using MaterialDesignExtensions.Controls;
 using MaterialDesignExtensions.Model;
 using MaterialDesignThemes.Wpf;
@@ -143,19 +144,11 @@ namespace Artemis.UI.Screens.Sidebar
             if (SidebarModules.Any(io => io.Value == module))
                 return;
 
-            object icon;
-            if (module.DisplayIconPath != null && File.Exists(Path.Combine(module.PluginInfo.Directory.FullName, module.DisplayIconPath)))
-                icon = new BitmapImage(new Uri(Path.Combine(module.PluginInfo.Directory.FullName, module.DisplayIconPath)));
-            else
+            FirstLevelNavigationItem sidebarItem = new FirstLevelNavigationItem
             {
-                // Icon is provided as string to avoid having to reference MaterialDesignThemes
-                bool parsedIcon = Enum.TryParse<PackIconKind>(module.DisplayIcon, true, out PackIconKind iconEnum);
-                if (parsedIcon == false)
-                    iconEnum = PackIconKind.QuestionMarkCircle;
-                icon = iconEnum;
-            }
-
-            FirstLevelNavigationItem sidebarItem = new FirstLevelNavigationItem {Icon = icon, Label = module.DisplayName};
+                Icon = PluginUtilities.GetPluginIcon(module.PluginInfo, module.DisplayIcon), 
+                Label = module.DisplayName
+            };
             SidebarItems.Add(sidebarItem);
             SidebarModules.Add(sidebarItem, module);
         }

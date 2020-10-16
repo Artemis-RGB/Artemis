@@ -176,5 +176,10 @@ namespace Artemis.Core
         {
             return File.Exists(Path.Combine(Directory.FullName, "artemis.lock"));
         }
+
+        public string? ResolveRelativePath(string path)
+        {
+            return path == null ? null : Path.Combine(Directory.FullName, path);
+        }
     }
 }

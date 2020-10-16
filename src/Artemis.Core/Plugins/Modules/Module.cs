@@ -69,19 +69,16 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     The modules display name that's shown in the menu
         /// </summary>
-        public string DisplayName { get; protected set; }
+        public string? DisplayName { get; protected set; }
 
         /// <summary>
-        ///     The modules display icon that's shown in the menu see <see href="https://materialdesignicons.com" /> for available
-        ///     icons
+        ///     The modules display icon that's shown in the UI accepts:
+        ///     <para>
+        ///         Either set to the name of a Material Icon see (<see href="https://materialdesignicons.com" /> for available
+        ///         icons) or set to a path relative to the plugin folder pointing to a .svg file
+        ///     </para>
         /// </summary>
-        public string DisplayIcon { get; set; }
-
-        /// <summary>
-        ///     A path to an image to use as the modules display icon that's shown in the menu.
-        ///     <para>If set, takes precedence over <see cref="DisplayIcon" /></para>
-        /// </summary>
-        public string DisplayIconPath { get; set; }
+        public string? DisplayIcon { get; set; }
 
         /// <summary>
         ///     Gets whether this module is activated. A module can only be active while its <see cref="ActivationRequirements" />
@@ -97,7 +94,8 @@ namespace Artemis.Core.Modules
 
         /// <summary>
         ///     Gets whether this module should update while <see cref="IsActivatedOverride" /> is <see langword="true" />. When
-        ///     set to <see langword="false" /> <see cref="Update" /> and any timed updates will not get called during an activation override.
+        ///     set to <see langword="false" /> <see cref="Update" /> and any timed updates will not get called during an
+        ///     activation override.
         ///     <para>Defaults to <see langword="false" /></para>
         /// </summary>
         public bool UpdateDuringActivationOverride { get; protected set; }
@@ -129,20 +127,20 @@ namespace Artemis.Core.Modules
         /// </summary>
         public int Priority { get; internal set; }
 
-        internal DataModel InternalDataModel { get; set; }
-
-        internal bool InternalExpandsMainDataModel { get; set; }
-        internal ModuleSettingsEntity Entity { get; set; }
-
         /// <summary>
         ///     A list of custom module tabs that show in the UI
         /// </summary>
-        public IEnumerable<ModuleTab> ModuleTabs { get; protected set; }
+        public IEnumerable<ModuleTab>? ModuleTabs { get; protected set; }
 
         /// <summary>
         ///     Gets whether updating this module is currently allowed
         /// </summary>
         public bool IsUpdateAllowed => IsActivated && (UpdateDuringActivationOverride || !IsActivatedOverride);
+
+        internal DataModel? InternalDataModel { get; set; }
+
+        internal bool InternalExpandsMainDataModel { get; set; }
+        internal ModuleSettingsEntity? Entity { get; set; }
 
         /// <summary>
         ///     Called each frame when the module should update
