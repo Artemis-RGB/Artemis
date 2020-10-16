@@ -238,7 +238,7 @@ namespace Artemis.Core
             {
                 // If we are at the end of the main timeline, wrap around back to the beginning
                 if (DisplayContinuously && TimelinePosition >= mainSegmentEnd)
-                    TimelinePosition = StartSegmentLength + (mainSegmentEnd - TimelinePosition);
+                    TimelinePosition = StartSegmentLength;
             }
             else
             {
