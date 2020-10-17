@@ -13,5 +13,6 @@
               ItemsSource="{Binding Path=EnumValues}"
               SelectedValuePath="Value"
               DisplayMemberPath="Description"
-              SelectedValue="{Binding Path=InputValue}" />
+              SelectedValue="{Binding Path=InputValue}" 
+              IsDropDownOpen="True"/>
 </UserControl>

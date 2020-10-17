@@ -113,14 +113,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (DataModelConditionPredicate.Operator == null)
                 DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType ?? typeof(object))));
             SelectedOperator = DataModelConditionPredicate.Operator;
+
             if (SelectedOperator == null || !SelectedOperator.SupportsRightSide)
             {
                 DisposeRightSideStaticViewModel();
                 DisposeRightSideDynamicViewModel();
+                return;
             }
 
             // Ensure the right side has the proper VM
-            if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic && SelectedOperator.SupportsRightSide)
+            if (DataModelConditionPredicate.PredicateType == ProfileRightSideType.Dynamic)
             {
                 DisposeRightSideStaticViewModel();
                 if (RightSideSelectionViewModel == null)
@@ -129,13 +131,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 RightSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.RightPath);
                 RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
             }
-            else if (SelectedOperator.SupportsRightSide)
+            else
             {
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
                     CreateRightSideInputViewModel(leftSideType);
 
-                RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
+                if (leftSideType != null && leftSideType.IsValueType && DataModelConditionPredicate.RightStaticValue == null)
+                    RightSideInputViewModel.Value = leftSideType.GetDefault();
+                else
+                    RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
                 if (RightSideInputViewModel.TargetType != leftSideType)
                     RightSideInputViewModel.UpdateTargetType(leftSideType);
             }

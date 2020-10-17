@@ -14,7 +14,8 @@
     <ComboBox Width="140"
               materialDesign:ComboBoxAssist.ClassicMode="True"
               materialDesign:ValidationAssist.UsePopup="True"
-              HorizontalAlignment="Left">
+              HorizontalAlignment="Left"
+              IsDropDownOpen="True">
         <ComboBoxItem Content="True" IsSelected="{Binding InputValue}" />
         <ComboBoxItem Content="False" IsSelected="{Binding InputValue, Converter={StaticResource InverseBooleanConverter}}"/>
     </ComboBox>

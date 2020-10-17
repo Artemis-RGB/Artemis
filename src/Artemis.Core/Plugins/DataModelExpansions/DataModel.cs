@@ -58,7 +58,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="key">The key of the child, must be unique to this data model</param>
         /// <param name="name">An optional name, if not provided the key will be used in a humanized form</param>
         /// <param name="description">An optional description</param>
-        public DataModel AddDynamicChild(DataModel dynamicDataModel, string key, string name = null, string description = null)
+        public T AddDynamicChild<T>(T dynamicDataModel, string key, string name = null, string description = null) where T : DataModel
         {
             if (dynamicDataModel == null)
                 throw new ArgumentNullException(nameof(dynamicDataModel));

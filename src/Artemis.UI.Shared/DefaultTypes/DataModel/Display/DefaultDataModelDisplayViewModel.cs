@@ -1,4 +1,6 @@
-﻿namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
+﻿using System;
+
+namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
 {
     public class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<object>
     {
@@ -24,6 +26,9 @@
 
         protected override void OnDisplayValueUpdated()
         {
+            if (DisplayValue is Enum enumDisplayValue)
+                DisplayValue = EnumUtilities.HumanizeValue(enumDisplayValue);
+
             ShowToString = DisplayValue != null;
             ShowNull = DisplayValue == null;
         }

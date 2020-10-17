@@ -216,13 +216,6 @@ namespace Artemis.UI.Shared.Services
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
         {
-            // The view models expecting value types shouldn't be given null, avoid that
-            if (registration.SupportedType.IsValueType)
-            {
-                if (initialValue == null)
-                    initialValue = Activator.CreateInstance(registration.SupportedType);
-            }
-
             // This assumes the type can be converted, that has been checked when the VM was created
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
