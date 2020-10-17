@@ -13,7 +13,9 @@ namespace Artemis.Core.DefaultTypes {
             string aString = (string)a;
             string bString = (string)b;
 
-            return Regex.IsMatch(aString, bString);
+            Match match = Regex.Match(aString, bString);
+
+            return match.Success && match.Value.Equals(aString);
         }
     }
 }
