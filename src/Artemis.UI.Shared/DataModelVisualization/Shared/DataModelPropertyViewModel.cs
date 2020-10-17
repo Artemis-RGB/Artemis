@@ -45,7 +45,8 @@ namespace Artemis.UI.Shared
             }
 
             DisplayValue = GetCurrentValue();
-            DisplayValueType = DataModelPath.GetPropertyType();
+            DisplayValueType = DisplayValue != null ? DisplayValue.GetType() : DataModelPath.GetPropertyType();
+
             UpdateDisplayParameters();
         }
 

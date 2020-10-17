@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
 using Humanizer;
 
@@ -12,23 +10,6 @@ namespace Artemis.UI.Shared
     /// </summary>
     public static class EnumUtilities
     {
-        /// <summary>
-        ///     Gets a human readable description of the given enum value
-        /// </summary>
-        /// <param name="value">The value to get a description for</param>
-        /// <returns>A human readable description of the given enum value</returns>
-        public static string Description(this Enum value)
-        {
-            object[] attributes = value.GetType().GetField(value.ToString()).GetCustomAttributes(typeof(DescriptionAttribute), false);
-            if (attributes.Any())
-                return (attributes.First() as DescriptionAttribute).Description;
-
-            // If no description is found, the least we can do is replace underscores with spaces
-            // You can add your own custom default formatting logic here
-            TextInfo ti = CultureInfo.CurrentCulture.TextInfo;
-            return ti.ToTitleCase(ti.ToLower(value.ToString().Replace("_", " ")));
-        }
-
         /// <summary>
         ///     Creates a list containing a <see cref="ValueDescription" /> for each value in the enum type
         /// </summary>
