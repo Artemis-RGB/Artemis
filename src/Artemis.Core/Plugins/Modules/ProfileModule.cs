@@ -232,6 +232,16 @@ namespace Artemis.Core.Modules
             profile?.Dispose();
         }
 
+        internal override void Reactivate(bool isDeactivateOverride, bool isActivateOverride)
+        {
+            if (!IsActivated)
+                return;
+
+            // Avoid disposing the profile
+            base.Deactivate(isDeactivateOverride);
+            Activate(isActivateOverride);
+        }
+
         #region Events
 
         /// <summary>

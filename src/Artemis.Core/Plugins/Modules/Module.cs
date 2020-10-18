@@ -222,6 +222,15 @@ namespace Artemis.Core.Modules
             ModuleDeactivated(isOverride);
         }
 
+        internal virtual void Reactivate(bool isDeactivateOverride, bool isActivateOverride)
+        {
+            if (!IsActivated)
+                return;
+
+            Deactivate(isDeactivateOverride);
+            Activate(isActivateOverride);
+        }
+
         internal void ApplyToEntity()
         {
             if (Entity == null)
