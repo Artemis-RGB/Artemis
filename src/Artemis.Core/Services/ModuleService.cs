@@ -58,7 +58,7 @@ namespace Artemis.Core.Services
                 // Always deactivate all other modules whenever override is called
                 List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
                 foreach (Module module in modules.Where(m => m != overrideModule))
-                    OverrideDeactivate(module);
+                    OverrideDeactivate(module, overrideModule != null);
 
                 ActiveModuleOverride = overrideModule;
             }
@@ -84,13 +84,11 @@ namespace Artemis.Core.Services
                     bool shouldBeActivated = ActiveModuleOverride.EvaluateActivationRequirements();
                     if (shouldBeActivated && ActiveModuleOverride.IsActivatedOverride)
                     {
-                        ActiveModuleOverride.Deactivate(true);
-                        ActiveModuleOverride.Activate(false);
+                        ActiveModuleOverride.Reactivate(true, false);
                     }
                     else if (!shouldBeActivated && !ActiveModuleOverride.IsActivatedOverride)
                     {
-                        ActiveModuleOverride.Deactivate(false);
-                        ActiveModuleOverride.Activate(true);
+                        ActiveModuleOverride.Reactivate(false, true);
                     }
 
                     return;
@@ -171,31 +169,12 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void OverrideActivate(Module module)
-        {
-            try
-            {
-                if (module.IsActivated)
-                    return;
-
-                module.Activate(true);
-
-                // If this is a profile module, activate the last active profile after module activation
-                if (module is ProfileModule profileModule)
-                    _profileService.ActivateLastProfile(profileModule);
-            }
-            catch (Exception e)
-            {
-                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to activate module and last profile.", e), "Failed to activate module and last profile");
-                throw;
-            }
-        }
-
         private async Task DeactivateModule(Module module)
         {
             try
             {
-                // If this is a profile module, activate the last active profile after module activation
+                // If this is a profile module, animate profile disable
+                // module.Deactivate would do the same but without animation
                 if (module.IsActivated && module is ProfileModule profileModule)
                     await profileModule.ChangeActiveProfileAnimated(null, null);
 
@@ -208,17 +187,41 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void OverrideDeactivate(Module module)
+        private void OverrideActivate(Module module)
+        {
+            try
+            {
+                if (module.IsActivated)
+                    return;
+
+                // If activating while it should be deactivated, its an override
+                bool shouldBeActivated = module.EvaluateActivationRequirements();
+                module.Activate(!shouldBeActivated);
+
+                // If this is a profile module, activate the last active profile after module activation
+                if (module is ProfileModule profileModule)
+                    _profileService.ActivateLastProfile(profileModule);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(new ArtemisPluginException(module.PluginInfo, "Failed to activate module and last profile.", e), "Failed to activate module and last profile");
+                throw;
+            }
+        }
+
+        private void OverrideDeactivate(Module module, bool clearingOverride)
         {
             try
             {
                 if (!module.IsActivated)
                     return;
 
-                // If this is a profile module, activate the last active profile after module activation
-                if (module is ProfileModule profileModule)
-                    profileModule.ChangeActiveProfile(null, null);
-
+                // If deactivating while it should be activated, its an override
+                bool shouldBeActivated = module.EvaluateActivationRequirements();
+                // No need to deactivate if it is not in an overridden state
+                if (shouldBeActivated && !module.IsActivatedOverride && !clearingOverride)
+                    return;
+                
                 module.Deactivate(true);
             }
             catch (Exception e)

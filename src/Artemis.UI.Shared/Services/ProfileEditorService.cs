@@ -361,7 +361,8 @@ namespace Artemis.UI.Shared.Services
 
         private void SelectedProfileOnDeactivated(object sender, EventArgs e)
         {
-            Execute.PostToUIThread(() => ChangeSelectedProfile(null));
+            // Execute.PostToUIThread(() => ChangeSelectedProfile(null));
+            ChangeSelectedProfile(null);
         }
     }
 }
