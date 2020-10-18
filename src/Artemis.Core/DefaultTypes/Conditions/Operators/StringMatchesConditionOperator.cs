@@ -10,12 +10,14 @@ namespace Artemis.Core.DefaultTypes {
         public override string Icon => "Regex";
 
         public override bool Evaluate(object a, object b) {
-            string aString = (string)a;
-            string bString = (string)b;
+            string text = a?.ToString() ?? string.Empty;
+            string regex = b?.ToString() ?? string.Empty;
 
-            Match match = Regex.Match(aString, bString);
+            // Ensures full match
+            if (!regex.StartsWith("^")) regex = "^" + regex;
+            if (!regex.EndsWith("$")) regex += "$";
 
-            return match.Success && match.Value.Equals(aString);
+            return Regex.IsMatch(text, regex);
         }
     }
 }
