@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core.DefaultTypes
 {
-    internal class StringStartsWithConditionOperator : ConditionOperator
+    internal class StringStartsWithConditionOperator : ConditionOperator<string, string>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
-
         public override string Description => "Starts with";
         public override string Icon => "ContainStart";
 
-        public override bool Evaluate(object a, object b)
+        public override bool Evaluate(string a, string b)
         {
-            string aString = (string) a;
-            string bString = (string) b;
-
-            return bString != null && aString != null && aString.StartsWith(bString, StringComparison.InvariantCultureIgnoreCase);
+            return a != null && b != null && a.StartsWith(b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
