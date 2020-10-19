@@ -8,7 +8,7 @@ namespace Artemis.Core
     {
         private static readonly List<ConditionOperatorRegistration> Registrations = new List<ConditionOperatorRegistration>();
 
-        public static ConditionOperatorRegistration Add(ConditionOperator conditionOperator)
+        public static ConditionOperatorRegistration Add(BaseConditionOperator conditionOperator)
         {
             ConditionOperatorRegistration registration;
             lock (Registrations)
@@ -46,19 +46,21 @@ namespace Artemis.Core
             }
         }
 
-        public static List<ConditionOperatorRegistration> GetForType(Type type)
+        public static List<ConditionOperatorRegistration> GetForType(Type type, ConditionParameterSide side)
         {
             lock (Registrations)
             {
                 if (type == null)
                     return new List<ConditionOperatorRegistration>(Registrations);
 
-                List<ConditionOperatorRegistration> candidates = Registrations.Where(r => r.ConditionOperator.CompatibleTypes.Any(t => t.IsCastableFrom(type))).ToList();
+                List<ConditionOperatorRegistration> candidates = Registrations.Where(r => r.ConditionOperator.SupportsType(type, side)).ToList();
 
                 // If there are multiple operators with the same description, use the closest match
                 foreach (IGrouping<string, ConditionOperatorRegistration> candidate in candidates.GroupBy(r => r.ConditionOperator.Description).Where(g => g.Count() > 1).ToList())
                 {
-                    ConditionOperatorRegistration closest = candidate.OrderByDescending(r => r.ConditionOperator.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    ConditionOperatorRegistration closest = side == ConditionParameterSide.Left 
+                        ? candidate.OrderByDescending(r => r.ConditionOperator.LeftSideType.ScoreCastability(type)).First() 
+                        : candidate.OrderByDescending(r => r.ConditionOperator.RightSideType!.ScoreCastability(type)).First();
                     foreach (ConditionOperatorRegistration conditionOperator in candidate)
                     {
                         if (conditionOperator != closest)

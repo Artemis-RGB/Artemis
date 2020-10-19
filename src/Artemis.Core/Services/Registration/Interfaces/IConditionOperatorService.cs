@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="pluginInfo">The PluginInfo of the plugin this condition operator belongs to</param>
         /// <param name="conditionOperator">The condition operator to register</param>
-        ConditionOperatorRegistration RegisterConditionOperator([NotNull] PluginInfo pluginInfo, [NotNull] ConditionOperator conditionOperator);
+        ConditionOperatorRegistration RegisterConditionOperator([NotNull] PluginInfo pluginInfo, [NotNull] BaseConditionOperator conditionOperator);
 
         /// <summary>
         ///     Removes a condition operator so it is no longer available for use in layer conditions
@@ -25,13 +25,13 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Returns all the condition operators compatible with the provided type
         /// </summary>
-        List<ConditionOperator> GetConditionOperatorsForType(Type type);
+        List<BaseConditionOperator> GetConditionOperatorsForType(Type type, ConditionParameterSide side);
 
         /// <summary>
         ///     Gets a condition operator by its plugin GUID and type name
         /// </summary>
         /// <param name="operatorPluginGuid">The operator's plugin GUID</param>
         /// <param name="operatorType">The type name of the operator</param>
-        ConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
+        BaseConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
     }
 }

@@ -12,7 +12,7 @@ namespace Artemis.Core.Services
             RegisterBuiltInConditionOperators();
         }
 
-        public ConditionOperatorRegistration RegisterConditionOperator(PluginInfo pluginInfo, ConditionOperator conditionOperator)
+        public ConditionOperatorRegistration RegisterConditionOperator(PluginInfo pluginInfo, BaseConditionOperator conditionOperator)
         {
             if (pluginInfo == null)
                 throw new ArgumentNullException(nameof(pluginInfo));
@@ -30,12 +30,12 @@ namespace Artemis.Core.Services
             ConditionOperatorStore.Remove(registration);
         }
 
-        public List<ConditionOperator> GetConditionOperatorsForType(Type type)
+        public List<BaseConditionOperator> GetConditionOperatorsForType(Type type, ConditionParameterSide side)
         {
-            return ConditionOperatorStore.GetForType(type).Select(r => r.ConditionOperator).ToList();
+            return ConditionOperatorStore.GetForType(type, side).Select(r => r.ConditionOperator).ToList();
         }
 
-        public ConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType)
+        public BaseConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType)
         {
             return ConditionOperatorStore.Get(operatorPluginGuid, operatorType)?.ConditionOperator;
         }
@@ -47,6 +47,8 @@ namespace Artemis.Core.Services
             RegisterConditionOperator(Constants.CorePluginInfo, new NotEqualConditionOperator());
 
             // Numeric operators
+            RegisterConditionOperator(Constants.CorePluginInfo, new NumberEqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePluginInfo, new NumberNotEqualConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new LessThanConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanConditionOperator());
             RegisterConditionOperator(Constants.CorePluginInfo, new LessThanOrEqualConditionOperator());
