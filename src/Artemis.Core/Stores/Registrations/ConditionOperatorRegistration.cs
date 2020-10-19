@@ -7,7 +7,7 @@ namespace Artemis.Core
     /// </summary>
     public class ConditionOperatorRegistration
     {
-        internal ConditionOperatorRegistration(ConditionOperator conditionOperator, Plugin plugin)
+        internal ConditionOperatorRegistration(BaseConditionOperator conditionOperator, Plugin plugin)
         {
             ConditionOperator = conditionOperator;
             Plugin = plugin;
@@ -18,7 +18,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the condition operator that has been registered
         /// </summary>
-        public ConditionOperator ConditionOperator { get; }
+        public BaseConditionOperator ConditionOperator { get; }
 
         /// <summary>
         ///     Gets the plugin the condition operator is associated with

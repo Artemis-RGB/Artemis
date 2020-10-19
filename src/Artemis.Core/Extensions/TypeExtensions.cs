@@ -21,6 +21,25 @@ namespace Artemis.Core
             {typeof(short), new List<Type> {typeof(byte)}}
         };
 
+        private static readonly Dictionary<Type, string> TypeKeywords = new Dictionary<Type, string>
+        {
+            {typeof(bool), "bool"},
+            {typeof(byte), "byte"},
+            {typeof(sbyte), "sbyte"},
+            {typeof(char), "char"},
+            {typeof(decimal), "decimal"},
+            {typeof(double), "double"},
+            {typeof(float), "float"},
+            {typeof(int), "int"},
+            {typeof(uint), "uint"},
+            {typeof(long), "long"},
+            {typeof(ulong), "ulong"},
+            {typeof(short), "short"},
+            {typeof(ushort), "ushort"},
+            {typeof(object), "object"},
+            {typeof(string), "string"}
+        };
+
         public static bool IsGenericType(this Type type, Type genericType)
         {
             if (type == null)
@@ -64,31 +83,10 @@ namespace Artemis.Core
                    || value is decimal;
         }
 
-        private static readonly Dictionary<Type, string> TypeKeywords = new Dictionary<Type, string>()
-        {
-            {typeof(bool), "bool"},
-            {typeof(byte), "byte"},
-            {typeof(sbyte), "sbyte"},
-            {typeof(char), "char"},
-            {typeof(decimal), "decimal"},
-            {typeof(double), "double"},
-            {typeof(float), "float"},
-            {typeof(int), "int"},
-            {typeof(uint), "uint"},
-            {typeof(long), "long"},
-            {typeof(ulong), "ulong"},
-            {typeof(short), "short"},
-            {typeof(ushort), "ushort"},
-            {typeof(object), "object"},
-            {typeof(string), "string"},
-        };
-
         // From https://stackoverflow.com/a/2224421/5015269 but inverted and renamed to match similar framework methods
         /// <summary>
         ///     Determines whether an instance of a specified type can be casted to a variable of the current type
         /// </summary>
-        /// <param name="to"></param>
-        /// <param name="from"></param>
         /// <returns></returns>
         public static bool IsCastableFrom(this Type to, Type from)
         {
@@ -99,12 +97,30 @@ namespace Artemis.Core
             if (PrimitiveTypeConversions.ContainsKey(to) && PrimitiveTypeConversions[to].Contains(from))
                 return true;
             bool castable = from.GetMethods(BindingFlags.Public | BindingFlags.Static)
-                .Any(
-                    m => m.ReturnType == to &&
-                         (m.Name == "op_Implicit" ||
-                          m.Name == "op_Explicit")
-                );
+                .Any(m => m.ReturnType == to && (m.Name == "op_Implicit" || m.Name == "op_Explicit"));
             return castable;
+        }
+
+        /// <summary>
+        ///     Scores how well the two types can be casted from one to another, 5 being a perfect match and 0 being not castable
+        ///     at all
+        /// </summary>
+        /// <returns></returns>
+        public static int ScoreCastability(this Type to, Type from)
+        {
+            if (to == from)
+                return 5;
+            if (to.TypeIsNumber() && from.TypeIsNumber())
+                return 4;
+            if (PrimitiveTypeConversions.ContainsKey(to) && PrimitiveTypeConversions[to].Contains(from))
+                return 3;
+            bool castable = from.GetMethods(BindingFlags.Public | BindingFlags.Static)
+                .Any(m => m.ReturnType == to && (m.Name == "op_Implicit" || m.Name == "op_Explicit"));
+            if (castable)
+                return 2;
+            if (to.IsAssignableFrom(from))
+                return 1;
+            return 0;
         }
 
         /// <summary>
@@ -149,7 +165,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Determines a display name for the given type
+        ///     Determines a display name for the given type
         /// </summary>
         /// <param name="type">The type to determine the name for</param>
         /// <param name="humanize">Whether or not to humanize the result, defaults to false</param>

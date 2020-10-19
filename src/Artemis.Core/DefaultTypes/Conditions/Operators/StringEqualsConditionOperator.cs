@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core.DefaultTypes
 {
-    internal class StringEqualsConditionOperator : ConditionOperator
+    internal class StringEqualsConditionOperator : ConditionOperator<string, string>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
-
         public override string Description => "Equals";
         public override string Icon => "Equal";
 
-        public override bool Evaluate(object a, object b)
+        public override bool Evaluate(string a, string b)
         {
-            string aString = (string) a;
-            string bString = (string) b;
-
-            return string.Equals(aString, bString, StringComparison.InvariantCultureIgnoreCase);
+            return string.Equals(a, b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }
