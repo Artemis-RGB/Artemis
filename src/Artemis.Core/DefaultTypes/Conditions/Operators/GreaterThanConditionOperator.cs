@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class GreaterThanConditionOperator : ConditionOperator
+    internal class GreaterThanConditionOperator : ConditionOperator<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-
         public override string Description => "Is greater than";
         public override string Icon => "GreaterThan";
 
-        public override bool Evaluate(object a, object b)
+        public override bool Evaluate(double a, double b)
         {
-            return Convert.ToSingle(a) > Convert.ToSingle(b);
+            return a > b;
         }
     }
 }

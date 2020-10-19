@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core.DefaultTypes
 {
-    internal class StringEndsWithConditionOperator : ConditionOperator
+    internal class StringEndsWithConditionOperator : ConditionOperator<string, string>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(string)};
-
         public override string Description => "Ends with";
         public override string Icon => "ContainEnd";
 
-        public override bool Evaluate(object a, object b)
+        public override bool Evaluate(string a, string b)
         {
-            string aString = (string) a;
-            string bString = (string) b;
-
-            return bString != null && aString != null && aString.EndsWith(bString, StringComparison.InvariantCultureIgnoreCase);
+            return a != null && b != null && a.EndsWith(b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

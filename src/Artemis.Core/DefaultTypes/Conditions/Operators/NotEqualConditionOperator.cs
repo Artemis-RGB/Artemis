@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class NotEqualConditionOperator : ConditionOperator
+    internal class NotEqualConditionOperator : ConditionOperator<object, object>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(object)};
-
         public override string Description => "Does not equal";
         public override string Icon => "NotEqualVariant";
 

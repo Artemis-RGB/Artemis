@@ -19,10 +19,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private DataModelDynamicViewModel _leftSideSelectionViewModel;
-        private BindableCollection<ConditionOperator> _operators;
+        private BindableCollection<BaseConditionOperator> _operators;
         private DataModelStaticViewModel _rightSideInputViewModel;
         private DataModelDynamicViewModel _rightSideSelectionViewModel;
-        private ConditionOperator _selectedOperator;
+        private BaseConditionOperator _selectedOperator;
 
         private List<Type> _supportedInputTypes;
 
@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _supportedInputTypes = new List<Type>();
 
             SelectOperatorCommand = new DelegateCommand(ExecuteSelectOperatorCommand);
-            Operators = new BindableCollection<ConditionOperator>();
+            Operators = new BindableCollection<BaseConditionOperator>();
 
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
 
@@ -50,7 +50,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public PluginSetting<bool> ShowDataModelValues { get; }
 
 
-        public BindableCollection<ConditionOperator> Operators
+        public BindableCollection<BaseConditionOperator> Operators
         {
             get => _operators;
             set => SetAndNotify(ref _operators, value);
@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             set => SetAndNotify(ref _leftSideSelectionViewModel, value);
         }
 
-        public ConditionOperator SelectedOperator
+        public BaseConditionOperator SelectedOperator
         {
             get => _selectedOperator;
             set => SetAndNotify(ref _selectedOperator, value);
@@ -109,12 +109,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             // Get the supported operators
             Operators.Clear();
-            Operators.AddRange(_conditionOperatorService.GetConditionOperatorsForType(leftSideType ?? typeof(object)));
+            Operators.AddRange(_conditionOperatorService.GetConditionOperatorsForType(leftSideType ?? typeof(object), ConditionParameterSide.Left));
             if (DataModelConditionPredicate.Operator == null)
-                DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType ?? typeof(object))));
+                DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType ?? typeof(object), ConditionParameterSide.Left)));
             SelectedOperator = DataModelConditionPredicate.Operator;
 
-            if (SelectedOperator == null || !SelectedOperator.SupportsRightSide)
+            // Without a selected operator or one that supports a right side, leave the right side input empty
+            if (SelectedOperator == null || SelectedOperator.RightSideType == null)
             {
                 DisposeRightSideStaticViewModel();
                 DisposeRightSideDynamicViewModel();
@@ -129,20 +130,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                     CreateRightSideSelectionViewModel();
 
                 RightSideSelectionViewModel.ChangeDataModelPath(DataModelConditionPredicate.RightPath);
-                RightSideSelectionViewModel.FilterTypes = new[] {leftSideType};
+                RightSideSelectionViewModel.FilterTypes = new[] {SelectedOperator.RightSideType};
             }
             else
             {
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
-                    CreateRightSideInputViewModel(leftSideType);
+                    CreateRightSideInputViewModel(SelectedOperator.RightSideType);
 
-                if (leftSideType != null && leftSideType.IsValueType && DataModelConditionPredicate.RightStaticValue == null)
-                    RightSideInputViewModel.Value = leftSideType.GetDefault();
+                if (SelectedOperator.RightSideType.IsValueType && DataModelConditionPredicate.RightStaticValue == null)
+                    RightSideInputViewModel.Value = SelectedOperator.RightSideType.GetDefault();
                 else
                     RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
-                if (RightSideInputViewModel.TargetType != leftSideType)
-                    RightSideInputViewModel.UpdateTargetType(leftSideType);
+                if (RightSideInputViewModel.TargetType != SelectedOperator.RightSideType)
+                    RightSideInputViewModel.UpdateTargetType(SelectedOperator.RightSideType);
             }
         }
 
@@ -188,7 +189,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         private void ExecuteSelectOperatorCommand(object context)
         {
-            if (!(context is ConditionOperator DataModelConditionOperator))
+            if (!(context is BaseConditionOperator DataModelConditionOperator))
                 return;
 
             SelectedOperator = DataModelConditionOperator;

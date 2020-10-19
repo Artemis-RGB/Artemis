@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -43,7 +44,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the operator
         /// </summary>
-        public ConditionOperator? Operator { get; private set; }
+        public BaseConditionOperator? Operator { get; private set; }
 
         /// <summary>
         ///     Gets the path of the left property
@@ -87,6 +88,8 @@ namespace Artemis.Core
         {
             if (path != null && !path.IsValid)
                 throw new ArtemisCoreException("Cannot update right side of predicate to an invalid path");
+            if (Operator != null && path != null && !Operator.SupportsType(path.GetPropertyType()!, ConditionParameterSide.Right))
+                throw new ArtemisCoreException($"Selected operator does not support right side of type {path.GetPropertyType()!.Name}");
 
             RightPath?.Dispose();
             RightPath = path != null ? new DataModelPath(path) : null;
@@ -104,24 +107,27 @@ namespace Artemis.Core
             RightPath?.Dispose();
             RightPath = null;
 
-            // If the left side is empty simply apply the value, any validation will wait
-            if (LeftPath == null || !LeftPath.IsValid)
+            // If the operator is null simply apply the value, any validation will wait
+            if (Operator == null)
             {
                 RightStaticValue = staticValue;
                 return;
             }
-
-            // If the left path is valid we can expect a type
-            Type leftSideType = LeftPath.GetPropertyType()!;
+            // If the operator does not support a right side, always set it to null
+            if (Operator.RightSideType == null)
+            {
+                RightStaticValue = null;
+                return;
+            }
 
             // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == leftSideType)
+            if (staticValue != null && staticValue.GetType() == Operator.RightSideType)
                 RightStaticValue = staticValue;
             else if (staticValue != null)
-                RightStaticValue = Convert.ChangeType(staticValue, leftSideType);
+                RightStaticValue = Convert.ChangeType(staticValue, Operator.RightSideType);
             // If null create a default instance for value types or simply make it null for reference types
-            else if (leftSideType.IsValueType)
-                RightStaticValue = Activator.CreateInstance(leftSideType);
+            else if (Operator.RightSideType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(Operator.RightSideType);
             else
                 RightStaticValue = null;
         }
@@ -130,9 +136,8 @@ namespace Artemis.Core
         ///     Updates the operator of the predicate and re-compiles the expression
         /// </summary>
         /// <param name="conditionOperator"></param>
-        public void UpdateOperator(ConditionOperator? conditionOperator)
+        public void UpdateOperator(BaseConditionOperator? conditionOperator)
         {
-            // Calling CreateExpression will clear compiled expressions
             if (conditionOperator == null)
             {
                 Operator = null;
@@ -147,11 +152,13 @@ namespace Artemis.Core
             }
 
             Type leftType = LeftPath.GetPropertyType()!;
-            if (!conditionOperator.SupportsType(leftType))
+            // Left side can't go empty so enforce a match
+            if (!conditionOperator.SupportsType(leftType, ConditionParameterSide.Left))
                 throw new ArtemisCoreException($"Cannot apply operator {conditionOperator.GetType().Name} to this predicate because " +
                                                $"it does not support left side type {leftType.Name}");
 
             Operator = conditionOperator;
+            ValidateRightSide();
         }
 
         /// <inheritdoc />
@@ -167,14 +174,14 @@ namespace Artemis.Core
                 if (leftSideValue != null && leftSideValue.GetType().IsValueType && RightStaticValue == null)
                     return false;
 
-                return Operator.Evaluate(leftSideValue, RightStaticValue);
+                return Operator.InternalEvaluate(leftSideValue, RightStaticValue);
             }
 
             if (RightPath == null || !RightPath.IsValid)
                 return false;
 
             // Compare with dynamic values
-            return Operator.Evaluate(LeftPath.GetValue(), RightPath.GetValue());
+            return Operator.InternalEvaluate(LeftPath.GetValue(), RightPath.GetValue());
         }
 
         /// <inheritdoc />
@@ -237,7 +244,7 @@ namespace Artemis.Core
             // Operator
             if (Entity.OperatorPluginGuid != null)
             {
-                ConditionOperator? conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
+                BaseConditionOperator? conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
                 if (conditionOperator != null)
                     UpdateOperator(conditionOperator);
             }
@@ -292,28 +299,31 @@ namespace Artemis.Core
                 return;
 
             Type leftType = LeftPath.GetPropertyType()!;
-            if (!Operator.SupportsType(leftType))
+            if (!Operator.SupportsType(leftType, ConditionParameterSide.Left))
                 Operator = null;
         }
 
         private void ValidateRightSide()
         {
-            Type? leftType = LeftPath?.GetPropertyType();
+            if (Operator == null)
+                return;
+
             if (PredicateType == ProfileRightSideType.Dynamic)
             {
                 if (RightPath == null || !RightPath.IsValid)
                     return;
 
                 Type rightSideType = RightPath.GetPropertyType()!;
-                if (leftType != null && !leftType.IsCastableFrom(rightSideType))
+                if (!Operator.SupportsType(rightSideType, ConditionParameterSide.Right))
                     UpdateRightSideDynamic(null);
             }
             else
             {
-                if (RightStaticValue != null && (leftType == null || leftType.IsCastableFrom(RightStaticValue.GetType())))
-                    UpdateRightSideStatic(RightStaticValue);
-                else
-                    UpdateRightSideStatic(null);
+                if (RightStaticValue == null)
+                    return;
+
+                if (!Operator.SupportsType(RightStaticValue.GetType(), ConditionParameterSide.Right))
+                    UpdateRightSideDynamic(null);
             }
         }
 
@@ -321,7 +331,7 @@ namespace Artemis.Core
 
         private void ConditionOperatorStoreOnConditionOperatorAdded(object? sender, ConditionOperatorStoreEvent e)
         {
-            ConditionOperator conditionOperator = e.Registration.ConditionOperator;
+            BaseConditionOperator conditionOperator = e.Registration.ConditionOperator;
             if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
                 UpdateOperator(conditionOperator);
         }
