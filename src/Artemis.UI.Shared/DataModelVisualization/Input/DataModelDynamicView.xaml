@@ -41,6 +41,8 @@
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
         <Button Style="{StaticResource MaterialDesignFlatDarkBgButton}"
+                Background="{Binding SwitchButtonBrush}"
+                BorderBrush="{Binding SwitchButtonBrush}"
                 Height="22"
                 Padding="0"
                 Width="22"

@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="pluginInfo">The PluginInfo of the plugin this modifier type belongs to</param>
         /// <param name="dataBindingModifierType">The modifier type to register</param>
-        DataBindingModifierTypeRegistration RegisterModifierType([NotNull] PluginInfo pluginInfo, [NotNull] DataBindingModifierType dataBindingModifierType);
+        DataBindingModifierTypeRegistration RegisterModifierType([NotNull] PluginInfo pluginInfo, [NotNull] BaseDataBindingModifierType dataBindingModifierType);
 
         /// <summary>
         ///     Removes a modifier type so it is no longer available for use in data bindings
@@ -25,7 +25,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Returns all the data binding modifier types compatible with the provided type
         /// </summary>
-        List<DataBindingModifierType> GetCompatibleModifierTypes(Type type);
+        List<BaseDataBindingModifierType> GetCompatibleModifierTypes(Type type, ModifierTypePart part);
 
         /// <summary>
         ///     Gets a modifier type by its plugin GUID and type name
@@ -33,6 +33,6 @@ namespace Artemis.Core.Services
         /// <param name="modifierTypePluginGuid">The modifier type's plugin GUID</param>
         /// <param name="modifierType">The type name of the modifier type</param>
         /// <returns></returns>
-        DataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType);
+        BaseDataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType);
     }
 }

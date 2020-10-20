@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class SubtractModifierType : DataBindingModifierType
+    internal class SubtractModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-
         public override string Name => "Subtract";
         public override string Icon => "Minus";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            return Convert.ToSingle(currentValue) - Convert.ToSingle(parameterValue);
+            return currentValue - parameterValue;
         }
     }
 }

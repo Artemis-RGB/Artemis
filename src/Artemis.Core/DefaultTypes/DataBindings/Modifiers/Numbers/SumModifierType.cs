@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class SumModifierType : DataBindingModifierType
+    internal class SumModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-
         public override string Name => "Sum";
         public override string Icon => "Plus";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            return Convert.ToSingle(currentValue) + Convert.ToSingle(parameterValue);
+            return currentValue + parameterValue;
         }
     }
 }

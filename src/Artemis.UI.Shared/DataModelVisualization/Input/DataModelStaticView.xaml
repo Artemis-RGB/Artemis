@@ -24,6 +24,8 @@
     <Grid Margin="3 -4">
         <StackPanel Orientation="Horizontal" Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <Button Style="{StaticResource MaterialDesignFlatDarkBgButton}"
+                    Background="{Binding SwitchButtonBrush}"
+                    BorderBrush="{Binding SwitchButtonBrush}"
                     Height="22"
                     Padding="0"
                     Width="22"
@@ -32,7 +34,8 @@
                     Margin="0 0 -3 0"
                     HorizontalAlignment="Left"
                     ToolTip="Switch to data model value"
-                    Command="{s:Action SwitchToDynamic}">
+                    Command="{s:Action SwitchToDynamic}"
+                    Visibility="{Binding DisplaySwitchButton, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
                 <materialDesign:PackIcon Kind="SwapHorizontal" />
             </Button>
             <Button Style="{StaticResource DataModelConditionButton}"

@@ -7,7 +7,7 @@ namespace Artemis.Core
     /// </summary>
     public class DataBindingModifierTypeRegistration
     {
-        internal DataBindingModifierTypeRegistration(DataBindingModifierType dataBindingModifierType, Plugin plugin)
+        internal DataBindingModifierTypeRegistration(BaseDataBindingModifierType dataBindingModifierType, Plugin plugin)
         {
             DataBindingModifierType = dataBindingModifierType;
             Plugin = plugin;
@@ -18,7 +18,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data binding modifier that has been registered
         /// </summary>
-        public DataBindingModifierType DataBindingModifierType { get; }
+        public BaseDataBindingModifierType DataBindingModifierType { get; }
 
         /// <summary>
         ///     Gets the plugin the data binding modifier is associated with

@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class ModuloModifierType : DataBindingModifierType
+    internal class ModuloModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-
         public override string Name => "Modulo";
         public override string Icon => "Stairs";
         public override string Category => "Advanced";
         public override string Description => "Calculates the remained of the division between the input value and the parameter";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            return Convert.ToSingle(currentValue) % Convert.ToSingle(parameterValue);
+            return currentValue % parameterValue;
         }
     }
 }

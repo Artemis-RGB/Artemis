@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class PercentageOfModifierType : DataBindingModifierType
+    internal class PercentageOfModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-        public override Type ParameterType => typeof(float);
-
         public override string Name => "Percentage of";
         public override string Icon => "Percent";
         public override string Description => "Calculates how much percent the parameter value is of the current value";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            float parameter = Convert.ToSingle(parameterValue);
             // Ye ye none of that
-            if (parameter == 0f)
-                return 100f;
+            if (parameterValue == 0d)
+                return 100d;
 
-            return 100f / Convert.ToSingle(parameterValue) * Convert.ToSingle(currentValue);
+            return 100d / parameterValue * currentValue;
         }
     }
 }

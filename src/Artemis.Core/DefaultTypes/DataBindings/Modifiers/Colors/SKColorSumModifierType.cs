@@ -1,20 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core.DefaultTypes
 {
-    internal class SKColorSumModifierType : DataBindingModifierType
+    internal class SKColorSumModifierType : DataBindingModifierType<SKColor, SKColor>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => new List<Type> {typeof(SKColor)};
-
         public override string Name => "Combine with";
         public override string Icon => "FormatColorFill";
         public override string Description => "Adds the two colors together";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override SKColor Apply(SKColor currentValue, SKColor parameterValue)
         {
-            return ((SKColor) currentValue).Sum((SKColor) parameterValue);
+            return currentValue.Sum(parameterValue);
         }
     }
 }

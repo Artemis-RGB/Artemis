@@ -275,7 +275,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private void CreateRightSideSelectionViewModel()
         {
             RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-            RightSideSelectionViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
+            RightSideSelectionViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
             RightSideSelectionViewModel.DisplaySwitchButton = true;
             RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;
             RightSideSelectionViewModel.SwitchToStaticRequested += RightSideSelectionViewModelOnSwitchToStaticRequested;
@@ -289,7 +289,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private void CreateRightSideInputViewModel(Type leftSideType)
         {
             RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
-            RightSideInputViewModel.ButtonBrush = (Brush) Application.Current.FindResource("PrimaryHueMidBrush");
+            RightSideInputViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
+            RightSideInputViewModel.DisplaySwitchButton = true;
             RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
             RightSideInputViewModel.SwitchToDynamicRequested += RightSideInputViewModelOnSwitchToDynamicRequested;
         }
