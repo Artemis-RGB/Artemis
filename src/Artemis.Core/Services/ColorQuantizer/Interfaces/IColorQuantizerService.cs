@@ -1,7 +1,7 @@
 ﻿using SkiaSharp;
 using System.Collections.Generic;
 
-namespace Artemis.Core.Services.Interfaces
+namespace Artemis.Core.Services
 {
     /// <summary>
     /// A service providing a pallette of colors in a bitmap based on vibrant.js
@@ -23,7 +23,7 @@ namespace Artemis.Core.Services.Interfaces
         /// </summary>
         /// <param name="colors">The colors to find the variations in</param>
         /// <param name="type">Which type of color to find</param>
-        /// <param name="ignoreLimits">Ignore hard limits on whether a color is considered for each category. Result may be <see cref="SKColor.Empty"/> if this is true</param>
+        /// <param name="ignoreLimits">Ignore hard limits on whether a color is considered for each category. Result may be <see cref="SKColor.Empty"/> if this is false</param>
         /// <returns>The color found</returns>
         public SKColor FindColorVariation(IEnumerable<SKColor> colors, ColorType type, bool ignoreLimits = false);
     }
