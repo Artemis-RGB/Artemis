@@ -12,7 +12,7 @@ namespace Artemis.Core.Services
             RegisterBuiltInModifiers();
         }
 
-        public DataBindingModifierTypeRegistration RegisterModifierType(PluginInfo pluginInfo, DataBindingModifierType dataBindingModifierType)
+        public DataBindingModifierTypeRegistration RegisterModifierType(PluginInfo pluginInfo, BaseDataBindingModifierType dataBindingModifierType)
         {
             if (pluginInfo == null)
                 throw new ArgumentNullException(nameof(pluginInfo));
@@ -30,12 +30,12 @@ namespace Artemis.Core.Services
             DataBindingModifierTypeStore.Remove(registration);
         }
 
-        public List<DataBindingModifierType> GetCompatibleModifierTypes(Type type)
+        public List<BaseDataBindingModifierType> GetCompatibleModifierTypes(Type type, ModifierTypePart part)
         {
-            return DataBindingModifierTypeStore.GetForType(type).Select(r => r.DataBindingModifierType).ToList();
+            return DataBindingModifierTypeStore.GetForType(type, part).Select(r => r.DataBindingModifierType).ToList();
         }
 
-        public DataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType)
+        public BaseDataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType)
         {
             return DataBindingModifierTypeStore.Get(modifierTypePluginGuid, modifierType)?.DataBindingModifierType;
         }

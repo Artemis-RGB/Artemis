@@ -30,7 +30,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the type of modifier that is being applied
         /// </summary>
-        public DataBindingModifierType ModifierType { get; private set; }
+        public BaseDataBindingModifierType? ModifierType { get; private set; }
 
         /// <summary>
         ///     Gets the direct data binding this modifier is applied to
@@ -40,7 +40,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the type of the parameter, can either be dynamic (based on a data model value) or static
         /// </summary>
-        public ProfileRightSideType ParameterType { get; private set; }
+        public ProfileRightSideType ParameterType { get; set; }
 
         /// <summary>
         ///     Gets or sets the position at which the modifier appears on the data binding
@@ -56,7 +56,7 @@ namespace Artemis.Core
         ///     Gets the parameter static value, only used it <see cref="ParameterType" /> is
         ///     <see cref="ProfileRightSideType.Static" />
         /// </summary>
-        public object ParameterStaticValue { get; private set; }
+        public object? ParameterStaticValue { get; private set; }
 
         internal DataBindingModifierEntity Entity { get; set; }
 
@@ -65,7 +65,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="currentValue">The value to apply the modifier to, should be of the same type as the data binding target</param>
         /// <returns>The modified value</returns>
-        public object Apply(object? currentValue)
+        public object? Apply(object? currentValue)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");
@@ -73,17 +73,17 @@ namespace Artemis.Core
             if (ModifierType == null)
                 return currentValue;
 
-            if (!ModifierType.SupportsParameter)
-                return ModifierType.Apply(currentValue, null);
+            if (ModifierType.ParameterType == null)
+                return ModifierType.InternalApply(currentValue, null);
 
             if (ParameterType == ProfileRightSideType.Dynamic && ParameterPath != null && ParameterPath.IsValid)
             {
                 object? value = ParameterPath.GetValue();
-                return ModifierType.Apply(currentValue, value);
+                return ModifierType.InternalApply(currentValue, value);
             }
 
             if (ParameterType == ProfileRightSideType.Static)
-                return ModifierType.Apply(currentValue, ParameterStaticValue);
+                return ModifierType.InternalApply(currentValue, ParameterStaticValue);
 
             return currentValue;
         }
@@ -92,12 +92,11 @@ namespace Artemis.Core
         ///     Updates the modifier type of the modifier and re-compiles the expression
         /// </summary>
         /// <param name="modifierType"></param>
-        public void UpdateModifierType(DataBindingModifierType modifierType)
+        public void UpdateModifierType(BaseDataBindingModifierType? modifierType)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");
 
-            // Calling CreateExpression will clear compiled expressions
             if (modifierType == null)
             {
                 ModifierType = null;
@@ -105,11 +104,36 @@ namespace Artemis.Core
             }
 
             Type targetType = DirectDataBinding.DataBinding.GetTargetType();
-            if (!modifierType.SupportsType(targetType))
+            if (!modifierType.SupportsType(targetType, ModifierTypePart.Value))
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
                                                $"it does not support this data binding's type {targetType.Name}");
 
             ModifierType = modifierType;
+            ValidateParameter();
+        }
+
+        private void ValidateParameter()
+        {
+            if (ModifierType == null)
+                return;
+
+            if (ParameterType == ProfileRightSideType.Dynamic)
+            {
+                if (ParameterPath == null || !ParameterPath.IsValid)
+                    return;
+
+                Type parameterType = ParameterPath.GetPropertyType()!;
+                if (!ModifierType.SupportsType(parameterType, ModifierTypePart.Parameter))
+                    UpdateParameterDynamic(null);
+            }
+            else
+            {
+                if (ParameterStaticValue == null)
+                    return;
+
+                if (!ModifierType.SupportsType(ParameterStaticValue.GetType(), ModifierTypePart.Parameter))
+                    UpdateParameterStatic(null);
+            }
         }
 
         /// <summary>
@@ -165,7 +189,7 @@ namespace Artemis.Core
             // Modifier type
             if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
             {
-                DataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
+                BaseDataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
                 if (modifierType != null)
                     UpdateModifierType(modifierType);
             }
@@ -261,7 +285,7 @@ namespace Artemis.Core
             if (ModifierType != null)
                 return;
 
-            DataBindingModifierType modifierType = e.TypeRegistration.DataBindingModifierType;
+            BaseDataBindingModifierType modifierType = e.TypeRegistration.DataBindingModifierType;
             if (modifierType.PluginInfo.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
                 UpdateModifierType(modifierType);
         }

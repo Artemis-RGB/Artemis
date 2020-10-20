@@ -13,17 +13,7 @@ namespace Artemis.Core
         /// <param name="a">The parameter on the left side of the expression</param>
         /// <param name="b">The parameter on the right side of the expression</param>
         public abstract bool Evaluate(TLeftSide a, TRightSide b);
-
-        /// <inheritdoc />
-        public override bool SupportsType(Type type, ConditionParameterSide side)
-        {
-            if (type == null)
-                return true;
-            if (side == ConditionParameterSide.Left)
-                return LeftSideType.IsCastableFrom(type);
-            return RightSideType.IsCastableFrom(type);
-        }
-
+        
         /// <inheritdoc />
         internal override bool InternalEvaluate(object? leftSideValue, object? rightSideValue)
         {
@@ -40,7 +30,7 @@ namespace Artemis.Core
             else
                 rightSide = default;
 
-            return Evaluate(leftSide, rightSide);
+            return Evaluate(leftSide!, rightSide!);
         }
 
         /// <inheritdoc />
@@ -62,16 +52,6 @@ namespace Artemis.Core
         public abstract bool Evaluate(TLeftSide a);
 
         /// <inheritdoc />
-        public override bool SupportsType(Type type, ConditionParameterSide side)
-        {
-            if (type == null)
-                return true;
-            if (side == ConditionParameterSide.Left)
-                return LeftSideType.IsCastableFrom(type);
-            return false;
-        }
-
-        /// <inheritdoc />
         internal override bool InternalEvaluate(object? leftSideValue, object? rightSideValue)
         {
             // TODO: Can we avoid boxing/unboxing?
@@ -81,7 +61,7 @@ namespace Artemis.Core
             else
                 leftSide = default;
 
-            return Evaluate(leftSide);
+            return Evaluate(leftSide!);
         }
 
         /// <inheritdoc />

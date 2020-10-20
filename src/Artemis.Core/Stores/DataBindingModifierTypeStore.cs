@@ -8,7 +8,7 @@ namespace Artemis.Core
     {
         private static readonly List<DataBindingModifierTypeRegistration> Registrations = new List<DataBindingModifierTypeRegistration>();
 
-        public static DataBindingModifierTypeRegistration Add(DataBindingModifierType modifierType)
+        public static DataBindingModifierTypeRegistration Add(BaseDataBindingModifierType modifierType)
         {
             DataBindingModifierTypeRegistration typeRegistration;
             lock (Registrations)
@@ -46,19 +46,21 @@ namespace Artemis.Core
             }
         }
 
-        public static List<DataBindingModifierTypeRegistration> GetForType(Type type)
+        public static List<DataBindingModifierTypeRegistration> GetForType(Type type, ModifierTypePart part)
         {
             lock (Registrations)
             {
                 if (type == null)
                     return new List<DataBindingModifierTypeRegistration>(Registrations);
 
-                List<DataBindingModifierTypeRegistration> candidates = Registrations.Where(r => r.DataBindingModifierType.CompatibleTypes.Any(t => t == type)).ToList();
+                List<DataBindingModifierTypeRegistration> candidates = Registrations.Where(r => r.DataBindingModifierType.SupportsType(type, part)).ToList();
 
-                // If there are multiple operators with the same description, use the closest match
+                // If there are multiple modifiers with the same description, use the closest match
                 foreach (IGrouping<string, DataBindingModifierTypeRegistration> displayDataBindingModifiers in candidates.GroupBy(r => r.DataBindingModifierType.Name).Where(g => g.Count() > 1).ToList())
                 {
-                    DataBindingModifierTypeRegistration closest = displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.CompatibleTypes.Contains(type)).FirstOrDefault();
+                    DataBindingModifierTypeRegistration closest = part == ModifierTypePart.Value
+                        ? displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.ValueType.ScoreCastability(type)).First()
+                        : displayDataBindingModifiers.OrderByDescending(r => r.DataBindingModifierType.ParameterType!.ScoreCastability(type)).First();
                     foreach (DataBindingModifierTypeRegistration displayDataBindingModifier in displayDataBindingModifiers)
                     {
                         if (displayDataBindingModifier != closest)

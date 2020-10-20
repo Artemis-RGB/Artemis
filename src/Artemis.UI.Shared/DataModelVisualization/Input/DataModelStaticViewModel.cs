@@ -6,6 +6,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
+using MaterialDesignColors.ColorManipulation;
 using Stylet;
 
 namespace Artemis.UI.Shared.Input
@@ -14,7 +15,7 @@ namespace Artemis.UI.Shared.Input
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Window _rootView;
-        private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
         private DataModelDisplayViewModel _displayViewModel;
         private DataModelInputViewModel _inputViewModel;
         private bool _isEnabled;
@@ -22,6 +23,7 @@ namespace Artemis.UI.Shared.Input
         private DataModelPropertyAttribute _targetDescription;
         private Type _targetType;
         private object _value;
+        private bool _displaySwitchButton;
 
         internal DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
@@ -40,11 +42,17 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
-        public Brush ButtonBrush
+        public SolidColorBrush ButtonBrush
         {
             get => _buttonBrush;
-            set => SetAndNotify(ref _buttonBrush, value);
+            set
+            {
+                if (!SetAndNotify(ref _buttonBrush, value)) return;
+                NotifyOfPropertyChange(nameof(SwitchButtonBrush));
+            }
         }
+
+        public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
 
         public DataModelDisplayViewModel DisplayViewModel
         {
@@ -90,6 +98,12 @@ namespace Artemis.UI.Shared.Input
         {
             get => _isEnabled;
             private set => SetAndNotify(ref _isEnabled, value);
+        }
+
+        public bool DisplaySwitchButton
+        {
+            get => _displaySwitchButton;
+            set => SetAndNotify(ref _displaySwitchButton, value);
         }
 
         public void ActivateInputViewModel()

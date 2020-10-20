@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Artemis.Core.DefaultTypes
 {
-    internal class SineModifierType : DataBindingModifierType
+    internal class SineModifierType : DataBindingModifierType<double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-        public override bool SupportsParameter => false;
-
         public override string Name => "Sine";
         public override string Icon => "MathSin";
         public override string Category => "Trigonometry";
         public override string Description => "Treats the input as an angle and calculates the sine";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue)
         {
-            return Math.Sin(Convert.ToSingle(currentValue));
+            return Math.Sin(currentValue);
         }
     }
 }

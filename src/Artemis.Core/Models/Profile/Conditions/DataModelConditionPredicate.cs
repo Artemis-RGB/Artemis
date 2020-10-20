@@ -144,7 +144,7 @@ namespace Artemis.Core
                 return;
             }
 
-            // No need to clear compiled expressions, without a left data model they are already null
+            // No need to check for compatibility without a left side, when left site does get set it will be checked again
             if (LeftPath == null || !LeftPath.IsValid)
             {
                 Operator = conditionOperator;
@@ -323,7 +323,7 @@ namespace Artemis.Core
                     return;
 
                 if (!Operator.SupportsType(RightStaticValue.GetType(), ConditionParameterSide.Right))
-                    UpdateRightSideDynamic(null);
+                    UpdateRightSideStatic(null);
             }
         }
 

@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
+using MaterialDesignColors.ColorManipulation;
 using Stylet;
 
 // Remove, annoying while working on it
@@ -19,7 +20,7 @@ namespace Artemis.UI.Shared.Input
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Module _module;
         private readonly Timer _updateTimer;
-        private Brush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
         private DataModelPath _dataModelPath;
         private DataModelPropertiesViewModel _dataModelViewModel;
         private bool _displaySwitchButton;
@@ -41,11 +42,17 @@ namespace Artemis.UI.Shared.Input
             Initialize();
         }
 
-        public Brush ButtonBrush
+        public SolidColorBrush ButtonBrush
         {
             get => _buttonBrush;
-            set => SetAndNotify(ref _buttonBrush, value);
+            set
+            {
+                if (!SetAndNotify(ref _buttonBrush, value)) return;
+                NotifyOfPropertyChange(nameof(SwitchButtonBrush));
+            }
         }
+
+        public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
 
         public string Placeholder
         {

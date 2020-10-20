@@ -4,11 +4,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 {
     public class ModifierTypeViewModel : IModifierTypeViewModel
     {
-        public ModifierTypeViewModel(DataBindingModifierType modifierType)
+        public ModifierTypeViewModel(BaseDataBindingModifierType modifierType)
         {
             ModifierType = modifierType;
         }
 
-        public DataBindingModifierType ModifierType { get; set; }
+        public BaseDataBindingModifierType ModifierType { get; set; }
     }
 }

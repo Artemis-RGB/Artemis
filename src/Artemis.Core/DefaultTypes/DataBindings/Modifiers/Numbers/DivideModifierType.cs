@@ -1,24 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class DivideModifierType : DataBindingModifierType
+    internal class DivideModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-        public override Type ParameterType => typeof(float);
-
         public override string Name => "Divide by";
         public override string Icon => "Divide";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            float parameter = Convert.ToSingle(parameterValue);
             // Ye ye none of that
-            if (parameter == 0)
+            if (parameterValue == 0)
                 return 0;
 
-            return Convert.ToSingle(currentValue) / parameter;
+            return currentValue / parameterValue;
         }
     }
 }

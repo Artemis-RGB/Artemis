@@ -26,7 +26,6 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Button Grid.Column="0"
@@ -39,18 +38,8 @@
                 Command="{s:Action Delete}">
             <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
         </Button>
+        
         <Button Grid.Column="1"
-                ToolTip="Swap modifier type to static/dynamic"
-                Style="{StaticResource MaterialDesignIconForegroundButton}"
-                HorizontalAlignment="Left"
-                Foreground="{StaticResource SecondaryAccentBrush}"
-                Width="25"
-                Height="25"
-                Command="{s:Action SwapType}">
-            <materialDesign:PackIcon Kind="SwapHorizontalVariant" Width="18" Height="18" />
-        </Button>
-
-        <Button Grid.Column="2"
                 Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
@@ -101,7 +90,7 @@
 
         </Button>
 
-        <ContentControl Grid.Column="3" s:View.Model="{Binding DynamicSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-        <ContentControl Grid.Column="3" s:View.Model="{Binding StaticInputViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+        <ContentControl Grid.Column="2" s:View.Model="{Binding DynamicSelectionViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+        <ContentControl Grid.Column="2" s:View.Model="{Binding StaticInputViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
     </Grid>
 </UserControl>

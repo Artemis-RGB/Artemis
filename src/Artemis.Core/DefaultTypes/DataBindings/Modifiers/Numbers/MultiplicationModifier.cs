@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core.DefaultTypes
 {
-    internal class MultiplicationModifierType : DataBindingModifierType
+    internal class MultiplicationModifierType : DataBindingModifierType<double, double>
     {
-        public override IReadOnlyCollection<Type> CompatibleTypes => Constants.NumberTypes;
-        public override Type ParameterType => typeof(float);
-
         public override string Name => "Multiply by";
         public override string Icon => "Close";
 
-        public override object Apply(object currentValue, object parameterValue)
+        public override double Apply(double currentValue, double parameterValue)
         {
-            return Convert.ToSingle(currentValue) * Convert.ToSingle(parameterValue);
+            return currentValue * parameterValue;
         }
     }
 }

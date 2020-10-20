@@ -388,7 +388,7 @@ namespace Artemis.Core
                     return;
 
                 if (!Operator.SupportsType(RightStaticValue.GetType(), ConditionParameterSide.Right))
-                    UpdateRightSideDynamic(null);
+                    UpdateRightSideStatic(null);
             }
         }
 

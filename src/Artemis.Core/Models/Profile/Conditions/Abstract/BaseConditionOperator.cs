@@ -33,7 +33,7 @@ namespace Artemis.Core
         public abstract Type LeftSideType { get; }
 
         /// <summary>
-        ///     Gets the right side type of this condition operator. May be null if the operator does not support a left side type
+        ///     Gets the right side type of this condition operator. May be null if the operator does not support a right side
         /// </summary>
         public abstract Type? RightSideType { get; }
 
@@ -42,7 +42,14 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="type">The type to check for, must be either the same or be castable to the target type</param>
         /// <param name="side">Which side of the operator to check, left or right</param>
-        public abstract bool SupportsType(Type type, ConditionParameterSide side);
+        public bool SupportsType(Type type, ConditionParameterSide side)
+        {
+            if (type == null)
+                return true;
+            if (side == ConditionParameterSide.Left)
+                return LeftSideType.IsCastableFrom(type);
+            return RightSideType != null && RightSideType.IsCastableFrom(type);
+        }
 
         /// <summary>
         ///     Evaluates the condition with the input types being provided as objects
