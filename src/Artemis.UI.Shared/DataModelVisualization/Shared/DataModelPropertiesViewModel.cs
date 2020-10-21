@@ -7,8 +7,8 @@ namespace Artemis.UI.Shared
 {
     public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
     {
-        private Type _displayValueType;
         private object _displayValue;
+        private Type _displayValueType;
 
         internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
@@ -29,15 +29,15 @@ namespace Artemis.UI.Shared
         public override void Update(IDataModelUIService dataModelUIService)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
-
+          
             // Only set a display value if ToString returns useful information and not just the type name
             object currentValue = GetCurrentValue();
             if (currentValue != null && currentValue.ToString() != currentValue.GetType().ToString())
                 DisplayValue = currentValue.ToString();
             else
                 DisplayValue = null;
-
-            // Always populate properties
+            
+            // Always populate properties   
             PopulateProperties(dataModelUIService);
 
             // Only update children if the parent is expanded
