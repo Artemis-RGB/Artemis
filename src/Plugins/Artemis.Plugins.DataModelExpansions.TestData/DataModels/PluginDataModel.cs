@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using SkiaSharp;
 
@@ -34,6 +35,22 @@ namespace Artemis.Plugins.DataModelExpansions.TestData.DataModels
         public bool IsWinning { get; set; }
 
         public List<SomeListItem> ListItems { get; set; }
+
+        [DataModelProperty(Description = "Event without arguments")]
+        public DataModelEvent Event1 { get; set; } = new DataModelEvent();
+
+        [DataModelProperty(Description = "Event with arguments")]
+        public DataModelEvent<TestEventArgs> Event2 { get; set; } = new DataModelEvent<TestEventArgs>();
+    }
+
+    public class TestEventArgs : DataModelEventArgs
+    {
+        public TestEventArgs(string someValue)
+        {
+            SomeValue = someValue;
+        }
+
+        public string SomeValue { get; set; }
     }
 
     public class Test<T>
