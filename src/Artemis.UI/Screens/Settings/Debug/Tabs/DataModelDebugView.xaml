@@ -66,12 +66,17 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                             <ColumnDefinition />
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
                             <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="2" 
+                                   Text="{Binding DisplayValue}" 
+                                   FontFamily="Consolas" 
+                                   HorizontalAlignment="Right"/>
                     </Grid>
                     
                 </HierarchicalDataTemplate>

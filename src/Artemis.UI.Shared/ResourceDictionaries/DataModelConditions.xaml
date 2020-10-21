@@ -54,7 +54,18 @@
         <StackPanel>
             <StackPanel.Resources>
                 <DataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}">
-                    <TextBlock Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True"/>
+                    <Grid ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Value description -->
+                        <TextBlock Grid.Column="0" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" ToolTipService.ShowOnDisabled="True"/>
+
+                        <!-- Value display -->
+                        <TextBlock Grid.Column="1" Text="{Binding DisplayValue}" HorizontalAlignment="Right" FontFamily="Consolas" Margin="15 0.5 0 0"/>
+                    </Grid>
                 </DataTemplate>
                 <DataTemplate DataType="{x:Type dataModel:DataModelListViewModel}">
                     <StackPanel Orientation="Horizontal">
