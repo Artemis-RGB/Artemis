@@ -147,6 +147,24 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
+        public void ConvertToConditionEvent(DataModelConditionPredicateViewModel predicateViewModel)
+        {
+            // Remove the old child
+            DataModelConditionGroup.RemoveChild(predicateViewModel.Model);
+
+            DataModelConditionPart rootGroup = DataModelConditionGroup;
+            while (rootGroup.Parent != null)
+                rootGroup = rootGroup.Parent;
+
+            // Insert an event at the start of the root group
+            DataModelConditionEvent conditionEvent = new DataModelConditionEvent(rootGroup);
+            conditionEvent.UpdateEvent(predicateViewModel.LeftSideSelectionViewModel.DataModelPath);
+            rootGroup.AddChild(conditionEvent, 0);
+
+            // Update to switch the VMs
+            Update();
+        }
+
         public void ConvertToPredicate(DataModelConditionListViewModel listViewModel)
         {
             // Store the old index and remove the old predicate

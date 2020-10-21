@@ -111,18 +111,6 @@ namespace Artemis.Core
         /// </summary>
         public IReadOnlyCollection<DataModelPathSegment> Segments => _segments.ToList().AsReadOnly();
 
-        /// <summary>
-        ///     Gets a boolean indicating whether this data model path points to a list
-        /// </summary>
-        public bool PointsToList
-        {
-            get
-            {
-                Type? type = GetPropertyType();
-                return type?.IsGenericEnumerable() ?? false;
-            }
-        }
-
         internal DataModelPathEntity Entity { get; }
 
         internal Func<object, object>? Accessor { get; private set; }

@@ -13,20 +13,30 @@ namespace Artemis.Core
         /// <param name="a">The parameter on the left side of the expression</param>
         /// <param name="b">The parameter on the right side of the expression</param>
         public abstract bool Evaluate(TLeftSide a, TRightSide b);
-        
+
         /// <inheritdoc />
         internal override bool InternalEvaluate(object? leftSideValue, object? rightSideValue)
         {
             // TODO: Can we avoid boxing/unboxing?
             TLeftSide leftSide;
             if (leftSideValue != null)
-                leftSide = (TLeftSide) Convert.ChangeType(leftSideValue, typeof(TLeftSide));
+            {
+                if (leftSideValue.GetType() != typeof(TLeftSide))
+                    leftSide = (TLeftSide) Convert.ChangeType(leftSideValue, typeof(TLeftSide));
+                else
+                    leftSide = (TLeftSide) leftSideValue;
+            }
             else
                 leftSide = default;
 
             TRightSide rightSide;
             if (rightSideValue != null)
-                rightSide = (TRightSide) Convert.ChangeType(rightSideValue, typeof(TRightSide));
+            {
+                if (rightSideValue.GetType() != typeof(TRightSide))
+                    rightSide = (TRightSide) Convert.ChangeType(rightSideValue, typeof(TRightSide));
+                else
+                    rightSide = (TRightSide) rightSideValue;
+            }
             else
                 rightSide = default;
 
@@ -57,7 +67,12 @@ namespace Artemis.Core
             // TODO: Can we avoid boxing/unboxing?
             TLeftSide leftSide;
             if (leftSideValue != null)
-                leftSide = (TLeftSide) Convert.ChangeType(leftSideValue, typeof(TLeftSide));
+            {
+                if (leftSideValue.GetType() != typeof(TLeftSide))
+                    leftSide = (TLeftSide)Convert.ChangeType(leftSideValue, typeof(TLeftSide));
+                else
+                    leftSide = (TLeftSide)leftSideValue;
+            }
             else
                 leftSide = default;
 

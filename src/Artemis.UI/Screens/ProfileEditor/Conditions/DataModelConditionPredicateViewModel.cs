@@ -97,6 +97,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             _supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             _supportedInputTypes.Add(typeof(IEnumerable<>));
+            _supportedInputTypes.Add(typeof(DataModelEvent));
+            _supportedInputTypes.Add(typeof(DataModelEvent<>));
             Update();
         }
 
@@ -277,7 +279,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionPredicate.PredicateType = ProfileRightSideType.Static;
             Update();
         }
-
 
         private void RightSideInputViewModelOnSwitchToDynamicRequested(object? sender, EventArgs e)
         {

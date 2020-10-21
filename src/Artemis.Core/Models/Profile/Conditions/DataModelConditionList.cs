@@ -180,7 +180,7 @@ namespace Artemis.Core
             DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
             Type listType = listPath.GetPropertyType()!;
             // Can't check this on an invalid list, if it becomes valid later lets hope for the best
-            if (listPath.IsValid && !listPath.PointsToList)
+            if (listPath.IsValid && !PointsToList(listPath))
                 return;
 
             ListPath = listPath;
@@ -206,6 +206,12 @@ namespace Artemis.Core
                 Entity.Children.Clear();
                 AddChild(new DataModelConditionGroup(this));
             }
+        }
+
+        private bool PointsToList(DataModelPath dataModelPath)
+        {
+            Type? type = dataModelPath.GetPropertyType();
+            return type?.IsGenericEnumerable() ?? false;
         }
 
         private void SubscribeToListPath()

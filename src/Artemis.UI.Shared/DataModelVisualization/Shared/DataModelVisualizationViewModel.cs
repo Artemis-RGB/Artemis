@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -137,7 +136,8 @@ namespace Artemis.UI.Shared
             if (looseMatch)
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
                                                                  t == typeof(Enum) && type.IsEnum ||
-                                                                 t == typeof(IEnumerable<>) && type.IsGenericEnumerable());
+                                                                 t == typeof(IEnumerable<>) && type.IsGenericEnumerable() ||
+                                                                 type.IsGenericType && t == type.GetGenericTypeDefinition());
             else
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
         }
@@ -219,7 +219,6 @@ namespace Artemis.UI.Shared
             // Add missing dynamic children
             object value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
-            {
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
                 {
                     string childPath = AppendToPath(kvp.Key);
@@ -230,7 +229,6 @@ namespace Artemis.UI.Shared
                     if (child != null)
                         Children.Add(child);
                 }
-            }
 
             // Remove dynamic children that have been removed from the data model
             List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => !c.DataModelPath.IsValid).ToList();
@@ -266,6 +264,8 @@ namespace Artemis.UI.Shared
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {Depth = depth};
             if (propertyType.IsGenericEnumerable())
                 return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
+            if (propertyType == typeof(DataModelEvent) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(DataModelEvent<>))
+                return new DataModelEventViewModel(DataModel, this, dataModelPath) { Depth = depth };
             // For other value types create a child view model
             if (propertyType.IsClass || propertyType.IsStruct())
                 return new DataModelPropertiesViewModel(DataModel, this, dataModelPath) {Depth = depth};
