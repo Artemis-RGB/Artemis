@@ -131,14 +131,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             {
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
-                    CreateRightSideInputViewModel(SelectedOperator.RightSideType);
+                    CreateRightSideInputViewModel();
 
                 if (SelectedOperator.RightSideType.IsValueType && DataModelConditionPredicate.RightStaticValue == null)
                     RightSideInputViewModel.Value = SelectedOperator.RightSideType.GetDefault();
                 else
                     RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
-                if (RightSideInputViewModel.TargetType != SelectedOperator.RightSideType)
-                    RightSideInputViewModel.UpdateTargetType(SelectedOperator.RightSideType);
+
+                Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
+                if (RightSideInputViewModel.TargetType != preferredType)
+                    RightSideInputViewModel.UpdateTargetType(preferredType);
             }
         }
 
@@ -188,7 +190,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             SelectedOperator = DataModelConditionOperator;
             ApplyOperator();
         }
-
+        
         #region IDisposable
 
         public void Dispose()
@@ -217,9 +219,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             RightSideSelectionViewModel.SwitchToStaticRequested += RightSideSelectionViewModelOnSwitchToStaticRequested;
         }
 
-        private void CreateRightSideInputViewModel(Type leftSideType)
+        private void CreateRightSideInputViewModel()
         {
-            RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(leftSideType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
+            Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
+            RightSideInputViewModel = _dataModelUIService.GetStaticInputViewModel(preferredType, LeftSideSelectionViewModel.DataModelPath?.GetPropertyDescription());
             RightSideInputViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
             RightSideInputViewModel.DisplaySwitchButton = true;
             RightSideInputViewModel.ValueUpdated += RightSideOnValueEntered;
