@@ -158,12 +158,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 if (RightSideInputViewModel == null)
                     CreateRightSideInputViewModel();
 
-                if (SelectedOperator.RightSideType.IsValueType && DataModelConditionListPredicate.RightStaticValue == null)
-                    RightSideInputViewModel.Value = SelectedOperator.RightSideType.GetDefault();
+                Type preferredType = DataModelConditionListPredicate.GetPreferredRightSideType();
+                if (preferredType.IsValueType && DataModelConditionListPredicate.RightStaticValue == null)
+                    RightSideInputViewModel.Value = preferredType.GetDefault();
                 else
                     RightSideInputViewModel.Value = DataModelConditionListPredicate.RightStaticValue;
 
-                Type preferredType = DataModelConditionListPredicate.GetPreferredRightSideType();
                 if (RightSideInputViewModel.TargetType != preferredType)
                     RightSideInputViewModel.UpdateTargetType(preferredType);
             }
