@@ -67,6 +67,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, bool isListGroup);
         DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList);
+        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent);
         DataModelConditionPredicateViewModel DataModelConditionPredicateViewModel(DataModelConditionPredicate dataModelConditionPredicate);
         DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
     }
