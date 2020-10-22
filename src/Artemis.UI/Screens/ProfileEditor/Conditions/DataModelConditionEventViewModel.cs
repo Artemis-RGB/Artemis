@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
-using Artemis.UI.Shared.Input;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Conditions
@@ -17,12 +15,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private DataModelDynamicViewModel _targetSelectionViewModel;
 
-        public DataModelConditionEventViewModel(DataModelConditionEvent model,
+        public DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
-            IDataModelConditionsVmFactory dataModelConditionsVmFactory) : base(model)
+            IDataModelConditionsVmFactory dataModelConditionsVmFactory) : base(dataModelConditionEvent)
         {
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
@@ -33,39 +30,37 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public DataModelConditionEvent DataModelConditionEvent => (DataModelConditionEvent) Model;
 
-        public DataModelDynamicViewModel TargetSelectionViewModel
-        {
-            get => _targetSelectionViewModel;
-            set => SetAndNotify(ref _targetSelectionViewModel, value);
-        }
 
         public void Initialize()
         {
-            TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
-            TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
             List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             supportedInputTypes.Add(typeof(IEnumerable<>));
-            TargetSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
+            LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
 
-            TargetSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(188, 174, 71));
-            TargetSelectionViewModel.Placeholder = "Select a list";
+            LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
+            LeftSideSelectionViewModel.Placeholder = "Select an event";
 
             Update();
         }
 
+        public override void Update()
+        {
+            LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionEvent.EventPath);
+        }
+
         public void ApplyEvent()
         {
-            if (!TargetSelectionViewModel.DataModelPath.GetPropertyType().IsGenericEnumerable())
-            {
-                if (Parent is DataModelConditionGroupViewModel groupViewModel)
-                    groupViewModel.ConvertToPredicate(this);
+            Type newType = LeftSideSelectionViewModel.DataModelPath.GetPropertyType();
+            bool converted = ConvertIfRequired(newType);
+            if (converted)
                 return;
-            }
 
-            DataModelConditionEvent.UpdateEvent(TargetSelectionViewModel.DataModelPath);
+            DataModelConditionEvent.UpdateEvent(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
@@ -73,7 +68,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         #region Event handlers
 
-        private void TargetSelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)
+        private void LeftSideSelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)
         {
             ApplyEvent();
         }
@@ -84,8 +79,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void Dispose()
         {
-            TargetSelectionViewModel.Dispose();
-            TargetSelectionViewModel.PropertySelected -= TargetSelectionViewModelOnPropertySelected;
+            LeftSideSelectionViewModel.Dispose();
+            LeftSideSelectionViewModel.PropertySelected -= LeftSideSelectionViewModelOnPropertySelected;
         }
 
         #endregion

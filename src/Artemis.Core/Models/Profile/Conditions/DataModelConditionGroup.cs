@@ -40,6 +40,8 @@ namespace Artemis.Core
                     AddChild(new DataModelConditionGroup(this, groupEntity));
                 else if (childEntity is DataModelConditionListEntity listEntity)
                     AddChild(new DataModelConditionList(this, listEntity));
+                else if (childEntity is DataModelConditionEventEntity eventEntity)
+                    AddChild(new DataModelConditionEvent(this, eventEntity));
                 else if (childEntity is DataModelConditionPredicateEntity predicateEntity)
                     AddChild(new DataModelConditionPredicate(this, predicateEntity));
                 else if (childEntity is DataModelConditionListPredicateEntity listPredicateEntity)

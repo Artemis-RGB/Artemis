@@ -100,19 +100,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
                 switch (childModel)
                 {
-                    case DataModelConditionGroup DataModelConditionGroup:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataModelConditionGroup, IsListGroup));
+                    case DataModelConditionGroup dataModelConditionGroup:
+                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, IsListGroup));
                         break;
-                    case DataModelConditionList DataModelConditionListPredicate:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(DataModelConditionListPredicate));
+                    case DataModelConditionList dataModelConditionList:
+                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
                         break;
-                    case DataModelConditionPredicate DataModelConditionPredicate:
+                    case DataModelConditionEvent dataModelConditionEvent:
+                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
+                        break;
+                    case DataModelConditionPredicate dataModelConditionPredicate:
                         if (!IsListGroup)
-                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionPredicateViewModel(DataModelConditionPredicate));
+                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionPredicateViewModel(dataModelConditionPredicate));
                         break;
-                    case DataModelConditionListPredicate DataModelConditionListPredicate:
+                    case DataModelConditionListPredicate dataModelConditionListPredicate:
                         if (IsListGroup)
-                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(DataModelConditionListPredicate));
+                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
                         break;
                 }
             }
@@ -132,7 +135,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             OnUpdated();
         }
 
-        public void ConvertToConditionList(DataModelConditionPredicateViewModel predicateViewModel)
+        public void ConvertToConditionList(DataModelConditionViewModel predicateViewModel)
         {
             // Store the old index and remove the old predicate
             int index = DataModelConditionGroup.Children.IndexOf(predicateViewModel.Model);
@@ -147,7 +150,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        public void ConvertToConditionEvent(DataModelConditionPredicateViewModel predicateViewModel)
+        public void ConvertToConditionEvent(DataModelConditionViewModel predicateViewModel)
         {
             // Remove the old child
             DataModelConditionGroup.RemoveChild(predicateViewModel.Model);
@@ -165,7 +168,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        public void ConvertToPredicate(DataModelConditionListViewModel listViewModel)
+        public void ConvertToPredicate(DataModelConditionViewModel listViewModel)
         {
             // Store the old index and remove the old predicate
             int index = DataModelConditionGroup.Children.IndexOf(listViewModel.Model);
@@ -173,7 +176,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             // Insert a list in the same position
             DataModelConditionPredicate predicate = new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
-            predicate.UpdateLeftSide(listViewModel.TargetSelectionViewModel.DataModelPath);
+            predicate.UpdateLeftSide(listViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(predicate, index);
 
             // Update to switch the VMs
