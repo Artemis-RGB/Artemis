@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
@@ -113,6 +111,7 @@ namespace Artemis.Core
                 RightStaticValue = staticValue;
                 return;
             }
+
             // If the operator does not support a right side, always set it to null
             if (Operator.RightSideType == null)
             {
@@ -121,13 +120,14 @@ namespace Artemis.Core
             }
 
             // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == Operator.RightSideType)
+            Type? preferredType = GetPreferredRightSideType();
+            if (staticValue != null && staticValue.GetType() == preferredType || preferredType == null)
                 RightStaticValue = staticValue;
             else if (staticValue != null)
-                RightStaticValue = Convert.ChangeType(staticValue, Operator.RightSideType);
+                RightStaticValue = Convert.ChangeType(staticValue, preferredType);
             // If null create a default instance for value types or simply make it null for reference types
-            else if (Operator.RightSideType.IsValueType)
-                RightStaticValue = Activator.CreateInstance(Operator.RightSideType);
+            else if (preferredType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(preferredType);
             else
                 RightStaticValue = null;
         }
@@ -182,6 +182,22 @@ namespace Artemis.Core
 
             // Compare with dynamic values
             return Operator.InternalEvaluate(LeftPath.GetValue(), RightPath.GetValue());
+        }
+
+        /// <summary>
+        ///     Determines the best type to use for the right side op this predicate
+        /// </summary>
+        public Type? GetPreferredRightSideType()
+        {
+            Type? preferredType = Operator?.RightSideType;
+            Type? leftSideType = LeftPath?.GetPropertyType();
+            if (preferredType == null)
+                return null;
+
+            if (leftSideType != null && preferredType.IsAssignableFrom(leftSideType))
+                preferredType = leftSideType;
+
+            return preferredType;
         }
 
         /// <inheritdoc />

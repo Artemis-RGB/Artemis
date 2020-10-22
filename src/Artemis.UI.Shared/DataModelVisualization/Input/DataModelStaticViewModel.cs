@@ -69,7 +69,7 @@ namespace Artemis.UI.Shared.Input
         public Type TargetType
         {
             get => _targetType;
-            set => SetAndNotify(ref _targetType, value);
+            private set => SetAndNotify(ref _targetType, value);
         }
 
         public DataModelPropertyAttribute TargetDescription
