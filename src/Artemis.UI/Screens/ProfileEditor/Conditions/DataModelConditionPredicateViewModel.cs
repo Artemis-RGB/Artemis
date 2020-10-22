@@ -18,7 +18,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private DataModelDynamicViewModel _leftSideSelectionViewModel;
         private BindableCollection<BaseConditionOperator> _operators;
         private DataModelStaticViewModel _rightSideInputViewModel;
         private DataModelDynamicViewModel _rightSideSelectionViewModel;
@@ -54,12 +53,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             get => _operators;
             set => SetAndNotify(ref _operators, value);
-        }
-
-        public DataModelDynamicViewModel LeftSideSelectionViewModel
-        {
-            get => _leftSideSelectionViewModel;
-            set => SetAndNotify(ref _leftSideSelectionViewModel, value);
         }
 
         public BaseConditionOperator SelectedOperator
@@ -151,12 +144,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyLeftSide()
         {
-            if (LeftSideSelectionViewModel.DataModelPath.GetPropertyType().IsGenericEnumerable())
-            {
-                if (Parent is DataModelConditionGroupViewModel groupViewModel)
-                    groupViewModel.ConvertToConditionList(this);
+            Type newType = LeftSideSelectionViewModel.DataModelPath.GetPropertyType();
+            bool converted = ConvertIfRequired(newType);
+            if (converted)
                 return;
-            }
 
             DataModelConditionPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();

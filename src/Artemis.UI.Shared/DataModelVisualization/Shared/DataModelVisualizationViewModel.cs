@@ -235,7 +235,6 @@ namespace Artemis.UI.Shared
             if (toRemoveDynamic.Any())
                 Children.RemoveRange(toRemoveDynamic);
         }
-
         private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
         {
             if (depth > MaxDepth)
@@ -265,7 +264,7 @@ namespace Artemis.UI.Shared
             if (propertyType.IsGenericEnumerable())
                 return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
             if (propertyType == typeof(DataModelEvent) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(DataModelEvent<>))
-                return new DataModelEventViewModel(DataModel, this, dataModelPath) { Depth = depth };
+                return new DataModelEventViewModel(DataModel, this, dataModelPath) {Depth = depth};
             // For other value types create a child view model
             if (propertyType.IsClass || propertyType.IsStruct())
                 return new DataModelPropertiesViewModel(DataModel, this, dataModelPath) {Depth = depth};
