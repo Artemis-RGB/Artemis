@@ -4,11 +4,11 @@ using System.Windows.Controls;
 namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
     /// <summary>
-    ///     Interaction logic for DataModelConditionPredicateView.xaml
+    ///     Interaction logic for DataModelConditionGeneralPredicateView.xaml
     /// </summary>
-    public partial class DataModelConditionPredicateView : UserControl
+    public partial class DataModelConditionGeneralPredicateView : UserControl
     {
-        public DataModelConditionPredicateView()
+        public DataModelConditionGeneralPredicateView()
         {
             InitializeComponent();
         }
