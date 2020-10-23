@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Artemis.Core;
 using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Artemis.Plugins.Modules.General.DataModels;
 using Artemis.Plugins.Modules.General.DataModels.Windows;
 using Artemis.Plugins.Modules.General.Utilities;
@@ -13,6 +14,12 @@ namespace Artemis.Plugins.Modules.General
 {
     public class GeneralModule : ProfileModule<GeneralDataModel>
     {
+        private readonly IColorQuantizerService _quantizerService;
+
+        public GeneralModule(IColorQuantizerService quantizerService) {
+            _quantizerService = quantizerService;
+        }
+
         public override void EnablePlugin()
         {
             DisplayName = "General";
@@ -51,7 +58,7 @@ namespace Artemis.Plugins.Modules.General
         {
             int processId = WindowUtilities.GetActiveProcessId();
             if (DataModel.ActiveWindow == null || DataModel.ActiveWindow.Process.Id != processId)
-                DataModel.ActiveWindow = new WindowDataModel(Process.GetProcessById(processId));
+                DataModel.ActiveWindow = new WindowDataModel(Process.GetProcessById(processId), _quantizerService);
             if (DataModel.ActiveWindow != null && string.IsNullOrWhiteSpace(DataModel.ActiveWindow.WindowTitle))
                 DataModel.ActiveWindow.WindowTitle = Process.GetProcessById(WindowUtilities.GetActiveProcessId()).MainWindowTitle;
         }
