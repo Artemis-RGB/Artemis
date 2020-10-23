@@ -45,7 +45,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void AddCondition()
         {
-            DataModelConditionList.AddChild(new DataModelConditionPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
+            DataModelConditionList.AddChild(new DataModelConditionGeneralPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
