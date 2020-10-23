@@ -69,7 +69,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public void AddCondition()
         {
             if (!IsListGroup)
-                DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+                DataModelConditionGroup.AddChild(new DataModelConditionGeneralPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
             else
                 DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
 
@@ -109,9 +109,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                     case DataModelConditionEvent dataModelConditionEvent:
                         viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
                         break;
-                    case DataModelConditionPredicate dataModelConditionPredicate:
+                    case DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate:
                         if (!IsListGroup)
-                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionPredicateViewModel(dataModelConditionPredicate));
+                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
                         break;
                     case DataModelConditionListPredicate dataModelConditionListPredicate:
                         if (IsListGroup)
@@ -175,7 +175,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.RemoveChild(listViewModel.Model);
 
             // Insert a list in the same position
-            DataModelConditionPredicate predicate = new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
+            DataModelConditionGeneralPredicate predicate = new DataModelConditionGeneralPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
             predicate.UpdateLeftSide(listViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(predicate, index);
 

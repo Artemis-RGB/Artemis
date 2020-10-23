@@ -7,10 +7,10 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
     xmlns:conditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.Conditions"
-    x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionPredicateView"
+    x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionGeneralPredicateView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
-    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type conditions:DataModelConditionPredicateViewModel}}">
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type conditions:DataModelConditionGeneralPredicateViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

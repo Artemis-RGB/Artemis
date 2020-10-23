@@ -24,17 +24,6 @@ namespace Artemis.Core
             );
         }
 
-        public static void LogListPredicateDeserializationFailure(DataModelConditionListPredicate dataModelConditionPredicate, JsonException exception)
-        {
-            _logger.Warning(
-                exception,
-                "Failed to deserialize display condition list predicate {list} => {left} {operator} {right}",
-                dataModelConditionPredicate.Entity.LeftPath?.Path,
-                dataModelConditionPredicate.Entity.OperatorType,
-                dataModelConditionPredicate.Entity.RightPath?.Path
-            );
-        }
-
         public static void LogModifierDeserializationFailure(string modifierName, JsonSerializationException exception)
         {
             _logger.Warning(exception, "Failed to deserialize static parameter for modifier {modifierName}", modifierName);
