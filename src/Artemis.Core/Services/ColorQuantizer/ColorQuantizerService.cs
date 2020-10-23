@@ -1,13 +1,28 @@
-﻿using SkiaSharp;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
     /// <inheritdoc />
-    public class ColorQuantizerService : IColorQuantizerService
+    internal class ColorQuantizerService : IColorQuantizerService
     {
+        private static float GetComparisonValue(float sat, float targetSaturation, float luma, float targetLuma)
+        {
+            static float InvertDiff(float value, float target)
+            {
+                return 1 - Math.Abs(value - target);
+            }
+
+            const float totalWeight = weightSaturation + weightLuma;
+
+            float totalValue = InvertDiff(sat, targetSaturation) * weightSaturation +
+                               InvertDiff(luma, targetLuma) * weightLuma;
+
+            return totalValue / totalWeight;
+        }
+
         /// <inheritdoc />
         public SKColor[] Quantize(IEnumerable<SKColor> colors, int amount)
         {
@@ -20,7 +35,7 @@ namespace Artemis.Core.Services
             while (cubes.Count < amount)
             {
                 ColorCube cube = cubes.Dequeue();
-                if (cube.TrySplit(out var a, out var b))
+                if (cube.TrySplit(out ColorCube? a, out ColorCube? b))
                 {
                     cubes.Enqueue(a);
                     cubes.Enqueue(b);
@@ -29,22 +44,6 @@ namespace Artemis.Core.Services
 
             return cubes.Select(c => c.GetAverageColor()).ToArray();
         }
-
-        #region Constants
-        private const float targetDarkLuma = 0.26f;
-        private const float maxDarkLuma = 0.45f;
-        private const float minLightLuma = 0.55f;
-        private const float targetLightLuma = 0.74f;
-        private const float minNormalLuma = 0.3f;
-        private const float targetNormalLuma = 0.5f;
-        private const float maxNormalLuma = 0.7f;
-        private const float targetMutesSaturation = 0.3f;
-        private const float maxMutesSaturation = 0.3f;
-        private const float targetVibrantSaturation = 1.0f;
-        private const float minVibrantSaturation = 0.35f;
-        private const float weightSaturation = 3f;
-        private const float weightLuma = 5f;
-        #endregion
 
         /// <inheritdoc />
         public SKColor FindColorVariation(IEnumerable<SKColor> colors, ColorType type, bool ignoreLimits = false)
@@ -60,9 +59,9 @@ namespace Artemis.Core.Services
                 _ => (0.5f, 0f, 1f, 0.5f, 0f, 1f)
             };
 
-            var bestColorScore = float.MinValue;
-            var bestColor = SKColor.Empty;
-            foreach (var clr in colors)
+            float bestColorScore = float.MinValue;
+            SKColor bestColor = SKColor.Empty;
+            foreach (SKColor clr in colors)
             {
                 clr.ToHsl(out float _, out float sat, out float luma);
                 sat /= 100f;
@@ -71,7 +70,7 @@ namespace Artemis.Core.Services
                 if (!ignoreLimits && (sat <= minSaturation || sat >= maxSaturation || luma <= minLuma || luma >= maxLuma))
                     continue;
 
-                var score = GetComparisonValue(sat, targetSaturation, luma, targetLuma);
+                float score = GetComparisonValue(sat, targetSaturation, luma, targetLuma);
                 if (score > bestColorScore)
                 {
                     bestColorScore = score;
@@ -82,15 +81,22 @@ namespace Artemis.Core.Services
             return bestColor;
         }
 
-        private static float GetComparisonValue(float sat, float targetSaturation, float luma, float targetLuma)
-        {
-            static float InvertDiff(float value, float target) => 1 - Math.Abs(value - target);
-            const float totalweight = weightSaturation + weightLuma;
+        #region Constants
 
-            float totalValue = (InvertDiff(sat, targetSaturation) * weightSaturation) +
-                               (InvertDiff(luma, targetLuma) * weightLuma);
+        private const float targetDarkLuma = 0.26f;
+        private const float maxDarkLuma = 0.45f;
+        private const float minLightLuma = 0.55f;
+        private const float targetLightLuma = 0.74f;
+        private const float minNormalLuma = 0.3f;
+        private const float targetNormalLuma = 0.5f;
+        private const float maxNormalLuma = 0.7f;
+        private const float targetMutesSaturation = 0.3f;
+        private const float maxMutesSaturation = 0.3f;
+        private const float targetVibrantSaturation = 1.0f;
+        private const float minVibrantSaturation = 0.35f;
+        private const float weightSaturation = 3f;
+        private const float weightLuma = 5f;
 
-            return totalValue / totalweight;
-        }
+        #endregion
     }
 }
