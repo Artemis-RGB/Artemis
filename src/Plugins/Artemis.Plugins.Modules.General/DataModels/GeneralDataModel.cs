@@ -1,6 +1,7 @@
 ﻿using System;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Plugins.Modules.General.DataModels.Windows;
+using SkiaSharp;
 
 namespace Artemis.Plugins.Modules.General.DataModels
 {
@@ -19,5 +20,15 @@ namespace Artemis.Plugins.Modules.General.DataModels
     {
         public DateTimeOffset CurrentTime { get; set; }
         public TimeSpan TimeSinceMidnight { get; set; }
+    }
+
+    public class IconColorsDataModel : DataModel 
+    {
+        public SKColor Vibrant { get; set; }
+        public SKColor LightVibrant { get; set; }
+        public SKColor DarkVibrant { get; set; }
+        public SKColor Muted { get; set; }
+        public SKColor LightMuted { get; set; }
+        public SKColor DarkMuted { get; set; }
     }
 }
