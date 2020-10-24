@@ -12,6 +12,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -308,9 +309,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             Point position = e.GetPosition((IInputElement) sender);
             Point relative = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             if (e.LeftButton == MouseButtonState.Pressed)
-                StartMouseDrag(position, relative);
+                StartMouseDrag(sender, position, relative);
             else
-                StopMouseDrag(position);
+                StopMouseDrag(sender, position);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -329,13 +330,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (_mouseDragStatus == MouseDragStatus.Dragging)
                 MoveSelected(relative);
             else if (_mouseDragStatus == MouseDragStatus.Selecting)
-                UpdateSelection(position);
+                UpdateSelection(sender, position);
         }
 
-        private void StartMouseDrag(Point position, Point relative)
+        private void StartMouseDrag(object sender, Point position, Point relative)
         {
             // If drag started on top of a device, initialise dragging
-            SurfaceDeviceViewModel device = Devices.LastOrDefault(d => PanZoomViewModel.TransformContainingRect(d.DeviceRectangle).Contains(position));
+            RectangleGeometry selectedRect = new RectangleGeometry(new Rect(position, new Size(1, 1)));
+            SurfaceDeviceViewModel device = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect).FirstOrDefault();
             if (device != null)
             {
                 _rgbService.IsRenderPaused = true;
@@ -344,10 +346,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 if (device.SelectionStatus != SelectionStatus.Selected)
                 {
                     if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                    {
                         foreach (SurfaceDeviceViewModel others in Devices)
                             others.SelectionStatus = SelectionStatus.None;
-                    }
 
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
@@ -366,27 +366,28 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SelectionRectangle.Rect = new Rect();
         }
 
-        private void StopMouseDrag(Point position)
+        private void StopMouseDrag(object sender, Point position)
         {
             if (_mouseDragStatus != MouseDragStatus.Dragging)
             {
-                Rect selectedRect = new Rect(_mouseDragStartPoint, position);
+                RectangleGeometry selectedRect = new RectangleGeometry(new Rect(_mouseDragStartPoint, position));
+                List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect);
                 foreach (SurfaceDeviceViewModel device in Devices)
-                {
-                    if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
+                    if (devices.Contains(device))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
-                }
             }
             else
+            {
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            }
 
             _mouseDragStatus = MouseDragStatus.None;
             _rgbService.IsRenderPaused = false;
         }
 
-        private void UpdateSelection(Point position)
+        private void UpdateSelection(object sender, Point position)
         {
             if (IsPanKeyDown())
                 return;
@@ -394,13 +395,12 @@ namespace Artemis.UI.Screens.SurfaceEditor
             Rect selectedRect = new Rect(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
+            List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, SelectionRectangle);
             foreach (SurfaceDeviceViewModel device in Devices)
-            {
-                if (PanZoomViewModel.TransformContainingRect(device.DeviceRectangle).IntersectsWith(selectedRect))
+                if (devices.Contains(device))
                     device.SelectionStatus = SelectionStatus.Selected;
                 else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                     device.SelectionStatus = SelectionStatus.None;
-            }
         }
 
         private void MoveSelected(Point position)
