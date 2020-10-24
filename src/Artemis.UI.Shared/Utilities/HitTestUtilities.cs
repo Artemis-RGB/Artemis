@@ -21,14 +21,15 @@ namespace Artemis.UI.Shared
         {
             List<T> result = new List<T>();
             GeometryHitTestParameters hitTestParams = new GeometryHitTestParameters(rectangleGeometry);
-            HitTestResultCallback resultCallback = new HitTestResultCallback(r => HitTestResultBehavior.Continue);
-            HitTestFilterCallback filterCallback = new HitTestFilterCallback(e =>
+            
+            HitTestResultBehavior ResultCallback(HitTestResult r) => HitTestResultBehavior.Continue;
+            HitTestFilterBehavior FilterCallback(DependencyObject e)
             {
-                if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context))
-                    result.Add(context);
+                if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context)) result.Add(context);
                 return HitTestFilterBehavior.Continue;
-            });
-            VisualTreeHelper.HitTest(container, filterCallback, resultCallback, hitTestParams);
+            }
+
+            VisualTreeHelper.HitTest(container, FilterCallback, ResultCallback, hitTestParams);
 
             return result;
         }
