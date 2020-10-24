@@ -17,7 +17,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the type of arguments this event contains
         /// </summary>
-        Type? ArgumentsType { get; }
+        Type ArgumentsType { get; }
 
         /// <summary>
         ///     Fires when the event is triggered

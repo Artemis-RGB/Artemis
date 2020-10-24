@@ -115,7 +115,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 if (!(childModel is DataModelConditionGroup dataModelConditionGroup))
                     continue;
 
-                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, true);
+                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.List);
                 viewModel.IsRootGroup = true;
                 viewModels.Add(viewModel);
             }

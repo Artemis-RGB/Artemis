@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Conditions;
 
 namespace Artemis.Core
@@ -76,11 +77,12 @@ namespace Artemis.Core
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)
             {
                 // Right side dynamic inside the list
-                // TODO: Come up with a general wrapper solution because this will clash with events
-                if (Entity.RightPath.DataModelGuid == Constants.CorePluginInfo.Guid)
+                if (Entity.RightPath.WrapperType == PathWrapperType.List)
+                {
                     RightPath = DataModelConditionList.ListType != null
                         ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), Entity.RightPath)
                         : null;
+                }
                 // Right side dynamic
                 else
                     RightPath = new DataModelPath(null, Entity.RightPath);
