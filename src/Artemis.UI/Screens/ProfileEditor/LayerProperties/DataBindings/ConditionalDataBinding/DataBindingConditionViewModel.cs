@@ -22,7 +22,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _profileEditorService = profileEditorService;
             DataBindingCondition = dataBindingCondition;
 
-            ActiveItem = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, false);
+            ActiveItem = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, ConditionGroupType.General);
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
             ActiveItem.Updated += ActiveItemOnUpdated;

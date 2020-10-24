@@ -7,10 +7,10 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
     xmlns:DataModelConditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.Conditions"
-    x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionListPredicateView"
+    x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionEventPredicateView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
-    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type DataModelConditions:DataModelConditionListPredicateViewModel}}">
+    d:DataContext="{d:DesignInstance IsDesignTimeCreatable=False, Type={x:Type DataModelConditions:DataModelConditionEventPredicateViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -40,7 +40,7 @@
             <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
         </Button>
 
-        <!-- Left side, may be null for primitive lists -->
+        <!-- Left side -->
         <ContentControl Grid.Row="0" 
                         Grid.Column="1"
                         s:View.Model="{Binding LeftSideSelectionViewModel}"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -39,6 +40,7 @@ namespace Artemis.Core
         /// </summary>
         public DataModelPath? EventPath { get; private set; }
 
+        public Type? EventArgumentType { get; set; }
 
         internal DataModelConditionEventEntity Entity { get; set; }
 
@@ -57,6 +59,11 @@ namespace Artemis.Core
                 return false;
 
             _eventTriggered = false;
+
+            // If there is a child (root group), it must evaluate to true whenever the event triggered
+            if (Children.Any())
+                return Children[0].Evaluate();
+            // If there are no children, we always evaluate to true whenever the event triggered
             return true;
         }
 
@@ -84,6 +91,31 @@ namespace Artemis.Core
             EventPath?.Dispose();
             EventPath = path != null ? new DataModelPath(path) : null;
             SubscribeToEventPath();
+
+            // Remove the old root group that was tied to the old data model
+            while (Children.Any())
+                RemoveChild(Children[0]);
+
+            if (EventPath != null)
+            {
+                EventArgumentType = GetEventArgumentType();
+                // Create a new root group
+                AddChild(new DataModelConditionGroup(this));
+            }
+            else
+            {
+                EventArgumentType = null;
+            }
+        }
+
+        private Type? GetEventArgumentType()
+        {
+            if (EventPath == null || !EventPath.IsValid)
+                return null;
+
+            // Cannot rely on EventPath.GetValue() because part of the path might be null
+            Type eventType = EventPath.GetPropertyType()!;
+            return eventType.IsGenericType ? eventType.GetGenericArguments()[0] : typeof(DataModelEventArgs);
         }
 
         #region IDisposable
@@ -117,6 +149,12 @@ namespace Artemis.Core
             // Target list
             EventPath?.Save();
             Entity.EventPath = EventPath?.Entity;
+
+            // Children
+            Entity.Children.Clear();
+            Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
+            foreach (DataModelConditionPart child in Children)
+                child.Save();
         }
 
         internal override DataModelConditionPartEntity GetEntity()
@@ -137,6 +175,18 @@ namespace Artemis.Core
 
             EventPath = eventPath;
             SubscribeToEventPath();
+
+            EventArgumentType = GetEventArgumentType();
+            // There should only be one child and it should be a group
+            if (Entity.Children.FirstOrDefault() is DataModelConditionGroupEntity rootGroup)
+            {
+                AddChild(new DataModelConditionGroup(this, rootGroup));
+            }
+            else
+            {
+                Entity.Children.Clear();
+                AddChild(new DataModelConditionGroup(this));
+            }
         }
 
         private bool PointsToEvent(DataModelPath dataModelPath)
