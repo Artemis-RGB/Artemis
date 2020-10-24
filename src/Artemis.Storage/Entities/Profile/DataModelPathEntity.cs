@@ -6,5 +6,14 @@ namespace Artemis.Storage.Entities.Profile
     {
         public string Path { get; set; }
         public Guid? DataModelGuid { get; set; }
+
+        public PathWrapperType WrapperType { get; set; }
+    }
+
+    public enum PathWrapperType
+    {
+        None,
+        List,
+        Event
     }
 }

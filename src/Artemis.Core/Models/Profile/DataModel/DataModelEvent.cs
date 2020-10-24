@@ -58,6 +58,9 @@ namespace Artemis.Core
         /// </summary>
         public void Trigger()
         {
+            DataModelEventArgs eventArgs = new DataModelEventArgs {TriggerTime = DateTime.Now};
+
+            LastEventArguments = eventArgs;
             LastTrigger = DateTime.Now;
             TriggerCount++;
 
@@ -74,10 +77,15 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public int TriggerCount { get; private set; }
-        
+
+        /// <summary>
+        ///     Gets the event arguments of the last time the event was triggered
+        /// </summary>
+        public DataModelEventArgs? LastEventArguments { get; private set; }
+
         /// <inheritdoc />
         [DataModelIgnore]
-        public Type? ArgumentsType => null;
+        public Type ArgumentsType => typeof(DataModelEventArgs);
 
         /// <inheritdoc />
         public event EventHandler? EventTriggered;

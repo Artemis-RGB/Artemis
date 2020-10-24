@@ -1,4 +1,5 @@
-﻿using Artemis.Storage.Entities.Profile.Abstract;
+﻿using System.Collections.Generic;
+using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Storage.Entities.Profile.Conditions
 {
@@ -6,7 +7,7 @@ namespace Artemis.Storage.Entities.Profile.Conditions
     {
         public DataModelConditionEventEntity()
         {
-           
+            Children = new List<DataModelConditionPartEntity>();
         }
 
         public DataModelPathEntity EventPath { get; set; }

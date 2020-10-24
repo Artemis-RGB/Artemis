@@ -86,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (e.RenderProfileElement.DisplayCondition == null)
                 e.RenderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, false);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General);
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
 

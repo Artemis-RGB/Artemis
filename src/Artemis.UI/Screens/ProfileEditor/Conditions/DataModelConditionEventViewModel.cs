@@ -51,6 +51,31 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Update()
         {
             LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionEvent.EventPath);
+
+            // Remove VMs of effects no longer applied on the layer
+            Items.RemoveRange(Items.Where(c => !DataModelConditionEvent.Children.Contains(c.Model)).ToList());
+
+            if (DataModelConditionEvent.EventPath == null || !DataModelConditionEvent.EventPath.IsValid)
+                return;
+
+            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
+            foreach (DataModelConditionPart childModel in Model.Children)
+            {
+                if (Items.Any(c => c.Model == childModel))
+                    continue;
+                if (!(childModel is DataModelConditionGroup dataModelConditionGroup))
+                    continue;
+
+                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.Event);
+                viewModel.IsRootGroup = true;
+                viewModels.Add(viewModel);
+            }
+
+            if (viewModels.Any())
+                Items.AddRange(viewModels);
+
+            foreach (DataModelConditionViewModel childViewModel in Items)
+                childViewModel.Update();
         }
 
         public void ApplyEvent()
