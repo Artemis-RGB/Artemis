@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
@@ -14,6 +15,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
+        private bool _isEventCondition;
 
         public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
         {
@@ -25,6 +27,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             get => _displayStartHint;
             set => SetAndNotify(ref _displayStartHint, value);
+        }
+
+        public bool IsEventCondition
+        {
+            get => _isEventCondition;
+            set => SetAndNotify(ref _isEventCondition, value);
         }
 
         public RenderProfileElement RenderProfileElement
@@ -71,7 +79,14 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
+            if (RenderProfileElement != null)
+            {
+                RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
+                RenderProfileElement.DisplayCondition.ChildRemoved -= DisplayConditionOnChildrenModified;
+            }
+
             RenderProfileElement = e.RenderProfileElement;
+
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
             NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
@@ -90,8 +105,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
 
-            // Only show the intro to conditions once, and only if the layer has no conditions
-            DisplayStartHint = !ActiveItem.Items.Any();
+            DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
+            IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
+
+            RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
+            RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
+        }
+
+        private void DisplayConditionOnChildrenModified(object? sender, EventArgs e)
+        {
+            DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
+            IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
         }
     }
 }

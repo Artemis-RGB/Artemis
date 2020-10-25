@@ -28,7 +28,7 @@ namespace Artemis.UI.Shared
             Children = new BindableCollection<DataModelVisualizationViewModel>();
             IsMatchingFilteredTypes = true;
 
-            if (dataModel == null && parent == null && dataModelPath == null)
+            if (parent == null)
                 IsRootViewModel = true;
             else
                 PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel.DataModelDescription;
@@ -184,7 +184,10 @@ namespace Artemis.UI.Shared
 
         internal void PopulateProperties(IDataModelUIService dataModelUIService)
         {
-            if (IsRootViewModel)
+            // if (IsRootViewModel)
+            //     return;
+
+            if (Parent == null && DataModel == null)
                 return;
 
             Type modelType = Parent == null || Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
@@ -235,6 +238,7 @@ namespace Artemis.UI.Shared
             if (toRemoveDynamic.Any())
                 Children.RemoveRange(toRemoveDynamic);
         }
+
         private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
         {
             if (depth > MaxDepth)

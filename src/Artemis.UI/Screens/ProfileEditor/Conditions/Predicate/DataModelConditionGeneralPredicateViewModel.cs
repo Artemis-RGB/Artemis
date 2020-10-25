@@ -20,6 +20,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             : base(dataModelConditionGeneralPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
+        }
+
+        protected override void OnInitialActivate()
+        {
             Initialize();
         }
 
@@ -29,8 +33,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             supportedInputTypes.Add(typeof(IEnumerable<>));
-            supportedInputTypes.Add(typeof(DataModelEvent));
-            supportedInputTypes.Add(typeof(DataModelEvent<>));
+
+            // Events are only supported in the root group enforce that here
+            if (Parent is DataModelConditionGroupViewModel groupViewModel && groupViewModel.IsRootGroup)
+            {
+                supportedInputTypes.Add(typeof(DataModelEvent));
+                supportedInputTypes.Add(typeof(DataModelEvent<>));
+            }
 
             return supportedInputTypes;
         }

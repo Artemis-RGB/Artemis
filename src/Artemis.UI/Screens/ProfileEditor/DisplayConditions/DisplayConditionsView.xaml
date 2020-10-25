@@ -179,5 +179,17 @@
                 </Grid>
             </materialDesign:ColorZone>
         </Grid>
+
+        <!-- Indicator for events, overlaps the previous grid -->
+        <materialDesign:Card Grid.Row="3" 
+                             Grid.Column="0" 
+                             Margin="-10 0 -10 -10" 
+                             Opacity="0.95"
+                             Background="{DynamicResource MaterialDesignPaper}"
+                             Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14">
+                <materialDesign:PackIcon Kind="FlashAlert" Height="20" Width="20" Margin="0 -5" /> Timeline modes not available to event-based conditions
+            </TextBlock>
+        </materialDesign:Card>
     </Grid>
 </UserControl>

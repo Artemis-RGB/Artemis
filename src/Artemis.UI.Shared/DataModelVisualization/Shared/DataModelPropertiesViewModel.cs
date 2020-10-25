@@ -29,19 +29,19 @@ namespace Artemis.UI.Shared
         public override void Update(IDataModelUIService dataModelUIService)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
-          
+
             // Only set a display value if ToString returns useful information and not just the type name
             object currentValue = GetCurrentValue();
             if (currentValue != null && currentValue.ToString() != currentValue.GetType().ToString())
                 DisplayValue = currentValue.ToString();
             else
                 DisplayValue = null;
-            
+
             // Always populate properties   
             PopulateProperties(dataModelUIService);
 
             // Only update children if the parent is expanded
-            if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
+            if (Parent != null && !Parent.IsRootViewModel && !Parent.IsVisualizationExpanded)
                 return;
 
             foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
@@ -50,9 +50,9 @@ namespace Artemis.UI.Shared
 
         public override object GetCurrentValue()
         {
-            if (Parent == null)
-                return null;
-            return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
+            if (Parent == null || Parent.IsRootViewModel || IsRootViewModel)
+                return DataModel;
+            return base.GetCurrentValue();
         }
 
         /// <inheritdoc />
