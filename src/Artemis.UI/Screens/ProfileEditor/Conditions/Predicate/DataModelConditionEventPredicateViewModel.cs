@@ -54,7 +54,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         protected override List<DataModelPropertiesViewModel> GetExtraRightSideDataModelViewModels()
         {
-            return new List<DataModelPropertiesViewModel> {GetEventDataModel()};
+            // Extra data models are expected to not have an empty root, so lets return the child
+            return GetEventDataModel().Children.Cast<DataModelPropertiesViewModel>().ToList();
         }
 
         private DataModelPropertiesViewModel GetEventDataModel()
@@ -63,7 +64,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DataModelConditionEventPredicate.DataModelConditionEvent.EventArgumentType
             );
 
-            return wrapper.CreateViewModel();
+            return wrapper.CreateViewModel(_dataModelUIService);
         }
     }
 }

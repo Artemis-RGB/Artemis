@@ -43,7 +43,7 @@ namespace Artemis.Core
         public Type? EventArgumentType { get; set; }
 
         internal DataModelConditionEventEntity Entity { get; set; }
-
+        
         /// <inheritdoc />
         public override bool Evaluate()
         {
@@ -93,8 +93,7 @@ namespace Artemis.Core
             SubscribeToEventPath();
 
             // Remove the old root group that was tied to the old data model
-            while (Children.Any())
-                RemoveChild(Children[0]);
+            ClearChildren();
 
             if (EventPath != null)
             {
@@ -164,6 +163,8 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
+            ClearChildren();
+
             if (Entity.EventPath == null)
                 return;
 

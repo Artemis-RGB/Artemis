@@ -281,6 +281,13 @@ namespace Artemis.Core
 
             Entity.Path = Path;
             Entity.DataModelGuid = DataModelGuid;
+            
+            Entity.WrapperType = Target switch
+            {
+                ListPredicateWrapperDataModel _ => PathWrapperType.List,
+                EventPredicateWrapperDataModel _ => PathWrapperType.Event,
+                _ => PathWrapperType.None
+            };
         }
 
         #endregion

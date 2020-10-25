@@ -19,6 +19,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
         private bool _isRootGroup;
+        private bool _isEventGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             ConditionGroupType groupType,
@@ -46,6 +47,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             get => _isRootGroup;
             set => SetAndNotify(ref _isRootGroup, value);
+        }
+
+        public bool IsEventGroup
+        {
+            get => _isEventGroup;
+            set => SetAndNotify(ref _isEventGroup, value);
         }
 
         public bool IsInitialized
@@ -98,7 +105,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Update()
         {
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
-
             // Remove VMs of effects no longer applied on the layer
             Items.RemoveRange(Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList());
 
@@ -140,8 +146,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
 
-            if (IsRootGroup && Parent is DisplayConditionsViewModel displayConditionsViewModel)
-                displayConditionsViewModel.DisplayStartHint = !Items.Any();
+            IsEventGroup = Items.Any(i => i is DataModelConditionEventViewModel);
+            if (IsEventGroup)
+            {
+                if (DataModelConditionGroup.BooleanOperator != BooleanOperator.And)
+                    SelectBooleanOperator("And");
+            }
 
             OnUpdated();
         }

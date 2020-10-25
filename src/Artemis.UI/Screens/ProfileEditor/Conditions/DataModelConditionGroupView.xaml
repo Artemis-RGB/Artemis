@@ -17,7 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+            <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -45,13 +45,24 @@
         </Button>
         <Button Grid.Row="0"
                 Grid.Column="1"
-                ToolTip="Change the operator of the group, determining which conditions should match"
                 Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
                 Background="#E74C4C"
                 BorderBrush="#E74C4C"
                 Margin="3 1"
                 Content="{Binding SelectedBooleanOperator}"
-                Visibility="{Binding DisplayBooleanOperator, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                Visibility="{Binding DisplayBooleanOperator, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                IsEnabled="{Binding IsEventGroup, Converter={StaticResource InverseBooleanConverter}}"
+                ToolTipService.ShowOnDisabled="True">
+            <Button.ToolTip>
+                <StackPanel>
+                    <TextBlock Visibility="{Binding IsEventGroup, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                        Change the operator of the group, determining which conditions should match
+                    </TextBlock>
+                    <TextBlock Visibility="{Binding IsEventGroup, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                        The operator of the root group cannot be changed for event-based conditions
+                    </TextBlock>
+                </StackPanel>
+            </Button.ToolTip>
             <Button.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="And"
