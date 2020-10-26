@@ -48,10 +48,23 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
     projects: '$(artemisSolution)'
+    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+    zipAfterPublish: false
+    modifyOutputPath: false
 
-- task: PublishBuildArtifacts@1
+- task: DownloadPipelineArtifact@2
   inputs:
-    pathtoPublish: '$(Build.ArtifactStagingDirectory)/build' 
+    buildType: 'specific'
+    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
+    definition: '2'
+    buildVersionToDownload: 'latest'
     artifactName: 'Artemis build'
+    targetPath: '$(Build.ArtifactStagingDirectory)/build'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Upload build to Azure Pipelines'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/build'
+    artifact: 'Artemis build'
+    publishLocation: 'pipeline'
