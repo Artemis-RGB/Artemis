@@ -1,0 +1,70 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+resources:
+  repositories:
+  - repository: RGBdotNET
+    type: github
+    endpoint: github.com_SpoinkyNL
+    name: DarthAffe/RGB.NET
+    ref: Development
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  rgbSolution: '**/RGB.NET.sln'
+  artemisSolution: '**/Artemis.sln'
+
+steps:
+- checkout: RGBdotNET
+- checkout: self
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore RGB.NET'
+  inputs:
+    restoreSolution: '$(rgbSolution)'
+
+- task: VSBuild@1
+  displayName: 'Build RGB.NET'
+  inputs:
+    solution: '$(rgbSolution)'
+    msbuildArgs: '/property:WarningLevel=0'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore Artemis'
+  inputs:
+    restoreSolution: '$(artemisSolution)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Artemis'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '$(artemisSolution)'
+    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'specific'
+    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
+    definition: '2'
+    buildVersionToDownload: 'latest'
+    artifactName: 'Artemis build'
+    targetPath: '$(Build.ArtifactStagingDirectory)/build'
+
+- task: PublishPipelineArtifact@1
+  displayName: 'Upload build to Azure Pipelines'
+  inputs:
+    targetPath: '$(Build.ArtifactStagingDirectory)/build'
+    artifact: 'Artemis build'
+    publishLocation: 'pipeline'
