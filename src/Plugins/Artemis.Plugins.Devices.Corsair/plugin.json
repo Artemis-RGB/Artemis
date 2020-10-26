@@ -1,7 +1,0 @@
-﻿{
-  "Guid": "926629ab-8170-42f3-be18-22c694aa91cd",
-  "Name": "Corsair Devices",
-  "Description": "Allows Artemis to control lighting on all iCUE enabled Corsair products",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.Devices.Corsair.dll"
-}

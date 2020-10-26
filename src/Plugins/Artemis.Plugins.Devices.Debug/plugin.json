@@ -1,7 +1,0 @@
-﻿{
-  "Guid": "cad475d3-c621-4ec7-bbfc-784e3b4723ce",
-  "Name": "Debug Devices",
-  "Description": "Provides configurable debug devices to among other things easily test layouts",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.Devices.Debug.dll"
-}
