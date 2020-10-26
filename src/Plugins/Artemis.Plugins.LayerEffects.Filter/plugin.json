@@ -1,7 +1,0 @@
-﻿{
-  "Guid": "fca5b5d6-3f86-4ea7-a271-06ec3fc219e2",
-  "Name": "Filter layer effect",
-  "Description": "A layer effect providing different types of filters.",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.LayerEffects.Filter.dll"
-}

@@ -1,7 +1,0 @@
-﻿{
-  "Guid": "9177c320-1206-48a3-af52-b1749c758786",
-  "Name": "MSI Devices",
-  "Description": "Allows Artemis to control the lighting on MSI GPUs and motherboards.",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.Devices.Msi.dll"
-}
