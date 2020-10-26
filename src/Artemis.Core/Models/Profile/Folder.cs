@@ -127,11 +127,13 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
+            // If the condition is event-based, never display continuously
+            bool displayContinuously = (DisplayCondition == null || !DisplayCondition.ContainsEvents) && DisplayContinuously;
             TimeSpan beginTime = TimelinePosition;
 
             if (stickToMainSegment)
             {
-                if (!DisplayContinuously)
+                if (!displayContinuously)
                 {
                     TimeSpan position = timeOverride + StartSegmentLength;
                     if (position > StartSegmentLength + EndSegmentLength)
