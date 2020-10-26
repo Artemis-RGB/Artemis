@@ -1,0 +1,57 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+resources:
+  repositories:
+  - repository: RGBdotNET
+    type: github
+    endpoint: github.com_SpoinkyNL
+    name: DarthAffe/RGB.NET
+    ref: Development
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  rgbSolution: '**/RGB.NET.sln'
+  artemisSolution: '**/Artemis.sln'
+
+steps:
+- checkout: RGBdotNET
+- checkout: self
+
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore RGB.NET'
+  inputs:
+    restoreSolution: '$(rgbSolution)'
+
+- task: VSBuild@1
+  displayName: 'Build RGB.NET'
+  inputs:
+    solution: '$(rgbSolution)'
+    msbuildArgs: '/property:WarningLevel=0'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore Artemis'
+  inputs:
+    restoreSolution: '$(artemisSolution)'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Artemis'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+    projects: '$(artemisSolution)'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/build' 
+    artifactName: 'Artemis build'
