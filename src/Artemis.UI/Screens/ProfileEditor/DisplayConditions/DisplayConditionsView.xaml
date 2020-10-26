@@ -56,9 +56,9 @@
             </materialDesign:Card>
         </Grid>
 
-        <Grid Grid.Row="3">
+        <Grid Grid.Row="3" Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="20" />
+                <RowDefinition Height="18" />
                 <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
@@ -67,19 +67,15 @@
             </Grid.ColumnDefinitions>
 
             <!-- Play mode -->
-            <StackPanel Grid.Column="0" Orientation="Horizontal">
-                <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" />
-                <TextBlock Text="Play mode" VerticalAlignment="Center">
-                    <TextBlock.ToolTip>
-                        <ToolTip Placement="Center" VerticalOffset="-30">
-                            <TextBlock>
-                                Configure how the layer should act while the conditions above are met
-                            </TextBlock>
-                        </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
-            </StackPanel>
-
+            <TextBlock Grid.Column="0" Text="Play mode">
+                <TextBlock.ToolTip>
+                    <ToolTip Placement="Center" VerticalOffset="-30">
+                        <TextBlock>
+                            Configure how the layer should act while the conditions above are met
+                        </TextBlock>
+                    </ToolTip>
+                </TextBlock.ToolTip>
+            </TextBlock>
             <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3" Margin="0 0 2 0">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -98,10 +94,10 @@
                                 </TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" />
-                            <TextBlock FontSize="12" VerticalAlignment="Center">REPEAT</TextBlock>
-                        </StackPanel>
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            REPEAT
+                        </TextBlock>
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
@@ -115,27 +111,24 @@
                                 </TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="StopwatchOutline" VerticalAlignment="Center" />
-                            <TextBlock FontSize="12" VerticalAlignment="Center">ONCE</TextBlock>
-                        </StackPanel>
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="StopwatchOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            ONCE
+                        </TextBlock>
                     </RadioButton>
                 </Grid>
             </materialDesign:ColorZone>
 
             <!-- Stop mode -->
-            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                <materialDesign:PackIcon Kind="Stop" VerticalAlignment="Center" />
-                <TextBlock Text="Stop mode" VerticalAlignment="Center">
-                    <TextBlock.ToolTip>
-                        <ToolTip Placement="Center" VerticalOffset="-30">
-                            <TextBlock>
-                                Configure how the layer should act when the conditions above are no longer met
-                            </TextBlock>
-                        </ToolTip>
-                    </TextBlock.ToolTip>
-                </TextBlock>
-            </StackPanel>
+            <TextBlock Grid.Row="0" Grid.Column="1" Text="Stop mode">
+                <TextBlock.ToolTip>
+                    <ToolTip Placement="Center" VerticalOffset="-30">
+                        <TextBlock>
+                            Configure how the layer should act when the conditions above are no longer met
+                        </TextBlock>
+                    </ToolTip>
+                </TextBlock.ToolTip>
+            </TextBlock>
             <materialDesign:ColorZone Grid.Row="1" Grid.Column="1" Mode="Standard" CornerRadius="3" Margin="2 0 0 0" HorizontalAlignment="Stretch">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -154,10 +147,10 @@
                                 </TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" />
-                            <TextBlock FontSize="12" VerticalAlignment="Center">FINISH</TextBlock>
-                        </StackPanel>
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="PlayOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            FINISH
+                        </TextBlock>
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
@@ -171,25 +164,85 @@
                                 </TextBlock>
                             </ToolTip>
                         </RadioButton.ToolTip>
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="SkipNextOutline" VerticalAlignment="Center" />
-                            <TextBlock FontSize="12" VerticalAlignment="Center">SKIP TO END</TextBlock>
-                        </StackPanel>
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="SkipNextOutline" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            SKIP TO END
+                        </TextBlock>
                     </RadioButton>
                 </Grid>
             </materialDesign:ColorZone>
         </Grid>
 
-        <!-- Indicator for events, overlaps the previous grid -->
-        <materialDesign:Card Grid.Row="3" 
-                             Grid.Column="0" 
-                             Margin="-10 0 -10 -10" 
-                             Opacity="0.95"
-                             Background="{DynamicResource MaterialDesignPaper}"
-                             Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-            <TextBlock VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14">
-                <materialDesign:PackIcon Kind="FlashAlert" Height="20" Width="20" Margin="0 -5" /> Timeline modes not available to event-based conditions
+        <Grid Grid.Row="3" Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="18" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <!-- Trigger mode -->
+            <TextBlock Grid.Column="0" Text="Rapid trigger mode">
+                <TextBlock.ToolTip>
+                    <ToolTip Placement="Center" VerticalOffset="-30">
+                        <TextBlock>
+                            Configure how the layer should act when the event(s) trigger before the timeline finishes
+                        </TextBlock>
+                    </ToolTip>
+                </TextBlock.ToolTip>
             </TextBlock>
-        </materialDesign:Card>
+            <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3">
+                <Grid HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <RadioButton Grid.Column="0"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="True">
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            RESTART
+                        </TextBlock>
+                        <RadioButton.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-40">
+                                <TextBlock>
+                                    Stop the current run and restart the timeline
+                                </TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                    <RadioButton Grid.Column="1"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="False">
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="EarHearingOff" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            IGNORE
+                        </TextBlock>
+                        <RadioButton.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-40">
+                                <TextBlock>
+                                    Ignore subsequent event fires until the timeline finishes
+                                </TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                    <RadioButton Grid.Column="2"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="False">
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="ContentCopy" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            COPY
+                        </TextBlock>
+                        <RadioButton.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-40">
+                                <TextBlock>
+                                    Play another copy of the timeline on top of the current run
+                                </TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                </Grid>
+            </materialDesign:ColorZone>
+        </Grid>
     </Grid>
 </UserControl>

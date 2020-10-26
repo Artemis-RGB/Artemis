@@ -13,7 +13,7 @@ namespace Artemis.Plugins.DataModelExpansions.TestData
         {
             _rand = new Random();
             AddTimedUpdate(TimeSpan.FromSeconds(1), TimedUpdate);
-            AddTimedUpdate(TimeSpan.FromSeconds(5), TriggerEvent);
+            AddTimedUpdate(TimeSpan.FromSeconds(0.5), TriggerEvent);
         }
 
         private void TriggerEvent(double obj)

@@ -228,6 +228,16 @@ namespace Artemis.Core
 
         protected double UpdateTimeline(double deltaTime)
         {
+            bool displayContinuously = DisplayContinuously;
+            bool alwaysFinishTimeline = AlwaysFinishTimeline;
+
+            // If the condition is event-based, never display continuously and always finish the timeline
+            if (DisplayCondition != null && DisplayCondition.ContainsEvents)
+            {
+                displayContinuously = false;
+                alwaysFinishTimeline = true;
+            }
+            
             TimeSpan oldPosition = _timelinePosition;
             TimeSpan deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
             TimeSpan mainSegmentEnd = StartSegmentLength + MainSegmentLength;
@@ -237,13 +247,13 @@ namespace Artemis.Core
             if (DisplayConditionMet)
             {
                 // If we are at the end of the main timeline, wrap around back to the beginning
-                if (DisplayContinuously && TimelinePosition >= mainSegmentEnd)
+                if (displayContinuously && TimelinePosition >= mainSegmentEnd)
                     TimelinePosition = StartSegmentLength;
             }
             else
             {
                 // Skip to the last segment if conditions are no longer met
-                if (!AlwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
+                if (!alwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
                     TimelinePosition = mainSegmentEnd;
             }
 

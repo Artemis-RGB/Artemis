@@ -301,11 +301,13 @@ namespace Artemis.Core
             bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
             ApplyDataBindingsEnabled = false;
 
+            // If the condition is event-based, never display continuously
+            bool displayContinuously = (DisplayCondition == null || !DisplayCondition.ContainsEvents) && DisplayContinuously;
             TimeSpan beginTime = TimelinePosition;
 
             if (stickToMainSegment)
             {
-                if (!DisplayContinuously)
+                if (!displayContinuously)
                 {
                     TimelinePosition = StartSegmentLength + timeOverride;
                 }
