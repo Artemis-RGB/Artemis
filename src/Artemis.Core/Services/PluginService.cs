@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Artemis.Core.DeviceProviders;
@@ -54,26 +55,28 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            foreach (DirectoryInfo subDirectory in builtInPluginDirectory.EnumerateDirectories())
+            foreach (FileInfo zipFile in builtInPluginDirectory.EnumerateFiles("*.zip"))
             {
-                // Load the metadata
-                string builtInMetadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
-                if (!File.Exists(builtInMetadataFile))
-                    throw new ArtemisPluginException("Couldn't find the built-in plugins metadata file at " + builtInMetadataFile);
+                // Find the metadata file in the zip
+                using ZipArchive archive = ZipFile.OpenRead(zipFile.FullName);
+                ZipArchiveEntry? metaDataFileEntry = archive.GetEntry("plugin.json");
+                if (metaDataFileEntry == null)
+                    throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
-                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(builtInMetadataFile));
+                using StreamReader reader = new StreamReader(metaDataFileEntry.Open());
+                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(reader.ReadToEnd());
 
                 // Find the matching plugin in the plugin folder
-                DirectoryInfo match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == subDirectory.Name);
+                DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == Path.GetFileNameWithoutExtension(zipFile.Name));
                 if (match == null)
-                    CopyBuiltInPlugin(subDirectory);
+                    CopyBuiltInPlugin(zipFile, archive);
                 else
                 {
                     string metadataFile = Path.Combine(match.FullName, "plugin.json");
                     if (!File.Exists(metadataFile))
                     {
                         _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
-                        CopyBuiltInPlugin(subDirectory);
+                        CopyBuiltInPlugin(zipFile, archive);
                     }
                     else
                     {
@@ -81,19 +84,12 @@ namespace Artemis.Core.Services
                         {
                             // Compare versions, copy if the same when debugging
                             PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
-                            #if DEBUG
-                            if (builtInPluginInfo.Version >= pluginInfo.Version)
-                            {
-                                _logger.Debug("Copying updated built-in plugin {builtInPluginInfo}", builtInPluginInfo);
-                                CopyBuiltInPlugin(subDirectory);
-                            }
-                            #else
+
                             if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
                                 _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
-                                CopyBuiltInPlugin(subDirectory);
+                                CopyBuiltInPlugin(zipFile, archive);
                             }
-                            #endif
                         }
                         catch (Exception e)
                         {
@@ -369,9 +365,9 @@ namespace Artemis.Core.Services
             UnloadPlugins();
         }
 
-        private static void CopyBuiltInPlugin(DirectoryInfo builtInPluginDirectory)
+        private void CopyBuiltInPlugin(FileInfo zipFileInfo, ZipArchive zipArchive)
         {
-            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", builtInPluginDirectory.Name));
+            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", Path.GetFileNameWithoutExtension(zipFileInfo.Name)));
             bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
@@ -379,11 +375,11 @@ namespace Artemis.Core.Services
                 pluginDirectory.DeleteRecursively();
             Directory.CreateDirectory(pluginDirectory.FullName);
 
-            builtInPluginDirectory.CopyFilesRecursively(pluginDirectory);
+            zipArchive.ExtractToDirectory(pluginDirectory.FullName, true);
             if (createLockFile)
                 File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
         }
-
+        
         #region Events
 
         public event EventHandler CopyingBuildInPlugins;
