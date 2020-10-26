@@ -1,7 +1,0 @@
-﻿{
-  "Guid": "58a3d80e-d5cb-4a40-9465-c0a5d54825d6",
-  "Name": "Razer Devices",
-  "Description": "Allows Artemis to control lighting on all Synapse enabled Razer products",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.Devices.Razer.dll"
-}

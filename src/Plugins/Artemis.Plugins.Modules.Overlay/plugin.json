@@ -1,7 +1,0 @@
-{
-  "Guid": "29e3ff97-83a5-44fc-a2dc-04f446b54146",
-  "Name": "Overlay module",
-  "Description": "A general profile-enabled overlay module for every-day use",
-  "Version": "1.0.0.0",
-  "Main": "Artemis.Plugins.Modules.Overlay.dll"
-}

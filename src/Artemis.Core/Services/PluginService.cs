@@ -48,6 +48,12 @@ namespace Artemis.Core.Services
 
             // Iterate built-in plugins
             DirectoryInfo builtInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            if (!builtInPluginDirectory.Exists)
+            {
+                _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
+                return;
+            }
+
             foreach (DirectoryInfo subDirectory in builtInPluginDirectory.EnumerateDirectories())
             {
                 // Load the metadata
