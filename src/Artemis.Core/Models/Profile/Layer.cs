@@ -182,13 +182,6 @@ namespace Artemis.Core
             DisplayConditionMet = false;
             TimeLine = TimelineLength;
             ExtraTimeLines.Clear();
-
-            General.Reset();
-            Transform.Reset();
-            LayerBrush.BaseProperties?.Reset();
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled)) 
-                baseLayerEffect.BaseProperties?.Reset();
         }
 
         #region Storage
@@ -265,7 +258,7 @@ namespace Artemis.Core
         #endregion
 
         #region Rendering
-        
+
         private TimeSpan _lastRenderTime;
 
         /// <inheritdoc />
@@ -288,7 +281,7 @@ namespace Artemis.Core
         {
             TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
         }
-        
+
         /// <inheritdoc />
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
@@ -306,43 +299,43 @@ namespace Artemis.Core
                 return;
 
             RenderLayer(TimeLine, canvas);
-            foreach (TimeSpan extraTimeLine in ExtraTimeLines) 
+            foreach (TimeSpan extraTimeLine in ExtraTimeLines)
                 RenderLayer(extraTimeLine, canvas);
         }
 
-        private void PrepareForRender(TimeSpan timeLine)
+        private void PrepareForRender(TimeSpan renderTime)
         {
-            double renderDelta = (timeLine - _lastRenderTime).TotalSeconds;
+            double renderDelta = (renderTime - _lastRenderTime).TotalSeconds;
 
-            General.Update(renderDelta);
-            Transform.Update(renderDelta);
-            LayerBrush.BaseProperties?.Update(renderDelta);
+            General.Update(renderTime, renderDelta);
+            Transform.Update(renderTime, renderDelta);
+            LayerBrush.BaseProperties?.Update(renderTime, renderDelta);
             LayerBrush.Update(renderDelta);
-            
+
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update(renderDelta);
+                baseLayerEffect.BaseProperties?.Update(renderTime, renderDelta);
                 baseLayerEffect.Update(renderDelta);
             }
 
-            _lastRenderTime = timeLine;
+            _lastRenderTime = renderTime;
         }
 
         private void RenderLayer(TimeSpan timeLine, SKCanvas canvas)
         {
-            if (timeLine > TimelineLength || timeLine == TimeSpan.Zero && !DisplayConditionMet)
+            if (timeLine > TimelineLength)
                 return;
-           
+
             PrepareForRender(timeLine);
 
             if (_layerBitmap == null)
             {
-                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
+                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
-            else if (_layerBitmap.Info.Width != (int)Path.Bounds.Width || _layerBitmap.Info.Height != (int)Path.Bounds.Height)
+            else if (_layerBitmap.Info.Width != (int) Path.Bounds.Width || _layerBitmap.Info.Height != (int) Path.Bounds.Height)
             {
                 _layerBitmap.Dispose();
-                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
+                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
             }
 
             using SKPath layerPath = new SKPath(Path);
@@ -350,7 +343,7 @@ namespace Artemis.Core
             using SKPaint layerPaint = new SKPaint
             {
                 FilterQuality = SKFilterQuality.Low,
-                Color = new SKColor(0, 0, 0, (byte)(Transform.Opacity.CurrentValue * 2.55f))
+                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
             };
             layerCanvas.Clear();
 
@@ -370,7 +363,7 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
-            using SKPaint canvasPaint = new SKPaint { BlendMode = General.BlendMode.CurrentValue };
+            using SKPaint canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
 
