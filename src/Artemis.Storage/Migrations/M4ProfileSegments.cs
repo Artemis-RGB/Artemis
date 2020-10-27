@@ -23,7 +23,7 @@ namespace Artemis.Storage.Migrations
                     if (folder.MainSegmentLength == TimeSpan.Zero)
                         folder.MainSegmentLength = TimeSpan.FromSeconds(5);
 
-                    folder.DisplayContinuously = true;
+                    folder.PlayMode = 0;
                 }
 
                 foreach (LayerEntity layer in profileEntity.Layers.Where(l => l.MainSegmentLength == TimeSpan.Zero))
@@ -33,7 +33,7 @@ namespace Artemis.Storage.Migrations
                     if (layer.MainSegmentLength == TimeSpan.Zero)
                         layer.MainSegmentLength = TimeSpan.FromSeconds(5);
 
-                    layer.DisplayContinuously = true;
+                    layer.PlayMode = 0;
                 }
 
                 repository.Update(profileEntity);

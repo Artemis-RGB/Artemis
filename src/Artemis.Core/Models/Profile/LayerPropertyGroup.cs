@@ -300,5 +300,16 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        /// <summary>
+        ///     Resets the internal state of the property group
+        /// </summary>
+        public void Reset()
+        {
+            foreach (ILayerProperty layerProperty in LayerProperties) 
+                layerProperty.Reset();
+            foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups) 
+                layerPropertyGroup.Reset();
+        }
     }
 }

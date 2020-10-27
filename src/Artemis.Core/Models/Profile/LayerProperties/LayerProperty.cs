@@ -19,6 +19,7 @@ namespace Artemis.Core
     public class LayerProperty<T> : ILayerProperty
     {
         private bool _disposed;
+        private TimeSpan _keyframeProgress;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="LayerProperty{T}" /> class
@@ -43,9 +44,10 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("LayerProperty");
 
             CurrentValue = BaseValue;
+            _keyframeProgress = _keyframeProgress.Add(TimeSpan.FromSeconds(deltaTime));
 
             if (ProfileElement.ApplyKeyframesEnabled)
-                UpdateKeyframes();
+                UpdateKeyframes(deltaTime);
             if (ProfileElement.ApplyDataBindingsEnabled)
                 UpdateDataBindings(deltaTime);
 
@@ -294,13 +296,13 @@ namespace Artemis.Core
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
 
-        private void UpdateKeyframes()
+        private void UpdateKeyframes(double deltaTime)
         {
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
-
+            
             // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= ProfileElement.TimelinePosition);
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= _keyframeProgress);
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
             int nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
             NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
@@ -314,7 +316,7 @@ namespace Artemis.Core
             else
             {
                 TimeSpan timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                float keyframeProgress = (float) ((ProfileElement.TimelinePosition - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                float keyframeProgress = (float) ((_keyframeProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
                 float keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
@@ -360,6 +362,12 @@ namespace Artemis.Core
         public List<IDataBindingRegistration> GetAllDataBindingRegistrations()
         {
             return _dataBindingRegistrations;
+        }
+
+        /// <inheritdoc />
+        public void Reset()
+        {
+            _keyframeProgress = TimeSpan.Zero;
         }
 
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)

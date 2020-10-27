@@ -91,7 +91,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
+        public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo);
+
+        /// <summary>
+        ///     Resets the internal state of the element
+        /// </summary>
+        public abstract void Reset();
 
         /// <inheritdoc />
         public override string ToString()
@@ -110,7 +115,7 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException(GetType().Name);
-            
+
             lock (ChildrenList)
             {
                 if (ChildrenList.Contains(child))

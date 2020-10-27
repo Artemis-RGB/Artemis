@@ -104,15 +104,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             {
                 if (Segment != SegmentViewModelType.Main)
                     return false;
-
-                return SelectedProfileElement?.DisplayContinuously ?? false;
+                return SelectedProfileElement?.PlayMode == TimelinePlayMode.Repeat;
             }
             set
             {
                 if (Segment != SegmentViewModelType.Main)
                     return;
-
-                SelectedProfileElement.DisplayContinuously = value;
+                SelectedProfileElement.PlayMode = value ? TimelinePlayMode.Repeat : TimelinePlayMode.Once;
                 ProfileEditorService.UpdateSelectedProfileElement();
                 NotifyOfPropertyChange(nameof(RepeatSegment));
             }
@@ -348,7 +346,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 e.PropertyName == nameof(RenderProfileElement.MainSegmentLength) ||
                 e.PropertyName == nameof(RenderProfileElement.EndSegmentLength))
                 Update();
-            else if (e.PropertyName == nameof(RenderProfileElement.DisplayContinuously))
+            else if (e.PropertyName == nameof(RenderProfileElement.PlayMode))
                 NotifyOfPropertyChange(nameof(RepeatSegment));
         }
 

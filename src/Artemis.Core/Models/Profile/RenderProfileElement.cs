@@ -17,6 +17,7 @@ namespace Artemis.Core
         {
             ApplyDataBindingsEnabled = true;
             ApplyKeyframesEnabled = true;
+            ExtraTimeLines = new List<TimeSpan>();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -49,8 +50,9 @@ namespace Artemis.Core
             StartSegmentLength = RenderElementEntity.StartSegmentLength;
             MainSegmentLength = RenderElementEntity.MainSegmentLength;
             EndSegmentLength = RenderElementEntity.EndSegmentLength;
-            DisplayContinuously = RenderElementEntity.DisplayContinuously;
-            AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
+            PlayMode = (TimelinePlayMode) RenderElementEntity.PlayMode;
+            StopMode = (TimelineStopMode) RenderElementEntity.StopMode;
+            EventOverlapMode = (TimeLineEventOverlapMode) RenderElementEntity.EventOverlapMode;
 
             DisplayCondition = RenderElementEntity.DisplayCondition != null
                 ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
@@ -64,8 +66,9 @@ namespace Artemis.Core
             RenderElementEntity.StartSegmentLength = StartSegmentLength;
             RenderElementEntity.MainSegmentLength = MainSegmentLength;
             RenderElementEntity.EndSegmentLength = EndSegmentLength;
-            RenderElementEntity.DisplayContinuously = DisplayContinuously;
-            RenderElementEntity.AlwaysFinishTimeline = AlwaysFinishTimeline;
+            RenderElementEntity.PlayMode = (int) PlayMode;
+            RenderElementEntity.StopMode = (int) StopMode;
+            RenderElementEntity.EventOverlapMode = (int) EventOverlapMode;
 
             RenderElementEntity.LayerEffects.Clear();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
@@ -146,8 +149,10 @@ namespace Artemis.Core
         private TimeSpan _startSegmentLength;
         private TimeSpan _mainSegmentLength;
         private TimeSpan _endSegmentLength;
-        private bool _displayContinuously;
-        private bool _alwaysFinishTimeline;
+        private TimeSpan _timeLine;
+        private TimelinePlayMode _playMode;
+        private TimelineStopMode _stopMode;
+        private TimeLineEventOverlapMode _eventOverlapMode;
 
         /// <summary>
         ///     Gets or sets the length of the start segment
@@ -158,9 +163,9 @@ namespace Artemis.Core
             set
             {
                 if (!SetAndNotify(ref _startSegmentLength, value)) return;
-                UpdateTimelineLength();
+                UpdateTimeLineLength();
                 if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
+                    renderElement.UpdateTimeLineLength();
             }
         }
 
@@ -173,9 +178,9 @@ namespace Artemis.Core
             set
             {
                 if (!SetAndNotify(ref _mainSegmentLength, value)) return;
-                UpdateTimelineLength();
+                UpdateTimeLineLength();
                 if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
+                    renderElement.UpdateTimeLineLength();
             }
         }
 
@@ -188,37 +193,53 @@ namespace Artemis.Core
             set
             {
                 if (!SetAndNotify(ref _endSegmentLength, value)) return;
-                UpdateTimelineLength();
+                UpdateTimeLineLength();
                 if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
+                    renderElement.UpdateTimeLineLength();
             }
         }
 
         /// <summary>
-        ///     Gets the current timeline position
+        ///     Gets the current time line position
         /// </summary>
-        public TimeSpan TimelinePosition
+        public TimeSpan TimeLine
         {
-            get => _timelinePosition;
-            protected set => SetAndNotify(ref _timelinePosition, value);
+            get => _timeLine;
+            protected set => SetAndNotify(ref _timeLine, value);
         }
 
         /// <summary>
-        ///     Gets or sets whether main timeline should repeat itself as long as display conditions are met
+        ///     Gets a list of extra time lines to render the element at each frame. Extra time lines are removed when they reach
+        ///     their end
         /// </summary>
-        public bool DisplayContinuously
+        public List<TimeSpan> ExtraTimeLines { get; }
+
+        /// <summary>
+        ///     Gets or sets the mode in which the render element starts its timeline when display conditions are met
+        /// </summary>
+        public TimelinePlayMode PlayMode
         {
-            get => _displayContinuously;
-            set => SetAndNotify(ref _displayContinuously, value);
+            get => _playMode;
+            set => SetAndNotify(ref _playMode, value);
         }
 
         /// <summary>
-        ///     Gets or sets whether the timeline should finish when conditions are no longer met
+        ///     Gets or sets the mode in which the render element stops its timeline when display conditions are no longer met
         /// </summary>
-        public bool AlwaysFinishTimeline
+        public TimelineStopMode StopMode
         {
-            get => _alwaysFinishTimeline;
-            set => SetAndNotify(ref _alwaysFinishTimeline, value);
+            get => _stopMode;
+            set => SetAndNotify(ref _stopMode, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the mode in which the render element responds to display condition events being fired before the
+        ///     timeline finished
+        /// </summary>
+        public TimeLineEventOverlapMode EventOverlapMode
+        {
+            get => _eventOverlapMode;
+            set => SetAndNotify(ref _eventOverlapMode, value);
         }
 
         /// <summary>
@@ -226,48 +247,62 @@ namespace Artemis.Core
         /// </summary>
         public TimeSpan TimelineLength { get; protected set; }
 
-        protected double UpdateTimeline(double deltaTime)
+        /// <summary>
+        ///     Updates the time line and any extra time lines present in <see cref="ExtraTimeLines" />
+        /// </summary>
+        /// <param name="deltaTime">The delta with which to move the time lines</param>
+        protected void UpdateTimeLines(double deltaTime)
         {
-            bool displayContinuously = DisplayContinuously;
-            bool alwaysFinishTimeline = AlwaysFinishTimeline;
+            bool repeatMainSegment = PlayMode == TimelinePlayMode.Repeat;
+            bool finishMainSegment = StopMode == TimelineStopMode.Finish;
 
             // If the condition is event-based, never display continuously and always finish the timeline
             if (DisplayCondition != null && DisplayCondition.ContainsEvents)
             {
-                displayContinuously = false;
-                alwaysFinishTimeline = true;
+                repeatMainSegment = false;
+                finishMainSegment = true;
             }
-            
-            TimeSpan oldPosition = _timelinePosition;
+
             TimeSpan deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
             TimeSpan mainSegmentEnd = StartSegmentLength + MainSegmentLength;
 
-            TimelinePosition += deltaTimeSpan;
-            // Manage segments while the condition is met
-            if (DisplayConditionMet)
+            // Update the main time line
+            if (TimeLine != TimeSpan.Zero || DisplayConditionMet)
             {
-                // If we are at the end of the main timeline, wrap around back to the beginning
-                if (displayContinuously && TimelinePosition >= mainSegmentEnd)
-                    TimelinePosition = StartSegmentLength;
-            }
-            else
-            {
-                // Skip to the last segment if conditions are no longer met
-                if (!alwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
-                    TimelinePosition = mainSegmentEnd;
+                TimeLine += deltaTimeSpan;
+
+                // Apply play and stop mode
+                if (DisplayConditionMet && repeatMainSegment && TimeLine >= mainSegmentEnd)
+                    TimeLine = StartSegmentLength;
+                else if (!DisplayConditionMet && !finishMainSegment)
+                    TimeLine = mainSegmentEnd.Add(new TimeSpan(1));
             }
 
-            return (TimelinePosition - oldPosition).TotalSeconds;
+            lock (ExtraTimeLines)
+            {
+                // Remove extra time lines that have finished
+                ExtraTimeLines.RemoveAll(t => t >= mainSegmentEnd);
+                // Update remaining extra time lines
+                for (int index = 0; index < ExtraTimeLines.Count; index++)
+                    ExtraTimeLines[index] += deltaTimeSpan;
+            }
         }
 
-        protected internal abstract void UpdateTimelineLength();
-
         /// <summary>
-        ///     Overrides the progress of the element
+        /// Overrides the time line to the specified time and clears any extra time lines
         /// </summary>
-        /// <param name="timeOverride"></param>
-        /// <param name="stickToMainSegment"></param>
-        public abstract void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment);
+        /// <param name="time">The time to override to</param>
+        /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
+        public void OverrideTimeLines(TimeSpan time, bool stickToMainSegment)
+        {
+            ExtraTimeLines.Clear();
+            TimeLine = time;
+
+            if (stickToMainSegment && TimeLine > StartSegmentLength)
+                TimeLine = StartSegmentLength + TimeSpan.FromMilliseconds(time.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+        }
+
+        protected internal abstract void UpdateTimeLineLength();
 
         #endregion
 
@@ -402,11 +437,10 @@ namespace Artemis.Core
         public bool DisplayConditionMet
         {
             get => _displayConditionMet;
-            private set => SetAndNotify(ref _displayConditionMet, value);
+            protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
         private DataModelConditionGroup _displayCondition;
-        private TimeSpan _timelinePosition;
         private bool _displayConditionMet;
 
         /// <summary>
@@ -430,9 +464,33 @@ namespace Artemis.Core
 
         public void UpdateDisplayCondition()
         {
-            bool conditionMet = DisplayCondition == null || DisplayCondition.Evaluate();
-            if (conditionMet && !DisplayConditionMet)
-                TimelinePosition = TimeSpan.Zero;
+            if (DisplayCondition == null)
+            {
+                DisplayConditionMet = true;
+                return;
+            }
+
+            bool conditionMet = DisplayCondition.Evaluate();
+
+            // Regular conditions reset the timeline whenever their condition is met and was not met before that
+            if (!DisplayCondition.ContainsEvents)
+            {
+                if (conditionMet && !DisplayConditionMet && TimeLine > TimelineLength)
+                    TimeLine = TimeSpan.Zero;
+            }
+            // Event conditions reset if the timeline finished and otherwise apply their overlap mode
+            else if (conditionMet)
+            {
+                if (TimeLine > TimelineLength)
+                    TimeLine = TimeSpan.Zero;
+                else
+                {
+                    if (EventOverlapMode == TimeLineEventOverlapMode.Restart)
+                        TimeLine = TimeSpan.Zero;
+                    else if (EventOverlapMode == TimeLineEventOverlapMode.Copy)
+                        ExtraTimeLines.Add(new TimeSpan());
+                }
+            }
 
             DisplayConditionMet = conditionMet;
         }
@@ -449,5 +507,58 @@ namespace Artemis.Core
         }
 
         #endregion
+    }
+
+    /// <summary>
+    ///     Represents a mode for render elements to start their timeline when display conditions are met
+    /// </summary>
+    public enum TimelinePlayMode
+    {
+        /// <summary>
+        ///     Continue repeating the main segment of the timeline while the condition is met
+        /// </summary>
+        Repeat,
+
+        /// <summary>
+        ///     Only play the timeline once when the condition is met
+        /// </summary>
+        Once
+    }
+
+    /// <summary>
+    ///     Represents a mode for render elements to stop their timeline when display conditions are no longer met
+    /// </summary>
+    public enum TimelineStopMode
+    {
+        /// <summary>
+        ///     When conditions are no longer met, finish the the current run of the main timeline
+        /// </summary>
+        Finish,
+
+        /// <summary>
+        ///     When conditions are no longer met, skip to the end segment of the timeline
+        /// </summary>
+        SkipToEnd
+    }
+
+    /// <summary>
+    ///     Represents a mode for render elements to start their timeline when display conditions events are fired
+    /// </summary>
+    public enum TimeLineEventOverlapMode
+    {
+        /// <summary>
+        ///     Stop the current run and restart the timeline
+        /// </summary>
+        Restart,
+
+        /// <summary>
+        ///     Ignore subsequent event fires until the timeline finishes
+        /// </summary>
+        Ignore,
+
+        /// <summary>
+        ///     Play another copy of the timeline on top of the current run
+        /// </summary>
+        Copy
     }
 }

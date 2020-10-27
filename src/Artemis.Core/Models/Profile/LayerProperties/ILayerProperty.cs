@@ -36,5 +36,10 @@ namespace Artemis.Core
         ///     Returns a list off all data binding registrations
         /// </summary>
         List<IDataBindingRegistration> GetAllDataBindingRegistrations();
+
+        /// <summary>
+        ///     Resets the internal state of the property
+        /// </summary>
+        void Reset();
     }
 }

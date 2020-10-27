@@ -30,7 +30,6 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            DisplayContinuously = true;
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -56,23 +55,22 @@ namespace Artemis.Core
             Load();
         }
 
+        public bool IsRootFolder => Parent == Profile;
+
         internal FolderEntity FolderEntity { get; set; }
+
+        internal override RenderElementEntity RenderElementEntity => FolderEntity;
 
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
             List<ILayerProperty> result = new List<ILayerProperty>();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
-            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
-            }
 
             return result;
         }
-
-        internal override RenderElementEntity RenderElementEntity => FolderEntity;
-        public bool IsRootFolder => Parent == Profile;
 
         public override void Update(double deltaTime)
         {
@@ -82,149 +80,28 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
-            // Disable data bindings during an override
-            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
-            ApplyDataBindingsEnabled = false;
-
+            // Ensure the layer must still be displayed
             UpdateDisplayCondition();
 
-            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
-            // to it's start
-            UpdateTimeline(deltaTime);
+            // Update the layer timeline
+            UpdateTimeLines(deltaTime);
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(deltaTime);
-                baseLayerEffect.Update(deltaTime);
-            }
-
-            // Iterate the children in reverse because that's how they must be rendered too
-            for (int index = Children.Count - 1; index > -1; index--)
-            {
-                ProfileElement profileElement = Children[index];
-                profileElement.Update(deltaTime);
-            }
-
-            // Restore the old data bindings enabled state
-            ApplyDataBindingsEnabled = wasApplyingDataBindings;
+            foreach (ProfileElement child in Children)
+                child.Update(deltaTime);
         }
 
-        protected internal override void UpdateTimelineLength()
+        /// <inheritdoc />
+        public override void Reset()
         {
-            TimelineLength = !Children.Any() ? TimeSpan.Zero : Children.OfType<RenderProfileElement>().Max(c => c.TimelineLength);
-            if (StartSegmentLength + MainSegmentLength + EndSegmentLength > TimelineLength)
-                TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
-
-            if (Parent is RenderProfileElement parent)
-                parent.UpdateTimelineLength();
-        }
-
-        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            if (!Enabled)
-                return;
-
-            // If the condition is event-based, never display continuously
-            bool displayContinuously = (DisplayCondition == null || !DisplayCondition.ContainsEvents) && DisplayContinuously;
-            TimeSpan beginTime = TimelinePosition;
-
-            if (stickToMainSegment)
-            {
-                if (!displayContinuously)
-                {
-                    TimeSpan position = timeOverride + StartSegmentLength;
-                    if (position > StartSegmentLength + EndSegmentLength)
-                        TimelinePosition = StartSegmentLength + EndSegmentLength;
-                }
-                else
-                {
-                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
-                    if (progress > 0)
-                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
-                    else
-                        TimelinePosition = StartSegmentLength;
-                }
-            }
-            else
-                TimelinePosition = timeOverride;
-
-            double delta = (TimelinePosition - beginTime).TotalSeconds;
+            DisplayConditionMet = false;
+            TimeLine = TimelineLength;
+            ExtraTimeLines.Clear();
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(delta);
-                baseLayerEffect.Update(delta);
-            }
-        }
+                baseLayerEffect.BaseProperties?.Reset();
 
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            if (Path == null || !Enabled || !Children.Any(c => c.Enabled))
-                return;
-
-            // No need to render if at the end of the timeline
-            if (TimelinePosition > TimelineLength)
-                return;
-
-            if (_folderBitmap == null)
-                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
-            else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
-            {
-                _folderBitmap.Dispose();
-                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
-            }
-
-            using SKPath folderPath = new SKPath(Path);
-            using SKCanvas folderCanvas = new SKCanvas(_folderBitmap);
-            using SKPaint folderPaint = new SKPaint();
-            folderCanvas.Clear();
-
-            folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
-
-            SKPoint targetLocation = Path.Bounds.Location;
-            if (Parent is Folder parentFolder)
-                targetLocation -= parentFolder.Path.Bounds.Location;
-
-            canvas.Save();
-
-            using SKPath clipPath = new SKPath(folderPath);
-            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
-            canvas.ClipPath(clipPath);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
-
-            // No point rendering if the alpha was set to zero by one of the effects
-            if (folderPaint.Color.Alpha == 0)
-                return;
-
-            // Iterate the children in reverse because the first layer must be rendered last to end up on top
-            for (int index = Children.Count - 1; index > -1; index--)
-            {
-                folderCanvas.Save();
-                ProfileElement profileElement = Children[index];
-                profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
-                folderCanvas.Restore();
-            }
-
-            // If required, apply the opacity override of the module to the root folder
-            if (IsRootFolder && Profile.Module.OpacityOverride < 1)
-            {
-                double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
-                folderPaint.Color = folderPaint.Color.WithAlpha((byte) (folderPaint.Color.Alpha * multiplier));
-            }
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
-            canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
-
-            canvas.Restore();
+            foreach (ProfileElement child in Children)
+                child.Reset();
         }
 
         /// <inheritdoc />
@@ -234,7 +111,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.AddChild(child, order);
-            UpdateTimelineLength();
+            UpdateTimeLineLength();
             CalculateRenderProperties();
         }
 
@@ -245,7 +122,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.RemoveChild(child);
-            UpdateTimelineLength();
+            UpdateTimeLineLength();
             CalculateRenderProperties();
         }
 
@@ -261,10 +138,8 @@ namespace Artemis.Core
 
             SKPath path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (ProfileElement child in Children)
-            {
                 if (child is RenderProfileElement effectChild && effectChild.Path != null)
                     path.AddPath(effectChild.Path);
-            }
 
             Path = path;
 
@@ -273,6 +148,16 @@ namespace Artemis.Core
                 folder.CalculateRenderProperties();
 
             OnRenderPropertiesUpdated();
+        }
+
+        protected internal override void UpdateTimeLineLength()
+        {
+            TimelineLength = !Children.Any() ? TimeSpan.Zero : Children.OfType<RenderProfileElement>().Max(c => c.TimelineLength);
+            if (StartSegmentLength + MainSegmentLength + EndSegmentLength > TimelineLength)
+                TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
+
+            if (Parent is RenderProfileElement parent)
+                parent.UpdateTimeLineLength();
         }
 
         protected override void Dispose(bool disposing)
@@ -323,6 +208,104 @@ namespace Artemis.Core
 
             SaveRenderElement();
         }
+
+        #region Rendering
+
+        private TimeSpan _lastRenderTime;
+
+        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("Folder");
+
+            if (!Enabled || !Children.Any(c => c.Enabled))
+                return;
+
+            // Ensure the folder is ready
+            if (Path == null)
+                return;
+
+            RenderFolder(TimeLine, canvas, canvasInfo);
+        }
+
+        private void PrepareForRender(TimeSpan timeLine)
+        {
+            double renderDelta = (timeLine - _lastRenderTime).TotalSeconds;
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update(renderDelta);
+                baseLayerEffect.Update(renderDelta);
+            }
+
+            _lastRenderTime = timeLine;
+        }
+
+        private void RenderFolder(TimeSpan timeLine, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            if (timeLine > TimelineLength)
+                return;
+
+            PrepareForRender(timeLine);
+
+            if (_folderBitmap == null)
+            {
+                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            }
+            else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
+            {
+                _folderBitmap.Dispose();
+                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            }
+
+            using SKPath folderPath = new SKPath(Path);
+            using SKCanvas folderCanvas = new SKCanvas(_folderBitmap);
+            using SKPaint folderPaint = new SKPaint();
+            folderCanvas.Clear();
+
+            folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
+
+            SKPoint targetLocation = Path.Bounds.Location;
+            if (Parent is Folder parentFolder)
+                targetLocation -= parentFolder.Path.Bounds.Location;
+
+            canvas.Save();
+
+            using SKPath clipPath = new SKPath(folderPath);
+            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
+            canvas.ClipPath(clipPath);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
+
+            // No point rendering if the alpha was set to zero by one of the effects
+            if (folderPaint.Color.Alpha == 0)
+                return;
+
+            // Iterate the children in reverse because the first layer must be rendered last to end up on top
+            for (int index = Children.Count - 1; index > -1; index--)
+            {
+                folderCanvas.Save();
+                ProfileElement profileElement = Children[index];
+                profileElement.Render(folderCanvas, _folderBitmap.Info);
+                folderCanvas.Restore();
+            }
+
+            // If required, apply the opacity override of the module to the root folder
+            if (IsRootFolder && Profile.Module.OpacityOverride < 1)
+            {
+                double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
+                folderPaint.Color = folderPaint.Color.WithAlpha((byte) (folderPaint.Color.Alpha * multiplier));
+            }
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
+            canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
+
+            canvas.Restore();
+        }
+
+        #endregion
 
         #region Events
 
