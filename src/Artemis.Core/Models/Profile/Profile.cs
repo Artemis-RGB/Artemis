@@ -66,7 +66,7 @@ namespace Artemis.Core
             }
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
             lock (this)
             {
@@ -76,8 +76,15 @@ namespace Artemis.Core
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (ProfileElement profileElement in Children)
-                    profileElement.Render(deltaTime, canvas, canvasInfo);
+                    profileElement.Render(canvas, canvasInfo);
             }
+        }
+
+        /// <inheritdoc />
+        public override void Reset()
+        {
+            foreach (ProfileElement child in Children)
+                child.Reset();
         }
 
         public Folder GetRootFolder()

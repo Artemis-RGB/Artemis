@@ -37,7 +37,6 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            DisplayContinuously = true;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
 
@@ -177,6 +176,21 @@ namespace Artemis.Core
             ActivateLayerBrush();
         }
 
+        /// <inheritdoc />
+        public override void Reset()
+        {
+            DisplayConditionMet = false;
+            TimeLine = TimelineLength;
+            ExtraTimeLines.Clear();
+
+            General.Reset();
+            Transform.Reset();
+            LayerBrush.BaseProperties?.Reset();
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled)) 
+                baseLayerEffect.BaseProperties?.Reset();
+        }
+
         #region Storage
 
         internal override void Load()
@@ -251,6 +265,8 @@ namespace Artemis.Core
         #endregion
 
         #region Rendering
+        
+        private TimeSpan _lastRenderTime;
 
         /// <inheritdoc />
         public override void Update(double deltaTime)
@@ -258,97 +274,28 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
+            if (!Enabled)
                 return;
 
             // Ensure the layer must still be displayed
             UpdateDisplayCondition();
 
-            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
-            // to it's start
-            UpdateTimeline(deltaTime);
-
-            // No point updating further than this if the layer is not going to be rendered
-            if (TimelinePosition > TimelineLength)
-                return;
-
-            General.Update(deltaTime);
-            Transform.Update(deltaTime);
-            LayerBrush.BaseProperties?.Update(deltaTime);
-            LayerBrush.Update(deltaTime);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(deltaTime);
-                baseLayerEffect.Update(deltaTime);
-            }
+            // Update the layer timeline
+            UpdateTimeLines(deltaTime);
         }
 
-        protected internal override void UpdateTimelineLength()
+        protected internal override void UpdateTimeLineLength()
         {
             TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
         }
-
-        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Layer");
-
-            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
-                return;
-
-            // Disable data bindings during an override
-            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
-            ApplyDataBindingsEnabled = false;
-
-            // If the condition is event-based, never display continuously
-            bool displayContinuously = (DisplayCondition == null || !DisplayCondition.ContainsEvents) && DisplayContinuously;
-            TimeSpan beginTime = TimelinePosition;
-
-            if (stickToMainSegment)
-            {
-                if (!displayContinuously)
-                {
-                    TimelinePosition = StartSegmentLength + timeOverride;
-                }
-                else
-                {
-                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
-                    if (progress > 0)
-                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
-                    else
-                        TimelinePosition = StartSegmentLength;
-                }
-            }
-            else
-            {
-                TimelinePosition = timeOverride;
-            }
-
-            double delta = (TimelinePosition - beginTime).TotalSeconds;
-
-            General.Update(delta);
-            Transform.Update(delta);
-            LayerBrush.BaseProperties?.Update(delta);
-            LayerBrush.Update(delta);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(delta);
-                baseLayerEffect.Update(delta);
-            }
-
-            // Restore the old data bindings enabled state
-            ApplyDataBindingsEnabled = wasApplyingDataBindings;
-        }
-
+        
         /// <inheritdoc />
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
             if (_disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled || TimelinePosition > TimelineLength)
+            if (!Enabled)
                 return;
 
             // Ensure the layer is ready
@@ -358,14 +305,44 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
+            RenderLayer(TimeLine, canvas);
+            foreach (TimeSpan extraTimeLine in ExtraTimeLines) 
+                RenderLayer(extraTimeLine, canvas);
+        }
+
+        private void PrepareForRender(TimeSpan timeLine)
+        {
+            double renderDelta = (timeLine - _lastRenderTime).TotalSeconds;
+
+            General.Update(renderDelta);
+            Transform.Update(renderDelta);
+            LayerBrush.BaseProperties?.Update(renderDelta);
+            LayerBrush.Update(renderDelta);
+            
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update(renderDelta);
+                baseLayerEffect.Update(renderDelta);
+            }
+
+            _lastRenderTime = timeLine;
+        }
+
+        private void RenderLayer(TimeSpan timeLine, SKCanvas canvas)
+        {
+            if (timeLine > TimelineLength || timeLine == TimeSpan.Zero && !DisplayConditionMet)
+                return;
+           
+            PrepareForRender(timeLine);
+
             if (_layerBitmap == null)
             {
-                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
             }
-            else if (_layerBitmap.Info.Width != (int) Path.Bounds.Width || _layerBitmap.Info.Height != (int) Path.Bounds.Height)
+            else if (_layerBitmap.Info.Width != (int)Path.Bounds.Width || _layerBitmap.Info.Height != (int)Path.Bounds.Height)
             {
                 _layerBitmap.Dispose();
-                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+                _layerBitmap = new SKBitmap(new SKImageInfo((int)Path.Bounds.Width, (int)Path.Bounds.Height));
             }
 
             using SKPath layerPath = new SKPath(Path);
@@ -373,7 +350,7 @@ namespace Artemis.Core
             using SKPaint layerPaint = new SKPaint
             {
                 FilterQuality = SKFilterQuality.Low,
-                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
+                Color = new SKColor(0, 0, 0, (byte)(Transform.Opacity.CurrentValue * 2.55f))
             };
             layerCanvas.Clear();
 
@@ -393,7 +370,7 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
-            using SKPaint canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
+            using SKPaint canvasPaint = new SKPaint { BlendMode = General.BlendMode.CurrentValue };
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
 
@@ -406,7 +383,7 @@ namespace Artemis.Core
                 (canvasPath.Bounds.Left - targetLocation.X) * -1,
                 (canvasPath.Bounds.Top - targetLocation.Y) * -1)
             );
-            canvas.ClipPath(canvasPath);
+            // canvas.ClipPath(canvasPath);
             canvas.DrawBitmap(_layerBitmap, targetLocation, canvasPaint);
         }
 

@@ -15,21 +15,35 @@ namespace Artemis.UI.Shared.Services
     internal class ProfileEditorService : IProfileEditorService
     {
         private readonly ILogger _logger;
+        private readonly ICoreService _coreService;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private readonly object _selectedProfileElementLock = new object();
         private readonly object _selectedProfileLock = new object();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
+        private bool _previewInvalidated;
 
-        public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger)
+        public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger, ICoreService coreService)
         {
             _profileService = profileService;
             _logger = logger;
+            _coreService = coreService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
+
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
 
             Kernel = kernel;
             PixelsPerSecond = 100;
+        }
+
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            if (_previewInvalidated)
+            {
+                _previewInvalidated = false;
+                Execute.PostToUIThread(OnProfilePreviewUpdated);
+            }
         }
 
         public IKernel Kernel { get; }
@@ -142,11 +156,11 @@ namespace Artemis.UI.Shared.Services
 
             // Stick to the main segment for any element that is not currently selected
             foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.OverrideProgress(CurrentTime, folder != SelectedProfileElement);
+                folder.OverrideTimeLines(CurrentTime, folder != SelectedProfileElement);
             foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.OverrideProgress(CurrentTime, layer != SelectedProfileElement);
+                layer.OverrideTimeLines(CurrentTime, layer != SelectedProfileElement);
 
-            OnProfilePreviewUpdated();
+            _previewInvalidated = true;
         }
 
         public bool UndoUpdateProfile()

@@ -32,7 +32,7 @@ namespace Artemis.Core
                 return;
 
             AnimationProfile.Update(deltaTime);
-            AnimationProfile.Render(deltaTime, canvas, bitmapInfo);
+            AnimationProfile.Render(canvas, bitmapInfo);
         }
 
         private void CreateIntroProfile()

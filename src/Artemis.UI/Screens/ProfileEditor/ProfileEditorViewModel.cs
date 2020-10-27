@@ -246,6 +246,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             LoadWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = true;
+            Module.ActiveProfile?.Reset();
             Module.ActiveProfileChanged += ModuleOnActiveProfileChanged;
             LoadProfiles();
 
@@ -261,6 +262,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             SaveWorkspaceSettings();
             Module.IsProfileUpdatingDisabled = false;
+            Module.ActiveProfile?.Reset();
             Module.ActiveProfileChanged -= ModuleOnActiveProfileChanged;
 
             _profileEditorService.ChangeSelectedProfile(null);

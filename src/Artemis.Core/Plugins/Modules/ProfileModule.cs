@@ -81,8 +81,9 @@ namespace Artemis.Core.Modules
 
         internal override void InternalDisablePlugin()
         {
-            DataModel = null;
+            Deactivate(true);
             base.InternalDisablePlugin();
+            DataModel = null;
         }
     }
 
@@ -112,7 +113,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets the currently active profile
         /// </summary>
-        public Profile ActiveProfile { get; private set; }
+        public Profile? ActiveProfile { get; private set; }
 
         /// <summary>
         ///     Disables updating the profile, rendering does continue
@@ -174,7 +175,7 @@ namespace Artemis.Core.Modules
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(deltaTime, canvas, canvasInfo);
+                ActiveProfile?.Render(canvas, canvasInfo);
             }
 
             ProfileRendered(deltaTime, surface, canvas, canvasInfo);

@@ -50,6 +50,11 @@ namespace Artemis.Core.Services
         void ActivateLastProfile(ProfileModule profileModule);
 
         /// <summary>
+        ///     Reloads the currently active profile on the provided profile module
+        /// </summary>
+        void ReloadProfile(ProfileModule module);
+
+        /// <summary>
         ///     Asynchronously activates the last profile of the given profile module using a fade animation
         /// </summary>
         /// <param name="profileModule"></param>
