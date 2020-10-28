@@ -74,7 +74,7 @@ namespace Artemis.Core
 
         public override void Update(double deltaTime)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             if (!Enabled)
@@ -104,7 +104,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void AddChild(ProfileElement child, int? order = null)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             base.AddChild(child, order);
@@ -115,7 +115,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void RemoveChild(ProfileElement child)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             base.RemoveChild(child);
@@ -130,7 +130,7 @@ namespace Artemis.Core
 
         public void CalculateRenderProperties()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             SKPath path = new SKPath {FillType = SKPathFillType.Winding};
@@ -159,7 +159,7 @@ namespace Artemis.Core
 
         protected override void Dispose(bool disposing)
         {
-            _disposed = true;
+            Disposed = true;
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
@@ -189,7 +189,7 @@ namespace Artemis.Core
 
         internal override void Save()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             FolderEntity.Id = EntityId;
@@ -212,7 +212,7 @@ namespace Artemis.Core
 
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             if (!Enabled || !Children.Any(c => c.Enabled))

@@ -56,7 +56,7 @@ namespace Artemis.Core
         {
             lock (this)
             {
-                if (_disposed)
+                if (Disposed)
                     throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot update inactive profile: {this}");
@@ -70,7 +70,7 @@ namespace Artemis.Core
         {
             lock (this)
             {
-                if (_disposed)
+                if (Disposed)
                     throw new ObjectDisposedException("Profile");
                 if (!IsActivated)
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
@@ -89,7 +89,7 @@ namespace Artemis.Core
 
         public Folder GetRootFolder()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             return (Folder) Children.Single();
@@ -97,7 +97,7 @@ namespace Artemis.Core
 
         internal override void Load()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             Name = ProfileEntity.Name;
@@ -137,12 +137,12 @@ namespace Artemis.Core
             ChildrenList.Clear();
 
             IsActivated = false;
-            _disposed = true;
+            Disposed = true;
         }
 
         internal override void Save()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             ProfileEntity.Id = EntityId;
@@ -164,7 +164,7 @@ namespace Artemis.Core
         {
             lock (this)
             {
-                if (_disposed)
+                if (Disposed)
                     throw new ObjectDisposedException("Profile");
                 if (IsActivated)
                     return;
@@ -177,7 +177,7 @@ namespace Artemis.Core
 
         internal void PopulateLeds(ArtemisSurface surface)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             foreach (Layer layer in GetAllLayers())
