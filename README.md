@@ -9,12 +9,9 @@
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
 
 Artemis adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
-#### Artemis 2 is still in very active development and that's why there are no how-to guides yet.
+### Artemis 2 is still in very active development and that's why there are no how-to guides yet.
 **Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases  
-**Plugin dcumentation**: https://artemis-rgb.com/docs/
-
-Executable of latest Artemis 2 build: [Artemis build.zip](http://download.rbeekman.nl/build/1/Artemis%20build). To use, extract the ZIP and run Artemis.UI.exe.  
-This download includes all the plugins found in the [Artemis.Plugins repository](https://github.com/Artemis-RGB/Artemis.Plugins)
+**Plugin documentation**: https://artemis-rgb.com/docs/
 
 **Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested. If you run into any issues please let us know on Discord.**
 
