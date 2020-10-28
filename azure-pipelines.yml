@@ -43,6 +43,12 @@ steps:
   inputs:
     restoreSolution: '$(artemisSolution)'
 
+- task: ResharperCli@2
+  inputs:
+    solutionOrProjectPath: '$(artemisSolution)'
+    failBuildLevelSelector: 'Error'
+    additionalArguments: '/disable-settings-layers:SolutionPersonal --properties:Configuration=win-x64'
+
 - task: DotNetCoreCLI@2
   displayName: 'Publish Artemis'
   inputs:
