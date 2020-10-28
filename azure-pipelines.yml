@@ -45,7 +45,7 @@ steps:
 
 - task: ResharperCli@2
   inputs:
-    solutionOrProjectPath: '$(artemisSolution)'
+    solutionOrProjectPath: 'Artemis/src/Artemis.sln'
     failBuildLevelSelector: 'Error'
     additionalArguments: '/disable-settings-layers:SolutionPersonal --properties:Configuration=win-x64'
 
