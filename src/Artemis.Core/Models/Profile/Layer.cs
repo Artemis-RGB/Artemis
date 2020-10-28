@@ -138,7 +138,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            _disposed = true;
+            Disposed = true;
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
@@ -199,7 +199,7 @@ namespace Artemis.Core
 
         internal override void Save()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             // Properties
@@ -264,7 +264,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             if (!Enabled)
@@ -285,7 +285,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             if (!Enabled)
@@ -446,7 +446,7 @@ namespace Artemis.Core
 
         internal void CalculateRenderProperties()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             if (!Leds.Any())
@@ -475,7 +475,7 @@ namespace Artemis.Core
 
         internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool zeroBased = false)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKPoint positionProperty = Transform.Position.CurrentValue;
@@ -499,7 +499,7 @@ namespace Artemis.Core
         /// <param name="path"></param>
         public void IncludePathInTranslation(SKPath path, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -535,7 +535,7 @@ namespace Artemis.Core
         /// <returns>The transformation matrix containing the current transformation settings</returns>
         public SKMatrix GetTransformMatrix(bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -569,7 +569,7 @@ namespace Artemis.Core
         /// </summary>
         public void ExcludePathFromTranslation(SKPath path, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -605,7 +605,7 @@ namespace Artemis.Core
         /// <returns>The number of transformations applied</returns>
         public int ExcludeCanvasFromTranslation(SKCanvas canvas, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -645,7 +645,7 @@ namespace Artemis.Core
         /// <param name="led">The LED to add</param>
         public void AddLed(ArtemisLed led)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Add(led);
@@ -658,7 +658,7 @@ namespace Artemis.Core
         /// <param name="leds">The LEDs to add</param>
         public void AddLeds(IEnumerable<ArtemisLed> leds)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.AddRange(leds);
@@ -671,7 +671,7 @@ namespace Artemis.Core
         /// <param name="led">The LED to remove</param>
         public void RemoveLed(ArtemisLed led)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Remove(led);
@@ -683,7 +683,7 @@ namespace Artemis.Core
         /// </summary>
         public void ClearLeds()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Clear();
@@ -692,7 +692,7 @@ namespace Artemis.Core
 
         internal void PopulateLeds(ArtemisSurface surface)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             List<ArtemisLed> leds = new List<ArtemisLed>();
