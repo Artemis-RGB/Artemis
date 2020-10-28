@@ -3,10 +3,10 @@
                          xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                          xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                          xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-                         xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor"
                          xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                          xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                         xmlns:windows="clr-namespace:Artemis.UI.Screens.ProfileEditor.Windows"
                          mc:Ignorable="d"
                          Title="Layer effect configuration"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -16,7 +16,7 @@
                          Height="800"
                          d:DesignHeight="800"
                          d:DesignWidth="800"
-                         d:DataContext="{d:DesignInstance local:LayerEffectSettingsWindowViewModel}"
+                         d:DataContext="{d:DesignInstance windows:LayerEffectSettingsWindowViewModel}"
                          Icon="/Resources/Images/Logo/logo-512.png">
     <DockPanel>
         <controls:AppBar Type="Dense" Title="{Binding ActiveItem.LayerEffect.Descriptor.DisplayName}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">

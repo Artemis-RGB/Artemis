@@ -3,14 +3,6 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-resources:
-  repositories:
-  - repository: RGBdotNET
-    type: github
-    endpoint: github.com_SpoinkyNL
-    name: DarthAffe/RGB.NET
-    ref: Development
-
 trigger:
 - master
 
@@ -18,25 +10,23 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  rgbSolution: '**/RGB.NET.sln'
   artemisSolution: '**/Artemis.sln'
+  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
 steps:
-- checkout: RGBdotNET
 - checkout: self
+  path: s/Artemis
 
 - task: NuGetToolInstaller@1
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore RGB.NET'
+- task: DownloadPipelineArtifact@2
   inputs:
-    restoreSolution: '$(rgbSolution)'
-
-- task: VSBuild@1
-  displayName: 'Build RGB.NET'
-  inputs:
-    solution: '$(rgbSolution)'
-    msbuildArgs: '/property:WarningLevel=0'
+    buildType: 'specific'
+    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
+    definition: '3'
+    buildVersionToDownload: 'latest'
+    artifactName: 'RGB.NET development build'
+    targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
 
 - task: NuGetCommand@2
   displayName: 'NuGet restore Artemis'
@@ -45,7 +35,7 @@ steps:
 
 - task: ResharperCli@2
   inputs:
-    solutionOrProjectPath: 'Artemis/src/Artemis.sln'
+    solutionOrProjectPath: 'src/Artemis.sln'
     failBuildLevelSelector: 'Error'
     additionalArguments: '/disable-settings-layers:SolutionPersonal --properties:Configuration=win-x64'
 

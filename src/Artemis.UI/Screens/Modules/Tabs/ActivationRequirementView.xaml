@@ -4,9 +4,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Modules.Tabs"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:ActivationRequirementViewModel}">
+             d:DataContext="{d:DesignInstance tabs:ActivationRequirementViewModel}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition />
