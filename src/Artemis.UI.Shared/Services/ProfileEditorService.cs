@@ -22,7 +22,6 @@ namespace Artemis.UI.Shared.Services
         private readonly object _selectedProfileLock = new object();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
-        private bool _previewInvalidated;
 
         public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger, ICoreService coreService)
         {
@@ -31,19 +30,14 @@ namespace Artemis.UI.Shared.Services
             _coreService = coreService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
 
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
-
             Kernel = kernel;
             PixelsPerSecond = 100;
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
         {
-            if (_previewInvalidated)
-            {
-                _previewInvalidated = false;
-                Execute.PostToUIThread(OnProfilePreviewUpdated);
-            }
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            Execute.PostToUIThread(OnProfilePreviewUpdated);
         }
 
         public IKernel Kernel { get; }
@@ -160,7 +154,7 @@ namespace Artemis.UI.Shared.Services
             foreach (Layer layer in SelectedProfile.GetAllLayers())
                 layer.OverrideTimeLines(CurrentTime, layer != SelectedProfileElement);
 
-            _previewInvalidated = true;
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
         }
 
         public bool UndoUpdateProfile()

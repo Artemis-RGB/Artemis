@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -82,16 +84,26 @@ namespace Artemis.Core
             if (Children.Count == 1)
                 return Children[0].Evaluate();
 
+            if (ContainsEvents)
+            {
+                bool eventTriggered = Children.Where(c => c is DataModelConditionEvent).Any(c => c.Evaluate());
+                return eventTriggered && EvaluateWithOperator(Children.Where(c => !(c is DataModelConditionEvent)));
+            }
+            return EvaluateWithOperator(Children);
+        }
+
+        private bool EvaluateWithOperator(IEnumerable<DataModelConditionPart> targets)
+        {
             switch (BooleanOperator)
             {
                 case BooleanOperator.And:
-                    return Children.All(c => c.Evaluate());
+                    return targets.All(c => c.Evaluate());
                 case BooleanOperator.Or:
-                    return Children.Any(c => c.Evaluate());
+                    return targets.Any(c => c.Evaluate());
                 case BooleanOperator.AndNot:
-                    return Children.All(c => !c.Evaluate());
+                    return targets.All(c => !c.Evaluate());
                 case BooleanOperator.OrNot:
-                    return Children.Any(c => !c.Evaluate());
+                    return targets.Any(c => !c.Evaluate());
                 default:
                     throw new ArgumentOutOfRangeException();
             }

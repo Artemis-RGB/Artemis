@@ -97,9 +97,6 @@ namespace Artemis.Core
             TimeLine = TimelineLength;
             ExtraTimeLines.Clear();
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.BaseProperties?.Reset();
-
             foreach (ProfileElement child in Children)
                 child.Reset();
         }
@@ -234,7 +231,7 @@ namespace Artemis.Core
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update(renderDelta);
+                baseLayerEffect.BaseProperties?.Update(timeLine, renderDelta);
                 baseLayerEffect.Update(renderDelta);
             }
 

@@ -19,7 +19,6 @@ namespace Artemis.Core
     public class LayerProperty<T> : ILayerProperty
     {
         private bool _disposed;
-        private TimeSpan _keyframeProgress;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="LayerProperty{T}" /> class
@@ -38,16 +37,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the property, applying keyframes and data bindings to the current value
         /// </summary>
-        public void Update(double deltaTime)
+        public void Update(TimeSpan time, double deltaTime)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             CurrentValue = BaseValue;
-            _keyframeProgress = _keyframeProgress.Add(TimeSpan.FromSeconds(deltaTime));
-
+            
             if (ProfileElement.ApplyKeyframesEnabled)
-                UpdateKeyframes(deltaTime);
+                UpdateKeyframes(time);
             if (ProfileElement.ApplyDataBindingsEnabled)
                 UpdateDataBindings(deltaTime);
 
@@ -127,7 +125,7 @@ namespace Artemis.Core
                     return;
 
                 _baseValue = value;
-                Update(0);
+                Update(ProfileElement.TimeLine, 0);
                 OnCurrentValueSet();
             }
         }
@@ -171,7 +169,7 @@ namespace Artemis.Core
 
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
-            Update(0);
+            Update(ProfileElement.TimeLine, 0);
             OnCurrentValueSet();
         }
 
@@ -296,13 +294,13 @@ namespace Artemis.Core
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
 
-        private void UpdateKeyframes(double deltaTime)
+        private void UpdateKeyframes(TimeSpan time)
         {
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
             
             // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= _keyframeProgress);
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= time);
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
             int nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
             NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
@@ -316,7 +314,7 @@ namespace Artemis.Core
             else
             {
                 TimeSpan timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                float keyframeProgress = (float) ((_keyframeProgress - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                float keyframeProgress = (float) ((time - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
                 float keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
@@ -363,13 +361,7 @@ namespace Artemis.Core
         {
             return _dataBindingRegistrations;
         }
-
-        /// <inheritdoc />
-        public void Reset()
-        {
-            _keyframeProgress = TimeSpan.Zero;
-        }
-
+        
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)
         {
             if (_disposed)
@@ -460,7 +452,6 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
-            LayerPropertyGroup.PropertyGroupUpdating += (sender, args) => Update(args.DeltaTime);
         }
 
         /// <inheritdoc />
