@@ -237,7 +237,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
 
             // While playing in preview data bindings aren't updated
-            Registration.DataBinding.Update(0.04);
+            Registration.DataBinding.Update(Registration.LayerProperty.ProfileElement.Timeline);
 
             if (ActiveItem.SupportsTestValue)
             {

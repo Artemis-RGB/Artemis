@@ -17,6 +17,7 @@ namespace Artemis.Core
         {
             ApplyDataBindingsEnabled = true;
             ApplyKeyframesEnabled = true;
+            Timeline = new Timeline();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -30,8 +31,8 @@ namespace Artemis.Core
                 ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
                 : new DataModelConditionGroup(null);
 
-            Timeline = RenderElementEntity.Timeline != null 
-                ? new Timeline(RenderElementEntity.Timeline) 
+            Timeline = RenderElementEntity.Timeline != null
+                ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();
 
             ActivateEffects();
@@ -70,7 +71,17 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the timeline associated with this render element
         /// </summary>
-        public Timeline? Timeline { get; private set; }
+        public Timeline Timeline { get; private set; }
+
+        /// <summary>
+        /// Updates the <see cref="Timeline"/> according to the provided <paramref name="deltaTime"/> and current display condition status
+        /// </summary>
+        public void UpdateTimeline(double deltaTime)
+        {
+            // The play mode dictates whether to stick to the main segment unless the display conditions contains events
+            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && (DisplayConditionMet || DisplayCondition != null && DisplayCondition.ContainsEvents);
+            Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
+        }
 
         #endregion
 
@@ -297,6 +308,9 @@ namespace Artemis.Core
         /// </summary>
         public bool ApplyDataBindingsEnabled { get; set; }
 
+        /// <summary>
+        /// Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline"/>
+        /// </summary>
         public void UpdateDisplayCondition()
         {
             if (DisplayCondition == null)
@@ -306,26 +320,30 @@ namespace Artemis.Core
             }
 
             bool conditionMet = DisplayCondition.Evaluate();
-
-            // Regular conditions reset the timeline whenever their condition is met and was not met before that
             if (!DisplayCondition.ContainsEvents)
             {
+                // Regular conditions reset the timeline whenever their condition is met and was not met before that
                 if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
                     Timeline.JumpToStart();
+                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
+                if (!conditionMet && DisplayConditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
+                    Timeline.JumpToEndSegment();
             }
-            // Event conditions reset if the timeline finished and otherwise apply their overlap mode
             else if (conditionMet)
             {
+                // Event conditions reset if the timeline finished
                 if (Timeline.IsFinished)
-                {
                     Timeline.JumpToStart();
-                }
+                // and otherwise apply their overlap mode
                 else
                 {
                     if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
                         Timeline.JumpToStart();
                     else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
                         Timeline.AddExtraTimeline();
+                    // The third option is ignore which is handled below:
+
+                    // done
                 }
             }
 

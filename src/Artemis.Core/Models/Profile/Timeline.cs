@@ -64,11 +64,14 @@ namespace Artemis.Core
         private TimelinePlayMode _playMode;
         private TimelineStopMode _stopMode;
         private readonly List<Timeline> _extraTimelines;
+        private TimeSpan _startSegmentLength;
+        private TimeSpan _mainSegmentLength;
+        private TimeSpan _endSegmentLength;
 
         /// <summary>
         ///     Gets the parent this timeline is an extra timeline of
         /// </summary>
-        public Timeline Parent { get; }
+        public Timeline? Parent { get; }
 
         /// <summary>
         ///     Gets the current position of the timeline
@@ -81,12 +84,20 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Gets the delta that was applied during the last call to <see cref="Update" />
+        ///     <para>
+        ///         Note: If this is an extra timeline <see cref="LastDelta" /> is always equal to <see cref="DeltaToParent" />
+        ///     </para>
         /// </summary>
         public TimeSpan LastDelta
         {
-            get => _lastDelta;
+            get => Parent == null ? _lastDelta : DeltaToParent;
             private set => SetAndNotify(ref _lastDelta, value);
         }
+
+        /// <summary>
+        ///     Gets the delta to this timeline's <see cref="Parent" />
+        /// </summary>
+        public TimeSpan DeltaToParent => Parent != null ? Position - Parent.Position : TimeSpan.Zero;
 
         /// <summary>
         ///     Gets or sets the mode in which the render element starts its timeline when display conditions are met
@@ -124,7 +135,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether the timeline has finished its run
         /// </summary>
-        public bool IsFinished => Position > Length;
+        public bool IsFinished => Position > Length || Length == TimeSpan.Zero;
 
         #region Segments
 
@@ -136,17 +147,41 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the length of the start segment
         /// </summary>
-        public TimeSpan StartSegmentLength { get; set; }
+        public TimeSpan StartSegmentLength
+        {
+            get => _startSegmentLength;
+            set
+            {
+                if (SetAndNotify(ref _startSegmentLength, value))
+                    NotifySegmentShiftAt(TimelineSegment.Start, false);
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the length of the main segment
         /// </summary>
-        public TimeSpan MainSegmentLength { get; set; }
+        public TimeSpan MainSegmentLength
+        {
+            get => _mainSegmentLength;
+            set
+            {
+                if (SetAndNotify(ref _mainSegmentLength, value))
+                    NotifySegmentShiftAt(TimelineSegment.Main, false);
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the length of the end segment
         /// </summary>
-        public TimeSpan EndSegmentLength { get; set; }
+        public TimeSpan EndSegmentLength
+        {
+            get => _endSegmentLength;
+            set
+            {
+                if (SetAndNotify(ref _endSegmentLength, value))
+                    NotifySegmentShiftAt(TimelineSegment.End, false);
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the start position of the main segment
@@ -154,7 +189,11 @@ namespace Artemis.Core
         public TimeSpan MainSegmentStartPosition
         {
             get => StartSegmentEndPosition;
-            set => StartSegmentEndPosition = value;
+            set
+            {
+                StartSegmentEndPosition = value;
+                NotifySegmentShiftAt(TimelineSegment.Main, true);
+            }
         }
 
         /// <summary>
@@ -163,7 +202,11 @@ namespace Artemis.Core
         public TimeSpan EndSegmentStartPosition
         {
             get => MainSegmentEndPosition;
-            set => MainSegmentEndPosition = value;
+            set
+            {
+                MainSegmentEndPosition = value;
+                NotifySegmentShiftAt(TimelineSegment.End, true);
+            }
         }
 
         /// <summary>
@@ -172,7 +215,11 @@ namespace Artemis.Core
         public TimeSpan StartSegmentEndPosition
         {
             get => StartSegmentLength;
-            set => StartSegmentLength = value;
+            set
+            {
+                StartSegmentLength = value;
+                NotifySegmentShiftAt(TimelineSegment.Start, false);
+            }
         }
 
         /// <summary>
@@ -181,7 +228,11 @@ namespace Artemis.Core
         public TimeSpan MainSegmentEndPosition
         {
             get => StartSegmentEndPosition + MainSegmentLength;
-            set => MainSegmentLength = value - StartSegmentEndPosition >= TimeSpan.Zero ? value - StartSegmentEndPosition : TimeSpan.Zero;
+            set
+            {
+                MainSegmentLength = value - StartSegmentEndPosition >= TimeSpan.Zero ? value - StartSegmentEndPosition : TimeSpan.Zero;
+                NotifySegmentShiftAt(TimelineSegment.Main, false);
+            }
         }
 
         /// <summary>
@@ -190,10 +241,40 @@ namespace Artemis.Core
         public TimeSpan EndSegmentEndPosition
         {
             get => MainSegmentEndPosition + EndSegmentLength;
-            set => EndSegmentLength = value - MainSegmentEndPosition >= TimeSpan.Zero ? value - MainSegmentEndPosition : TimeSpan.Zero;
+            set
+            {
+                EndSegmentLength = value - MainSegmentEndPosition >= TimeSpan.Zero ? value - MainSegmentEndPosition : TimeSpan.Zero;
+                NotifySegmentShiftAt(TimelineSegment.End, false);
+            }
         }
 
         internal TimelineEntity Entity { get; set; }
+
+        /// <summary>
+        ///     Notifies the right segments in a way that I don't have to think about it
+        /// </summary>
+        /// <param name="segment">The segment that was updated</param>
+        /// <param name="startUpdated">Whether the start point of the <paramref name="segment" /> was updated</param>
+        private void NotifySegmentShiftAt(TimelineSegment segment, bool startUpdated)
+        {
+            if (segment <= TimelineSegment.End)
+            {
+                if (startUpdated || segment < TimelineSegment.End)
+                    NotifyOfPropertyChange(nameof(EndSegmentStartPosition));
+                NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
+            }
+
+            if (segment <= TimelineSegment.Main)
+            {
+                if (startUpdated || segment < TimelineSegment.Main)
+                    NotifyOfPropertyChange(nameof(MainSegmentStartPosition));
+                NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
+            }
+
+            if (segment <= TimelineSegment.Start) NotifyOfPropertyChange(nameof(StartSegmentEndPosition));
+
+            NotifyOfPropertyChange(nameof(Length));
+        }
 
         #endregion
 
@@ -213,6 +294,9 @@ namespace Artemis.Core
 
             if (stickToMainSegment && Position >= MainSegmentStartPosition)
                 Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+
+            foreach (Timeline extraTimeline in _extraTimelines)
+                extraTimeline.Update(delta, false);
         }
 
         /// <summary>
@@ -225,6 +309,8 @@ namespace Artemis.Core
 
             LastDelta = TimeSpan.Zero - Position;
             Position = TimeSpan.Zero;
+
+            _extraTimelines.Clear();
         }
 
         /// <summary>
@@ -237,6 +323,8 @@ namespace Artemis.Core
 
             LastDelta = EndSegmentStartPosition - Position;
             Position = EndSegmentStartPosition;
+
+            _extraTimelines.Clear();
         }
 
         /// <summary>
@@ -249,6 +337,8 @@ namespace Artemis.Core
 
             LastDelta = EndSegmentEndPosition - Position;
             Position = EndSegmentEndPosition;
+
+            _extraTimelines.Clear();
         }
 
         /// <summary>
@@ -258,12 +348,20 @@ namespace Artemis.Core
         /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
         public void Override(TimeSpan position, bool stickToMainSegment)
         {
-            _extraTimelines.Clear();
-
             LastDelta = position - Position;
             Position = position;
             if (stickToMainSegment && Position >= MainSegmentStartPosition)
                 Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+
+            _extraTimelines.Clear();
+        }
+
+        /// <summary>
+        ///     Sets the <see cref="LastDelta" /> to <see cref="TimeSpan.Zero" />
+        /// </summary>
+        public void ClearDelta()
+        {
+            LastDelta = TimeSpan.Zero;
         }
 
         #endregion
@@ -293,6 +391,13 @@ namespace Artemis.Core
         }
 
         #endregion
+    }
+
+    internal enum TimelineSegment
+    {
+        Start,
+        Main,
+        End
     }
 
     /// <summary>

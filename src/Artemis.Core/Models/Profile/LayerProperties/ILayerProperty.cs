@@ -40,8 +40,7 @@ namespace Artemis.Core
         /// <summary>
         /// Updates the layer properties internal state
         /// </summary>
-        /// <param name="renderTime">The current position in the timeline</param>
-        /// <param name="deltaTime">The position difference since last update</param>
-        void Update(TimeSpan renderTime, double deltaTime);
+        /// <param name="timeline">The timeline to apply to the property</param>
+        void Update(Timeline timeline);
     }
 }

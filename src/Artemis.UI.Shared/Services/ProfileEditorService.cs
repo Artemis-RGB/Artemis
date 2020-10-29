@@ -52,8 +52,8 @@ namespace Artemis.UI.Shared.Services
             set
             {
                 if (_currentTime.Equals(value)) return;
-                if (SelectedProfileElement != null && value > SelectedProfileElement.TimelineLength)
-                    _currentTime = SelectedProfileElement.TimelineLength;
+                if (SelectedProfileElement != null && value > SelectedProfileElement.Timeline.Length)
+                    _currentTime = SelectedProfileElement.Timeline.Length;
                 else
                     _currentTime = value;
                 UpdateProfilePreview();
@@ -150,9 +150,9 @@ namespace Artemis.UI.Shared.Services
 
             // Stick to the main segment for any element that is not currently selected
             foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.OverrideTimeLines(CurrentTime, folder != SelectedProfileElement);
+                folder.Timeline.Override(CurrentTime, folder != SelectedProfileElement);
             foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.OverrideTimeLines(CurrentTime, layer != SelectedProfileElement);
+                layer.Timeline.Override(CurrentTime, layer != SelectedProfileElement);
 
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
         }
@@ -232,24 +232,23 @@ namespace Artemis.UI.Shared.Services
             if (snapToSegments)
             {
                 // Snap to the end of the start segment
-                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.StartSegmentLength.TotalMilliseconds) < tolerance.TotalMilliseconds)
-                    return SelectedProfileElement.StartSegmentLength;
+                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.Timeline.StartSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.Timeline.StartSegmentEndPosition;
 
                 // Snap to the end of the main segment
-                TimeSpan mainSegmentEnd = SelectedProfileElement.StartSegmentLength + SelectedProfileElement.MainSegmentLength;
-                if (Math.Abs(time.TotalMilliseconds - mainSegmentEnd.TotalMilliseconds) < tolerance.TotalMilliseconds)
-                    return mainSegmentEnd;
+                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.Timeline.MainSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.Timeline.MainSegmentEndPosition;
 
                 // Snap to the end of the end segment (end of the timeline)
-                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.TimelineLength.TotalMilliseconds) < tolerance.TotalMilliseconds)
-                    return SelectedProfileElement.TimelineLength;
+                if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.Timeline.EndSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
+                    return SelectedProfileElement.Timeline.EndSegmentEndPosition;
             }
 
             if (snapToCurrentTime)
             {
                 // Snap to the current time
                 if (Math.Abs(time.TotalMilliseconds - CurrentTime.TotalMilliseconds) < tolerance.TotalMilliseconds)
-                    return SelectedProfileElement.StartSegmentLength;
+                    return CurrentTime;
             }
 
             if (snapTimes != null)

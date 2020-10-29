@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
             if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.SelectedProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
             Update();
         }
 
@@ -75,9 +75,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             TotalTimelineWidth = EndSegmentEndPosition;
         }
 
-        private void SelectedProfileElementOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            Update();
+            if (e.PropertyName == nameof(Core.Timeline.StartSegmentLength) ||
+                e.PropertyName == nameof(Core.Timeline.MainSegmentLength) ||
+                e.PropertyName == nameof(Core.Timeline.EndSegmentLength))
+                Update();
         }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
@@ -88,9 +91,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
         {
             if (e.PreviousRenderProfileElement != null)
-                e.PreviousRenderProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+                e.PreviousRenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             if (e.RenderProfileElement != null)
-                e.RenderProfileElement.PropertyChanged += SelectedProfileElementOnPropertyChanged;
+                e.RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
 
             Update();
         }
@@ -184,13 +187,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // If shift is held, snap to the current time
             // Take a tolerance of 5 pixels (half a keyframe width)
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
-                float tolerance = 1000f / _profileEditorService.PixelsPerSecond * 5;
-                if (Math.Abs(_profileEditorService.CurrentTime.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
-                    time = _profileEditorService.CurrentTime;
-                else if (Math.Abs(_profileEditorService.SelectedProfileElement.StartSegmentLength.TotalMilliseconds - time.TotalMilliseconds) < tolerance)
-                    time = _profileEditorService.SelectedProfileElement.StartSegmentLength;
-            }
+                time = _profileEditorService.SnapToTimeline(time, TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 5), false, true);
 
             return time;
         }
@@ -351,7 +348,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.SelectedProfileElement.PropertyChanged -= SelectedProfileElementOnPropertyChanged;
+                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
         }
 
         #endregion

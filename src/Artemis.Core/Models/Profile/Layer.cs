@@ -45,14 +45,14 @@ namespace Artemis.Core
             _expandedPropertyGroups = new List<string>();
 
             Initialize();
-            ApplyRenderElementDefaults();
-
             Parent.AddChild(this);
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
         {
             LayerEntity = layerEntity;
+            EntityId = layerEntity.Id;
+
             Profile = profile;
             Parent = parent;
             General = new LayerGeneralProperties();
@@ -176,14 +176,6 @@ namespace Artemis.Core
             ActivateLayerBrush();
         }
 
-        /// <inheritdoc />
-        public override void Reset()
-        {
-            DisplayConditionMet = false;
-            TimeLine = TimelineLength;
-            ExtraTimeLines.Clear();
-        }
-
         #region Storage
 
         internal override void Load()
@@ -258,9 +250,7 @@ namespace Artemis.Core
         #endregion
 
         #region Rendering
-
-        private TimeSpan _lastRenderTime;
-
+        
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
@@ -270,16 +260,15 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
-            // Ensure the layer must still be displayed
             UpdateDisplayCondition();
-
-            // Update the layer timeline
-            UpdateTimeLines(deltaTime);
+            UpdateTimeline(deltaTime);
         }
 
-        protected internal override void UpdateTimeLineLength()
+        /// <inheritdoc />
+        public override void Reset()
         {
-            TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
+            DisplayConditionMet = false;
+            Timeline.JumpToStart();
         }
 
         /// <inheritdoc />
@@ -298,35 +287,31 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
-            RenderLayer(TimeLine, canvas);
-            foreach (TimeSpan extraTimeLine in ExtraTimeLines)
-                RenderLayer(extraTimeLine, canvas);
+            RenderLayer(Timeline, canvas);
+            foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
+                RenderLayer(extraTimeline, canvas);
         }
 
-        private void PrepareForRender(TimeSpan renderTime)
+        private void PrepareForRender(Timeline timeline)
         {
-            double renderDelta = (renderTime - _lastRenderTime).TotalSeconds;
-
-            General.Update(renderTime, renderDelta);
-            Transform.Update(renderTime, renderDelta);
-            LayerBrush.BaseProperties?.Update(renderTime, renderDelta);
-            LayerBrush.Update(renderDelta);
+            General.Update(timeline);
+            Transform.Update(timeline);
+            LayerBrush.BaseProperties?.Update(timeline);
+            LayerBrush.Update(timeline.LastDelta.TotalSeconds);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update(renderTime, renderDelta);
-                baseLayerEffect.Update(renderDelta);
+                baseLayerEffect.BaseProperties?.Update(timeline);
+                baseLayerEffect.Update(timeline.LastDelta.TotalSeconds);
             }
-
-            _lastRenderTime = renderTime;
         }
 
-        private void RenderLayer(TimeSpan timeLine, SKCanvas canvas)
+        private void RenderLayer(Timeline timeline, SKCanvas canvas)
         {
-            if (timeLine > TimelineLength)
+            if (timeline.IsFinished)
                 return;
 
-            PrepareForRender(timeLine);
+            PrepareForRender(timeline);
 
             if (_layerBitmap == null)
             {
