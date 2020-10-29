@@ -52,16 +52,15 @@ namespace Artemis.Core
             _expandedPropertyGroups = new List<string>();
 
             Load();
-            UpdateChildrenTimelineLength();
         }
 
         /// <summary>
-        /// Gets a boolean indicating whether this folder is at the root of the profile tree
+        ///     Gets a boolean indicating whether this folder is at the root of the profile tree
         /// </summary>
         public bool IsRootFolder => Parent == Profile;
 
         /// <summary>
-        /// Gets the longest timeline of all this folders children
+        ///     Gets the longest timeline of all this folders children
         /// </summary>
         public Timeline LongestChildTimeline { get; private set; }
 
@@ -112,7 +111,6 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.AddChild(child, order);
-            UpdateChildrenTimelineLength();
             CalculateRenderProperties();
         }
 
@@ -123,7 +121,6 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.RemoveChild(child);
-            UpdateChildrenTimelineLength();
             CalculateRenderProperties();
         }
 
@@ -149,23 +146,6 @@ namespace Artemis.Core
                 folder.CalculateRenderProperties();
 
             OnRenderPropertiesUpdated();
-        }
-
-        private void UpdateChildrenTimelineLength()
-        {
-            Timeline longest = new Timeline() {MainSegmentLength = TimeSpan.Zero};
-            foreach (ProfileElement profileElement in Children)
-            {
-                if (profileElement is Folder folder && folder.LongestChildTimeline.Length > longest.Length)
-                    longest = folder.LongestChildTimeline;
-                else if (profileElement is Layer layer && 
-                         layer.Timeline.PlayMode == TimelinePlayMode.Once && 
-                         layer.Timeline.StopMode == TimelineStopMode.Finish &&
-                         layer.Timeline.Length > longest.Length)
-                    longest = layer.Timeline;
-            }
-
-            LongestChildTimeline = longest;
         }
 
         protected override void Dispose(bool disposing)
@@ -231,6 +211,10 @@ namespace Artemis.Core
             if (Path == null)
                 return;
 
+            // No point rendering if none of the children are going to render
+            if (!Children.Any(c => c is RenderProfileElement renderElement && !renderElement.Timeline.IsFinished))
+                return;
+
             RenderFolder(Timeline, canvas, canvasInfo);
         }
 
@@ -245,9 +229,6 @@ namespace Artemis.Core
 
         private void RenderFolder(Timeline timeline, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (Timeline.IsFinished && LongestChildTimeline.IsFinished)
-                return;
-
             PrepareForRender(timeline);
 
             if (_folderBitmap == null)

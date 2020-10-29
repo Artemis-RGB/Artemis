@@ -250,7 +250,7 @@ namespace Artemis.Core
         #endregion
 
         #region Rendering
-        
+
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
@@ -325,11 +325,7 @@ namespace Artemis.Core
 
             using SKPath layerPath = new SKPath(Path);
             using SKCanvas layerCanvas = new SKCanvas(_layerBitmap);
-            using SKPaint layerPaint = new SKPaint
-            {
-                FilterQuality = SKFilterQuality.Low,
-                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
-            };
+            using SKPaint layerPaint = new SKPaint {FilterQuality = SKFilterQuality.Low};
             layerCanvas.Clear();
 
             layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
@@ -348,7 +344,11 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
-            using SKPaint canvasPaint = new SKPaint {BlendMode = General.BlendMode.CurrentValue};
+            using SKPaint canvasPaint = new SKPaint
+            {
+                BlendMode = General.BlendMode.CurrentValue,
+                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
+            };
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
 

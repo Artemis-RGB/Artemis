@@ -150,9 +150,9 @@ namespace Artemis.UI.Shared.Services
 
             // Stick to the main segment for any element that is not currently selected
             foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.Timeline.Override(CurrentTime, folder != SelectedProfileElement);
+                folder.Timeline.Override(CurrentTime, folder != SelectedProfileElement && folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
             foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.Timeline.Override(CurrentTime, layer != SelectedProfileElement);
+                layer.Timeline.Override(CurrentTime, layer != SelectedProfileElement && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
 
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
         }

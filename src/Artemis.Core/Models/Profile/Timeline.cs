@@ -293,7 +293,14 @@ namespace Artemis.Core
             Position += delta;
 
             if (stickToMainSegment && Position >= MainSegmentStartPosition)
-                Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+            {
+                // If the main segment has no length, simply stick to the start of the segment
+                if (MainSegmentLength == TimeSpan.Zero)
+                    Position = MainSegmentStartPosition;
+                // Ensure wrapping back around retains the delta time
+                else
+                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+            }
 
             foreach (Timeline extraTimeline in _extraTimelines)
                 extraTimeline.Update(delta, false);

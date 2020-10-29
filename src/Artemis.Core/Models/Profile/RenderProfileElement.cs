@@ -320,6 +320,9 @@ namespace Artemis.Core
             }
 
             bool conditionMet = DisplayCondition.Evaluate();
+            if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
+                conditionMet = false;
+
             if (!DisplayCondition.ContainsEvents)
             {
                 // Regular conditions reset the timeline whenever their condition is met and was not met before that
