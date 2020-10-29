@@ -34,20 +34,18 @@ namespace Artemis.Core
         /// <inheritdoc />
         public string Path { get; private set; }
 
-        /// <summary>
-        ///     Updates the property, applying keyframes and data bindings to the current value
-        /// </summary>
-        public void Update(TimeSpan time, double deltaTime)
+        /// <inheritdoc />
+        public void Update(Timeline timeline)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             CurrentValue = BaseValue;
-            
+
             if (ProfileElement.ApplyKeyframesEnabled)
-                UpdateKeyframes(time);
+                UpdateKeyframes(timeline);
             if (ProfileElement.ApplyDataBindingsEnabled)
-                UpdateDataBindings(deltaTime);
+                UpdateDataBindings(timeline);
 
             OnUpdated();
         }
@@ -125,8 +123,7 @@ namespace Artemis.Core
                     return;
 
                 _baseValue = value;
-                Update(ProfileElement.TimeLine, 0);
-                OnCurrentValueSet();
+                ReapplyUpdate();
             }
         }
 
@@ -169,8 +166,7 @@ namespace Artemis.Core
 
             // Force an update so that the base value is applied to the current value and
             // keyframes/data bindings are applied using the new base value
-            Update(ProfileElement.TimeLine, 0);
-            OnCurrentValueSet();
+            ReapplyUpdate();
         }
 
         /// <summary>
@@ -183,6 +179,13 @@ namespace Artemis.Core
 
             BaseValue = DefaultValue;
             CurrentValue = DefaultValue;
+        }
+
+        private void ReapplyUpdate()
+        {
+            ProfileElement.Timeline.ClearDelta();
+            Update(ProfileElement.Timeline);
+            OnCurrentValueSet();
         }
 
         #endregion
@@ -294,13 +297,13 @@ namespace Artemis.Core
             _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
         }
 
-        private void UpdateKeyframes(TimeSpan time)
+        private void UpdateKeyframes(Timeline timeline)
         {
             if (!KeyframesSupported || !KeyframesEnabled)
                 return;
-            
+
             // The current keyframe is the last keyframe before the current time
-            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= time);
+            CurrentKeyframe = _keyframes.LastOrDefault(k => k.Position <= timeline.Position);
             // Keyframes are sorted by position so we can safely assume the next keyframe's position is after the current 
             int nextIndex = _keyframes.IndexOf(CurrentKeyframe) + 1;
             NextKeyframe = _keyframes.Count > nextIndex ? _keyframes[nextIndex] : null;
@@ -314,7 +317,7 @@ namespace Artemis.Core
             else
             {
                 TimeSpan timeDiff = NextKeyframe.Position - CurrentKeyframe.Position;
-                float keyframeProgress = (float) ((time - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
+                float keyframeProgress = (float) ((timeline.Position - CurrentKeyframe.Position).TotalMilliseconds / timeDiff.TotalMilliseconds);
                 float keyframeProgressEased = (float) Easings.Interpolate(keyframeProgress, CurrentKeyframe.EasingFunction);
                 UpdateCurrentValue(keyframeProgress, keyframeProgressEased);
             }
@@ -361,7 +364,7 @@ namespace Artemis.Core
         {
             return _dataBindingRegistrations;
         }
-        
+
         public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)
         {
             if (_disposed)
@@ -416,11 +419,11 @@ namespace Artemis.Core
             OnDataBindingDisabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
         }
 
-        private void UpdateDataBindings(double deltaTime)
+        private void UpdateDataBindings(Timeline timeline)
         {
             foreach (IDataBinding dataBinding in _dataBindings)
             {
-                dataBinding.Update(deltaTime);
+                dataBinding.Update(timeline);
                 dataBinding.Apply();
             }
         }
@@ -484,12 +487,10 @@ namespace Artemis.Core
             _keyframes.Clear();
             try
             {
-                _keyframes.AddRange(Entity.KeyframeEntities.Select(k => new LayerPropertyKeyframe<T>(
-                    JsonConvert.DeserializeObject<T>(k.Value),
-                    k.Position,
-                    (Easings.Functions) k.EasingFunction,
-                    this
-                )));
+                _keyframes.AddRange(
+                    Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length)
+                        .Select(k => new LayerPropertyKeyframe<T>(JsonConvert.DeserializeObject<T>(k.Value), k.Position, (Easings.Functions) k.EasingFunction, this))
+                );
             }
             catch (JsonException e)
             {

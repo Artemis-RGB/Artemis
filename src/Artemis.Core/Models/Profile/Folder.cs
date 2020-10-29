@@ -34,14 +34,12 @@ namespace Artemis.Core
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
 
-            ApplyRenderElementDefaults();
             Parent.AddChild(this);
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
         {
             FolderEntity = folderEntity;
-
             EntityId = folderEntity.Id;
 
             Profile = profile;
@@ -52,10 +50,20 @@ namespace Artemis.Core
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
+
             Load();
+            UpdateChildrenTimelineLength();
         }
 
+        /// <summary>
+        /// Gets a boolean indicating whether this folder is at the root of the profile tree
+        /// </summary>
         public bool IsRootFolder => Parent == Profile;
+
+        /// <summary>
+        /// Gets the longest timeline of all this folders children
+        /// </summary>
+        public Timeline LongestChildTimeline { get; private set; }
 
         internal FolderEntity FolderEntity { get; set; }
 
@@ -80,11 +88,8 @@ namespace Artemis.Core
             if (!Enabled)
                 return;
 
-            // Ensure the layer must still be displayed
             UpdateDisplayCondition();
-
-            // Update the layer timeline
-            UpdateTimeLines(deltaTime);
+            UpdateTimeline(deltaTime);
 
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);
@@ -94,8 +99,7 @@ namespace Artemis.Core
         public override void Reset()
         {
             DisplayConditionMet = false;
-            TimeLine = TimelineLength;
-            ExtraTimeLines.Clear();
+            Timeline.JumpToStart();
 
             foreach (ProfileElement child in Children)
                 child.Reset();
@@ -108,7 +112,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.AddChild(child, order);
-            UpdateTimeLineLength();
+            UpdateChildrenTimelineLength();
             CalculateRenderProperties();
         }
 
@@ -119,7 +123,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             base.RemoveChild(child);
-            UpdateTimeLineLength();
+            UpdateChildrenTimelineLength();
             CalculateRenderProperties();
         }
 
@@ -147,14 +151,21 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        protected internal override void UpdateTimeLineLength()
+        private void UpdateChildrenTimelineLength()
         {
-            TimelineLength = !Children.Any() ? TimeSpan.Zero : Children.OfType<RenderProfileElement>().Max(c => c.TimelineLength);
-            if (StartSegmentLength + MainSegmentLength + EndSegmentLength > TimelineLength)
-                TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
+            Timeline longest = new Timeline() {MainSegmentLength = TimeSpan.Zero};
+            foreach (ProfileElement profileElement in Children)
+            {
+                if (profileElement is Folder folder && folder.LongestChildTimeline.Length > longest.Length)
+                    longest = folder.LongestChildTimeline;
+                else if (profileElement is Layer layer && 
+                         layer.Timeline.PlayMode == TimelinePlayMode.Once && 
+                         layer.Timeline.StopMode == TimelineStopMode.Finish &&
+                         layer.Timeline.Length > longest.Length)
+                    longest = layer.Timeline;
+            }
 
-            if (Parent is RenderProfileElement parent)
-                parent.UpdateTimeLineLength();
+            LongestChildTimeline = longest;
         }
 
         protected override void Dispose(bool disposing)
@@ -208,8 +219,6 @@ namespace Artemis.Core
 
         #region Rendering
 
-        private TimeSpan _lastRenderTime;
-
         public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
         {
             if (Disposed)
@@ -222,28 +231,24 @@ namespace Artemis.Core
             if (Path == null)
                 return;
 
-            RenderFolder(TimeLine, canvas, canvasInfo);
+            RenderFolder(Timeline, canvas, canvasInfo);
         }
 
-        private void PrepareForRender(TimeSpan timeLine)
+        private void PrepareForRender(Timeline timeline)
         {
-            double renderDelta = (timeLine - _lastRenderTime).TotalSeconds;
-
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
-                baseLayerEffect.BaseProperties?.Update(timeLine, renderDelta);
-                baseLayerEffect.Update(renderDelta);
+                baseLayerEffect.BaseProperties?.Update(timeline);
+                baseLayerEffect.Update(timeline.LastDelta.TotalSeconds);
             }
-
-            _lastRenderTime = timeLine;
         }
 
-        private void RenderFolder(TimeSpan timeLine, SKCanvas canvas, SKImageInfo canvasInfo)
+        private void RenderFolder(Timeline timeline, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            if (timeLine > TimelineLength)
+            if (Timeline.IsFinished && LongestChildTimeline.IsFinished)
                 return;
 
-            PrepareForRender(timeLine);
+            PrepareForRender(timeline);
 
             if (_folderBitmap == null)
             {

@@ -43,24 +43,24 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public bool DisplayContinuously
         {
-            get => RenderProfileElement?.PlayMode == TimelinePlayMode.Repeat;
+            get => RenderProfileElement?.Timeline.PlayMode == TimelinePlayMode.Repeat;
             set
             {
                 TimelinePlayMode playMode = value ? TimelinePlayMode.Repeat : TimelinePlayMode.Once;
-                if (RenderProfileElement == null || RenderProfileElement?.PlayMode == playMode) return;
-                RenderProfileElement.PlayMode = playMode;
+                if (RenderProfileElement == null || RenderProfileElement?.Timeline.PlayMode == playMode) return;
+                RenderProfileElement.Timeline.PlayMode = playMode;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
 
         public bool AlwaysFinishTimeline
         {
-            get => RenderProfileElement?.StopMode == TimelineStopMode.Finish;
+            get => RenderProfileElement?.Timeline.StopMode == TimelineStopMode.Finish;
             set
             {
                 TimelineStopMode stopMode = value ? TimelineStopMode.Finish : TimelineStopMode.SkipToEnd;
-                if (RenderProfileElement == null || RenderProfileElement?.StopMode == stopMode) return;
-                RenderProfileElement.StopMode = stopMode;
+                if (RenderProfileElement == null || RenderProfileElement?.Timeline.StopMode == stopMode) return;
+                RenderProfileElement.Timeline.StopMode = stopMode;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }

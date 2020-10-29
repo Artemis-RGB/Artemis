@@ -198,12 +198,12 @@ namespace Artemis.Core
                 layerPropertyGroup.ApplyToEntity();
         }
 
-        internal void Update(TimeSpan renderTime, double deltaTime)
+        internal void Update(Timeline timeline)
         {
             foreach (ILayerProperty layerProperty in LayerProperties)
-                layerProperty.Update(renderTime, deltaTime);
+                layerProperty.Update(timeline);
             foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
-                layerPropertyGroup.Update(renderTime, deltaTime);
+                layerPropertyGroup.Update(timeline);
         }
 
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)

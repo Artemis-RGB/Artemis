@@ -148,8 +148,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             if (position < TimeSpan.Zero)
                 LayerPropertyKeyframe.Position = TimeSpan.Zero;
-            else if (position > _profileEditorService.SelectedProfileElement.TimelineLength)
-                LayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.TimelineLength;
+            else if (position > _profileEditorService.SelectedProfileElement.Timeline.Length)
+                LayerPropertyKeyframe.Position = _profileEditorService.SelectedProfileElement.Timeline.Length;
             else
                 LayerPropertyKeyframe.Position = position;
 
@@ -170,7 +170,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             );
             // If possible, shift the keyframe to the right by 11 pixels
             TimeSpan desiredPosition = newKeyframe.Position + TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
-            if (desiredPosition <= newKeyframe.LayerProperty.ProfileElement.TimelineLength)
+            if (desiredPosition <= newKeyframe.LayerProperty.ProfileElement.Timeline.Length)
                 newKeyframe.Position = desiredPosition;
             // Otherwise if possible shift it to the left by 11 pixels
             else

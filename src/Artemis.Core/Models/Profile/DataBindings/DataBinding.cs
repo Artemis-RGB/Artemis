@@ -137,16 +137,18 @@ namespace Artemis.Core
         /// <summary>
         ///     Updates the smoothing progress of the data binding
         /// </summary>
-        /// <param name="deltaTime">The time in seconds that passed since the last update</param>
-        public void Update(double deltaTime)
+        /// <param name="timeline">The timeline to apply during update</param>
+        public void Update(Timeline timeline)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
             // Data bindings cannot go back in time like brushes
-            deltaTime = Math.Max(0, deltaTime);
+            TimeSpan deltaTime = timeline.LastDelta;
+            if (deltaTime < TimeSpan.Zero)
+                deltaTime = TimeSpan.Zero;
 
-            _easingProgress = _easingProgress.Add(TimeSpan.FromSeconds(deltaTime));
+            _easingProgress = _easingProgress.Add(deltaTime);
             if (_easingProgress > EasingTime)
                 _easingProgress = EasingTime;
         }
