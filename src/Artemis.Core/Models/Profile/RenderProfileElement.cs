@@ -79,7 +79,9 @@ namespace Artemis.Core
         public void UpdateTimeline(double deltaTime)
         {
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
-            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && (DisplayConditionMet || DisplayCondition != null && DisplayCondition.ContainsEvents);
+            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
+            if (DisplayCondition != null && DisplayCondition.ContainsEvents)
+                stickToMainSegment = false;
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }
 
