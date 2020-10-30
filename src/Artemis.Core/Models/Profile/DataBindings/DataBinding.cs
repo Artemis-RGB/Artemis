@@ -144,7 +144,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             // Data bindings cannot go back in time like brushes
-            TimeSpan deltaTime = timeline.LastDelta;
+            TimeSpan deltaTime = timeline.Delta;
             if (deltaTime < TimeSpan.Zero)
                 deltaTime = TimeSpan.Zero;
 

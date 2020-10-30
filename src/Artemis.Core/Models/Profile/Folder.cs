@@ -215,7 +215,11 @@ namespace Artemis.Core
             if (!Children.Any(c => c is RenderProfileElement renderElement && !renderElement.Timeline.IsFinished))
                 return;
 
-            RenderFolder(Timeline, canvas, canvasInfo);
+            lock (Timeline)
+            {
+                RenderFolder(Timeline, canvas, canvasInfo);
+                Timeline.ClearDelta();
+            }
         }
 
         private void PrepareForRender(Timeline timeline)
@@ -223,7 +227,7 @@ namespace Artemis.Core
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(timeline);
-                baseLayerEffect.Update(timeline.LastDelta.TotalSeconds);
+                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
             }
         }
 

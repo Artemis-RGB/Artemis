@@ -83,12 +83,12 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the delta that was applied during the last call to <see cref="Update" />
+        ///     Gets the cumulative delta of all calls to <see cref="Update" /> that took place after the last call to <see cref="ClearDelta"/>
         ///     <para>
-        ///         Note: If this is an extra timeline <see cref="LastDelta" /> is always equal to <see cref="DeltaToParent" />
+        ///         Note: If this is an extra timeline <see cref="Delta" /> is always equal to <see cref="DeltaToParent" />
         ///     </para>
         /// </summary>
-        public TimeSpan LastDelta
+        public TimeSpan Delta
         {
             get => Parent == null ? _lastDelta : DeltaToParent;
             private set => SetAndNotify(ref _lastDelta, value);
@@ -289,21 +289,24 @@ namespace Artemis.Core
         /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
         public void Update(TimeSpan delta, bool stickToMainSegment)
         {
-            LastDelta = delta;
-            Position += delta;
-
-            if (stickToMainSegment && Position >= MainSegmentStartPosition)
+            lock (this)
             {
-                // If the main segment has no length, simply stick to the start of the segment
-                if (MainSegmentLength == TimeSpan.Zero)
-                    Position = MainSegmentStartPosition;
-                // Ensure wrapping back around retains the delta time
-                else
-                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
-            }
+                Delta += delta;
+                Position += delta;
 
-            foreach (Timeline extraTimeline in _extraTimelines)
-                extraTimeline.Update(delta, false);
+                if (stickToMainSegment && Position >= MainSegmentStartPosition)
+                {
+                    // If the main segment has no length, simply stick to the start of the segment
+                    if (MainSegmentLength == TimeSpan.Zero)
+                        Position = MainSegmentStartPosition;
+                    // Ensure wrapping back around retains the delta time
+                    else
+                        Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                }
+
+                foreach (Timeline extraTimeline in _extraTimelines)
+                    extraTimeline.Update(delta, false);
+            }
         }
 
         /// <summary>
@@ -311,13 +314,16 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToStart()
         {
-            if (Position == TimeSpan.Zero)
-                return;
+            lock (this)
+            {
+                if (Position == TimeSpan.Zero)
+                    return;
 
-            LastDelta = TimeSpan.Zero - Position;
-            Position = TimeSpan.Zero;
+                Delta = TimeSpan.Zero - Position;
+                Position = TimeSpan.Zero;
 
-            _extraTimelines.Clear();
+                _extraTimelines.Clear();
+            }
         }
 
         /// <summary>
@@ -325,13 +331,16 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToEndSegment()
         {
-            if (Position >= EndSegmentStartPosition)
-                return;
+            lock (this)
+            {
+                if (Position >= EndSegmentStartPosition)
+                    return;
 
-            LastDelta = EndSegmentStartPosition - Position;
-            Position = EndSegmentStartPosition;
+                Delta = EndSegmentStartPosition - Position;
+                Position = EndSegmentStartPosition;
 
-            _extraTimelines.Clear();
+                _extraTimelines.Clear();
+            }
         }
 
         /// <summary>
@@ -339,13 +348,16 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToEnd()
         {
-            if (Position >= EndSegmentEndPosition)
-                return;
+            lock (this)
+            {
+                if (Position >= EndSegmentEndPosition)
+                    return;
 
-            LastDelta = EndSegmentEndPosition - Position;
-            Position = EndSegmentEndPosition;
+                Delta = EndSegmentEndPosition - Position;
+                Position = EndSegmentEndPosition;
 
-            _extraTimelines.Clear();
+                _extraTimelines.Clear();
+            }
         }
 
         /// <summary>
@@ -355,20 +367,26 @@ namespace Artemis.Core
         /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
         public void Override(TimeSpan position, bool stickToMainSegment)
         {
-            LastDelta = position - Position;
-            Position = position;
-            if (stickToMainSegment && Position >= MainSegmentStartPosition)
-                Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+            lock (this)
+            {
+                Delta += position - Position;
+                Position = position;
+                if (stickToMainSegment && Position >= MainSegmentStartPosition)
+                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
 
-            _extraTimelines.Clear();
+                _extraTimelines.Clear();
+            }
         }
 
         /// <summary>
-        ///     Sets the <see cref="LastDelta" /> to <see cref="TimeSpan.Zero" />
+        ///     Sets the <see cref="Delta" /> to <see cref="TimeSpan.Zero" />
         /// </summary>
         public void ClearDelta()
         {
-            LastDelta = TimeSpan.Zero;
+            lock (this)
+            {
+                Delta = TimeSpan.Zero;
+            }
         }
 
         #endregion
@@ -398,6 +416,11 @@ namespace Artemis.Core
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return $"Progress: {Position}/{Length} - delta: {Delta}";
+        }
     }
 
     internal enum TimelineSegment
