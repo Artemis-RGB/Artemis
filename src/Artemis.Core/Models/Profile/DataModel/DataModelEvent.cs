@@ -45,6 +45,10 @@ namespace Artemis.Core
         public Type ArgumentsType => typeof(T);
 
         /// <inheritdoc />
+        [DataModelIgnore]
+        public DataModelEventArgs? LastEventArgumentsUntyped => LastEventArguments;
+
+        /// <inheritdoc />
         public event EventHandler? EventTriggered;
     }
 
@@ -86,6 +90,10 @@ namespace Artemis.Core
         /// <inheritdoc />
         [DataModelIgnore]
         public Type ArgumentsType => typeof(DataModelEventArgs);
+
+        /// <inheritdoc />
+        [DataModelIgnore]
+        public DataModelEventArgs? LastEventArgumentsUntyped => LastEventArguments;
 
         /// <inheritdoc />
         public event EventHandler? EventTriggered;
