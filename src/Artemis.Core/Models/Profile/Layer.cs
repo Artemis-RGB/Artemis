@@ -287,9 +287,13 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
-            RenderLayer(Timeline, canvas);
-            foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
-                RenderLayer(extraTimeline, canvas);
+            lock (Timeline)
+            {
+                RenderLayer(Timeline, canvas);
+                foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
+                    RenderLayer(extraTimeline, canvas);
+                Timeline.ClearDelta();
+            }
         }
 
         private void PrepareForRender(Timeline timeline)
@@ -297,12 +301,12 @@ namespace Artemis.Core
             General.Update(timeline);
             Transform.Update(timeline);
             LayerBrush.BaseProperties?.Update(timeline);
-            LayerBrush.Update(timeline.LastDelta.TotalSeconds);
+            LayerBrush.Update(timeline.Delta.TotalSeconds);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
                 baseLayerEffect.BaseProperties?.Update(timeline);
-                baseLayerEffect.Update(timeline.LastDelta.TotalSeconds);
+                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
             }
         }
 
