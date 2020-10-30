@@ -184,14 +184,11 @@ namespace Artemis.UI.Shared
 
         internal void PopulateProperties(IDataModelUIService dataModelUIService)
         {
-            // if (IsRootViewModel)
-            //     return;
-
-            if (Parent == null && DataModel == null)
+            if (IsRootViewModel && DataModel == null)
                 return;
 
-            Type modelType = Parent == null || Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
-
+            Type modelType = IsRootViewModel ? DataModel.GetType() : DataModelPath?.GetPropertyType() ?? DataModel.GetType();
+            
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {

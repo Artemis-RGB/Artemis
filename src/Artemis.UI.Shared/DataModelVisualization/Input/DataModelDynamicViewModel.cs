@@ -97,7 +97,11 @@ namespace Artemis.UI.Shared.Input
         public bool IsDataModelViewModelOpen
         {
             get => _isDataModelViewModelOpen;
-            set => SetAndNotify(ref _isDataModelViewModelOpen, value);
+            set
+            {
+                if (!SetAndNotify(ref _isDataModelViewModelOpen, value)) return;
+                if (value) UpdateDataModelVisualization();
+            }
         }
 
         public DataModelPath DataModelPath
@@ -195,9 +199,14 @@ namespace Artemis.UI.Shared.Input
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!IsDataModelViewModelOpen)
-                return;
+            // if (!IsDataModelViewModelOpen)
+            //     return;
+            //
+            // UpdateDataModelVisualization();
+        }
 
+        private void UpdateDataModelVisualization()
+        {
             DataModelViewModel.Update(_dataModelUIService);
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
                 extraDataModelViewModel.Update(_dataModelUIService);

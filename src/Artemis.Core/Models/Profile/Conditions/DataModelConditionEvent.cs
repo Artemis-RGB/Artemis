@@ -62,7 +62,8 @@ namespace Artemis.Core
 
             // If there is a child (root group), it must evaluate to true whenever the event triggered
             if (Children.Any())
-                return Children[0].Evaluate();
+                return Children[0].EvaluateObject(_event.LastEventArgumentsUntyped);
+
             // If there are no children, we always evaluate to true whenever the event triggered
             return true;
         }

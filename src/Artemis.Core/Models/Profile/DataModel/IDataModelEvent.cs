@@ -20,6 +20,11 @@ namespace Artemis.Core
         Type ArgumentsType { get; }
 
         /// <summary>
+        ///     Gets the event arguments of the last time the event was triggered by its base type
+        /// </summary>
+        public DataModelEventArgs? LastEventArgumentsUntyped { get; }
+
+        /// <summary>
         ///     Fires when the event is triggered
         /// </summary>
         event EventHandler EventTriggered;
