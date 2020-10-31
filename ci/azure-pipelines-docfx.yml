@@ -9,7 +9,17 @@ trigger:
 pool:
   vmImage: 'windows-latest'
 
+variables:
+  artemisSolution: '**/Artemis.sln'
+
 steps:
+- task: NuGetToolInstaller@1
+
+- task: NuGetCommand@2
+  displayName: 'NuGet restore Artemis'
+  inputs:
+    restoreSolution: '$(artemisSolution)'
+
 - task: PowerShell@2
   displayName: "DockFX build"
   inputs:
@@ -20,9 +30,10 @@ steps:
     workingDirectory: 'docfx'
 
 - task: FtpUpload@2
+  displayName: "DockFX FTP upload"
   inputs:
     credentialsOption: 'inputs'
-    serverUrl: 'artemis-rgb.com'
+    serverUrl: 'ftp://artemis-rgb.com'
     username: 'devops'
     password: '$(ftp_password)'
     rootDirectory: 'docfx/docfx_project/_site'
