@@ -15,8 +15,6 @@ namespace Artemis.UI.Shared
         {
             DataModel = ListPredicateWrapperDataModel.Create(listType);
             ListType = listType;
-
-            IsRootViewModel = false;
         }
 
         public int Index

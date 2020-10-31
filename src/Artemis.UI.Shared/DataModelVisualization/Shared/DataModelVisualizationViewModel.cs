@@ -142,41 +142,6 @@ namespace Artemis.UI.Shared
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
         }
 
-        public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
-        {
-            if (!IsRootViewModel)
-            {
-                if (DataModel.PluginInfo.Guid != dataModelGuid)
-                    return null;
-                if (propertyPath == null)
-                    return null;
-                if (Path != null && Path.StartsWith(propertyPath, StringComparison.OrdinalIgnoreCase))
-                    return null;
-            }
-
-            // Ensure children are populated by requesting an update
-            if (!IsVisualizationExpanded)
-            {
-                IsVisualizationExpanded = true;
-                RequestUpdate();
-                IsVisualizationExpanded = false;
-            }
-
-            foreach (DataModelVisualizationViewModel child in Children)
-            {
-                // Try the child itself first
-                if (child.Path == propertyPath)
-                    return child;
-
-                // Try a child on the child next, this will go recursive
-                DataModelVisualizationViewModel match = child.GetChildByPath(dataModelGuid, propertyPath);
-                if (match != null)
-                    return match;
-            }
-
-            return null;
-        }
-
         internal virtual int GetChildDepth()
         {
             return 0;
@@ -187,7 +152,7 @@ namespace Artemis.UI.Shared
             if (IsRootViewModel && DataModel == null)
                 return;
 
-            Type modelType = IsRootViewModel ? DataModel.GetType() : DataModelPath?.GetPropertyType() ?? DataModel.GetType();
+            Type modelType = IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
             
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))

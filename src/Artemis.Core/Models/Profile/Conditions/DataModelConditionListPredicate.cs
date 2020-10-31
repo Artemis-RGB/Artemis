@@ -93,18 +93,6 @@ namespace Artemis.Core
 
         #region Modification
 
-        /// <summary>
-        ///     Updates the left side of the predicate
-        /// </summary>
-        /// <param name="path">The path pointing to the left side value inside the list</param>
-        public override void UpdateLeftSide(DataModelPath? path)
-        {
-            if (DataModelConditionList.IsPrimitiveList)
-                throw new ArtemisCoreException("Cannot apply a left side to a predicate inside a primitive list");
-
-            base.UpdateLeftSide(path);
-        }
-
         /// <inheritdoc />
         public override Type? GetPreferredRightSideType()
         {

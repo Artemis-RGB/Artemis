@@ -4,7 +4,6 @@ using System.Linq;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Exceptions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 
@@ -13,8 +12,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     public class DataModelConditionListPredicateViewModel : DataModelConditionPredicateViewModel
     {
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly IProfileEditorService _profileEditorService;
-        private bool _isPrimitiveList;
 
         public DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate,
             IProfileEditorService profileEditorService,
@@ -23,11 +20,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             ISettingsService settingsService)
             : base(dataModelConditionListPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
-            _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
 
             LeftSideColor = new SolidColorBrush(Color.FromRgb(71, 108, 188));
-            Initialize();
         }
 
         public DataModelConditionListPredicate DataModelConditionListPredicate => (DataModelConditionListPredicate) Model;
@@ -37,14 +32,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             base.Initialize();
 
             DataModelPropertiesViewModel listDataModel = GetListDataModel();
-            if (listDataModel.Children.Count == 1 && listDataModel.Children.First() is DataModelListPropertyViewModel)
-                _isPrimitiveList = true;
-            else
-                _isPrimitiveList = false;
+            LeftSideSelectionViewModel.ChangeDataModel(listDataModel);
 
-            // Get the data models
-            if (!_isPrimitiveList)
-                LeftSideSelectionViewModel.ChangeDataModel(listDataModel);
+            // If this is a primitive list the user doesn't have much to choose, so preselect the list item for them
+            if (DataModelConditionListPredicate.DataModelConditionList.IsPrimitiveList && DataModelConditionListPredicate.LeftPath == null)
+            {
+                DataModelConditionListPredicate.UpdateLeftSide(listDataModel.Children.FirstOrDefault()?.DataModelPath);
+                Update();
+            }
+        }
+
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            Initialize();
         }
 
         protected override List<Type> GetSupportedInputTypes()
@@ -72,16 +73,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         private DataModelPropertiesViewModel GetListDataModel()
         {
-            if (DataModelConditionListPredicate.DataModelConditionList.ListPath?.DataModelGuid == null)
-                throw new ArtemisUIException("Failed to retrieve the list data model VM for this list predicate because it has no list path");
-
-            DataModelPropertiesViewModel dataModel = _dataModelUIService.GetPluginDataModelVisualization(_profileEditorService.GetCurrentModule(), true);
-            DataModelListViewModel listDataModel = (DataModelListViewModel) dataModel.GetChildByPath(
-                DataModelConditionListPredicate.DataModelConditionList.ListPath.DataModelGuid.Value,
-                DataModelConditionListPredicate.DataModelConditionList.ListPath.Path
+            ListPredicateWrapperDataModel wrapper = ListPredicateWrapperDataModel.Create(
+                DataModelConditionListPredicate.DataModelConditionList.ListType
             );
 
-            return listDataModel.GetListTypeViewModel(_dataModelUIService);
+            return wrapper.CreateViewModel(_dataModelUIService);
         }
     }
 }
