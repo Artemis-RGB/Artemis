@@ -1,0 +1,33 @@
+# .NET Desktop
+# Build and run tests for .NET Desktop or Windows classic desktop solutions.
+# Add steps that publish symbols, save build artifacts, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+steps:
+- task: PowerShell@2
+  displayName: "DockFX build"
+  inputs:
+    targetType: 'inline'
+    script: |
+      choco install docfx -y
+      docfx.exe .\docfx_project\docfx.json
+    workingDirectory: 'docfx'
+
+- task: FtpUpload@2
+  inputs:
+    credentialsOption: 'inputs'
+    serverUrl: 'artemis-rgb.com'
+    username: 'devops'
+    password: '$(ftp_password)'
+    rootDirectory: 'docfx/docfx_project/_site'
+    filePatterns: '**'
+    remoteDirectory: '/httpdocs/docs'
+    clean: true
+    preservePaths: true
+    trustSSL: false
