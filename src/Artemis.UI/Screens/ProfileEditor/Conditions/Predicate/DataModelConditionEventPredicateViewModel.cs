@@ -12,7 +12,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     public class DataModelConditionEventPredicateViewModel : DataModelConditionPredicateViewModel
     {
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly IProfileEditorService _profileEditorService;
 
         public DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate,
             IProfileEditorService profileEditorService,
@@ -21,11 +20,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             ISettingsService settingsService)
             : base(dataModelConditionEventPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
-            _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
 
             LeftSideColor = new SolidColorBrush(Color.FromRgb(185, 164, 10));
-            Initialize();
         }
 
         public DataModelConditionEventPredicate DataModelConditionEventPredicate => (DataModelConditionEventPredicate) Model;
@@ -36,6 +33,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             DataModelPropertiesViewModel eventDataModel = GetEventDataModel();
             LeftSideSelectionViewModel.ChangeDataModel(eventDataModel);
+        }
+
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            Initialize();
         }
 
         protected override List<Type> GetSupportedInputTypes()

@@ -99,7 +99,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Operators.Clear();
             Operators.AddRange(_conditionOperatorService.GetConditionOperatorsForType(leftSideType ?? typeof(object), ConditionParameterSide.Left));
             if (DataModelConditionPredicate.Operator == null)
-                DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.SupportsType(leftSideType ?? typeof(object), ConditionParameterSide.Left)));
+                DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault());
+            // The core doesn't care about best matches so if there is a new preferred operator, use that instead
+            else if (!Operators.Contains(DataModelConditionPredicate.Operator))
+                DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.Description == DataModelConditionPredicate.Operator.Description) ?? Operators.FirstOrDefault());
+
             SelectedOperator = DataModelConditionPredicate.Operator;
 
             // Without a selected operator or one that supports a right side, leave the right side input empty

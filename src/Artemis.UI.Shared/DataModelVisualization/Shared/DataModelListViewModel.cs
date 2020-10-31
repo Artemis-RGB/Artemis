@@ -44,31 +44,7 @@ namespace Artemis.UI.Shared
         }
 
         public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
-
-        public DataModelPropertiesViewModel GetListTypeViewModel(IDataModelUIService dataModelUIService)
-        {
-            Type listType = DataModelPath.GetPropertyType()?.GetGenericEnumerableType();
-            if (listType == null)
-                return null;
-
-            // Create a property VM describing the type of the list
-            DataModelVisualizationViewModel viewModel = CreateListChild(dataModelUIService, listType);
-            viewModel.Update(dataModelUIService);
-
-            // Put an empty value into the list type property view model
-            if (viewModel is DataModelListPropertiesViewModel dataModelListClassViewModel) return dataModelListClassViewModel;
-
-            if (viewModel is DataModelListPropertyViewModel dataModelListPropertyViewModel)
-            {
-                dataModelListPropertyViewModel.DisplayValue = Activator.CreateInstance(dataModelListPropertyViewModel.ListType);
-                DataModelPropertiesViewModel wrapper = new DataModelPropertiesViewModel(null, null, null);
-                wrapper.Children.Add(dataModelListPropertyViewModel);
-                return wrapper;
-            }
-
-            return null;
-        }
-
+        
         public override void Update(IDataModelUIService dataModelUIService)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded)

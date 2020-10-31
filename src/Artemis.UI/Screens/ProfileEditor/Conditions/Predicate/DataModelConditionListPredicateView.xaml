@@ -40,7 +40,7 @@
             <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
         </Button>
 
-        <!-- Left side, may be null for primitive lists -->
+        <!-- Left side, always a property -->
         <ContentControl Grid.Row="0" 
                         Grid.Column="1"
                         s:View.Model="{Binding LeftSideSelectionViewModel}"

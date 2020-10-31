@@ -26,8 +26,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
-
-            Initialize();
         }
 
         public DataModelConditionList DataModelConditionList => (DataModelConditionList) Model;
@@ -74,8 +72,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             supportedInputTypes.Add(typeof(IEnumerable<>));
-            LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
 
+            // Events are only supported in the root group enforce that here
+            if (Parent is DataModelConditionGroupViewModel groupViewModel && groupViewModel.IsRootGroup)
+            {
+                supportedInputTypes.Add(typeof(DataModelEvent));
+                supportedInputTypes.Add(typeof(DataModelEvent<>));
+            }
+
+            LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
             LeftSideSelectionViewModel.Placeholder = "Select a list";
 
@@ -88,14 +93,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             bool converted = ConvertIfRequired(newType);
             if (converted)
                 return;
-            
+
             DataModelConditionList.UpdateList(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
         }
-
-     
+        
         public override void Update()
         {
             LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionList.ListPath);
@@ -125,6 +129,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
+        }
+
+        protected override void OnInitialActivate()
+        {
+            Initialize();
+            base.OnInitialActivate();
         }
 
         private void LeftSideSelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)

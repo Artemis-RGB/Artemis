@@ -24,12 +24,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
-
-            Initialize();
         }
 
         public DataModelConditionEvent DataModelConditionEvent => (DataModelConditionEvent) Model;
-
 
         public void Initialize()
         {
@@ -40,8 +37,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
             supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             supportedInputTypes.Add(typeof(IEnumerable<>));
-            LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
 
+            // Events are only supported in the root group enforce that here
+            if (Parent is DataModelConditionGroupViewModel groupViewModel && groupViewModel.IsRootGroup)
+            {
+                supportedInputTypes.Add(typeof(DataModelEvent));
+                supportedInputTypes.Add(typeof(DataModelEvent<>));
+            }
+
+            LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
             LeftSideSelectionViewModel.Placeholder = "Select an event";
 
@@ -89,6 +93,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService.UpdateSelectedProfileElement();
 
             Update();
+        }
+
+        protected override void OnInitialActivate()
+        {
+            Initialize();
+            base.OnInitialActivate();
         }
 
         #region Event handlers
