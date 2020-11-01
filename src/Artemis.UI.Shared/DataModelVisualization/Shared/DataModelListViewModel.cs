@@ -45,7 +45,7 @@ namespace Artemis.UI.Shared
 
         public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
         
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded)
                 return;
@@ -83,7 +83,7 @@ namespace Artemis.UI.Shared
                     dataModelListPropertyViewModel.Index = index;
                 }
 
-                child.Update(dataModelUIService);
+                child.Update(dataModelUIService, configuration);
                 index++;
             }
 

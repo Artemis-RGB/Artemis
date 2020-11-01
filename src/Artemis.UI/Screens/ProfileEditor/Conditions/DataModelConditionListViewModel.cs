@@ -73,13 +73,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
             supportedInputTypes.Add(typeof(IEnumerable<>));
 
-            // Events are only supported in the root group enforce that here
-            if (Parent is DataModelConditionGroupViewModel groupViewModel && groupViewModel.IsRootGroup)
-            {
-                supportedInputTypes.Add(typeof(DataModelEvent));
-                supportedInputTypes.Add(typeof(DataModelEvent<>));
-            }
-
             LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(71, 108, 188));
             LeftSideSelectionViewModel.Placeholder = "Select a list";

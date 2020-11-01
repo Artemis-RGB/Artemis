@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _displayValue, value);
         }
 
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
 
@@ -38,14 +38,14 @@ namespace Artemis.UI.Shared
                 DisplayValue = null;
 
             // Always populate properties   
-            PopulateProperties(dataModelUIService);
+            PopulateProperties(dataModelUIService, configuration);
 
             // Only update children if the parent is expanded
             if (Parent != null && !Parent.IsRootViewModel && !Parent.IsVisualizationExpanded)
                 return;
 
             foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
-                dataModelVisualizationViewModel.Update(dataModelUIService);
+                dataModelVisualizationViewModel.Update(dataModelUIService, configuration);
         }
 
         public override object GetCurrentValue()

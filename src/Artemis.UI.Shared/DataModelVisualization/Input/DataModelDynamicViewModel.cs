@@ -131,6 +131,8 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        public bool LoadEventChildren { get; set; } = true;
+
         public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
         {
             if (DataModelViewModel != null)
@@ -199,17 +201,17 @@ namespace Artemis.UI.Shared.Input
 
         private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            // if (!IsDataModelViewModelOpen)
-            //     return;
-            //
-            // UpdateDataModelVisualization();
+            if (!IsDataModelViewModelOpen)
+                return;
+            
+            UpdateDataModelVisualization();
         }
 
         private void UpdateDataModelVisualization()
         {
-            DataModelViewModel.Update(_dataModelUIService);
+            DataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
-                extraDataModelViewModel.Update(_dataModelUIService);
+                extraDataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
         }
 
         #endregion

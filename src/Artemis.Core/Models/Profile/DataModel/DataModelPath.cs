@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -281,7 +280,7 @@ namespace Artemis.Core
 
             Entity.Path = Path;
             Entity.DataModelGuid = DataModelGuid;
-            
+
             Entity.WrapperType = Target switch
             {
                 ListPredicateWrapperDataModel _ => PathWrapperType.List,

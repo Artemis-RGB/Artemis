@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.DataModelExpansions;
 
 namespace Artemis.Core
@@ -8,6 +10,45 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelEvent<T> : IDataModelEvent where T : DataModelEventArgs
     {
+        private bool _trackHistory;
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelEvent{T}" /> class with history tracking disabled
+        /// </summary>
+        public DataModelEvent()
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelEvent{T}" />
+        /// </summary>
+        /// <param name="trackHistory">A boolean indicating whether the last 20 events should be tracked</param>
+        public DataModelEvent(bool trackHistory)
+        {
+            _trackHistory = trackHistory;
+        }
+
+        /// <inheritdoc />
+        [DataModelProperty(Name = "Last event trigger", Description = "The time at which the event last triggered")]
+        public DateTime LastTrigger { get; private set; }
+
+        /// <summary>
+        ///     Gets the event arguments of the last time the event was triggered
+        /// </summary>
+        [DataModelProperty(Description = "The arguments of the last time this event triggered")]
+        public T? LastEventArguments { get; private set; }
+
+        /// <inheritdoc />
+        [DataModelProperty(Description = "The total amount of times this event has triggered since the module was activated")]
+        public int TriggerCount { get; private set; }
+
+        /// <summary>
+        ///     Gets a queue of the last 20 event arguments
+        ///     <para>Always empty if <see cref="TrackHistory" /> is <see langword="false" /></para>
+        /// </summary>
+        [DataModelProperty(Description = "The arguments of the last time this event triggered")]
+        public Queue<T> EventArgumentsHistory { get; } = new Queue<T>(20);
+
         /// <summary>
         ///     Trigger the event with the given <paramref name="eventArgs" />
         /// </summary>
@@ -21,6 +62,16 @@ namespace Artemis.Core
             LastTrigger = DateTime.Now;
             TriggerCount++;
 
+            if (TrackHistory)
+            {
+                lock (EventArgumentsHistory)
+                {
+                    if (EventArgumentsHistory.Count == 20)
+                        EventArgumentsHistory.Dequeue();
+                    EventArgumentsHistory.Enqueue(eventArgs);
+                }
+            }
+
             OnEventTriggered();
         }
 
@@ -30,26 +81,38 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public DateTime LastTrigger { get; private set; }
-
-        /// <inheritdoc />
-        public int TriggerCount { get; private set; }
-
-        /// <summary>
-        ///     Gets the event arguments of the last time the event was triggered
-        /// </summary>
-        public T? LastEventArguments { get; private set; }
+        [DataModelIgnore]
+        public Type ArgumentsType => typeof(T);
 
         /// <inheritdoc />
         [DataModelIgnore]
-        public Type ArgumentsType => typeof(T);
+        public bool TrackHistory
+        {
+            get => _trackHistory;
+            set
+            {
+                EventArgumentsHistory.Clear();
+                _trackHistory = value;
+            }
+        }
 
         /// <inheritdoc />
         [DataModelIgnore]
         public DataModelEventArgs? LastEventArgumentsUntyped => LastEventArguments;
 
         /// <inheritdoc />
+        [DataModelIgnore]
+        public List<DataModelEventArgs> EventArgumentsHistoryUntyped => EventArgumentsHistory.Cast<DataModelEventArgs>().ToList();
+
+        /// <inheritdoc />
         public event EventHandler? EventTriggered;
+
+        /// <inheritdoc />
+        public void Reset()
+        {
+            TriggerCount = 0;
+            EventArgumentsHistory.Clear();
+        }
     }
 
     /// <summary>
@@ -57,6 +120,45 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelEvent : IDataModelEvent
     {
+        private bool _trackHistory;
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelEvent" /> class with history tracking disabled
+        /// </summary>
+        public DataModelEvent()
+        {
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelEvent" />
+        /// </summary>
+        /// <param name="trackHistory">A boolean indicating whether the last 20 events should be tracked</param>
+        public DataModelEvent(bool trackHistory)
+        {
+            _trackHistory = trackHistory;
+        }
+
+        /// <inheritdoc />
+        [DataModelProperty(Name = "Last event trigger", Description = "The time at which the event last triggered")]
+        public DateTime LastTrigger { get; private set; }
+
+        /// <summary>
+        ///     Gets the event arguments of the last time the event was triggered
+        /// </summary>
+        [DataModelProperty(Description = "The arguments of the last time this event triggered")]
+        public DataModelEventArgs? LastEventArguments { get; private set; }
+
+        /// <inheritdoc />
+        [DataModelProperty(Description = "The total amount of times this event has triggered since the module was activated")]
+        public int TriggerCount { get; private set; }
+
+        /// <summary>
+        ///     Gets a queue of the last 20 event arguments
+        ///     <para>Always empty if <see cref="TrackHistory" /> is <see langword="false" /></para>
+        /// </summary>
+        [DataModelProperty(Description = "The arguments of the last time this event triggered")]
+        public Queue<DataModelEventArgs> EventArgumentsHistory { get; } = new Queue<DataModelEventArgs>(20);
+
         /// <summary>
         ///     Trigger the event
         /// </summary>
@@ -68,6 +170,16 @@ namespace Artemis.Core
             LastTrigger = DateTime.Now;
             TriggerCount++;
 
+            if (TrackHistory)
+            {
+                lock (EventArgumentsHistory)
+                {
+                    if (EventArgumentsHistory.Count == 20)
+                        EventArgumentsHistory.Dequeue();
+                    EventArgumentsHistory.Enqueue(eventArgs);
+                }
+            }
+
             OnEventTriggered();
         }
 
@@ -75,27 +187,39 @@ namespace Artemis.Core
         {
             EventTriggered?.Invoke(this, EventArgs.Empty);
         }
-
-        /// <inheritdoc />
-        public DateTime LastTrigger { get; private set; }
-
-        /// <inheritdoc />
-        public int TriggerCount { get; private set; }
-
-        /// <summary>
-        ///     Gets the event arguments of the last time the event was triggered
-        /// </summary>
-        public DataModelEventArgs? LastEventArguments { get; private set; }
-
+        
         /// <inheritdoc />
         [DataModelIgnore]
         public Type ArgumentsType => typeof(DataModelEventArgs);
 
         /// <inheritdoc />
         [DataModelIgnore]
+        public bool TrackHistory
+        {
+            get => _trackHistory;
+            set
+            {
+                EventArgumentsHistory.Clear();
+                _trackHistory = value;
+            }
+        }
+
+        /// <inheritdoc />
+        [DataModelIgnore]
         public DataModelEventArgs? LastEventArgumentsUntyped => LastEventArguments;
 
         /// <inheritdoc />
+        [DataModelIgnore]
+        public List<DataModelEventArgs> EventArgumentsHistoryUntyped => EventArgumentsHistory.ToList();
+
+        /// <inheritdoc />
         public event EventHandler? EventTriggered;
+
+        /// <inheritdoc />
+        public void Reset()
+        {
+            TriggerCount = 0;
+            EventArgumentsHistory.Clear();
+        }
     }
 }

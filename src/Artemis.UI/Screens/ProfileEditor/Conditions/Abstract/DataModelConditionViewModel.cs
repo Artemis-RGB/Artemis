@@ -47,25 +47,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 return true;
             }
 
-            // Event
-            if (IsEvent(newType))
-            {
-                if (this is DataModelConditionEventViewModel)
-                    return false;
-                groupViewModel.ConvertToConditionEvent(this);
-                return true;
-            }
-
             // Predicate
             if (this is DataModelConditionPredicateViewModel)
                 return false;
             groupViewModel.ConvertToPredicate(this);
             return true;
-        }
-
-        protected bool IsEvent(Type type)
-        {
-            return type == typeof(DataModelEvent) || type.IsGenericType && type.GetGenericTypeDefinition() == typeof(DataModelEvent<>);
         }
     }
 }

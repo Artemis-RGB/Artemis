@@ -146,7 +146,7 @@ namespace Artemis.Core.Services
         {
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> {new SKColorConverter()}
+                Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
             };
         }
 
