@@ -39,7 +39,7 @@ namespace Artemis.UI.Shared
             return DisplayValue;
         }
 
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             // Display value gets updated by parent, don't do anything if it is null
             if (DisplayValue == null)

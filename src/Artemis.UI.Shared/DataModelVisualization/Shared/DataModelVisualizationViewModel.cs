@@ -87,8 +87,9 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
         /// </summary>
-        /// <param name="dataModelUIService"></param>
-        public abstract void Update(IDataModelUIService dataModelUIService);
+        /// <param name="dataModelUIService">The data model UI service used during update</param>
+        /// <param name="configuration">The configuration to apply while updating</param>
+        public abstract void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration);
 
         public virtual object GetCurrentValue()
         {
@@ -147,7 +148,7 @@ namespace Artemis.UI.Shared
             return 0;
         }
 
-        internal void PopulateProperties(IDataModelUIService dataModelUIService)
+        internal void PopulateProperties(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration dataModelUpdateConfiguration)
         {
             if (IsRootViewModel && DataModel == null)
                 return;
@@ -259,5 +260,15 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
+    }
+
+    public class DataModelUpdateConfiguration
+    {
+        public bool CreateEventChildren { get; }
+
+        public DataModelUpdateConfiguration(bool createEventChildren)
+        {
+            CreateEventChildren = createEventChildren;
+        }
     }
 }

@@ -135,6 +135,25 @@
                         <ContentControl Grid.Column="2" s:View.Model="{Binding DisplayViewModel}" FontFamily="Consolas" />
                     </Grid>
                 </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelEventViewModel}" ItemsSource="{Binding Children}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0" Margin="0 0 5 0" FontWeight="Bold">
+                            <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
+                        </TextBlock>
+                        <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding CountDisplay, Mode=OneWay}"
+                                   FontFamily="Consolas"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+                </HierarchicalDataTemplate>
+
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListPropertiesViewModel}" ItemsSource="{Binding DisplayViewModel.Children}">
                     <TextBlock>
                         <Run>List item [</Run><Run Text="{Binding Index, Mode=OneWay}" /><Run>]</Run>

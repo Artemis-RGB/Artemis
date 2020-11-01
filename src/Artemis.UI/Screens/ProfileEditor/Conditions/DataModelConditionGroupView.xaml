@@ -18,6 +18,7 @@
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+            <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -109,12 +110,20 @@
             </Button.Style>
             <Button.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Add condition" ToolTip="A condition that compares with another value" Command="{s:Action AddCondition}">
+                    <MenuItem Header="Add condition" ToolTip="A condition that evaluates the state of a property in the data model" Command="{s:Action AddCondition}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="Equal" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Add group" ToolTip="A group can contain conditions and other groups" Command="{s:Action AddGroup}">
+                    <MenuItem Header="Add event condition" 
+                              ToolTip="An event condition that responds to data model events"
+                              Command="{s:Action AddEventCondition}" 
+                              Visibility="{Binding Data.CanAddEventCondition, Source={StaticResource DataContextProxy}, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                        <MenuItem.Icon>
+                            <materialDesign:PackIcon Kind="LightningBolt" />
+                        </MenuItem.Icon>
+                    </MenuItem>
+                    <MenuItem Header="Add group" ToolTip="A group for conditions and other groups" Command="{s:Action AddGroup}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="CodeParentheses" />
                         </MenuItem.Icon>

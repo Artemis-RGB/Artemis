@@ -40,14 +40,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             });
         }
 
-        public ConditionGroupType GroupType { get; set; }
+        public ConditionGroupType GroupType { get; }
         public DataModelConditionGroup DataModelConditionGroup => (DataModelConditionGroup) Model;
 
         public bool IsRootGroup
         {
             get => _isRootGroup;
-            set => SetAndNotify(ref _isRootGroup, value);
+            set
+            {
+                if (!SetAndNotify(ref _isRootGroup, value)) return;
+                NotifyOfPropertyChange(nameof(CanAddEventCondition));
+            }
         }
+
+        public bool CanAddEventCondition => IsRootGroup && GroupType == ConditionGroupType.General;
 
         public bool IsEventGroup
         {
@@ -89,6 +95,23 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            Update();
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public void AddEventCondition()
+        {
+            if (!CanAddEventCondition)
+                return;
+
+            // Find a good spot for the event, behind the last existing event
+            int index = 0;
+            DataModelConditionPart existing = DataModelConditionGroup.Children.LastOrDefault(c => c is DataModelConditionEvent);
+            if (existing != null)
+                index = DataModelConditionGroup.Children.IndexOf(existing) + 1;
+
+            DataModelConditionGroup.AddChild(new DataModelConditionEvent(DataModelConditionGroup), index);
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -166,24 +189,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionList list = new DataModelConditionList(DataModelConditionGroup);
             list.UpdateList(predicateViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(list, index);
-
-            // Update to switch the VMs
-            Update();
-        }
-
-        public void ConvertToConditionEvent(DataModelConditionViewModel predicateViewModel)
-        {
-            // Remove the old child
-            DataModelConditionGroup.RemoveChild(predicateViewModel.Model);
-
-            DataModelConditionPart rootGroup = DataModelConditionGroup;
-            while (rootGroup.Parent != null)
-                rootGroup = rootGroup.Parent;
-
-            // Insert an event at the start of the root group
-            DataModelConditionEvent conditionEvent = new DataModelConditionEvent(rootGroup);
-            conditionEvent.UpdateEvent(predicateViewModel.LeftSideSelectionViewModel.DataModelPath);
-            rootGroup.AddChild(conditionEvent, 0);
 
             // Update to switch the VMs
             Update();

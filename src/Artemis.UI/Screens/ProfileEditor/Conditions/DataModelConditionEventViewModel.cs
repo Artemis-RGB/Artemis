@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
@@ -32,19 +32,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
             LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
+            LeftSideSelectionViewModel.LoadEventChildren = false;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
-            List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
-            supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
-            supportedInputTypes.Add(typeof(IEnumerable<>));
-
-            // Events are only supported in the root group enforce that here
-            if (Parent is DataModelConditionGroupViewModel groupViewModel && groupViewModel.IsRootGroup)
-            {
-                supportedInputTypes.Add(typeof(DataModelEvent));
-                supportedInputTypes.Add(typeof(DataModelEvent<>));
-            }
-
+            List<Type> supportedInputTypes = new List<Type> {typeof(DataModelEvent), typeof(DataModelEvent<>)};
+            
             LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
             LeftSideSelectionViewModel.Placeholder = "Select an event";
@@ -84,11 +76,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void ApplyEvent()
         {
-            Type newType = LeftSideSelectionViewModel.DataModelPath.GetPropertyType();
-            bool converted = ConvertIfRequired(newType);
-            if (converted)
-                return;
-
             DataModelConditionEvent.UpdateEvent(LeftSideSelectionViewModel.DataModelPath);
             _profileEditorService.UpdateSelectedProfileElement();
 

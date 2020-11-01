@@ -99,7 +99,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             lock (MainDataModel)
             {
-                MainDataModel.Update(_dataModelUIService);
+                MainDataModel.Update(_dataModelUIService, null);
             }
         }
 

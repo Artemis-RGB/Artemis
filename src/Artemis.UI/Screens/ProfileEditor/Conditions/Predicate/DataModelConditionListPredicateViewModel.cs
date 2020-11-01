@@ -77,7 +77,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DataModelConditionListPredicate.DataModelConditionList.ListType
             );
 
-            return wrapper.CreateViewModel(_dataModelUIService);
+            return wrapper.CreateViewModel(_dataModelUIService, new DataModelUpdateConfiguration(true));
         }
     }
 }
