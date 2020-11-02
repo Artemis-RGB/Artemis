@@ -293,6 +293,10 @@ namespace Artemis.Core
             if (Operator == null || LeftPath == null || !LeftPath.IsValid)
                 return false;
 
+            // If the operator does not support a right side, immediately evaluate with null
+            if (Operator.RightSideType == null)
+                return Operator.InternalEvaluate(LeftPath.GetValue(), null);
+
             // Compare with a static value
             if (PredicateType == ProfileRightSideType.Static)
             {

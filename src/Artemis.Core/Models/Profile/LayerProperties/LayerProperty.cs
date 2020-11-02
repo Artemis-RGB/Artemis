@@ -42,10 +42,8 @@ namespace Artemis.Core
 
             CurrentValue = BaseValue;
 
-            if (ProfileElement.ApplyKeyframesEnabled)
-                UpdateKeyframes(timeline);
-            if (ProfileElement.ApplyDataBindingsEnabled)
-                UpdateDataBindings(timeline);
+            UpdateKeyframes(timeline);
+            UpdateDataBindings(timeline);
 
             OnUpdated();
         }
@@ -421,6 +419,10 @@ namespace Artemis.Core
 
         private void UpdateDataBindings(Timeline timeline)
         {
+            // To avoid data bindings applying at non-regular updating (during editing) only update when not overriden
+            if (timeline.IsOverridden)
+                return;
+
             foreach (IDataBinding dataBinding in _dataBindings)
             {
                 dataBinding.Update(timeline);

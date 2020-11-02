@@ -21,7 +21,7 @@
         <Image Grid.Row="0"
                Grid.RowSpan="2"
                Source="/Resources/Images/Sidebar/sidebar-header.png"
-               Stretch="None"
+               Stretch="UniformToFill"
                VerticalAlignment="Top" Height="120" />
         <TextBlock Grid.Row="1"
                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"

@@ -43,7 +43,7 @@ namespace Artemis.Core
         ///     The action to call every time the interval has passed. The delta time parameter represents the
         ///     time passed since the last update in seconds
         /// </param>
-        /// <returns>The resulting plugin update registration</returns>
+        /// <returns>The resulting plugin update registration which can be used to stop the update</returns>
         public PluginUpdateRegistration AddTimedUpdate(TimeSpan interval, Action<double> action)
         {
             if (action == null)

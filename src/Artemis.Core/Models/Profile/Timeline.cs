@@ -137,6 +137,11 @@ namespace Artemis.Core
         /// </summary>
         public bool IsFinished => Position > Length || Length == TimeSpan.Zero;
 
+        /// <summary>
+        /// Gets a boolean indicating whether the timeline progress has been overridden
+        /// </summary>
+        public bool IsOverridden { get; private set; }
+
         #region Segments
 
         /// <summary>
@@ -293,6 +298,7 @@ namespace Artemis.Core
             {
                 Delta += delta;
                 Position += delta;
+                IsOverridden = false;
 
                 if (stickToMainSegment && Position >= MainSegmentStartPosition)
                 {
@@ -371,6 +377,8 @@ namespace Artemis.Core
             {
                 Delta += position - Position;
                 Position = position;
+                IsOverridden = true;
+
                 if (stickToMainSegment && Position >= MainSegmentStartPosition)
                     Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
 

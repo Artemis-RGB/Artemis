@@ -15,8 +15,6 @@ namespace Artemis.Core
     {
         protected RenderProfileElement()
         {
-            ApplyDataBindingsEnabled = true;
-            ApplyKeyframesEnabled = true;
             Timeline = new Timeline();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
@@ -299,16 +297,6 @@ namespace Artemis.Core
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
         }
-
-        /// <summary>
-        ///     Gets or sets whether keyframes should be applied when this profile element updates
-        /// </summary>
-        public bool ApplyKeyframesEnabled { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether data bindings should be applied when this profile element updates
-        /// </summary>
-        public bool ApplyDataBindingsEnabled { get; set; }
 
         /// <summary>
         /// Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline"/>

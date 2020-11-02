@@ -133,7 +133,7 @@
             <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
         </Button>
 
-        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items, IsAsync=True}">
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items, IsAsync=True}" Margin="0 3 0 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
