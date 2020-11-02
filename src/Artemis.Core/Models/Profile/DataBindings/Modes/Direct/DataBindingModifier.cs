@@ -109,14 +109,6 @@ namespace Artemis.Core
                                                $"it does not support this data binding's type {targetType.Name}");
 
             ModifierType = modifierType;
-
-            // Ensure the right parameter static value is never null when the parameter type is a value type
-            if (ParameterType == ProfileRightSideType.Static && modifierType.ParameterType != null)
-            {
-                if (modifierType.ParameterType.IsValueType && ParameterStaticValue == null)
-                    UpdateParameterStatic(modifierType.ParameterType.GetDefault());
-            }
-
             ValidateParameter();
         }
 
@@ -225,14 +217,7 @@ namespace Artemis.Core
                     staticValue = Activator.CreateInstance(parameterType);
                 }
 
-                try
-                {
-                    UpdateParameterStatic(staticValue);
-                }
-                catch (Exception e)
-                {
-                    DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, new JsonSerializationException("The JSON deserialized into a mismatching type", e));
-                }
+                UpdateParameterStatic(staticValue);
             }
         }
 
