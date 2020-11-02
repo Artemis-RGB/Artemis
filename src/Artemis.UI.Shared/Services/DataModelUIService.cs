@@ -220,8 +220,7 @@ namespace Artemis.UI.Shared.Services
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
-            IParameter[] parameters = new IParameter[]
-            {
+            IParameter[] parameters = {
                 new ConstructorArgument("targetDescription", description),
                 new ConstructorArgument("initialValue", initialValue)
             };

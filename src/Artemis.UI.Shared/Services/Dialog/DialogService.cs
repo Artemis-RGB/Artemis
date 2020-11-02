@@ -28,8 +28,7 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            IParameter[] arguments = new IParameter[]
-            {
+            IParameter[] arguments = {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
@@ -41,8 +40,7 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            IParameter[] arguments = new IParameter[]
-            {
+            IParameter[] arguments = {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),

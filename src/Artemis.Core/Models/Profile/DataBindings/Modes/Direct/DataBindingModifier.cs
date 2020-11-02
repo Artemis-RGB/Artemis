@@ -109,6 +109,14 @@ namespace Artemis.Core
                                                $"it does not support this data binding's type {targetType.Name}");
 
             ModifierType = modifierType;
+
+            // Ensure the right parameter static value is never null when the parameter type is a value type
+            if (ParameterType == ProfileRightSideType.Static && modifierType.ParameterType != null)
+            {
+                if (modifierType.ParameterType.IsValueType && ParameterStaticValue == null)
+                    UpdateParameterStatic(modifierType.ParameterType.GetDefault());
+            }
+
             ValidateParameter();
         }
 
@@ -200,7 +208,7 @@ namespace Artemis.Core
                 ParameterPath = new DataModelPath(null, Entity.ParameterPath);
             }
             // Static parameter
-            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
+            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
                 Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
@@ -217,7 +225,14 @@ namespace Artemis.Core
                     staticValue = Activator.CreateInstance(parameterType);
                 }
 
-                UpdateParameterStatic(staticValue);
+                try
+                {
+                    UpdateParameterStatic(staticValue);
+                }
+                catch (Exception e)
+                {
+                    DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, new JsonSerializationException("The JSON deserialized into a mismatching type", e));
+                }
             }
         }
 

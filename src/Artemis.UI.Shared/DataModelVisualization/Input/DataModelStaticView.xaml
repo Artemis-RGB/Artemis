@@ -71,6 +71,7 @@
                 Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}}"
                 CornerRadius="3"
                 Padding="3"
+                Margin="0 -3"
                 HorizontalAlignment="Left"
                 MinWidth="140">
             <ContentControl s:View.Model="{Binding InputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />
