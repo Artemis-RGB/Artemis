@@ -10,7 +10,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding
 {
-    public class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Screen, IDataBindingModeViewModel
+    public class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Conductor<DataBindingConditionViewModel<TLayerProperty, TProperty>>.Collection.AllActive, IDataBindingModeViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
@@ -24,18 +24,83 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _dataBindingsVmFactory = dataBindingsVmFactory;
 
             ConditionalDataBinding = conditionalDataBinding;
-            ConditionViewModels = new BindableCollection<DataBindingConditionViewModel<TLayerProperty, TProperty>>();
-
-            Initialize();
         }
 
         public ConditionalDataBinding<TLayerProperty, TProperty> ConditionalDataBinding { get; }
-        public BindableCollection<DataBindingConditionViewModel<TLayerProperty, TProperty>> ConditionViewModels { get; }
+
+        public void AddCondition()
+        {
+            DataBindingCondition<TLayerProperty, TProperty> condition = ConditionalDataBinding.AddCondition();
+
+            // Find the VM of the new condition
+            DataBindingConditionViewModel<TLayerProperty, TProperty> viewModel = Items.First(c => c.DataBindingCondition == condition);
+            viewModel.ActiveItem.AddCondition();
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            Initialize();
+        }
+
+        private void UpdateItems()
+        {
+            _updating = true;
+
+            // Remove old VMs
+            List<DataBindingConditionViewModel<TLayerProperty, TProperty>> toRemove = Items.Where(c => !ConditionalDataBinding.Conditions.Contains(c.DataBindingCondition)).ToList();
+            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> dataBindingConditionViewModel in toRemove)
+            {
+                Items.Remove(dataBindingConditionViewModel);
+                dataBindingConditionViewModel.Dispose();
+            }
+
+            // Add missing VMs
+            foreach (DataBindingCondition<TLayerProperty, TProperty> condition in ConditionalDataBinding.Conditions)
+                if (Items.All(c => c.DataBindingCondition != condition))
+                    Items.Add(_dataBindingsVmFactory.DataBindingConditionViewModel(condition));
+
+            // Fix order
+            ((BindableCollection<DataBindingConditionViewModel<TLayerProperty, TProperty>>) Items).Sort(c => c.DataBindingCondition.Order);
+
+            _updating = false;
+        }
+
+        private void Initialize()
+        {
+            ConditionalDataBinding.ConditionsUpdated += ConditionalDataBindingOnConditionsUpdated;
+            Items.CollectionChanged += ItemsOnCollectionChanged;
+            UpdateItems();
+        }
+
+        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (_updating || e.Action != NotifyCollectionChangedAction.Add)
+                return;
+
+            for (int index = 0; index < Items.Count; index++)
+            {
+                DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel = Items[index];
+                conditionViewModel.DataBindingCondition.Order = index + 1;
+            }
+
+            ConditionalDataBinding.ApplyOrder();
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        private void ConditionalDataBindingOnConditionsUpdated(object sender, EventArgs e)
+        {
+            UpdateItems();
+        }
+
         public bool SupportsTestValue => false;
 
         public void Update()
         {
-            UpdateConditionViewModels();
+            UpdateItems();
         }
 
         public object GetTestValue()
@@ -49,64 +114,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         {
             ConditionalDataBinding.ConditionsUpdated -= ConditionalDataBindingOnConditionsUpdated;
 
-            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel in ConditionViewModels)
+            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel in Items)
                 conditionViewModel.Dispose();
-            ConditionViewModels.Clear();
+            Items.Clear();
         }
 
         #endregion
-
-        private void UpdateConditionViewModels()
-        {
-            _updating = true;
-
-            // Remove old VMs
-            List<DataBindingConditionViewModel<TLayerProperty, TProperty>> toRemove = ConditionViewModels.Where(c => !ConditionalDataBinding.Conditions.Contains(c.DataBindingCondition)).ToList();
-            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> dataBindingConditionViewModel in toRemove)
-            {
-                ConditionViewModels.Remove(dataBindingConditionViewModel);
-                dataBindingConditionViewModel.Dispose();
-            }
-
-            // Add missing VMs
-            foreach (DataBindingCondition<TLayerProperty, TProperty> condition in ConditionalDataBinding.Conditions)
-            {
-                if (ConditionViewModels.All(c => c.DataBindingCondition != condition))
-                    ConditionViewModels.Add(_dataBindingsVmFactory.DataBindingConditionViewModel(condition));
-            }
-
-            // Fix order
-            ConditionViewModels.Sort(c => c.DataBindingCondition.Order);
-
-            _updating = false;
-        }
-
-        private void Initialize()
-        {
-            ConditionalDataBinding.ConditionsUpdated += ConditionalDataBindingOnConditionsUpdated;
-            ConditionViewModels.CollectionChanged += ConditionViewModelsOnCollectionChanged;
-            UpdateConditionViewModels();
-        }
-
-        private void ConditionViewModelsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (_updating || e.Action != NotifyCollectionChangedAction.Add)
-                return;
-
-            for (int index = 0; index < ConditionViewModels.Count; index++)
-            {
-                DataBindingConditionViewModel<TLayerProperty, TProperty> conditionViewModel = ConditionViewModels[index];
-                conditionViewModel.DataBindingCondition.Order = index + 1;
-            }
-
-            ConditionalDataBinding.ApplyOrder();
-
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        private void ConditionalDataBindingOnConditionsUpdated(object sender, EventArgs e)
-        {
-            UpdateConditionViewModels();
-        }
     }
 }

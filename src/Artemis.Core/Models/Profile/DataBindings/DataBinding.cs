@@ -60,9 +60,9 @@ namespace Artemis.Core
         ///     Gets ors ets the easing function of the data binding
         /// </summary>
         public Easings.Functions EasingFunction { get; set; }
-        
+
         internal DataBindingEntity Entity { get; }
-        
+
         /// <summary>
         ///     Gets the current value of the data binding
         /// </summary>
@@ -140,15 +140,23 @@ namespace Artemis.Core
         /// <param name="timeline">The timeline to apply during update</param>
         public void Update(Timeline timeline)
         {
+            UpdateWithDelta(timeline.Delta);
+        }
+
+        /// <summary>
+        ///     Updates the smoothing progress of the data binding
+        /// </summary>
+        /// <param name="delta">The delta to apply during update</param>
+        public void UpdateWithDelta(TimeSpan delta)
+        {
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
             // Data bindings cannot go back in time like brushes
-            TimeSpan deltaTime = timeline.Delta;
-            if (deltaTime < TimeSpan.Zero)
-                deltaTime = TimeSpan.Zero;
+            if (delta < TimeSpan.Zero)
+                delta = TimeSpan.Zero;
 
-            _easingProgress = _easingProgress.Add(deltaTime);
+            _easingProgress = _easingProgress.Add(delta);
             if (_easingProgress > EasingTime)
                 _easingProgress = EasingTime;
         }

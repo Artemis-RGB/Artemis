@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             // and creating the actual data bindings
             foreach (IDataBindingRegistration registration in registrations)
                 Items.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
-
+            
             SelectedItemIndex = 0;
         }
 

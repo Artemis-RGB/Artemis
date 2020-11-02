@@ -131,7 +131,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             // Remove VMs of effects no longer applied on the layer
             Items.RemoveRange(Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList());
 
-            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
             foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))
@@ -140,32 +139,28 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 switch (childModel)
                 {
                     case DataModelConditionGroup dataModelConditionGroup:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType));
                         break;
                     case DataModelConditionList dataModelConditionList:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
                         break;
                     case DataModelConditionEvent dataModelConditionEvent:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
                         break;
                     case DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
                         break;
                     case DataModelConditionListPredicate dataModelConditionListPredicate:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
                         break;
                     case DataModelConditionEventPredicate dataModelConditionEventPredicate:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate));
                         break;
                 }
             }
 
-            if (viewModels.Any())
-                Items.AddRange(viewModels);
-
             // Ensure the items are in the same order as on the model
             ((BindableCollection<DataModelConditionViewModel>) Items).Sort(i => Model.Children.IndexOf(i.Model));
-
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
 

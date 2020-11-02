@@ -55,11 +55,14 @@ namespace Artemis.Core
 
         private object? GetEventPathValue(DataModelPath path, object target)
         {
-            if (!(path.Target is EventPredicateWrapperDataModel wrapper))
-                throw new ArtemisCoreException("Data model condition event predicate has a path with an invalid target");
+            lock (path)
+            {
+                if (!(path.Target is EventPredicateWrapperDataModel wrapper))
+                    throw new ArtemisCoreException("Data model condition event predicate has a path with an invalid target");
 
-            wrapper.UntypedArguments = target;
-            return path.GetValue();
+                wrapper.UntypedArguments = target;
+                return path.GetValue();
+            }
         }
 
         #region Initialization
@@ -123,6 +126,10 @@ namespace Artemis.Core
         {
             if (Operator == null || LeftPath == null || !LeftPath.IsValid)
                 return false;
+
+            // If the operator does not support a right side, immediately evaluate with null
+            if (Operator.RightSideType == null)
+                return Operator.InternalEvaluate(GetEventPathValue(LeftPath, target), null);
 
             // Compare with a static value
             if (PredicateType == ProfileRightSideType.Static)
