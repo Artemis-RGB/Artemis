@@ -70,10 +70,10 @@ namespace Artemis.Core.Services
         List<PluginInfo> GetAllPluginInfo();
 
         /// <summary>
-        ///     Finds all enabled <see cref="Plugin" /> instances of <typeparamref name="T"/>
+        ///     Finds all enabled <see cref="Plugin" /> instances of <typeparamref name="T" />
         /// </summary>
         /// <typeparam name="T">Either <see cref="Plugin" /> or a plugin type implementing <see cref="Plugin" /></typeparam>
-        /// <returns>Returns a list of plugin instances of <typeparamref name="T"/></returns>
+        /// <returns>Returns a list of plugin instances of <typeparamref name="T" /></returns>
         List<T> GetPluginsOfType<T>() where T : Plugin;
 
         /// <summary>
@@ -89,6 +89,12 @@ namespace Artemis.Core.Services
         /// <param name="device"></param>
         /// <returns></returns>
         Plugin GetPluginByDevice(IRGBDevice device);
+
+        /// <summary>
+        ///     Returns the plugin info of the current call stack
+        /// </summary>
+        /// <returns>If the current call stack contains a plugin, the plugin. Otherwise null</returns>
+        Plugin GetCallingPlugin();
 
         #region Events
 

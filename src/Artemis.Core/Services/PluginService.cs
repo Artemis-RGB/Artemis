@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -358,6 +359,22 @@ namespace Artemis.Core.Services
         public Plugin GetPluginByDevice(IRGBDevice rgbDevice)
         {
             return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices != null && d.RgbDeviceProvider.Devices.Contains(rgbDevice));
+        }
+
+        public Plugin GetCallingPlugin()
+        {
+            StackTrace stackTrace = new StackTrace();           // get call stack
+            StackFrame[] stackFrames = stackTrace.GetFrames();  // get method calls (frames)
+
+            foreach (StackFrame stackFrame in stackFrames)
+            {
+                Assembly assembly = stackFrame.GetMethod().DeclaringType.Assembly;
+                Plugin plugin = GetPluginByAssembly(assembly);
+                if (plugin != null)
+                    return plugin;
+            }
+
+            return null;
         }
 
         public void Dispose()
