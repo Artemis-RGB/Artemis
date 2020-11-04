@@ -52,15 +52,6 @@ namespace Artemis.UI.Shared.Services
         Task<object> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase;
 
         /// <summary>
-        ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" /> using an array of
-        ///     Ninject <see cref="IParameter" />, requires you to reference Ninject
-        /// </summary>
-        /// <typeparam name="T">The type of the view model</typeparam>
-        /// <param name="parameters">An array of Ninject <see cref="IParameter" /> to pass to the view model during activation</param>
-        /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase;
-
-        /// <summary>
         ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" />
         /// </summary>
         /// <typeparam name="T">The type of the view model</typeparam>
@@ -83,19 +74,6 @@ namespace Artemis.UI.Shared.Services
         /// <param name="parameters">A dictionary of constructor arguments to pass to the view model</param>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
         Task<object> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase;
-
-        /// <summary>
-        ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" /> using an array of
-        ///     Ninject <see cref="IParameter" />, requires you to reference Ninject
-        /// </summary>
-        /// <typeparam name="T">The type of the view model</typeparam>
-        /// <param name="identifier">
-        ///     The identifier of the <see cref="DialogHost" /> to use eg.
-        ///     <code>&lt;materialDesign:DialogHost Identifier="MyDialogHost"&gt;</code>
-        /// </param>
-        /// <param name="parameters">An array of Ninject <see cref="IParameter" /> to pass to the view model during activation</param>
-        /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase;
 
         /// <summary>
         ///     Shows a dialog displaying the provided message and exception. Does not handle, log or throw the exception.
