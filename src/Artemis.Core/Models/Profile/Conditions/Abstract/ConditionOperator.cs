@@ -7,6 +7,12 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ConditionOperator<TLeftSide, TRightSide> : BaseConditionOperator
     {
+        /// <inheritdoc />
+        public override Type LeftSideType => typeof(TLeftSide);
+
+        /// <inheritdoc />
+        public override Type RightSideType => typeof(TRightSide);
+
         /// <summary>
         ///     Evaluates the operator on a and b
         /// </summary>
@@ -21,33 +27,31 @@ namespace Artemis.Core
             TLeftSide leftSide;
             if (leftSideValue != null)
             {
-                if (leftSideValue.GetType() != typeof(TLeftSide))
+                if (leftSideValue.GetType() != typeof(TLeftSide) && leftSideValue is IConvertible)
                     leftSide = (TLeftSide) Convert.ChangeType(leftSideValue, typeof(TLeftSide));
                 else
                     leftSide = (TLeftSide) leftSideValue;
             }
             else
+            {
                 leftSide = default;
+            }
 
             TRightSide rightSide;
             if (rightSideValue != null)
             {
-                if (rightSideValue.GetType() != typeof(TRightSide))
+                if (rightSideValue.GetType() != typeof(TRightSide) && leftSideValue is IConvertible)
                     rightSide = (TRightSide) Convert.ChangeType(rightSideValue, typeof(TRightSide));
                 else
                     rightSide = (TRightSide) rightSideValue;
             }
             else
+            {
                 rightSide = default;
+            }
 
             return Evaluate(leftSide!, rightSide!);
         }
-
-        /// <inheritdoc />
-        public override Type LeftSideType => typeof(TLeftSide);
-
-        /// <inheritdoc />
-        public override Type RightSideType => typeof(TRightSide);
     }
 
     /// <summary>
@@ -55,6 +59,14 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ConditionOperator<TLeftSide> : BaseConditionOperator
     {
+        /// <inheritdoc />
+        public override Type LeftSideType => typeof(TLeftSide);
+
+        /// <summary>
+        ///     Always <c>null</c>, not applicable to this type of condition operator
+        /// </summary>
+        public override Type? RightSideType => null;
+
         /// <summary>
         ///     Evaluates the operator on a and b
         /// </summary>
@@ -68,23 +80,17 @@ namespace Artemis.Core
             TLeftSide leftSide;
             if (leftSideValue != null)
             {
-                if (leftSideValue.GetType() != typeof(TLeftSide))
-                    leftSide = (TLeftSide)Convert.ChangeType(leftSideValue, typeof(TLeftSide));
+                if (leftSideValue.GetType() != typeof(TLeftSide) && leftSideValue is IConvertible)
+                    leftSide = (TLeftSide) Convert.ChangeType(leftSideValue, typeof(TLeftSide));
                 else
-                    leftSide = (TLeftSide)leftSideValue;
+                    leftSide = (TLeftSide) leftSideValue;
             }
             else
+            {
                 leftSide = default;
+            }
 
             return Evaluate(leftSide!);
         }
-
-        /// <inheritdoc />
-        public override Type LeftSideType => typeof(TLeftSide);
-
-        /// <summary>
-        ///     Always <c>null</c>, not applicable to this type of condition operator
-        /// </summary>
-        public override Type? RightSideType => null;
     }
 }
