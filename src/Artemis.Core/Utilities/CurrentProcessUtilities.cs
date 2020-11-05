@@ -16,8 +16,8 @@ namespace Artemis.Core
         ///         gracefully shut down
         ///     </para>
         /// </summary>
-        /// <param name="delay">The delay in seconds after which to kill the application</param>
-        /// <param name="restart">Whether or not to restart the application after shutdown</param>
+        /// <param name="delay">The delay in seconds after which to kill the application (ignored when a debugger is attached)</param>
+        /// <param name="restart">Whether or not to restart the application after shutdown (ignored when a debugger is attached)</param>
         public static void Shutdown(int delay, bool restart)
         {
             // Always kill the process after the delay has passed, with all the plugins a graceful shutdown cannot be guaranteed
@@ -33,7 +33,9 @@ namespace Artemis.Core
                 CreateNoWindow = true,
                 FileName = "PowerShell.exe"
             };
-            Process.Start(info);
+
+            if (!Debugger.IsAttached)
+                Process.Start(info);
 
             // Also attempt a graceful shutdown on the UI thread
             Execute.OnUIThread(() => Application.Current.Shutdown());

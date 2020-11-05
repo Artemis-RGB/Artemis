@@ -101,11 +101,14 @@ namespace Artemis.Core.Services
                 List<Task> tasks = new List<Task>();
                 foreach (Module module in modules)
                 {
-                    bool shouldBeActivated = module.EvaluateActivationRequirements();
-                    if (shouldBeActivated && !module.IsActivated)
-                        tasks.Add(ActivateModule(module));
-                    else if (!shouldBeActivated && module.IsActivated)
-                        tasks.Add(DeactivateModule(module));
+                    lock (module)
+                    {
+                        bool shouldBeActivated = module.EvaluateActivationRequirements() && module.Enabled;
+                        if (shouldBeActivated && !module.IsActivated)
+                            tasks.Add(ActivateModule(module));
+                        else if (!shouldBeActivated && module.IsActivated)
+                            tasks.Add(DeactivateModule(module));
+                    }
                 }
 
                 await Task.WhenAll(tasks);
