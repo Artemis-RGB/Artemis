@@ -140,7 +140,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             if (DynamicSelectionViewModel != null)
                 DynamicSelectionViewModel.ChangeDataModelPath(Modifier.ParameterPath);
             else if (StaticInputViewModel != null)
+            {
+                // Ensure the right static value is never null when the preferred type is a value type
                 StaticInputViewModel.Value = Modifier.ParameterStaticValue;
+                if (SelectedModifierType.ParameterType.IsValueType && StaticInputViewModel.Value == null)
+                    StaticInputViewModel.Value = SelectedModifierType.ParameterType.GetDefault();
+            }
         }
 
         private void ExecuteSelectModifierTypeCommand(object context)

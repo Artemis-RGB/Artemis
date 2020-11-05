@@ -15,8 +15,6 @@ namespace Artemis.UI.Shared
         {
             DataModel = ListPredicateWrapperDataModel.Create(listType);
             ListType = listType;
-
-            IsRootViewModel = false;
         }
 
         public int Index
@@ -41,17 +39,17 @@ namespace Artemis.UI.Shared
 
         public override string DisplayPath => null;
 
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             ((ListPredicateWrapperDataModel) DataModel).UntypedValue = DisplayValue;
 
-            PopulateProperties(dataModelUIService);
+            PopulateProperties(dataModelUIService, configuration);
             if (DisplayViewModel == null)
                 return;
 
             if (IsVisualizationExpanded && !DisplayViewModel.IsVisualizationExpanded)
                 DisplayViewModel.IsVisualizationExpanded = IsVisualizationExpanded;
-            DisplayViewModel.Update(dataModelUIService);
+            DisplayViewModel.Update(dataModelUIService, null);
         }
 
         public override object GetCurrentValue()

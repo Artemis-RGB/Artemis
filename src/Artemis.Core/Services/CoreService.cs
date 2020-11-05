@@ -123,7 +123,7 @@ namespace Artemis.Core.Services
                     _introAnimation.Render(args.DeltaTime, args.Canvas, _rgbService.BitmapBrush.Bitmap.Info);
             }
 
-            TimeSpan introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.TimelineLength);
+            TimeSpan introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length);
 
             // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
             Task.Run(async () =>
@@ -146,7 +146,7 @@ namespace Artemis.Core.Services
         {
             JsonConvert.DefaultSettings = () => new JsonSerializerSettings
             {
-                Converters = new List<JsonConverter> {new SKColorConverter()}
+                Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
             };
         }
 

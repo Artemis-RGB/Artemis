@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.Conditions.DataModelConditionEventView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.Conditions"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Button Grid.Row="0"
+                Grid.Column="0"
+                ToolTip="Delete the event trigger"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                HorizontalAlignment="Left"
+                Foreground="#E74C4C"
+                Width="25"
+                Height="25"
+                Command="{s:Action Delete}">
+            <materialDesign:PackIcon Kind="Close" Width="18" Height="18" />
+        </Button>
+
+        <!-- Left side, the list this predicate is targeting -->
+        <ContentControl Grid.Row="0"
+                        Grid.Column="1"
+                        s:View.Model="{Binding LeftSideSelectionViewModel}"
+                        VerticalContentAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        IsTabStop="False" />
+
+        <TextBlock Grid.Row="0"
+                   Grid.Column="2"
+                   VerticalAlignment="Center"
+                   Margin="5 0 0 0">
+            triggered
+        </TextBlock>
+
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items}" Margin="0 3 0 0">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

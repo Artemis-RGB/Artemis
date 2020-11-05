@@ -37,8 +37,8 @@ namespace Artemis.UI.Shared.Services
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
-            viewModel.Update(this);
-            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
+            viewModel.Update(this, null);
+            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this, null);
             return viewModel;
         }
 
@@ -67,8 +67,8 @@ namespace Artemis.UI.Shared.Services
             viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, null));
 
             // Update to populate children
-            viewModel.Update(this);
-            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this);
+            viewModel.Update(this, null);
+            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this, null);
             return viewModel;
         }
 
@@ -173,7 +173,7 @@ namespace Artemis.UI.Shared.Services
                 else
                     result = _kernel.Get<DefaultDataModelDisplayViewModel>();
 
-                if (result != null) 
+                if (result != null)
                     result.PropertyDescription = description;
 
                 return result;
@@ -220,8 +220,7 @@ namespace Artemis.UI.Shared.Services
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
-            IParameter[] parameters = new IParameter[]
-            {
+            IParameter[] parameters = {
                 new ConstructorArgument("targetDescription", description),
                 new ConstructorArgument("initialValue", initialValue)
             };

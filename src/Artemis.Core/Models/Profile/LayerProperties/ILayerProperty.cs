@@ -11,7 +11,7 @@ namespace Artemis.Core
     ///         initialize these for you.
     ///     </para>
     /// </summary>
-    public interface ILayerProperty : IStorageModel, IUpdateModel, IDisposable
+    public interface ILayerProperty : IStorageModel, IDisposable
     {
         /// <summary>
         ///     Gets the description attribute applied to this property
@@ -36,5 +36,11 @@ namespace Artemis.Core
         ///     Returns a list off all data binding registrations
         /// </summary>
         List<IDataBindingRegistration> GetAllDataBindingRegistrations();
+
+        /// <summary>
+        /// Updates the layer properties internal state
+        /// </summary>
+        /// <param name="timeline">The timeline to apply to the property</param>
+        void Update(Timeline timeline);
     }
 }

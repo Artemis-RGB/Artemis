@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 
 namespace Artemis.Core
@@ -36,6 +37,8 @@ namespace Artemis.Core
                     _children.Insert(index.Value, dataModelConditionPart);
                 else
                     _children.Add(dataModelConditionPart);
+
+                OnChildAdded();
             }
         }
 
@@ -49,7 +52,17 @@ namespace Artemis.Core
             {
                 dataModelConditionPart.Parent = null;
                 _children.Remove(dataModelConditionPart);
+                OnChildRemoved();
             }
+        }
+
+        /// <summary>
+        ///     Removes all children. You monster.
+        /// </summary>
+        public void ClearChildren()
+        {
+            while (Children.Any())
+                RemoveChild(Children[0]);
         }
 
         /// <summary>
@@ -71,7 +84,7 @@ namespace Artemis.Core
         #region IDisposable
 
         /// <summary>
-        /// Disposed the condition part
+        ///     Disposed the condition part
         /// </summary>
         protected virtual void Dispose(bool disposing)
         {
@@ -85,6 +98,23 @@ namespace Artemis.Core
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler ChildAdded;
+        public event EventHandler ChildRemoved;
+
+        protected virtual void OnChildAdded()
+        {
+            ChildAdded?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnChildRemoved()
+        {
+            ChildRemoved?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

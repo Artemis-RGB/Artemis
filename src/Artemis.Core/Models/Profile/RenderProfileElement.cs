@@ -15,8 +15,7 @@ namespace Artemis.Core
     {
         protected RenderProfileElement()
         {
-            ApplyDataBindingsEnabled = true;
-            ApplyKeyframesEnabled = true;
+            Timeline = new Timeline();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -24,49 +23,21 @@ namespace Artemis.Core
 
         public abstract List<ILayerProperty> GetAllLayerProperties();
 
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
-            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
-        internal void ApplyRenderElementDefaults()
-        {
-            MainSegmentLength = TimeSpan.FromSeconds(5);
-        }
-
         internal void LoadRenderElement()
         {
-            StartSegmentLength = RenderElementEntity.StartSegmentLength;
-            MainSegmentLength = RenderElementEntity.MainSegmentLength;
-            EndSegmentLength = RenderElementEntity.EndSegmentLength;
-            DisplayContinuously = RenderElementEntity.DisplayContinuously;
-            AlwaysFinishTimeline = RenderElementEntity.AlwaysFinishTimeline;
-
             DisplayCondition = RenderElementEntity.DisplayCondition != null
                 ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
                 : new DataModelConditionGroup(null);
+
+            Timeline = RenderElementEntity.Timeline != null
+                ? new Timeline(RenderElementEntity.Timeline)
+                : new Timeline();
 
             ActivateEffects();
         }
 
         internal void SaveRenderElement()
         {
-            RenderElementEntity.StartSegmentLength = StartSegmentLength;
-            RenderElementEntity.MainSegmentLength = MainSegmentLength;
-            RenderElementEntity.EndSegmentLength = EndSegmentLength;
-            RenderElementEntity.DisplayContinuously = DisplayContinuously;
-            RenderElementEntity.AlwaysFinishTimeline = AlwaysFinishTimeline;
-
             RenderElementEntity.LayerEffects.Clear();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
             {
@@ -87,7 +58,47 @@ namespace Artemis.Core
             // Conditions
             RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
             DisplayCondition?.Save();
+
+            // Timeline
+            RenderElementEntity.Timeline = Timeline?.Entity;
+            Timeline?.Save();
         }
+
+        #region Timeline
+
+        /// <summary>
+        ///     Gets the timeline associated with this render element
+        /// </summary>
+        public Timeline Timeline { get; private set; }
+
+        /// <summary>
+        /// Updates the <see cref="Timeline"/> according to the provided <paramref name="deltaTime"/> and current display condition status
+        /// </summary>
+        public void UpdateTimeline(double deltaTime)
+        {
+            // The play mode dictates whether to stick to the main segment unless the display conditions contains events
+            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
+            if (DisplayCondition != null && DisplayCondition.ContainsEvents)
+                stickToMainSegment = false;
+            Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        protected override void Dispose(bool disposing)
+        {
+            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
 
         #region Properties
 
@@ -138,126 +149,6 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        #endregion
-
-        #region Timeline
-
-        private TimeSpan _startSegmentLength;
-        private TimeSpan _mainSegmentLength;
-        private TimeSpan _endSegmentLength;
-        private bool _displayContinuously;
-        private bool _alwaysFinishTimeline;
-
-        /// <summary>
-        ///     Gets or sets the length of the start segment
-        /// </summary>
-        public TimeSpan StartSegmentLength
-        {
-            get => _startSegmentLength;
-            set
-            {
-                if (!SetAndNotify(ref _startSegmentLength, value)) return;
-                UpdateTimelineLength();
-                if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets the length of the main segment
-        /// </summary>
-        public TimeSpan MainSegmentLength
-        {
-            get => _mainSegmentLength;
-            set
-            {
-                if (!SetAndNotify(ref _mainSegmentLength, value)) return;
-                UpdateTimelineLength();
-                if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
-            }
-        }
-
-        /// <summary>
-        ///     Gets or sets the length of the end segment
-        /// </summary>
-        public TimeSpan EndSegmentLength
-        {
-            get => _endSegmentLength;
-            set
-            {
-                if (!SetAndNotify(ref _endSegmentLength, value)) return;
-                UpdateTimelineLength();
-                if (Parent is RenderProfileElement renderElement)
-                    renderElement.UpdateTimelineLength();
-            }
-        }
-
-        /// <summary>
-        ///     Gets the current timeline position
-        /// </summary>
-        public TimeSpan TimelinePosition
-        {
-            get => _timelinePosition;
-            protected set => SetAndNotify(ref _timelinePosition, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets whether main timeline should repeat itself as long as display conditions are met
-        /// </summary>
-        public bool DisplayContinuously
-        {
-            get => _displayContinuously;
-            set => SetAndNotify(ref _displayContinuously, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets whether the timeline should finish when conditions are no longer met
-        /// </summary>
-        public bool AlwaysFinishTimeline
-        {
-            get => _alwaysFinishTimeline;
-            set => SetAndNotify(ref _alwaysFinishTimeline, value);
-        }
-
-        /// <summary>
-        ///     Gets the max length of this element and any of its children
-        /// </summary>
-        public TimeSpan TimelineLength { get; protected set; }
-
-        protected double UpdateTimeline(double deltaTime)
-        {
-            TimeSpan oldPosition = _timelinePosition;
-            TimeSpan deltaTimeSpan = TimeSpan.FromSeconds(deltaTime);
-            TimeSpan mainSegmentEnd = StartSegmentLength + MainSegmentLength;
-
-            TimelinePosition += deltaTimeSpan;
-            // Manage segments while the condition is met
-            if (DisplayConditionMet)
-            {
-                // If we are at the end of the main timeline, wrap around back to the beginning
-                if (DisplayContinuously && TimelinePosition >= mainSegmentEnd)
-                    TimelinePosition = StartSegmentLength;
-            }
-            else
-            {
-                // Skip to the last segment if conditions are no longer met
-                if (!AlwaysFinishTimeline && TimelinePosition < mainSegmentEnd)
-                    TimelinePosition = mainSegmentEnd;
-            }
-
-            return (TimelinePosition - oldPosition).TotalSeconds;
-        }
-
-        protected internal abstract void UpdateTimelineLength();
-
-        /// <summary>
-        ///     Overrides the progress of the element
-        /// </summary>
-        /// <param name="timeOverride"></param>
-        /// <param name="stickToMainSegment"></param>
-        public abstract void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment);
 
         #endregion
 
@@ -392,11 +283,10 @@ namespace Artemis.Core
         public bool DisplayConditionMet
         {
             get => _displayConditionMet;
-            private set => SetAndNotify(ref _displayConditionMet, value);
+            protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
         private DataModelConditionGroup _displayCondition;
-        private TimeSpan _timelinePosition;
         private bool _displayConditionMet;
 
         /// <summary>
@@ -409,20 +299,46 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets whether keyframes should be applied when this profile element updates
+        /// Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline"/>
         /// </summary>
-        public bool ApplyKeyframesEnabled { get; set; }
-
-        /// <summary>
-        ///     Gets or sets whether data bindings should be applied when this profile element updates
-        /// </summary>
-        public bool ApplyDataBindingsEnabled { get; set; }
-
         public void UpdateDisplayCondition()
         {
-            bool conditionMet = DisplayCondition == null || DisplayCondition.Evaluate();
-            if (conditionMet && !DisplayConditionMet)
-                TimelinePosition = TimeSpan.Zero;
+            if (DisplayCondition == null)
+            {
+                DisplayConditionMet = true;
+                return;
+            }
+
+            bool conditionMet = DisplayCondition.Evaluate();
+            if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
+                conditionMet = false;
+
+            if (!DisplayCondition.ContainsEvents)
+            {
+                // Regular conditions reset the timeline whenever their condition is met and was not met before that
+                if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
+                    Timeline.JumpToStart();
+                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
+                if (!conditionMet && DisplayConditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
+                    Timeline.JumpToEndSegment();
+            }
+            else if (conditionMet)
+            {
+                // Event conditions reset if the timeline finished
+                if (Timeline.IsFinished)
+                    Timeline.JumpToStart();
+                // and otherwise apply their overlap mode
+                else
+                {
+                    if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
+                        Timeline.JumpToStart();
+                    else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
+                        Timeline.AddExtraTimeline();
+                    // The third option is ignore which is handled below:
+
+                    // done
+                }
+            }
 
             DisplayConditionMet = conditionMet;
         }

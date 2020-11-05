@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
 using Newtonsoft.Json;
@@ -11,20 +9,19 @@ namespace Artemis.Core
     ///     A predicate in a data model condition using either two data model values or one data model value and a
     ///     static value
     /// </summary>
-    public class DataModelConditionPredicate : DataModelConditionPart
+    public abstract class DataModelConditionPredicate : DataModelConditionPart
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionPredicate" /> class
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="predicateType"></param>
-        public DataModelConditionPredicate(DataModelConditionPart parent, ProfileRightSideType predicateType)
+        /// <param name="entity">A new empty entity</param>
+        protected DataModelConditionPredicate(DataModelConditionPart parent, ProfileRightSideType predicateType, DataModelConditionPredicateEntity entity)
         {
             Parent = parent;
+            Entity = entity;
             PredicateType = predicateType;
-            Entity = new DataModelConditionPredicateEntity();
-
-            Initialize();
         }
 
         internal DataModelConditionPredicate(DataModelConditionPart parent, DataModelConditionPredicateEntity entity)
@@ -32,8 +29,6 @@ namespace Artemis.Core
             Parent = parent;
             Entity = entity;
             PredicateType = (ProfileRightSideType) entity.PredicateType;
-
-            Initialize();
         }
 
         /// <summary>
@@ -44,31 +39,117 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the operator
         /// </summary>
-        public BaseConditionOperator? Operator { get; private set; }
+        public BaseConditionOperator? Operator { get; protected set; }
 
         /// <summary>
         ///     Gets the path of the left property
         /// </summary>
-        public DataModelPath? LeftPath { get; private set; }
+        public DataModelPath? LeftPath { get; protected set; }
 
         /// <summary>
         ///     Gets the path of the right property
         /// </summary>
-        public DataModelPath? RightPath { get; private set; }
+        public DataModelPath? RightPath { get; protected set; }
 
         /// <summary>
         ///     Gets the right static value, only used it <see cref="PredicateType" /> is
         ///     <see cref="ProfileRightSideType.Static" />
         /// </summary>
-        public object? RightStaticValue { get; private set; }
+        public object? RightStaticValue { get; protected set; }
 
         internal DataModelConditionPredicateEntity Entity { get; set; }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            if (PredicateType == ProfileRightSideType.Dynamic)
+                return $"[Dynamic] {LeftPath} {Operator.Description} {RightPath}";
+            return $"[Static] {LeftPath} {Operator.Description} {RightStaticValue}";
+        }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
+
+            LeftPath?.Dispose();
+            RightPath?.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
+
+        #region Initialization
+
+        internal void Initialize()
+        {
+            ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
+            ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
+
+            InitializeLeftPath();
+
+            // Operator
+            if (Entity.OperatorPluginGuid != null)
+            {
+                BaseConditionOperator? conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
+                if (conditionOperator != null)
+                    UpdateOperator(conditionOperator);
+            }
+
+            // Right side dynamic
+            if (PredicateType == ProfileRightSideType.Dynamic)
+                InitializeRightPath();
+            // Right side static
+            else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
+                try
+                {
+                    if (LeftPath != null && LeftPath.IsValid)
+                    {
+                        // Use the left side type so JSON.NET has a better idea what to do
+                        Type leftSideType = LeftPath.GetPropertyType()!;
+                        object? rightSideValue;
+
+                        try
+                        {
+                            rightSideValue = JsonConvert.DeserializeObject(Entity.RightStaticValue, leftSideType);
+                        }
+                        // If deserialization fails, use the type's default
+                        catch (JsonSerializationException e)
+                        {
+                            DeserializationLogger.LogPredicateDeserializationFailure(this, e);
+                            rightSideValue = Activator.CreateInstance(leftSideType);
+                        }
+
+                        UpdateRightSideStatic(rightSideValue);
+                    }
+                    else
+                    {
+                        // Hope for the best...
+                        UpdateRightSideStatic(JsonConvert.DeserializeObject(Entity.RightStaticValue));
+                    }
+                }
+                catch (JsonReaderException e)
+                {
+                    DeserializationLogger.LogPredicateDeserializationFailure(this, e);
+                }
+        }
+
+        protected abstract void InitializeLeftPath();
+        protected abstract void InitializeRightPath();
+
+        #endregion
+
+        #region Modification
 
         /// <summary>
         ///     Updates the left side of the predicate
         /// </summary>
         /// <param name="path">The path pointing to the left side value inside the data model</param>
-        public void UpdateLeftSide(DataModelPath? path)
+        public virtual void UpdateLeftSide(DataModelPath? path)
         {
             if (path != null && !path.IsValid)
                 throw new ArtemisCoreException("Cannot update left side of predicate to an invalid path");
@@ -113,6 +194,7 @@ namespace Artemis.Core
                 RightStaticValue = staticValue;
                 return;
             }
+
             // If the operator does not support a right side, always set it to null
             if (Operator.RightSideType == null)
             {
@@ -121,13 +203,14 @@ namespace Artemis.Core
             }
 
             // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == Operator.RightSideType)
+            Type? preferredType = GetPreferredRightSideType();
+            if (staticValue != null && staticValue.GetType() == preferredType || preferredType == null)
                 RightStaticValue = staticValue;
             else if (staticValue != null)
-                RightStaticValue = Convert.ChangeType(staticValue, Operator.RightSideType);
+                RightStaticValue = Convert.ChangeType(staticValue, preferredType);
             // If null create a default instance for value types or simply make it null for reference types
-            else if (Operator.RightSideType.IsValueType)
-                RightStaticValue = Activator.CreateInstance(Operator.RightSideType);
+            else if (preferredType.IsValueType)
+                RightStaticValue = Activator.CreateInstance(preferredType);
             else
                 RightStaticValue = null;
         }
@@ -161,137 +244,10 @@ namespace Artemis.Core
             ValidateRightSide();
         }
 
-        /// <inheritdoc />
-        public override bool Evaluate()
-        {
-            if (Operator == null || LeftPath == null || !LeftPath.IsValid)
-                return false;
-
-            // Compare with a static value
-            if (PredicateType == ProfileRightSideType.Static)
-            {
-                object? leftSideValue = LeftPath.GetValue();
-                if (leftSideValue != null && leftSideValue.GetType().IsValueType && RightStaticValue == null)
-                    return false;
-
-                return Operator.InternalEvaluate(leftSideValue, RightStaticValue);
-            }
-
-            if (RightPath == null || !RightPath.IsValid)
-                return false;
-
-            // Compare with dynamic values
-            return Operator.InternalEvaluate(LeftPath.GetValue(), RightPath.GetValue());
-        }
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            if (PredicateType == ProfileRightSideType.Dynamic)
-                return $"[Dynamic] {LeftPath} {Operator.Description} {RightPath}";
-            return $"[Static] {LeftPath} {Operator.Description} {RightStaticValue}";
-        }
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            ConditionOperatorStore.ConditionOperatorAdded -= ConditionOperatorStoreOnConditionOperatorAdded;
-            ConditionOperatorStore.ConditionOperatorRemoved -= ConditionOperatorStoreOnConditionOperatorRemoved;
-
-            LeftPath?.Dispose();
-            RightPath?.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        /// <inheritdoc />
-        internal override bool EvaluateObject(object target)
-        {
-            return false;
-        }
-
-        internal override void Save()
-        {
-            // Don't save an invalid state
-            if (LeftPath != null && !LeftPath.IsValid || RightPath != null && !RightPath.IsValid)
-                return;
-
-            Entity.PredicateType = (int) PredicateType;
-
-            LeftPath?.Save();
-            Entity.LeftPath = LeftPath?.Entity;
-            RightPath?.Save();
-            Entity.RightPath = RightPath?.Entity;
-
-            Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
-
-            if (Operator != null)
-            {
-                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
-                Entity.OperatorType = Operator.GetType().Name;
-            }
-        }
-
-        internal void Initialize()
-        {
-            ConditionOperatorStore.ConditionOperatorAdded += ConditionOperatorStoreOnConditionOperatorAdded;
-            ConditionOperatorStore.ConditionOperatorRemoved += ConditionOperatorStoreOnConditionOperatorRemoved;
-
-            // Left side
-            if (Entity.LeftPath != null)
-                LeftPath = new DataModelPath(null, Entity.LeftPath);
-
-            // Operator
-            if (Entity.OperatorPluginGuid != null)
-            {
-                BaseConditionOperator? conditionOperator = ConditionOperatorStore.Get(Entity.OperatorPluginGuid.Value, Entity.OperatorType)?.ConditionOperator;
-                if (conditionOperator != null)
-                    UpdateOperator(conditionOperator);
-            }
-
-            // Right side dynamic
-            if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)
-                RightPath = new DataModelPath(null, Entity.RightPath);
-            // Right side static
-            else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
-                try
-                {
-                    if (LeftPath != null && LeftPath.IsValid)
-                    {
-                        // Use the left side type so JSON.NET has a better idea what to do
-                        Type leftSideType = LeftPath.GetPropertyType()!;
-                        object? rightSideValue;
-
-                        try
-                        {
-                            rightSideValue = JsonConvert.DeserializeObject(Entity.RightStaticValue, leftSideType);
-                        }
-                        // If deserialization fails, use the type's default
-                        catch (JsonSerializationException e)
-                        {
-                            DeserializationLogger.LogPredicateDeserializationFailure(this, e);
-                            rightSideValue = Activator.CreateInstance(leftSideType);
-                        }
-
-                        UpdateRightSideStatic(rightSideValue);
-                    }
-                    else
-                    {
-                        // Hope for the best...
-                        UpdateRightSideStatic(JsonConvert.DeserializeObject(Entity.RightStaticValue));
-                    }
-                }
-                catch (JsonReaderException)
-                {
-                    // ignored
-                    // TODO: Some logging would be nice
-                }
-        }
-
-        internal override DataModelConditionPartEntity GetEntity()
-        {
-            return Entity;
-        }
+        /// <summary>
+        ///     Determines the best type to use for the right side op this predicate
+        /// </summary>
+        public abstract Type? GetPreferredRightSideType();
 
         private void ValidateOperator()
         {
@@ -326,6 +282,76 @@ namespace Artemis.Core
                     UpdateRightSideStatic(null);
             }
         }
+
+        #endregion
+
+        #region Evaluation
+
+        /// <inheritdoc />
+        public override bool Evaluate()
+        {
+            if (Operator == null || LeftPath == null || !LeftPath.IsValid)
+                return false;
+
+            // If the operator does not support a right side, immediately evaluate with null
+            if (Operator.RightSideType == null)
+                return Operator.InternalEvaluate(LeftPath.GetValue(), null);
+
+            // Compare with a static value
+            if (PredicateType == ProfileRightSideType.Static)
+            {
+                object? leftSideValue = LeftPath.GetValue();
+                if (leftSideValue != null && leftSideValue.GetType().IsValueType && RightStaticValue == null)
+                    return false;
+
+                return Operator.InternalEvaluate(leftSideValue, RightStaticValue);
+            }
+
+            if (RightPath == null || !RightPath.IsValid)
+                return false;
+
+            // Compare with dynamic values
+            return Operator.InternalEvaluate(LeftPath.GetValue(), RightPath.GetValue());
+        }
+
+        /// <inheritdoc />
+        internal override bool EvaluateObject(object target)
+        {
+            return false;
+        }
+
+        #endregion
+
+        #region Storage
+
+        internal override DataModelConditionPartEntity GetEntity()
+        {
+            return Entity;
+        }
+
+        internal override void Save()
+        {
+            // Don't save an invalid state
+            if (LeftPath != null && !LeftPath.IsValid || RightPath != null && !RightPath.IsValid)
+                return;
+
+            Entity.PredicateType = (int) PredicateType;
+
+            LeftPath?.Save();
+            Entity.LeftPath = LeftPath?.Entity;
+            RightPath?.Save();
+            Entity.RightPath = RightPath?.Entity;
+
+            Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
+
+            if (Operator != null)
+            {
+                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
+                Entity.OperatorType = Operator.GetType().Name;
+            }
+        }
+
+        #endregion
 
         #region Event handlers
 

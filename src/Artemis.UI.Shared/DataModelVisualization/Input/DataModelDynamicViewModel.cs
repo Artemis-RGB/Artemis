@@ -97,7 +97,11 @@ namespace Artemis.UI.Shared.Input
         public bool IsDataModelViewModelOpen
         {
             get => _isDataModelViewModelOpen;
-            set => SetAndNotify(ref _isDataModelViewModelOpen, value);
+            set
+            {
+                if (!SetAndNotify(ref _isDataModelViewModelOpen, value)) return;
+                if (value) UpdateDataModelVisualization();
+            }
         }
 
         public DataModelPath DataModelPath
@@ -126,6 +130,8 @@ namespace Artemis.UI.Shared.Input
                 return string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
             }
         }
+
+        public bool LoadEventChildren { get; set; } = true;
 
         public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
         {
@@ -197,10 +203,15 @@ namespace Artemis.UI.Shared.Input
         {
             if (!IsDataModelViewModelOpen)
                 return;
+            
+            UpdateDataModelVisualization();
+        }
 
-            DataModelViewModel.Update(_dataModelUIService);
+        private void UpdateDataModelVisualization()
+        {
+            DataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
-                extraDataModelViewModel.Update(_dataModelUIService);
+                extraDataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
         }
 
         #endregion

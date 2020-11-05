@@ -30,19 +30,16 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            DisplayContinuously = true;
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
 
-            ApplyRenderElementDefaults();
             Parent.AddChild(this);
         }
 
         internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
         {
             FolderEntity = folderEntity;
-
             EntityId = folderEntity.Id;
 
             Profile = profile;
@@ -53,125 +50,195 @@ namespace Artemis.Core
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
+
             Load();
         }
 
+        /// <summary>
+        ///     Gets a boolean indicating whether this folder is at the root of the profile tree
+        /// </summary>
+        public bool IsRootFolder => Parent == Profile;
+
+        /// <summary>
+        ///     Gets the longest timeline of all this folders children
+        /// </summary>
+        public Timeline LongestChildTimeline { get; private set; }
+
         internal FolderEntity FolderEntity { get; set; }
+
+        internal override RenderElementEntity RenderElementEntity => FolderEntity;
 
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
             List<ILayerProperty> result = new List<ILayerProperty>();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
-            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
-            }
 
             return result;
         }
 
-        internal override RenderElementEntity RenderElementEntity => FolderEntity;
-        public bool IsRootFolder => Parent == Profile;
-
         public override void Update(double deltaTime)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
             if (!Enabled)
                 return;
-
-            // Disable data bindings during an override
-            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
-            ApplyDataBindingsEnabled = false;
 
             UpdateDisplayCondition();
-
-            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
-            // to it's start
             UpdateTimeline(deltaTime);
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(deltaTime);
-                baseLayerEffect.Update(deltaTime);
-            }
-
-            // Iterate the children in reverse because that's how they must be rendered too
-            for (int index = Children.Count - 1; index > -1; index--)
-            {
-                ProfileElement profileElement = Children[index];
-                profileElement.Update(deltaTime);
-            }
-
-            // Restore the old data bindings enabled state
-            ApplyDataBindingsEnabled = wasApplyingDataBindings;
+            foreach (ProfileElement child in Children)
+                child.Update(deltaTime);
         }
 
-        protected internal override void UpdateTimelineLength()
+        /// <inheritdoc />
+        public override void Reset()
         {
-            TimelineLength = !Children.Any() ? TimeSpan.Zero : Children.OfType<RenderProfileElement>().Max(c => c.TimelineLength);
-            if (StartSegmentLength + MainSegmentLength + EndSegmentLength > TimelineLength)
-                TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
+            DisplayConditionMet = false;
+            Timeline.JumpToStart();
 
-            if (Parent is RenderProfileElement parent)
-                parent.UpdateTimelineLength();
+            foreach (ProfileElement child in Children)
+                child.Reset();
         }
 
-        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
+        /// <inheritdoc />
+        public override void AddChild(ProfileElement child, int? order = null)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
-            if (!Enabled)
+            base.AddChild(child, order);
+            CalculateRenderProperties();
+        }
+
+        /// <inheritdoc />
+        public override void RemoveChild(ProfileElement child)
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            base.RemoveChild(child);
+            CalculateRenderProperties();
+        }
+
+        public override string ToString()
+        {
+            return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
+        }
+
+        public void CalculateRenderProperties()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+            foreach (ProfileElement child in Children)
+                if (child is RenderProfileElement effectChild && effectChild.Path != null)
+                    path.AddPath(effectChild.Path);
+
+            Path = path;
+
+            // Folder render properties are based on child paths and thus require an update
+            if (Parent is Folder folder)
+                folder.CalculateRenderProperties();
+
+            OnRenderPropertiesUpdated();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            Disposed = true;
+
+            foreach (ProfileElement profileElement in Children)
+                profileElement.Dispose();
+
+            _folderBitmap?.Dispose();
+            base.Dispose(disposing);
+        }
+
+        internal override void Load()
+        {
+            _expandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
+
+            // Load child folders
+            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Folder(Profile, this, childFolder));
+            // Load child layers
+            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Layer(Profile, this, childLayer));
+
+            // Ensure order integrity, should be unnecessary but no one is perfect specially me
+            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            for (int index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index + 1;
+
+            LoadRenderElement();
+        }
+
+        internal override void Save()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            FolderEntity.Id = EntityId;
+            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
+
+            FolderEntity.Order = Order;
+            FolderEntity.Name = Name;
+            FolderEntity.Enabled = Enabled;
+
+            FolderEntity.ProfileId = Profile.EntityId;
+            FolderEntity.ExpandedPropertyGroups.Clear();
+            FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
+
+            SaveRenderElement();
+        }
+
+        #region Rendering
+
+        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            if (!Enabled || !Children.Any(c => c.Enabled))
                 return;
 
-            TimeSpan beginTime = TimelinePosition;
+            // Ensure the folder is ready
+            if (Path == null)
+                return;
 
-            if (stickToMainSegment)
+            // No point rendering if none of the children are going to render
+            if (!Children.Any(c => c is RenderProfileElement renderElement && !renderElement.Timeline.IsFinished))
+                return;
+
+            lock (Timeline)
             {
-                if (!DisplayContinuously)
-                {
-                    TimeSpan position = timeOverride + StartSegmentLength;
-                    if (position > StartSegmentLength + EndSegmentLength)
-                        TimelinePosition = StartSegmentLength + EndSegmentLength;
-                }
-                else
-                {
-                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
-                    if (progress > 0)
-                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
-                    else
-                        TimelinePosition = StartSegmentLength;
-                }
-            }
-            else
-                TimelinePosition = timeOverride;
-
-            double delta = (TimelinePosition - beginTime).TotalSeconds;
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(delta);
-                baseLayerEffect.Update(delta);
+                RenderFolder(Timeline, canvas, canvasInfo);
+                Timeline.ClearDelta();
             }
         }
 
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        private void PrepareForRender(Timeline timeline)
         {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update(timeline);
+                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
+            }
+        }
 
-            if (Path == null || !Enabled || !Children.Any(c => c.Enabled))
-                return;
-
-            // No need to render if at the end of the timeline
-            if (TimelinePosition > TimelineLength)
-                return;
+        private void RenderFolder(Timeline timeline, SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            PrepareForRender(timeline);
 
             if (_folderBitmap == null)
+            {
                 _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            }
             else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
             {
                 _folderBitmap.Dispose();
@@ -207,7 +274,7 @@ namespace Artemis.Core
             {
                 folderCanvas.Save();
                 ProfileElement profileElement = Children[index];
-                profileElement.Render(deltaTime, folderCanvas, _folderBitmap.Info);
+                profileElement.Render(folderCanvas, _folderBitmap.Info);
                 folderCanvas.Restore();
             }
 
@@ -225,102 +292,7 @@ namespace Artemis.Core
             canvas.Restore();
         }
 
-        /// <inheritdoc />
-        public override void AddChild(ProfileElement child, int? order = null)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            base.AddChild(child, order);
-            UpdateTimelineLength();
-            CalculateRenderProperties();
-        }
-
-        /// <inheritdoc />
-        public override void RemoveChild(ProfileElement child)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            base.RemoveChild(child);
-            UpdateTimelineLength();
-            CalculateRenderProperties();
-        }
-
-        public override string ToString()
-        {
-            return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
-        }
-
-        public void CalculateRenderProperties()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
-            foreach (ProfileElement child in Children)
-            {
-                if (child is RenderProfileElement effectChild && effectChild.Path != null)
-                    path.AddPath(effectChild.Path);
-            }
-
-            Path = path;
-
-            // Folder render properties are based on child paths and thus require an update
-            if (Parent is Folder folder)
-                folder.CalculateRenderProperties();
-
-            OnRenderPropertiesUpdated();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            _disposed = true;
-
-            foreach (ProfileElement profileElement in Children)
-                profileElement.Dispose();
-
-            _folderBitmap?.Dispose();
-            base.Dispose(disposing);
-        }
-
-        internal override void Load()
-        {
-            _expandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
-
-            // Load child folders
-            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Folder(Profile, this, childFolder));
-            // Load child layers
-            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Layer(Profile, this, childLayer));
-
-            // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
-            for (int index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index + 1;
-
-            LoadRenderElement();
-        }
-
-        internal override void Save()
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Folder");
-
-            FolderEntity.Id = EntityId;
-            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
-
-            FolderEntity.Order = Order;
-            FolderEntity.Name = Name;
-            FolderEntity.Enabled = Enabled;
-
-            FolderEntity.ProfileId = Profile.EntityId;
-            FolderEntity.ExpandedPropertyGroups.Clear();
-            FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
-
-            SaveRenderElement();
-        }
+        #endregion
 
         #region Events
 

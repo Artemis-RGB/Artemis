@@ -6,16 +6,11 @@ namespace Artemis.Storage.Entities.Profile.Abstract
 {
     public abstract class RenderElementEntity
     {
-        public TimeSpan StartSegmentLength { get; set; }
-        public TimeSpan MainSegmentLength { get; set; }
-        public TimeSpan EndSegmentLength { get; set; }
-        public bool DisplayContinuously { get; set; }
-        public bool AlwaysFinishTimeline { get; set; }
-
         public List<LayerEffectEntity> LayerEffects { get; set; }
         public List<PropertyEntity> PropertyEntities { get; set; }
         public List<string> ExpandedPropertyGroups { get; set; }
 
         public DataModelConditionGroupEntity DisplayCondition { get; set; }
+        public TimelineEntity Timeline { get; set; }
     }
 }

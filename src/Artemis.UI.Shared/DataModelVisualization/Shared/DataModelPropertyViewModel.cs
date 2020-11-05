@@ -33,7 +33,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _displayViewModel, value);
         }
 
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
                 return;

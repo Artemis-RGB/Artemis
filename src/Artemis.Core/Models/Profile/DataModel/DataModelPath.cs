@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -110,18 +109,6 @@ namespace Artemis.Core
         ///     Gets a read-only list of all segments of this path
         /// </summary>
         public IReadOnlyCollection<DataModelPathSegment> Segments => _segments.ToList().AsReadOnly();
-
-        /// <summary>
-        ///     Gets a boolean indicating whether this data model path points to a list
-        /// </summary>
-        public bool PointsToList
-        {
-            get
-            {
-                Type? type = GetPropertyType();
-                return type?.IsGenericEnumerable() ?? false;
-            }
-        }
 
         internal DataModelPathEntity Entity { get; }
 
@@ -293,6 +280,13 @@ namespace Artemis.Core
 
             Entity.Path = Path;
             Entity.DataModelGuid = DataModelGuid;
+
+            Entity.WrapperType = Target switch
+            {
+                ListPredicateWrapperDataModel _ => PathWrapperType.List,
+                EventPredicateWrapperDataModel _ => PathWrapperType.Event,
+                _ => PathWrapperType.None
+            };
         }
 
         #endregion
