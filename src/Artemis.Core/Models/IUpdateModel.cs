@@ -8,7 +8,7 @@
         /// <summary>
         ///     Performs an update on the model
         /// </summary>
-        /// <param name="deltaTime">The delta time in seconds</param>
-        void Update(double deltaTime);
+        /// <param name="timeline">The timeline to apply during update</param>
+        void Update(Timeline timeline);
     }
 }

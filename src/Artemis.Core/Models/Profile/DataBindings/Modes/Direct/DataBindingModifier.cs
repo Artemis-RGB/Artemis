@@ -200,7 +200,7 @@ namespace Artemis.Core
                 ParameterPath = new DataModelPath(null, Entity.ParameterPath);
             }
             // Static parameter
-            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null && ParameterStaticValue == null)
+            else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
                 Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();

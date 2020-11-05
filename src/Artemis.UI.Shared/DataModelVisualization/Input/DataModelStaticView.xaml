@@ -16,12 +16,21 @@
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI.Shared;component/ResourceDictionaries/DataModelConditions.xaml" />
                 <ResourceDictionary>
                     <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <Style x:Key="DataModelConditionButtonCornerToggle" BasedOn="{StaticResource DataModelConditionButton}" TargetType="Button">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding DisplaySwitchButton}" Value="True">
+                                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="0 2 2 0" />
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding DisplaySwitchButton}" Value="False">
+                                <Setter Property="materialDesign:ButtonAssist.CornerRadius" Value="2" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-
-    <Grid Margin="3 -4">
+    <Grid>
         <StackPanel Orientation="Horizontal" Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
             <Button Style="{StaticResource MaterialDesignFlatDarkBgButton}"
                     Background="{Binding SwitchButtonBrush}"
@@ -31,15 +40,14 @@
                     Width="22"
                     FontSize="12"
                     materialDesign:ButtonAssist.CornerRadius="2 0 0 2"
-                    Margin="0 0 -3 0"
+                    Margin="3 0 -3 0"
                     HorizontalAlignment="Left"
                     ToolTip="Switch to data model value"
                     Command="{s:Action SwitchToDynamic}"
                     Visibility="{Binding DisplaySwitchButton, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
                 <materialDesign:PackIcon Kind="SwapHorizontal" />
             </Button>
-            <Button Style="{StaticResource DataModelConditionButton}"
-                    materialDesign:ButtonAssist.CornerRadius="0 2 2 0"
+            <Button Style="{StaticResource DataModelConditionButtonCornerToggle}"
                     Background="{Binding ButtonBrush}"
                     BorderBrush="{Binding ButtonBrush}"
                     Command="{s:Action ActivateInputViewModel}"
@@ -63,6 +71,7 @@
                 Visibility="{Binding InputViewModel, Converter={StaticResource NullToVisibilityConverter}}"
                 CornerRadius="3"
                 Padding="3"
+                Margin="0 -3"
                 HorizontalAlignment="Left"
                 MinWidth="140">
             <ContentControl s:View.Model="{Binding InputViewModel}" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" />

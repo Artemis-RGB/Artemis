@@ -56,10 +56,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             start ??= TimeSpan.Zero;
             end ??= TimeSpan.MaxValue;
 
-            List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position >= start && k.Position < end).ToList();
+            List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position > start && k.Position < end).ToList();
             foreach (LayerPropertyKeyframe<T> keyframe in toShift)
                 keyframe.Position += amount;
-
+            
             UpdateKeyframes();
         }
 

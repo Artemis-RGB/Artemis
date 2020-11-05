@@ -44,7 +44,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
             TestInputValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
             TestResultValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
+        }
 
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
             Initialize();
         }
 
@@ -237,7 +241,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
 
             // While playing in preview data bindings aren't updated
-            Registration.DataBinding.Update(0.04);
+            Registration.DataBinding.UpdateWithDelta(TimeSpan.FromMilliseconds(40));
 
             if (ActiveItem.SupportsTestValue)
             {

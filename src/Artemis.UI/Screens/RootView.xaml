@@ -55,9 +55,9 @@
                                DialogTheme="Inherit"
                                SnackbarMessageQueue="{Binding MainMessageQueue}">
 
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}">
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}" >
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="280" ClipToBounds="False" />
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="280"  />
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
                 <mde:AppBar Type="Dense"

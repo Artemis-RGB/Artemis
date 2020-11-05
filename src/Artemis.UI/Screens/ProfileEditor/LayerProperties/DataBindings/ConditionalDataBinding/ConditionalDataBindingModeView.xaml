@@ -5,18 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
-             xmlns:dd="urn:gong-wpf-dragdrop" xmlns:Converters="clr-namespace:Artemis.UI.Converters"
-             xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
+             xmlns:dd="urn:gong-wpf-dragdrop"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
-                <ResourceDictionary>
-                    <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-                    <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
-                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -27,43 +22,16 @@
         </Grid.RowDefinitions>
 
         <Button Grid.Row="0"
-                Style="{StaticResource DataModelConditionButtonLeftClickMenu}"
+                Style="{StaticResource DataModelConditionButton}"
                 Background="{StaticResource PrimaryHueMidBrush}"
                 BorderBrush="{StaticResource PrimaryHueMidBrush}"
-                HorizontalAlignment="Right">
+                HorizontalAlignment="Right"
+                Command="{s:Action AddCondition}">
             ADD CONDITION
-            <Button.ContextMenu>
-                <ContextMenu>
-                    <MenuItem Header="Add static condition"
-                              ToolTip="A condition that compares with a static input"
-                              Command="{s:Action AddCondition}"
-                              CommandParameter="Static">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="FormTextarea" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Add dynamic condition"
-                              ToolTip="A condition that compares with a data model property"
-                              Command="{s:Action AddCondition}"
-                              CommandParameter="Dynamic">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="Link" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                    <MenuItem Header="Add list condition"
-                              ToolTip="A condition that evaluates on items in a list"
-                              Command="{s:Action AddCondition}"
-                              CommandParameter="List">
-                        <MenuItem.Icon>
-                            <materialDesign:PackIcon Kind="FormatListBulleted" />
-                        </MenuItem.Icon>
-                    </MenuItem>
-                </ContextMenu>
-            </Button.ContextMenu>
         </Button>
 
         <ListBox Grid.Row="1"
-                 ItemsSource="{Binding ConditionViewModels}"
+                 ItemsSource="{Binding Items}"
                  materialDesign:RippleAssist.IsDisabled="True"
                  dd:DragDrop.IsDragSource="True"
                  dd:DragDrop.IsDropTarget="True"

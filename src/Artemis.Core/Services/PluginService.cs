@@ -221,8 +221,7 @@ namespace Artemis.Core.Services
                 Type pluginType = pluginTypes.Single();
                 try
                 {
-                    IParameter[] parameters = new IParameter[]
-                    {
+                    IParameter[] parameters = {
                         new Parameter("PluginInfo", pluginInfo, false)
                     };
                     pluginInfo.Kernel = new ChildKernel(_kernel);

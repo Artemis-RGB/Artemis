@@ -9,13 +9,13 @@ namespace Artemis.Core
 {
     public abstract class ProfileElement : PropertyChangedBase, IDisposable
     {
-        protected bool _disposed;
         private bool _enabled;
         private Guid _entityId;
         private string _name;
         private int _order;
         private ProfileElement _parent;
         private Profile _profile;
+        protected bool Disposed;
         protected List<ProfileElement> ChildrenList;
 
         protected ProfileElement()
@@ -91,7 +91,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
+        public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo);
+
+        /// <summary>
+        ///     Resets the internal state of the element
+        /// </summary>
+        public abstract void Reset();
 
         /// <inheritdoc />
         public override string ToString()
@@ -108,9 +113,9 @@ namespace Artemis.Core
         /// <param name="order">The order where to place the child (1-based), defaults to the end of the collection</param>
         public virtual void AddChild(ProfileElement child, int? order = null)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
-            
+
             lock (ChildrenList)
             {
                 if (ChildrenList.Contains(child))
@@ -152,7 +157,7 @@ namespace Artemis.Core
         /// <param name="child">The profile element to remove</param>
         public virtual void RemoveChild(ProfileElement child)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
             lock (ChildrenList)
@@ -175,7 +180,7 @@ namespace Artemis.Core
         /// <returns></returns>
         public List<Folder> GetAllFolders()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
             List<Folder> folders = new List<Folder>();
@@ -196,7 +201,7 @@ namespace Artemis.Core
         /// <returns></returns>
         public List<Layer> GetAllLayers()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
             List<Layer> layers = new List<Layer>();

@@ -125,25 +125,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 return;
             }
 
-            Execute.PostToUIThread(() =>
+            Rect bounds = _layerEditorService.GetLayerBounds(Layer);
+            Geometry shapeGeometry = Geometry.Empty;
+            switch (Layer.LayerShape)
             {
-                Rect bounds = _layerEditorService.GetLayerBounds(Layer);
-                Geometry shapeGeometry = Geometry.Empty;
-                switch (Layer.LayerShape)
-                {
-                    case EllipseShape _:
-                        shapeGeometry = new EllipseGeometry(bounds);
-                        break;
-                    case RectangleShape _:
-                        shapeGeometry = new RectangleGeometry(bounds);
-                        break;
-                }
+                case EllipseShape _:
+                    shapeGeometry = new EllipseGeometry(bounds);
+                    break;
+                case RectangleShape _:
+                    shapeGeometry = new RectangleGeometry(bounds);
+                    break;
+            }
 
-                if (Layer.LayerBrush == null || Layer.LayerBrush.SupportsTransformation)
-                    shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
+            if (Layer.LayerBrush == null || Layer.LayerBrush.SupportsTransformation)
+                shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
 
-                ShapeGeometry = shapeGeometry;
-            });
+            ShapeGeometry = shapeGeometry;
         }
 
         private void CreateViewportRectangle()

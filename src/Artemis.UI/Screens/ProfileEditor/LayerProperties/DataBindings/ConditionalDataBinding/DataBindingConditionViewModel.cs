@@ -13,6 +13,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
     public class DataBindingConditionViewModel<TLayerProperty, TProperty> : Conductor<DataModelConditionGroupViewModel>, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
+        private readonly IDataModelUIService _dataModelUIService;
 
         public DataBindingConditionViewModel(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition,
             IProfileEditorService profileEditorService,
@@ -20,21 +22,27 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             IDataModelUIService dataModelUIService)
         {
             _profileEditorService = profileEditorService;
+            _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
+            _dataModelUIService = dataModelUIService;
             DataBindingCondition = dataBindingCondition;
-
-            ActiveItem = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, false);
-            ActiveItem.IsRootGroup = true;
-            ActiveItem.Update();
-            ActiveItem.Updated += ActiveItemOnUpdated;
-
-            ValueViewModel = dataModelUIService.GetStaticInputViewModel(typeof(TProperty), null);
-            ValueViewModel.ValueUpdated += ValueViewModelOnValueUpdated;
-            ValueViewModel.Value = DataBindingCondition.Value;
         }
 
         public DataBindingCondition<TLayerProperty, TProperty> DataBindingCondition { get; }
 
         public DataModelStaticViewModel ValueViewModel { get; set; }
+
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, ConditionGroupType.General);
+            ActiveItem.IsRootGroup = true;
+            ActiveItem.Update();
+            ActiveItem.Updated += ActiveItemOnUpdated;
+
+            ValueViewModel = _dataModelUIService.GetStaticInputViewModel(typeof(TProperty), null);
+            ValueViewModel.ValueUpdated += ValueViewModelOnValueUpdated;
+            ValueViewModel.Value = DataBindingCondition.Value;
+        }
 
         public void Dispose()
         {

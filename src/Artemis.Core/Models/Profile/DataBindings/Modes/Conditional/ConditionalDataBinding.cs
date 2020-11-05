@@ -75,7 +75,7 @@ namespace Artemis.Core
 
             return condition;
         }
-
+        
         /// <summary>
         ///     Removes a condition from the conditional data binding's <see cref="Conditions" /> collection and disposes it
         /// </summary>

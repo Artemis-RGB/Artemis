@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -38,7 +37,6 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            DisplayContinuously = true;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
 
@@ -47,14 +45,14 @@ namespace Artemis.Core
             _expandedPropertyGroups = new List<string>();
 
             Initialize();
-            ApplyRenderElementDefaults();
-
             Parent.AddChild(this);
         }
 
         internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
         {
             LayerEntity = layerEntity;
+            EntityId = layerEntity.Id;
+
             Profile = profile;
             Parent = parent;
             General = new LayerGeneralProperties();
@@ -67,27 +65,6 @@ namespace Artemis.Core
             Load();
             Initialize();
         }
-
-        internal LayerEntity LayerEntity { get; set; }
-
-        /// <inheritdoc />
-        public override List<ILayerProperty> GetAllLayerProperties()
-        {
-            List<ILayerProperty> result = new List<ILayerProperty>();
-            result.AddRange(General.GetAllLayerProperties());
-            result.AddRange(Transform.GetAllLayerProperties());
-            if (LayerBrush?.BaseProperties != null)
-                result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
-            foreach (BaseLayerEffect layerEffect in LayerEffects)
-            {
-                if (layerEffect.BaseProperties != null)
-                    result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
-            }
-
-            return result;
-        }
-
-        internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
         /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
@@ -131,6 +108,25 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _layerBrush, value);
         }
 
+        internal LayerEntity LayerEntity { get; set; }
+
+        internal override RenderElementEntity RenderElementEntity => LayerEntity;
+
+        /// <inheritdoc />
+        public override List<ILayerProperty> GetAllLayerProperties()
+        {
+            List<ILayerProperty> result = new List<ILayerProperty>();
+            result.AddRange(General.GetAllLayerProperties());
+            result.AddRange(Transform.GetAllLayerProperties());
+            if (LayerBrush?.BaseProperties != null)
+                result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
+            foreach (BaseLayerEffect layerEffect in LayerEffects)
+                if (layerEffect.BaseProperties != null)
+                    result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
+
+            return result;
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {
@@ -142,7 +138,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
-            _disposed = true;
+            Disposed = true;
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
@@ -195,7 +191,7 @@ namespace Artemis.Core
 
         internal override void Save()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             // Properties
@@ -258,94 +254,30 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
+            if (!Enabled)
                 return;
 
-            // Ensure the layer must still be displayed
             UpdateDisplayCondition();
-
-            // Update the layer timeline, this will give us a new delta time which could be negative in case the main segment wrapped back
-            // to it's start
             UpdateTimeline(deltaTime);
-
-            // No point updating further than this if the layer is not going to be rendered
-            if (TimelinePosition > TimelineLength)
-                return;
-
-            General.Update(deltaTime);
-            Transform.Update(deltaTime);
-            LayerBrush.BaseProperties?.Update(deltaTime);
-            LayerBrush.Update(deltaTime);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(deltaTime);
-                baseLayerEffect.Update(deltaTime);
-            }
-        }
-
-        protected internal override void UpdateTimelineLength()
-        {
-            TimelineLength = StartSegmentLength + MainSegmentLength + EndSegmentLength;
-        }
-
-        public override void OverrideProgress(TimeSpan timeOverride, bool stickToMainSegment)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("Layer");
-
-            if (!Enabled || LayerBrush?.BaseProperties == null || !LayerBrush.BaseProperties.PropertiesInitialized)
-                return;
-
-            // Disable data bindings during an override
-            bool wasApplyingDataBindings = ApplyDataBindingsEnabled;
-            ApplyDataBindingsEnabled = false;
-
-            TimeSpan beginTime = TimelinePosition;
-
-            if (stickToMainSegment)
-            {
-                if (!DisplayContinuously)
-                    TimelinePosition = StartSegmentLength + timeOverride;
-                else
-                {
-                    double progress = timeOverride.TotalMilliseconds % MainSegmentLength.TotalMilliseconds;
-                    if (progress > 0)
-                        TimelinePosition = TimeSpan.FromMilliseconds(progress) + StartSegmentLength;
-                    else
-                        TimelinePosition = StartSegmentLength;
-                }
-            }
-            else
-                TimelinePosition = timeOverride;
-
-            double delta = (TimelinePosition - beginTime).TotalSeconds;
-
-            General.Update(delta);
-            Transform.Update(delta);
-            LayerBrush.BaseProperties?.Update(delta);
-            LayerBrush.Update(delta);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(delta);
-                baseLayerEffect.Update(delta);
-            }
-
-            // Restore the old data bindings enabled state
-            ApplyDataBindingsEnabled = wasApplyingDataBindings;
         }
 
         /// <inheritdoc />
-        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Reset()
         {
-            if (_disposed)
+            DisplayConditionMet = false;
+            Timeline.JumpToStart();
+        }
+
+        /// <inheritdoc />
+        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        {
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled || TimelinePosition > TimelineLength)
+            if (!Enabled)
                 return;
 
             // Ensure the layer is ready
@@ -355,8 +287,40 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
+            lock (Timeline)
+            {
+                RenderLayer(Timeline, canvas);
+                foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
+                    RenderLayer(extraTimeline, canvas);
+                Timeline.ClearDelta();
+            }
+        }
+
+        private void PrepareForRender(Timeline timeline)
+        {
+            General.Update(timeline);
+            Transform.Update(timeline);
+            LayerBrush.BaseProperties?.Update(timeline);
+            LayerBrush.Update(timeline.Delta.TotalSeconds);
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            {
+                baseLayerEffect.BaseProperties?.Update(timeline);
+                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
+            }
+        }
+
+        private void RenderLayer(Timeline timeline, SKCanvas canvas)
+        {
+            if (timeline.IsFinished)
+                return;
+
+            PrepareForRender(timeline);
+
             if (_layerBitmap == null)
+            {
                 _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+            }
             else if (_layerBitmap.Info.Width != (int) Path.Bounds.Width || _layerBitmap.Info.Height != (int) Path.Bounds.Height)
             {
                 _layerBitmap.Dispose();
@@ -365,11 +329,7 @@ namespace Artemis.Core
 
             using SKPath layerPath = new SKPath(Path);
             using SKCanvas layerCanvas = new SKCanvas(_layerBitmap);
-            using SKPaint layerPaint = new SKPaint
-            {
-                FilterQuality = SKFilterQuality.Low,
-                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
-            };
+            using SKPaint layerPaint = new SKPaint {FilterQuality = SKFilterQuality.Low};
             layerCanvas.Clear();
 
             layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
@@ -388,7 +348,11 @@ namespace Artemis.Core
             else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
                 ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
 
-            using SKPaint canvasPaint = new SKPaint { BlendMode = General.BlendMode.CurrentValue };
+            using SKPaint canvasPaint = new SKPaint
+            {
+                BlendMode = General.BlendMode.CurrentValue,
+                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
+            };
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
 
@@ -401,7 +365,7 @@ namespace Artemis.Core
                 (canvasPath.Bounds.Left - targetLocation.X) * -1,
                 (canvasPath.Bounds.Top - targetLocation.Y) * -1)
             );
-            canvas.ClipPath(canvasPath);
+            // canvas.ClipPath(canvasPath);
             canvas.DrawBitmap(_layerBitmap, targetLocation, canvasPaint);
         }
 
@@ -471,11 +435,13 @@ namespace Artemis.Core
 
         internal void CalculateRenderProperties()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             if (!Leds.Any())
+            {
                 Path = new SKPath();
+            }
             else
             {
                 SKPath path = new SKPath {FillType = SKPathFillType.Winding};
@@ -498,7 +464,7 @@ namespace Artemis.Core
 
         internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool zeroBased = false)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKPoint positionProperty = Transform.Position.CurrentValue;
@@ -522,7 +488,7 @@ namespace Artemis.Core
         /// <param name="path"></param>
         public void IncludePathInTranslation(SKPath path, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -549,12 +515,50 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Creates a transformation matrix that applies the current transformation settings
+        /// </summary>
+        /// <param name="zeroBased">
+        ///     If true, treats the layer as if it is located at 0,0 instead of its actual position on the
+        ///     surface
+        /// </param>
+        /// <returns>The transformation matrix containing the current transformation settings</returns>
+        public SKMatrix GetTransformMatrix(bool zeroBased)
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Layer");
+
+            SKSize sizeProperty = Transform.Scale.CurrentValue;
+            float rotationProperty = Transform.Rotation.CurrentValue;
+
+            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
+
+            // Translation originates from the unscaled center of the shape and is tied to the anchor
+            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
+            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
+
+            if (General.ResizeMode == LayerResizeMode.Normal)
+            {
+                SKMatrix transform = SKMatrix.MakeTranslation(x, y);
+                transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
+                transform = transform.PostConcat(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+                return transform;
+            }
+            else
+            {
+                SKMatrix transform = SKMatrix.MakeTranslation(x, y);
+                transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
+                return transform;
+            }
+        }
+
+        /// <summary>
         ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
         ///     layer translations out
         /// </summary>
         public void ExcludePathFromTranslation(SKPath path, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -590,7 +594,7 @@ namespace Artemis.Core
         /// <returns>The number of transformations applied</returns>
         public int ExcludeCanvasFromTranslation(SKCanvas canvas, bool zeroBased)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
@@ -630,7 +634,7 @@ namespace Artemis.Core
         /// <param name="led">The LED to add</param>
         public void AddLed(ArtemisLed led)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Add(led);
@@ -643,7 +647,7 @@ namespace Artemis.Core
         /// <param name="leds">The LEDs to add</param>
         public void AddLeds(IEnumerable<ArtemisLed> leds)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.AddRange(leds);
@@ -656,7 +660,7 @@ namespace Artemis.Core
         /// <param name="led">The LED to remove</param>
         public void RemoveLed(ArtemisLed led)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Remove(led);
@@ -668,7 +672,7 @@ namespace Artemis.Core
         /// </summary>
         public void ClearLeds()
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             _leds.Clear();
@@ -677,7 +681,7 @@ namespace Artemis.Core
 
         internal void PopulateLeds(ArtemisSurface surface)
         {
-            if (_disposed)
+            if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
             List<ArtemisLed> leds = new List<ArtemisLed>();

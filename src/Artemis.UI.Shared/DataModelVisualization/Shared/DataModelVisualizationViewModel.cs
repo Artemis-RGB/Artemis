@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -29,7 +28,7 @@ namespace Artemis.UI.Shared
             Children = new BindableCollection<DataModelVisualizationViewModel>();
             IsMatchingFilteredTypes = true;
 
-            if (dataModel == null && parent == null && dataModelPath == null)
+            if (parent == null)
                 IsRootViewModel = true;
             else
                 PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel.DataModelDescription;
@@ -88,8 +87,9 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Updates the datamodel and if in an parent, any children
         /// </summary>
-        /// <param name="dataModelUIService"></param>
-        public abstract void Update(IDataModelUIService dataModelUIService);
+        /// <param name="dataModelUIService">The data model UI service used during update</param>
+        /// <param name="configuration">The configuration to apply while updating</param>
+        public abstract void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration);
 
         public virtual object GetCurrentValue()
         {
@@ -137,44 +137,10 @@ namespace Artemis.UI.Shared
             if (looseMatch)
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t.IsCastableFrom(type) ||
                                                                  t == typeof(Enum) && type.IsEnum ||
-                                                                 t == typeof(IEnumerable<>) && type.IsGenericEnumerable());
+                                                                 t == typeof(IEnumerable<>) && type.IsGenericEnumerable() ||
+                                                                 type.IsGenericType && t == type.GetGenericTypeDefinition());
             else
                 IsMatchingFilteredTypes = filteredTypes.Any(t => t == type || t == typeof(Enum) && type.IsEnum);
-        }
-
-        public DataModelVisualizationViewModel GetChildByPath(Guid dataModelGuid, string propertyPath)
-        {
-            if (!IsRootViewModel)
-            {
-                if (DataModel.PluginInfo.Guid != dataModelGuid)
-                    return null;
-                if (propertyPath == null)
-                    return null;
-                if (Path != null && Path.StartsWith(propertyPath, StringComparison.OrdinalIgnoreCase))
-                    return null;
-            }
-
-            // Ensure children are populated by requesting an update
-            if (!IsVisualizationExpanded)
-            {
-                IsVisualizationExpanded = true;
-                RequestUpdate();
-                IsVisualizationExpanded = false;
-            }
-
-            foreach (DataModelVisualizationViewModel child in Children)
-            {
-                // Try the child itself first
-                if (child.Path == propertyPath)
-                    return child;
-
-                // Try a child on the child next, this will go recursive
-                DataModelVisualizationViewModel match = child.GetChildByPath(dataModelGuid, propertyPath);
-                if (match != null)
-                    return match;
-            }
-
-            return null;
         }
 
         internal virtual int GetChildDepth()
@@ -182,13 +148,13 @@ namespace Artemis.UI.Shared
             return 0;
         }
 
-        internal void PopulateProperties(IDataModelUIService dataModelUIService)
+        internal void PopulateProperties(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration dataModelUpdateConfiguration)
         {
-            if (IsRootViewModel)
+            if (IsRootViewModel && DataModel == null)
                 return;
 
-            Type modelType = Parent == null || Parent.IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
-
+            Type modelType = IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
+            
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
             {
@@ -219,7 +185,6 @@ namespace Artemis.UI.Shared
             // Add missing dynamic children
             object value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
             if (value is DataModel dataModel)
-            {
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
                 {
                     string childPath = AppendToPath(kvp.Key);
@@ -230,7 +195,6 @@ namespace Artemis.UI.Shared
                     if (child != null)
                         Children.Add(child);
                 }
-            }
 
             // Remove dynamic children that have been removed from the data model
             List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => !c.DataModelPath.IsValid).ToList();
@@ -266,6 +230,8 @@ namespace Artemis.UI.Shared
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {Depth = depth};
             if (propertyType.IsGenericEnumerable())
                 return new DataModelListViewModel(DataModel, this, dataModelPath) {Depth = depth};
+            if (propertyType == typeof(DataModelEvent) || propertyType.IsGenericType && propertyType.GetGenericTypeDefinition() == typeof(DataModelEvent<>))
+                return new DataModelEventViewModel(DataModel, this, dataModelPath) {Depth = depth};
             // For other value types create a child view model
             if (propertyType.IsClass || propertyType.IsStruct())
                 return new DataModelPropertiesViewModel(DataModel, this, dataModelPath) {Depth = depth};
@@ -294,5 +260,15 @@ namespace Artemis.UI.Shared
         }
 
         #endregion
+    }
+
+    public class DataModelUpdateConfiguration
+    {
+        public bool CreateEventChildren { get; }
+
+        public DataModelUpdateConfiguration(bool createEventChildren)
+        {
+            CreateEventChildren = createEventChildren;
+        }
     }
 }

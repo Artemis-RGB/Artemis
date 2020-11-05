@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile.Abstract;
 using Artemis.Storage.Entities.Profile.Conditions;
@@ -21,6 +23,8 @@ namespace Artemis.Core
         {
             Parent = parent;
             Entity = new DataModelConditionGroupEntity();
+            ChildAdded += OnChildrenChanged;
+            ChildRemoved += OnChildrenChanged;
         }
 
         /// <summary>
@@ -40,17 +44,30 @@ namespace Artemis.Core
                     AddChild(new DataModelConditionGroup(this, groupEntity));
                 else if (childEntity is DataModelConditionListEntity listEntity)
                     AddChild(new DataModelConditionList(this, listEntity));
-                else if (childEntity is DataModelConditionPredicateEntity predicateEntity)
-                    AddChild(new DataModelConditionPredicate(this, predicateEntity));
+                else if (childEntity is DataModelConditionEventEntity eventEntity)
+                    AddChild(new DataModelConditionEvent(this, eventEntity));
+                else if (childEntity is DataModelConditionGeneralPredicateEntity predicateEntity)
+                    AddChild(new DataModelConditionGeneralPredicate(this, predicateEntity));
                 else if (childEntity is DataModelConditionListPredicateEntity listPredicateEntity)
                     AddChild(new DataModelConditionListPredicate(this, listPredicateEntity));
+                else if (childEntity is DataModelConditionEventPredicateEntity eventPredicateEntity)
+                    AddChild(new DataModelConditionEventPredicate(this, eventPredicateEntity));
             }
+
+            ContainsEvents = Children.Any(c => c is DataModelConditionEvent);
+            ChildAdded += OnChildrenChanged;
+            ChildRemoved += OnChildrenChanged;
         }
 
         /// <summary>
         ///     Gets or sets the boolean operator of this group
         /// </summary>
         public BooleanOperator BooleanOperator { get; set; }
+
+        /// <summary>
+        ///     Gets whether this group contains any events
+        /// </summary>
+        public bool ContainsEvents { get; private set; }
 
         internal DataModelConditionGroupEntity Entity { get; set; }
 
@@ -67,16 +84,26 @@ namespace Artemis.Core
             if (Children.Count == 1)
                 return Children[0].Evaluate();
 
+            if (ContainsEvents)
+            {
+                bool eventTriggered = Children.Where(c => c is DataModelConditionEvent).Any(c => c.Evaluate());
+                return eventTriggered && EvaluateWithOperator(Children.Where(c => !(c is DataModelConditionEvent)));
+            }
+            return EvaluateWithOperator(Children);
+        }
+
+        private bool EvaluateWithOperator(IEnumerable<DataModelConditionPart> targets)
+        {
             switch (BooleanOperator)
             {
                 case BooleanOperator.And:
-                    return Children.All(c => c.Evaluate());
+                    return targets.All(c => c.Evaluate());
                 case BooleanOperator.Or:
-                    return Children.Any(c => c.Evaluate());
+                    return targets.Any(c => c.Evaluate());
                 case BooleanOperator.AndNot:
-                    return Children.All(c => !c.Evaluate());
+                    return targets.All(c => !c.Evaluate());
                 case BooleanOperator.OrNot:
-                    return Children.Any(c => !c.Evaluate());
+                    return targets.Any(c => !c.Evaluate());
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -132,6 +159,11 @@ namespace Artemis.Core
         internal override DataModelConditionPartEntity GetEntity()
         {
             return Entity;
+        }
+
+        private void OnChildrenChanged(object? sender, EventArgs e)
+        {
+            ContainsEvents = Children.Any(c => c is DataModelConditionEvent);
         }
     }
 

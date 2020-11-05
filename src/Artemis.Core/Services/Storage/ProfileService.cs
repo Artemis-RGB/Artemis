@@ -82,6 +82,19 @@ namespace Artemis.Core.Services
             return profile;
         }
 
+        public void ReloadProfile(ProfileModule module)
+        {
+            if (module.ActiveProfile == null)
+                return;
+
+            ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
+            Profile profile = new Profile(module, entity);
+            InstantiateProfile(profile);
+
+            module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
+            module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+        }
+
         public async Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor)
         {
             if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)

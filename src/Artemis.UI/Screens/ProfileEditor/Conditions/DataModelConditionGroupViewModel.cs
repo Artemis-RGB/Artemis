@@ -19,14 +19,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IProfileEditorService _profileEditorService;
         private bool _isInitialized;
         private bool _isRootGroup;
+        private bool _isEventGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
-            bool isListGroup,
+            ConditionGroupType groupType,
             IProfileEditorService profileEditorService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory)
             : base(dataModelConditionGroup)
         {
-            IsListGroup = isListGroup;
+            GroupType = groupType;
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -39,13 +40,25 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             });
         }
 
-        public bool IsListGroup { get; }
+        public ConditionGroupType GroupType { get; }
         public DataModelConditionGroup DataModelConditionGroup => (DataModelConditionGroup) Model;
 
         public bool IsRootGroup
         {
             get => _isRootGroup;
-            set => SetAndNotify(ref _isRootGroup, value);
+            set
+            {
+                if (!SetAndNotify(ref _isRootGroup, value)) return;
+                NotifyOfPropertyChange(nameof(CanAddEventCondition));
+            }
+        }
+
+        public bool CanAddEventCondition => IsRootGroup && GroupType == ConditionGroupType.General;
+
+        public bool IsEventGroup
+        {
+            get => _isEventGroup;
+            set => SetAndNotify(ref _isEventGroup, value);
         }
 
         public bool IsInitialized
@@ -68,10 +81,37 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void AddCondition()
         {
-            if (!IsListGroup)
-                DataModelConditionGroup.AddChild(new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
-            else
-                DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+            switch (GroupType)
+            {
+                case ConditionGroupType.General:
+                    DataModelConditionGroup.AddChild(new DataModelConditionGeneralPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+                    break;
+                case ConditionGroupType.List:
+                    DataModelConditionGroup.AddChild(new DataModelConditionListPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+                    break;
+                case ConditionGroupType.Event:
+                    DataModelConditionGroup.AddChild(new DataModelConditionEventPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            Update();
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public void AddEventCondition()
+        {
+            if (!CanAddEventCondition)
+                return;
+
+            // Find a good spot for the event, behind the last existing event
+            int index = 0;
+            DataModelConditionPart existing = DataModelConditionGroup.Children.LastOrDefault(c => c is DataModelConditionEvent);
+            if (existing != null)
+                index = DataModelConditionGroup.Children.IndexOf(existing) + 1;
+
+            DataModelConditionGroup.AddChild(new DataModelConditionEvent(DataModelConditionGroup), index);
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
@@ -88,11 +128,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Update()
         {
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
-
             // Remove VMs of effects no longer applied on the layer
             Items.RemoveRange(Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList());
 
-            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
             foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))
@@ -100,39 +138,43 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
                 switch (childModel)
                 {
-                    case DataModelConditionGroup DataModelConditionGroup:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataModelConditionGroup, IsListGroup));
+                    case DataModelConditionGroup dataModelConditionGroup:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType));
                         break;
-                    case DataModelConditionList DataModelConditionListPredicate:
-                        viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(DataModelConditionListPredicate));
+                    case DataModelConditionList dataModelConditionList:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
                         break;
-                    case DataModelConditionPredicate DataModelConditionPredicate:
-                        if (!IsListGroup)
-                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionPredicateViewModel(DataModelConditionPredicate));
+                    case DataModelConditionEvent dataModelConditionEvent:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
                         break;
-                    case DataModelConditionListPredicate DataModelConditionListPredicate:
-                        if (IsListGroup)
-                            viewModels.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(DataModelConditionListPredicate));
+                    case DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
+                        break;
+                    case DataModelConditionListPredicate dataModelConditionListPredicate:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
+                        break;
+                    case DataModelConditionEventPredicate dataModelConditionEventPredicate:
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate));
                         break;
                 }
             }
 
-            if (viewModels.Any())
-                Items.AddRange(viewModels);
-
             // Ensure the items are in the same order as on the model
             ((BindableCollection<DataModelConditionViewModel>) Items).Sort(i => Model.Children.IndexOf(i.Model));
-
             foreach (DataModelConditionViewModel childViewModel in Items)
                 childViewModel.Update();
 
-            if (IsRootGroup && Parent is DisplayConditionsViewModel displayConditionsViewModel)
-                displayConditionsViewModel.DisplayStartHint = !Items.Any();
+            IsEventGroup = Items.Any(i => i is DataModelConditionEventViewModel);
+            if (IsEventGroup)
+            {
+                if (DataModelConditionGroup.BooleanOperator != BooleanOperator.And)
+                    SelectBooleanOperator("And");
+            }
 
             OnUpdated();
         }
 
-        public void ConvertToConditionList(DataModelConditionPredicateViewModel predicateViewModel)
+        public void ConvertToConditionList(DataModelConditionViewModel predicateViewModel)
         {
             // Store the old index and remove the old predicate
             int index = DataModelConditionGroup.Children.IndexOf(predicateViewModel.Model);
@@ -147,15 +189,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        public void ConvertToPredicate(DataModelConditionListViewModel listViewModel)
+        public void ConvertToPredicate(DataModelConditionViewModel listViewModel)
         {
             // Store the old index and remove the old predicate
             int index = DataModelConditionGroup.Children.IndexOf(listViewModel.Model);
             DataModelConditionGroup.RemoveChild(listViewModel.Model);
 
             // Insert a list in the same position
-            DataModelConditionPredicate predicate = new DataModelConditionPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
-            predicate.UpdateLeftSide(listViewModel.TargetSelectionViewModel.DataModelPath);
+            DataModelConditionGeneralPredicate predicate = new DataModelConditionGeneralPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
+            predicate.UpdateLeftSide(listViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(predicate, index);
 
             // Update to switch the VMs
@@ -168,5 +210,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             Updated?.Invoke(this, EventArgs.Empty);
         }
+    }
+
+    public enum ConditionGroupType
+    {
+        General,
+        List,
+        Event
     }
 }

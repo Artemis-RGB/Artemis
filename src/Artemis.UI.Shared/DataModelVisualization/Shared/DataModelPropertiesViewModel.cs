@@ -7,8 +7,8 @@ namespace Artemis.UI.Shared
 {
     public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
     {
-        private Type _displayValueType;
         private object _displayValue;
+        private Type _displayValueType;
 
         internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _displayValue, value);
         }
 
-        public override void Update(IDataModelUIService dataModelUIService)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
 
@@ -37,22 +37,22 @@ namespace Artemis.UI.Shared
             else
                 DisplayValue = null;
 
-            // Always populate properties
-            PopulateProperties(dataModelUIService);
+            // Always populate properties   
+            PopulateProperties(dataModelUIService, configuration);
 
             // Only update children if the parent is expanded
-            if (Parent != null && !Parent.IsVisualizationExpanded && !Parent.IsRootViewModel)
+            if (Parent != null && !Parent.IsRootViewModel && !Parent.IsVisualizationExpanded)
                 return;
 
             foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children)
-                dataModelVisualizationViewModel.Update(dataModelUIService);
+                dataModelVisualizationViewModel.Update(dataModelUIService, configuration);
         }
 
         public override object GetCurrentValue()
         {
-            if (Parent == null)
-                return null;
-            return Parent.IsRootViewModel ? DataModel : base.GetCurrentValue();
+            if (Parent == null || Parent.IsRootViewModel || IsRootViewModel)
+                return DataModel;
+            return base.GetCurrentValue();
         }
 
         /// <inheritdoc />

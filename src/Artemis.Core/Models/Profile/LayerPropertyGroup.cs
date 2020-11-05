@@ -198,11 +198,12 @@ namespace Artemis.Core
                 layerPropertyGroup.ApplyToEntity();
         }
 
-        internal void Update(double deltaTime)
+        internal void Update(Timeline timeline)
         {
-            // Since at this point we don't know what properties the group has without using reflection,
-            // let properties subscribe to the update event and update themselves
-            OnPropertyGroupUpdating(new LayerPropertyGroupUpdatingEventArgs(deltaTime));
+            foreach (ILayerProperty layerProperty in LayerProperties)
+                layerProperty.Update(timeline);
+            foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
+                layerPropertyGroup.Update(timeline);
         }
 
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
@@ -266,8 +267,6 @@ namespace Artemis.Core
 
         #region Events
 
-        internal event EventHandler<LayerPropertyGroupUpdatingEventArgs> PropertyGroupUpdating;
-
         /// <summary>
         ///     Occurs when the property group has initialized all its children
         /// </summary>
@@ -283,11 +282,6 @@ namespace Artemis.Core
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
         /// </summary>
         public event EventHandler VisibilityChanged;
-
-        internal virtual void OnPropertyGroupUpdating(LayerPropertyGroupUpdatingEventArgs e)
-        {
-            PropertyGroupUpdating?.Invoke(this, e);
-        }
 
         internal virtual void OnVisibilityChanged()
         {

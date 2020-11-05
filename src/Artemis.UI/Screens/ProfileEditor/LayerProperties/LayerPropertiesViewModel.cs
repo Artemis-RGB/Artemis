@@ -567,7 +567,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 {
                     if (Repeating && RepeatTimeline)
                     {
-                        if (newTime > SelectedProfileElement.TimelineLength)
+                        if (newTime > SelectedProfileElement.Timeline.Length)
                             newTime = TimeSpan.Zero;
                     }
                     else if (Repeating && RepeatSegment)
@@ -575,9 +575,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                         if (newTime > GetCurrentSegmentEnd())
                             newTime = GetCurrentSegmentStart();
                     }
-                    else if (newTime > SelectedProfileElement.TimelineLength)
+                    else if (newTime > SelectedProfileElement.Timeline.Length)
                     {
-                        newTime = SelectedProfileElement.TimelineLength;
+                        newTime = SelectedProfileElement.Timeline.Length;
                         Pause();
                     }
                 }
