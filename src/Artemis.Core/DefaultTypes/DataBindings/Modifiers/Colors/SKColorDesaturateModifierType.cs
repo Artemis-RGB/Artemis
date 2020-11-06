@@ -1,4 +1,5 @@
-﻿using SkiaSharp;
+﻿using System;
+using SkiaSharp;
 
 namespace Artemis.Core.DefaultTypes
 {
@@ -10,10 +11,11 @@ namespace Artemis.Core.DefaultTypes
 
         public override SKColor Apply(SKColor currentValue, float parameterValue)
         {
-            // TODO: Not so straightforward ^^
             currentValue.ToHsl(out float h, out float s, out float l);
-            s *= (parameterValue * -1 + 100f) / 100f;
-            return SKColor.FromHsl(h, s, l);
+            s -= parameterValue;
+            s = Math.Clamp(s, 0, 100);
+
+            return SKColor.FromHsl(h, s, l, currentValue.Alpha);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿using System;
+
+namespace Artemis.Core.DefaultTypes
 {
     /// <inheritdoc />
     public class FloatLayerProperty : LayerProperty<float>
