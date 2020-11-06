@@ -77,6 +77,7 @@ namespace Artemis.Core.Services
             RegisterModifierType(Constants.CorePluginInfo, new SKColorBrightenModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new SKColorDarkenModifierType());
             RegisterModifierType(Constants.CorePluginInfo, new SKColorRotateHueModifierType());
+            RegisterModifierType(Constants.CorePluginInfo, new SKColorInvertModifierType());
         }
     }
 }

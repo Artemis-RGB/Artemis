@@ -332,5 +332,8 @@
     <Page Update="DefaultTypes\DataModel\Input\StringDataModelInputView.xaml">
       <SubType>Designer</SubType>
     </Page>
+    <Page Update="DefaultTypes\PropertyInput\FloatRangePropertyInputView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 </Project>

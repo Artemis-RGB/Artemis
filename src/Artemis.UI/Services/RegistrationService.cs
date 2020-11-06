@@ -67,6 +67,8 @@ namespace Artemis.UI.Services
             _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePluginInfo);
             _profileEditorService.RegisterPropertyInput(typeof(EnumPropertyInputViewModel<>), Constants.CorePluginInfo);
             _profileEditorService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<FloatRangePropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<IntRangePropertyInputViewModel>(Constants.CorePluginInfo);
 
             _registeredBuiltInPropertyEditors = true;
         }
