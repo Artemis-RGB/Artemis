@@ -5,6 +5,7 @@
 
 trigger:
 - master
+pr: none
 
 pool:
   vmImage: 'windows-latest'
@@ -13,6 +14,8 @@ variables:
   artemisSolution: '**/Artemis.sln'
 
 steps:
+- checkout: self
+
 - task: NuGetToolInstaller@1
 
 - task: NuGetCommand@2
