@@ -244,8 +244,6 @@ namespace Artemis.Core
                     if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
                         throw new ArtemisCoreException("Failed to open folder render context");
 
-                    // Renderer.ApplyClip(canvas);
-
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                         baseLayerEffect.PreProcess(Renderer.Canvas, Renderer.Path, Renderer.Paint);
 

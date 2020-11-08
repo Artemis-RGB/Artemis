@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using Artemis.Storage.Entities.Profile;
 using Stylet;
 
@@ -11,6 +12,8 @@ namespace Artemis.Core
     /// </summary>
     public class Timeline : PropertyChangedBase, IStorageModel
     {
+        private const int MaxExtraTimelines = 15;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="Timeline" /> class
         /// </summary>
@@ -34,6 +37,11 @@ namespace Artemis.Core
         private Timeline(Timeline parent)
         {
             Parent = parent;
+            StartSegmentLength = Parent.StartSegmentLength;
+            MainSegmentLength = Parent.MainSegmentLength;
+            EndSegmentLength = Parent.EndSegmentLength;
+
+            _extraTimelines = new List<Timeline>();
         }
 
         #region Extra timelines
@@ -44,6 +52,8 @@ namespace Artemis.Core
         public void AddExtraTimeline()
         {
             _extraTimelines.Add(new Timeline(this));
+            if (_extraTimelines.Count > MaxExtraTimelines)
+                _extraTimelines.RemoveAt(0);
         }
 
         /// <summary>
@@ -135,7 +145,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether the timeline has finished its run
         /// </summary>
-        public bool IsFinished => Position > Length || Length == TimeSpan.Zero;
+        public bool IsFinished => (Position > Length || Length == TimeSpan.Zero) && !ExtraTimelines.Any();
 
         /// <summary>
         /// Gets a boolean indicating whether the timeline progress has been overridden
@@ -310,6 +320,7 @@ namespace Artemis.Core
                         Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
                 }
 
+                _extraTimelines.RemoveAll(t => t.IsFinished);
                 foreach (Timeline extraTimeline in _extraTimelines)
                     extraTimeline.Update(delta, false);
             }
@@ -327,8 +338,6 @@ namespace Artemis.Core
 
                 Delta = TimeSpan.Zero - Position;
                 Position = TimeSpan.Zero;
-
-                _extraTimelines.Clear();
             }
         }
 
@@ -344,8 +353,6 @@ namespace Artemis.Core
 
                 Delta = EndSegmentStartPosition - Position;
                 Position = EndSegmentStartPosition;
-
-                _extraTimelines.Clear();
             }
         }
 
@@ -361,8 +368,6 @@ namespace Artemis.Core
 
                 Delta = EndSegmentEndPosition - Position;
                 Position = EndSegmentEndPosition;
-
-                _extraTimelines.Clear();
             }
         }
 
