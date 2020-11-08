@@ -128,13 +128,17 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Creates a deep copy of the layer
+        ///     Creates a deep copy of the folder
         /// </summary>
         /// <returns>The newly created copy</returns>
         public Folder CreateCopy()
         {
-            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity));
+            JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity, settings), settings)!;
             entityCopy.Id = Guid.NewGuid();
+            entityCopy.Name += " - Copy";
+
+            // TODO Children
 
             return new Folder(Profile, Parent, entityCopy);
         }
