@@ -28,18 +28,11 @@ namespace Artemis.Core.LayerBrushes
         /// <returns>The color the LED will receive</returns>
         public abstract SKColor GetColor(ArtemisLed led, SKPoint renderPoint);
 
-        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        internal override void InternalRender(SKCanvas canvas, SKPath path, SKPaint paint)
         {
-            // We don't want translations on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
-            Layer.ExcludeCanvasFromTranslation(canvas, true);
-
-            if (Layer.General.ResizeMode == LayerResizeMode.Normal)
-            {
-                // Apply a translated version of the shape as the clipping mask
-                SKPath shapePath = new SKPath(Layer.LayerShape.Path);
-                Layer.IncludePathInTranslation(shapePath, true);
-                canvas.ClipPath(shapePath);
-            }
+            // We don't want rotation on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
+            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
+                canvas.SetMatrix(canvas.TotalMatrix.PreConcat(Layer.GetTransformMatrix(true, false, false, true).Invert()));
 
             using SKPath pointsPath = new SKPath();
             using SKPaint ledPaint = new SKPaint();
@@ -52,7 +45,10 @@ namespace Artemis.Core.LayerBrushes
                 });
             }
 
-            Layer.ExcludePathFromTranslation(pointsPath, true);
+            // Apply the translation to the points of each LED instead
+            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
+                pointsPath.Transform(Layer.GetTransformMatrix(true, true, true, true).Invert());
+
             SKPoint[] points = pointsPath.Points;
             for (int index = 0; index < Layer.Leds.Count; index++)
             {

@@ -22,14 +22,13 @@ namespace Artemis.Core.LayerBrushes
         ///     <para>Called during rendering or layer preview, in the order configured on the layer</para>
         /// </summary>
         /// <param name="canvas">The layer canvas</param>
-        /// <param name="canvasInfo"></param>
         /// <param name="path">The path to be filled, represents the shape</param>
         /// <param name="paint">The paint to be used to fill the shape</param>
-        public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
+        public abstract void Render(SKCanvas canvas, SKPath path, SKPaint paint);
 
-        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        internal override void InternalRender(SKCanvas canvas, SKPath path, SKPaint paint)
         {
-            Render(canvas, canvasInfo, path, paint);
+            Render(canvas, path, paint);
         }
 
         internal override void Initialize()

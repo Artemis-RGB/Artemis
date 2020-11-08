@@ -15,8 +15,8 @@ namespace Artemis.Core
         private int _order;
         private ProfileElement _parent;
         private Profile _profile;
-        protected bool Disposed;
         protected List<ProfileElement> ChildrenList;
+        protected bool Disposed;
 
         protected ProfileElement()
         {
@@ -91,7 +91,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(SKCanvas canvas, SKImageInfo canvasInfo);
+        public abstract void Render(SKCanvas canvas);
 
         /// <summary>
         ///     Resets the internal state of the element

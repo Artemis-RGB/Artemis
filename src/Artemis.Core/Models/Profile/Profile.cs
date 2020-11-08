@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -66,7 +67,7 @@ namespace Artemis.Core
             }
         }
 
-        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(SKCanvas canvas)
         {
             lock (this)
             {
@@ -76,7 +77,7 @@ namespace Artemis.Core
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (ProfileElement profileElement in Children)
-                    profileElement.Render(canvas, canvasInfo);
+                    profileElement.Render(canvas);
             }
         }
 

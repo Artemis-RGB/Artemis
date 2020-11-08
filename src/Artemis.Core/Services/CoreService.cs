@@ -33,7 +33,6 @@ namespace Artemis.Core.Services
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
         private List<BaseDataModelExpansion> _dataModelExpansions;
-        private IntroAnimation _introAnimation;
         private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
@@ -111,28 +110,24 @@ namespace Artemis.Core.Services
 
         private void PlayIntroAnimation()
         {
-            FrameRendering += DrawOverlay;
-            _introAnimation = new IntroAnimation(_logger, _profileService, _surfaceService);
+            // The intro is cool and all, but sometimes you just wanna see what you're working on straight away ^^
+            if (Debugger.IsAttached)
+                return;
+
+            IntroAnimation intro = new IntroAnimation(_logger, _profileService, _surfaceService);
 
             // Draw a white overlay over the device
-            void DrawOverlay(object sender, FrameRenderingEventArgs args)
-            {
-                if (_introAnimation == null)
-                    args.Canvas.Clear(new SKColor(0, 0, 0));
-                else
-                    _introAnimation.Render(args.DeltaTime, args.Canvas, _rgbService.BitmapBrush.Bitmap.Info);
-            }
-
-            TimeSpan introLength = _introAnimation.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length);
+            void DrawOverlay(object? sender, FrameRenderingEventArgs args) => intro.Render(args.DeltaTime, args.Canvas);
+            FrameRendering += DrawOverlay;
 
             // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
+            TimeSpan introLength = intro.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length);
             Task.Run(async () =>
             {
                 await Task.Delay(introLength.Add(TimeSpan.FromSeconds(1)));
                 FrameRendering -= DrawOverlay;
 
-                _introAnimation.AnimationProfile?.Dispose();
-                _introAnimation = null;
+                intro.AnimationProfile.Dispose();
             });
         }
 
@@ -167,7 +162,7 @@ namespace Artemis.Core.Services
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
-                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.Enabled)) 
+                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.Enabled))
                         dataModelExpansion.Update(args.DeltaTime);
                 }
 

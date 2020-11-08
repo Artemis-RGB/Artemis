@@ -122,11 +122,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             _updatingTree = false;
 
             // Auto-select the first layer
-            if (_profileEditorService.SelectedProfile != null && SelectedTreeItem == null)
-            {
-                if (_profileEditorService.SelectedProfile.GetRootFolder().Children.FirstOrDefault() is RenderProfileElement firstElement)
-                    Execute.PostToUIThread(() => _profileEditorService.ChangeSelectedProfileElement(firstElement));
-            }
+            // if (_profileEditorService.SelectedProfile != null && SelectedTreeItem == null)
+            // {
+            //     if (_profileEditorService.SelectedProfile.GetRootFolder().Children.FirstOrDefault() is RenderProfileElement firstElement)
+            //         Execute.PostToUIThread(() => _profileEditorService.ChangeSelectedProfileElement(firstElement));
+            // }
         }
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)

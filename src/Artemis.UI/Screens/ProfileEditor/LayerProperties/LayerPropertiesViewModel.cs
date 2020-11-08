@@ -289,7 +289,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             bool hideRenderRelatedProperties = SelectedLayer?.LayerBrush != null && !SelectedLayer.LayerBrush.SupportsTransformation;
 
             SelectedLayer.General.ShapeType.IsHidden = hideRenderRelatedProperties;
-            SelectedLayer.General.ResizeMode.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.General.BlendMode.IsHidden = hideRenderRelatedProperties;
             SelectedLayer.Transform.IsHidden = hideRenderRelatedProperties;
 

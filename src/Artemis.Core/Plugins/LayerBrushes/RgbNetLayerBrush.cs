@@ -68,7 +68,7 @@ namespace Artemis.Core.LayerBrushes
         }
 
         // Not used in this effect type
-        internal override void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint)
+        internal override void InternalRender(SKCanvas canvas, SKPath path, SKPaint paint)
         {
             throw new NotImplementedException("RGB.NET layer effectes do not implement InternalRender");
         }
