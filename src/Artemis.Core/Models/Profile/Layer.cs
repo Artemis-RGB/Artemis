@@ -122,9 +122,10 @@ namespace Artemis.Core
         /// <returns>The newly created copy</returns>
         public Layer CreateCopy()
         {
-            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(JsonConvert.SerializeObject(LayerEntity));
+            JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(JsonConvert.SerializeObject(LayerEntity, settings), settings)!;
             entityCopy.Id = Guid.NewGuid();
-            entityCopy.Name = entityCopy.Name + " - Copy";
+            entityCopy.Name += " - Copy";
 
             Layer copy = new Layer(Profile, Parent, entityCopy);
             copy.ChangeLayerBrush(LayerBrush.Descriptor);
