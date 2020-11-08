@@ -4,6 +4,7 @@ using System.Linq;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -13,8 +14,6 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Folder : RenderProfileElement
     {
-        private SKBitmap _folderBitmap;
-
         /// <summary>
         ///     Creates a new instance of the <see cref="Folder" /> class and adds itself to the child collection of the provided
         ///     <paramref name="parent" />
@@ -30,6 +29,7 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
+            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -47,6 +47,7 @@ namespace Artemis.Core
             Name = folderEntity.Name;
             Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
+            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -67,6 +68,8 @@ namespace Artemis.Core
         internal FolderEntity FolderEntity { get; set; }
 
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
+
+        internal Renderer Renderer { get; }
 
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
@@ -124,6 +127,18 @@ namespace Artemis.Core
             CalculateRenderProperties();
         }
 
+        /// <summary>
+        ///     Creates a deep copy of the layer
+        /// </summary>
+        /// <returns>The newly created copy</returns>
+        public Folder CreateCopy()
+        {
+            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity));
+            entityCopy.Id = Guid.NewGuid();
+
+            return new Folder(Profile, Parent, entityCopy);
+        }
+
         public override string ToString()
         {
             return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
@@ -154,8 +169,8 @@ namespace Artemis.Core
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
+            Renderer.Dispose();
 
-            _folderBitmap?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -199,16 +214,13 @@ namespace Artemis.Core
 
         #region Rendering
 
-        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(SKCanvas canvas)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
-            if (!Enabled || !Children.Any(c => c.Enabled))
-                return;
-
             // Ensure the folder is ready
-            if (Path == null)
+            if (!Enabled || !Children.Any(c => c.Enabled) || Path == null)
                 return;
 
             // No point rendering if none of the children are going to render
@@ -217,79 +229,54 @@ namespace Artemis.Core
 
             lock (Timeline)
             {
-                RenderFolder(Timeline, canvas, canvasInfo);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                {
+                    baseLayerEffect.BaseProperties?.Update(Timeline);
+                    baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
+                }
+                
+                try
+                {
+                    canvas.Save();
+                    Renderer.Open(Path, Parent as Folder);
+                    
+                    if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
+                        throw new ArtemisCoreException("Failed to open folder render context");
+
+                    // Renderer.ApplyClip(canvas);
+
+                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                        baseLayerEffect.PreProcess(Renderer.Canvas, Renderer.Path, Renderer.Paint);
+
+                    // If required, apply the opacity override of the module to the root folder
+                    if (IsRootFolder && Profile.Module.OpacityOverride < 1)
+                    {
+                        double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
+                        Renderer.Paint.Color = Renderer.Paint.Color.WithAlpha((byte)(Renderer.Paint.Color.Alpha * multiplier));
+                    }
+
+                    // No point rendering if the alpha was set to zero by one of the effects
+                    if (Renderer.Paint.Color.Alpha == 0)
+                        return;
+
+                    // Iterate the children in reverse because the first layer must be rendered last to end up on top
+                    for (int index = Children.Count - 1; index > -1; index--) 
+                        Children[index].Render(Renderer.Canvas);
+
+                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                        baseLayerEffect.PostProcess(Renderer.Canvas, Renderer.Path, Renderer.Paint);
+
+                    canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
+                }
+                finally
+                {
+                    canvas.Restore();
+                    Renderer.Close();
+                }
+
                 Timeline.ClearDelta();
             }
-        }
-
-        private void PrepareForRender(Timeline timeline)
-        {
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-            {
-                baseLayerEffect.BaseProperties?.Update(timeline);
-                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
-            }
-        }
-
-        private void RenderFolder(Timeline timeline, SKCanvas canvas, SKImageInfo canvasInfo)
-        {
-            PrepareForRender(timeline);
-
-            if (_folderBitmap == null)
-            {
-                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
-            }
-            else if (_folderBitmap.Info.Width != (int) Path.Bounds.Width || _folderBitmap.Info.Height != (int) Path.Bounds.Height)
-            {
-                _folderBitmap.Dispose();
-                _folderBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
-            }
-
-            using SKPath folderPath = new SKPath(Path);
-            using SKCanvas folderCanvas = new SKCanvas(_folderBitmap);
-            using SKPaint folderPaint = new SKPaint();
-            folderCanvas.Clear();
-
-            folderPath.Transform(SKMatrix.MakeTranslation(folderPath.Bounds.Left * -1, folderPath.Bounds.Top * -1));
-
-            SKPoint targetLocation = Path.Bounds.Location;
-            if (Parent is Folder parentFolder)
-                targetLocation -= parentFolder.Path.Bounds.Location;
-
-            canvas.Save();
-
-            using SKPath clipPath = new SKPath(folderPath);
-            clipPath.Transform(SKMatrix.MakeTranslation(targetLocation.X, targetLocation.Y));
-            canvas.ClipPath(clipPath);
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(folderCanvas, _folderBitmap.Info, folderPath, folderPaint);
-
-            // No point rendering if the alpha was set to zero by one of the effects
-            if (folderPaint.Color.Alpha == 0)
-                return;
-
-            // Iterate the children in reverse because the first layer must be rendered last to end up on top
-            for (int index = Children.Count - 1; index > -1; index--)
-            {
-                folderCanvas.Save();
-                ProfileElement profileElement = Children[index];
-                profileElement.Render(folderCanvas, _folderBitmap.Info);
-                folderCanvas.Restore();
-            }
-
-            // If required, apply the opacity override of the module to the root folder
-            if (IsRootFolder && Profile.Module.OpacityOverride < 1)
-            {
-                double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
-                folderPaint.Color = folderPaint.Color.WithAlpha((byte) (folderPaint.Color.Alpha * multiplier));
-            }
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(canvas, canvasInfo, folderPath, folderPaint);
-            canvas.DrawBitmap(_folderBitmap, targetLocation, folderPaint);
-
-            canvas.Restore();
         }
 
         #endregion

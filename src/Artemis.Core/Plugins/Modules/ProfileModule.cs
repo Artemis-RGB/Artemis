@@ -175,7 +175,7 @@ namespace Artemis.Core.Modules
             lock (this)
             {
                 // Render the profile
-                ActiveProfile?.Render(canvas, canvasInfo);
+                ActiveProfile?.Render(canvas);
             }
 
             ProfileRendered(deltaTime, surface, canvas, canvasInfo);

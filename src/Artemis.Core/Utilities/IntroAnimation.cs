@@ -26,13 +26,13 @@ namespace Artemis.Core
 
         public Profile AnimationProfile { get; set; }
 
-        public void Render(double deltaTime, SKCanvas canvas, SKImageInfo bitmapInfo)
+        public void Render(double deltaTime, SKCanvas canvas)
         {
             if (AnimationProfile == null)
                 return;
 
             AnimationProfile.Update(deltaTime);
-            AnimationProfile.Render(canvas, bitmapInfo);
+            AnimationProfile.Render(canvas);
         }
 
         private void CreateIntroProfile()

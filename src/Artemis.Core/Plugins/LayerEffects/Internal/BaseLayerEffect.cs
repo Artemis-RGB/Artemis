@@ -131,19 +131,17 @@ namespace Artemis.Core.LayerEffects
         ///     Called before the layer or folder will be rendered
         /// </summary>
         /// <param name="canvas">The canvas used to render the frame</param>
-        /// <param name="canvasInfo">Info on the canvas size and pixel type</param>
         /// <param name="renderBounds">The bounds this layer/folder will render in</param>
         /// <param name="paint">The paint this layer/folder will use to render</param>
-        public abstract void PreProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint);
+        public abstract void PreProcess(SKCanvas canvas, SKPath renderBounds, SKPaint paint);
 
         /// <summary>
         ///     Called after the layer of folder has been rendered
         /// </summary>
         /// <param name="canvas">The canvas used to render the frame</param>
-        /// <param name="canvasInfo">Info on the canvas size and pixel type</param>
         /// <param name="renderBounds">The bounds this layer/folder rendered in</param>
         /// <param name="paint">The paint this layer/folder used to render</param>
-        public abstract void PostProcess(SKCanvas canvas, SKImageInfo canvasInfo, SKPath renderBounds, SKPaint paint);
+        public abstract void PostProcess(SKCanvas canvas, SKPath renderBounds, SKPaint paint);
 
         // Not only is this needed to initialize properties on the layer effects, it also prevents implementing anything
         // but LayerEffect<T> outside the core

@@ -290,6 +290,7 @@ namespace Artemis.Core
 
         internal virtual void OnLayerPropertyOnCurrentValueSet(LayerPropertyEventArgs e)
         {
+            Parent?.OnLayerPropertyOnCurrentValueSet(e);
             LayerPropertyOnCurrentValueSet?.Invoke(this, e);
         }
 

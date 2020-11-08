@@ -17,6 +17,11 @@
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="RenameBox" />
                     </MenuItem.Icon>
+                </MenuItem>   
+                <MenuItem Header="Copy" Command="{s:Action CopyElement}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem Header="Delete" Command="{s:Action DeleteElement}">
                     <MenuItem.Icon>

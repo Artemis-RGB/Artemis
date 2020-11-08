@@ -6,6 +6,7 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -16,7 +17,6 @@ namespace Artemis.Core
     public sealed class Layer : RenderProfileElement
     {
         private LayerGeneralProperties _general;
-        private SKBitmap _layerBitmap;
         private BaseLayerBrush _layerBrush;
         private LayerShape _layerShape;
         private List<ArtemisLed> _leds;
@@ -39,6 +39,7 @@ namespace Artemis.Core
             Enabled = true;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
+            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
@@ -57,6 +58,7 @@ namespace Artemis.Core
             Parent = parent;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
+            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
@@ -112,6 +114,27 @@ namespace Artemis.Core
 
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
+        internal Renderer Renderer { get; }
+
+        /// <summary>
+        ///     Creates a deep copy of the layer
+        /// </summary>
+        /// <returns>The newly created copy</returns>
+        public Layer CreateCopy()
+        {
+            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(JsonConvert.SerializeObject(LayerEntity));
+            entityCopy.Id = Guid.NewGuid();
+            entityCopy.Name = entityCopy.Name + " - Copy";
+
+            Layer copy = new Layer(Profile, Parent, entityCopy);
+            copy.ChangeLayerBrush(LayerBrush.Descriptor);
+            copy.AddLeds(Leds);
+
+            Parent.AddChild(copy, Order + 1);
+
+            return copy;
+        }
+
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
@@ -142,10 +165,9 @@ namespace Artemis.Core
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
-
             _general?.Dispose();
-            _layerBitmap?.Dispose();
             _transform?.Dispose();
+            Renderer.Dispose();
 
             base.Dispose(disposing);
         }
@@ -272,16 +294,13 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(SKCanvas canvas)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled)
-                return;
-
             // Ensure the layer is ready
-            if (Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
+            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
             // Ensure the brush is ready
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
@@ -289,14 +308,14 @@ namespace Artemis.Core
 
             lock (Timeline)
             {
-                RenderLayer(Timeline, canvas);
+                RenderTimeline(Timeline, canvas);
                 foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
-                    RenderLayer(extraTimeline, canvas);
+                    RenderTimeline(extraTimeline, canvas);
                 Timeline.ClearDelta();
             }
         }
 
-        private void PrepareForRender(Timeline timeline)
+        private void ApplyTimeline(Timeline timeline)
         {
             General.Update(timeline);
             Transform.Update(timeline);
@@ -310,127 +329,79 @@ namespace Artemis.Core
             }
         }
 
-        private void RenderLayer(Timeline timeline, SKCanvas canvas)
+        private void RenderTimeline(Timeline timeline, SKCanvas canvas)
         {
             if (timeline.IsFinished)
                 return;
 
-            PrepareForRender(timeline);
+            ApplyTimeline(timeline);
 
-            if (_layerBitmap == null)
+            try
             {
-                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+                canvas.Save();
+                Renderer.Open(Path, Parent as Folder);
+
+                if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
+                    throw new ArtemisCoreException("Failed to open layer render context");
+
+                // Apply blend mode and color
+                Renderer.Paint.BlendMode = General.BlendMode.CurrentValue;
+                Renderer.Paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
+
+                // Clip anything outside the LED selection bounds
+                canvas.ClipPath(Renderer.ClipPath);
+
+                using SKPath renderPath = new SKPath();
+                renderPath.AddRect(Renderer.Path.Bounds);
+
+                if (General.TransformMode.CurrentValue == LayerTransformMode.Normal)
+                {
+                    // Apply transformation except rotation to the render path
+                    if (LayerBrush.SupportsTransformation)
+                    {
+                        SKMatrix renderPathMatrix = GetTransformMatrix(true, true, true, false);
+                        renderPath.Transform(renderPathMatrix);
+                    }
+
+                    // Apply rotation to the canvas
+                    if (LayerBrush.SupportsTransformation)
+                    {
+                        SKMatrix rotationMatrix = GetTransformMatrix(true, false, false, true);
+                        Renderer.Canvas.SetMatrix(Renderer.Canvas.TotalMatrix.PreConcat(rotationMatrix));
+                    }
+
+                    // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
+                    Renderer.Canvas.ClipPath(renderPath);
+                    DelegateRendering(renderPath);
+                }
+                else if (General.TransformMode.CurrentValue == LayerTransformMode.Clip)
+                {
+                    SKMatrix renderPathMatrix = GetTransformMatrix(true, true, true, true);
+                    renderPath.Transform(renderPathMatrix);
+
+                    // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
+                    Renderer.Canvas.ClipPath(renderPath);
+                    DelegateRendering(Renderer.Path);
+                }
+
+                canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
             }
-            else if (_layerBitmap.Info.Width != (int) Path.Bounds.Width || _layerBitmap.Info.Height != (int) Path.Bounds.Height)
+            finally
             {
-                _layerBitmap.Dispose();
-                _layerBitmap = new SKBitmap(new SKImageInfo((int) Path.Bounds.Width, (int) Path.Bounds.Height));
+                canvas.Restore();
+                Renderer.Close();
             }
+        }
 
-            using SKPath layerPath = new SKPath(Path);
-            using SKCanvas layerCanvas = new SKCanvas(_layerBitmap);
-            using SKPaint layerPaint = new SKPaint {FilterQuality = SKFilterQuality.Low};
-            layerCanvas.Clear();
+        private void DelegateRendering(SKPath path)
+        {
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                baseLayerEffect.PreProcess(Renderer.Canvas, path, Renderer.Paint);
 
-            layerPath.Transform(SKMatrix.MakeTranslation(layerPath.Bounds.Left * -1, layerPath.Bounds.Top * -1));
+            LayerBrush.InternalRender(Renderer.Canvas, path, Renderer.Paint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(layerCanvas, _layerBitmap.Info, layerPath, layerPaint);
-
-            // No point rendering if the alpha was set to zero by one of the effects
-            if (layerPaint.Color.Alpha == 0)
-                return;
-
-            if (!LayerBrush.SupportsTransformation)
-                SimpleRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
-            else if (General.ResizeMode.CurrentValue == LayerResizeMode.Normal)
-                StretchRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
-            else if (General.ResizeMode.CurrentValue == LayerResizeMode.Clip)
-                ClipRender(layerCanvas, _layerBitmap.Info, layerPaint, layerPath);
-
-            using SKPaint canvasPaint = new SKPaint
-            {
-                BlendMode = General.BlendMode.CurrentValue,
-                Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f))
-            };
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(layerCanvas, _layerBitmap.Info, layerPath, canvasPaint);
-
-            SKPoint targetLocation = new SKPoint(0, 0);
-            if (Parent is Folder parentFolder)
-                targetLocation = Path.Bounds.Location - parentFolder.Path.Bounds.Location;
-
-            using SKPath canvasPath = new SKPath(Path);
-            canvasPath.Transform(SKMatrix.MakeTranslation(
-                (canvasPath.Bounds.Left - targetLocation.X) * -1,
-                (canvasPath.Bounds.Top - targetLocation.Y) * -1)
-            );
-            // canvas.ClipPath(canvasPath);
-            canvas.DrawBitmap(_layerBitmap, targetLocation, canvasPaint);
-        }
-
-        private void SimpleRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
-        {
-            using SKPath renderPath = new SKPath(LayerShape.Path);
-            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
-        }
-
-        private void StretchRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
-        {
-            // Apply transformations
-            SKSize sizeProperty = Transform.Scale.CurrentValue;
-            float rotationProperty = Transform.Rotation.CurrentValue;
-
-            SKPoint anchorPosition = GetLayerAnchorPosition(layerPath);
-            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
-
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
-            float y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
-
-            // Apply these before translation because anchorPosition takes translation into account
-            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            canvas.Scale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
-            canvas.Translate(x, y);
-
-            using SKPath renderPath = new SKPath(LayerShape.Path);
-            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
-        }
-
-        private void ClipRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPaint paint, SKPath layerPath)
-        {
-            // Apply transformation
-            SKSize sizeProperty = Transform.Scale.CurrentValue;
-            float rotationProperty = Transform.Rotation.CurrentValue;
-
-            SKPoint anchorPosition = GetLayerAnchorPosition(layerPath);
-            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
-
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - layerPath.Bounds.MidX - anchorProperty.X * layerPath.Bounds.Width;
-            float y = anchorPosition.Y - layerPath.Bounds.MidY - anchorProperty.Y * layerPath.Bounds.Height;
-
-            using SKPath clipPath = new SKPath(LayerShape.Path);
-            clipPath.Transform(SKMatrix.MakeTranslation(x, y));
-            clipPath.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
-            clipPath.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
-            canvas.ClipPath(clipPath);
-
-            canvas.RotateDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
-            canvas.Translate(x, y);
-
-            // Render the layer in the largest required bounds, this still creates stretching in some situations
-            // but the only alternative I see right now is always forcing brushes to render on the entire canvas
-            SKRect boundsRect = new SKRect(
-                Math.Min(clipPath.Bounds.Left - x, Bounds.Left - x),
-                Math.Min(clipPath.Bounds.Top - y, Bounds.Top - y),
-                Math.Max(clipPath.Bounds.Right - x, Bounds.Right - x),
-                Math.Max(clipPath.Bounds.Bottom - y, Bounds.Bottom - y)
-            );
-            using SKPath renderPath = new SKPath();
-            renderPath.AddRect(boundsRect);
-
-            LayerBrush.InternalRender(canvas, canvasInfo, renderPath, paint);
+                baseLayerEffect.PostProcess(Renderer.Canvas, path, Renderer.Paint);
         }
 
         internal void CalculateRenderProperties()
@@ -462,7 +433,7 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool zeroBased = false)
+        internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool applyTranslation, bool zeroBased)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -475,43 +446,13 @@ namespace Artemis.Core
                 : new SKPoint(layerPath.Bounds.MidX, layerPath.Bounds.MidY);
 
             // Apply translation
-            position.X += positionProperty.X * layerPath.Bounds.Width;
-            position.Y += positionProperty.Y * layerPath.Bounds.Height;
+            if (applyTranslation)
+            {
+                position.X += positionProperty.X * layerPath.Bounds.Width;
+                position.Y += positionProperty.Y * layerPath.Bounds.Height;
+            }
 
             return position;
-        }
-
-        /// <summary>
-        ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
-        ///     layer translations out
-        /// </summary>
-        /// <param name="path"></param>
-        public void IncludePathInTranslation(SKPath path, bool zeroBased)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Layer");
-
-            SKSize sizeProperty = Transform.Scale.CurrentValue;
-            float rotationProperty = Transform.Rotation.CurrentValue;
-
-            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
-
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
-
-            if (General.ResizeMode == LayerResizeMode.Normal)
-            {
-                path.Transform(SKMatrix.MakeTranslation(x, y));
-                path.Transform(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
-                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
-            }
-            else
-            {
-                path.Transform(SKMatrix.MakeTranslation(x, y));
-                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
-            }
         }
 
         /// <summary>
@@ -522,7 +463,7 @@ namespace Artemis.Core
         ///     surface
         /// </param>
         /// <returns>The transformation matrix containing the current transformation settings</returns>
-        public SKMatrix GetTransformMatrix(bool zeroBased)
+        public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -530,98 +471,38 @@ namespace Artemis.Core
             SKSize sizeProperty = Transform.Scale.CurrentValue;
             float rotationProperty = Transform.Rotation.CurrentValue;
 
-            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
+            SKPoint anchorPosition = GetLayerAnchorPosition(Path, true, zeroBased);
             SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor
             float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
             float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
 
-            if (General.ResizeMode == LayerResizeMode.Normal)
+            SKMatrix transform = SKMatrix.Empty;
+
+            if (includeTranslation)
             {
-                SKMatrix transform = SKMatrix.MakeTranslation(x, y);
-                transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
-                transform = transform.PostConcat(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
-                return transform;
-            }
-            else
-            {
-                SKMatrix transform = SKMatrix.MakeTranslation(x, y);
-                transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
-                return transform;
-            }
-        }
-
-        /// <summary>
-        ///     Excludes the provided path from the translations applied to the layer by applying translations that cancel the
-        ///     layer translations out
-        /// </summary>
-        public void ExcludePathFromTranslation(SKPath path, bool zeroBased)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Layer");
-
-            SKSize sizeProperty = Transform.Scale.CurrentValue;
-            float rotationProperty = Transform.Rotation.CurrentValue;
-
-            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
-
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
-
-            float reversedXScale = 1f / (sizeProperty.Width / 100f);
-            float reversedYScale = 1f / (sizeProperty.Height / 100f);
-
-            if (General.ResizeMode == LayerResizeMode.Normal)
-            {
-                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
-                path.Transform(SKMatrix.MakeScale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y));
-                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
-            }
-            else
-            {
-                path.Transform(SKMatrix.MakeRotationDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y));
-                path.Transform(SKMatrix.MakeTranslation(x * -1, y * -1));
-            }
-        }
-
-        /// <summary>
-        ///     Excludes the provided canvas from the translations applied to the layer by applying translations that cancel the
-        ///     layer translations out
-        /// </summary>
-        /// <returns>The number of transformations applied</returns>
-        public int ExcludeCanvasFromTranslation(SKCanvas canvas, bool zeroBased)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Layer");
-
-            SKSize sizeProperty = Transform.Scale.CurrentValue;
-            float rotationProperty = Transform.Rotation.CurrentValue;
-
-            SKPoint anchorPosition = GetLayerAnchorPosition(Path, zeroBased);
-            SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
-
-            // Translation originates from the unscaled center of the shape and is tied to the anchor
-            float x = anchorPosition.X - (zeroBased ? Bounds.MidX - Bounds.Left : Bounds.MidX) - anchorProperty.X * Bounds.Width;
-            float y = anchorPosition.Y - (zeroBased ? Bounds.MidY - Bounds.Top : Bounds.MidY) - anchorProperty.Y * Bounds.Height;
-
-            float reversedXScale = 1f / (sizeProperty.Width / 100f);
-            float reversedYScale = 1f / (sizeProperty.Height / 100f);
-
-            if (General.ResizeMode == LayerResizeMode.Normal)
-            {
-                canvas.Translate(x * -1, y * -1);
-                canvas.Scale(reversedXScale, reversedYScale, anchorPosition.X, anchorPosition.Y);
-                canvas.RotateDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y);
-
-                return 3;
+                // transform is always SKMatrix.Empty here...
+                transform = SKMatrix.MakeTranslation(x, y);
             }
 
-            canvas.RotateDegrees(rotationProperty * -1, anchorPosition.X, anchorPosition.Y);
-            canvas.Translate(x * -1, y * -1);
-            return 2;
+            if (includeScale)
+            {
+                if (transform == SKMatrix.Empty)
+                    transform = SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
+                else
+                    transform = transform.PostConcat(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+            }
+
+            if (includeRotation)
+            {
+                if (transform == SKMatrix.Empty)
+                    transform = SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+                else
+                    transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
+            }
+
+            return transform;
         }
 
         #endregion
@@ -811,7 +692,7 @@ namespace Artemis.Core
         Rectangle
     }
 
-    public enum LayerResizeMode
+    public enum LayerTransformMode
     {
         Normal,
         Clip

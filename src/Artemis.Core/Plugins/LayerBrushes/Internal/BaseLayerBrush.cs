@@ -107,7 +107,7 @@ namespace Artemis.Core.LayerBrushes
         // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
         internal abstract void Initialize();
 
-        internal abstract void InternalRender(SKCanvas canvas, SKImageInfo canvasInfo, SKPath path, SKPaint paint);
+        internal abstract void InternalRender(SKCanvas canvas, SKPath path, SKPaint paint);
 
         internal virtual void Dispose(bool disposing)
         {
