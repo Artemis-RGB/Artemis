@@ -662,7 +662,7 @@ namespace Artemis.Core
                 return;
 
             LayerBrushReference current = General.BrushReference.CurrentValue;
-            if (e.Registration.Plugin.PluginInfo.Guid == current.BrushPluginGuid &&
+            if (e.Registration.PluginImplementation.PluginInfo.Guid == current.BrushPluginGuid &&
                 e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();
         }

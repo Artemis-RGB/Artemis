@@ -136,7 +136,7 @@ namespace Artemis.Core.Services
                 }
 
                 // Activate plugins after they are all loaded
-                foreach (PluginInfo pluginInfo in _plugins.Where(p => p.Enabled))
+                foreach (PluginInfo pluginInfo in _plugins.Where(p => p.IsEnabled))
                 {
                     try
                     {
@@ -180,7 +180,7 @@ namespace Artemis.Core.Services
                     pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true};
 
                 pluginInfo.PluginEntity = pluginEntity;
-                pluginInfo.Enabled = pluginEntity.IsEnabled;
+                pluginInfo.IsEnabled = pluginEntity.IsEnabled;
 
                 string mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
                 if (!File.Exists(mainFile))
@@ -206,7 +206,7 @@ namespace Artemis.Core.Services
                 List<Type> pluginTypes;
                 try
                 {
-                    pluginTypes = pluginInfo.Assembly.GetTypes().Where(t => typeof(Plugin).IsAssignableFrom(t)).ToList();
+                    pluginTypes = pluginInfo.Assembly.GetTypes().Where(t => typeof(PluginImplementation).IsAssignableFrom(t)).ToList();
                 }
                 catch (ReflectionTypeLoadException e)
                 {
@@ -226,7 +226,7 @@ namespace Artemis.Core.Services
                     };
                     pluginInfo.Kernel = new ChildKernel(_kernel);
                     pluginInfo.Kernel.Load(new PluginModule(pluginInfo));
-                    pluginInfo.Instance = (Plugin) pluginInfo.Kernel.Get(pluginType, constraint: null, parameters: parameters);
+                    pluginInfo.Instance = (PluginImplementation) pluginInfo.Kernel.Get(pluginType, constraint: null, parameters: parameters);
                     pluginInfo.Instance.PluginInfo = pluginInfo;
                 }
                 catch (Exception e)
@@ -266,29 +266,29 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void EnablePlugin(Plugin plugin, bool isAutoEnable = false)
+        public void EnablePlugin(PluginImplementation pluginImplementation, bool isAutoEnable = false)
         {
-            _logger.Debug("Enabling plugin {pluginInfo}", plugin.PluginInfo);
-            OnPluginEnabling(new PluginEventArgs(plugin.PluginInfo));
+            _logger.Debug("Enabling plugin {pluginInfo}", pluginImplementation.PluginInfo);
+            OnPluginEnabling(new PluginEventArgs(pluginImplementation.PluginInfo));
 
             lock (_plugins)
             {
                 try
                 {
                     // A device provider may be queued for disable on next restart, this undoes that
-                    if (plugin is DeviceProvider && plugin.Enabled && !plugin.PluginInfo.Enabled)
+                    if (pluginImplementation is DeviceProvider && pluginImplementation.IsEnabled && !pluginImplementation.PluginInfo.IsEnabled)
                     {
-                        plugin.PluginInfo.Enabled = true;
-                        plugin.PluginInfo.ApplyToEntity();
-                        _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                        pluginImplementation.PluginInfo.IsEnabled = true;
+                        pluginImplementation.PluginInfo.ApplyToEntity();
+                        _pluginRepository.SavePlugin(pluginImplementation.PluginInfo.PluginEntity);
                         return;
                     }
 
-                    plugin.SetEnabled(true, isAutoEnable);
+                    pluginImplementation.SetEnabled(true, isAutoEnable);
                 }
                 catch (Exception e)
                 {
-                    _logger.Warning(new ArtemisPluginException(plugin.PluginInfo, "Exception during SetEnabled(true)", e), "Failed to enable plugin");
+                    _logger.Warning(new ArtemisPluginException(pluginImplementation.PluginInfo, "Exception during SetEnabled(true)", e), "Failed to enable plugin");
                     throw;
                 }
                 finally
@@ -296,48 +296,48 @@ namespace Artemis.Core.Services
                     // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
                     // not affect the user's settings
                     if (isAutoEnable)
-                        plugin.PluginInfo.Enabled = true;
+                        pluginImplementation.PluginInfo.IsEnabled = true;
 
-                    plugin.PluginInfo.ApplyToEntity();
-                    _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                    pluginImplementation.PluginInfo.ApplyToEntity();
+                    _pluginRepository.SavePlugin(pluginImplementation.PluginInfo.PluginEntity);
 
-                    if (plugin.PluginInfo.Enabled)
-                        _logger.Debug("Successfully enabled plugin {pluginInfo}", plugin.PluginInfo);
+                    if (pluginImplementation.PluginInfo.IsEnabled)
+                        _logger.Debug("Successfully enabled plugin {pluginInfo}", pluginImplementation.PluginInfo);
                 }
             }
 
-            OnPluginEnabled(new PluginEventArgs(plugin.PluginInfo));
+            OnPluginEnabled(new PluginEventArgs(pluginImplementation.PluginInfo));
         }
 
-        public void DisablePlugin(Plugin plugin)
+        public void DisablePlugin(PluginImplementation pluginImplementation)
         {
             lock (_plugins)
             {
-                _logger.Debug("Disabling plugin {pluginInfo}", plugin.PluginInfo);
+                _logger.Debug("Disabling plugin {pluginInfo}", pluginImplementation.PluginInfo);
 
                 // Device providers cannot be disabled at runtime simply queue a disable for next restart
-                if (plugin is DeviceProvider)
+                if (pluginImplementation is DeviceProvider)
                 {
                     // Don't call SetEnabled(false) but simply update enabled state and save it
-                    plugin.PluginInfo.Enabled = false;
-                    plugin.PluginInfo.ApplyToEntity();
-                    _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                    pluginImplementation.PluginInfo.IsEnabled = false;
+                    pluginImplementation.PluginInfo.ApplyToEntity();
+                    _pluginRepository.SavePlugin(pluginImplementation.PluginInfo.PluginEntity);
                     return;
                 }
 
-                plugin.SetEnabled(false);
-                plugin.PluginInfo.ApplyToEntity();
-                _pluginRepository.SavePlugin(plugin.PluginInfo.PluginEntity);
+                pluginImplementation.SetEnabled(false);
+                pluginImplementation.PluginInfo.ApplyToEntity();
+                _pluginRepository.SavePlugin(pluginImplementation.PluginInfo.PluginEntity);
 
-                _logger.Debug("Successfully disabled plugin {pluginInfo}", plugin.PluginInfo);
+                _logger.Debug("Successfully disabled plugin {pluginInfo}", pluginImplementation.PluginInfo);
             }
 
-            OnPluginDisabled(new PluginEventArgs(plugin.PluginInfo));
+            OnPluginDisabled(new PluginEventArgs(pluginImplementation.PluginInfo));
         }
 
-        public PluginInfo GetPluginInfo(Plugin plugin)
+        public PluginInfo GetPluginInfo(PluginImplementation pluginImplementation)
         {
-            return _plugins.FirstOrDefault(p => p.Instance == plugin);
+            return _plugins.FirstOrDefault(p => p.Instance == pluginImplementation);
         }
 
         public List<PluginInfo> GetAllPluginInfo()
@@ -345,22 +345,22 @@ namespace Artemis.Core.Services
             return new List<PluginInfo>(_plugins);
         }
 
-        public List<T> GetPluginsOfType<T>() where T : Plugin
+        public List<T> GetPluginsOfType<T>() where T : PluginImplementation
         {
-            return _plugins.Where(p => p.Enabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
+            return _plugins.Where(p => p.IsEnabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
         }
 
-        public Plugin GetPluginByAssembly(Assembly assembly)
+        public PluginImplementation GetPluginByAssembly(Assembly assembly)
         {
             return _plugins.FirstOrDefault(p => p.Assembly == assembly)?.Instance;
         }
 
-        public Plugin GetPluginByDevice(IRGBDevice rgbDevice)
+        public PluginImplementation GetPluginByDevice(IRGBDevice rgbDevice)
         {
             return GetPluginsOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices != null && d.RgbDeviceProvider.Devices.Contains(rgbDevice));
         }
 
-        public Plugin GetCallingPlugin()
+        public PluginImplementation GetCallingPlugin()
         {
             StackTrace stackTrace = new StackTrace();           // get call stack
             StackFrame[] stackFrames = stackTrace.GetFrames();  // get method calls (frames)
@@ -368,9 +368,9 @@ namespace Artemis.Core.Services
             foreach (StackFrame stackFrame in stackFrames)
             {
                 Assembly assembly = stackFrame.GetMethod().DeclaringType.Assembly;
-                Plugin plugin = GetPluginByAssembly(assembly);
-                if (plugin != null)
-                    return plugin;
+                PluginImplementation pluginImplementation = GetPluginByAssembly(assembly);
+                if (pluginImplementation != null)
+                    return pluginImplementation;
             }
 
             return null;

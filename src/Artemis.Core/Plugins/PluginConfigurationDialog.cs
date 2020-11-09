@@ -17,7 +17,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The layer brush this dialog belongs to
         /// </summary>
-        internal Plugin Plugin { get; set; }
+        internal PluginImplementation PluginImplementation { get; set; }
 
         /// <summary>
         ///     The type of view model the tab contains

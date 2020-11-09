@@ -51,7 +51,7 @@ namespace Artemis.Core
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(d => d.Plugin.PluginInfo.Guid == pluginGuid &&
+                return Registrations.FirstOrDefault(d => d.PluginImplementation.PluginInfo.Guid == pluginGuid &&
                                                          d.LayerBrushDescriptor.LayerBrushType.Name == typeName);
             }
         }

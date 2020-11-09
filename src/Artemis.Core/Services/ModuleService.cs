@@ -103,7 +103,7 @@ namespace Artemis.Core.Services
                 {
                     lock (module)
                     {
-                        bool shouldBeActivated = module.EvaluateActivationRequirements() && module.Enabled;
+                        bool shouldBeActivated = module.EvaluateActivationRequirements() && module.IsEnabled;
                         if (shouldBeActivated && !module.IsActivated)
                             tasks.Add(ActivateModule(module));
                         else if (!shouldBeActivated && module.IsActivated)

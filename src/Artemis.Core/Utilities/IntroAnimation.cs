@@ -67,12 +67,12 @@ namespace Artemis.Core
 
     internal class DummyModule : ProfileModule
     {
-        public override void EnablePlugin()
+        public override void Enable()
         {
             throw new NotImplementedException();
         }
 
-        public override void DisablePlugin()
+        public override void Disable()
         {
             throw new NotImplementedException();
         }

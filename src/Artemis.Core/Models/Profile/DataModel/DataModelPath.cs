@@ -93,7 +93,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data model GUID of the <see cref="Target" /> if it is a <see cref="DataModel" />
         /// </summary>
-        public Guid? DataModelGuid => Target?.PluginInfo.Guid;
+        public Guid? DataModelGuid => Target?.Implementation.Guid;
 
         /// <summary>
         ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
@@ -295,7 +295,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.PluginInfo.Guid != Entity.DataModelGuid)
+            if (e.Registration.DataModel.Implementation.Guid != Entity.DataModelGuid)
                 return;
 
             Target = e.Registration.DataModel;
@@ -304,7 +304,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.PluginInfo.Guid != Entity.DataModelGuid)
+            if (e.Registration.DataModel.Implementation.Guid != Entity.DataModelGuid)
                 return;
 
             Target = null;

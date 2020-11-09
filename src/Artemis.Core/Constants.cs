@@ -34,10 +34,10 @@ namespace Artemis.Core
         /// </summary>
         public static readonly PluginInfo CorePluginInfo = new PluginInfo
         {
-            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Enabled = true
+            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", IsEnabled = true
         };
 
-        internal static readonly CorePlugin CorePlugin = new CorePlugin {PluginInfo = CorePluginInfo};
+        internal static readonly CorePluginImplementation CorePluginImplementation = new CorePluginImplementation {PluginInfo = CorePluginInfo};
         internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {PluginInfo = CorePluginInfo};
 
         /// <summary>

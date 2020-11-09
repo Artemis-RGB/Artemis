@@ -45,18 +45,18 @@ namespace Artemis.Core.Modules
             return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
         }
 
-        internal override void InternalEnablePlugin()
+        internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.PluginInfo = PluginInfo;
+            DataModel.Implementation = PluginInfo;
             DataModel.DataModelDescription = GetDataModelDescription();
-            base.InternalEnablePlugin();
+            base.InternalEnable();
         }
 
-        internal override void InternalDisablePlugin()
+        internal override void InternalDisable()
         {
             DataModel = null;
-            base.InternalDisablePlugin();
+            base.InternalDisable();
         }
     }
 
@@ -64,7 +64,7 @@ namespace Artemis.Core.Modules
     /// <summary>
     ///     Allows you to add support for new games/applications
     /// </summary>
-    public abstract class Module : Plugin
+    public abstract class Module : DataModelPluginImplementation
     {
         /// <summary>
         ///     The modules display name that's shown in the menu

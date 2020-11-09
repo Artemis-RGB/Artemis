@@ -23,7 +23,7 @@
                                Identifier="PluginSettingsDialog"
                                DialogTheme="Inherit">
         <DockPanel>
-            <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.Plugin.PluginInfo.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
+            <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.PluginImplementation.PluginInfo.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
                 <controls:AppBar.AppIcon>
                     <materialDesign:PackIcon Kind="{Binding Icon}" Width="20" Height="28" />
                 </controls:AppBar.AppIcon>

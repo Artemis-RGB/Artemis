@@ -35,7 +35,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface ISettingsVmFactory : IVmFactory
     {
-        PluginSettingsViewModel CreatePluginSettingsViewModel(Plugin plugin);
+        PluginSettingsViewModel CreatePluginSettingsViewModel(PluginImplementation pluginImplementation);
         DeviceSettingsViewModel CreateDeviceSettingsViewModel(ArtemisDevice device);
     }
 

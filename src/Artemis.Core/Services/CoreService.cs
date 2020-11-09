@@ -133,8 +133,8 @@ namespace Artemis.Core.Services
 
         private void UpdatePluginCache()
         {
-            _modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
-            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled).ToList();
+            _modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.IsEnabled).ToList();
+            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
         }
 
         private void ConfigureJsonConvert()
@@ -162,7 +162,7 @@ namespace Artemis.Core.Services
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
-                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.Enabled))
+                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.IsEnabled))
                         dataModelExpansion.Update(args.DeltaTime);
                 }
 
