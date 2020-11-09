@@ -7,12 +7,12 @@ namespace Artemis.Core
     /// </summary>
     public class ConditionOperatorRegistration
     {
-        internal ConditionOperatorRegistration(BaseConditionOperator conditionOperator, Plugin plugin)
+        internal ConditionOperatorRegistration(BaseConditionOperator conditionOperator, PluginImplementation pluginImplementation)
         {
             ConditionOperator = conditionOperator;
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
 
-            Plugin.PluginDisabled += PluginOnPluginDisabled;
+            PluginImplementation.Disabled += OnDisabled;
         }
 
         /// <summary>
@@ -23,16 +23,16 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin the condition operator is associated with
         /// </summary>
-        public Plugin Plugin { get; }
+        public PluginImplementation PluginImplementation { get; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the registration is in the internal Core store
         /// </summary>
         public bool IsInStore { get; internal set; }
 
-        private void PluginOnPluginDisabled(object sender, EventArgs e)
+        private void OnDisabled(object sender, EventArgs e)
         {
-            Plugin.PluginDisabled -= PluginOnPluginDisabled;
+            PluginImplementation.Disabled -= OnDisabled;
             if (IsInStore)
                 ConditionOperatorStore.Remove(this);
         }

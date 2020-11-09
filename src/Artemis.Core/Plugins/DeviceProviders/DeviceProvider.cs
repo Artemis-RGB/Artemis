@@ -10,7 +10,7 @@ namespace Artemis.Core.DeviceProviders
     /// <summary>
     ///     Allows you to implement and register your own device provider
     /// </summary>
-    public abstract class DeviceProvider : Plugin
+    public abstract class DeviceProvider : PluginImplementation
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="DeviceProvider" /> class
@@ -34,7 +34,7 @@ namespace Artemis.Core.DeviceProviders
         public ILogger Logger { get; set; }
 
         /// <inheritdoc />
-        public override void DisablePlugin()
+        public override void Disable()
         {
             // Does not happen with device providers, they require Artemis to restart
         }

@@ -22,7 +22,7 @@ namespace Artemis.UI.Shared
             ViewModelType = viewModelType;
 
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
+                PluginInfo.Instance.Disabled += InstanceOnDisabled;
         }
 
         public RegistrationType RegistrationType { get; }
@@ -35,10 +35,10 @@ namespace Artemis.UI.Shared
         internal void Unsubscribe()
         {
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
+                PluginInfo.Instance.Disabled -= InstanceOnDisabled;
         }
 
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
+        private void InstanceOnDisabled(object sender, EventArgs e)
         {
             if (RegistrationType == RegistrationType.Input)
                 _dataModelUIService.RemoveDataModelInput(this);

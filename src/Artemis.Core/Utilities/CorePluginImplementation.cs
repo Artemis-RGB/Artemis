@@ -5,19 +5,19 @@ namespace Artemis.Core
     /// <summary>
     /// An empty plugin used by <see cref="Constants.CorePluginInfo"/>
     /// </summary>
-    internal class CorePlugin : Plugin
+    internal class CorePluginImplementation : PluginImplementation
     {
-        public CorePlugin()
+        public CorePluginImplementation()
         {
             Constants.CorePluginInfo.Instance = this;
-            Enabled = true;
+            IsEnabled = true;
         }
 
-        public override void EnablePlugin()
+        public override void Enable()
         {
         }
 
-        public override void DisablePlugin()
+        public override void Disable()
         {
         }
     }
@@ -26,14 +26,14 @@ namespace Artemis.Core
     {
         public EffectPlaceholderPlugin()
         {
-            Enabled = true;
+            IsEnabled = true;
         }
 
-        public override void EnablePlugin()
+        public override void Enable()
         {
         }
 
-        public override void DisablePlugin()
+        public override void Disable()
         {
         }
     }

@@ -10,25 +10,25 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class
         /// </summary>
-        /// <param name="plugin"></param>
-        protected PluginConfigurationViewModel(Plugin plugin)
+        /// <param name="pluginImplementation"></param>
+        protected PluginConfigurationViewModel(PluginImplementation pluginImplementation)
         {
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
         }
 
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class with a validator
         /// </summary>
-        /// <param name="plugin"></param>
+        /// <param name="pluginImplementation"></param>
         /// <param name="validator"></param>
-        protected PluginConfigurationViewModel(Plugin plugin, IModelValidator validator) : base(validator)
+        protected PluginConfigurationViewModel(PluginImplementation pluginImplementation, IModelValidator validator) : base(validator)
         {
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
         }
 
         /// <summary>
         ///     Gets the plugin this configuration view model is associated with
         /// </summary>
-        public Plugin Plugin { get; }
+        public PluginImplementation PluginImplementation { get; }
     }
 }

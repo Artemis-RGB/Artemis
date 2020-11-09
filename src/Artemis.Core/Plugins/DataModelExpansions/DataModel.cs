@@ -14,10 +14,10 @@ namespace Artemis.Core.DataModelExpansions
         private readonly Dictionary<string, DataModel> _dynamicDataModels = new Dictionary<string, DataModel>();
 
         /// <summary>
-        ///     Gets the plugin info this data model belongs to
+        ///     Gets the plugin implementation this data model belongs to
         /// </summary>
         [DataModelIgnore]
-        public PluginInfo PluginInfo { get; internal set; }
+        public DataModelPluginImplementation Implementation { get; internal set; }
 
         /// <summary>
         ///     Gets the <see cref="DataModelPropertyAttribute" /> describing this data model
@@ -43,9 +43,9 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
         {
-            if (PluginInfo.Instance is ProfileModule profileModule)
+            if (Implementation is ProfileModule profileModule)
                 return profileModule.HiddenProperties;
-            if (PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
+            if (Implementation is BaseDataModelExpansion dataModelExpansion)
                 return dataModelExpansion.HiddenProperties;
 
             return new List<PropertyInfo>().AsReadOnly();
@@ -81,7 +81,7 @@ namespace Artemis.Core.DataModelExpansions
                 throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
                                                "because the key is already in use by a static property on this data model.");
 
-            dynamicDataModel.PluginInfo = PluginInfo;
+            dynamicDataModel.Implementation = Implementation;
             dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute
             {
                 Name = string.IsNullOrWhiteSpace(name) ? key.Humanize() : name,

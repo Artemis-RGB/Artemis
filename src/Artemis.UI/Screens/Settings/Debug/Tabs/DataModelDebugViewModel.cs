@@ -117,7 +117,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void PopulateModules()
         {
-            Modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
+            Modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.IsEnabled).ToList();
         }
     }
 }

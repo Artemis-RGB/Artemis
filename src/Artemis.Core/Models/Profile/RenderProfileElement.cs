@@ -254,7 +254,7 @@ namespace Artemis.Core
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
             List<BaseLayerEffect> pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
-                                                                            ef.PluginInfo.Guid == e.Registration.Plugin.PluginInfo.Guid).ToList();
+                                                                            ef.PluginInfo.Guid == e.Registration.PluginImplementation.PluginInfo.Guid).ToList();
             foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
                 LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
@@ -268,7 +268,7 @@ namespace Artemis.Core
 
         private void LayerEffectStoreOnLayerEffectAdded(object sender, LayerEffectStoreEvent e)
         {
-            if (RenderElementEntity.LayerEffects.Any(ef => ef.PluginGuid == e.Registration.Plugin.PluginInfo.Guid))
+            if (RenderElementEntity.LayerEffects.Any(ef => ef.PluginGuid == e.Registration.PluginImplementation.PluginInfo.Guid))
                 ActivateEffects();
         }
 

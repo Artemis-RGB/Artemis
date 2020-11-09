@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         {
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Device.Plugin.PluginInfo.Directory.FullName);
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Device.PluginImplementation.PluginInfo.Directory.FullName);
             }
             catch (Exception e)
             {

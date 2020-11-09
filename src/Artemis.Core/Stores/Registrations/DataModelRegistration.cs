@@ -8,12 +8,12 @@ namespace Artemis.Core
     /// </summary>
     public class DataModelRegistration
     {
-        internal DataModelRegistration(DataModel dataModel, Plugin plugin)
+        internal DataModelRegistration(DataModel dataModel, PluginImplementation pluginImplementation)
         {
             DataModel = dataModel;
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
 
-            Plugin.PluginDisabled += PluginOnPluginDisabled;
+            PluginImplementation.Disabled += OnDisabled;
         }
 
         /// <summary>
@@ -24,16 +24,16 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin the data model is associated with
         /// </summary>
-        public Plugin Plugin { get; }
+        public PluginImplementation PluginImplementation { get; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the registration is in the internal Core store
         /// </summary>
         public bool IsInStore { get; internal set; }
 
-        private void PluginOnPluginDisabled(object sender, EventArgs e)
+        private void OnDisabled(object sender, EventArgs e)
         {
-            Plugin.PluginDisabled -= PluginOnPluginDisabled;
+            PluginImplementation.Disabled -= OnDisabled;
             if (IsInStore)
                 DataModelStore.Remove(this);
         }

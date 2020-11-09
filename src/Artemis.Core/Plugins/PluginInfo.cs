@@ -5,7 +5,6 @@ using Artemis.Storage.Entities.Plugins;
 using McMaster.NETCore.Plugins;
 using Newtonsoft.Json;
 using Ninject;
-using Ninject.Extensions.ChildKernel;
 using Stylet;
 
 namespace Artemis.Core
@@ -18,10 +17,10 @@ namespace Artemis.Core
     {
         private string _description;
         private DirectoryInfo _directory;
-        private bool _enabled;
         private Guid _guid;
         private string _icon;
         private Plugin _instance;
+        private bool _isEnabled;
         private Exception _loadException;
         private string _main;
         private string _name;
@@ -103,7 +102,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     A reference to the type implementing Plugin, available after successful load
+        ///     Gets the plugin this info is associated with
         /// </summary>
         public Plugin Instance
         {
@@ -114,10 +113,10 @@ namespace Artemis.Core
         /// <summary>
         ///     Indicates whether the user enabled the plugin or not
         /// </summary>
-        public bool Enabled
+        public bool IsEnabled
         {
-            get => _enabled;
-            internal set => SetAndNotify(ref _enabled, value);
+            get => _isEnabled;
+            internal set => SetAndNotify(ref _isEnabled, value);
         }
 
         /// <summary>
@@ -130,35 +129,40 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     The PluginLoader backing this plugin
-        /// </summary>
-        internal PluginLoader PluginLoader { get; set; }
-
-        /// <summary>
         ///     The assembly the plugin code lives in
         /// </summary>
         public Assembly Assembly { get; internal set; }
 
         /// <summary>
-        /// The Ninject kernel of the plugin
+        ///     The Ninject kernel of the plugin
         /// </summary>
         public IKernel Kernel { get; internal set; }
+
+        /// <summary>
+        ///     The PluginLoader backing this plugin
+        /// </summary>
+        internal PluginLoader PluginLoader { get; set; }
 
         /// <summary>
         ///     The entity representing the plugin
         /// </summary>
         internal PluginEntity PluginEntity { get; set; }
-        
+
         /// <inheritdoc />
         public override string ToString()
         {
             return $"{Name} v{Version} - {Guid}";
         }
 
+        public string? ResolveRelativePath(string path)
+        {
+            return path == null ? null : Path.Combine(Directory.FullName, path);
+        }
+
         internal void ApplyToEntity()
         {
             PluginEntity.Id = Guid;
-            PluginEntity.IsEnabled = Enabled;
+            PluginEntity.IsEnabled = IsEnabled;
         }
 
         internal void CreateLockFile()
@@ -175,11 +179,6 @@ namespace Artemis.Core
         internal bool GetLockFileCreated()
         {
             return File.Exists(Path.Combine(Directory.FullName, "artemis.lock"));
-        }
-
-        public string? ResolveRelativePath(string path)
-        {
-            return path == null ? null : Path.Combine(Directory.FullName, path);
         }
     }
 }

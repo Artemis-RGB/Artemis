@@ -42,24 +42,24 @@ namespace Artemis.UI.Shared.Services
             return viewModel;
         }
 
-        public DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool includeMainDataModel)
+        public DataModelPropertiesViewModel GetPluginDataModelVisualization(PluginImplementation pluginImplementation, bool includeMainDataModel)
         {
             if (includeMainDataModel)
             {
                 DataModelPropertiesViewModel mainDataModel = GetMainDataModelVisualization();
 
                 // If the main data model already includes the plugin data model we're done
-                if (mainDataModel.Children.Any(c => c.DataModel.PluginInfo.Instance == plugin))
+                if (mainDataModel.Children.Any(c => c.DataModel.Implementation.Instance == pluginImplementation))
                     return mainDataModel;
                 // Otherwise get just the plugin data model and add it
-                DataModelPropertiesViewModel pluginDataModel = GetPluginDataModelVisualization(plugin, false);
+                DataModelPropertiesViewModel pluginDataModel = GetPluginDataModelVisualization(pluginImplementation, false);
                 if (pluginDataModel != null)
                     mainDataModel.Children.Add(pluginDataModel);
 
                 return mainDataModel;
             }
 
-            DataModel dataModel = _dataModelService.GetPluginDataModel(plugin);
+            DataModel dataModel = _dataModelService.GetPluginDataModel(pluginImplementation);
             if (dataModel == null)
                 return null;
 

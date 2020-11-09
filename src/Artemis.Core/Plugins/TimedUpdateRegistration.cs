@@ -8,32 +8,32 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a registration for a timed plugin update
     /// </summary>
-    public class PluginUpdateRegistration
+    public class TimedUpdateRegistration
     {
         private DateTime _lastEvent;
         private Timer _timer;
 
-        internal PluginUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Action<double> action)
+        internal TimedUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Action<double> action)
         {
             PluginInfo = pluginInfo;
             Interval = interval;
             Action = action;
 
-            PluginInfo.Instance.PluginEnabled += InstanceOnPluginEnabled;
-            PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
-            if (PluginInfo.Instance.Enabled)
+            PluginInfo.Instance.Enabled += InstanceOnEnabled;
+            PluginInfo.Instance.Disabled += InstanceOnDisabled;
+            if (PluginInfo.Instance.IsEnabled)
                 Start();
         }
 
-        internal PluginUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Func<double, Task> asyncAction)
+        internal TimedUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Func<double, Task> asyncAction)
         {
             PluginInfo = pluginInfo;
             Interval = interval;
             AsyncAction = asyncAction;
             
-            PluginInfo.Instance.PluginEnabled += InstanceOnPluginEnabled;
-            PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
-            if (PluginInfo.Instance.Enabled)
+            PluginInfo.Instance.Enabled += InstanceOnEnabled;
+            PluginInfo.Instance.Disabled += InstanceOnDisabled;
+            if (PluginInfo.Instance.IsEnabled)
                 Start();
         }
 
@@ -66,7 +66,7 @@ namespace Artemis.Core
         {
             lock (this)
             {
-                if (!PluginInfo.Instance.Enabled)
+                if (!PluginInfo.Instance.IsEnabled)
                     throw new ArtemisPluginException("Cannot start a timed update for a disabled plugin");
 
                 if (_timer != null)
@@ -99,7 +99,7 @@ namespace Artemis.Core
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!PluginInfo.Instance.Enabled)
+            if (!PluginInfo.Instance.IsEnabled)
                 return;
 
             lock (this)
@@ -121,12 +121,12 @@ namespace Artemis.Core
             }
         }
 
-        private void InstanceOnPluginEnabled(object sender, EventArgs e)
+        private void InstanceOnEnabled(object sender, EventArgs e)
         {
             Start();
         }
 
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
+        private void InstanceOnDisabled(object sender, EventArgs e)
         {
             Stop();
         }

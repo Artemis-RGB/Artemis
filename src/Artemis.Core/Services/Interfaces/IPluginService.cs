@@ -46,22 +46,22 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Enables the provided plugin
         /// </summary>
-        /// <param name="plugin"></param>
+        /// <param name="pluginImplementation"></param>
         /// <param name="isAutoEnable">If true, fails if there is a lock file present</param>
-        void EnablePlugin(Plugin plugin, bool isAutoEnable = false);
+        void EnablePlugin(PluginImplementation pluginImplementation, bool isAutoEnable = false);
 
         /// <summary>
         ///     Disables the provided plugin
         /// </summary>
-        /// <param name="plugin"></param>
-        void DisablePlugin(Plugin plugin);
+        /// <param name="pluginImplementation"></param>
+        void DisablePlugin(PluginImplementation pluginImplementation);
 
         /// <summary>
         ///     Finds the plugin info related to the plugin
         /// </summary>
-        /// <param name="plugin">The plugin you want to find the plugin info for</param>
+        /// <param name="pluginImplementation">The plugin you want to find the plugin info for</param>
         /// <returns>The plugins PluginInfo</returns>
-        PluginInfo GetPluginInfo(Plugin plugin);
+        PluginInfo GetPluginInfo(PluginImplementation pluginImplementation);
 
         /// <summary>
         ///     Gets the plugin info of all loaded plugins
@@ -70,31 +70,31 @@ namespace Artemis.Core.Services
         List<PluginInfo> GetAllPluginInfo();
 
         /// <summary>
-        ///     Finds all enabled <see cref="Plugin" /> instances of <typeparamref name="T" />
+        ///     Finds all enabled <see cref="PluginImplementation" /> instances of <typeparamref name="T" />
         /// </summary>
-        /// <typeparam name="T">Either <see cref="Plugin" /> or a plugin type implementing <see cref="Plugin" /></typeparam>
+        /// <typeparam name="T">Either <see cref="PluginImplementation" /> or a plugin type implementing <see cref="PluginImplementation" /></typeparam>
         /// <returns>Returns a list of plugin instances of <typeparamref name="T" /></returns>
-        List<T> GetPluginsOfType<T>() where T : Plugin;
+        List<T> GetPluginsOfType<T>() where T : PluginImplementation;
 
         /// <summary>
         ///     Gets the plugin that provided the specified assembly
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        Plugin GetPluginByAssembly(Assembly assembly);
+        PluginImplementation GetPluginByAssembly(Assembly assembly);
 
         /// <summary>
         ///     Gets the plugin that defined the specified device
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        Plugin GetPluginByDevice(IRGBDevice device);
+        PluginImplementation GetPluginByDevice(IRGBDevice device);
 
         /// <summary>
         ///     Returns the plugin info of the current call stack
         /// </summary>
         /// <returns>If the current call stack contains a plugin, the plugin. Otherwise null</returns>
-        Plugin GetCallingPlugin();
+        PluginImplementation GetCallingPlugin();
 
         #region Events
 

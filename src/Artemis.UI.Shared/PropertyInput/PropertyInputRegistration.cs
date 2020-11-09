@@ -16,7 +16,7 @@ namespace Artemis.UI.Shared
             ViewModelType = viewModelType;
 
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
+                PluginInfo.Instance.Disabled += InstanceOnDisabled;
         }
 
         public PluginInfo PluginInfo { get; }
@@ -26,10 +26,10 @@ namespace Artemis.UI.Shared
         internal void Unsubscribe()
         {
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
+                PluginInfo.Instance.Disabled -= InstanceOnDisabled;
         }
 
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
+        private void InstanceOnDisabled(object sender, EventArgs e)
         {
             // Profile editor service will call Unsubscribe
             _profileEditorService.RemovePropertyInput(this);

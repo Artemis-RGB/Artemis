@@ -14,10 +14,10 @@ namespace Artemis.Core
         private SKPath _renderPath;
         private SKRect _renderRectangle;
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface)
+        internal ArtemisDevice(IRGBDevice rgbDevice, PluginImplementation pluginImplementation, ArtemisSurface surface)
         {
             RgbDevice = rgbDevice;
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
             Surface = surface;
             DeviceEntity = new DeviceEntity();
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
@@ -30,10 +30,10 @@ namespace Artemis.Core
             CalculateRenderProperties();
         }
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, Plugin plugin, ArtemisSurface surface, DeviceEntity deviceEntity)
+        internal ArtemisDevice(IRGBDevice rgbDevice, PluginImplementation pluginImplementation, ArtemisSurface surface, DeviceEntity deviceEntity)
         {
             RgbDevice = rgbDevice;
-            Plugin = plugin;
+            PluginImplementation = pluginImplementation;
             Surface = surface;
             DeviceEntity = deviceEntity;
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
@@ -52,7 +52,7 @@ namespace Artemis.Core
         }
 
         public IRGBDevice RgbDevice { get; }
-        public Plugin Plugin { get; }
+        public PluginImplementation PluginImplementation { get; }
         public ArtemisSurface Surface { get; }
         public DeviceEntity DeviceEntity { get; }
 

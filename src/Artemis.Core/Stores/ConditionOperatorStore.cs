@@ -42,7 +42,7 @@ namespace Artemis.Core
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(r => r.Plugin.PluginInfo.Guid == pluginGuid && r.ConditionOperator.GetType().Name == type);
+                return Registrations.FirstOrDefault(r => r.PluginImplementation.PluginInfo.Guid == pluginGuid && r.ConditionOperator.GetType().Name == type);
             }
         }
 
