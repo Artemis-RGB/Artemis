@@ -12,13 +12,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 {
     public class EffectsViewModel : Conductor<LayerEffectDescriptor>.Collection.AllActive
     {
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileEditorService _profileEditorService;
         private LayerEffectDescriptor _selectedLayerEffectDescriptor;
 
-        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginService pluginService, IProfileEditorService profileEditorService)
+        public EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IPluginManagementService pluginManagementService, IProfileEditorService profileEditorService)
         {
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _profileEditorService = profileEditorService;
             LayerPropertiesViewModel = layerPropertiesViewModel;
             PropertyChanged += HandleSelectedLayerEffectChanged;
@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 
         public void PopulateDescriptors()
         {
-            List<LayerEffectProvider> layerBrushProviders = _pluginService.GetPluginsOfType<LayerEffectProvider>();
+            List<LayerEffectProvider> layerBrushProviders = _pluginManagementService.GetPluginsOfType<LayerEffectProvider>();
             List<LayerEffectDescriptor> descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
             Items.AddRange(descriptors.Except(Items));
             Items.RemoveRange(Items.Except(descriptors));

@@ -10,17 +10,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
     public class ModuleOrderTabViewModel : Screen, IDropTarget
     {
         private readonly IModuleService _moduleService;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly DefaultDropHandler _defaultDropHandler;
         private readonly List<ModuleOrderModuleViewModel> _modules;
 
-        public ModuleOrderTabViewModel(IPluginService pluginService, IModuleService moduleService)
+        public ModuleOrderTabViewModel(IPluginManagementService pluginManagementService, IModuleService moduleService)
         {
             DisplayName = "MODULE PRIORITY";
 
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _moduleService = moduleService;
-            _modules = new List<ModuleOrderModuleViewModel>(pluginService.GetPluginsOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)));
+            _modules = new List<ModuleOrderModuleViewModel>(pluginManagementService.GetPluginsOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)));
             _defaultDropHandler = new DefaultDropHandler();
 
             NormalModules = new BindableCollection<ModuleOrderModuleViewModel>();

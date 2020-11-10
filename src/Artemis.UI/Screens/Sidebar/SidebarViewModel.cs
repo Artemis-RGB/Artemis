@@ -29,18 +29,18 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
         private readonly IModuleVmFactory _moduleVmFactory;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private string _activeModules;
         private bool _isSidebarOpen;
         private IScreen _selectedItem;
         private BindableCollection<INavigationItem> _sidebarItems;
         private Dictionary<INavigationItem, Module> _sidebarModules;
 
-        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginService pluginService)
+        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService)
         {
             _kernel = kernel;
             _moduleVmFactory = moduleVmFactory;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
 
             SidebarModules = new Dictionary<INavigationItem, Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
@@ -49,8 +49,8 @@ namespace Artemis.UI.Screens.Sidebar
             _activeModulesUpdateTimer.Start();
             _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
 
-            _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
-            _pluginService.PluginDisabled += PluginServiceOnPluginDisabled;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementDisabled;
 
             SetupSidebar();
             eventAggregator.Subscribe(this);
@@ -96,8 +96,8 @@ namespace Artemis.UI.Screens.Sidebar
             SelectedItem?.Deactivate();
             SelectedItem = null;
 
-            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
-            _pluginService.PluginDisabled -= PluginServiceOnPluginDisabled;
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementDisabled;
 
             _activeModulesUpdateTimer.Stop();
             _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
@@ -118,7 +118,7 @@ namespace Artemis.UI.Screens.Sidebar
             // Add all activated modules
             SidebarItems.Add(new DividerNavigationItem());
             SidebarItems.Add(new SubheaderNavigationItem {Subheader = "Modules"});
-            List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+            List<Module> modules = _pluginManagementService.GetPluginsOfType<Module>().ToList();
             foreach (Module module in modules)
                 AddModule(module);
 
@@ -210,15 +210,15 @@ namespace Artemis.UI.Screens.Sidebar
 
         #region Event handlers
 
-        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginManagementEnabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Module module)
+            if (e.PluginInfo.Plugin is Module module)
                 AddModule(module);
         }
 
-        private void PluginServiceOnPluginDisabled(object sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginManagementDisabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Module module)
+            if (e.PluginInfo.Plugin is Module module)
                 RemoveModule(module);
         }
 

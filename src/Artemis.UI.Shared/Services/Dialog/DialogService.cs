@@ -22,14 +22,14 @@ namespace Artemis.UI.Shared.Services
         private readonly IKernel _kernel;
         private readonly IViewManager _viewManager;
         private readonly IWindowManager _windowManager;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
 
-        public DialogService(IKernel kernel, IViewManager viewManager, IWindowManager windowManager, IPluginService pluginService)
+        public DialogService(IKernel kernel, IViewManager viewManager, IWindowManager windowManager, IPluginManagementService pluginManagementService)
         {
             _kernel = kernel;
             _viewManager = viewManager;
             _windowManager = windowManager;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
         }
 
         private async Task<object> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase
@@ -109,7 +109,7 @@ namespace Artemis.UI.Shared.Services
 
         private async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
         {
-            PluginImplementation callingPluginImplementation = _pluginService.GetCallingPlugin();
+            PluginImplementation callingPluginImplementation = _pluginManagementService.GetCallingPlugin();
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             if (callingPluginImplementation != null)

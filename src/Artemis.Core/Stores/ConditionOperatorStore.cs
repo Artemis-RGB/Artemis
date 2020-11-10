@@ -16,7 +16,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.ConditionOperator == conditionOperator))
                     throw new ArtemisCoreException($"Condition operator store store already contains operator '{conditionOperator.Description}'");
 
-                registration = new ConditionOperatorRegistration(conditionOperator, conditionOperator.PluginInfo.Instance) {IsInStore = true};
+                registration = new ConditionOperatorRegistration(conditionOperator, conditionOperator.PluginInfo.Plugin) {IsInStore = true};
                 Registrations.Add(registration);
             }
 

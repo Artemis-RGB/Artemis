@@ -16,7 +16,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.DataBindingModifierType == modifierType))
                     throw new ArtemisCoreException($"Data binding modifier type store already contains modifier '{modifierType.Name}'");
 
-                typeRegistration = new DataBindingModifierTypeRegistration(modifierType, modifierType.PluginInfo.Instance) { IsInStore = true };
+                typeRegistration = new DataBindingModifierTypeRegistration(modifierType, modifierType.PluginInfo.Plugin) { IsInStore = true };
                 Registrations.Add(typeRegistration);
             }
 

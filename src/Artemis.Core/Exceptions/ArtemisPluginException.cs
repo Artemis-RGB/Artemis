@@ -4,19 +4,19 @@ namespace Artemis.Core
 {
     public class ArtemisPluginException : Exception
     {
-        public ArtemisPluginException(PluginInfo pluginInfo)
+        public ArtemisPluginException(Plugin plugin)
         {
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
         }
 
-        public ArtemisPluginException(PluginInfo pluginInfo, string message) : base(message)
+        public ArtemisPluginException(Plugin plugin, string message) : base(message)
         {
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
         }
 
-        public ArtemisPluginException(PluginInfo pluginInfo, string message, Exception inner) : base(message, inner)
+        public ArtemisPluginException(Plugin plugin, string message, Exception inner) : base(message, inner)
         {
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
         }
 
         public ArtemisPluginException(string message) : base(message)
@@ -27,6 +27,6 @@ namespace Artemis.Core
         {
         }
 
-        public PluginInfo PluginInfo { get; }
+        public Plugin Plugin { get; }
     }
 }

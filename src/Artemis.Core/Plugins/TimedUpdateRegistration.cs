@@ -19,9 +19,9 @@ namespace Artemis.Core
             Interval = interval;
             Action = action;
 
-            PluginInfo.Instance.Enabled += InstanceOnEnabled;
-            PluginInfo.Instance.Disabled += InstanceOnDisabled;
-            if (PluginInfo.Instance.IsEnabled)
+            PluginInfo.Plugin.Enabled += InstanceOnEnabled;
+            PluginInfo.Plugin.Disabled += InstanceOnDisabled;
+            if (PluginInfo.Plugin.IsEnabled)
                 Start();
         }
 
@@ -31,9 +31,9 @@ namespace Artemis.Core
             Interval = interval;
             AsyncAction = asyncAction;
             
-            PluginInfo.Instance.Enabled += InstanceOnEnabled;
-            PluginInfo.Instance.Disabled += InstanceOnDisabled;
-            if (PluginInfo.Instance.IsEnabled)
+            PluginInfo.Plugin.Enabled += InstanceOnEnabled;
+            PluginInfo.Plugin.Disabled += InstanceOnDisabled;
+            if (PluginInfo.Plugin.IsEnabled)
                 Start();
         }
 
@@ -66,7 +66,7 @@ namespace Artemis.Core
         {
             lock (this)
             {
-                if (!PluginInfo.Instance.IsEnabled)
+                if (!PluginInfo.Plugin.IsEnabled)
                     throw new ArtemisPluginException("Cannot start a timed update for a disabled plugin");
 
                 if (_timer != null)
@@ -99,7 +99,7 @@ namespace Artemis.Core
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!PluginInfo.Instance.IsEnabled)
+            if (!PluginInfo.Plugin.IsEnabled)
                 return;
 
             lock (this)
@@ -108,7 +108,7 @@ namespace Artemis.Core
                 _lastEvent = DateTime.Now;
 
                 // Modules don't always want to update, honor that
-                if (PluginInfo.Instance is Module module && !module.IsUpdateAllowed)
+                if (PluginInfo.Plugin is Module module && !module.IsUpdateAllowed)
                     return;
 
                 if (Action != null)

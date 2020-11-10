@@ -13,7 +13,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
     public class DataModelDebugViewModel : Screen
     {
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly Timer _updateTimer;
         private bool _isModuleFilterEnabled;
         private DataModelPropertiesViewModel _mainDataModel;
@@ -21,10 +21,10 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private string _propertySearch;
         private Module _selectedModule;
 
-        public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginService pluginService)
+        public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
         {
             _dataModelUIService = dataModelUIService;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _updateTimer = new Timer(500);
 
             DisplayName = "Data model";
@@ -77,8 +77,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             GetDataModel();
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
-            _pluginService.PluginEnabled += PluginServiceOnPluginToggled;
-            _pluginService.PluginDisabled += PluginServiceOnPluginToggled;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementToggled;
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementToggled;
 
             PopulateModules();
 
@@ -89,8 +89,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             _updateTimer.Stop();
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-            _pluginService.PluginEnabled -= PluginServiceOnPluginToggled;
-            _pluginService.PluginDisabled -= PluginServiceOnPluginToggled;
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementToggled;
+            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementToggled;
 
             base.OnDeactivate();
         }
@@ -110,14 +110,14 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                 : _dataModelUIService.GetMainDataModelVisualization();
         }
 
-        private void PluginServiceOnPluginToggled(object? sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginManagementToggled(object? sender, PluginEventArgs e)
         {
             PopulateModules();
         }
 
         private void PopulateModules()
         {
-            Modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.IsEnabled).ToList();
+            Modules = _pluginManagementService.GetPluginsOfType<Module>().Where(p => p.IsEnabled).ToList();
         }
     }
 }

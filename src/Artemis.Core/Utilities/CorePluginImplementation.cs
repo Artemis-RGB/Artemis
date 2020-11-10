@@ -9,7 +9,7 @@ namespace Artemis.Core
     {
         public CorePluginImplementation()
         {
-            Constants.CorePluginInfo.Instance = this;
+            Constants.CorePluginInfo.Plugin = this;
             IsEnabled = true;
         }
 

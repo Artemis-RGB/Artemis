@@ -25,7 +25,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private List<Tuple<string, int>> _targetFrameRates;
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
 
-        public GeneralSettingsTabViewModel(IDialogService dialogService, IDebugService debugService, ISettingsService settingsService, IPluginService pluginService)
+        public GeneralSettingsTabViewModel(IDialogService dialogService, IDebugService debugService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
         {
             DisplayName = "GENERAL";
 
@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             // Anything else is kinda broken right now
             SampleSizes = new List<int> {1, 9};
 
-            List<LayerBrushProvider> layerBrushProviders = pluginService.GetPluginsOfType<LayerBrushProvider>();
+            List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetPluginsOfType<LayerBrushProvider>();
 
             LayerBrushDescriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference

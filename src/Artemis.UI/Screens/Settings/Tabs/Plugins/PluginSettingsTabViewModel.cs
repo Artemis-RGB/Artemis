@@ -9,15 +9,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginSettingsTabViewModel : Conductor<PluginSettingsViewModel>.Collection.AllActive
     {
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
         private BindableCollection<PluginSettingsViewModel> _plugins;
 
-        public PluginSettingsTabViewModel(IPluginService pluginService, ISettingsVmFactory settingsVmFactory)
+        public PluginSettingsTabViewModel(IPluginManagementService pluginManagementService, ISettingsVmFactory settingsVmFactory)
         {
             DisplayName = "PLUGINS";
 
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _settingsVmFactory = settingsVmFactory;
         }
 
@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 Items.Clear();
                 await Task.Delay(200);
 
-                List<PluginSettingsViewModel> instances = _pluginService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Instance)).ToList();
+                List<PluginSettingsViewModel> instances = _pluginManagementService.GetAllPluginInfo().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p.Plugin)).ToList();
                 foreach (PluginSettingsViewModel pluginSettingsViewModel in instances) 
                     Items.Add(pluginSettingsViewModel);
             });

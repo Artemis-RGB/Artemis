@@ -8,16 +8,16 @@ namespace Artemis.Core.Services
 {
     internal class DataModelService : IDataModelService
     {
-        public DataModelService(IPluginService pluginService)
+        public DataModelService(IPluginManagementService pluginManagementService)
         {
             // Add data models of already loaded plugins
-            foreach (Module module in pluginService.GetPluginsOfType<Module>().Where(p => p.IsEnabled))
+            foreach (Module module in pluginManagementService.GetPluginsOfType<Module>().Where(p => p.IsEnabled))
                 AddModuleDataModel(module);
-            foreach (BaseDataModelExpansion dataModelExpansion in pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
+            foreach (BaseDataModelExpansion dataModelExpansion in pluginManagementService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
                 AddDataModelExpansionDataModel(dataModelExpansion);
 
             // Add data models of new plugins when they get enabled
-            pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
+            pluginManagementService.PluginEnabled += PluginServiceOnPluginEnabled;
         }
 
         public DataModelRegistration RegisterDataModel(DataModel dataModel)
@@ -56,9 +56,9 @@ namespace Artemis.Core.Services
 
         private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Module module)
+            if (e.PluginInfo.Plugin is Module module)
                 AddModuleDataModel(module);
-            else if (e.PluginInfo.Instance is BaseDataModelExpansion dataModelExpansion)
+            else if (e.PluginInfo.Plugin is BaseDataModelExpansion dataModelExpansion)
                 AddDataModelExpansionDataModel(dataModelExpansion);
         }
 

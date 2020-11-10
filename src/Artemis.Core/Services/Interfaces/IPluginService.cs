@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using RGB.NET.Core;
 
@@ -8,7 +9,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     A service providing plugin management
     /// </summary>
-    public interface IPluginService : IArtemisService, IDisposable
+    public interface IPluginManagementService : IArtemisService, IDisposable
     {
         /// <summary>
         ///     Indicates whether or not plugins are currently being loaded
@@ -35,7 +36,7 @@ namespace Artemis.Core.Services
         ///     Loads the plugin defined in the provided <see cref="PluginInfo" />
         /// </summary>
         /// <param name="pluginInfo">The plugin info defining the plugin to load</param>
-        void LoadPlugin(PluginInfo pluginInfo);
+        void LoadPlugin(DirectoryInfo pluginInfo);
 
         /// <summary>
         ///     Unloads the plugin defined in the provided <see cref="PluginInfo" />
@@ -48,13 +49,13 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="pluginImplementation"></param>
         /// <param name="isAutoEnable">If true, fails if there is a lock file present</param>
-        void EnablePlugin(PluginImplementation pluginImplementation, bool isAutoEnable = false);
+        void EnablePluginImplementation(PluginImplementation pluginImplementation, bool isAutoEnable = false);
 
         /// <summary>
         ///     Disables the provided plugin
         /// </summary>
         /// <param name="pluginImplementation"></param>
-        void DisablePlugin(PluginImplementation pluginImplementation);
+        void DisablePluginImplementation(PluginImplementation pluginImplementation);
 
         /// <summary>
         ///     Finds the plugin info related to the plugin

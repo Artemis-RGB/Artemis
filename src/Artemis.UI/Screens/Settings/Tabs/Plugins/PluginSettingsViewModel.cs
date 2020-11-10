@@ -26,7 +26,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly ILogger _logger;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly IWindowManager _windowManager;
         private bool _enabling;
@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             ILogger logger,
             IWindowManager windowManager,
             IDialogService dialogService,
-            IPluginService pluginService,
+            IPluginManagementService pluginManagementService,
             ISnackbarMessageQueue snackbarMessageQueue)
         {
             PluginImplementation = pluginImplementation;
@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _logger = logger;
             _windowManager = windowManager;
             _dialogService = dialogService;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _snackbarMessageQueue = snackbarMessageQueue;
         }
 
@@ -183,7 +183,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 try
                 {
-                    _pluginService.EnablePlugin(PluginImplementation);
+                    _pluginManagementService.EnablePluginImplementation(PluginImplementation);
                 }
                 catch (Exception e)
                 {
@@ -195,7 +195,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
             }
             else
-                _pluginService.DisablePlugin(PluginImplementation);
+                _pluginManagementService.DisablePluginImplementation(PluginImplementation);
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));
@@ -208,7 +208,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             bool restart = false;
 
             // If any plugin already requires a restart, don't ask the user again
-            bool restartQueued = _pluginService.GetAllPluginInfo().Any(p => p.Instance != null && !p.IsEnabled && p.Instance.IsEnabled);
+            bool restartQueued = _pluginManagementService.GetAllPluginInfo().Any(p => p.Plugin != null && !p.IsEnabled && p.Plugin.IsEnabled);
             // If the plugin isn't enabled (load failed), it can be disabled without a restart
             if (!restartQueued && PluginImplementation.IsEnabled)
             {
@@ -220,7 +220,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 );
             }
 
-            _pluginService.DisablePlugin(PluginImplementation);
+            _pluginManagementService.DisablePluginImplementation(PluginImplementation);
             if (restart)
             {
                 _logger.Debug("Restarting for device provider disable {pluginInfo}", PluginImplementation.PluginInfo);

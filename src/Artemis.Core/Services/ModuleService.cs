@@ -17,22 +17,22 @@ namespace Artemis.Core.Services
         private static readonly SemaphoreSlim ActiveModuleSemaphore = new SemaphoreSlim(1, 1);
         private readonly ILogger _logger;
         private readonly IModuleRepository _moduleRepository;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
 
-        public ModuleService(ILogger logger, IModuleRepository moduleRepository, IPluginService pluginService, IProfileService profileService)
+        public ModuleService(ILogger logger, IModuleRepository moduleRepository, IPluginManagementService pluginManagementService, IProfileService profileService)
         {
             _logger = logger;
             _moduleRepository = moduleRepository;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _profileService = profileService;
-            _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementEnabled;
 
             Timer activationUpdateTimer = new Timer(2000);
             activationUpdateTimer.Start();
             activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
 
-            foreach (Module module in _pluginService.GetPluginsOfType<Module>())
+            foreach (Module module in _pluginManagementService.GetPluginsOfType<Module>())
                 InitialiseOrApplyPriority(module);
         }
 
@@ -56,7 +56,7 @@ namespace Artemis.Core.Services
                     _logger.Information("Clearing active module override");
 
                 // Always deactivate all other modules whenever override is called
-                List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                List<Module> modules = _pluginManagementService.GetPluginsOfType<Module>().ToList();
                 foreach (Module module in modules.Where(m => m != overrideModule))
                     OverrideDeactivate(module, overrideModule != null);
 
@@ -97,7 +97,7 @@ namespace Artemis.Core.Services
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
 
-                List<Module> modules = _pluginService.GetPluginsOfType<Module>().ToList();
+                List<Module> modules = _pluginManagementService.GetPluginsOfType<Module>().ToList();
                 List<Task> tasks = new List<Task>();
                 foreach (Module module in modules)
                 {
@@ -128,7 +128,7 @@ namespace Artemis.Core.Services
             if (module.PriorityCategory == category && module.Priority == priority)
                 return;
 
-            List<Module> modules = _pluginService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
+            List<Module> modules = _pluginManagementService.GetPluginsOfType<Module>().Where(m => m.PriorityCategory == category).OrderBy(m => m.Priority).ToList();
             if (modules.Contains(module))
                 modules.Remove(module);
 
@@ -234,9 +234,9 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginManagementEnabled(object sender, PluginEventArgs e)
         {
-            if (e.PluginInfo.Instance is Module module)
+            if (e.PluginInfo.Plugin is Module module)
                 InitialiseOrApplyPriority(module);
         }
 
