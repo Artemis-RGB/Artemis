@@ -10,12 +10,12 @@ namespace Artemis.Core.Ninject
     {
         private static readonly List<PluginSettings> PluginSettings = new List<PluginSettings>();
         private readonly IPluginRepository _pluginRepository;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
 
-        internal PluginSettingsProvider(IPluginRepository pluginRepository, IPluginService pluginService)
+        internal PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
         {
             _pluginRepository = pluginRepository;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
         }
 
         protected override PluginSettings CreateInstance(IContext context)
@@ -27,7 +27,7 @@ namespace Artemis.Core.Ninject
             // First try by PluginInfo parameter
             PluginInfo pluginInfo = parentRequest.Parameters.FirstOrDefault(p => p.Name == "PluginInfo")?.GetValue(context, null) as PluginInfo;
             if (pluginInfo == null)
-                pluginInfo = _pluginService.GetPluginByAssembly(parentRequest.Service.Assembly)?.PluginInfo;
+                pluginInfo = _pluginManagementService.GetPluginByAssembly(parentRequest.Service.Assembly)?.PluginInfo;
             // Fall back to assembly based detection
             if (pluginInfo == null)
                 throw new ArtemisCoreException("PluginSettings can only be injected with the PluginInfo parameter provided " +

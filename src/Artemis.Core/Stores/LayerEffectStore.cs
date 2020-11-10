@@ -17,7 +17,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.LayerEffectDescriptor == descriptor))
                     throw new ArtemisCoreException($"Store already contains layer brush '{descriptor.DisplayName}'");
 
-                registration = new LayerEffectRegistration(descriptor, descriptor.LayerEffectProvider.PluginInfo.Instance) { IsInStore = true };
+                registration = new LayerEffectRegistration(descriptor, descriptor.LayerEffectProvider.PluginInfo.Plugin) { IsInStore = true };
                 Registrations.Add(registration);
             }
 

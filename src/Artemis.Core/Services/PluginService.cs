@@ -22,19 +22,19 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Provides access to plugin loading and unloading
     /// </summary>
-    internal class PluginService : IPluginService
+    internal class PluginManagementService : IPluginManagementService
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginRepository _pluginRepository;
-        private readonly List<PluginInfo> _plugins;
+        private readonly List<Plugin> _plugins;
 
-        public PluginService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
+        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
         {
             _kernel = kernel;
             _logger = logger;
             _pluginRepository = pluginRepository;
-            _plugins = new List<PluginInfo>();
+            _plugins = new List<Plugin>();
 
             // Ensure the plugins directory exists
             if (!Directory.Exists(Constants.DataFolder + "plugins"))
@@ -42,6 +42,8 @@ namespace Artemis.Core.Services
         }
 
         public bool LoadingPlugins { get; private set; }
+
+        #region Built in plugins
 
         public void CopyBuiltInPlugins()
         {
@@ -101,6 +103,10 @@ namespace Artemis.Core.Services
             }
         }
 
+        #endregion
+
+        #region Plugins
+
         public void LoadPlugins(bool ignorePluginLock)
         {
             if (LoadingPlugins)
@@ -119,15 +125,7 @@ namespace Artemis.Core.Services
                 {
                     try
                     {
-                        // Load the metadata
-                        string metadataFile = Path.Combine(subDirectory.FullName, "plugin.json");
-                        if (!File.Exists(metadataFile)) _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
-
-                        // Locate the main entry
-                        PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
-                        pluginInfo.Directory = subDirectory;
-
-                        LoadPlugin(pluginInfo);
+                        LoadPlugin(subDirectory);
                     }
                     catch (Exception e)
                     {
@@ -136,15 +134,18 @@ namespace Artemis.Core.Services
                 }
 
                 // Activate plugins after they are all loaded
-                foreach (PluginInfo pluginInfo in _plugins.Where(p => p.IsEnabled))
+                foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
                 {
-                    try
+                    foreach (PluginImplementation pluginImplementation in plugin.Implementations.Where(i => i.Entity.IsEnabled))
                     {
-                        EnablePlugin(pluginInfo.Instance, !ignorePluginLock);
-                    }
-                    catch (Exception)
-                    {
-                        // ignored, logged in EnablePlugin
+                        try
+                        {
+                            EnablePluginImplementation(pluginImplementation, !ignorePluginLock);
+                        }
+                        catch (Exception)
+                        {
+                            // ignored, logged in EnablePlugin
+                        }
                     }
                 }
 
@@ -164,30 +165,37 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void LoadPlugin(PluginInfo pluginInfo)
+        public void LoadPlugin(DirectoryInfo pluginDirectory)
         {
             lock (_plugins)
             {
-                _logger.Debug("Loading plugin {pluginInfo}", pluginInfo);
-                OnPluginLoading(new PluginEventArgs(pluginInfo));
+                _logger.Debug("Loading plugin from {directory}", pluginDirectory.FullName);
 
-                // Unload the plugin first if it is already loaded
-                if (_plugins.Contains(pluginInfo))
-                    UnloadPlugin(pluginInfo);
+                // Load the metadata
+                string metadataFile = Path.Combine(pluginDirectory.FullName, "plugin.json");
+                if (!File.Exists(metadataFile))
+                    _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
 
-                PluginEntity pluginEntity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid);
-                if (pluginEntity == null)
-                    pluginEntity = new PluginEntity {Id = pluginInfo.Guid, IsEnabled = true};
+                // PluginInfo contains the ID which we need to move on
+                PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
 
-                pluginInfo.PluginEntity = pluginEntity;
-                pluginInfo.IsEnabled = pluginEntity.IsEnabled;
+                // Ensure the plugin is not already loaded
+                if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
+                    throw new ArtemisCoreException("Cannot load a plugin that is already loaded");
 
-                string mainFile = Path.Combine(pluginInfo.Directory.FullName, pluginInfo.Main);
+                Plugin plugin = new Plugin(pluginInfo, pluginDirectory);
+                OnPluginLoading(new PluginEventArgs(plugin));
+
+                // Load the entity and fall back on creating a new one
+                plugin.Entity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid) ?? new PluginEntity { Id = plugin.Guid, IsEnabled = true };
+
+                // Locate the main assembly entry
+                string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
                 if (!File.Exists(mainFile))
-                    throw new ArtemisPluginException(pluginInfo, "Couldn't find the plugins main entry at " + mainFile);
+                    throw new ArtemisPluginException(plugin, "Couldn't find the plugins main entry at " + mainFile);
 
                 // Load the plugin, all types implementing Plugin and register them with DI
-                pluginInfo.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile, configure =>
+                plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
                 {
                     configure.IsUnloadable = true;
                     configure.PreferSharedTypes = true;
@@ -195,57 +203,58 @@ namespace Artemis.Core.Services
 
                 try
                 {
-                    pluginInfo.Assembly = pluginInfo.PluginLoader.LoadDefaultAssembly();
+                    plugin.Assembly = plugin.PluginLoader.LoadDefaultAssembly();
                 }
                 catch (Exception e)
                 {
-                    throw new ArtemisPluginException(pluginInfo, "Failed to load the plugins assembly", e);
+                    throw new ArtemisPluginException(plugin, "Failed to load the plugins assembly", e);
                 }
 
                 // Get the Plugin implementation from the main assembly and if there is only one, instantiate it
-                List<Type> pluginTypes;
+                List<Type> implementationTypes;
                 try
                 {
-                    pluginTypes = pluginInfo.Assembly.GetTypes().Where(t => typeof(PluginImplementation).IsAssignableFrom(t)).ToList();
+                    implementationTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginImplementation).IsAssignableFrom(t)).ToList();
                 }
                 catch (ReflectionTypeLoadException e)
                 {
-                    throw new ArtemisPluginException(pluginInfo, "Failed to initialize the plugin assembly", new AggregateException(e.LoaderExceptions));
+                    throw new ArtemisPluginException(plugin, "Failed to initialize the plugin assembly", new AggregateException(e.LoaderExceptions));
                 }
 
-                if (pluginTypes.Count > 1)
-                    throw new ArtemisPluginException(pluginInfo, $"Plugin contains {pluginTypes.Count} implementations of Plugin, only 1 allowed");
-                if (pluginTypes.Count == 0)
-                    throw new ArtemisPluginException(pluginInfo, "Plugin contains no implementation of Plugin");
+                // Create the Ninject child kernel and load the module
+                plugin.Kernel = new ChildKernel(_kernel);
+                plugin.Kernel.Load(new PluginModule(pluginInfo));
 
-                Type pluginType = pluginTypes.Single();
-                try
+                if (!implementationTypes.Any())
+                    _logger.Warning("Plugin {plugin} contains no implementations", plugin);
+
+                // Create instances of each implementation and add them to the plugin
+                // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
+                foreach (Type implementationType in implementationTypes)
                 {
-                    IParameter[] parameters = {
-                        new Parameter("PluginInfo", pluginInfo, false)
-                    };
-                    pluginInfo.Kernel = new ChildKernel(_kernel);
-                    pluginInfo.Kernel.Load(new PluginModule(pluginInfo));
-                    pluginInfo.Instance = (PluginImplementation) pluginInfo.Kernel.Get(pluginType, constraint: null, parameters: parameters);
-                    pluginInfo.Instance.PluginInfo = pluginInfo;
-                }
-                catch (Exception e)
-                {
-                    throw new ArtemisPluginException(pluginInfo, "Failed to instantiate the plugin", e);
+                    try
+                    {
+                        PluginImplementation instance = (PluginImplementation)plugin.Kernel.Get(implementationType);
+                        plugin.AddImplementation(instance);
+                    }
+                    catch (Exception e)
+                    {
+                        throw new ArtemisPluginException(plugin, "Failed to load instantiate implementation", e);
+                    }
                 }
 
-                _plugins.Add(pluginInfo);
-                OnPluginLoaded(new PluginEventArgs(pluginInfo));
+                _plugins.Add(plugin);
+                OnPluginLoaded(new PluginEventArgs(plugin));
             }
         }
 
-        public void UnloadPlugin(PluginInfo pluginInfo)
+        public void UnloadPlugin(Plugin plugin)
         {
             lock (_plugins)
             {
                 try
                 {
-                    pluginInfo.Instance.SetEnabled(false);
+                    plugin.SetEnabled(false);
                 }
                 catch (Exception)
                 {
@@ -253,23 +262,24 @@ namespace Artemis.Core.Services
                 }
                 finally
                 {
-                    OnPluginDisabled(new PluginEventArgs(pluginInfo));
+                    OnPluginDisabled(new PluginEventArgs(plugin));
                 }
 
-                pluginInfo.Instance.Dispose();
-                pluginInfo.PluginLoader.Dispose();
-                pluginInfo.Kernel.Dispose();
+                plugin.Dispose();
+                _plugins.Remove(plugin);
 
-                _plugins.Remove(pluginInfo);
-
-                OnPluginUnloaded(new PluginEventArgs(pluginInfo));
+                OnPluginUnloaded(new PluginEventArgs(plugin));
             }
         }
 
-        public void EnablePlugin(PluginImplementation pluginImplementation, bool isAutoEnable = false)
+        #endregion
+
+
+        #region Implementations
+
+        public void EnablePluginImplementation(PluginImplementation pluginImplementation, bool isAutoEnable = false)
         {
-            _logger.Debug("Enabling plugin {pluginInfo}", pluginImplementation.PluginInfo);
-            OnPluginEnabling(new PluginEventArgs(pluginImplementation.PluginInfo));
+            _logger.Debug("Enabling plugin implementation {implementation} - {plugin}", pluginImplementation, pluginImplementation.Plugin);
 
             lock (_plugins)
             {
@@ -306,10 +316,10 @@ namespace Artemis.Core.Services
                 }
             }
 
-            OnPluginEnabled(new PluginEventArgs(pluginImplementation.PluginInfo));
+            OnPluginImplementationEnabled(new PluginImplementationEventArgs(pluginImplementation));
         }
 
-        public void DisablePlugin(PluginImplementation pluginImplementation)
+        public void DisablePluginImplementation(PluginImplementation pluginImplementation)
         {
             lock (_plugins)
             {
@@ -335,9 +345,12 @@ namespace Artemis.Core.Services
             OnPluginDisabled(new PluginEventArgs(pluginImplementation.PluginInfo));
         }
 
+        #endregion
+
+
         public PluginInfo GetPluginInfo(PluginImplementation pluginImplementation)
         {
-            return _plugins.FirstOrDefault(p => p.Instance == pluginImplementation);
+            return _plugins.FirstOrDefault(p => p.Plugin == pluginImplementation);
         }
 
         public List<PluginInfo> GetAllPluginInfo()
@@ -347,12 +360,12 @@ namespace Artemis.Core.Services
 
         public List<T> GetPluginsOfType<T>() where T : PluginImplementation
         {
-            return _plugins.Where(p => p.IsEnabled && p.Instance is T).Select(p => (T) p.Instance).ToList();
+            return _plugins.Where(p => p.IsEnabled && p.Plugin is T).Select(p => (T) p.Plugin).ToList();
         }
 
         public PluginImplementation GetPluginByAssembly(Assembly assembly)
         {
-            return _plugins.FirstOrDefault(p => p.Assembly == assembly)?.Instance;
+            return _plugins.FirstOrDefault(p => p.Assembly == assembly)?.Plugin;
         }
 
         public PluginImplementation GetPluginByDevice(IRGBDevice rgbDevice)
@@ -362,8 +375,8 @@ namespace Artemis.Core.Services
 
         public PluginImplementation GetCallingPlugin()
         {
-            StackTrace stackTrace = new StackTrace();           // get call stack
-            StackFrame[] stackFrames = stackTrace.GetFrames();  // get method calls (frames)
+            StackTrace stackTrace = new StackTrace(); // get call stack
+            StackFrame[] stackFrames = stackTrace.GetFrames(); // get method calls (frames)
 
             foreach (StackFrame stackFrame in stackFrames)
             {
@@ -395,7 +408,7 @@ namespace Artemis.Core.Services
             if (createLockFile)
                 File.Create(Path.Combine(pluginDirectory.FullName, "artemis.lock")).Close();
         }
-        
+
         #region Events
 
         public event EventHandler CopyingBuildInPlugins;
@@ -405,6 +418,9 @@ namespace Artemis.Core.Services
         public event EventHandler<PluginEventArgs> PluginEnabling;
         public event EventHandler<PluginEventArgs> PluginEnabled;
         public event EventHandler<PluginEventArgs> PluginDisabled;
+
+        public event EventHandler<PluginImplementationEventArgs> PluginImplementationEnabled;
+        public event EventHandler<PluginImplementationEventArgs> PluginImplementationDisabled;
 
         protected virtual void OnCopyingBuildInPlugins()
         {
@@ -439,6 +455,16 @@ namespace Artemis.Core.Services
         protected virtual void OnPluginDisabled(PluginEventArgs e)
         {
             PluginDisabled?.Invoke(this, e);
+        }
+
+        protected virtual void OnPluginImplementationDisabled(PluginImplementationEventArgs e)
+        {
+            PluginImplementationDisabled?.Invoke(this, e);
+        }
+
+        protected virtual void OnPluginImplementationEnabled(PluginImplementationEventArgs e)
+        {
+            PluginImplementationEnabled?.Invoke(this, e);
         }
 
         #endregion

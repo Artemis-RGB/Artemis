@@ -16,7 +16,7 @@ namespace Artemis.UI.Shared
             ViewModelType = viewModelType;
 
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.Disabled += InstanceOnDisabled;
+                PluginInfo.Plugin.Disabled += InstanceOnDisabled;
         }
 
         public PluginInfo PluginInfo { get; }
@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared
         internal void Unsubscribe()
         {
             if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.Disabled -= InstanceOnDisabled;
+                PluginInfo.Plugin.Disabled -= InstanceOnDisabled;
         }
 
         private void InstanceOnDisabled(object sender, EventArgs e)
