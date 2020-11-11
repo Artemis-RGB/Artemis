@@ -10,7 +10,7 @@ namespace Artemis.Storage.Repositories.Interfaces
         void Remove(ProfileEntity profileEntity);
         List<ProfileEntity> GetAll();
         ProfileEntity Get(Guid id);
-        List<ProfileEntity> GetByPluginGuid(Guid pluginGuid);
+        List<ProfileEntity> GetByModuleId(string moduleId);
         void Save(ProfileEntity profileEntity);
     }
 }

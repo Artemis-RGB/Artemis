@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Storage.Entities.Profile
@@ -12,7 +11,7 @@ namespace Artemis.Storage.Entities.Profile
             DataBindingEntities = new List<DataBindingEntity>();
         }
 
-        public Guid PluginGuid { get; set; }
+        public string FeatureId { get; set; }
         public string Path { get; set; }
 
         public string Value { get; set; }

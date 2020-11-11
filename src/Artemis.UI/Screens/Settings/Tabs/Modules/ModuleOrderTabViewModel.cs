@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
 
             _pluginManagementService = pluginManagementService;
             _moduleService = moduleService;
-            _modules = new List<ModuleOrderModuleViewModel>(pluginManagementService.GetPluginsOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)));
+            _modules = new List<ModuleOrderModuleViewModel>(pluginManagementService.GetFeaturesOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)));
             _defaultDropHandler = new DefaultDropHandler();
 
             NormalModules = new BindableCollection<ModuleOrderModuleViewModel>();

@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.LayerEffects;
+using Artemis.UI.Shared.LayerEffects;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Windows

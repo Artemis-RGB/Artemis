@@ -8,7 +8,7 @@ namespace Artemis.Core.DataModelExpansions
     ///     For internal use only, to implement your own layer property type, extend <see cref="DataModelExpansion{T}" />
     ///     instead.
     /// </summary>
-    public abstract class BaseDataModelExpansion : DataModelPluginImplementation
+    public abstract class BaseDataModelExpansion : DataModelPluginFeature
     {
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
@@ -35,7 +35,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
+            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
     }
 }

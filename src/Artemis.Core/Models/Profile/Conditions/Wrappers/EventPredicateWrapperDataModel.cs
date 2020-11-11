@@ -16,7 +16,7 @@ namespace Artemis.Core
     {
         internal EventPredicateWrapperDataModel()
         {
-            Implementation = Constants.CorePluginInfo;
+            Feature = Constants.CorePluginFeature;
         }
 
         [DataModelIgnore]

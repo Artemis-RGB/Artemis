@@ -40,7 +40,7 @@ namespace Artemis.Core.Services
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
             Kernel = kernel;
-            Constants.CorePluginInfo.Kernel = kernel;
+            Constants.CorePlugin.Kernel = kernel;
 
             _logger = logger;
             _pluginManagementService = pluginManagementService;
@@ -133,8 +133,8 @@ namespace Artemis.Core.Services
 
         private void UpdatePluginCache()
         {
-            _modules = _pluginManagementService.GetPluginsOfType<Module>().Where(p => p.IsEnabled).ToList();
-            _dataModelExpansions = _pluginManagementService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
+            _modules = _pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).ToList();
+            _dataModelExpansions = _pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
         }
 
         private void ConfigureJsonConvert()

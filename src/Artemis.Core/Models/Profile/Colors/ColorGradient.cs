@@ -5,7 +5,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using Artemis.Core.Properties;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core
 {
@@ -19,13 +18,13 @@ namespace Artemis.Core
         /// </summary>
         public ColorGradient()
         {
-            Stops = new BindableCollection<ColorGradientStop>();
+            Stops = new List<ColorGradientStop>();
         }
 
         /// <summary>
         ///     Gets a list of all the <see cref="ColorGradientStop" />s in the gradient
         /// </summary>
-        public BindableCollection<ColorGradientStop> Stops { get; }
+        public List<ColorGradientStop> Stops { get; }
 
         /// <summary>
         ///     Gets all the colors in the color gradient

@@ -1,6 +1,7 @@
-﻿using Stylet;
+﻿using Artemis.Core.LayerEffects;
+using Stylet;
 
-namespace Artemis.Core.LayerEffects
+namespace Artemis.UI.Shared.LayerEffects
 {
     /// <summary>
     ///     Represents a view model for an effect configuration window

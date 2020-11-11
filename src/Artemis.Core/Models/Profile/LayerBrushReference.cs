@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Core.LayerBrushes;
+﻿using Artemis.Core.LayerBrushes;
 
 namespace Artemis.Core
 {
@@ -8,24 +7,24 @@ namespace Artemis.Core
     /// </summary>
     public class LayerBrushReference
     {
-        /// <summary>
-        ///     The GUID of the plugin the brush descriptor resides in
-        /// </summary>
-        public Guid BrushPluginGuid { get; set; }
-
-        /// <summary>
-        ///     The full type name of the brush descriptor
-        /// </summary>
-        public string BrushType { get; set; }
-
         public LayerBrushReference()
         {
         }
 
         public LayerBrushReference(LayerBrushDescriptor descriptor)
         {
-            BrushPluginGuid = descriptor.LayerBrushProvider.PluginInfo.Guid;
+            LayerBrushProviderId = descriptor.Provider.Id;
             BrushType = descriptor.LayerBrushType.Name;
         }
+
+        /// <summary>
+        ///     The ID of the layer brush provided the brush was provided by
+        /// </summary>
+        public string LayerBrushProviderId { get; set; }
+
+        /// <summary>
+        ///     The full type name of the brush descriptor
+        /// </summary>
+        public string BrushType { get; set; }
     }
 }

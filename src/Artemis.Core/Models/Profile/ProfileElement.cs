@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core
 {
-    public abstract class ProfileElement : PropertyChangedBase, IDisposable
+    public abstract class ProfileElement : CorePropertyChanged, IDisposable
     {
         private bool _enabled;
         private Guid _entityId;

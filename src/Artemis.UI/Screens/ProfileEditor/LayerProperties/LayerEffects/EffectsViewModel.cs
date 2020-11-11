@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
 
         public void PopulateDescriptors()
         {
-            List<LayerEffectProvider> layerBrushProviders = _pluginManagementService.GetPluginsOfType<LayerEffectProvider>();
+            List<LayerEffectProvider> layerBrushProviders = _pluginManagementService.GetFeaturesOfType<LayerEffectProvider>();
             List<LayerEffectDescriptor> descriptors = layerBrushProviders.SelectMany(l => l.LayerEffectDescriptors).ToList();
             Items.AddRange(descriptors.Except(Items));
             Items.RemoveRange(Items.Except(descriptors));

@@ -8,25 +8,25 @@ namespace Artemis.UI.Shared
     {
         private readonly IProfileEditorService _profileEditorService;
 
-        internal PropertyInputRegistration(IProfileEditorService profileEditorService, PluginInfo pluginInfo, Type supportedType, Type viewModelType)
+        internal PropertyInputRegistration(IProfileEditorService profileEditorService, Plugin plugin, Type supportedType, Type viewModelType)
         {
             _profileEditorService = profileEditorService;
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
             SupportedType = supportedType;
             ViewModelType = viewModelType;
 
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Plugin.Disabled += InstanceOnDisabled;
+            if (Plugin != Constants.CorePlugin)
+                Plugin.Disabled += InstanceOnDisabled;
         }
 
-        public PluginInfo PluginInfo { get; }
+        public Plugin Plugin { get; }
         public Type SupportedType { get; }
         public Type ViewModelType { get; }
 
         internal void Unsubscribe()
         {
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Plugin.Disabled -= InstanceOnDisabled;
+            if (Plugin != Constants.CorePlugin)
+                Plugin.Disabled -= InstanceOnDisabled;
         }
 
         private void InstanceOnDisabled(object sender, EventArgs e)

@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Windows;
-using Stylet;
 
 namespace Artemis.Core
 {
@@ -37,8 +37,8 @@ namespace Artemis.Core
             if (!Debugger.IsAttached)
                 Process.Start(info);
 
-            // Also attempt a graceful shutdown on the UI thread
-            Execute.OnUIThread(() => Application.Current.Shutdown());
+            // Request a graceful shutdown, whatever UI we're running can pick this up
+            OnShutdownRequested();
         }
 
         /// <summary>
@@ -64,5 +64,18 @@ namespace Artemis.Core
         {
             return Process.GetCurrentProcess().MainModule.FileName;
         }
+
+        #region Events
+
+        public static event EventHandler ShutdownRequested;
+
+        private static void OnShutdownRequested()
+        {
+            ShutdownRequested?.Invoke(null, EventArgs.Empty);
+        }
+
+        #endregion
+
+
     }
 }

@@ -91,9 +91,9 @@ namespace Artemis.Core
         public DataModel? Target { get; private set; }
 
         /// <summary>
-        ///     Gets the data model GUID of the <see cref="Target" /> if it is a <see cref="DataModel" />
+        ///     Gets the data model ID of the <see cref="Target" /> if it is a <see cref="DataModel" />
         /// </summary>
-        public Guid? DataModelGuid => Target?.Implementation.Guid;
+        public string? DataModelId => Target?.Feature.Id;
 
         /// <summary>
         ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
@@ -267,8 +267,8 @@ namespace Artemis.Core
         {
             Path = Entity.Path;
 
-            if (Target == null && Entity.DataModelGuid != null)
-                Target = DataModelStore.Get(Entity.DataModelGuid.Value)?.DataModel;
+            if (Target == null && Entity.DataModelId != null)
+                Target = DataModelStore.Get(Entity.DataModelId)?.DataModel;
         }
 
         /// <inheritdoc />
@@ -279,7 +279,7 @@ namespace Artemis.Core
                 return;
 
             Entity.Path = Path;
-            Entity.DataModelGuid = DataModelGuid;
+            Entity.DataModelId = DataModelId;
 
             Entity.WrapperType = Target switch
             {
@@ -295,7 +295,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.Implementation.Guid != Entity.DataModelGuid)
+            if (e.Registration.DataModel.Feature.Id != Entity.DataModelId)
                 return;
 
             Target = e.Registration.DataModel;
@@ -304,7 +304,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.Implementation.Guid != Entity.DataModelGuid)
+            if (e.Registration.DataModel.Feature.Id != Entity.DataModelId)
                 return;
 
             Target = null;

@@ -1,5 +1,4 @@
-﻿using System;
-using Artemis.Storage.Entities.Profile;
+﻿using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerEffects.Placeholder
@@ -9,7 +8,7 @@ namespace Artemis.Core.LayerEffects.Placeholder
     /// </summary>
     internal class PlaceholderLayerEffect : LayerEffect<PlaceholderProperties>
     {
-        internal PlaceholderLayerEffect(LayerEffectEntity originalEntity, Guid placeholderFor)
+        internal PlaceholderLayerEffect(LayerEffectEntity originalEntity, string placeholderFor)
         {
             OriginalEntity = originalEntity;
             PlaceholderFor = placeholderFor;
@@ -21,8 +20,9 @@ namespace Artemis.Core.LayerEffects.Placeholder
             HasBeenRenamed = OriginalEntity.HasBeenRenamed;
         }
 
+        public string PlaceholderFor { get; }
+
         internal LayerEffectEntity OriginalEntity { get; }
-        public Guid PlaceholderFor { get; }
 
         /// <inheritdoc />
         public override void EnableLayerEffect()
@@ -56,7 +56,7 @@ namespace Artemis.Core.LayerEffects.Placeholder
     }
 
     /// <summary>
-    /// This is in place so that the UI has something to show
+    ///     This is in place so that the UI has something to show
     /// </summary>
     internal class PlaceholderProperties : LayerPropertyGroup
     {

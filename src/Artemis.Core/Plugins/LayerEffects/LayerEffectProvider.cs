@@ -7,7 +7,7 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
     /// </summary>
-    public abstract class LayerEffectProvider : PluginImplementation
+    public abstract class LayerEffectProvider : PluginFeature
     {
         private readonly List<LayerEffectDescriptor> _layerEffectDescriptors;
 
@@ -39,7 +39,7 @@ namespace Artemis.Core.LayerEffects
         protected void RegisterLayerEffectDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerEffect
         {
             if (!IsEnabled)
-                throw new ArtemisPluginException(PluginInfo, "Can only add a layer effect descriptor when the plugin is enabled");
+                throw new ArtemisPluginFeatureException(this, "Can only add a layer effect descriptor when the plugin is enabled");
 
             LayerEffectDescriptor descriptor = new LayerEffectDescriptor(displayName, description, icon, typeof(T), this);
             _layerEffectDescriptors.Add(descriptor);

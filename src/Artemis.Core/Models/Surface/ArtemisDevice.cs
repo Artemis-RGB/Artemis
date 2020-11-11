@@ -4,20 +4,19 @@ using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core
 {
-    public class ArtemisDevice : PropertyChangedBase
+    public class ArtemisDevice : CorePropertyChanged
     {
         private ReadOnlyCollection<ArtemisLed> _leds;
         private SKPath _renderPath;
         private SKRect _renderRectangle;
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, PluginImplementation pluginImplementation, ArtemisSurface surface)
+        internal ArtemisDevice(IRGBDevice rgbDevice, PluginFeature pluginFeature, ArtemisSurface surface)
         {
             RgbDevice = rgbDevice;
-            PluginImplementation = pluginImplementation;
+            PluginFeature = pluginFeature;
             Surface = surface;
             DeviceEntity = new DeviceEntity();
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
@@ -30,10 +29,10 @@ namespace Artemis.Core
             CalculateRenderProperties();
         }
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, PluginImplementation pluginImplementation, ArtemisSurface surface, DeviceEntity deviceEntity)
+        internal ArtemisDevice(IRGBDevice rgbDevice, PluginFeature pluginFeature, ArtemisSurface surface, DeviceEntity deviceEntity)
         {
             RgbDevice = rgbDevice;
-            PluginImplementation = pluginImplementation;
+            PluginFeature = pluginFeature;
             Surface = surface;
             DeviceEntity = deviceEntity;
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
@@ -52,7 +51,7 @@ namespace Artemis.Core
         }
 
         public IRGBDevice RgbDevice { get; }
-        public PluginImplementation PluginImplementation { get; }
+        public PluginFeature PluginFeature { get; }
         public ArtemisSurface Surface { get; }
         public DeviceEntity DeviceEntity { get; }
 
@@ -68,7 +67,7 @@ namespace Artemis.Core
             set
             {
                 DeviceEntity.X = value;
-                NotifyOfPropertyChange(nameof(X));
+                OnPropertyChanged(nameof(X));
             }
         }
 
@@ -78,7 +77,7 @@ namespace Artemis.Core
             set
             {
                 DeviceEntity.Y = value;
-                NotifyOfPropertyChange(nameof(Y));
+                OnPropertyChanged(nameof(Y));
             }
         }
 
@@ -88,7 +87,7 @@ namespace Artemis.Core
             set
             {
                 DeviceEntity.Rotation = value;
-                NotifyOfPropertyChange(nameof(Rotation));
+                OnPropertyChanged(nameof(Rotation));
             }
         }
 
@@ -98,7 +97,7 @@ namespace Artemis.Core
             set
             {
                 DeviceEntity.Scale = value;
-                NotifyOfPropertyChange(nameof(Scale));
+                OnPropertyChanged(nameof(Scale));
             }
         }
 
@@ -108,7 +107,7 @@ namespace Artemis.Core
             set
             {
                 DeviceEntity.ZIndex = value;
-                NotifyOfPropertyChange(nameof(ZIndex));
+                OnPropertyChanged(nameof(ZIndex));
             }
         }
 

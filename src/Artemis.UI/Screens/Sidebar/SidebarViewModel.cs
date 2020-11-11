@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Timers;
-using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
@@ -49,8 +47,8 @@ namespace Artemis.UI.Screens.Sidebar
             _activeModulesUpdateTimer.Start();
             _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
 
-            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementEnabled;
-            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementDisabled;
+            _pluginManagementService.PluginFeatureEnabled += OnFeatureEnabled;
+            _pluginManagementService.PluginFeatureDisabled += OnFeatureDisabled;
 
             SetupSidebar();
             eventAggregator.Subscribe(this);
@@ -91,18 +89,6 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public void Dispose()
-        {
-            SelectedItem?.Deactivate();
-            SelectedItem = null;
-
-            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementEnabled;
-            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementDisabled;
-
-            _activeModulesUpdateTimer.Stop();
-            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
-        }
-
         public void SetupSidebar()
         {
             SidebarItems.Clear();
@@ -118,7 +104,7 @@ namespace Artemis.UI.Screens.Sidebar
             // Add all activated modules
             SidebarItems.Add(new DividerNavigationItem());
             SidebarItems.Add(new SubheaderNavigationItem {Subheader = "Modules"});
-            List<Module> modules = _pluginManagementService.GetPluginsOfType<Module>().ToList();
+            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
             foreach (Module module in modules)
                 AddModule(module);
 
@@ -146,7 +132,7 @@ namespace Artemis.UI.Screens.Sidebar
 
             FirstLevelNavigationItem sidebarItem = new FirstLevelNavigationItem
             {
-                Icon = PluginUtilities.GetPluginIcon(module.PluginInfo, module.DisplayIcon), 
+                Icon = PluginUtilities.GetPluginIcon(module.Plugin, module.DisplayIcon),
                 Label = module.DisplayName
             };
             SidebarItems.Add(sidebarItem);
@@ -208,17 +194,29 @@ namespace Artemis.UI.Screens.Sidebar
             SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]) : null;
         }
 
+        public void Dispose()
+        {
+            SelectedItem?.Deactivate();
+            SelectedItem = null;
+
+            _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnabled;
+            _pluginManagementService.PluginFeatureDisabled -= OnFeatureDisabled;
+
+            _activeModulesUpdateTimer.Stop();
+            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
+        }
+
         #region Event handlers
 
-        private void PluginManagementServiceOnPluginManagementEnabled(object sender, PluginEventArgs e)
+        private void OnFeatureEnabled(object? sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginInfo.Plugin is Module module)
+            if (e.PluginFeature is Module module)
                 AddModule(module);
         }
 
-        private void PluginManagementServiceOnPluginManagementDisabled(object sender, PluginEventArgs e)
+        private void OnFeatureDisabled(object? sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginInfo.Plugin is Module module)
+            if (e.PluginFeature is Module module)
                 RemoveModule(module);
         }
 

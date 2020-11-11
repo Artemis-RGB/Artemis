@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents an implementation of a certain type provided by a plugin with support for data models
+    ///     Represents an feature of a certain type provided by a plugin with support for data models
     /// </summary>
-    public abstract class DataModelPluginImplementation : PluginImplementation
+    public abstract class DataModelPluginFeature : PluginFeature
     {
         /// <summary>
         ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the
@@ -23,11 +23,11 @@ namespace Artemis.Core
         {
             if (action == null)
                 throw new ArgumentNullException(nameof(action));
-            return new TimedUpdateRegistration(PluginInfo, interval, action);
+            return new TimedUpdateRegistration(this, interval, action);
         }
 
         /// <summary>
-        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the
+        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="asyncAction" /> at the
         ///     provided
         ///     <paramref name="interval" />
         /// </summary>
@@ -41,7 +41,7 @@ namespace Artemis.Core
         {
             if (asyncAction == null)
                 throw new ArgumentNullException(nameof(asyncAction));
-            return new TimedUpdateRegistration(PluginInfo, interval, asyncAction);
+            return new TimedUpdateRegistration(this, interval, asyncAction);
         }
     }
 }

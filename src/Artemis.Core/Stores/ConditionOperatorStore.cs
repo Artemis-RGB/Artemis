@@ -16,7 +16,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.ConditionOperator == conditionOperator))
                     throw new ArtemisCoreException($"Condition operator store store already contains operator '{conditionOperator.Description}'");
 
-                registration = new ConditionOperatorRegistration(conditionOperator, conditionOperator.PluginInfo.Plugin) {IsInStore = true};
+                registration = new ConditionOperatorRegistration(conditionOperator, conditionOperator.Plugin) {IsInStore = true};
                 Registrations.Add(registration);
             }
 
@@ -42,7 +42,7 @@ namespace Artemis.Core
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(r => r.PluginImplementation.PluginInfo.Guid == pluginGuid && r.ConditionOperator.GetType().Name == type);
+                return Registrations.FirstOrDefault(r => r.Plugin.Guid == pluginGuid && r.ConditionOperator.GetType().Name == type);
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
+using Artemis.Core;
 
-namespace Artemis.Core
+namespace Artemis.UI.Shared
 {
     /// <inheritdoc />
     public class PluginConfigurationDialog<T> : PluginConfigurationDialog where T : PluginConfigurationViewModel
@@ -12,12 +13,12 @@ namespace Artemis.Core
     /// <summary>
     ///     Describes a configuration dialog for a specific plugin
     /// </summary>
-    public abstract class PluginConfigurationDialog
+    public abstract class PluginConfigurationDialog : IPluginConfigurationDialog
     {
         /// <summary>
         ///     The layer brush this dialog belongs to
         /// </summary>
-        internal PluginImplementation PluginImplementation { get; set; }
+        internal PluginFeature PluginFeature { get; set; }
 
         /// <summary>
         ///     The type of view model the tab contains

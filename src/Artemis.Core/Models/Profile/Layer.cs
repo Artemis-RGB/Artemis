@@ -190,9 +190,9 @@ namespace Artemis.Core
                 typeof(PropertyGroupDescriptionAttribute)
             );
             General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
-            General.Initialize(this, "General.", Constants.CorePluginInfo);
+            General.Initialize(this, "General.", Constants.CorePluginFeature);
             Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
-            Transform.Initialize(this, "Transform.", Constants.CorePluginInfo);
+            Transform.Initialize(this, "Transform.", Constants.CorePluginFeature);
 
             General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
@@ -619,7 +619,7 @@ namespace Artemis.Core
 
             BaseLayerBrush brush = LayerBrush;
             DeactivateLayerBrush();
-            LayerEntity.PropertyEntities.RemoveAll(p => p.PluginGuid == brush.PluginInfo.Guid && p.Path.StartsWith("LayerBrush."));
+            LayerEntity.PropertyEntities.RemoveAll(p => p.FeatureId == brush.ProviderId && p.Path.StartsWith("LayerBrush."));
         }
 
         internal void ActivateLayerBrush()
@@ -628,7 +628,7 @@ namespace Artemis.Core
             if (current == null)
                 return;
 
-            LayerBrushDescriptor descriptor = LayerBrushStore.Get(current.BrushPluginGuid, current.BrushType)?.LayerBrushDescriptor;
+            LayerBrushDescriptor? descriptor = LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor;
             descriptor?.CreateInstance(this);
 
             OnLayerBrushUpdated();
@@ -662,7 +662,7 @@ namespace Artemis.Core
                 return;
 
             LayerBrushReference current = General.BrushReference.CurrentValue;
-            if (e.Registration.PluginImplementation.PluginInfo.Guid == current.BrushPluginGuid &&
+            if (e.Registration.PluginFeature.Id == current.LayerBrushProviderId &&
                 e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();
         }

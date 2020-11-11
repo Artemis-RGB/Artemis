@@ -1,16 +1,15 @@
 ﻿using System;
 using Artemis.Core.Services;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core.LayerEffects
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
     /// </summary>
-    public abstract class BaseLayerEffect : PropertyChangedBase, IDisposable
+    public abstract class BaseLayerEffect : CorePropertyChanged, IDisposable
     {
-        private LayerEffectConfigurationDialog _configurationDialog;
+        private ILayerEffectConfigurationDialog _configurationDialog;
         private LayerEffectDescriptor _descriptor;
         private bool _enabled;
         private Guid _entityId;
@@ -77,7 +76,7 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets the <see cref="LayerEffectDescriptor" /> that registered this effect
         /// </summary>
-        public LayerEffectDescriptor Descriptor
+        public LayerEffectDescriptor? Descriptor
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);
@@ -86,16 +85,16 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets or sets a configuration dialog complementing the regular properties
         /// </summary>
-        public LayerEffectConfigurationDialog ConfigurationDialog
+        public ILayerEffectConfigurationDialog ConfigurationDialog
         {
             get => _configurationDialog;
             protected set => SetAndNotify(ref _configurationDialog, value);
         }
 
         /// <summary>
-        ///     Gets the plugin info that defined this effect
+        ///     Gets the ID of the <see cref="LayerEffectProvider"/> that provided this effect
         /// </summary>
-        public PluginInfo PluginInfo => Descriptor.LayerEffectProvider?.PluginInfo;
+        public string ProviderId => Descriptor?.Provider?.Id;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type

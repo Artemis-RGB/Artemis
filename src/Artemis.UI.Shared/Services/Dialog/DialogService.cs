@@ -109,11 +109,12 @@ namespace Artemis.UI.Shared.Services
 
         private async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
         {
-            PluginImplementation callingPluginImplementation = _pluginManagementService.GetCallingPlugin();
-            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            Plugin callingPlugin = _pluginManagementService.GetCallingPlugin();
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
 
-            if (callingPluginImplementation != null)
-                return await ShowDialog(identifier, callingPluginImplementation.PluginInfo.Kernel.Get<T>(parameters));
+            if (callingPlugin != null)
+                return await ShowDialog(identifier, callingPlugin.Kernel.Get<T>(parameters));
             return await ShowDialog(identifier, _kernel.Get<T>(parameters));
         }
 

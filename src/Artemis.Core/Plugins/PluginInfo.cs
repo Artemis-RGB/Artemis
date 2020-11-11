@@ -1,6 +1,5 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Stylet;
 
 namespace Artemis.Core
 {
@@ -8,7 +7,7 @@ namespace Artemis.Core
     ///     Represents basic info about a plugin and contains a reference to the instance of said plugin
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginInfo : PropertyChangedBase
+    public class PluginInfo : CorePropertyChanged
     {
         private string _description;
         private Guid _guid;

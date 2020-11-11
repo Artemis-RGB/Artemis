@@ -17,7 +17,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.LayerBrushDescriptor == descriptor))
                     throw new ArtemisCoreException($"Store already contains layer brush '{descriptor.DisplayName}'");
 
-                registration = new LayerBrushRegistration(descriptor, descriptor.LayerBrushProvider.PluginInfo.Plugin) {IsInStore = true};
+                registration = new LayerBrushRegistration(descriptor, descriptor.Provider) {IsInStore = true};
                 Registrations.Add(registration);
             }
 
@@ -47,11 +47,11 @@ namespace Artemis.Core
             }
         }
 
-        public static LayerBrushRegistration Get(Guid pluginGuid, string typeName)
+        public static LayerBrushRegistration? Get(string id, string typeName)
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(d => d.PluginImplementation.PluginInfo.Guid == pluginGuid &&
+                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == id &&
                                                          d.LayerBrushDescriptor.LayerBrushType.Name == typeName);
             }
         }

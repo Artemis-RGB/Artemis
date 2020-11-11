@@ -12,9 +12,9 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Registers a new condition operator for use in layer conditions
         /// </summary>
-        /// <param name="pluginInfo">The PluginInfo of the plugin this condition operator belongs to</param>
+        /// <param name="plugin">The plugin this condition operator belongs to</param>
         /// <param name="conditionOperator">The condition operator to register</param>
-        ConditionOperatorRegistration RegisterConditionOperator([NotNull] PluginInfo pluginInfo, [NotNull] BaseConditionOperator conditionOperator);
+        ConditionOperatorRegistration RegisterConditionOperator([NotNull] Plugin plugin, [NotNull] BaseConditionOperator conditionOperator);
 
         /// <summary>
         ///     Removes a condition operator so it is no longer available for use in layer conditions
