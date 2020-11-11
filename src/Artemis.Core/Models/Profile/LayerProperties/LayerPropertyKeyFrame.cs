@@ -1,12 +1,11 @@
 ﻿using System;
-using Stylet;
 
 namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a keyframe on a <see cref="LayerProperty{T}" /> containing a value and a timestamp
     /// </summary>
-    public class LayerPropertyKeyframe<T> : PropertyChangedBase
+    public class LayerPropertyKeyframe<T> : CorePropertyChanged
     {
         private LayerProperty<T> _layerProperty;
         private TimeSpan _position;

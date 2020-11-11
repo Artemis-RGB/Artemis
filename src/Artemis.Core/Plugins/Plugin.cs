@@ -7,16 +7,15 @@ using System.Reflection;
 using Artemis.Storage.Entities.Plugins;
 using McMaster.NETCore.Plugins;
 using Ninject;
-using Stylet;
 
 namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a plugin
     /// </summary>
-    public class Plugin : PropertyChangedBase, IDisposable
+    public class Plugin : CorePropertyChanged, IDisposable
     {
-        private readonly List<PluginImplementation> _implementations;
+        private readonly List<PluginFeature> _features;
 
         private bool _isEnabled;
 
@@ -25,7 +24,7 @@ namespace Artemis.Core
             Info = info;
             Directory = directory;
 
-            _implementations = new List<PluginImplementation>();
+            _features = new List<PluginFeature>();
         }
 
         /// <summary>
@@ -46,8 +45,8 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
         /// </summary>
-        public PluginConfigurationDialog? ConfigurationDialog { get; protected set; }
-        
+        public IPluginConfigurationDialog? ConfigurationDialog { get; set; }
+
         /// <summary>
         ///     Indicates whether the user enabled the plugin or not
         /// </summary>
@@ -58,19 +57,24 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets a read-only collection of all implementations this plugin provides
+        ///     Gets a read-only collection of all features this plugin provides
         /// </summary>
-        public ReadOnlyCollection<PluginImplementation> Implementations => _implementations.AsReadOnly();
+        public ReadOnlyCollection<PluginFeature> Features => _features.AsReadOnly();
 
         /// <summary>
         ///     The assembly the plugin code lives in
         /// </summary>
-        internal Assembly? Assembly { get; set; }
+        public Assembly? Assembly { get; internal set; }
+
+        /// <summary>
+        ///     Gets the plugin bootstrapper
+        /// </summary>
+        public IPluginBootstrapper? Bootstrapper { get; internal set; }
 
         /// <summary>
         ///     The Ninject kernel of the plugin
         /// </summary>
-        internal IKernel? Kernel { get; set; }
+        public IKernel? Kernel { get; internal set; }
 
         /// <summary>
         ///     The PluginLoader backing this plugin
@@ -80,7 +84,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The entity representing the plugin
         /// </summary>
-        internal PluginEntity? Entity { get; set; }
+        internal PluginEntity Entity { get; set; }
 
         /// <summary>
         ///     Resolves the relative path provided in the <paramref name="path" /> parameter to an absolute path
@@ -92,25 +96,15 @@ namespace Artemis.Core
             return path == null ? null : Path.Combine(Directory.FullName, path);
         }
 
-        internal void ApplyToEntity()
+        /// <summary>
+        ///     Looks up the instance of the feature of type <typeparamref name="T" />
+        ///     <para>Note: This method only returns instances of enabled features</para>
+        /// </summary>
+        /// <typeparam name="T">The type of feature to find</typeparam>
+        /// <returns>If found, the instance of the feature</returns>
+        public T? GetFeature<T>() where T : PluginFeature
         {
-            Entity.Id = Guid;
-            Entity.IsEnabled = IsEnabled;
-        }
-
-        internal void AddImplementation(PluginImplementation implementation)
-        {
-            implementation.Plugin = this;
-            _implementations.Add(implementation);
-        }
-
-        public void SetEnabled(bool enable)
-        {
-            if (IsEnabled == enable)
-                return;
-
-            if (!enable && Implementations.Any(e => e.IsEnabled))
-                throw new ArtemisCoreException("Cannot disable this plugin because it still has enabled implementations");
+            return _features.FirstOrDefault(i => i is T) as T;
         }
 
         /// <inheritdoc />
@@ -119,13 +113,118 @@ namespace Artemis.Core
             return Info.ToString();
         }
 
+        internal void ApplyToEntity()
+        {
+            Entity.Id = Guid;
+            Entity.IsEnabled = IsEnabled;
+        }
+
+        internal void AddFeature(PluginFeature feature)
+        {
+            feature.Plugin = this;
+            _features.Add(feature);
+
+            OnFeatureAdded(new PluginFeatureEventArgs(feature));
+        }
+
+        internal void RemoveFeature(PluginFeature feature)
+        {
+            _features.Remove(feature);
+            feature.InternalDisable();
+            feature.Dispose();
+
+            OnFeatureRemoved(new PluginFeatureEventArgs(feature));
+        }
+
+
+        internal void SetEnabled(bool enable)
+        {
+            if (IsEnabled == enable)
+                return;
+
+            if (!enable && Features.Any(e => e.IsEnabled))
+                throw new ArtemisCoreException("Cannot disable this plugin because it still has enabled features");
+
+            IsEnabled = enable;
+
+            if (enable)
+            {
+                Bootstrapper?.Enable(this);
+                OnEnabled();
+            }
+            else
+            {
+                Bootstrapper?.Disable(this);
+                OnDisabled();
+            }
+        }
+
         public void Dispose()
         {
-            foreach (PluginImplementation pluginImplementation in Implementations) 
-                pluginImplementation.Dispose();
+            foreach (PluginFeature feature in Features)
+                feature.Dispose();
 
             Kernel?.Dispose();
             PluginLoader?.Dispose();
+
+            _features.Clear();
+            SetEnabled(false);
         }
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when the plugin is enabled
+        /// </summary>
+        public event EventHandler? Enabled;
+
+        /// <summary>
+        ///     Occurs when the plugin is disabled
+        /// </summary>
+        public event EventHandler? Disabled;
+
+        /// <summary>
+        ///     Occurs when an feature is loaded and added to the plugin
+        /// </summary>
+        public event EventHandler<PluginFeatureEventArgs>? FeatureAdded;
+
+        /// <summary>
+        ///     Occurs when an feature is disabled and removed from the plugin
+        /// </summary>
+        public event EventHandler<PluginFeatureEventArgs>? FeatureRemoved;
+
+        /// <summary>
+        ///     Invokes the Enabled event
+        /// </summary>
+        protected virtual void OnEnabled()
+        {
+            Enabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the Disabled event
+        /// </summary>
+        protected virtual void OnDisabled()
+        {
+            Disabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureAdded event
+        /// </summary>
+        protected virtual void OnFeatureAdded(PluginFeatureEventArgs e)
+        {
+            FeatureAdded?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureRemoved event
+        /// </summary>
+        protected virtual void OnFeatureRemoved(PluginFeatureEventArgs e)
+        {
+            FeatureRemoved?.Invoke(this, e);
+        }
+
+        #endregion
     }
 }

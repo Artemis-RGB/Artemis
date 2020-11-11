@@ -16,7 +16,7 @@ namespace Artemis.Core
     {
         internal ListPredicateWrapperDataModel()
         {
-            Implementation = Constants.CorePluginInfo;
+            Feature = Constants.CorePluginFeature;
         }
 
         [DataModelIgnore]

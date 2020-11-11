@@ -39,6 +39,8 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
+            Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+
             ILogger logger = Kernel.Get<ILogger>();
             IViewManager viewManager = Kernel.Get<IViewManager>();
 
@@ -82,6 +84,11 @@ namespace Artemis.UI
                     throw;
                 }
             });
+        }
+
+        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        {
+            Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 
         protected override void ConfigureIoC(IKernel kernel)

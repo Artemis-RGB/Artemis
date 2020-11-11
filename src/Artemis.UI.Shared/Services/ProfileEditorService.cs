@@ -177,12 +177,12 @@ namespace Artemis.UI.Shared.Services
             return true;
         }
 
-        public PropertyInputRegistration RegisterPropertyInput<T>(PluginInfo pluginInfo) where T : PropertyInputViewModel
+        public PropertyInputRegistration RegisterPropertyInput<T>(Plugin plugin) where T : PropertyInputViewModel
         {
-            return RegisterPropertyInput(typeof(T), pluginInfo);
+            return RegisterPropertyInput(typeof(T), plugin);
         }
 
-        public PropertyInputRegistration RegisterPropertyInput(Type viewModelType, PluginInfo pluginInfo)
+        public PropertyInputRegistration RegisterPropertyInput(Type viewModelType, Plugin plugin)
         {
             if (!typeof(PropertyInputViewModel).IsAssignableFrom(viewModelType))
                 throw new ArtemisSharedUIException($"Property input VM type must implement {nameof(PropertyInputViewModel)}");
@@ -201,13 +201,14 @@ namespace Artemis.UI.Shared.Services
                 PropertyInputRegistration existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
-                    if (existing.PluginInfo != pluginInfo)
-                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already registered by {existing.PluginInfo.Name}");
+                    if (existing.Plugin != plugin)
+                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already " +
+                                                         $"registered by {existing.Plugin}");
                     return existing;
                 }
 
                 Kernel.Bind(viewModelType).ToSelf();
-                PropertyInputRegistration registration = new PropertyInputRegistration(this, pluginInfo, supportedType, viewModelType);
+                PropertyInputRegistration registration = new PropertyInputRegistration(this, plugin, supportedType, viewModelType);
                 _registeredPropertyEditors.Add(registration);
                 return registration;
             }
@@ -281,7 +282,7 @@ namespace Artemis.UI.Shared.Services
                 return null;
 
             ConstructorArgument parameter = new ConstructorArgument("layerProperty", layerProperty);
-            IKernel kernel = registration != null ? registration.PluginInfo.Kernel : Kernel;
+            IKernel kernel = registration != null ? registration.Plugin.Kernel : Kernel;
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 

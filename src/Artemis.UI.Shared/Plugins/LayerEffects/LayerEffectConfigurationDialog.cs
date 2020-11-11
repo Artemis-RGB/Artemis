@@ -1,6 +1,7 @@
 ﻿using System;
+using Artemis.Core.LayerEffects;
 
-namespace Artemis.Core.LayerEffects
+namespace Artemis.UI.Shared.LayerEffects
 {
     /// <inheritdoc />
     public class LayerEffectConfigurationDialog<T> : LayerEffectConfigurationDialog where T : EffectConfigurationViewModel
@@ -12,7 +13,7 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     Describes a UI tab for a specific layer effect
     /// </summary>
-    public abstract class LayerEffectConfigurationDialog
+    public abstract class LayerEffectConfigurationDialog : ILayerEffectConfigurationDialog
     {
         /// <summary>
         ///     The layer effect this dialog belongs to

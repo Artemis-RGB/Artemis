@@ -346,7 +346,7 @@ namespace Artemis.Core
 
             if (Operator != null)
             {
-                Entity.OperatorPluginGuid = Operator.PluginInfo.Guid;
+                Entity.OperatorPluginGuid = Operator.Plugin.Guid;
                 Entity.OperatorType = Operator.GetType().Name;
             }
         }
@@ -358,7 +358,7 @@ namespace Artemis.Core
         private void ConditionOperatorStoreOnConditionOperatorAdded(object? sender, ConditionOperatorStoreEvent e)
         {
             BaseConditionOperator conditionOperator = e.Registration.ConditionOperator;
-            if (Entity.OperatorPluginGuid == conditionOperator.PluginInfo.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
+            if (Entity.OperatorPluginGuid == conditionOperator.Plugin.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
                 UpdateOperator(conditionOperator);
         }
 

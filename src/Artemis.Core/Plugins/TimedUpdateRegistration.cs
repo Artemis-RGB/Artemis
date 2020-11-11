@@ -8,40 +8,41 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a registration for a timed plugin update
     /// </summary>
-    public class TimedUpdateRegistration
+    public class TimedUpdateRegistration : IDisposable
     {
         private DateTime _lastEvent;
         private Timer _timer;
+        private bool _disposed;
 
-        internal TimedUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Action<double> action)
+        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action)
         {
-            PluginInfo = pluginInfo;
+            Feature = feature;
             Interval = interval;
             Action = action;
 
-            PluginInfo.Plugin.Enabled += InstanceOnEnabled;
-            PluginInfo.Plugin.Disabled += InstanceOnDisabled;
-            if (PluginInfo.Plugin.IsEnabled)
+            Feature.Enabled += FeatureOnEnabled;
+            Feature.Disabled += FeatureOnDisabled;
+            if (Feature.IsEnabled)
                 Start();
         }
 
-        internal TimedUpdateRegistration(PluginInfo pluginInfo, TimeSpan interval, Func<double, Task> asyncAction)
+        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction)
         {
-            PluginInfo = pluginInfo;
+            Feature = feature;
             Interval = interval;
             AsyncAction = asyncAction;
-            
-            PluginInfo.Plugin.Enabled += InstanceOnEnabled;
-            PluginInfo.Plugin.Disabled += InstanceOnDisabled;
-            if (PluginInfo.Plugin.IsEnabled)
+
+            Feature.Enabled += FeatureOnEnabled;
+            Feature.Disabled += FeatureOnDisabled;
+            if (Feature.IsEnabled)
                 Start();
         }
 
 
         /// <summary>
-        ///     Gets the plugin info of the plugin this registration is associated with
+        ///     Gets the plugin feature this registration is associated with
         /// </summary>
-        public PluginInfo PluginInfo { get; }
+        public PluginFeature Feature { get; }
 
         /// <summary>
         ///     Gets the interval at which the update should occur
@@ -64,10 +65,13 @@ namespace Artemis.Core
         /// </summary>
         public void Start()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("TimedUpdateRegistration");
+
             lock (this)
             {
-                if (!PluginInfo.Plugin.IsEnabled)
-                    throw new ArtemisPluginException("Cannot start a timed update for a disabled plugin");
+                if (!Feature.IsEnabled)
+                    throw new ArtemisPluginException("Cannot start a timed update for a disabled plugin feature");
 
                 if (_timer != null)
                     return;
@@ -85,6 +89,9 @@ namespace Artemis.Core
         /// </summary>
         public void Stop()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("TimedUpdateRegistration");
+
             lock (this)
             {
                 if (_timer == null)
@@ -99,7 +106,7 @@ namespace Artemis.Core
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
         {
-            if (!PluginInfo.Plugin.IsEnabled)
+            if (!Feature.IsEnabled)
                 return;
 
             lock (this)
@@ -108,7 +115,7 @@ namespace Artemis.Core
                 _lastEvent = DateTime.Now;
 
                 // Modules don't always want to update, honor that
-                if (PluginInfo.Plugin is Module module && !module.IsUpdateAllowed)
+                if (Feature is Module module && !module.IsUpdateAllowed)
                     return;
 
                 if (Action != null)
@@ -121,14 +128,25 @@ namespace Artemis.Core
             }
         }
 
-        private void InstanceOnEnabled(object sender, EventArgs e)
+        private void FeatureOnEnabled(object sender, EventArgs e)
         {
             Start();
         }
 
-        private void InstanceOnDisabled(object sender, EventArgs e)
+        private void FeatureOnDisabled(object sender, EventArgs e)
         {
             Stop();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Stop();
+
+            Feature.Enabled -= FeatureOnEnabled;
+            Feature.Disabled -= FeatureOnDisabled;
+
+            _disposed = true;
         }
     }
 }

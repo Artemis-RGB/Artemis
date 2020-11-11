@@ -1,17 +1,15 @@
 ﻿using System;
-using Artemis.Core.Services;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
     /// </summary>
-    public abstract class BaseLayerBrush : PropertyChangedBase, IDisposable
+    public abstract class BaseLayerBrush : CorePropertyChanged, IDisposable
     {
         private LayerBrushType _brushType;
-        private LayerBrushConfigurationDialog _configurationDialog;
+        private ILayerBrushConfigurationDialog _configurationDialog;
         private LayerBrushDescriptor _descriptor;
         private Layer _layer;
         private bool _supportsTransformation = true;
@@ -37,7 +35,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Gets or sets a configuration dialog complementing the regular properties
         /// </summary>
-        public LayerBrushConfigurationDialog ConfigurationDialog
+        public ILayerBrushConfigurationDialog ConfigurationDialog
         {
             get => _configurationDialog;
             protected set => SetAndNotify(ref _configurationDialog, value);
@@ -53,9 +51,9 @@ namespace Artemis.Core.LayerBrushes
         }
 
         /// <summary>
-        ///     Gets the plugin info that defined this brush
+        ///     Gets the ID of the <see cref="LayerBrushProvider" /> that provided this effect
         /// </summary>
-        public PluginInfo PluginInfo => Descriptor.LayerBrushProvider.PluginInfo;
+        public string ProviderId => Descriptor?.Provider?.Id;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
@@ -72,19 +70,9 @@ namespace Artemis.Core.LayerBrushes
             protected set
             {
                 if (value && BrushType == LayerBrushType.RgbNet)
-                    throw new ArtemisPluginException(PluginInfo, "An RGB.NET brush cannot support transformation");
+                    throw new ArtemisPluginFeatureException(Descriptor.Provider, "An RGB.NET brush cannot support transformation");
                 _supportsTransformation = value;
             }
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            DisableLayerBrush();
-            BaseProperties.Dispose();
-
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -111,6 +99,16 @@ namespace Artemis.Core.LayerBrushes
 
         internal virtual void Dispose(bool disposing)
         {
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            DisableLayerBrush();
+            BaseProperties.Dispose();
+
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 

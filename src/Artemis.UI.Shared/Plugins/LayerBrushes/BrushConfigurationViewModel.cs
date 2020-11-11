@@ -1,6 +1,7 @@
-﻿using Stylet;
+﻿using Artemis.Core.LayerBrushes;
+using Stylet;
 
-namespace Artemis.Core.LayerBrushes
+namespace Artemis.UI.Shared.LayerBrushes
 {
     /// <summary>
     ///     Represents a view model for a brush configuration window

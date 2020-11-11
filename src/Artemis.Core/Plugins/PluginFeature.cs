@@ -1,24 +1,22 @@
 ﻿using System;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities.Plugins;
-using Stylet;
 
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents an implementation of a certain type provided by a plugin
+    ///     Represents an feature of a certain type provided by a plugin
     /// </summary>
-    public abstract class PluginImplementation : PropertyChangedBase, IDisposable
+    public abstract class PluginFeature : CorePropertyChanged, IDisposable
     {
-        private Exception? _loadException;
         private bool _isEnabled;
+        private Exception? _loadException;
 
         /// <summary>
-        ///     Gets the plugin that provides this implementation
+        ///     Gets the plugin that provides this feature
         /// </summary>
-        public Plugin? Plugin { get; internal set; }
+        public Plugin Plugin { get; internal set; }
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -38,15 +36,20 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _loadException, value);
         }
 
-        internal PluginImplementationEntity? Entity { get; set; }
+        /// <summary>
+        ///     Gets the identifier of this plugin feature
+        /// </summary>
+        public string Id => $"{GetType().FullName}-{Plugin.Guid.ToString().Substring(0, 8)}"; // Not as unique as a GUID but good enough and stays readable
+
+        internal PluginFeatureEntity Entity { get; set; }
 
         /// <summary>
-        ///     Called when the implementation is activated
+        ///     Called when the feature is activated
         /// </summary>
         public abstract void Enable();
 
         /// <summary>
-        ///     Called when the implementation is deactivated or when Artemis shuts down
+        ///     Called when the feature is deactivated or when Artemis shuts down
         /// </summary>
         public abstract void Disable();
 
@@ -56,12 +59,12 @@ namespace Artemis.Core
                 return;
 
             if (Plugin == null)
-                throw new ArtemisCoreException("Cannot enable a plugin implementation that is not associated with a plugin");
+                throw new ArtemisCoreException("Cannot enable a plugin feature that is not associated with a plugin");
 
             lock (Plugin)
             {
                 if (!Plugin.IsEnabled)
-                    throw new ArtemisCoreException("Cannot enable a plugin implementation of a disabled plugin");
+                    throw new ArtemisCoreException("Cannot enable a plugin feature of a disabled plugin");
 
                 if (!enable)
                 {
@@ -72,7 +75,7 @@ namespace Artemis.Core
                     OnDisabled();
                     return;
                 }
-                
+
                 try
                 {
                     if (isAutoEnable && GetLockFileCreated())
@@ -89,19 +92,10 @@ namespace Artemis.Core
 
                     // Allow up to 15 seconds for plugins to activate.
                     // This means plugins that need more time should do their long running tasks in a background thread, which is intentional
-                    ManualResetEvent wait = new ManualResetEvent(false);
-                    Thread work = new Thread(() =>
-                    {
-                        InternalEnable();
-                        wait.Set();
-                    });
-                    work.Start();
-                    wait.WaitOne(TimeSpan.FromSeconds(15));
-                    if (work.IsAlive)
-                    {
-                        work.Abort();
+                    // This would've been a perfect match for Thread.Abort but that didn't make it into .NET Core
+                    Task enableTask = Task.Run(InternalEnable);
+                    if (!enableTask.Wait(TimeSpan.FromSeconds(15)))
                         throw new ArtemisPluginException(Plugin, "Plugin load timeout");
-                    }
 
                     LoadException = null;
                     OnEnabled();
@@ -144,7 +138,7 @@ namespace Artemis.Core
         internal void CreateLockFile()
         {
             if (Plugin == null)
-                throw new ArtemisCoreException("Cannot lock a plugin implementation that is not associated with a plugin");
+                throw new ArtemisCoreException("Cannot lock a plugin feature that is not associated with a plugin");
 
             File.Create(Plugin.ResolveRelativePath($"{GetType().FullName}.lock")).Close();
         }
@@ -152,7 +146,7 @@ namespace Artemis.Core
         internal void DeleteLockFile()
         {
             if (Plugin == null)
-                throw new ArtemisCoreException("Cannot lock a plugin implementation that is not associated with a plugin");
+                throw new ArtemisCoreException("Cannot lock a plugin feature that is not associated with a plugin");
 
             if (GetLockFileCreated())
                 File.Delete(Plugin.ResolveRelativePath($"{GetType().FullName}.lock"));
@@ -161,7 +155,7 @@ namespace Artemis.Core
         internal bool GetLockFileCreated()
         {
             if (Plugin == null)
-                throw new ArtemisCoreException("Cannot lock a plugin implementation that is not associated with a plugin");
+                throw new ArtemisCoreException("Cannot lock a plugin feature that is not associated with a plugin");
 
             return File.Exists(Plugin.ResolveRelativePath($"{GetType().FullName}.lock"));
         }
@@ -171,17 +165,17 @@ namespace Artemis.Core
         #region Events
 
         /// <summary>
-        ///     Occurs when the implementation is enabled
+        ///     Occurs when the feature is enabled
         /// </summary>
         public event EventHandler? Enabled;
 
         /// <summary>
-        ///     Occurs when the implementation is disabled
+        ///     Occurs when the feature is disabled
         /// </summary>
         public event EventHandler? Disabled;
 
         /// <summary>
-        ///     Triggers the PluginEnabled event
+        ///     Triggers the Enabled event
         /// </summary>
         protected virtual void OnEnabled()
         {
@@ -189,7 +183,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Triggers the PluginDisabled event
+        ///     Triggers the Disabled event
         /// </summary>
         protected virtual void OnDisabled()
         {

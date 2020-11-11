@@ -238,7 +238,7 @@ namespace Artemis.Core
             if (ModifierType != null)
             {
                 Entity.ModifierType = ModifierType.GetType().Name;
-                Entity.ModifierTypePluginGuid = ModifierType.PluginInfo.Guid;
+                Entity.ModifierTypePluginGuid = ModifierType.Plugin.Guid;
             }
 
             // General
@@ -286,7 +286,7 @@ namespace Artemis.Core
                 return;
 
             BaseDataBindingModifierType modifierType = e.TypeRegistration.DataBindingModifierType;
-            if (modifierType.PluginInfo.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
+            if (modifierType.Plugin.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
                 UpdateModifierType(modifierType);
         }
 

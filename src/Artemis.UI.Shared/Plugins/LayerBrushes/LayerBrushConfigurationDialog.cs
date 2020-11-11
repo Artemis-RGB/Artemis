@@ -1,6 +1,7 @@
 ﻿using System;
+using Artemis.Core.LayerBrushes;
 
-namespace Artemis.Core.LayerBrushes
+namespace Artemis.UI.Shared.LayerBrushes
 {
     /// <inheritdoc />
     public class LayerBrushConfigurationDialog<T> : LayerBrushConfigurationDialog where T : BrushConfigurationViewModel
@@ -12,7 +13,7 @@ namespace Artemis.Core.LayerBrushes
     /// <summary>
     ///     Describes a UI tab for a layer brush
     /// </summary>
-    public abstract class LayerBrushConfigurationDialog
+    public abstract class LayerBrushConfigurationDialog : ILayerBrushConfigurationDialog
     {
         /// <summary>
         ///     The layer brush this dialog belongs to

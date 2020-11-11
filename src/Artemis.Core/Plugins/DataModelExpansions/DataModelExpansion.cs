@@ -45,7 +45,7 @@ namespace Artemis.Core.DataModelExpansions
         internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.Implementation = PluginInfo;
+            DataModel.Feature = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
         }

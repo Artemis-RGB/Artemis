@@ -5,7 +5,7 @@ namespace Artemis.Storage.Entities.Profile
     public class DataModelPathEntity
     {
         public string Path { get; set; }
-        public Guid? DataModelGuid { get; set; }
+        public string DataModelId { get; set; }
 
         public PathWrapperType WrapperType { get; set; }
     }

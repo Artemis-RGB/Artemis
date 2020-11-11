@@ -3,13 +3,13 @@
 namespace Artemis.Core
 {
     /// <summary>
-    /// An empty plugin used by <see cref="Constants.CorePluginInfo"/>
+    ///     An empty data model plugin feature used by <see cref="Constants.CorePlugin" />
     /// </summary>
-    internal class CorePluginImplementation : PluginImplementation
+    internal class CorePluginFeature : DataModelPluginFeature
     {
-        public CorePluginImplementation()
+        public CorePluginFeature()
         {
-            Constants.CorePluginInfo.Plugin = this;
+            Constants.CorePlugin.AddFeature(this);
             IsEnabled = true;
         }
 

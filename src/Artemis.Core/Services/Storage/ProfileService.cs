@@ -38,13 +38,13 @@ namespace Artemis.Core.Services
 
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
-            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
             return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
         }
 
         public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
-            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
+            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, ModuleId = module.Id};
             _profileRepository.Add(profileEntity);
 
             return new ProfileDescriptor(module, profileEntity);
@@ -258,7 +258,7 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
         {
-            List<ProfileEntity> moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> moduleProfiles = _profileRepository.GetByModuleId(module.Id);
             if (!moduleProfiles.Any())
                 return CreateProfileDescriptor(module, "Default");
 
@@ -271,7 +271,7 @@ namespace Artemis.Core.Services
             if (module.ActiveProfile == null)
                 return;
 
-            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
             foreach (ProfileEntity profileEntity in profileEntities)
             {
                 profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
@@ -285,7 +285,7 @@ namespace Artemis.Core.Services
         /// <param name="surface"></param>
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
-            List<ProfileModule> profileModules = _pluginManagementService.GetPluginsOfType<ProfileModule>();
+            List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
             foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }

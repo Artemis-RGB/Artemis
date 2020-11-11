@@ -12,9 +12,9 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Registers a new modifier type for use in data bindings
         /// </summary>
-        /// <param name="pluginInfo">The PluginInfo of the plugin this modifier type belongs to</param>
+        /// <param name="plugin">The plugin this modifier type belongs to</param>
         /// <param name="dataBindingModifierType">The modifier type to register</param>
-        DataBindingModifierTypeRegistration RegisterModifierType([NotNull] PluginInfo pluginInfo, [NotNull] BaseDataBindingModifierType dataBindingModifierType);
+        DataBindingModifierTypeRegistration RegisterModifierType([NotNull] Plugin plugin, [NotNull] BaseDataBindingModifierType dataBindingModifierType);
 
         /// <summary>
         ///     Removes a modifier type so it is no longer available for use in data bindings

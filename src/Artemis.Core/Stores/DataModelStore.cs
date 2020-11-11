@@ -17,7 +17,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.DataModel == dataModel))
                     throw new ArtemisCoreException($"Data model store already contains data model '{dataModel.DataModelDescription}'");
 
-                registration = new DataModelRegistration(dataModel, dataModel.Implementation.Instance) {IsInStore = true};
+                registration = new DataModelRegistration(dataModel, dataModel.Feature) {IsInStore = true};
                 Registrations.Add(registration);
             }
 
@@ -47,11 +47,11 @@ namespace Artemis.Core
             }
         }
 
-        public static DataModelRegistration Get(Guid pluginGuid)
+        public static DataModelRegistration Get(string id)
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(d => d.PluginImplementation.PluginInfo.Guid == pluginGuid);
+                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == id);
             }
         }
 

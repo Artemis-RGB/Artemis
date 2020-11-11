@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
-using Stylet;
 
 namespace Artemis.Core
 {
-    public class ArtemisSurface : PropertyChangedBase
+    public class ArtemisSurface : CorePropertyChanged
     {
         private List<ArtemisDevice> _devices;
         private bool _isActive;

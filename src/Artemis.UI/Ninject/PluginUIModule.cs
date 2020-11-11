@@ -10,19 +10,19 @@ namespace Artemis.UI.Ninject
 {
     public class PluginUIModule : NinjectModule
     {
-        public PluginUIModule(PluginInfo pluginInfo)
+        public PluginUIModule(Plugin plugin)
         {
-            PluginInfo = pluginInfo ?? throw new ArgumentNullException(nameof(pluginInfo));
+            Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
         }
 
-        public PluginInfo PluginInfo { get; }
+        public Plugin Plugin { get; }
 
         public override void Load()
         {
             Bind(typeof(IModelValidator<>)).To(typeof(FluentValidationAdapter<>));
             Kernel.Bind(x =>
             {
-                x.From(PluginInfo.Assembly)
+                x.From(Plugin.Assembly)
                     .SelectAllClasses()
                     .InheritedFrom<IValidator>()
                     .BindAllInterfaces();

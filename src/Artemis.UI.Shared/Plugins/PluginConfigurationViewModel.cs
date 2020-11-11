@@ -1,34 +1,35 @@
-﻿using Stylet;
+﻿using Artemis.Core;
+using Stylet;
 
-namespace Artemis.Core
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Represents a view model for a plugin configuration window
     /// </summary>
-    public abstract class PluginConfigurationViewModel : Screen
+    public abstract class PluginConfigurationViewModel : Screen, IPluginConfigurationViewModel
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class
         /// </summary>
-        /// <param name="pluginImplementation"></param>
-        protected PluginConfigurationViewModel(PluginImplementation pluginImplementation)
+        /// <param name="plugin"></param>
+        protected PluginConfigurationViewModel(Plugin plugin)
         {
-            PluginImplementation = pluginImplementation;
+            Plugin = plugin;
         }
 
         /// <summary>
         ///     Creates a new instance of the <see cref="PluginConfigurationViewModel" /> class with a validator
         /// </summary>
-        /// <param name="pluginImplementation"></param>
+        /// <param name="plugin"></param>
         /// <param name="validator"></param>
-        protected PluginConfigurationViewModel(PluginImplementation pluginImplementation, IModelValidator validator) : base(validator)
+        protected PluginConfigurationViewModel(Plugin plugin, IModelValidator validator) : base(validator)
         {
-            PluginImplementation = pluginImplementation;
+            Plugin = plugin;
         }
 
         /// <summary>
         ///     Gets the plugin this configuration view model is associated with
         /// </summary>
-        public PluginImplementation PluginImplementation { get; }
+        public Plugin Plugin { get; }
     }
 }

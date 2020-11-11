@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Humanizer;
 using MaterialDesignExtensions.Controls;
 using Stylet;
 
@@ -42,6 +43,8 @@ namespace Artemis.UI.Screens.Splash
             _pluginManagementService.PluginLoaded += OnPluginManagementServiceOnPluginManagementLoaded;
             _pluginManagementService.PluginEnabling += PluginManagementServiceOnPluginManagementEnabling;
             _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginFeatureEnabling += PluginManagementServiceOnPluginFeatureEnabling;
+            _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
             base.OnInitialActivate();
         }
 
@@ -53,6 +56,8 @@ namespace Artemis.UI.Screens.Splash
             _pluginManagementService.PluginLoaded -= OnPluginManagementServiceOnPluginManagementLoaded;
             _pluginManagementService.PluginEnabling -= PluginManagementServiceOnPluginManagementEnabling;
             _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginFeatureEnabling -= PluginManagementServiceOnPluginFeatureEnabling;
+            _pluginManagementService.PluginFeatureEnabled -= PluginManagementServiceOnPluginFeatureEnabled;
             base.OnClose();
         }
 
@@ -63,7 +68,7 @@ namespace Artemis.UI.Screens.Splash
 
         private void OnPluginManagementServiceOnPluginManagementLoading(object sender, PluginEventArgs args)
         {
-            Status = "Loading plugin: " + args.PluginInfo.Name;
+            Status = "Loading plugin: " + args.Plugin.Info.Name;
         }
 
         private void PluginManagementServiceOnPluginManagementEnabled(object sender, PluginEventArgs args)
@@ -73,7 +78,17 @@ namespace Artemis.UI.Screens.Splash
 
         private void PluginManagementServiceOnPluginManagementEnabling(object sender, PluginEventArgs args)
         {
-            Status = "Enabling plugin: " + args.PluginInfo.Name;
+            Status = "Enabling plugin: " + args.Plugin.Info.Name;
+        }
+
+        private void PluginManagementServiceOnPluginFeatureEnabling(object? sender, PluginFeatureEventArgs e)
+        {
+            Status = "Enabling: " + e.PluginFeature.GetType().Name.Humanize();
+        }
+
+        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        {
+            Status = "Initializing UI";
         }
 
         private void OnPluginManagementServiceOnCopyingBuildInPluginsManagement(object sender, EventArgs args)

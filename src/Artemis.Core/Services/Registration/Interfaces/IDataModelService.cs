@@ -34,13 +34,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     If found, returns the data model of the provided plugin
         /// </summary>
-        /// <param name="pluginImplementation">The plugin to find the data model of</param>
-        DataModel GetPluginDataModel(PluginImplementation pluginImplementation);
-
-        /// <summary>
-        ///     If found, returns the data model of the provided plugin GUID
-        /// </summary>
-        /// <param name="pluginGuid">The GUID of the plugin to find the data model of</param>
-        DataModel GetPluginDataModel(Guid pluginGuid);
+        /// <param name="pluginFeature">The plugin to find the data model of</param>
+        DataModel? GetPluginDataModel(PluginFeature pluginFeature);
     }
 }

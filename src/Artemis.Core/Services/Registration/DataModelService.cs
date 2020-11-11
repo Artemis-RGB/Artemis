@@ -11,14 +11,15 @@ namespace Artemis.Core.Services
         public DataModelService(IPluginManagementService pluginManagementService)
         {
             // Add data models of already loaded plugins
-            foreach (Module module in pluginManagementService.GetPluginsOfType<Module>().Where(p => p.IsEnabled))
+            foreach (Module module in pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled))
                 AddModuleDataModel(module);
-            foreach (BaseDataModelExpansion dataModelExpansion in pluginManagementService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
+            foreach (BaseDataModelExpansion dataModelExpansion in pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
                 AddDataModelExpansionDataModel(dataModelExpansion);
 
             // Add data models of new plugins when they get enabled
-            pluginManagementService.PluginEnabled += PluginServiceOnPluginEnabled;
+            pluginManagementService.PluginFeatureEnabled += OnPluginFeatureEnabled;
         }
+
 
         public DataModelRegistration RegisterDataModel(DataModel dataModel)
         {
@@ -44,21 +45,16 @@ namespace Artemis.Core.Services
             return (T) DataModelStore.GetAll().FirstOrDefault(d => d.DataModel is T)?.DataModel;
         }
 
-        public DataModel GetPluginDataModel(PluginImplementation pluginImplementation)
+        public DataModel? GetPluginDataModel(PluginFeature pluginFeature)
         {
-            return DataModelStore.Get(pluginImplementation.PluginInfo.Guid)?.DataModel;
+            return DataModelStore.Get(pluginFeature.Id)?.DataModel;
         }
-
-        public DataModel GetPluginDataModel(Guid pluginGuid)
+        
+        private void OnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
         {
-            return DataModelStore.Get(pluginGuid)?.DataModel;
-        }
-
-        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs e)
-        {
-            if (e.PluginInfo.Plugin is Module module)
+            if (e.PluginFeature is Module module)
                 AddModuleDataModel(module);
-            else if (e.PluginInfo.Plugin is BaseDataModelExpansion dataModelExpansion)
+            else if (e.PluginFeature is BaseDataModelExpansion dataModelExpansion)
                 AddDataModelExpansionDataModel(dataModelExpansion);
         }
 
@@ -68,7 +64,7 @@ namespace Artemis.Core.Services
                 return;
 
             if (module.InternalDataModel.DataModelDescription == null)
-                throw new ArtemisPluginException(module.PluginInfo, "Module overrides GetDataModelDescription but returned null");
+                throw new ArtemisPluginFeatureException(module, "Module overrides GetDataModelDescription but returned null");
 
             module.InternalDataModel.IsExpansion = module.InternalExpandsMainDataModel;
             RegisterDataModel(module.InternalDataModel);
@@ -77,7 +73,7 @@ namespace Artemis.Core.Services
         private void AddDataModelExpansionDataModel(BaseDataModelExpansion dataModelExpansion)
         {
             if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
-                throw new ArtemisPluginException(dataModelExpansion.PluginInfo, "Data model expansion overrides GetDataModelDescription but returned null");
+                throw new ArtemisPluginFeatureException(dataModelExpansion, "Data model expansion overrides GetDataModelDescription but returned null");
 
             dataModelExpansion.InternalDataModel.IsExpansion = true;
             RegisterDataModel(dataModelExpansion.InternalDataModel);

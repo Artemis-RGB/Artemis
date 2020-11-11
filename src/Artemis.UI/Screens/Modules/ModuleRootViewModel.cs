@@ -2,6 +2,7 @@
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Shared.Modules;
 using Ninject;
 using Ninject.Parameters;
 using Stylet;
@@ -45,7 +46,7 @@ namespace Artemis.UI.Screens.Modules
                     ConstructorArgument module = new ConstructorArgument("module", Module);
                     ConstructorArgument displayName = new ConstructorArgument("displayName", DisplayName);
 
-                    ModuleViewModel viewModel = (ModuleViewModel) Module.PluginInfo.Kernel.Get(moduleTab.Type, module, displayName);
+                    ModuleViewModel viewModel = (ModuleViewModel) Module.Plugin.Kernel.Get(moduleTab.Type, module, displayName);
                     Items.Add(viewModel);
                 }
             }

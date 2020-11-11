@@ -7,7 +7,7 @@ namespace Artemis.Core.LayerBrushes
     /// <summary>
     ///     Allows you to create one or more <see cref="LayerBrush{T}" />s usable by profile layers.
     /// </summary>
-    public abstract class LayerBrushProvider : PluginImplementation
+    public abstract class LayerBrushProvider : PluginFeature
     {
         private readonly List<LayerBrushDescriptor> _layerBrushDescriptors;
 
@@ -39,7 +39,7 @@ namespace Artemis.Core.LayerBrushes
         protected void RegisterLayerBrushDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerBrush
         {
             if (!IsEnabled)
-                throw new ArtemisPluginException(PluginInfo, "Can only add a layer brush descriptor when the plugin is enabled");
+                throw new ArtemisPluginException(Plugin, "Can only add a layer brush descriptor when the plugin is enabled");
 
             LayerBrushDescriptor descriptor = new LayerBrushDescriptor(displayName, description, icon, typeof(T), this);
             _layerBrushDescriptors.Add(descriptor);

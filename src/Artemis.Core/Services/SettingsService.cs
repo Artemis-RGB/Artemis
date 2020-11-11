@@ -9,7 +9,7 @@ namespace Artemis.Core.Services
 
         internal SettingsService(IPluginRepository pluginRepository)
         {
-            _pluginSettings = new PluginSettings(Constants.CorePluginInfo, pluginRepository);
+            _pluginSettings = new PluginSettings(Constants.CorePlugin, pluginRepository);
         }
 
         public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)

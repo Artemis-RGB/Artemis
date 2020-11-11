@@ -44,8 +44,8 @@ namespace Artemis.Core.Services
             // Add all current devices
             foreach (IRGBDevice rgbDevice in _rgbService.LoadedDevices)
             {
-                PluginImplementation pluginImplementation = _pluginManagementService.GetPluginByDevice(rgbDevice);
-                configuration.Devices.Add(new ArtemisDevice(rgbDevice, pluginImplementation, configuration));
+                PluginFeature pluginFeature = _pluginManagementService.GetDeviceProviderByDevice(rgbDevice);
+                configuration.Devices.Add(new ArtemisDevice(rgbDevice, pluginFeature, configuration));
             }
 
             lock (_surfaceConfigurations)
@@ -136,8 +136,8 @@ namespace Artemis.Core.Services
                     IRGBDevice device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
                     if (device != null)
                     {
-                        PluginImplementation pluginImplementation = _pluginManagementService.GetPluginByDevice(device);
-                        surfaceConfiguration.Devices.Add(new ArtemisDevice(device, pluginImplementation, surfaceConfiguration, position));
+                        PluginFeature pluginFeature = _pluginManagementService.GetDeviceProviderByDevice(device);
+                        surfaceConfiguration.Devices.Add(new ArtemisDevice(device, pluginFeature, surfaceConfiguration, position));
                     }
                 }
 
@@ -178,8 +178,8 @@ namespace Artemis.Core.Services
             DeviceEntity existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceIdentifier == deviceIdentifier);
             if (existingDeviceConfig != null)
             {
-                PluginImplementation pluginImplementation = _pluginManagementService.GetPluginByDevice(rgbDevice);
-                device = new ArtemisDevice(rgbDevice, pluginImplementation, surface, existingDeviceConfig);
+                PluginFeature pluginFeature = _pluginManagementService.GetDeviceProviderByDevice(rgbDevice);
+                device = new ArtemisDevice(rgbDevice, pluginFeature, surface, existingDeviceConfig);
             }
             // Fall back on creating a new device
             else
@@ -189,8 +189,8 @@ namespace Artemis.Core.Services
                     rgbDevice.DeviceInfo,
                     deviceIdentifier
                 );
-                PluginImplementation pluginImplementation = _pluginManagementService.GetPluginByDevice(rgbDevice);
-                device = new ArtemisDevice(rgbDevice, pluginImplementation, surface);
+                PluginFeature pluginFeature = _pluginManagementService.GetDeviceProviderByDevice(rgbDevice);
+                device = new ArtemisDevice(rgbDevice, pluginFeature, surface);
             }
 
             surface.Devices.Add(device);

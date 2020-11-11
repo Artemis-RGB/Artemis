@@ -8,16 +8,21 @@ namespace Artemis.Storage.Entities.Plugins
     /// </summary>
     public class PluginEntity
     {
+        public PluginEntity()
+        {
+            Features = new List<PluginFeatureEntity>();
+        }
+
         public Guid Id { get; set; }
         public bool IsEnabled { get; set; }
 
-        public List<PluginImplementationEntity> Implementations { get; set; }
+        public List<PluginFeatureEntity> Features { get; set; }
     }
 
     /// <summary>
-    ///     Represents the configuration of a plugin implementation, each implementation has one configuration
+    ///     Represents the configuration of a plugin feature, each feature has one configuration
     /// </summary>
-    public class PluginImplementationEntity
+    public class PluginFeatureEntity
     {
         public string Type { get; set; }
         public bool IsEnabled { get; set; }

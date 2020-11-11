@@ -44,7 +44,7 @@ namespace Artemis.Core
                 LayerEffectEntity layerEffectEntity = new LayerEffectEntity
                 {
                     Id = layerEffect.EntityId,
-                    PluginGuid = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.PluginInfo.Guid,
+                    ProviderId = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.ProviderId,
                     EffectType = layerEffect.GetEffectTypeName(),
                     Name = layerEffect.Name,
                     Enabled = layerEffect.Enabled,
@@ -215,11 +215,11 @@ namespace Artemis.Core
             foreach (LayerEffectEntity layerEffectEntity in RenderElementEntity.LayerEffects)
             {
                 // If there is a non-placeholder existing effect, skip this entity
-                BaseLayerEffect existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
+                BaseLayerEffect? existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
                 if (existing != null && existing.Descriptor.PlaceholderFor == null)
                     continue;
 
-                LayerEffectDescriptor descriptor = LayerEffectStore.Get(layerEffectEntity.PluginGuid, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
+                LayerEffectDescriptor? descriptor = LayerEffectStore.Get(layerEffectEntity.ProviderId, layerEffectEntity.EffectType)?.LayerEffectDescriptor;
                 if (descriptor != null)
                 {
                     // If a descriptor is found but there is an existing placeholder, remove the placeholder
@@ -235,7 +235,7 @@ namespace Artemis.Core
                 else if (existing == null)
                 {
                     // If no descriptor was found and there was no existing placeholder, create a placeholder
-                    descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.PluginGuid);
+                    descriptor = PlaceholderLayerEffectDescriptor.Create(layerEffectEntity.ProviderId);
                     descriptor.CreateInstance(this, layerEffectEntity);
                 }
             }
@@ -253,22 +253,22 @@ namespace Artemis.Core
         private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
-            List<BaseLayerEffect> pluginEffects = _layerEffects.Where(ef => ef.Descriptor.LayerEffectProvider != null &&
-                                                                            ef.PluginInfo.Guid == e.Registration.PluginImplementation.PluginInfo.Guid).ToList();
+            List<BaseLayerEffect> pluginEffects = _layerEffects.Where(ef => ef.Descriptor.Provider != null &&
+                                                                            ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
             foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
                 LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
                 _layerEffects.Remove(pluginEffect);
                 pluginEffect.Dispose();
 
-                LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.PluginInfo.Guid);
+                LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.ProviderId);
                 descriptor.CreateInstance(this, entity);
             }
         }
 
         private void LayerEffectStoreOnLayerEffectAdded(object sender, LayerEffectStoreEvent e)
         {
-            if (RenderElementEntity.LayerEffects.Any(ef => ef.PluginGuid == e.Registration.PluginImplementation.PluginInfo.Guid))
+            if (RenderElementEntity.LayerEffects.Any(ef => ef.ProviderId == e.Registration.PluginFeature.Id))
                 ActivateEffects();
         }
 
