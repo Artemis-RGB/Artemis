@@ -4,7 +4,7 @@ using Microsoft.Xaml.Behaviors;
 
 namespace Artemis.UI.Shared
 {
-    public class PutCursorAtEndTextBoxBehavior : Behavior<UIElement>
+    public class PutCursorAtEndTextBox : Behavior<UIElement>
     {
         private TextBox _textBox;
 

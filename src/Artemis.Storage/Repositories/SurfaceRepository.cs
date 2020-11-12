@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
-    public class SurfaceRepository : ISurfaceRepository
+    internal class SurfaceRepository : ISurfaceRepository
     {
         private readonly LiteRepository _repository;
 
-        internal SurfaceRepository(LiteRepository repository)
+        public SurfaceRepository(LiteRepository repository)
         {
             _repository = repository;
             _repository.Database.GetCollection<SurfaceEntity>().EnsureIndex(s => s.Name);

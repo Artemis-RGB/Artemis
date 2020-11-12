@@ -12,7 +12,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
         private readonly IModuleService _moduleService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly DefaultDropHandler _defaultDropHandler;
-        private readonly List<ModuleOrderModuleViewModel> _modules;
+        private List<ModuleOrderModuleViewModel> _modules;
 
         public ModuleOrderTabViewModel(IPluginManagementService pluginManagementService, IModuleService moduleService)
         {
@@ -20,14 +20,23 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
 
             _pluginManagementService = pluginManagementService;
             _moduleService = moduleService;
-            _modules = new List<ModuleOrderModuleViewModel>(pluginManagementService.GetFeaturesOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)));
             _defaultDropHandler = new DefaultDropHandler();
 
             NormalModules = new BindableCollection<ModuleOrderModuleViewModel>();
             ApplicationModules = new BindableCollection<ModuleOrderModuleViewModel>();
             OverlayModules = new BindableCollection<ModuleOrderModuleViewModel>();
+        }
 
+        protected override void OnActivate()
+        {
+            base.OnActivate();
             Update();
+        }
+
+        protected override void OnDeactivate()
+        {
+            base.OnDeactivate();
+            _modules = null;
         }
 
         public BindableCollection<ModuleOrderModuleViewModel> NormalModules { get; set; }
@@ -67,6 +76,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
 
         public void Update()
         {
+            if (_modules == null)
+                _modules = _pluginManagementService.GetFeaturesOfType<Module>().Select(m => new ModuleOrderModuleViewModel(m)).ToList();
             NormalModules.Clear();
             NormalModules.AddRange(_modules.Where(m => m.Module.PriorityCategory == ModulePriorityCategory.Normal).OrderBy(m => m.Module.Priority));
 

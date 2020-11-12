@@ -22,7 +22,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private bool _enabling;
-        private bool _isEnabled;
 
         public PluginFeatureViewModel(PluginFeature feature,
             IDialogService dialogService,
@@ -35,8 +34,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             Feature = feature;
             Icon = GetIconKind();
-
-            IsEnabled = Feature.IsEnabled;
         }
 
         public PluginFeature Feature { get; }
@@ -54,8 +51,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public bool IsEnabled
         {
-            get => _isEnabled;
-            set => SetAndNotify(ref _isEnabled, value);
+            get => Feature.IsEnabled;
+            set => Task.Run(() => UpdateEnabled(value));
         }
 
         public void ShowLogsFolder()
@@ -100,7 +97,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 try
                 {
-                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(Feature));
+                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(Feature, true));
                 }
                 catch (Exception e)
                 {
@@ -113,7 +110,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
             else
             {
-                _pluginManagementService.DisablePluginFeature(Feature);
+                _pluginManagementService.DisablePluginFeature(Feature, true);
+                NotifyOfPropertyChange(nameof(IsEnabled));
             }
         }
 
@@ -150,8 +148,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             if (e.PluginFeature != Feature) return;
             Enabling = false;
-            IsEnabled = e.PluginFeature.IsEnabled;
-
+            
+            NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(LoadException));
         }
 

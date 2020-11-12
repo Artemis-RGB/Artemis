@@ -20,13 +20,19 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
 
-        internal DataModel InternalDataModel { get; set; }
+        internal DataModel? InternalDataModel { get; set; }
 
         /// <summary>
         ///     Called each frame when the data model should update
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
         public abstract void Update(double deltaTime);
+
+        internal void InternalUpdate(double deltaTime)
+        {
+            if (InternalDataModel != null)
+                Update(deltaTime);
+        }
 
         /// <summary>
         ///     Override to provide your own data model description. By default this returns a description matching your plugin

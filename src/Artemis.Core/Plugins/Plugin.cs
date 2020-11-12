@@ -129,14 +129,15 @@ namespace Artemis.Core
 
         internal void RemoveFeature(PluginFeature feature)
         {
+            if (feature.IsEnabled)
+                throw new ArtemisCoreException("Cannot remove an enabled feature from a plugin");
+            
             _features.Remove(feature);
-            feature.InternalDisable();
             feature.Dispose();
 
             OnFeatureRemoved(new PluginFeatureEventArgs(feature));
         }
-
-
+        
         internal void SetEnabled(bool enable)
         {
             if (IsEnabled == enable)

@@ -13,7 +13,7 @@ namespace Artemis.Core.Ninject
         private readonly IPluginRepository _pluginRepository;
         private readonly IPluginManagementService _pluginManagementService;
 
-        internal PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
+        public PluginSettingsProvider(IPluginRepository pluginRepository, IPluginManagementService pluginManagementService)
         {
             _pluginRepository = pluginRepository;
             _pluginManagementService = pluginManagementService;

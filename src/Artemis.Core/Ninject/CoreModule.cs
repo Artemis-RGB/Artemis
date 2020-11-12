@@ -7,6 +7,7 @@ using LiteDB;
 using Ninject.Activation;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
+using Ninject.Planning.Bindings.Resolvers;
 using Serilog;
 
 namespace Artemis.Core.Ninject
@@ -21,6 +22,8 @@ namespace Artemis.Core.Ninject
         {
             if (Kernel == null)
                 throw new ArtemisCoreException("Failed to bind Ninject Core module, kernel is null.");
+
+            Kernel.Components.Remove<IMissingBindingResolver, SelfBindingResolver>();
 
             // Bind all services as singletons
             Kernel.Bind(x =>
@@ -88,6 +91,7 @@ namespace Artemis.Core.Ninject
 
             Kernel.Bind<PluginSettings>().ToProvider<PluginSettingsProvider>();
             Kernel.Bind<ILogger>().ToProvider<LoggerProvider>();
+            Kernel.Bind<LoggerProvider>().ToSelf();
         }
 
         private bool HasAccessToProtectedService(IRequest r)

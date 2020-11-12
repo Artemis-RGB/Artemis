@@ -163,7 +163,7 @@ namespace Artemis.Core.Services
                 {
                     // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
                     foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.IsEnabled))
-                        dataModelExpansion.Update(args.DeltaTime);
+                        dataModelExpansion.InternalUpdate(args.DeltaTime);
                 }
 
                 List<Module> modules;

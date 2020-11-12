@@ -8,10 +8,11 @@
              xmlns:wpf="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:modules="clr-namespace:Artemis.Core.Modules;assembly=Artemis.Core"
              xmlns:dataModel="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:DataModelDebugViewModel}">
     <UserControl.Resources>
-        <dataModel:TypeToStringConverter x:Key="TypeToStringConverter"/>
+        <dataModel:TypeToStringConverter x:Key="TypeToStringConverter" />
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -43,19 +44,11 @@
                       wpf:HintAssist.Hint="Select a module"
                       IsEditable="True"
                       TextSearch.TextPath="DisplayName"
+                      DisplayMemberPath="DisplayName"
                       Margin="5 0 0 0"
                       IsEnabled="{Binding IsModuleFilterEnabled}"
                       SelectedItem="{Binding SelectedModule}"
-                      ItemsSource="{Binding Modules}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel d:DataContext="{d:DesignInstance Type=modules:Module}" Orientation="Horizontal">
-                            <wpf:PackIcon Kind="{Binding DisplayIcon}" VerticalAlignment="Center" Margin="0 0 5 0" />
-                            <TextBlock Text="{Binding DisplayName}" VerticalAlignment="Center" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
+                      ItemsSource="{Binding Modules}" />
         </Grid>
         <TreeView Grid.Row="1" ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch">
             <TreeView.Resources>
@@ -73,12 +66,12 @@
                             <Run>[</Run><Run Text="{Binding DisplayValueType, Converter={StaticResource TypeToStringConverter}, Mode=OneWay}" /><Run>]</Run>
                         </TextBlock>
                         <TextBlock Grid.Column="1" Text="{Binding PropertyDescription.Name}" ToolTip="{Binding PropertyDescription.Description}" />
-                        <TextBlock Grid.Column="2" 
-                                   Text="{Binding DisplayValue}" 
-                                   FontFamily="Consolas" 
-                                   HorizontalAlignment="Right"/>
+                        <TextBlock Grid.Column="2"
+                                   Text="{Binding DisplayValue}"
+                                   FontFamily="Consolas"
+                                   HorizontalAlignment="Right" />
                     </Grid>
-                    
+
                 </HierarchicalDataTemplate>
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelListViewModel}" ItemsSource="{Binding ListChildren}">
                     <Grid>
