@@ -67,6 +67,14 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
+        public void ViewLoadException()
+        {
+            if (LoadException == null)
+                return;
+
+            _dialogService.ShowExceptionDialog("Feature failed to enable", Feature.LoadException);
+        }
+
         protected override void OnInitialActivate()
         {
             base.OnInitialActivate();
@@ -148,7 +156,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             if (e.PluginFeature != Feature) return;
             Enabling = false;
-            
+
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(LoadException));
         }

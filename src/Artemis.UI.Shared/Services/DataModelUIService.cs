@@ -7,6 +7,7 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Input;
+using Artemis.UI.Shared.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
 
@@ -15,13 +16,15 @@ namespace Artemis.UI.Shared.Services
     internal class DataModelUIService : IDataModelUIService
     {
         private readonly IDataModelService _dataModelService;
+        private readonly IDataModelVmFactory _dataModelVmFactory;
         private readonly IKernel _kernel;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
 
-        public DataModelUIService(IDataModelService dataModelService, IKernel kernel)
+        public DataModelUIService(IDataModelService dataModelService, IDataModelVmFactory dataModelVmFactory, IKernel kernel)
         {
             _dataModelService = dataModelService;
+            _dataModelVmFactory = dataModelVmFactory;
             _kernel = kernel;
             _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
             _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
@@ -219,12 +222,12 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module)
         {
-            return _kernel.Get<DataModelDynamicViewModel>(new ConstructorArgument("module", module));
+            return _dataModelVmFactory.DataModelDynamicViewModel(module);
         }
 
         public DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription)
         {
-            return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType), new ConstructorArgument("targetDescription", targetDescription));
+            return _dataModelVmFactory.DataModelStaticViewModel(targetType, targetDescription);
         }
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)

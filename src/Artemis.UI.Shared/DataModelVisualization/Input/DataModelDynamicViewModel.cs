@@ -29,7 +29,7 @@ namespace Artemis.UI.Shared.Input
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
 
-        internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
+        public DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
             _module = module;
             _dataModelUIService = dataModelUIService;

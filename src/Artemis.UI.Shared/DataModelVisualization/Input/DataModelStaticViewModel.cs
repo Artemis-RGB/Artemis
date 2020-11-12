@@ -25,7 +25,7 @@ namespace Artemis.UI.Shared.Input
         private object _value;
         private bool _displaySwitchButton;
 
-        internal DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
+        public DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
             _dataModelUIService = dataModelUIService;
             _rootView = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
