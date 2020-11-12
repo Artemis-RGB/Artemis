@@ -87,8 +87,8 @@ namespace Artemis.Core
                         throw new ArtemisPluginLockException(LoadException);
                     }
 
-                    IsEnabled = true;
                     CreateLockFile();
+                    IsEnabled = true;
 
                     // Allow up to 15 seconds for plugins to activate.
                     // This means plugins that need more time should do their long running tasks in a background thread, which is intentional

@@ -185,7 +185,8 @@ namespace Artemis.Core.Services
                     try
                     {
                         Plugin plugin = LoadPlugin(subDirectory);
-                        EnablePlugin(plugin, ignorePluginLock);
+                        if (plugin.Entity.IsEnabled)
+                            EnablePlugin(plugin, false, ignorePluginLock);
                     }
                     catch (Exception e)
                     {
@@ -271,16 +272,13 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void EnablePlugin(Plugin plugin, bool ignorePluginLock)
+        public void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock)
         {
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
 
             // Create the Ninject child kernel and load the module
-            plugin.Kernel = new ChildKernel(_kernel);
-            plugin.Kernel.Bind<Plugin>().ToConstant(plugin);
-            plugin.Kernel.Load(new PluginModule(plugin.Info));
-
+            plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
             plugin.SetEnabled(true);
 
             // Get the Plugin feature from the main assembly and if there is only one, instantiate it
@@ -303,6 +301,8 @@ namespace Artemis.Core.Services
             {
                 try
                 {
+                    plugin.Kernel.Bind(featureType).ToSelf().InSingletonScope();
+
                     // Include Plugin as a parameter for the PluginSettingsProvider
                     IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
                     PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureType, parameters);
@@ -314,7 +314,7 @@ namespace Artemis.Core.Services
                 }
                 catch (Exception e)
                 {
-                    throw new ArtemisPluginException(plugin, "Failed to load instantiate feature", e);
+                    throw new ArtemisPluginException(plugin, "Failed to instantiate feature", e);
                 }
             }
 
@@ -323,12 +323,18 @@ namespace Artemis.Core.Services
             {
                 try
                 {
-                    EnablePluginFeature(pluginFeature, !ignorePluginLock);
+                    EnablePluginFeature(pluginFeature, false, !ignorePluginLock);
                 }
                 catch (Exception)
                 {
                     // ignored, logged in EnablePluginFeature
                 }
+            }
+
+            if (saveState)
+            {
+                plugin.Entity.IsEnabled = plugin.IsEnabled;
+                SavePlugin(plugin);
             }
 
             OnPluginEnabled(new PluginEventArgs(plugin));
@@ -340,7 +346,7 @@ namespace Artemis.Core.Services
             {
                 try
                 {
-                    DisablePlugin(plugin);
+                    DisablePlugin(plugin, false);
                 }
                 catch (Exception e)
                 {
@@ -356,7 +362,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void DisablePlugin(Plugin plugin)
+        public void DisablePlugin(Plugin plugin, bool saveState)
         {
             if (!plugin.IsEnabled)
                 return;
@@ -364,14 +370,25 @@ namespace Artemis.Core.Services
             while (plugin.Features.Any())
             {
                 PluginFeature feature = plugin.Features[0];
+                if (feature.IsEnabled)
+                    DisablePluginFeature(feature, false);
                 plugin.RemoveFeature(feature);
-                OnPluginFeatureDisabled(new PluginFeatureEventArgs(feature));
             }
 
             plugin.SetEnabled(false);
 
             plugin.Kernel.Dispose();
             plugin.Kernel = null;
+            
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+
+            if (saveState)
+            {
+                plugin.Entity.IsEnabled = plugin.IsEnabled;
+                SavePlugin(plugin);
+            }
 
             OnPluginDisabled(new PluginEventArgs(plugin));
         }
@@ -380,7 +397,7 @@ namespace Artemis.Core.Services
 
         #region Features
 
-        public void EnablePluginFeature(PluginFeature pluginFeature, bool isAutoEnable = false)
+        public void EnablePluginFeature(PluginFeature pluginFeature, bool saveState, bool isAutoEnable)
         {
             _logger.Debug("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
 
@@ -389,16 +406,9 @@ namespace Artemis.Core.Services
                 OnPluginFeatureEnabling(new PluginFeatureEventArgs(pluginFeature));
                 try
                 {
-                    // A device provider may be queued for disable on next restart, this undoes that
-                    if (pluginFeature is DeviceProvider && pluginFeature.IsEnabled && !pluginFeature.Entity.IsEnabled)
-                    {
-                        pluginFeature.Entity.IsEnabled = true;
-                        SavePlugin(pluginFeature.Plugin);
-                        return;
-                    }
-
                     pluginFeature.SetEnabled(true, isAutoEnable);
-                    pluginFeature.Entity.IsEnabled = true;
+                    if (saveState)
+                        pluginFeature.Entity.IsEnabled = true;
                 }
                 catch (Exception e)
                 {
@@ -412,10 +422,13 @@ namespace Artemis.Core.Services
                 {
                     // On an auto-enable, ensure PluginInfo.Enabled is true even if enable failed, that way a failure on auto-enable does
                     // not affect the user's settings
-                    if (isAutoEnable)
-                        pluginFeature.Entity.IsEnabled = true;
+                    if (saveState)
+                    {
+                        if (isAutoEnable)
+                            pluginFeature.Entity.IsEnabled = true;
 
-                    SavePlugin(pluginFeature.Plugin);
+                        SavePlugin(pluginFeature.Plugin);
+                    }
 
                     if (pluginFeature.IsEnabled)
                     {
@@ -430,34 +443,22 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void DisablePluginFeature(PluginFeature pluginFeature)
+        public void DisablePluginFeature(PluginFeature pluginFeature, bool saveState)
         {
             lock (_plugins)
             {
                 try
                 {
                     _logger.Debug("Disabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-
-                    // Device providers cannot be disabled at runtime simply queue a disable for next restart
-                    if (pluginFeature is DeviceProvider)
-                    {
-                        // Don't call SetEnabled(false) but simply update enabled state and save it
-                        pluginFeature.Entity.IsEnabled = false;
-                        SavePlugin(pluginFeature.Plugin);
-                        return;
-                    }
-
                     pluginFeature.SetEnabled(false);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
                 }
                 finally
                 {
-                    pluginFeature.Entity.IsEnabled = false;
-                    SavePlugin(pluginFeature.Plugin);
+                    if (saveState)
+                    {
+                        pluginFeature.Entity.IsEnabled = false;
+                        SavePlugin(pluginFeature.Plugin);
+                    }
 
                     if (!pluginFeature.IsEnabled)
                     {

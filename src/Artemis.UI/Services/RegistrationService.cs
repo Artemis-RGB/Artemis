@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.Linq;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.DataModel.Display;
 using Artemis.UI.DefaultTypes.DataModel.Input;
@@ -80,7 +81,7 @@ namespace Artemis.UI.Services
 
         private void LoadPluginModules()
         {
-            foreach (Plugin plugin in _pluginManagementService.GetAllPlugins()) 
+            foreach (Plugin plugin in _pluginManagementService.GetAllPlugins().Where(p => p.IsEnabled)) 
                 plugin.Kernel.Load(new[] {new PluginUIModule(plugin)});
         }
     }

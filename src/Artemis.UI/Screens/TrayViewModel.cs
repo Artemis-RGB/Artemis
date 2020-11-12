@@ -1,5 +1,4 @@
-﻿using Artemis.Core;
-using Artemis.Core.Services;
+﻿using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services.Interfaces;

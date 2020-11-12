@@ -43,7 +43,8 @@ namespace Artemis.Core.Services
         ///     Enables the provided <paramref name="plugin" />
         /// </summary>
         /// <param name="plugin">The plugin to enable</param>
-        void EnablePlugin(Plugin plugin, bool ignorePluginLock = false);
+        /// <param name="saveState">Whether or not to save the new enabled state</param>
+        void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock = false);
 
         /// <summary>
         ///     Unloads the provided <paramref name="plugin" />
@@ -55,20 +56,23 @@ namespace Artemis.Core.Services
         ///     Disables the provided <paramref name="plugin" />
         /// </summary>
         /// <param name="plugin">The plugin to disable</param>
-        void DisablePlugin(Plugin plugin);
+        /// <param name="saveState">Whether or not to save the new enabled state</param>
+        void DisablePlugin(Plugin plugin, bool saveState);
 
         /// <summary>
         ///     Enables the provided plugin feature
         /// </summary>
-        /// <param name="pluginFeature"></param>
+        /// <param name="pluginFeature">The feature to enable</param>
+        /// <param name="saveState">Whether or not to save the new enabled state</param>
         /// <param name="isAutoEnable">If true, fails if there is a lock file present</param>
-        void EnablePluginFeature(PluginFeature pluginFeature, bool isAutoEnable = false);
+        void EnablePluginFeature(PluginFeature pluginFeature, bool saveState, bool isAutoEnable = false);
 
         /// <summary>
         ///     Disables the provided plugin feature
         /// </summary>
-        /// <param name="pluginFeature"></param>
-        void DisablePluginFeature(PluginFeature pluginFeature);
+        /// <param name="pluginFeature">The feature to enable</param>
+        /// <param name="saveState">Whether or not to save the new enabled state</param>
+        void DisablePluginFeature(PluginFeature pluginFeature, bool saveState);
 
         /// <summary>
         ///     Gets the plugin info of all loaded plugins

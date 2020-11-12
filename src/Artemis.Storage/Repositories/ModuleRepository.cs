@@ -6,11 +6,11 @@ using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
-    public class ModuleRepository : IModuleRepository
+    internal class ModuleRepository : IModuleRepository
     {
         private readonly LiteRepository _repository;
 
-        internal ModuleRepository(LiteRepository repository)
+        public ModuleRepository(LiteRepository repository)
         {
             _repository = repository;
             _repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.ModuleId, true);

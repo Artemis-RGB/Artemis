@@ -33,13 +33,32 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
-            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels())
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
             viewModel.Update(this, null);
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(this, null);
             return viewModel;
+        }
+
+        public void UpdateModules(DataModelPropertiesViewModel mainDataModelVisualization)
+        {
+            List<DataModelVisualizationViewModel> disabledChildren = mainDataModelVisualization.Children.Where(d => !d.DataModel.Feature.IsEnabled).ToList();
+            foreach (DataModelVisualizationViewModel child in disabledChildren)
+                mainDataModelVisualization.Children.Remove(child);
+
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
+            {
+                if (mainDataModelVisualization.Children.All(c => c.DataModel != dataModelExpansion))
+                {
+                    mainDataModelVisualization.Children.Add(
+                        new DataModelPropertiesViewModel(dataModelExpansion, mainDataModelVisualization, new DataModelPath(dataModelExpansion))
+                    );
+                }
+            }
+
+            mainDataModelVisualization.Update(this, null);
         }
 
         public DataModelPropertiesViewModel GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel)
@@ -64,7 +83,7 @@ namespace Artemis.UI.Shared.Services
                 return null;
 
             DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
-            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, null));
+            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, new DataModelPath(dataModel)));
 
             // Update to populate children
             viewModel.Update(this, null);

@@ -17,7 +17,7 @@ namespace Artemis.Core.Services
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(ILogger logger,
+        public ProfileService(ILogger logger,
             IPluginManagementService pluginManagementService,
             ISurfaceService surfaceService,
             IConditionOperatorService conditionOperatorService,

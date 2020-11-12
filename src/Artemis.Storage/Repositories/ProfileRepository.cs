@@ -6,11 +6,11 @@ using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
-    public class ProfileRepository : IProfileRepository
+    internal class ProfileRepository : IProfileRepository
     {
         private readonly LiteRepository _repository;
 
-        internal ProfileRepository(LiteRepository repository)
+        public ProfileRepository(LiteRepository repository)
         {
             _repository = repository;
             _repository.Database.GetCollection<ProfileEntity>().EnsureIndex(s => s.Name);

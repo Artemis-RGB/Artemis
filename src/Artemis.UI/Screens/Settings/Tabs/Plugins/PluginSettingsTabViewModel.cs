@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Services;
@@ -11,6 +12,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
+        private string _searchPluginInput;
+        private List<PluginSettingsViewModel> _instances;
 
         public PluginSettingsTabViewModel(IPluginManagementService pluginManagementService, ISettingsVmFactory settingsVmFactory)
         {
@@ -20,17 +23,42 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _settingsVmFactory = settingsVmFactory;
         }
 
+        public string SearchPluginInput
+        {
+            get => _searchPluginInput;
+            set
+            {
+                if (!SetAndNotify(ref _searchPluginInput, value)) return;
+                UpdatePluginSearch();
+            }
+        }
+
+        private void UpdatePluginSearch()
+        {
+            if (_instances == null)
+                return;
+
+            Items.Clear();
+
+            if (string.IsNullOrWhiteSpace(SearchPluginInput))
+                Items.AddRange(_instances);
+            else
+                Items.AddRange(_instances.Where(i => i.Plugin.Info.Name.Contains(SearchPluginInput, StringComparison.OrdinalIgnoreCase) ||
+                                                     i.Plugin.Info.Description.Contains(SearchPluginInput, StringComparison.OrdinalIgnoreCase)));
+        }
+
         protected override void OnActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(async () =>
             {
-                Items.Clear();
                 await Task.Delay(200);
+                _instances = _pluginManagementService.GetAllPlugins()
+                    .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
+                    .OrderBy(i => i.Plugin.Info.Name)
+                    .ToList();
 
-                List<PluginSettingsViewModel> instances = _pluginManagementService.GetAllPlugins().Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p)).ToList();
-                foreach (PluginSettingsViewModel pluginSettingsViewModel in instances.OrderBy(i => i.Plugin.Info.Name)) 
-                    Items.Add(pluginSettingsViewModel);
+                UpdatePluginSearch();
             });
 
             base.OnActivate();
