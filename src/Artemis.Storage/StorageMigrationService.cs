@@ -30,7 +30,11 @@ namespace Artemis.Storage
 
                 _logger.Information("Applying storage migration {storageMigration} to update DB from v{oldVersion} to v{newVersion}",
                     storageMigration.GetType().Name, _repository.Database.UserVersion, storageMigration.UserVersion);
+
+                _repository.Database.BeginTrans();
                 storageMigration.Apply(_repository);
+                _repository.Database.Commit();
+                
                 _repository.Database.UserVersion = storageMigration.UserVersion;
             }
         }
