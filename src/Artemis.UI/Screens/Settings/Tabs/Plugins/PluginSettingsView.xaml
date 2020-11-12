@@ -102,7 +102,6 @@
                     <ListBox Grid.Row="1"
                              MaxHeight="135"
                              ItemsSource="{Binding Items}"
-                             materialDesign:RippleAssist.IsDisabled="True"
                              HorizontalContentAlignment="Stretch"
                              VirtualizingPanel.ScrollUnit="Pixel"
                              Visibility="{Binding IsEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
