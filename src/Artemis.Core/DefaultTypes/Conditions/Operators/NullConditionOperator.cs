@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     internal class NullConditionOperator : ConditionOperator<object>
     {

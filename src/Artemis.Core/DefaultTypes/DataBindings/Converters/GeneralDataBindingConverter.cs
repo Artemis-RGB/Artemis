@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a generic data binding converter that acts as the bridge between a
