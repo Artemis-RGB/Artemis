@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     /// <inheritdoc />
     public class ColorGradientLayerProperty : LayerProperty<ColorGradient>

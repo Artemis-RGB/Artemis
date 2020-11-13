@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class EnumLayerProperty<T> : LayerProperty<T> where T : Enum

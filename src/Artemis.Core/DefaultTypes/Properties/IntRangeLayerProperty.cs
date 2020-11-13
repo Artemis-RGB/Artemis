@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     /// <inheritdoc />
     public class IntRangeLayerProperty : LayerProperty<IntRange>

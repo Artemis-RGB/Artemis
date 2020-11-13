@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     /// <summary>
     ///     A special layer property used to configure the selected layer brush

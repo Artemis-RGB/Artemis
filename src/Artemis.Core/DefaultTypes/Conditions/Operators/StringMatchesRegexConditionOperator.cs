@@ -1,6 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 
-namespace Artemis.Core.DefaultTypes {
+namespace Artemis.Core {
     internal class StringMatchesRegexConditionOperator : ConditionOperator<string, string>
     {
         public override string Description => "Matches Regex";

@@ -1,5 +1,4 @@
-﻿using Artemis.Core.DefaultTypes;
-using SkiaSharp;
+﻿using SkiaSharp;
 
 namespace Artemis.Core
 {
