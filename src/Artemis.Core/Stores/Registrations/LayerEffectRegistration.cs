@@ -8,12 +8,12 @@ namespace Artemis.Core
     /// </summary>
     public class LayerEffectRegistration
     {
-        internal LayerEffectRegistration(LayerEffectDescriptor descriptor, Plugin plugin)
+        internal LayerEffectRegistration(LayerEffectDescriptor descriptor, PluginFeature pluginFeature)
         {
             LayerEffectDescriptor = descriptor;
-            Plugin = plugin;
+            PluginFeature = pluginFeature;
 
-            Plugin.PluginDisabled += PluginOnPluginDisabled;
+            PluginFeature.Disabled += OnDisabled;
         }
 
         /// <summary>
@@ -24,16 +24,16 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin the layer effect is associated with
         /// </summary>
-        public Plugin Plugin { get; }
+        public PluginFeature PluginFeature { get; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the registration is in the internal Core store
         /// </summary>
         public bool IsInStore { get; internal set; }
 
-        private void PluginOnPluginDisabled(object sender, EventArgs e)
+        private void OnDisabled(object sender, EventArgs e)
         {
-            Plugin.PluginDisabled -= PluginOnPluginDisabled;
+            PluginFeature.Disabled -= OnDisabled;
             if (IsInStore)
                 LayerEffectStore.Remove(this);
         }

@@ -5,11 +5,11 @@ using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
-    public class PluginRepository : IPluginRepository
+    internal class PluginRepository : IPluginRepository
     {
         private readonly LiteRepository _repository;
 
-        internal PluginRepository(LiteRepository repository)
+        public PluginRepository(LiteRepository repository)
         {
             _repository = repository;
 

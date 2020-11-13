@@ -2,6 +2,7 @@
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Humanizer;
 using MaterialDesignExtensions.Controls;
 using Stylet;
 
@@ -10,13 +11,13 @@ namespace Artemis.UI.Screens.Splash
     public class SplashViewModel : Screen
     {
         private readonly ICoreService _coreService;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private string _status;
 
-        public SplashViewModel(ICoreService coreService, IPluginService pluginService)
+        public SplashViewModel(ICoreService coreService, IPluginManagementService pluginManagementService)
         {
             _coreService = coreService;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             Status = "Initializing Core";
         }
 
@@ -37,46 +38,60 @@ namespace Artemis.UI.Screens.Splash
         protected override void OnInitialActivate()
         {
             _coreService.Initialized += OnCoreServiceOnInitialized;
-            _pluginService.CopyingBuildInPlugins += OnPluginServiceOnCopyingBuildInPlugins;
-            _pluginService.PluginLoading += OnPluginServiceOnPluginLoading;
-            _pluginService.PluginLoaded += OnPluginServiceOnPluginLoaded;
-            _pluginService.PluginEnabling += PluginServiceOnPluginEnabling;
-            _pluginService.PluginEnabled += PluginServiceOnPluginEnabled;
+            _pluginManagementService.CopyingBuildInPlugins += OnPluginManagementServiceOnCopyingBuildInPluginsManagement;
+            _pluginManagementService.PluginLoading += OnPluginManagementServiceOnPluginManagementLoading;
+            _pluginManagementService.PluginLoaded += OnPluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginEnabling += PluginManagementServiceOnPluginManagementEnabling;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginFeatureEnabling += PluginManagementServiceOnPluginFeatureEnabling;
+            _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             _coreService.Initialized -= OnCoreServiceOnInitialized;
-            _pluginService.CopyingBuildInPlugins -= OnPluginServiceOnCopyingBuildInPlugins;
-            _pluginService.PluginLoading -= OnPluginServiceOnPluginLoading;
-            _pluginService.PluginLoaded -= OnPluginServiceOnPluginLoaded;
-            _pluginService.PluginEnabling -= PluginServiceOnPluginEnabling;
-            _pluginService.PluginEnabled -= PluginServiceOnPluginEnabled;
+            _pluginManagementService.CopyingBuildInPlugins -= OnPluginManagementServiceOnCopyingBuildInPluginsManagement;
+            _pluginManagementService.PluginLoading -= OnPluginManagementServiceOnPluginManagementLoading;
+            _pluginManagementService.PluginLoaded -= OnPluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginEnabling -= PluginManagementServiceOnPluginManagementEnabling;
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementEnabled;
+            _pluginManagementService.PluginFeatureEnabling -= PluginManagementServiceOnPluginFeatureEnabling;
+            _pluginManagementService.PluginFeatureEnabled -= PluginManagementServiceOnPluginFeatureEnabled;
             base.OnClose();
         }
 
-        private void OnPluginServiceOnPluginLoaded(object sender, PluginEventArgs args)
+        private void OnPluginManagementServiceOnPluginManagementLoaded(object sender, PluginEventArgs args)
         {
             Status = "Initializing UI";
         }
 
-        private void OnPluginServiceOnPluginLoading(object sender, PluginEventArgs args)
+        private void OnPluginManagementServiceOnPluginManagementLoading(object sender, PluginEventArgs args)
         {
-            Status = "Loading plugin: " + args.PluginInfo.Name;
+            Status = "Loading plugin: " + args.Plugin.Info.Name;
         }
 
-        private void PluginServiceOnPluginEnabled(object sender, PluginEventArgs args)
+        private void PluginManagementServiceOnPluginManagementEnabled(object sender, PluginEventArgs args)
         {
             Status = "Initializing UI";
         }
 
-        private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs args)
+        private void PluginManagementServiceOnPluginManagementEnabling(object sender, PluginEventArgs args)
         {
-            Status = "Enabling plugin: " + args.PluginInfo.Name;
+            Status = "Enabling plugin: " + args.Plugin.Info.Name;
         }
 
-        private void OnPluginServiceOnCopyingBuildInPlugins(object sender, EventArgs args)
+        private void PluginManagementServiceOnPluginFeatureEnabling(object? sender, PluginFeatureEventArgs e)
+        {
+            Status = "Enabling: " + e.PluginFeature.GetType().Name.Humanize();
+        }
+
+        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        {
+            Status = "Initializing UI";
+        }
+
+        private void OnPluginManagementServiceOnCopyingBuildInPluginsManagement(object sender, EventArgs args)
         {
             Status = "Updating built-in plugins";
         }

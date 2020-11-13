@@ -12,10 +12,10 @@ namespace Artemis.Core
     public abstract class BaseDataBindingModifierType
     {
         /// <summary>
-        ///     Gets the plugin info this data binding modifier belongs to
+        ///     Gets the plugin this data binding modifier belongs to
         ///     <para>Note: Not set until after registering</para>
         /// </summary>
-        public PluginInfo PluginInfo { get; internal set; }
+        public Plugin Plugin { get; internal set; }
 
         /// <summary>
         ///     Gets the value type of this modifier type

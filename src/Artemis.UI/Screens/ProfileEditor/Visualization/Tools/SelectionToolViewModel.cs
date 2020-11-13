@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Properties;
 using Artemis.UI.Shared.Services;
@@ -91,7 +92,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private void CreateLayer(Folder folder, List<ArtemisLed> selectedLeds)
         {
             Layer newLayer = new Layer(folder, "New layer");
-            newLayer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
+
+            LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
+            if (brush != null)
+                newLayer.ChangeLayerBrush(brush);
+
             newLayer.AddLeds(selectedLeds);
             ProfileEditorService.ChangeSelectedProfileElement(newLayer);
             ProfileEditorService.UpdateSelectedProfileElement();

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
@@ -139,7 +140,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
             Layer layer = new Layer(ProfileElement, "New layer");
-            layer.ChangeLayerBrush(_layerBrushService.GetDefaultLayerBrush());
+
+            // Could be null if the default brush got disabled
+            LayerBrushDescriptor? brush = _layerBrushService.GetDefaultLayerBrush();
+            if (brush != null)
+                layer.ChangeLayerBrush(brush);
+
             layer.AddLeds(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds));
             _profileEditorService.UpdateSelectedProfile();
             _profileEditorService.ChangeSelectedProfileElement(layer);

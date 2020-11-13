@@ -7,7 +7,7 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     Allows you to register one or more <see cref="LayerEffect{T}" />s usable by profile layers.
     /// </summary>
-    public abstract class LayerEffectProvider : Plugin
+    public abstract class LayerEffectProvider : PluginFeature
     {
         private readonly List<LayerEffectDescriptor> _layerEffectDescriptors;
 
@@ -17,7 +17,7 @@ namespace Artemis.Core.LayerEffects
         protected LayerEffectProvider()
         {
             _layerEffectDescriptors = new List<LayerEffectDescriptor>();
-            PluginDisabled += OnPluginDisabled;
+            Disabled += OnDisabled;
         }
 
         /// <summary>
@@ -38,15 +38,15 @@ namespace Artemis.Core.LayerEffects
         /// </param>
         protected void RegisterLayerEffectDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerEffect
         {
-            if (!Enabled)
-                throw new ArtemisPluginException(PluginInfo, "Can only add a layer effect descriptor when the plugin is enabled");
+            if (!IsEnabled)
+                throw new ArtemisPluginFeatureException(this, "Can only add a layer effect descriptor when the plugin is enabled");
 
             LayerEffectDescriptor descriptor = new LayerEffectDescriptor(displayName, description, icon, typeof(T), this);
             _layerEffectDescriptors.Add(descriptor);
             LayerEffectStore.Add(descriptor);
         }
 
-        private void OnPluginDisabled(object sender, EventArgs e)
+        private void OnDisabled(object sender, EventArgs e)
         {
             // The store will clean up the registrations by itself, the plugin just needs to clear its own list
             _layerEffectDescriptors.Clear();

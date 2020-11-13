@@ -6,17 +6,21 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Plugins"
+             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <materialDesign:Card Width="400">
+    <materialDesign:Card Width="800">
         <Grid Margin="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="100" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
@@ -24,64 +28,94 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <materialDesign:PackIcon Kind="{Binding Icon}" Width="48" Height="48" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Center" />
+                <controls:ArtemisIcon Icon="{Binding Icon}"
+                                      Width="48"
+                                      Height="48"
+                                      Margin="0 5 0 0"
+                                      Grid.Row="0"
+                                      Grid.RowSpan="2"
+                                      HorizontalAlignment="Center"
+                                      VerticalAlignment="Top" />
 
-                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignTextBlock}" Text="{Binding PluginInfo.Name}" />
-                <Button Grid.Column="2" Grid.Row="0"
-                        Background="#FF4343"
-                        BorderBrush="#FF7474"
-                        Foreground="White"
-                        Height="22"
-                        Padding="4"
-                        Margin="0 -18 0 0"
-                        Visibility="{Binding DisplayLoadFailed, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        ToolTip="Click to see the full error that occured"
-                        Command="{s:Action ShowLoadException}">
-                    <TextBlock FontSize="11">LOAD FAILED</TextBlock>
-                </Button>
-                <Button Grid.Column="2" Grid.Row="0"
-                        Height="22"
-                        Padding="4"
-                        Margin="0 -18 0 0"
-                        Visibility="{Binding RequiresRestart, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        ToolTip="Click to restart"
-                        Command="{s:Action Restart}">
-                    <TextBlock FontSize="11">NEEDS RESTART</TextBlock>
-                </Button>
+                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding Plugin.Info.Name}" />
 
                 <TextBlock Grid.Column="1"
                            Grid.Row="1"
-                           Grid.ColumnSpan="2"
                            TextWrapping="Wrap"
-                           Text="{Binding PluginInfo.Description}"
+                           Text="{Binding Plugin.Info.Description}"
                            Style="{StaticResource MaterialDesignTextBlock}"
                            Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
             </Grid>
 
-            <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal">
-                <Button Style="{StaticResource MaterialDesignOutlinedButton}" ToolTip="MaterialDesignOutlinedButton" Margin="4" Command="{s:Action OpenSettings}">
-                    SETTINGS
-                </Button>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8"
-                        Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
-                    Plugin enabled
-                </CheckBox>
-            </StackPanel>
-            <StackPanel Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8"
-                        Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-                <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" />
-            </StackPanel>
+
+            <Button Grid.Row="1"
+                    Grid.Column="0"
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    ToolTip="Open the plugins settings window"
+                    Margin="4"
+                    Command="{s:Action OpenSettings}">
+                SETTINGS
+            </Button>
+
+            <CheckBox Grid.Row="1"
+                      Grid.Column="1"
+                      HorizontalAlignment="Right"
+                      VerticalAlignment="Bottom"
+                      Margin="8"
+                      Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                      Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
+                Plugin enabled
+            </CheckBox>
+
+            <ProgressBar Grid.Row="1"
+                         Grid.Column="1"
+                         HorizontalAlignment="Right"
+                         VerticalAlignment="Bottom"
+                         Margin="8"
+                         Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                         Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0"
+                         IsIndeterminate="True" />
+
+            <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{StaticResource MaterialDesignDivider}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Margin="10 10 0 5" Style="{StaticResource MaterialDesignBody2TextBlock}">Plugin features</TextBlock>
+                    <TextBlock Grid.Row="1"
+                               HorizontalAlignment="Center"
+                               Margin="0 30 0 0"
+                               Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               Visibility="{Binding IsEnabled, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                        Enable the plugin to view its features
+                    </TextBlock>
+
+                    <ListBox Grid.Row="1"
+                             MaxHeight="135"
+                             ItemsSource="{Binding Items}"
+                             HorizontalContentAlignment="Stretch"
+                             VirtualizingPanel.ScrollUnit="Pixel"
+                             Visibility="{Binding IsEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                        <b:Interaction.Behaviors>
+                            <shared:ScrollParentWhenAtMax />
+                        </b:Interaction.Behaviors>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </Border>
         </Grid>
     </materialDesign:Card>
 </UserControl>

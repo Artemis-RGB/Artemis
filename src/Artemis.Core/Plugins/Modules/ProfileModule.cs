@@ -46,7 +46,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
+            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
 
         /// <summary>
@@ -71,18 +71,18 @@ namespace Artemis.Core.Modules
             HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
         }
 
-        internal override void InternalEnablePlugin()
+        internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.PluginInfo = PluginInfo;
+            DataModel.Feature = this;
             DataModel.DataModelDescription = GetDataModelDescription();
-            base.InternalEnablePlugin();
+            base.InternalEnable();
         }
 
-        internal override void InternalDisablePlugin()
+        internal override void InternalDisable()
         {
             Deactivate(true);
-            base.InternalDisablePlugin();
+            base.InternalDisable();
             DataModel = null;
         }
     }
@@ -184,7 +184,7 @@ namespace Artemis.Core.Modules
         internal async Task ChangeActiveProfileAnimated(Profile profile, ArtemisSurface surface)
         {
             if (profile != null && profile.Module != this)
-                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
+                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
             if (!IsActivated)
                 throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
 
@@ -206,7 +206,7 @@ namespace Artemis.Core.Modules
         internal void ChangeActiveProfile(Profile profile, ArtemisSurface surface)
         {
             if (profile != null && profile.Module != this)
-                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {PluginInfo}.");
+                throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
             if (!IsActivated)
                 throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
 

@@ -1,6 +1,5 @@
 ﻿using System;
-using Artemis.Core;
-using MaterialDesignThemes.Wpf;
+using Artemis.UI.Shared;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
@@ -9,11 +8,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly PluginConfigurationViewModel _configurationViewModel;
 
-        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, PackIconKind icon)
+        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, object icon)
         {
             _configurationViewModel = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
             Icon = icon;
         }
+
+        public object Icon { get; }
 
         protected override void OnInitialActivate()
         {
@@ -22,8 +23,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             base.OnInitialActivate();
         }
-
-        public PackIconKind Icon { get; }
 
         private void ActiveItemOnClosed(object sender, CloseEventArgs e)
         {

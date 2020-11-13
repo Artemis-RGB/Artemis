@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -147,7 +146,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Profile");
 
             ProfileEntity.Id = EntityId;
-            ProfileEntity.PluginGuid = Module.PluginInfo.Guid;
+            ProfileEntity.ModuleId = Module.Id;
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
 

@@ -3,7 +3,7 @@
 namespace Artemis.Core.Modules
 {
     /// <inheritdoc />
-    public class ModuleTab<T> : ModuleTab where T : ModuleViewModel
+    public class ModuleTab<T> : ModuleTab where T : IModuleViewModel
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="ModuleTab{T}" /> class

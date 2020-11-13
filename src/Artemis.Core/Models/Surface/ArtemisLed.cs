@@ -1,10 +1,9 @@
 ﻿using RGB.NET.Core;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.Core
 {
-    public class ArtemisLed : PropertyChangedBase
+    public class ArtemisLed : CorePropertyChanged
     {
         private SKRect _absoluteRenderRectangle;
         private SKRect _renderRectangle;

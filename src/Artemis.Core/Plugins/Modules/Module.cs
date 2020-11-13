@@ -42,21 +42,21 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = PluginInfo.Name, Description = PluginInfo.Description};
+            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
 
-        internal override void InternalEnablePlugin()
+        internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.PluginInfo = PluginInfo;
+            DataModel.Feature = this;
             DataModel.DataModelDescription = GetDataModelDescription();
-            base.InternalEnablePlugin();
+            base.InternalEnable();
         }
 
-        internal override void InternalDisablePlugin()
+        internal override void InternalDisable()
         {
             DataModel = null;
-            base.InternalDisablePlugin();
+            base.InternalDisable();
         }
     }
 
@@ -64,7 +64,7 @@ namespace Artemis.Core.Modules
     /// <summary>
     ///     Allows you to add support for new games/applications
     /// </summary>
-    public abstract class Module : Plugin
+    public abstract class Module : DataModelPluginFeature
     {
         /// <summary>
         ///     The modules display name that's shown in the menu
@@ -236,7 +236,7 @@ namespace Artemis.Core.Modules
             if (Entity == null)
                 Entity = new ModuleSettingsEntity();
 
-            Entity.PluginGuid = PluginInfo.Guid;
+            Entity.ModuleId = Id;
             Entity.PriorityCategory = (int) PriorityCategory;
             Entity.Priority = Priority;
         }

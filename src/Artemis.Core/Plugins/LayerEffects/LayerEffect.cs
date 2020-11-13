@@ -37,7 +37,7 @@ namespace Artemis.Core.LayerEffects
         {
             Properties = Activator.CreateInstance<T>();
             Properties.LayerEffect = this;
-            Properties.Initialize(ProfileElement, PropertyRootPath, PluginInfo);
+            Properties.Initialize(ProfileElement, PropertyRootPath, Descriptor.Provider);
             PropertiesInitialized = true;
 
             EnableLayerEffect();

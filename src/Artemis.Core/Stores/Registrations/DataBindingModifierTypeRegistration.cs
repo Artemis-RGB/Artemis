@@ -12,7 +12,7 @@ namespace Artemis.Core
             DataBindingModifierType = dataBindingModifierType;
             Plugin = plugin;
 
-            Plugin.PluginDisabled += PluginOnPluginDisabled;
+            Plugin.Disabled += OnDisabled;
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace Artemis.Core
         /// </summary>
         public bool IsInStore { get; internal set; }
 
-        private void PluginOnPluginDisabled(object sender, EventArgs e)
+        private void OnDisabled(object sender, EventArgs e)
         {
-            Plugin.PluginDisabled -= PluginOnPluginDisabled;
+            Plugin.Disabled -= OnDisabled;
             if (IsInStore)
                 DataBindingModifierTypeStore.Remove(this);
         }

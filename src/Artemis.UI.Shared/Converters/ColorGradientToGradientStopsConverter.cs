@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media;
 using Artemis.Core;
 using SkiaSharp;
-using Stylet;
 
 namespace Artemis.UI.Shared
 {
@@ -14,13 +14,13 @@ namespace Artemis.UI.Shared
     ///     Converts  <see cref="T:Artemis.Core.Models.Profile.ColorGradient" /> into a
     ///     <see cref="T:System.Windows.Media.GradientStopCollection" />.
     /// </summary>
-    [ValueConversion(typeof(BindableCollection<ColorGradientStop>), typeof(GradientStopCollection))]
+    [ValueConversion(typeof(List<ColorGradientStop>), typeof(GradientStopCollection))]
     public class ColorGradientToGradientStopsConverter : IValueConverter
     {
         /// <inheritdoc />
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BindableCollection<ColorGradientStop> colorGradients = (BindableCollection<ColorGradientStop>) value;
+            List<ColorGradientStop> colorGradients = (List<ColorGradientStop>) value;
             GradientStopCollection collection = new GradientStopCollection();
             if (colorGradients == null)
                 return collection;
@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             GradientStopCollection collection = (GradientStopCollection) value;
-            BindableCollection<ColorGradientStop> colorGradients = new BindableCollection<ColorGradientStop>();
+            List<ColorGradientStop> colorGradients = new List<ColorGradientStop>();
             if (collection == null)
                 return colorGradients;
 

@@ -11,22 +11,22 @@ namespace Artemis.UI.Shared
 
         public DataModelVisualizationRegistration(IDataModelUIService dataModelUIService,
             RegistrationType registrationType,
-            PluginInfo pluginInfo,
+            Plugin plugin,
             Type supportedType,
             Type viewModelType)
         {
             _dataModelUIService = dataModelUIService;
             RegistrationType = registrationType;
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
             SupportedType = supportedType;
             ViewModelType = viewModelType;
 
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled += InstanceOnPluginDisabled;
+            if (Plugin != Constants.CorePlugin)
+                Plugin.Disabled += InstanceOnDisabled;
         }
 
         public RegistrationType RegistrationType { get; }
-        public PluginInfo PluginInfo { get; }
+        public Plugin Plugin { get; }
         public Type SupportedType { get; }
         public Type ViewModelType { get; }
 
@@ -34,11 +34,11 @@ namespace Artemis.UI.Shared
 
         internal void Unsubscribe()
         {
-            if (PluginInfo != Constants.CorePluginInfo)
-                PluginInfo.Instance.PluginDisabled -= InstanceOnPluginDisabled;
+            if (Plugin != Constants.CorePlugin)
+                Plugin.Disabled -= InstanceOnDisabled;
         }
 
-        private void InstanceOnPluginDisabled(object sender, EventArgs e)
+        private void InstanceOnDisabled(object sender, EventArgs e)
         {
             if (RegistrationType == RegistrationType.Input)
                 _dataModelUIService.RemoveDataModelInput(this);

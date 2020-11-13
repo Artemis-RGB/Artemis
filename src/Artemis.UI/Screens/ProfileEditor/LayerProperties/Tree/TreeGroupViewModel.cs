@@ -9,6 +9,8 @@ using Artemis.Core.LayerEffects;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.Windows;
+using Artemis.UI.Shared.LayerBrushes;
+using Artemis.UI.Shared.LayerEffects;
 using Artemis.UI.Shared.Services;
 using Ninject;
 using Ninject.Parameters;
@@ -18,6 +20,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
     public class TreeGroupViewModel : PropertyChangedBase
     {
+        public enum LayerPropertyGroupType
+        {
+            General,
+            Transform,
+            LayerBrushRoot,
+            LayerEffectRoot,
+            None
+        }
+
         private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
         private readonly IProfileEditorService _profileEditorService;
@@ -55,7 +66,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         public void OpenBrushSettings()
         {
             BaseLayerBrush layerBrush = LayerPropertyGroup.LayerBrush;
-            LayerBrushConfigurationDialog configurationViewModel = layerBrush.ConfigurationDialog;
+            LayerBrushConfigurationDialog configurationViewModel = (LayerBrushConfigurationDialog) layerBrush.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
@@ -69,7 +80,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 // Find the BaseLayerBrush parameter, it is required by the base constructor so its there for sure
                 ParameterInfo brushParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerBrush).IsAssignableFrom(p.ParameterType));
                 ConstructorArgument argument = new ConstructorArgument(brushParameter.Name, layerBrush);
-                BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
+                BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
 
                 _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(viewModel));
             }
@@ -82,7 +93,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         public void OpenEffectSettings()
         {
             BaseLayerEffect layerEffect = LayerPropertyGroup.LayerEffect;
-            LayerEffectConfigurationDialog configurationViewModel = layerEffect.ConfigurationDialog;
+            LayerEffectConfigurationDialog configurationViewModel = (LayerEffectConfigurationDialog) layerEffect.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
@@ -95,7 +106,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
                 ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
                 ConstructorArgument argument = new ConstructorArgument(effectParameter.Name, layerEffect);
-                EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.PluginInfo.Kernel.Get(configurationViewModel.Type, argument);
+                EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
                 _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
@@ -168,15 +179,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 GroupType = LayerPropertyGroupType.LayerEffectRoot;
             else
                 GroupType = LayerPropertyGroupType.None;
-        }
-
-        public enum LayerPropertyGroupType
-        {
-            General,
-            Transform,
-            LayerBrushRoot,
-            LayerEffectRoot,
-            None
         }
     }
 }

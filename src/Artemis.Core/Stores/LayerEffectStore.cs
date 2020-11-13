@@ -17,7 +17,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.LayerEffectDescriptor == descriptor))
                     throw new ArtemisCoreException($"Store already contains layer brush '{descriptor.DisplayName}'");
 
-                registration = new LayerEffectRegistration(descriptor, descriptor.LayerEffectProvider.PluginInfo.Instance) { IsInStore = true };
+                registration = new LayerEffectRegistration(descriptor, descriptor.Provider) { IsInStore = true };
                 Registrations.Add(registration);
             }
 
@@ -47,11 +47,11 @@ namespace Artemis.Core
             }
         }
 
-        public static LayerEffectRegistration Get(Guid pluginGuid, string typeName)
+        public static LayerEffectRegistration? Get(string providerId, string typeName)
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(d => d.Plugin.PluginInfo.Guid == pluginGuid && d.LayerEffectDescriptor.LayerEffectType.Name == typeName);
+                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == providerId && d.LayerEffectDescriptor.LayerEffectType.Name == typeName);
             }
         }
 

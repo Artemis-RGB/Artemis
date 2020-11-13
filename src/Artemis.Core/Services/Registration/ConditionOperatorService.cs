@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.DefaultTypes;
 
 namespace Artemis.Core.Services
 {
@@ -12,14 +11,14 @@ namespace Artemis.Core.Services
             RegisterBuiltInConditionOperators();
         }
 
-        public ConditionOperatorRegistration RegisterConditionOperator(PluginInfo pluginInfo, BaseConditionOperator conditionOperator)
+        public ConditionOperatorRegistration RegisterConditionOperator(Plugin plugin, BaseConditionOperator conditionOperator)
         {
-            if (pluginInfo == null)
-                throw new ArgumentNullException(nameof(pluginInfo));
+            if (plugin == null)
+                throw new ArgumentNullException(nameof(plugin));
             if (conditionOperator == null)
                 throw new ArgumentNullException(nameof(conditionOperator));
 
-            conditionOperator.PluginInfo = pluginInfo;
+            conditionOperator.Plugin = plugin;
             return ConditionOperatorStore.Add(conditionOperator);
         }
 
@@ -43,30 +42,30 @@ namespace Artemis.Core.Services
         private void RegisterBuiltInConditionOperators()
         {
             // General usage for any type
-            RegisterConditionOperator(Constants.CorePluginInfo, new EqualsConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new NotEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new EqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new NotEqualConditionOperator());
 
             // Numeric operators
-            RegisterConditionOperator(Constants.CorePluginInfo, new NumberEqualsConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new NumberNotEqualConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new LessThanConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new LessThanOrEqualConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new GreaterThanOrEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new NumberEqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new NumberNotEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new LessThanConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new GreaterThanConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new LessThanOrEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new GreaterThanOrEqualConditionOperator());
 
             // String operators
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringEqualsConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringNotEqualConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringContainsConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringNotContainsConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringStartsWithConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringEndsWithConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new StringMatchesRegexConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringEqualsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringNotEqualConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringContainsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringNotContainsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringStartsWithConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringEndsWithConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new StringMatchesRegexConditionOperator());
 
             // Null checks, at the bottom
             // TODO: Implement a priority mechanism
-            RegisterConditionOperator(Constants.CorePluginInfo, new NullConditionOperator());
-            RegisterConditionOperator(Constants.CorePluginInfo, new NotNullConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new NullConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new NotNullConditionOperator());
         }
     }
 }

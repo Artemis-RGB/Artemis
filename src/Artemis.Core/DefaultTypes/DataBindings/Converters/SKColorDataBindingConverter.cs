@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     /// <inheritdoc />
     public class SKColorDataBindingConverter : DataBindingConverter<SKColor, SKColor>

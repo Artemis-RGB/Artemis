@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     internal class MinModifierType : DataBindingModifierType<double, double>
     {

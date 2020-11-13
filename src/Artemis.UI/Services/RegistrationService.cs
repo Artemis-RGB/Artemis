@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.Linq;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.DataModel.Display;
 using Artemis.UI.DefaultTypes.DataModel.Input;
@@ -13,19 +14,19 @@ namespace Artemis.UI.Services
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
 
-        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService, IPluginService pluginService)
+        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService)
         {
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
 
             LoadPluginModules();
-            pluginService.PluginLoaded += PluginServiceOnPluginLoaded;
+            pluginManagementService.PluginLoaded += PluginServiceOnPluginLoaded;
         }
 
         public void RegisterBuiltInDataModelDisplays()
@@ -33,7 +34,7 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelDisplays)
                 return;
 
-            _dataModelUIService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePluginInfo);
+            _dataModelUIService.RegisterDataModelDisplay<SKColorDataModelDisplayViewModel>(Constants.CorePlugin);
 
             _registeredBuiltInDataModelDisplays = true;
         }
@@ -43,12 +44,12 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInDataModelInputs)
                 return;
 
-            _dataModelUIService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePluginInfo, Constants.FloatNumberTypes);
-            _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePluginInfo, Constants.IntegralNumberTypes);
-            _dataModelUIService.RegisterDataModelInput<SKColorDataModelInputViewModel>(Constants.CorePluginInfo, null);
-            _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePluginInfo, null);
-            _dataModelUIService.RegisterDataModelInput<EnumDataModelInputViewModel>(Constants.CorePluginInfo, null);
-            _dataModelUIService.RegisterDataModelInput<BoolDataModelInputViewModel>(Constants.CorePluginInfo, null);
+            _dataModelUIService.RegisterDataModelInput<DoubleDataModelInputViewModel>(Constants.CorePlugin, Constants.FloatNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<IntDataModelInputViewModel>(Constants.CorePlugin, Constants.IntegralNumberTypes);
+            _dataModelUIService.RegisterDataModelInput<SKColorDataModelInputViewModel>(Constants.CorePlugin, null);
+            _dataModelUIService.RegisterDataModelInput<StringDataModelInputViewModel>(Constants.CorePlugin, null);
+            _dataModelUIService.RegisterDataModelInput<EnumDataModelInputViewModel>(Constants.CorePlugin, null);
+            _dataModelUIService.RegisterDataModelInput<BoolDataModelInputViewModel>(Constants.CorePlugin, null);
 
             _registeredBuiltInDataModelInputs = true;
         }
@@ -58,30 +59,30 @@ namespace Artemis.UI.Services
             if (_registeredBuiltInPropertyEditors)
                 return;
 
-            _profileEditorService.RegisterPropertyInput<BrushPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<ColorGradientPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<FloatPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<IntPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKColorPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput(typeof(EnumPropertyInputViewModel<>), Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<FloatRangePropertyInputViewModel>(Constants.CorePluginInfo);
-            _profileEditorService.RegisterPropertyInput<IntRangePropertyInputViewModel>(Constants.CorePluginInfo);
+            _profileEditorService.RegisterPropertyInput<BrushPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<ColorGradientPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<FloatPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<IntPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<SKColorPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<SKPointPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<SKSizePropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput(typeof(EnumPropertyInputViewModel<>), Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<BoolPropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<FloatRangePropertyInputViewModel>(Constants.CorePlugin);
+            _profileEditorService.RegisterPropertyInput<IntRangePropertyInputViewModel>(Constants.CorePlugin);
 
             _registeredBuiltInPropertyEditors = true;
         }
 
         private void PluginServiceOnPluginLoaded(object? sender, PluginEventArgs e)
         {
-            e.PluginInfo.Kernel.Load(new[] { new PluginUIModule(e.PluginInfo) });
+            e.Plugin.Kernel.Load(new[] {new PluginUIModule(e.Plugin)});
         }
 
         private void LoadPluginModules()
         {
-            foreach (PluginInfo pluginInfo in _pluginService.GetAllPluginInfo())
-                pluginInfo.Kernel.Load(new[] { new PluginUIModule(pluginInfo) });
+            foreach (Plugin plugin in _pluginManagementService.GetAllPlugins().Where(p => p.IsEnabled)) 
+                plugin.Kernel.Load(new[] {new PluginUIModule(plugin)});
         }
     }
 

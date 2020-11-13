@@ -3,14 +3,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Storage.Entities.Profile;
-using Stylet;
 
 namespace Artemis.Core
 {
     /// <summary>
     ///     Represents a timeline used by profile elements
     /// </summary>
-    public class Timeline : PropertyChangedBase, IStorageModel
+    public class Timeline : CorePropertyChanged, IStorageModel
     {
         private const int MaxExtraTimelines = 15;
 
@@ -275,20 +274,20 @@ namespace Artemis.Core
             if (segment <= TimelineSegment.End)
             {
                 if (startUpdated || segment < TimelineSegment.End)
-                    NotifyOfPropertyChange(nameof(EndSegmentStartPosition));
-                NotifyOfPropertyChange(nameof(EndSegmentEndPosition));
+                    OnPropertyChanged(nameof(EndSegmentStartPosition));
+                OnPropertyChanged(nameof(EndSegmentEndPosition));
             }
 
             if (segment <= TimelineSegment.Main)
             {
                 if (startUpdated || segment < TimelineSegment.Main)
-                    NotifyOfPropertyChange(nameof(MainSegmentStartPosition));
-                NotifyOfPropertyChange(nameof(MainSegmentEndPosition));
+                    OnPropertyChanged(nameof(MainSegmentStartPosition));
+                OnPropertyChanged(nameof(MainSegmentEndPosition));
             }
 
-            if (segment <= TimelineSegment.Start) NotifyOfPropertyChange(nameof(StartSegmentEndPosition));
+            if (segment <= TimelineSegment.Start) OnPropertyChanged(nameof(StartSegmentEndPosition));
 
-            NotifyOfPropertyChange(nameof(Length));
+            OnPropertyChanged(nameof(Length));
         }
 
         #endregion

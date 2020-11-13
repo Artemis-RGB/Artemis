@@ -42,18 +42,18 @@ namespace Artemis.Core.DataModelExpansions
             HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
         }
 
-        internal override void InternalEnablePlugin()
+        internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.PluginInfo = PluginInfo;
+            DataModel.Feature = this;
             DataModel.DataModelDescription = GetDataModelDescription();
-            base.InternalEnablePlugin();
+            base.InternalEnable();
         }
 
-        internal override void InternalDisablePlugin()
+        internal override void InternalDisable()
         {
             DataModel = null;
-            base.InternalDisablePlugin();
+            base.InternalDisable();
         }
     }
 }

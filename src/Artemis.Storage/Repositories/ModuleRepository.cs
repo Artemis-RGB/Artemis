@@ -6,14 +6,14 @@ using LiteDB;
 
 namespace Artemis.Storage.Repositories
 {
-    public class ModuleRepository : IModuleRepository
+    internal class ModuleRepository : IModuleRepository
     {
         private readonly LiteRepository _repository;
 
-        internal ModuleRepository(LiteRepository repository)
+        public ModuleRepository(LiteRepository repository)
         {
             _repository = repository;
-            _repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.PluginGuid, true);
+            _repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.ModuleId, true);
         }
 
         public void Add(ModuleSettingsEntity moduleSettingsEntity)
@@ -21,9 +21,9 @@ namespace Artemis.Storage.Repositories
             _repository.Insert(moduleSettingsEntity);
         }
 
-        public ModuleSettingsEntity GetByPluginGuid(Guid guid)
+        public ModuleSettingsEntity GetByModuleId(string moduleId)
         {
-            return _repository.FirstOrDefault<ModuleSettingsEntity>(s => s.PluginGuid == guid);
+            return _repository.FirstOrDefault<ModuleSettingsEntity>(s => s.ModuleId == moduleId);
         }
 
         public List<ModuleSettingsEntity> GetAll()

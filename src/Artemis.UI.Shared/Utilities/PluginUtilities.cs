@@ -14,13 +14,13 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Transforms the provided icon so that it is usable by the <see cref="ArtemisIcon" /> control
         /// </summary>
-        /// <param name="pluginInfo">The info of the plugin the icon belongs to</param>
+        /// <param name="plugin">The plugin the icon belongs to</param>
         /// <param name="icon">
         ///     The icon, may be a string representation of a <see cref="PackIconKind" /> or a relative path
         ///     pointing to a .svg file
         /// </param>
         /// <returns></returns>
-        public static object GetPluginIcon(PluginInfo pluginInfo, string icon)
+        public static object GetPluginIcon(Plugin plugin, string icon)
         {
             if (icon == null)
                 return PackIconKind.QuestionMarkCircle;
@@ -28,7 +28,7 @@ namespace Artemis.UI.Shared
             // Icon is provided as a path
             if (icon.EndsWith(".svg"))
             {
-                string iconPath = pluginInfo.ResolveRelativePath(icon);
+                string iconPath = plugin.ResolveRelativePath(icon);
                 if (!File.Exists(iconPath))
                     return PackIconKind.QuestionMarkCircle;
                 return iconPath;

@@ -22,10 +22,10 @@ namespace Artemis.Core
         public abstract string Icon { get; }
 
         /// <summary>
-        ///     Gets the plugin info this condition operator belongs to
+        ///     Gets the plugin this condition operator belongs to
         ///     <para>Note: Not set until after registering</para>
         /// </summary>
-        public PluginInfo PluginInfo { get; internal set; }
+        public Plugin Plugin { get; internal set; }
 
         /// <summary>
         ///     Gets the left side type of this condition operator

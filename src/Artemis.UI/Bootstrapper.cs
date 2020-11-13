@@ -39,6 +39,8 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
+            Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+
             ILogger logger = Kernel.Get<ILogger>();
             IViewManager viewManager = Kernel.Get<IViewManager>();
 
@@ -86,7 +88,7 @@ namespace Artemis.UI
 
         protected override void ConfigureIoC(IKernel kernel)
         {
-            kernel.Settings.InjectNonPublic = true;
+            // kernel.Settings.InjectNonPublic = true;
 
             // Load the UI modules
             kernel.Load<UIModule>();
@@ -114,6 +116,11 @@ namespace Artemis.UI
 
             // Don't shut down, is that a good idea? Depends on the exception of course..
             e.Handled = true;
+        }
+
+        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        {
+            Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 
         private void CreateDataDirectory(ILogger logger)

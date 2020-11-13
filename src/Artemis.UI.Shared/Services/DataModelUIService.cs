@@ -7,6 +7,7 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Input;
+using Artemis.UI.Shared.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
 
@@ -15,13 +16,15 @@ namespace Artemis.UI.Shared.Services
     internal class DataModelUIService : IDataModelUIService
     {
         private readonly IDataModelService _dataModelService;
+        private readonly IDataModelVmFactory _dataModelVmFactory;
         private readonly IKernel _kernel;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelDisplays;
         private readonly List<DataModelVisualizationRegistration> _registeredDataModelEditors;
 
-        public DataModelUIService(IDataModelService dataModelService, IKernel kernel)
+        public DataModelUIService(IDataModelService dataModelService, IDataModelVmFactory dataModelVmFactory, IKernel kernel)
         {
             _dataModelService = dataModelService;
+            _dataModelVmFactory = dataModelVmFactory;
             _kernel = kernel;
             _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
             _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
@@ -33,7 +36,7 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
-            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels())
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
@@ -42,29 +45,48 @@ namespace Artemis.UI.Shared.Services
             return viewModel;
         }
 
-        public DataModelPropertiesViewModel GetPluginDataModelVisualization(Plugin plugin, bool includeMainDataModel)
+        public void UpdateModules(DataModelPropertiesViewModel mainDataModelVisualization)
+        {
+            List<DataModelVisualizationViewModel> disabledChildren = mainDataModelVisualization.Children.Where(d => !d.DataModel.Feature.IsEnabled).ToList();
+            foreach (DataModelVisualizationViewModel child in disabledChildren)
+                mainDataModelVisualization.Children.Remove(child);
+
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
+            {
+                if (mainDataModelVisualization.Children.All(c => c.DataModel != dataModelExpansion))
+                {
+                    mainDataModelVisualization.Children.Add(
+                        new DataModelPropertiesViewModel(dataModelExpansion, mainDataModelVisualization, new DataModelPath(dataModelExpansion))
+                    );
+                }
+            }
+
+            mainDataModelVisualization.Update(this, null);
+        }
+
+        public DataModelPropertiesViewModel GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel)
         {
             if (includeMainDataModel)
             {
                 DataModelPropertiesViewModel mainDataModel = GetMainDataModelVisualization();
 
                 // If the main data model already includes the plugin data model we're done
-                if (mainDataModel.Children.Any(c => c.DataModel.PluginInfo.Instance == plugin))
+                if (mainDataModel.Children.Any(c => c.DataModel.Feature == pluginFeature))
                     return mainDataModel;
                 // Otherwise get just the plugin data model and add it
-                DataModelPropertiesViewModel pluginDataModel = GetPluginDataModelVisualization(plugin, false);
+                DataModelPropertiesViewModel pluginDataModel = GetPluginDataModelVisualization(pluginFeature, false);
                 if (pluginDataModel != null)
                     mainDataModel.Children.Add(pluginDataModel);
 
                 return mainDataModel;
             }
 
-            DataModel dataModel = _dataModelService.GetPluginDataModel(plugin);
+            DataModel dataModel = _dataModelService.GetPluginDataModel(pluginFeature);
             if (dataModel == null)
                 return null;
 
             DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
-            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, null));
+            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, new DataModelPath(dataModel)));
 
             // Update to populate children
             viewModel.Update(this, null);
@@ -72,7 +94,7 @@ namespace Artemis.UI.Shared.Services
             return viewModel;
         }
 
-        public DataModelVisualizationRegistration RegisterDataModelInput<T>(PluginInfo pluginInfo, IReadOnlyCollection<Type> compatibleConversionTypes = null) where T : DataModelInputViewModel
+        public DataModelVisualizationRegistration RegisterDataModelInput<T>(Plugin plugin, IReadOnlyCollection<Type> compatibleConversionTypes = null) where T : DataModelInputViewModel
         {
             if (compatibleConversionTypes == null)
                 compatibleConversionTypes = new List<Type>();
@@ -83,19 +105,16 @@ namespace Artemis.UI.Shared.Services
                 DataModelVisualizationRegistration existing = _registeredDataModelEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
-                    if (existing.PluginInfo != pluginInfo)
-                    {
-                        throw new ArtemisPluginException($"Cannot register data model input for type {supportedType.Name} " +
-                                                         $"because an editor was already registered by {pluginInfo.Name}");
-                    }
-
+                    if (existing.Plugin != plugin)
+                        throw new ArtemisPluginException($"Cannot register data model input for type {supportedType.Name} because an editor was already" +
+                                                         $" registered by {existing.Plugin}");
                     return existing;
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
 
                 // Create the registration
-                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, pluginInfo, supportedType, viewModelType)
+                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, plugin, supportedType, viewModelType)
                 {
                     // Apply the compatible conversion types to the registration
                     CompatibleConversionTypes = compatibleConversionTypes
@@ -106,7 +125,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public DataModelVisualizationRegistration RegisterDataModelDisplay<T>(PluginInfo pluginInfo) where T : DataModelDisplayViewModel
+        public DataModelVisualizationRegistration RegisterDataModelDisplay<T>(Plugin plugin) where T : DataModelDisplayViewModel
         {
             Type viewModelType = typeof(T);
             lock (_registeredDataModelDisplays)
@@ -115,17 +134,14 @@ namespace Artemis.UI.Shared.Services
                 DataModelVisualizationRegistration existing = _registeredDataModelDisplays.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
-                    if (existing.PluginInfo != pluginInfo)
-                    {
-                        throw new ArtemisPluginException($"Cannot register data model display for type {supportedType.Name} " +
-                                                         $"because an editor was already registered by {pluginInfo.Name}");
-                    }
-
+                    if (existing.Plugin != plugin)
+                        throw new ArtemisPluginException($"Cannot register data model display for type {supportedType.Name} because an editor was already" +
+                                                         $" registered by {existing.Plugin}");
                     return existing;
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
-                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Display, pluginInfo, supportedType, viewModelType);
+                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Display, plugin, supportedType, viewModelType);
                 _registeredDataModelDisplays.Add(registration);
                 return registration;
             }
@@ -167,7 +183,7 @@ namespace Artemis.UI.Shared.Services
 
                 DataModelVisualizationRegistration match = _registeredDataModelDisplays.FirstOrDefault(d => d.SupportedType == propertyType);
                 if (match != null)
-                    result = (DataModelDisplayViewModel) match.PluginInfo.Kernel.Get(match.ViewModelType);
+                    result = (DataModelDisplayViewModel) match.Plugin.Kernel.Get(match.ViewModelType);
                 else if (!fallBackToDefault)
                     result = null;
                 else
@@ -206,12 +222,12 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module)
         {
-            return _kernel.Get<DataModelDynamicViewModel>(new ConstructorArgument("module", module));
+            return _dataModelVmFactory.DataModelDynamicViewModel(module);
         }
 
         public DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription)
         {
-            return _kernel.Get<DataModelStaticViewModel>(new ConstructorArgument("targetType", targetType), new ConstructorArgument("targetDescription", targetDescription));
+            return _dataModelVmFactory.DataModelStaticViewModel(targetType, targetDescription);
         }
 
         private DataModelInputViewModel InstantiateDataModelInputViewModel(DataModelVisualizationRegistration registration, DataModelPropertyAttribute description, object initialValue)
@@ -220,11 +236,12 @@ namespace Artemis.UI.Shared.Services
             if (initialValue != null && initialValue.GetType() != registration.SupportedType)
                 initialValue = Convert.ChangeType(initialValue, registration.SupportedType);
 
-            IParameter[] parameters = {
+            IParameter[] parameters =
+            {
                 new ConstructorArgument("targetDescription", description),
                 new ConstructorArgument("initialValue", initialValue)
             };
-            DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.PluginInfo.Kernel.Get(registration.ViewModelType, parameters);
+            DataModelInputViewModel viewModel = (DataModelInputViewModel) registration.Plugin.Kernel.Get(registration.ViewModelType, parameters);
             viewModel.CompatibleConversionTypes = registration.CompatibleConversionTypes;
             return viewModel;
         }
