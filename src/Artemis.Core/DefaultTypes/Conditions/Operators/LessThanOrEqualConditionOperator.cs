@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     internal class LessThanOrEqualConditionOperator : ConditionOperator<double, double>
     {

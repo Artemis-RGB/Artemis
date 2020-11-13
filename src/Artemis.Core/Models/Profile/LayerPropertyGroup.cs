@@ -28,11 +28,11 @@ namespace Artemis.Core
         ///     Gets the description of this group
         /// </summary>
         public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
-
+        
         /// <summary>
-        ///     Gets the info of the plugin this group is associated with
+        ///     Gets the plugin feature this group is associated with
         /// </summary>
-        public PluginInfo PluginInfo { get; internal set; }
+        public PluginFeature Feature { get; set; }
 
         /// <summary>
         ///     Gets the profile element (such as layer or folder) this group is associated with
@@ -145,18 +145,18 @@ namespace Artemis.Core
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void Initialize(RenderProfileElement profileElement, [NotNull] string path, PluginInfo pluginInfo)
+        internal void Initialize(RenderProfileElement profileElement, [NotNull] string path, PluginFeature feature)
         {
             if (path == null)
                 throw new ArgumentNullException(nameof(path));
-            if (pluginInfo == null)
-                throw new ArgumentNullException(nameof(pluginInfo));
+            if (feature == null)
+                throw new ArgumentNullException(nameof(feature));
 
             // Doubt this will happen but let's make sure
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
-            PluginInfo = pluginInfo;
+            Feature = feature;
             ProfileElement = profileElement;
             Path = path.TrimEnd('.');
 
@@ -246,7 +246,7 @@ namespace Artemis.Core
             instance.GroupDescription = propertyGroupDescription;
             instance.LayerBrush = LayerBrush;
             instance.LayerEffect = LayerEffect;
-            instance.Initialize(ProfileElement, $"{path}{propertyInfo.Name}.", PluginInfo);
+            instance.Initialize(ProfileElement, $"{path}{propertyInfo.Name}.", Feature);
 
             propertyInfo.SetValue(this, instance);
             _layerPropertyGroups.Add(instance);
@@ -254,11 +254,11 @@ namespace Artemis.Core
 
         private PropertyEntity GetPropertyEntity(RenderProfileElement profileElement, string path, out bool fromStorage)
         {
-            PropertyEntity entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.PluginGuid == PluginInfo.Guid && p.Path == path);
+            PropertyEntity entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.FeatureId == Feature.Id && p.Path == path);
             fromStorage = entity != null;
             if (entity == null)
             {
-                entity = new PropertyEntity {PluginGuid = PluginInfo.Guid, Path = path};
+                entity = new PropertyEntity {FeatureId = Feature.Id, Path = path};
                 profileElement.RenderElementEntity.PropertyEntities.Add(entity);
             }
 

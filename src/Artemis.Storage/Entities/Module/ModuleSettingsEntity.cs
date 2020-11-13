@@ -10,7 +10,7 @@ namespace Artemis.Storage.Entities.Module
         }
 
         public Guid Id { get; set; }
-        public Guid PluginGuid { get; set; }
+        public string ModuleId { get; set; }
         public int PriorityCategory { get; set; }
         public int Priority { get; set; }
     }

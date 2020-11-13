@@ -16,7 +16,7 @@
              LostFocus="{s:Action Submit}" 
              Width="140">
         <b:Interaction.Behaviors>
-            <shared:PutCursorAtEndTextBoxBehavior />
+            <shared:PutCursorAtEndTextBox />
         </b:Interaction.Behaviors>
     </TextBox>
 </UserControl>

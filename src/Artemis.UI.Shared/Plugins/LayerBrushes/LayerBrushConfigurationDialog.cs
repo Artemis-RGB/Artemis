@@ -1,23 +1,24 @@
 ﻿using System;
+using Artemis.Core.LayerBrushes;
 
-namespace Artemis.Core
+namespace Artemis.UI.Shared.LayerBrushes
 {
     /// <inheritdoc />
-    public class PluginConfigurationDialog<T> : PluginConfigurationDialog where T : PluginConfigurationViewModel
+    public class LayerBrushConfigurationDialog<T> : LayerBrushConfigurationDialog where T : BrushConfigurationViewModel
     {
         /// <inheritdoc />
         public override Type Type => typeof(T);
     }
 
     /// <summary>
-    ///     Describes a configuration dialog for a specific plugin
+    ///     Describes a UI tab for a layer brush
     /// </summary>
-    public abstract class PluginConfigurationDialog
+    public abstract class LayerBrushConfigurationDialog : ILayerBrushConfigurationDialog
     {
         /// <summary>
         ///     The layer brush this dialog belongs to
         /// </summary>
-        internal Plugin Plugin { get; set; }
+        internal BaseLayerBrush LayerBrush { get; set; }
 
         /// <summary>
         ///     The type of view model the tab contains

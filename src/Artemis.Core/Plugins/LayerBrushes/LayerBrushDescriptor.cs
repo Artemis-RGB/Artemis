@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core.Services;
 using Ninject;
 
 namespace Artemis.Core.LayerBrushes
@@ -9,13 +8,13 @@ namespace Artemis.Core.LayerBrushes
     /// </summary>
     public class LayerBrushDescriptor
     {
-        internal LayerBrushDescriptor(string displayName, string description, string icon, Type layerBrushType, LayerBrushProvider layerBrushProvider)
+        internal LayerBrushDescriptor(string displayName, string description, string icon, Type layerBrushType, LayerBrushProvider provider)
         {
             DisplayName = displayName;
             Description = description;
             Icon = icon;
             LayerBrushType = layerBrushType;
-            LayerBrushProvider = layerBrushProvider;
+            Provider = provider;
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     The plugin that provided this <see cref="LayerBrushDescriptor" />
         /// </summary>
-        public LayerBrushProvider LayerBrushProvider { get; }
+        public LayerBrushProvider Provider { get; }
 
         /// <summary>
         ///     Determines whether the provided <paramref name="reference" /> references to a brush provided by this descriptor
@@ -51,7 +50,8 @@ namespace Artemis.Core.LayerBrushes
         {
             if (reference == null)
                 return false;
-            return LayerBrushProvider.PluginInfo.Guid == reference.BrushPluginGuid && LayerBrushType.Name == reference.BrushType;
+
+            return Provider.Id == reference.LayerBrushProviderId && LayerBrushType.Name == reference.BrushType;
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace Artemis.Core.LayerBrushes
             if (layer.LayerBrush != null)
                 throw new ArtemisCoreException("Layer already has an instantiated layer brush");
 
-            BaseLayerBrush brush = (BaseLayerBrush) LayerBrushProvider.PluginInfo.Kernel.Get(LayerBrushType);
+            BaseLayerBrush brush = (BaseLayerBrush) Provider.Plugin.Kernel!.Get(LayerBrushType);
             brush.Layer = layer;
             brush.Descriptor = this;
             brush.Initialize();

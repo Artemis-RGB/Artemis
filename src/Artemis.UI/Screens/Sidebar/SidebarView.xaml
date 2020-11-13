@@ -25,6 +25,7 @@
                VerticalAlignment="Top" Height="120" />
         <TextBlock Grid.Row="1"
                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                   Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
                    Margin="15"
                    materialDesign:ShadowAssist.ShadowDepth="Depth1"
                    Text="{Binding ActiveModules}"

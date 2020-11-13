@@ -10,7 +10,7 @@ namespace Artemis.Core.DeviceProviders
     /// <summary>
     ///     Allows you to implement and register your own device provider
     /// </summary>
-    public abstract class DeviceProvider : Plugin
+    public abstract class DeviceProvider : PluginFeature
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="DeviceProvider" /> class
@@ -34,7 +34,7 @@ namespace Artemis.Core.DeviceProviders
         public ILogger Logger { get; set; }
 
         /// <inheritdoc />
-        public override void DisablePlugin()
+        public override void Disable()
         {
             // Does not happen with device providers, they require Artemis to restart
         }
@@ -50,9 +50,9 @@ namespace Artemis.Core.DeviceProviders
             {
                 // Start from the plugin directory
                 if (e.RelativePart != null && e.FileName != null)
-                    e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePart, e.FileName);
+                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePart, e.FileName);
                 else if (e.RelativePath != null)
-                    e.FinalPath = Path.Combine(PluginInfo.Directory.FullName, e.RelativePath);
+                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePath);
 
                 IRGBDeviceInfo deviceInfo = ((IRGBDevice) sender).DeviceInfo;
                 if (e.FileName != null && !File.Exists(e.FinalPath))

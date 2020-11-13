@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     internal class TangentModifierType : DataBindingModifierType<double>
     {

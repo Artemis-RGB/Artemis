@@ -13,19 +13,19 @@ namespace Artemis.Core.Services
     internal class ProfileService : IProfileService
     {
         private readonly ILogger _logger;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileRepository _profileRepository;
         private readonly ISurfaceService _surfaceService;
 
-        internal ProfileService(ILogger logger,
-            IPluginService pluginService,
+        public ProfileService(ILogger logger,
+            IPluginManagementService pluginManagementService,
             ISurfaceService surfaceService,
             IConditionOperatorService conditionOperatorService,
             IDataBindingService dataBindingService,
             IProfileRepository profileRepository)
         {
             _logger = logger;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _surfaceService = surfaceService;
             _profileRepository = profileRepository;
 
@@ -38,13 +38,13 @@ namespace Artemis.Core.Services
 
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
-            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
             return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
         }
 
         public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
-            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, PluginGuid = module.PluginInfo.Guid};
+            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, ModuleId = module.Id};
             _profileRepository.Add(profileEntity);
 
             return new ProfileDescriptor(module, profileEntity);
@@ -118,15 +118,15 @@ namespace Artemis.Core.Services
             }
 
             // This could happen during activation so subscribe to it
-            _pluginService.PluginEnabled += ActivatingProfilePluginToggle;
-            _pluginService.PluginDisabled += ActivatingProfilePluginToggle;
+            _pluginManagementService.PluginEnabled += ActivatingProfilePluginToggle;
+            _pluginManagementService.PluginDisabled += ActivatingProfilePluginToggle;
             _surfaceService.SurfaceConfigurationUpdated += ActivatingProfileSurfaceUpdate;
 
             await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _surfaceService.ActiveSurface);
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
-            _pluginService.PluginEnabled -= ActivatingProfilePluginToggle;
-            _pluginService.PluginDisabled -= ActivatingProfilePluginToggle;
+            _pluginManagementService.PluginEnabled -= ActivatingProfilePluginToggle;
+            _pluginManagementService.PluginDisabled -= ActivatingProfilePluginToggle;
             _surfaceService.SurfaceConfigurationUpdated -= ActivatingProfileSurfaceUpdate;
 
             return profile;
@@ -258,7 +258,7 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
         {
-            List<ProfileEntity> moduleProfiles = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> moduleProfiles = _profileRepository.GetByModuleId(module.Id);
             if (!moduleProfiles.Any())
                 return CreateProfileDescriptor(module, "Default");
 
@@ -271,7 +271,7 @@ namespace Artemis.Core.Services
             if (module.ActiveProfile == null)
                 return;
 
-            List<ProfileEntity> profileEntities = _profileRepository.GetByPluginGuid(module.PluginInfo.Guid);
+            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
             foreach (ProfileEntity profileEntity in profileEntities)
             {
                 profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
@@ -285,7 +285,7 @@ namespace Artemis.Core.Services
         /// <param name="surface"></param>
         private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
         {
-            List<ProfileModule> profileModules = _pluginService.GetPluginsOfType<ProfileModule>();
+            List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
             foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
                 profileModule.ActiveProfile.PopulateLeds(surface);
         }

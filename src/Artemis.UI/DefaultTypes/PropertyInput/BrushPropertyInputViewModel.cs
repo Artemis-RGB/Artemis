@@ -11,17 +11,17 @@ namespace Artemis.UI.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private BindableCollection<LayerBrushDescriptor> _descriptors;
 
         public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty,
             IProfileEditorService profileEditorService,
-            IPluginService pluginService) : base(layerProperty, profileEditorService)
+            IPluginManagementService pluginManagementService) : base(layerProperty, profileEditorService)
         {
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
 
-            _pluginService.PluginEnabled += PluginServiceOnPluginLoaded;
-            _pluginService.PluginDisabled += PluginServiceOnPluginLoaded;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementLoaded;
             UpdateEnumValues();
         }
 
@@ -39,7 +39,7 @@ namespace Artemis.UI.PropertyInput
 
         public void UpdateEnumValues()
         {
-            List<LayerBrushProvider> layerBrushProviders = _pluginService.GetPluginsOfType<LayerBrushProvider>();
+            List<LayerBrushProvider> layerBrushProviders = _pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
             Descriptors = new BindableCollection<LayerBrushDescriptor>(layerBrushProviders.SelectMany(l => l.LayerBrushDescriptors));
             NotifyOfPropertyChange(nameof(SelectedDescriptor));
         }
@@ -47,8 +47,8 @@ namespace Artemis.UI.PropertyInput
 
         public override void Dispose()
         {
-            _pluginService.PluginEnabled -= PluginServiceOnPluginLoaded;
-            _pluginService.PluginDisabled -= PluginServiceOnPluginLoaded;
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
             base.Dispose();
         }
 
@@ -63,7 +63,7 @@ namespace Artemis.UI.PropertyInput
             InputValue = new LayerBrushReference(value);
         }
 
-        private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginManagementLoaded(object sender, PluginEventArgs e)
         {
             UpdateEnumValues();
         }

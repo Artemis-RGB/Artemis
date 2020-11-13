@@ -1,6 +1,6 @@
 ﻿using SkiaSharp;
 
-namespace Artemis.Core.DefaultTypes
+namespace Artemis.Core
 {
     internal class SKColorSumModifierType : DataBindingModifierType<SKColor, SKColor>
     {

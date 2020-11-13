@@ -1,4 +1,4 @@
-﻿namespace Artemis.Core.DefaultTypes
+﻿namespace Artemis.Core
 {
     internal class SubtractModifierType : DataBindingModifierType<double, double>
     {

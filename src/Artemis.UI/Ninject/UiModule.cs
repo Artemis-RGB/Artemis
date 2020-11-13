@@ -3,6 +3,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.ProfileEditor;
+using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
@@ -10,6 +11,7 @@ using FluentValidation;
 using Ninject.Extensions.Conventions;
 using Ninject.Extensions.Factory;
 using Ninject.Modules;
+using Ninject.Planning.Bindings.Resolvers;
 using Stylet;
 
 namespace Artemis.UI.Ninject
@@ -20,6 +22,11 @@ namespace Artemis.UI.Ninject
         {
             if (Kernel == null)
                 throw new ArgumentNullException("Kernel shouldn't be null here.");
+
+            Kernel.Components.Add<IMissingBindingResolver, UIElementSelfBindingResolver>();
+
+            Kernel.Bind<TrayViewModel>().ToSelf().InSingletonScope();
+            Kernel.Bind<SplashViewModel>().ToSelf();
 
             // Bind all built-in VMs
             Kernel.Bind(x =>

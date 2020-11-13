@@ -2,52 +2,44 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
-using Artemis.Core.DeviceProviders;
-using Artemis.Core.LayerBrushes;
-using Artemis.Core.LayerEffects;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Artemis.UI.Exceptions;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
-using Ninject.Parameters;
-using Serilog;
 using Stylet;
-using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
-    public class PluginSettingsViewModel : PropertyChangedBase
+    public class PluginSettingsViewModel : Conductor<PluginFeatureViewModel>.Collection.AllActive
     {
         private readonly IDialogService _dialogService;
-        private readonly ILogger _logger;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
+        private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly IWindowManager _windowManager;
         private bool _enabling;
         private Plugin _plugin;
-        private PluginInfo _pluginInfo;
 
         public PluginSettingsViewModel(Plugin plugin,
-            ILogger logger,
+            ISettingsVmFactory settingsVmFactory,
             IWindowManager windowManager,
             IDialogService dialogService,
-            IPluginService pluginService,
+            IPluginManagementService pluginManagementService,
             ISnackbarMessageQueue snackbarMessageQueue)
         {
             Plugin = plugin;
-            PluginInfo = plugin.PluginInfo;
 
-            _logger = logger;
+            _settingsVmFactory = settingsVmFactory;
             _windowManager = windowManager;
             _dialogService = dialogService;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _snackbarMessageQueue = snackbarMessageQueue;
+
+            Icon = PluginUtilities.GetPluginIcon(Plugin, Plugin.Info.Icon);
         }
 
         public Plugin Plugin
@@ -56,46 +48,31 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             set => SetAndNotify(ref _plugin, value);
         }
 
-        public PluginInfo PluginInfo
-        {
-            get => _pluginInfo;
-            set => SetAndNotify(ref _pluginInfo, value);
-        }
-
         public bool Enabling
         {
             get => _enabling;
             set => SetAndNotify(ref _enabling, value);
         }
 
-        public PackIconKind Icon => GetIconKind();
+        public object Icon { get; set; }
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
         public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
-        public bool DisplayLoadFailed => !Enabling && PluginInfo.LoadException != null;
-        public bool RequiresRestart => Plugin.Enabled && !PluginInfo.Enabled;
 
         public bool IsEnabled
         {
-            get => Plugin.PluginInfo.Enabled;
+            get => Plugin.IsEnabled;
             set => Task.Run(() => UpdateEnabled(value));
         }
 
         public void OpenSettings()
         {
-            PluginConfigurationDialog configurationViewModel = Plugin.ConfigurationDialog;
+            PluginConfigurationDialog configurationViewModel = (PluginConfigurationDialog) Plugin.ConfigurationDialog;
             if (configurationViewModel == null)
                 return;
 
             try
             {
-                // Limit to one constructor, there's no need to have more and it complicates things anyway
-                ConstructorInfo[] constructors = configurationViewModel.Type.GetConstructors();
-                if (constructors.Length != 1)
-                    throw new ArtemisUIException("Plugin configuration dialogs must have exactly one constructor");
-
-                ParameterInfo pluginParameter = constructors.First().GetParameters().First(p => typeof(Plugin).IsAssignableFrom(p.ParameterType));
-                ConstructorArgument plugin = new ConstructorArgument(pluginParameter.Name, Plugin);
-                PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) PluginInfo.Kernel.Get(configurationViewModel.Type, plugin);
+                PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) Plugin.Kernel.Get(configurationViewModel.Type);
                 _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
             }
             catch (Exception e)
@@ -117,49 +94,22 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
-        public void ShowLoadException()
+        protected override void OnInitialActivate()
         {
-            if (PluginInfo.LoadException == null)
-                return;
+            Plugin.FeatureAdded += PluginOnFeatureAdded;
+            Plugin.FeatureRemoved += PluginOnFeatureRemoved;
+            foreach (PluginFeature pluginFeature in Plugin.Features)
+                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeature));
 
-            _dialogService.ShowExceptionDialog("The plugin failed to load: " + PluginInfo.LoadException.Message, PluginInfo.LoadException);
+            base.OnInitialActivate();
         }
 
-        public async Task Restart()
+        protected override void OnClose()
         {
-            _logger.Debug("Restarting for device provider disable {pluginInfo}", Plugin.PluginInfo);
+            Plugin.FeatureAdded -= PluginOnFeatureAdded;
+            Plugin.FeatureRemoved -= PluginOnFeatureRemoved;
 
-            // Give the logger a chance to write, might not always be enough but oh well
-            await Task.Delay(500);
-            Core.Utilities.Shutdown(2, true);
-        }
-
-        private PackIconKind GetIconKind()
-        {
-            if (PluginInfo.Icon != null)
-            {
-                bool parsedIcon = Enum.TryParse<PackIconKind>(PluginInfo.Icon, true, out PackIconKind iconEnum);
-                if (parsedIcon)
-                    return iconEnum;
-            }
-
-            switch (Plugin)
-            {
-                case BaseDataModelExpansion _:
-                    return PackIconKind.TableAdd;
-                case DeviceProvider _:
-                    return PackIconKind.Devices;
-                case ProfileModule _:
-                    return PackIconKind.VectorRectangle;
-                case Module _:
-                    return PackIconKind.GearBox;
-                case LayerBrushProvider _:
-                    return PackIconKind.Brush;
-                case LayerEffectProvider _:
-                    return PackIconKind.AutoAwesome;
-            }
-
-            return PackIconKind.Plugin;
+            base.OnClose();
         }
 
         private async Task UpdateEnabled(bool enable)
@@ -170,24 +120,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 return;
             }
 
-            if (!enable && Plugin is DeviceProvider)
-            {
-                await DisableDeviceProvider();
-                return;
-            }
-
             if (enable)
             {
                 Enabling = true;
-                NotifyOfPropertyChange(nameof(DisplayLoadFailed));
 
                 try
                 {
-                    _pluginService.EnablePlugin(Plugin);
+                    await Task.Run(() => _pluginManagementService.EnablePlugin(Plugin, true));
                 }
                 catch (Exception e)
                 {
-                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {PluginInfo.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {
@@ -195,44 +138,24 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
             }
             else
-                _pluginService.DisablePlugin(Plugin);
+            {
+                _pluginManagementService.DisablePlugin(Plugin, true);
+            }
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));
-            NotifyOfPropertyChange(nameof(RequiresRestart));
-            NotifyOfPropertyChange(nameof(DisplayLoadFailed));
         }
 
-        private async Task DisableDeviceProvider()
+        private void PluginOnFeatureRemoved(object? sender, PluginFeatureEventArgs e)
         {
-            bool restart = false;
+            PluginFeatureViewModel viewModel = Items.FirstOrDefault(i => i.Feature == e.PluginFeature);
+            if (viewModel != null)
+                Items.Remove(viewModel);
+        }
 
-            // If any plugin already requires a restart, don't ask the user again
-            bool restartQueued = _pluginService.GetAllPluginInfo().Any(p => p.Instance != null && !p.Enabled && p.Instance.Enabled);
-            // If the plugin isn't enabled (load failed), it can be disabled without a restart
-            if (!restartQueued && Plugin.Enabled)
-            {
-                restart = await _dialogService.ShowConfirmDialog(
-                    "Disable device provider",
-                    "You are disabling a device provider, Artemis has to restart to \r\nfully disable this type of plugin",
-                    "Restart now",
-                    "Restart later"
-                );
-            }
-
-            _pluginService.DisablePlugin(Plugin);
-            if (restart)
-            {
-                _logger.Debug("Restarting for device provider disable {pluginInfo}", Plugin.PluginInfo);
-
-                // Give the logger a chance to write, might not always be enough but oh well
-                await Task.Delay(500);
-                Core.Utilities.Shutdown(2, true);
-            }
-
-            NotifyOfPropertyChange(nameof(IsEnabled));
-            NotifyOfPropertyChange(nameof(RequiresRestart));
-            NotifyOfPropertyChange(nameof(DisplayLoadFailed));
+        private void PluginOnFeatureAdded(object? sender, PluginFeatureEventArgs e)
+        {
+            Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(e.PluginFeature));
         }
     }
 }

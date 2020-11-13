@@ -1,11 +1,12 @@
-﻿using Stylet;
+﻿using Artemis.Core.Modules;
+using Stylet;
 
-namespace Artemis.Core.Modules
+namespace Artemis.UI.Shared.Modules
 {
     /// <summary>
     ///     The base class for any view model that belongs to a module
     /// </summary>
-    public abstract class ModuleViewModel : Screen
+    public abstract class ModuleViewModel : Screen, IModuleViewModel
     {
         /// <summary>
         ///     The base class for any view model that belongs to a module

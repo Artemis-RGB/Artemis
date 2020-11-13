@@ -28,7 +28,7 @@ namespace Artemis.Core.Services
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
-        private readonly IPluginService _pluginService;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
@@ -36,14 +36,14 @@ namespace Artemis.Core.Services
         private List<Module> _modules;
 
         // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
-        public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginService pluginService,
+        public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
             Kernel = kernel;
-            Constants.CorePluginInfo.Kernel = kernel;
+            Constants.CorePlugin.Kernel = kernel;
 
             _logger = logger;
-            _pluginService = pluginService;
+            _pluginManagementService = pluginManagementService;
             _rgbService = rgbService;
             _surfaceService = surfaceService;
             _profileService = profileService;
@@ -57,8 +57,8 @@ namespace Artemis.Core.Services
             _rgbService.Surface.Updated += SurfaceOnUpdated;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
 
-            _pluginService.PluginEnabled += (sender, args) => UpdatePluginCache();
-            _pluginService.PluginDisabled += (sender, args) => UpdatePluginCache();
+            _pluginManagementService.PluginEnabled += (sender, args) => UpdatePluginCache();
+            _pluginManagementService.PluginDisabled += (sender, args) => UpdatePluginCache();
         }
 
         public TimeSpan FrameTime { get; private set; }
@@ -68,7 +68,7 @@ namespace Artemis.Core.Services
         public void Dispose()
         {
             // Dispose services
-            _pluginService.Dispose();
+            _pluginManagementService.Dispose();
         }
 
         public bool IsInitialized { get; set; }
@@ -85,8 +85,8 @@ namespace Artemis.Core.Services
             DeserializationLogger.Initialize(Kernel);
 
             // Initialize the services
-            _pluginService.CopyBuiltInPlugins();
-            _pluginService.LoadPlugins(StartupArguments.Contains("--ignore-plugin-lock"));
+            _pluginManagementService.CopyBuiltInPlugins();
+            _pluginManagementService.LoadPlugins(StartupArguments.Contains("--ignore-plugin-lock"));
 
             ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
             if (surfaceConfig != null)
@@ -133,8 +133,8 @@ namespace Artemis.Core.Services
 
         private void UpdatePluginCache()
         {
-            _modules = _pluginService.GetPluginsOfType<Module>().Where(p => p.Enabled).ToList();
-            _dataModelExpansions = _pluginService.GetPluginsOfType<BaseDataModelExpansion>().Where(p => p.Enabled).ToList();
+            _modules = _pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).ToList();
+            _dataModelExpansions = _pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
         }
 
         private void ConfigureJsonConvert()
@@ -162,8 +162,8 @@ namespace Artemis.Core.Services
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
-                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.Enabled))
-                        dataModelExpansion.Update(args.DeltaTime);
+                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.IsEnabled))
+                        dataModelExpansion.InternalUpdate(args.DeltaTime);
                 }
 
                 List<Module> modules;

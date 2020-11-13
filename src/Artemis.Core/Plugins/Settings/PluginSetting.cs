@@ -2,7 +2,6 @@
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
-using Stylet;
 
 namespace Artemis.Core
 {
@@ -10,17 +9,18 @@ namespace Artemis.Core
     ///     Represents a setting tied to a plugin of type <typeparamref name="T" />
     /// </summary>
     /// <typeparam name="T">The value type of the setting</typeparam>
-    public class PluginSetting<T> : PropertyChangedBase
+    public class PluginSetting<T> : CorePropertyChanged
     {
-        // ReSharper disable once NotAccessedField.Local
-        private readonly PluginInfo _pluginInfo;
+        // TODO: Why? Should have included that...
+        // ReSharper disable once NotAccessedField.Local 
+        private readonly Plugin _plugin;
         private readonly IPluginRepository _pluginRepository;
         private readonly PluginSettingEntity _pluginSettingEntity;
         private T _value;
 
-        internal PluginSetting(PluginInfo pluginInfo, IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity)
+        internal PluginSetting(Plugin plugin, IPluginRepository pluginRepository, PluginSettingEntity pluginSettingEntity)
         {
-            _pluginInfo = pluginInfo;
+            _plugin = plugin;
             _pluginRepository = pluginRepository;
             _pluginSettingEntity = pluginSettingEntity;
 
@@ -52,7 +52,7 @@ namespace Artemis.Core
 
                 _value = value;
                 OnSettingChanged();
-                NotifyOfPropertyChange(nameof(Value));
+                OnPropertyChanged(nameof(Value));
 
                 if (AutoSave)
                     Save();

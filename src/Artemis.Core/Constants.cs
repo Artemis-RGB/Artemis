@@ -12,7 +12,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The full path to the Artemis application folder
         /// </summary>
-        public static readonly string ApplicationFolder = Path.GetDirectoryName(typeof(Constants).Assembly.Location);
+        public static readonly string ApplicationFolder = Path.GetDirectoryName(typeof(Constants).Assembly.Location)!;
 
         /// <summary>
         ///     The full path to the Artemis executable
@@ -34,11 +34,16 @@ namespace Artemis.Core
         /// </summary>
         public static readonly PluginInfo CorePluginInfo = new PluginInfo
         {
-            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Enabled = true
+            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core"
         };
 
-        internal static readonly CorePlugin CorePlugin = new CorePlugin {PluginInfo = CorePluginInfo};
-        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {PluginInfo = CorePluginInfo};
+        /// <summary>
+        ///     The plugin used by core components of Artemis
+        /// </summary>
+        public static readonly Plugin CorePlugin = new Plugin(CorePluginInfo, new DirectoryInfo(ApplicationFolder));
+
+        internal static readonly CorePluginFeature CorePluginFeature = new CorePluginFeature {Plugin = CorePlugin};
+        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {Plugin = CorePlugin};
 
         /// <summary>
         ///     A read-only collection containing all primitive numeric types

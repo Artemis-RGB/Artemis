@@ -1,148 +1,175 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using Artemis.Storage.Entities.Plugins;
+using McMaster.NETCore.Plugins;
+using Ninject;
 
 namespace Artemis.Core
 {
     /// <summary>
-    ///     This is the base plugin type, use the other interfaces such as Module to create plugins
+    ///     Represents a plugin
     /// </summary>
-    public abstract class Plugin : IDisposable
+    public class Plugin : CorePropertyChanged, IDisposable
     {
+        private readonly List<PluginFeature> _features;
+
+        private bool _isEnabled;
+
+        internal Plugin(PluginInfo info, DirectoryInfo directory)
+        {
+            Info = info;
+            Directory = directory;
+
+            _features = new List<PluginFeature>();
+        }
+
+        /// <summary>
+        ///     Gets the plugin GUID
+        /// </summary>
+        public Guid Guid => Info.Guid;
+
         /// <summary>
         ///     Gets the plugin info related to this plugin
         /// </summary>
-        public PluginInfo PluginInfo { get; internal set; }
+        public PluginInfo Info { get; }
 
         /// <summary>
-        ///     Gets whether the plugin is enabled
+        ///     The plugins root directory
         /// </summary>
-        public bool Enabled { get; internal set; }
+        public DirectoryInfo Directory { get; }
 
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
         /// </summary>
-        public PluginConfigurationDialog ConfigurationDialog { get; protected set; }
+        public IPluginConfigurationDialog? ConfigurationDialog { get; set; }
 
         /// <summary>
-        ///     Called when the plugin is activated
+        ///     Indicates whether the user enabled the plugin or not
         /// </summary>
-        public abstract void EnablePlugin();
-
-        /// <summary>
-        ///     Called when the plugin is deactivated or when Artemis shuts down
-        /// </summary>
-        public abstract void DisablePlugin();
-
-        /// <summary>
-        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the
-        ///     provided
-        ///     <paramref name="interval" />
-        /// </summary>
-        /// <param name="interval">The interval at which the update should occur</param>
-        /// <param name="action">
-        ///     The action to call every time the interval has passed. The delta time parameter represents the
-        ///     time passed since the last update in seconds
-        /// </param>
-        /// <returns>The resulting plugin update registration which can be used to stop the update</returns>
-        public PluginUpdateRegistration AddTimedUpdate(TimeSpan interval, Action<double> action)
+        public bool IsEnabled
         {
-            if (action == null)
-                throw new ArgumentNullException(nameof(action));
-            return new PluginUpdateRegistration(PluginInfo, interval, action);
+            get => _isEnabled;
+            private set => SetAndNotify(ref _isEnabled, value);
         }
 
         /// <summary>
-        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the
-        ///     provided
-        ///     <paramref name="interval" />
+        ///     Gets a read-only collection of all features this plugin provides
         /// </summary>
-        /// <param name="interval">The interval at which the update should occur</param>
-        /// <param name="asyncAction">
-        ///     The async action to call every time the interval has passed. The delta time parameter
-        ///     represents the time passed since the last update in seconds
-        /// </param>
-        /// <returns>The resulting plugin update registration</returns>
-        public PluginUpdateRegistration AddTimedUpdate(TimeSpan interval, Func<double, Task> asyncAction)
+        public ReadOnlyCollection<PluginFeature> Features => _features.AsReadOnly();
+
+        /// <summary>
+        ///     The assembly the plugin code lives in
+        /// </summary>
+        public Assembly? Assembly { get; internal set; }
+
+        /// <summary>
+        ///     Gets the plugin bootstrapper
+        /// </summary>
+        public IPluginBootstrapper? Bootstrapper { get; internal set; }
+
+        /// <summary>
+        ///     The Ninject kernel of the plugin
+        /// </summary>
+        public IKernel? Kernel { get; internal set; }
+
+        /// <summary>
+        ///     The PluginLoader backing this plugin
+        /// </summary>
+        internal PluginLoader? PluginLoader { get; set; }
+
+        /// <summary>
+        ///     The entity representing the plugin
+        /// </summary>
+        internal PluginEntity Entity { get; set; }
+
+        /// <summary>
+        ///     Resolves the relative path provided in the <paramref name="path" /> parameter to an absolute path
+        /// </summary>
+        /// <param name="path">The path to resolve</param>
+        /// <returns>An absolute path pointing to the provided relative path</returns>
+        public string? ResolveRelativePath(string path)
         {
-            if (asyncAction == null)
-                throw new ArgumentNullException(nameof(asyncAction));
-            return new PluginUpdateRegistration(PluginInfo, interval, asyncAction);
+            return path == null ? null : Path.Combine(Directory.FullName, path);
         }
 
-        internal void SetEnabled(bool enable, bool isAutoEnable = false)
+        /// <summary>
+        ///     Looks up the instance of the feature of type <typeparamref name="T" />
+        ///     <para>Note: This method only returns instances of enabled features</para>
+        /// </summary>
+        /// <typeparam name="T">The type of feature to find</typeparam>
+        /// <returns>If found, the instance of the feature</returns>
+        public T? GetFeature<T>() where T : PluginFeature
         {
-            if (enable && !Enabled)
-            {
-                try
-                {
-                    if (isAutoEnable && PluginInfo.GetLockFileCreated())
-                    {
-                        // Don't wrap existing lock exceptions, simply rethrow them
-                        if (PluginInfo.LoadException is ArtemisPluginLockException)
-                            throw PluginInfo.LoadException;
-
-                        throw new ArtemisPluginLockException(PluginInfo.LoadException);
-                    }
-
-                    Enabled = true;
-                    PluginInfo.Enabled = true;
-                    PluginInfo.CreateLockFile();
-
-                    // Allow up to 15 seconds for plugins to activate.
-                    // This means plugins that need more time should do their long running tasks in a background thread, which is intentional
-                    // Little meh: Running this from a different thread could cause deadlocks
-                    Task enableTask = Task.Run(InternalEnablePlugin);
-                    if (!enableTask.Wait(TimeSpan.FromSeconds(15)))
-                        throw new ArtemisPluginException(PluginInfo, "Plugin load timeout");
-
-                    PluginInfo.LoadException = null;
-                    OnPluginEnabled();
-                }
-                // If enable failed, put it back in a disabled state
-                catch (Exception e)
-                {
-                    Enabled = false;
-                    PluginInfo.Enabled = false;
-                    PluginInfo.LoadException = e;
-                    throw;
-                }
-                finally
-                {
-                    if (!(PluginInfo.LoadException is ArtemisPluginLockException))
-                        PluginInfo.DeleteLockFile();
-                }
-            }
-            else if (!enable && Enabled)
-            {
-                Enabled = false;
-                PluginInfo.Enabled = false;
-
-                // Even if disable failed, still leave it in a disabled state to avoid more issues
-                InternalDisablePlugin();
-                OnPluginDisabled();
-            }
-            // A failed load is still enabled in plugin info (to avoid disabling it permanently after a fail)
-            // update even that when manually disabling
-            else if (!enable && !Enabled)
-            {
-                PluginInfo.Enabled = false;
-            }
-        }
-
-        internal virtual void InternalEnablePlugin()
-        {
-            EnablePlugin();
-        }
-
-        internal virtual void InternalDisablePlugin()
-        {
-            DisablePlugin();
+            return _features.FirstOrDefault(i => i is T) as T;
         }
 
         /// <inheritdoc />
+        public override string ToString()
+        {
+            return Info.ToString();
+        }
+
+        internal void ApplyToEntity()
+        {
+            Entity.Id = Guid;
+            Entity.IsEnabled = IsEnabled;
+        }
+
+        internal void AddFeature(PluginFeature feature)
+        {
+            feature.Plugin = this;
+            _features.Add(feature);
+
+            OnFeatureAdded(new PluginFeatureEventArgs(feature));
+        }
+
+        internal void RemoveFeature(PluginFeature feature)
+        {
+            if (feature.IsEnabled)
+                throw new ArtemisCoreException("Cannot remove an enabled feature from a plugin");
+            
+            _features.Remove(feature);
+            feature.Dispose();
+
+            OnFeatureRemoved(new PluginFeatureEventArgs(feature));
+        }
+        
+        internal void SetEnabled(bool enable)
+        {
+            if (IsEnabled == enable)
+                return;
+
+            if (!enable && Features.Any(e => e.IsEnabled))
+                throw new ArtemisCoreException("Cannot disable this plugin because it still has enabled features");
+
+            IsEnabled = enable;
+
+            if (enable)
+            {
+                Bootstrapper?.Enable(this);
+                OnEnabled();
+            }
+            else
+            {
+                Bootstrapper?.Disable(this);
+                OnDisabled();
+            }
+        }
+
         public void Dispose()
         {
-            DisablePlugin();
+            foreach (PluginFeature feature in Features)
+                feature.Dispose();
+
+            Kernel?.Dispose();
+            PluginLoader?.Dispose();
+
+            _features.Clear();
+            SetEnabled(false);
         }
 
         #region Events
@@ -150,27 +177,53 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when the plugin is enabled
         /// </summary>
-        public event EventHandler PluginEnabled;
+        public event EventHandler? Enabled;
 
         /// <summary>
         ///     Occurs when the plugin is disabled
         /// </summary>
-        public event EventHandler PluginDisabled;
+        public event EventHandler? Disabled;
 
         /// <summary>
-        ///     Triggers the PluginEnabled event
+        ///     Occurs when an feature is loaded and added to the plugin
         /// </summary>
-        protected virtual void OnPluginEnabled()
+        public event EventHandler<PluginFeatureEventArgs>? FeatureAdded;
+
+        /// <summary>
+        ///     Occurs when an feature is disabled and removed from the plugin
+        /// </summary>
+        public event EventHandler<PluginFeatureEventArgs>? FeatureRemoved;
+
+        /// <summary>
+        ///     Invokes the Enabled event
+        /// </summary>
+        protected virtual void OnEnabled()
         {
-            PluginEnabled?.Invoke(this, EventArgs.Empty);
+            Enabled?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
-        ///     Triggers the PluginDisabled event
+        ///     Invokes the Disabled event
         /// </summary>
-        protected virtual void OnPluginDisabled()
+        protected virtual void OnDisabled()
         {
-            PluginDisabled?.Invoke(this, EventArgs.Empty);
+            Disabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureAdded event
+        /// </summary>
+        protected virtual void OnFeatureAdded(PluginFeatureEventArgs e)
+        {
+            FeatureAdded?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureRemoved event
+        /// </summary>
+        protected virtual void OnFeatureRemoved(PluginFeatureEventArgs e)
+        {
+            FeatureRemoved?.Invoke(this, e);
         }
 
         #endregion

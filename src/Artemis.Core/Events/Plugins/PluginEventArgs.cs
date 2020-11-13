@@ -8,11 +8,11 @@ namespace Artemis.Core
         {
         }
 
-        public PluginEventArgs(PluginInfo pluginInfo)
+        public PluginEventArgs(Plugin plugin)
         {
-            PluginInfo = pluginInfo;
+            Plugin = plugin;
         }
 
-        public PluginInfo PluginInfo { get; }
+        public Plugin Plugin { get; }
     }
 }
