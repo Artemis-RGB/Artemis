@@ -5,12 +5,12 @@ namespace Artemis.Core
 {
     internal class Renderer : IDisposable
     {
+        private bool _valid;
         private bool _disposed;
         public SKBitmap? Bitmap { get; private set; }
         public SKCanvas? Canvas { get; private set; }
         public SKPaint? Paint { get; private set; }
         public SKPath? Path { get; private set; }
-        public SKPath? ClipPath { get; private set; }
         public SKPoint TargetLocation { get; private set; }
 
         public bool IsOpen { get; private set; }
@@ -26,27 +26,30 @@ namespace Artemis.Core
             if (IsOpen)
                 throw new ArtemisCoreException("Cannot open render context because it is already open");
 
-            int width = (int) path.Bounds.Width;
-            int height = (int) path.Bounds.Height;
+            if (!_valid)
+            {
+                SKRect pathBounds = path.Bounds;
+                int width = (int) pathBounds.Width;
+                int height = (int) pathBounds.Height;
 
-            if (Bitmap == null)
                 Bitmap = new SKBitmap(width, height);
-            else if (Bitmap.Info.Width != width || Bitmap.Info.Height != height)
-                Bitmap = new SKBitmap(width, height);
+                Path = new SKPath(path);
+                Canvas = new SKCanvas(Bitmap);
+                Path.Transform(SKMatrix.MakeTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
-            Path = new SKPath(path);
-            Canvas = new SKCanvas(Bitmap);
+                TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
+                if (parent != null)
+                    TargetLocation -= parent.Bounds.Location;
+
+                Canvas.ClipPath(Path);
+
+                _valid = true;
+            }
+
             Paint = new SKPaint();
 
-            Path.Transform(SKMatrix.MakeTranslation(Path.Bounds.Left * -1, Path.Bounds.Top * -1));
             Canvas.Clear();
-
-            TargetLocation = new SKPoint(path.Bounds.Location.X, path.Bounds.Location.Y);
-            if (parent != null)
-                TargetLocation -= parent.Path.Bounds.Location;
-
-            ClipPath = new SKPath(Path);
-            ClipPath.Transform(SKMatrix.MakeTranslation(TargetLocation.X, TargetLocation.Y));
+            Canvas.Save();
 
             IsOpen = true;
         }
@@ -55,18 +58,20 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException("Renderer");
-
-            Canvas?.Dispose();
+            
+            Canvas.Restore();
             Paint?.Dispose();
-            Path?.Dispose();
-            ClipPath?.Dispose();
-
-            Canvas = null;
             Paint = null;
-            Path = null;
-            ClipPath = null;
 
             IsOpen = false;
+        }
+
+        public void Invalidate()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("Renderer");
+
+            _valid = false;
         }
 
         public void Dispose()
@@ -74,7 +79,14 @@ namespace Artemis.Core
             if (IsOpen)
                 Close();
 
+            Canvas?.Dispose();
+            Paint?.Dispose();
+            Path?.Dispose();
             Bitmap?.Dispose();
+
+            Canvas = null;
+            Paint = null;
+            Path = null;
             Bitmap = null;
 
             _disposed = true;

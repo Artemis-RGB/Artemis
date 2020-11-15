@@ -16,6 +16,7 @@ namespace Artemis.Core
         protected RenderProfileElement()
         {
             Timeline = new Timeline();
+            Renderer = new Renderer();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -102,8 +103,22 @@ namespace Artemis.Core
 
         #region Properties
 
+        private ProfileElement _parent;
         private SKPath _path;
         internal abstract RenderElementEntity RenderElementEntity { get; }
+
+        /// <summary>
+        ///     Gets the parent of this element
+        /// </summary>
+        public new ProfileElement Parent
+        {
+            get => _parent;
+            internal set
+            {
+                SetAndNotify(ref _parent, value);
+                Renderer.Invalidate();
+            }
+        }
 
         /// <summary>
         ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
@@ -118,6 +133,7 @@ namespace Artemis.Core
                 // I can't really be sure about the performance impact of calling Bounds often but
                 // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
                 Bounds = value?.Bounds ?? SKRect.Empty;
+                Renderer.Invalidate();
             }
         }
 
@@ -129,6 +145,8 @@ namespace Artemis.Core
             get => _bounds;
             private set => SetAndNotify(ref _bounds, value);
         }
+
+        internal Renderer Renderer { get; }
 
         #region Property group expansion
 

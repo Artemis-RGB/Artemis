@@ -28,7 +28,7 @@ namespace Artemis.Core.LayerBrushes
         /// <returns>The color the LED will receive</returns>
         public abstract SKColor GetColor(ArtemisLed led, SKPoint renderPoint);
 
-        internal override void InternalRender(SKCanvas canvas, SKPath path, SKPaint paint)
+        internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
             // We don't want rotation on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
             if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
