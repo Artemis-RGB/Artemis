@@ -17,8 +17,6 @@ steps:
 - checkout: self
   path: s/Artemis
 
-- task: NuGetToolInstaller@1
-
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'specific'
@@ -28,10 +26,11 @@ steps:
     artifactName: 'RGB.NET development build'
     targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet restore Artemis'
+- task: DotNetCoreCLI@2
   inputs:
-    restoreSolution: '$(artemisSolution)'
+    command: 'restore'
+    projects: '$(artemisSolution)'
+    feedsToUse: 'config'
 
 # - task: ResharperCli@2
 #  inputs:
