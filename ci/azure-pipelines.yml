@@ -33,6 +33,7 @@ steps:
     targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
 
 - task: DotNetCoreCLI@2
+  displayName: 'dotnet restore Artemis'
   inputs:
     command: 'restore'
     projects: '$(artemisSolution)'

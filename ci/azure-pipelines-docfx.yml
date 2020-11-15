@@ -28,7 +28,7 @@ steps:
     command: 'restore'
     projects: '$(artemisSolution)'
     feedsToUse: 'config'
-    nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
+    nugetConfigPath: '$(Pipeline.Workspace)/s/src/NuGet.Config'
 
 - task: PowerShell@2
   displayName: "DockFX build"
