@@ -29,7 +29,6 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -47,7 +46,6 @@ namespace Artemis.Core
             Name = folderEntity.Name;
             Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
-            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _expandedPropertyGroups = new List<string>();
@@ -68,8 +66,6 @@ namespace Artemis.Core
         internal FolderEntity FolderEntity { get; set; }
 
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
-
-        internal Renderer Renderer { get; }
 
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
@@ -133,7 +129,7 @@ namespace Artemis.Core
         /// <returns>The newly created copy</returns>
         public Folder CreateCopy()
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
             FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity, settings), settings)!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
@@ -233,29 +229,28 @@ namespace Artemis.Core
 
             lock (Timeline)
             {
-
                 foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 {
                     baseLayerEffect.BaseProperties?.Update(Timeline);
                     baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
                 }
-                
+
                 try
                 {
                     canvas.Save();
                     Renderer.Open(Path, Parent as Folder);
-                    
                     if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
                         throw new ArtemisCoreException("Failed to open folder render context");
 
+                    SKRect rendererBounds = Renderer.Path.Bounds;
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PreProcess(Renderer.Canvas, Renderer.Path, Renderer.Paint);
+                        baseLayerEffect.PreProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
 
                     // If required, apply the opacity override of the module to the root folder
                     if (IsRootFolder && Profile.Module.OpacityOverride < 1)
                     {
                         double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
-                        Renderer.Paint.Color = Renderer.Paint.Color.WithAlpha((byte)(Renderer.Paint.Color.Alpha * multiplier));
+                        Renderer.Paint.Color = Renderer.Paint.Color.WithAlpha((byte) (Renderer.Paint.Color.Alpha * multiplier));
                     }
 
                     // No point rendering if the alpha was set to zero by one of the effects
@@ -263,11 +258,11 @@ namespace Artemis.Core
                         return;
 
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
-                    for (int index = Children.Count - 1; index > -1; index--) 
+                    for (int index = Children.Count - 1; index > -1; index--)
                         Children[index].Render(Renderer.Canvas);
 
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PostProcess(Renderer.Canvas, Renderer.Path, Renderer.Paint);
+                        baseLayerEffect.PostProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
 
                     canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
                 }

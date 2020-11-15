@@ -39,7 +39,6 @@ namespace Artemis.Core
             Enabled = true;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
-            Renderer = new Renderer();
 
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
@@ -58,8 +57,7 @@ namespace Artemis.Core
             Parent = parent;
             General = new LayerGeneralProperties();
             Transform = new LayerTransformProperties();
-            Renderer = new Renderer();
-
+   
             _layerEffects = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
             _expandedPropertyGroups = new List<string>();
@@ -113,9 +111,7 @@ namespace Artemis.Core
         internal LayerEntity LayerEntity { get; set; }
 
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
-
-        internal Renderer Renderer { get; }
-
+        
         /// <summary>
         ///     Creates a deep copy of the layer
         /// </summary>
@@ -349,11 +345,11 @@ namespace Artemis.Core
                 Renderer.Paint.BlendMode = General.BlendMode.CurrentValue;
                 Renderer.Paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                // Clip anything outside the LED selection bounds
-                canvas.ClipPath(Renderer.ClipPath);
-
                 using SKPath renderPath = new SKPath();
-                renderPath.AddRect(Renderer.Path.Bounds);
+                if (General.ShapeType.CurrentValue == LayerShapeType.Rectangle)
+                    renderPath.AddRect(Renderer.Path.Bounds);
+                else
+                    renderPath.AddOval(Renderer.Path.Bounds);
 
                 if (General.TransformMode.CurrentValue == LayerTransformMode.Normal)
                 {
@@ -373,7 +369,7 @@ namespace Artemis.Core
 
                     // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
                     Renderer.Canvas.ClipPath(renderPath);
-                    DelegateRendering(renderPath);
+                    DelegateRendering(renderPath.Bounds);
                 }
                 else if (General.TransformMode.CurrentValue == LayerTransformMode.Clip)
                 {
@@ -382,7 +378,7 @@ namespace Artemis.Core
 
                     // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
                     Renderer.Canvas.ClipPath(renderPath);
-                    DelegateRendering(Renderer.Path);
+                    DelegateRendering(Renderer.Path.Bounds);
                 }
 
                 canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
@@ -394,15 +390,15 @@ namespace Artemis.Core
             }
         }
 
-        private void DelegateRendering(SKPath path)
+        private void DelegateRendering(SKRect bounds)
         {
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(Renderer.Canvas, path, Renderer.Paint);
+                baseLayerEffect.PreProcess(Renderer.Canvas, bounds, Renderer.Paint);
 
-            LayerBrush.InternalRender(Renderer.Canvas, path, Renderer.Paint);
+            LayerBrush.InternalRender(Renderer.Canvas, bounds, Renderer.Paint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(Renderer.Canvas, path, Renderer.Paint);
+                baseLayerEffect.PostProcess(Renderer.Canvas, bounds, Renderer.Paint);
         }
 
         internal void CalculateRenderProperties()
