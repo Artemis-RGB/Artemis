@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                 if (e.BitmapBrush?.Bitmap == null || e.BitmapBrush.Bitmap.Pixels.Length == 0)
                     return;
 
-                var bitmapInfo = e.BitmapBrush.Bitmap.Info;
+                SKImageInfo bitmapInfo = e.BitmapBrush.Bitmap.Info;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap) || 
                     writeableBitmap.Width != bitmapInfo.Width || 
