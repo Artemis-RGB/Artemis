@@ -16,12 +16,19 @@ variables:
 steps:
 - checkout: self
 
-- task: NuGetToolInstaller@1
-
-- task: NuGetCommand@2
-  displayName: 'NuGet restore Artemis'
+- task: UseDotNet@2
+  displayName: 'Install .Net 5 SDK'
   inputs:
-    restoreSolution: '$(artemisSolution)'
+    packageType: 'sdk'
+    version: '5.0.100'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet restore Artemis'
+  inputs:
+    command: 'restore'
+    projects: '$(artemisSolution)'
+    feedsToUse: 'config'
+    nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
 
 - task: PowerShell@2
   displayName: "DockFX build"
