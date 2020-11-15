@@ -17,6 +17,14 @@ steps:
 - checkout: self
   path: s/Artemis
 
+- task: UseDotNet@2
+  displayName: 'Install .Net 5 SDK'
+  inputs:
+    packageType: 'sdk'
+    version: '5.0.100'
+
+- task: NuGetToolInstaller@1
+
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'specific'
@@ -26,11 +34,10 @@ steps:
     artifactName: 'RGB.NET development build'
     targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
 
-- task: DotNetCoreCLI@2
+- task: NuGetCommand@2
+  displayName: 'NuGet restore Artemis'
   inputs:
-    command: 'restore'
-    projects: '$(artemisSolution)'
-    feedsToUse: 'config'
+    restoreSolution: '$(artemisSolution)'
 
 # - task: ResharperCli@2
 #  inputs:
