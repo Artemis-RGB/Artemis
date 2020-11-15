@@ -114,9 +114,9 @@
       },
       "SkiaSharp": {
         "type": "Direct",
-        "requested": "[1.68.3, )",
-        "resolved": "1.68.3",
-        "contentHash": "78YvBVmR52PoLPf0aTZMWOZVrMxlXlgPOgU3vGk7W50wrYHi3lSd886ccYd7MkJmm+oInP8shf0vSy1321ERCQ==",
+        "requested": "[2.80.2, )",
+        "resolved": "2.80.2",
+        "contentHash": "D25rzdCwh+3L+XyXqpNa+H/yiLJbE3/R3K/XexwHyQjGdzZvSufFW3oqf3En7hhqSIsxsJ8f5NEZ0J5W5wlGBg==",
         "dependencies": {
           "System.Memory": "4.5.3"
         }
