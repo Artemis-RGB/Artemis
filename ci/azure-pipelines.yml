@@ -37,6 +37,7 @@ steps:
     command: 'restore'
     projects: '$(artemisSolution)'
     feedsToUse: 'config'
+    nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish Artemis'
