@@ -12,6 +12,9 @@ namespace Artemis.Core
             Surface = surface;
         }
 
+        /// <summary>
+        ///     Gets the active surface at the time the event fired
+        /// </summary>
         public ArtemisSurface Surface { get; }
     }
 }

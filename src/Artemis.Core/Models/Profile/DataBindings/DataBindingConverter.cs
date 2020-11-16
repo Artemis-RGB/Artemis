@@ -13,22 +13,22 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a dynamically compiled getter pointing to the data bound property
         /// </summary>
-        public Func<TLayerProperty, TProperty> GetExpression { get; private set; }
+        public Func<TLayerProperty, TProperty>? GetExpression { get; private set; }
 
         /// <summary>
         ///     Gets a dynamically compiled setter pointing to the data bound property used for value types
         /// </summary>
-        public Action<TProperty> ValueTypeSetExpression { get; private set; }
+        public Action<TProperty>? ValueTypeSetExpression { get; private set; }
 
         /// <summary>
         ///     Gets a dynamically compiled setter pointing to the data bound property used for reference types
         /// </summary>
-        public Action<TLayerProperty, TProperty> ReferenceTypeSetExpression { get; private set; }
+        public Action<TLayerProperty, TProperty>? ReferenceTypeSetExpression { get; private set; }
 
         /// <summary>
         ///     Gets the data binding this converter is applied to
         /// </summary>
-        public DataBinding<TLayerProperty, TProperty> DataBinding { get; private set; }
+        public DataBinding<TLayerProperty, TProperty>? DataBinding { get; private set; }
 
         /// <summary>
         ///     Gets whether or not this data binding converter supports the <see cref="Sum" /> method
@@ -65,6 +65,8 @@ namespace Artemis.Core
         /// <param name="value"></param>
         public virtual void ApplyValue(TProperty value)
         {
+            if (DataBinding == null)
+                throw new ArtemisCoreException("Data binding converter is not yet initialized");
             if (ReferenceTypeSetExpression != null)
                 ReferenceTypeSetExpression(DataBinding.LayerProperty.CurrentValue, value);
             else if (ValueTypeSetExpression != null)
@@ -76,6 +78,8 @@ namespace Artemis.Core
         /// </summary>
         public virtual TProperty GetValue()
         {
+            if (DataBinding == null || GetExpression == null)
+                throw new ArtemisCoreException("Data binding converter is not yet initialized");
             return GetExpression(DataBinding.LayerProperty.CurrentValue);
         }
 
@@ -84,7 +88,7 @@ namespace Artemis.Core
         /// </summary>
         public virtual TProperty ConvertFromObject(object? source)
         {
-            return (TProperty) Convert.ChangeType(source, typeof(TProperty));
+            return (TProperty) Convert.ChangeType(source, typeof(TProperty))!;
         }
 
         /// <summary>
@@ -96,6 +100,9 @@ namespace Artemis.Core
 
         internal void Initialize(DataBinding<TLayerProperty, TProperty> dataBinding)
         {
+            if (dataBinding.Registration == null)
+                throw new ArtemisCoreException("Cannot initialize a data binding converter for a data binding without a registration");
+
             DataBinding = dataBinding;
             GetExpression = dataBinding.Registration.PropertyExpression.Compile();
             CreateSetExpression();
@@ -106,14 +113,14 @@ namespace Artemis.Core
         private void CreateSetExpression()
         {
             // If the registration does not point towards a member of LayerProperty<T>.CurrentValue, assign directly to LayerProperty<T>.CurrentValue
-            if (DataBinding.Registration.Member == null)
+            if (DataBinding!.Registration?.Member == null)
             {
                 CreateSetCurrentValueExpression();
                 return;
             }
 
             // Ensure the member of LayerProperty<T>.CurrentValue has a setter
-            MethodInfo setterMethod = null;
+            MethodInfo? setterMethod = null;
             if (DataBinding.Registration.Member is PropertyInfo propertyInfo)
                 setterMethod = propertyInfo.GetSetMethod();
             // If there is no setter, the built-in data binding cannot do its job, stay null
@@ -130,6 +137,9 @@ namespace Artemis.Core
 
         private void CreateSetReferenceTypeExpression()
         {
+            if (DataBinding!.Registration?.Member == null)
+                throw new ArtemisCoreException("Cannot create value setter for data binding without a registration");
+
             ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
             ParameterExpression parameter = Expression.Parameter(typeof(TLayerProperty), "currentValue");
             MemberExpression memberAccess = Expression.MakeMemberAccess(parameter, DataBinding.Registration.Member);
@@ -141,6 +151,9 @@ namespace Artemis.Core
 
         private void CreateSetValueTypeExpression()
         {
+            if (DataBinding!.Registration?.Member == null)
+                throw new ArtemisCoreException("Cannot create value setter for data binding without a registration");
+
             ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
             ParameterExpression variableCurrent = Expression.Variable(typeof(TLayerProperty), "current");
             ConstantExpression layerProperty = Expression.Constant(DataBinding.LayerProperty);
@@ -161,7 +174,7 @@ namespace Artemis.Core
         private void CreateSetCurrentValueExpression()
         {
             ParameterExpression propertyValue = Expression.Parameter(typeof(TProperty), "propertyValue");
-            ConstantExpression layerProperty = Expression.Constant(DataBinding.LayerProperty);
+            ConstantExpression layerProperty = Expression.Constant(DataBinding!.LayerProperty);
             MemberExpression layerPropertyMemberAccess = Expression.MakeMemberAccess(layerProperty,
                 DataBinding.LayerProperty.GetType().GetMember(nameof(DataBinding.LayerProperty.CurrentValue))[0]);
 

@@ -19,7 +19,7 @@ namespace Artemis.Core
         ///     Creates a new instance of the <see cref="DataModelConditionGroup" /> class
         /// </summary>
         /// <param name="parent"></param>
-        public DataModelConditionGroup(DataModelConditionPart parent)
+        public DataModelConditionGroup(DataModelConditionPart? parent)
         {
             Parent = parent;
             Entity = new DataModelConditionGroupEntity();
@@ -32,7 +32,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent"></param>
         /// <param name="entity"></param>
-        public DataModelConditionGroup(DataModelConditionPart parent, DataModelConditionGroupEntity entity)
+        public DataModelConditionGroup(DataModelConditionPart? parent, DataModelConditionGroupEntity entity)
         {
             Parent = parent;
             Entity = entity;
@@ -124,7 +124,7 @@ namespace Artemis.Core
         #endregion
 
         /// <inheritdoc />
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionGroup");

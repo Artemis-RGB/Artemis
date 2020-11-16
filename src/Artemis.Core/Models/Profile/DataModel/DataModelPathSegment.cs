@@ -115,8 +115,8 @@ namespace Artemis.Core
             // Dynamic types have a data model description
             if (Type == DataModelPathSegmentType.Dynamic)
                 return (GetValue() as DataModel)?.DataModelDescription;
-            if (IsStartSegment && DataModelPath.Target is DataModel targetDataModel)
-                return targetDataModel.DataModelDescription;
+            if (IsStartSegment && DataModelPath.Target != null)
+                return DataModelPath.Target.DataModelDescription;
             if (IsStartSegment)
                 return null;
 
@@ -125,7 +125,7 @@ namespace Artemis.Core
                 return null;
 
             // Static types may have one as an attribute
-            DataModelPropertyAttribute? attribute = (DataModelPropertyAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
+            DataModelPropertyAttribute? attribute = (DataModelPropertyAttribute?) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
             if (attribute != null)
             {
                 if (string.IsNullOrWhiteSpace(attribute.Name))
@@ -187,8 +187,8 @@ namespace Artemis.Core
                     return CreateExpression(parameter, expression, nullCondition);
 
                 // If a dynamic data model is found the use that
-                bool hasDynamicDataModel = _dynamicDataModel.DynamicDataModels.TryGetValue(Identifier, out DataModel dynamicDataModel);
-                if (hasDynamicDataModel)
+                bool hasDynamicDataModel = _dynamicDataModel.DynamicDataModels.TryGetValue(Identifier, out DataModel? dynamicDataModel);
+                if (hasDynamicDataModel && dynamicDataModel != null)
                     DetermineDynamicType(dynamicDataModel);
 
                 _dynamicDataModel.DynamicDataModelAdded += DynamicDataModelOnDynamicDataModelAdded;
@@ -219,7 +219,7 @@ namespace Artemis.Core
                 accessorExpression = Expression.Call(
                     expression,
                     nameof(DataModel.DynamicChild),
-                    new[] {DynamicDataModelType},
+                    DynamicDataModelType != null ? new[] {DynamicDataModelType} : null,
                     Expression.Constant(Identifier)
                 );
 

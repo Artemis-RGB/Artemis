@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using Artemis.Core.Modules;
 using RGB.NET.Core;
 using SkiaSharp;
 
@@ -11,17 +9,26 @@ namespace Artemis.Core
     /// </summary>
     public class FrameRenderingEventArgs : EventArgs
     {
-        internal FrameRenderingEventArgs(List<Module> modules, SKCanvas canvas, double deltaTime, RGBSurface rgbSurface)
+        internal FrameRenderingEventArgs(SKCanvas canvas, double deltaTime, RGBSurface rgbSurface)
         {
-            Modules = modules;
             Canvas = canvas;
             DeltaTime = deltaTime;
             RgbSurface = rgbSurface;
         }
 
-        public List<Module> Modules { get; }
+        /// <summary>
+        ///     Gets the canvas this frame is rendering on
+        /// </summary>
         public SKCanvas Canvas { get; }
+
+        /// <summary>
+        ///     Gets the delta time since the last frame was rendered
+        /// </summary>
         public double DeltaTime { get; }
+
+        /// <summary>
+        ///     Gets the RGB surface used to render this frame
+        /// </summary>
         public RGBSurface RgbSurface { get; }
     }
 }

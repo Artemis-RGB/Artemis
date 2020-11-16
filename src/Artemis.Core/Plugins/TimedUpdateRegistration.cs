@@ -104,7 +104,7 @@ namespace Artemis.Core
             }
         }
 
-        private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             if (!Feature.IsEnabled)
                 return;
@@ -128,12 +128,12 @@ namespace Artemis.Core
             }
         }
 
-        private void FeatureOnEnabled(object sender, EventArgs e)
+        private void FeatureOnEnabled(object? sender, EventArgs e)
         {
             Start();
         }
 
-        private void FeatureOnDisabled(object sender, EventArgs e)
+        private void FeatureOnDisabled(object? sender, EventArgs e)
         {
             Stop();
         }

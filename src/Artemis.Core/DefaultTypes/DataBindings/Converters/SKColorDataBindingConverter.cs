@@ -5,6 +5,9 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class SKColorDataBindingConverter : DataBindingConverter<SKColor, SKColor>
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="SKColorDataBindingConverter" /> class
+        /// </summary>
         public SKColorDataBindingConverter()
         {
             SupportsInterpolate = true;

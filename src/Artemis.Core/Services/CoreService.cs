@@ -198,7 +198,7 @@ namespace Artemis.Core.Services
                             module.InternalRender(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
                     }
 
-                    OnFrameRendering(new FrameRenderingEventArgs(modules, canvas, args.DeltaTime, _rgbService.Surface));
+                    OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
                 }
             }
             catch (Exception e)

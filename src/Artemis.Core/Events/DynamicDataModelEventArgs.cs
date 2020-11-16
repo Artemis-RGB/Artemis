@@ -14,7 +14,14 @@ namespace Artemis.Core
             Key = key;
         }
 
+        /// <summary>
+        ///     Gets the dynamic data model
+        /// </summary>
         public DataModel DynamicDataModel { get; }
+
+        /// <summary>
+        ///     Gets the key of the dynamic data model on the parent <see cref="DataModel" />
+        /// </summary>
         public string Key { get; }
     }
 }

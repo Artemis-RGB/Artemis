@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using Artemis.Core.Properties;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -11,7 +8,7 @@ namespace Artemis.Core
     /// <summary>
     ///     A gradient containing a list of <see cref="ColorGradientStop" />s
     /// </summary>
-    public class ColorGradient : INotifyPropertyChanged
+    public class ColorGradient : CorePropertyChanged
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="ColorGradient" /> class
@@ -92,7 +89,8 @@ namespace Artemis.Core
             ColorGradientStop[] stops = Stops.OrderBy(x => x.Position).ToArray();
             if (position <= 0) return stops[0].Color;
             if (position >= 1) return stops[^1].Color;
-            ColorGradientStop left = stops[0], right = null;
+            ColorGradientStop left = stops[0];
+            ColorGradientStop? right = null;
             foreach (ColorGradientStop stop in stops)
             {
                 if (stop.Position >= position)
@@ -130,18 +128,5 @@ namespace Artemis.Core
 
             return gradient;
         }
-
-        #region PropertyChanged
-
-        /// <inheritdoc />
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        [NotifyPropertyChangedInvocator]
-        internal virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        #endregion
     }
 }

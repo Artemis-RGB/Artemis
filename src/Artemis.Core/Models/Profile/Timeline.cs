@@ -429,6 +429,7 @@ namespace Artemis.Core
 
         #endregion
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"Progress: {Position}/{Length} - delta: {Delta}";

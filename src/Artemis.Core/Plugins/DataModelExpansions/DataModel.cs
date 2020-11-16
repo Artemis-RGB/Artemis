@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,6 +8,9 @@ using Humanizer;
 
 namespace Artemis.Core.DataModelExpansions
 {
+    /// <summary>
+    ///     Represents a data model that contains information on a game/application etc.
+    /// </summary>
     public abstract class DataModel
     {
         private readonly Dictionary<string, DataModel> _dynamicDataModels = new Dictionary<string, DataModel>();
@@ -154,11 +156,17 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         public event EventHandler<DynamicDataModelEventArgs>? DynamicDataModelRemoved;
 
+        /// <summary>
+        ///     Invokes the <see cref="DynamicDataModelAdded" /> event
+        /// </summary>
         protected virtual void OnDynamicDataModelAdded(DynamicDataModelEventArgs e)
         {
             DynamicDataModelAdded?.Invoke(this, e);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="DynamicDataModelRemoved" /> event
+        /// </summary>
         protected virtual void OnDynamicDataModelRemoved(DynamicDataModelEventArgs e)
         {
             DynamicDataModelRemoved?.Invoke(this, e);

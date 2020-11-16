@@ -11,9 +11,12 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents an element of a <see cref="Profile" /> that has advanced rendering capabilities
+    /// </summary>
     public abstract class RenderProfileElement : ProfileElement
     {
-        protected RenderProfileElement()
+        internal RenderProfileElement()
         {
             Timeline = new Timeline();
             Renderer = new Renderer();
@@ -22,7 +25,27 @@ namespace Artemis.Core
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
         }
 
+        /// <summary>
+        ///     Creates a list of all layer properties present on this render element
+        /// </summary>
+        /// <returns>A list of all layer properties present on this render element</returns>
         public abstract List<ILayerProperty> GetAllLayerProperties();
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
+            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
 
         internal void LoadRenderElement()
         {
@@ -73,7 +96,8 @@ namespace Artemis.Core
         public Timeline Timeline { get; private set; }
 
         /// <summary>
-        /// Updates the <see cref="Timeline"/> according to the provided <paramref name="deltaTime"/> and current display condition status
+        ///     Updates the <see cref="Timeline" /> according to the provided <paramref name="deltaTime" /> and current display
+        ///     condition status
         /// </summary>
         public void UpdateTimeline(double deltaTime)
         {
@@ -86,31 +110,16 @@ namespace Artemis.Core
 
         #endregion
 
-        #region IDisposable
-
-        protected override void Dispose(bool disposing)
-        {
-            LayerEffectStore.LayerEffectAdded -= LayerEffectStoreOnLayerEffectAdded;
-            LayerEffectStore.LayerEffectRemoved -= LayerEffectStoreOnLayerEffectRemoved;
-
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        #endregion
-
         #region Properties
 
-        private ProfileElement _parent;
-        private SKPath _path;
+        private ProfileElement? _parent;
+        private SKPath? _path;
         internal abstract RenderElementEntity RenderElementEntity { get; }
 
         /// <summary>
         ///     Gets the parent of this element
         /// </summary>
-        public new ProfileElement Parent
+        public new ProfileElement? Parent
         {
             get => _parent;
             internal set
@@ -124,7 +133,7 @@ namespace Artemis.Core
         ///     Gets the path containing all the LEDs this entity is applied to, any rendering outside the entity Path is
         ///     clipped.
         /// </summary>
-        public SKPath Path
+        public SKPath? Path
         {
             get => _path;
             protected set
@@ -150,20 +159,30 @@ namespace Artemis.Core
 
         #region Property group expansion
 
-        protected List<string> _expandedPropertyGroups;
+        internal List<string> ExpandedPropertyGroups;
         private SKRect _bounds;
 
+        /// <summary>
+        ///     Determines whether the provided property group is expanded
+        /// </summary>
+        /// <param name="layerPropertyGroup">The property group to check</param>
+        /// <returns>A boolean indicating whether the provided property group is expanded</returns>
         public bool IsPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup)
         {
-            return _expandedPropertyGroups.Contains(layerPropertyGroup.Path);
+            return ExpandedPropertyGroups.Contains(layerPropertyGroup.Path);
         }
 
+        /// <summary>
+        ///     Expands or collapses the provided property group
+        /// </summary>
+        /// <param name="layerPropertyGroup">The group to expand or collapse</param>
+        /// <param name="expanded">Whether to expand or collapse the property group</param>
         public void SetPropertyGroupExpanded(LayerPropertyGroup layerPropertyGroup, bool expanded)
         {
             if (!expanded && IsPropertyGroupExpanded(layerPropertyGroup))
-                _expandedPropertyGroups.Remove(layerPropertyGroup.Path);
+                ExpandedPropertyGroups.Remove(layerPropertyGroup.Path);
             else if (expanded && !IsPropertyGroupExpanded(layerPropertyGroup))
-                _expandedPropertyGroups.Add(layerPropertyGroup.Path);
+                ExpandedPropertyGroups.Add(layerPropertyGroup.Path);
         }
 
         #endregion
@@ -172,12 +191,12 @@ namespace Artemis.Core
 
         #region Effect management
 
-        protected List<BaseLayerEffect> _layerEffects;
+        internal List<BaseLayerEffect> LayerEffectsList;
 
         /// <summary>
         ///     Gets a read-only collection of the layer effects on this entity
         /// </summary>
-        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => _layerEffects.AsReadOnly();
+        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => LayerEffectsList.AsReadOnly();
 
         /// <summary>
         ///     Adds a the layer effect described inthe provided <paramref name="descriptor" />
@@ -208,7 +227,7 @@ namespace Artemis.Core
             if (effect == null) throw new ArgumentNullException(nameof(effect));
 
             // Remove the effect from the layer and dispose it
-            _layerEffects.Remove(effect);
+            LayerEffectsList.Remove(effect);
             effect.Dispose();
 
             // Update the order on the remaining effects
@@ -225,7 +244,7 @@ namespace Artemis.Core
                 index++;
             }
 
-            _layerEffects.Sort((a, b) => a.Order.CompareTo(b.Order));
+            LayerEffectsList.Sort((a, b) => a.Order.CompareTo(b.Order));
         }
 
         internal void ActivateEffects()
@@ -233,7 +252,7 @@ namespace Artemis.Core
             foreach (LayerEffectEntity layerEffectEntity in RenderElementEntity.LayerEffects)
             {
                 // If there is a non-placeholder existing effect, skip this entity
-                BaseLayerEffect? existing = _layerEffects.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
+                BaseLayerEffect? existing = LayerEffectsList.FirstOrDefault(e => e.EntityId == layerEffectEntity.Id);
                 if (existing != null && existing.Descriptor.PlaceholderFor == null)
                     continue;
 
@@ -243,7 +262,7 @@ namespace Artemis.Core
                     // If a descriptor is found but there is an existing placeholder, remove the placeholder
                     if (existing != null)
                     {
-                        _layerEffects.Remove(existing);
+                        LayerEffectsList.Remove(existing);
                         existing.Dispose();
                     }
 
@@ -264,19 +283,19 @@ namespace Artemis.Core
 
         internal void ActivateLayerEffect(BaseLayerEffect layerEffect)
         {
-            _layerEffects.Add(layerEffect);
+            LayerEffectsList.Add(layerEffect);
             OnLayerEffectsUpdated();
         }
 
         private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
-            List<BaseLayerEffect> pluginEffects = _layerEffects.Where(ef => ef.Descriptor.Provider != null &&
-                                                                            ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
+            List<BaseLayerEffect> pluginEffects = LayerEffectsList.Where(ef => ef.Descriptor.Provider != null &&
+                                                                               ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
             foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
                 LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
-                _layerEffects.Remove(pluginEffect);
+                LayerEffectsList.Remove(pluginEffect);
                 pluginEffect.Dispose();
 
                 LayerEffectDescriptor descriptor = PlaceholderLayerEffectDescriptor.Create(pluginEffect.ProviderId);
@@ -317,7 +336,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline"/>
+        ///     Evaluates the display conditions on this element and applies any required changes to the <see cref="Timeline" />
         /// </summary>
         public void UpdateDisplayCondition()
         {
@@ -344,7 +363,9 @@ namespace Artemis.Core
             {
                 // Event conditions reset if the timeline finished
                 if (Timeline.IsFinished)
+                {
                     Timeline.JumpToStart();
+                }
                 // and otherwise apply their overlap mode
                 else
                 {
@@ -365,7 +386,10 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler LayerEffectsUpdated;
+        /// <summary>
+        ///     Occurs when a layer effect has been added or removed to this render element
+        /// </summary>
+        public event EventHandler? LayerEffectsUpdated;
 
         internal void OnLayerEffectsUpdated()
         {

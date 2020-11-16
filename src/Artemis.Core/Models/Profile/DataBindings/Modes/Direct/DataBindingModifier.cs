@@ -103,8 +103,8 @@ namespace Artemis.Core
                 return;
             }
 
-            Type targetType = DirectDataBinding.DataBinding.GetTargetType();
-            if (!modifierType.SupportsType(targetType, ModifierTypePart.Value))
+            Type? targetType = DirectDataBinding.DataBinding.GetTargetType();
+            if (targetType != null && !modifierType.SupportsType(targetType, ModifierTypePart.Value))
                 throw new ArtemisCoreException($"Cannot apply modifier type {modifierType.GetType().Name} to this modifier because " +
                                                $"it does not support this data binding's type {targetType.Name}");
 
@@ -158,7 +158,7 @@ namespace Artemis.Core
         ///     Updates the parameter of the modifier, makes the modifier static and re-compiles the expression
         /// </summary>
         /// <param name="staticValue">The static value to use as a parameter</param>
-        public void UpdateParameterStatic(object staticValue)
+        public void UpdateParameterStatic(object? staticValue)
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBindingModifier");
@@ -167,10 +167,10 @@ namespace Artemis.Core
             ParameterPath?.Dispose();
             ParameterPath = null;
 
-            Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+            Type? parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
 
             // If not null ensure the types match and if not, convert it
-            if (staticValue != null && staticValue.GetType() == parameterType)
+            if (parameterType == null || staticValue != null && staticValue.GetType() == parameterType)
                 ParameterStaticValue = staticValue;
             else if (staticValue != null)
                 ParameterStaticValue = Convert.ChangeType(staticValue, parameterType);
@@ -189,7 +189,7 @@ namespace Artemis.Core
             // Modifier type
             if (Entity.ModifierTypePluginGuid != null && ModifierType == null)
             {
-                BaseDataBindingModifierType modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
+                BaseDataBindingModifierType? modifierType = DataBindingModifierTypeStore.Get(Entity.ModifierTypePluginGuid.Value, Entity.ModifierType)?.DataBindingModifierType;
                 if (modifierType != null)
                     UpdateModifierType(modifierType);
             }
@@ -203,18 +203,21 @@ namespace Artemis.Core
             else if (ParameterType == ProfileRightSideType.Static && Entity.ParameterStaticValue != null)
             {
                 // Use the target type so JSON.NET has a better idea what to do
-                Type parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
-                object staticValue;
+                Type? parameterType = ModifierType?.ParameterType ?? DirectDataBinding.DataBinding.GetTargetType();
+                object? staticValue = null;
 
                 try
                 {
-                    staticValue = JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType);
+                    staticValue = parameterType != null 
+                        ? JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType) 
+                        : JsonConvert.DeserializeObject(Entity.ParameterStaticValue);
                 }
                 // If deserialization fails, use the type's default
                 catch (JsonSerializationException e)
                 {
                     DeserializationLogger.LogModifierDeserializationFailure(GetType().Name, e);
-                    staticValue = Activator.CreateInstance(parameterType);
+                    if (parameterType != null)
+                        staticValue = Activator.CreateInstance(parameterType);
                 }
 
                 UpdateParameterStatic(staticValue);
@@ -235,7 +238,7 @@ namespace Artemis.Core
                 DirectDataBinding.Entity.Modifiers.Add(Entity);
 
             // Modifier
-            if (ModifierType != null)
+            if (ModifierType?.Plugin != null)
             {
                 Entity.ModifierType = ModifierType.GetType().Name;
                 Entity.ModifierTypePluginGuid = ModifierType.Plugin.Guid;
@@ -280,17 +283,17 @@ namespace Artemis.Core
 
         #region Event handlers
 
-        private void DataBindingModifierTypeStoreOnDataBindingModifierAdded(object sender, DataBindingModifierTypeStoreEvent e)
+        private void DataBindingModifierTypeStoreOnDataBindingModifierAdded(object? sender, DataBindingModifierTypeStoreEvent e)
         {
             if (ModifierType != null)
                 return;
 
             BaseDataBindingModifierType modifierType = e.TypeRegistration.DataBindingModifierType;
-            if (modifierType.Plugin.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
+            if (modifierType.Plugin!.Guid == Entity.ModifierTypePluginGuid && modifierType.GetType().Name == Entity.ModifierType)
                 UpdateModifierType(modifierType);
         }
 
-        private void DataBindingModifierTypeStoreOnDataBindingModifierRemoved(object sender, DataBindingModifierTypeStoreEvent e)
+        private void DataBindingModifierTypeStoreOnDataBindingModifierRemoved(object? sender, DataBindingModifierTypeStoreEvent e)
         {
             if (e.TypeRegistration.DataBindingModifierType == ModifierType)
                 UpdateModifierType(null);

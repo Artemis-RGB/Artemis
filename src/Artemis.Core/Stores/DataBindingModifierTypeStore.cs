@@ -10,6 +10,9 @@ namespace Artemis.Core
 
         public static DataBindingModifierTypeRegistration Add(BaseDataBindingModifierType modifierType)
         {
+            if (modifierType.Plugin == null)
+                throw new ArtemisCoreException("Cannot add a data binding modifier type that is not associated with a plugin");
+
             DataBindingModifierTypeRegistration typeRegistration;
             lock (Registrations)
             {
@@ -38,7 +41,7 @@ namespace Artemis.Core
             OnDataBindingModifierRemoved(new DataBindingModifierTypeStoreEvent(typeRegistration));
         }
 
-        public static DataBindingModifierTypeRegistration Get(Guid pluginGuid, string type)
+        public static DataBindingModifierTypeRegistration? Get(Guid pluginGuid, string type)
         {
             lock (Registrations)
             {
@@ -74,8 +77,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler<DataBindingModifierTypeStoreEvent> DataBindingModifierAdded;
-        public static event EventHandler<DataBindingModifierTypeStoreEvent> DataBindingModifierRemoved;
+        public static event EventHandler<DataBindingModifierTypeStoreEvent>? DataBindingModifierAdded;
+        public static event EventHandler<DataBindingModifierTypeStoreEvent>? DataBindingModifierRemoved;
 
         private static void OnDataBindingModifierAdded(DataBindingModifierTypeStoreEvent e)
         {

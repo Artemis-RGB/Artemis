@@ -38,7 +38,7 @@ namespace Artemis.Core
             OnConditionOperatorRemoved(new ConditionOperatorStoreEvent(registration));
         }
 
-        public static ConditionOperatorRegistration Get(Guid pluginGuid, string type)
+        public static ConditionOperatorRegistration? Get(Guid pluginGuid, string type)
         {
             lock (Registrations)
             {

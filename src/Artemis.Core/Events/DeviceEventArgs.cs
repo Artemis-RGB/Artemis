@@ -13,6 +13,9 @@ namespace Artemis.Core
             Device = device;
         }
 
+        /// <summary>
+        ///     Gets the device this event is related to
+        /// </summary>
         public IRGBDevice Device { get; }
     }
 }

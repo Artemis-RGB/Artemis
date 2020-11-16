@@ -7,6 +7,9 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a profile containing folders and layers
+    /// </summary>
     public sealed class Profile : ProfileElement
     {
         private bool _isActivated;
@@ -39,8 +42,14 @@ namespace Artemis.Core
             Load();
         }
 
+        /// <summary>
+        ///     Gets the module backing this profile
+        /// </summary>
         public ProfileModule Module { get; }
 
+        /// <summary>
+        ///     Gets a boolean indicating whether this profile is activated
+        /// </summary>
         public bool IsActivated
         {
             get => _isActivated;
@@ -52,6 +61,7 @@ namespace Artemis.Core
         internal Stack<string> UndoStack { get; set; }
         internal Stack<string> RedoStack { get; set; }
 
+        /// <inheritdoc />
         public override void Update(double deltaTime)
         {
             lock (this)
@@ -66,6 +76,7 @@ namespace Artemis.Core
             }
         }
 
+        /// <inheritdoc />
         public override void Render(SKCanvas canvas)
         {
             lock (this)
@@ -87,12 +98,39 @@ namespace Artemis.Core
                 child.Reset();
         }
 
+        /// <summary>
+        ///     Retrieves the root folder of this profile
+        /// </summary>
+        /// <returns>The root folder of the profile</returns>
+        /// <exception cref="ObjectDisposedException"></exception>
         public Folder GetRootFolder()
         {
             if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             return (Folder) Children.Single();
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(Module)}: {Module}";
+        }
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (!disposing)
+                return;
+
+            OnDeactivating();
+
+            foreach (ProfileElement profileElement in Children)
+                profileElement.Dispose();
+            ChildrenList.Clear();
+
+            IsActivated = false;
+            Disposed = true;
         }
 
         internal override void Load()
@@ -116,28 +154,10 @@ namespace Artemis.Core
                     Folder _ = new Folder(this, "Root folder");
                 }
                 else
+                {
                     AddChild(new Folder(this, this, rootFolder));
+                }
             }
-        }
-
-        public override string ToString()
-        {
-            return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(Module)}: {Module}";
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (!disposing)
-                return;
-
-            OnDeactivating();
-
-            foreach (ProfileElement profileElement in Children)
-                profileElement.Dispose();
-            ChildrenList.Clear();
-
-            IsActivated = false;
-            Disposed = true;
         }
 
         internal override void Save()
@@ -189,12 +209,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when the profile has been activated.
         /// </summary>
-        public event EventHandler Activated;
+        public event EventHandler? Activated;
 
         /// <summary>
         ///     Occurs when the profile is being deactivated.
         /// </summary>
-        public event EventHandler Deactivated;
+        public event EventHandler? Deactivated;
 
         private void OnActivated()
         {

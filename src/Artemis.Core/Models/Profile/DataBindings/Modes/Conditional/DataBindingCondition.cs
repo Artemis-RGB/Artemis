@@ -18,6 +18,8 @@ namespace Artemis.Core
             ConditionalDataBinding = conditionalDataBinding ?? throw new ArgumentNullException(nameof(conditionalDataBinding));
             Order = conditionalDataBinding.Conditions.Count + 1;
             Condition = new DataModelConditionGroup(null);
+            Value = default!;
+
             Entity = new DataBindingConditionEntity();
             Save();
         }
@@ -26,6 +28,9 @@ namespace Artemis.Core
         {
             ConditionalDataBinding = conditionalDataBinding ?? throw new ArgumentNullException(nameof(conditionalDataBinding));
             Entity = entity;
+            Condition = null!;
+            Value = default!;
+
             Load();
         }
 
@@ -83,7 +88,7 @@ namespace Artemis.Core
                 ? new DataModelConditionGroup(null, Entity.Condition)
                 : new DataModelConditionGroup(null);
 
-            Value = Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value);
+            Value = (Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value))!;
             Order = Entity.Order;
         }
 

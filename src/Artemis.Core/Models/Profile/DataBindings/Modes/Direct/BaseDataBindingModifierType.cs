@@ -15,7 +15,7 @@ namespace Artemis.Core
         ///     Gets the plugin this data binding modifier belongs to
         ///     <para>Note: Not set until after registering</para>
         /// </summary>
-        public Plugin Plugin { get; internal set; }
+        public Plugin? Plugin { get; internal set; }
 
         /// <summary>
         ///     Gets the value type of this modifier type
@@ -35,17 +35,17 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the icon of this modifier
         /// </summary>
-        public abstract string Icon { get; }
+        public abstract string? Icon { get; }
 
         /// <summary>
         ///     Gets the description of this modifier
         /// </summary>
-        public virtual string Description => null;
+        public virtual string? Description => null;
 
         /// <summary>
         ///     Gets the category of this modifier
         /// </summary>
-        public virtual string Category => null;
+        public virtual string? Category => null;
 
         /// <summary>
         ///     Returns whether the given type is supported by the modifier
@@ -69,14 +69,26 @@ namespace Artemis.Core
         ///     </para>
         /// </summary>
         /// <param name="currentValue">The current value before modification, type should match <see cref="ValueType" /></param>
-        /// <param name="parameterValue">The parameter to use for the modification, type should match <see cref="ParameterType" /></param>
+        /// <param name="parameterValue">
+        ///     The parameter to use for the modification, type should match <see cref="ParameterType" />
+        /// </param>
         /// <returns>The modified value, with a type of <see cref="ValueType" /></returns>
         internal abstract object? InternalApply(object? currentValue, object? parameterValue);
     }
 
+    /// <summary>
+    ///     Represents a part of a modifier type
+    /// </summary>
     public enum ModifierTypePart
     {
+        /// <summary>
+        ///     The value part of a modifier, backed by <see cref="DataBindingModifierType{TValue}.ValueType" />
+        /// </summary>
         Value,
+
+        /// <summary>
+        ///     The parameter part of a modifier, backed by <see cref="DataBindingModifierType{TValue,TParameter}.ParameterType" />
+        /// </summary>
         Parameter
     }
 }

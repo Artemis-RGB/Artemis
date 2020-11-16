@@ -19,11 +19,14 @@ namespace Artemis.Core
             Feature = Constants.CorePluginFeature;
         }
 
+        /// <summary>
+        ///     Gets the last arguments of this event as an object
+        /// </summary>
         [DataModelIgnore]
-        public object? UntypedArguments { get; set; }
+        public object? UntypedArguments { get; internal set; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="EventPredicateWrapperDataModel"/> class
+        ///     Creates a new instance of the <see cref="EventPredicateWrapperDataModel" /> class
         /// </summary>
         public static EventPredicateWrapperDataModel Create(Type type)
         {

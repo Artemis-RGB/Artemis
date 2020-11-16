@@ -2,17 +2,19 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data about plugin related events
+    /// </summary>
     public class PluginEventArgs : EventArgs
     {
-        public PluginEventArgs()
-        {
-        }
-
-        public PluginEventArgs(Plugin plugin)
+        internal PluginEventArgs(Plugin plugin)
         {
             Plugin = plugin;
         }
 
+        /// <summary>
+        ///     Gets the plugin this event is related to
+        /// </summary>
         public Plugin Plugin { get; }
     }
 }

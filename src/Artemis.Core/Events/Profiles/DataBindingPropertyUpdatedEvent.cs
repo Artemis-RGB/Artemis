@@ -2,9 +2,13 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Provides data for the <see langword='DataBindingPropertyUpdatedEvent' /> event.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class DataBindingPropertyUpdatedEvent<T> : EventArgs
     {
-        public DataBindingPropertyUpdatedEvent(T value)
+        internal DataBindingPropertyUpdatedEvent(T value)
         {
             Value = value;
         }

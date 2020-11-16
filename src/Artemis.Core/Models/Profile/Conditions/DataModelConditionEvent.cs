@@ -11,9 +11,9 @@ namespace Artemis.Core
     public class DataModelConditionEvent : DataModelConditionPart
     {
         private bool _disposed;
-        private bool _reinitializing;
         private IDataModelEvent? _event;
         private bool _eventTriggered;
+        private bool _reinitializing;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionEvent" /> class
@@ -40,10 +40,13 @@ namespace Artemis.Core
         /// </summary>
         public DataModelPath? EventPath { get; private set; }
 
-        public Type? EventArgumentType { get; set; }
+        /// <summary>
+        ///     Gets or sets the type of argument the event provides
+        /// </summary>
+        public Type? EventArgumentType { get; private set; }
 
         internal DataModelConditionEventEntity Entity { get; set; }
-        
+
         /// <inheritdoc />
         public override bool Evaluate()
         {
@@ -62,20 +65,10 @@ namespace Artemis.Core
 
             // If there is a child (root group), it must evaluate to true whenever the event triggered
             if (Children.Any())
-                return Children[0].EvaluateObject(_event.LastEventArgumentsUntyped);
+                return Children[0].EvaluateObject(_event?.LastEventArgumentsUntyped);
 
             // If there are no children, we always evaluate to true whenever the event triggered
             return true;
-        }
-
-        private void SubscribeToDataModelEvent(IDataModelEvent dataModelEvent)
-        {
-            if (_event != null)
-                _event.EventTriggered -= OnEventTriggered;
-
-            _event = dataModelEvent;
-            if (_event != null)
-                _event.EventTriggered += OnEventTriggered;
         }
 
         /// <summary>
@@ -108,16 +101,6 @@ namespace Artemis.Core
             }
         }
 
-        private Type? GetEventArgumentType()
-        {
-            if (EventPath == null || !EventPath.IsValid)
-                return null;
-
-            // Cannot rely on EventPath.GetValue() because part of the path might be null
-            Type eventType = EventPath.GetPropertyType()!;
-            return eventType.IsGenericType ? eventType.GetGenericArguments()[0] : typeof(DataModelEventArgs);
-        }
-
         #region IDisposable
 
         /// <inheritdoc />
@@ -135,7 +118,7 @@ namespace Artemis.Core
 
         #endregion
 
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             return false;
         }
@@ -189,6 +172,26 @@ namespace Artemis.Core
                 Entity.Children.Clear();
                 AddChild(new DataModelConditionGroup(this));
             }
+        }
+
+        private void SubscribeToDataModelEvent(IDataModelEvent dataModelEvent)
+        {
+            if (_event != null)
+                _event.EventTriggered -= OnEventTriggered;
+
+            _event = dataModelEvent;
+            if (_event != null)
+                _event.EventTriggered += OnEventTriggered;
+        }
+
+        private Type? GetEventArgumentType()
+        {
+            if (EventPath == null || !EventPath.IsValid)
+                return null;
+
+            // Cannot rely on EventPath.GetValue() because part of the path might be null
+            Type eventType = EventPath.GetPropertyType()!;
+            return eventType.IsGenericType ? eventType.GetGenericArguments()[0] : typeof(DataModelEventArgs);
         }
 
         private bool PointsToEvent(DataModelPath dataModelPath)

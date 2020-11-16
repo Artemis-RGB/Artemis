@@ -6,10 +6,10 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBinding<TLayerProperty, TProperty> : IDataBinding
     {
-        private TProperty _currentValue;
+        private TProperty _currentValue = default!;
+        private TProperty _previousValue = default!;
         private bool _disposed;
         private TimeSpan _easingProgress;
-        private TProperty _previousValue;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -34,7 +34,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data binding registration this data binding is based upon
         /// </summary>
-        public DataBindingRegistration<TLayerProperty, TProperty> Registration { get; private set; }
+        public DataBindingRegistration<TLayerProperty, TProperty>? Registration { get; private set; }
 
         /// <summary>
         ///     Gets the layer property this data binding targets
@@ -44,12 +44,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the converter used to apply this data binding to the <see cref="LayerProperty" />
         /// </summary>
-        public DataBindingConverter<TLayerProperty, TProperty> Converter { get; private set; }
+        public DataBindingConverter<TLayerProperty, TProperty>? Converter { get; private set; }
 
         /// <summary>
         ///     Gets the data binding mode
         /// </summary>
-        public IDataBindingMode<TLayerProperty, TProperty> DataBindingMode { get; private set; }
+        public IDataBindingMode<TLayerProperty, TProperty>? DataBindingMode { get; private set; }
 
         /// <summary>
         ///     Gets or sets the easing time of the data binding
@@ -93,9 +93,9 @@ namespace Artemis.Core
         /// <summary>
         ///     Returns the type of the target property of this data binding
         /// </summary>
-        public Type GetTargetType()
+        public Type? GetTargetType()
         {
-            return Registration.PropertyExpression.ReturnType;
+            return Registration?.PropertyExpression.ReturnType;
         }
 
         private void ResetEasing(TProperty value)
@@ -111,15 +111,15 @@ namespace Artemis.Core
                 throw new ArgumentNullException(nameof(dataBindingRegistration));
 
             dataBindingRegistration.DataBinding = this;
-            Converter = dataBindingRegistration?.Converter;
+            Converter = dataBindingRegistration.Converter;
             Registration = dataBindingRegistration;
 
-            if (GetTargetType().IsValueType)
+            if (GetTargetType()!.IsValueType)
             {
                 if (_currentValue == null)
-                    _currentValue = default;
+                    _currentValue = default!;
                 if (_previousValue == null)
-                    _previousValue = default;
+                    _previousValue = default!;
             }
 
             Converter?.Initialize(this);
@@ -127,7 +127,7 @@ namespace Artemis.Core
 
         private TProperty GetInterpolatedValue()
         {
-            if (_easingProgress == EasingTime || !Converter.SupportsInterpolate)
+            if (_easingProgress == EasingTime || Converter == null || !Converter.SupportsInterpolate)
                 return _currentValue;
 
             double easingAmount = _easingProgress.TotalSeconds / EasingTime.TotalSeconds;
@@ -180,7 +180,8 @@ namespace Artemis.Core
         {
             _disposed = true;
 
-            Registration.DataBinding = null;
+            if (Registration != null) 
+                Registration.DataBinding = null;
             DataBindingMode?.Dispose();
         }
 
@@ -234,7 +235,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             // General
-            DataBindingRegistration<TLayerProperty, TProperty> registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
+            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
             if (registration != null)
                 ApplyRegistration(registration);
 
@@ -253,8 +254,10 @@ namespace Artemis.Core
             if (!LayerProperty.Entity.DataBindingEntities.Contains(Entity))
                 LayerProperty.Entity.DataBindingEntities.Add(Entity);
 
-            // General 
-            Entity.TargetExpression = Registration.PropertyExpression.ToString();
+            // Don't save an invalid state
+            if (Registration != null) 
+                Entity.TargetExpression = Registration.PropertyExpression.ToString();
+
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;
 

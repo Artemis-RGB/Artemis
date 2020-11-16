@@ -3,7 +3,7 @@
     /// <summary>
     ///     A special layer property used to configure the selected layer brush
     /// </summary>
-    public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference>
+    public class LayerBrushReferenceLayerProperty : LayerProperty<LayerBrushReference?>
     {
         internal LayerBrushReferenceLayerProperty()
         {
@@ -14,7 +14,7 @@
         /// <summary>
         ///     Implicitly converts an <see cref="LayerBrushReferenceLayerProperty" /> to an <see cref="LayerBrushReference" />
         /// </summary>
-        public static implicit operator LayerBrushReference(LayerBrushReferenceLayerProperty p)
+        public static implicit operator LayerBrushReference?(LayerBrushReferenceLayerProperty p)
         {
             return p.CurrentValue;
         }

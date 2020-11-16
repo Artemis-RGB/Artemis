@@ -21,9 +21,9 @@ namespace Artemis.Core
         public LayerPropertyKeyframe(T value, TimeSpan position, Easings.Functions easingFunction, LayerProperty<T> layerProperty)
         {
             _position = position;
+            _layerProperty = layerProperty;
+            _value = value;
 
-            Value = value;
-            LayerProperty = layerProperty;
             EasingFunction = easingFunction;
         }
 

@@ -6,18 +6,22 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents an element of a <see cref="Profile" />
+    /// </summary>
     public abstract class ProfileElement : CorePropertyChanged, IDisposable
     {
         private bool _enabled;
         private Guid _entityId;
         private string _name;
         private int _order;
-        private ProfileElement _parent;
+        private ProfileElement? _parent;
         private Profile _profile;
-        protected List<ProfileElement> ChildrenList;
-        protected bool Disposed;
 
-        protected ProfileElement()
+        internal List<ProfileElement> ChildrenList;
+        internal bool Disposed;
+
+        internal ProfileElement()
         {
             ChildrenList = new List<ProfileElement>();
         }
@@ -43,7 +47,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the parent of this element
         /// </summary>
-        public ProfileElement Parent
+        public ProfileElement? Parent
         {
             get => _parent;
             internal set => SetAndNotify(ref _parent, value);
@@ -233,6 +237,9 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        ///     Disposes the profile element
+        /// </summary>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -244,14 +251,27 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler ChildAdded;
-        public event EventHandler ChildRemoved;
+        /// <summary>
+        ///     Occurs when a child was added to the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler? ChildAdded;
 
+        /// <summary>
+        ///     Occurs when a child was removed from the <see cref="Children" /> list
+        /// </summary>
+        public event EventHandler? ChildRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="ChildAdded" /> event
+        /// </summary>
         protected virtual void OnChildAdded()
         {
             ChildAdded?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="ChildRemoved" /> event
+        /// </summary>
         protected virtual void OnChildRemoved()
         {
             ChildRemoved?.Invoke(this, EventArgs.Empty);

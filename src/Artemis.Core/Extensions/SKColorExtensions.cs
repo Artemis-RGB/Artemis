@@ -4,14 +4,28 @@ using SkiaSharp;
 
 namespace Artemis.Core
 {
-    // ReSharper disable once InconsistentNaming - I didn't come up with SKColor
+    /// <summary>
+    ///     A static class providing <see cref="SKColor" /> extensions
+    /// </summary>
     public static class SKColorExtensions
     {
+        /// <summary>
+        ///     Converts hte SKColor to an RGB.NET color
+        /// </summary>
+        /// <param name="color">The color to convert</param>
+        /// <returns>The RGB.NET color</returns>
         public static Color ToRgbColor(this SKColor color)
         {
             return new Color(color.Alpha, color.Red, color.Green, color.Blue);
         }
 
+        /// <summary>
+        ///     Interpolates a color between the <paramref name="from" /> and <paramref name="to" /> color.
+        /// </summary>
+        /// <param name="from">The first color</param>
+        /// <param name="to">The second color</param>
+        /// <param name="progress">A value between 0 and 1</param>
+        /// <returns>The interpolated color</returns>
         public static SKColor Interpolate(this SKColor from, SKColor to, float progress)
         {
             int redDiff = to.Red - from.Red;
@@ -27,6 +41,12 @@ namespace Artemis.Core
             );
         }
 
+        /// <summary>
+        ///     Adds the two colors together
+        /// </summary>
+        /// <param name="a">The first color</param>
+        /// <param name="b">The second color</param>
+        /// <returns>The sum of the two colors</returns>
         public static SKColor Sum(this SKColor a, SKColor b)
         {
             return new SKColor(

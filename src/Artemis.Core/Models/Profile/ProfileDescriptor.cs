@@ -4,6 +4,9 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a descriptor that describes a profile
+    /// </summary>
     public class ProfileDescriptor
     {
         internal ProfileDescriptor(ProfileModule profileModule, ProfileEntity profileEntity)
@@ -15,10 +18,24 @@ namespace Artemis.Core
             IsLastActiveProfile = profileEntity.IsActive;
         }
 
-        public bool IsLastActiveProfile { get; set; }
+        /// <summary>
+        ///     Gets a boolean indicating whether this was the last active profile
+        /// </summary>
+        public bool IsLastActiveProfile { get; }
 
+        /// <summary>
+        ///     Gets the unique ID of the profile by which it can be loaded from storage
+        /// </summary>
         public Guid Id { get; }
+
+        /// <summary>
+        ///     Gets the module backing the profile
+        /// </summary>
         public ProfileModule ProfileModule { get; }
+
+        /// <summary>
+        ///     Gets the name of the profile
+        /// </summary>
         public string Name { get; }
     }
 }

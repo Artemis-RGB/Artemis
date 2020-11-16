@@ -38,28 +38,28 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Gets the member the <see cref="PropertyExpression" /> targets
-        ///     <para><c>null</c> if the <see cref="PropertyExpression" /> is not a member expression</para>
+        ///     <para><see langword="null"/> if the <see cref="PropertyExpression" /> is not a member expression</para>
         /// </summary>
-        public MemberInfo Member { get; }
+        public MemberInfo? Member { get; }
 
         /// <summary>
         ///     Gets the data binding created using this registration
         /// </summary>
-        public DataBinding<TLayerProperty, TProperty> DataBinding { get; internal set; }
+        public DataBinding<TLayerProperty, TProperty>? DataBinding { get; internal set; }
 
         /// <inheritdoc />
-        public IDataBinding GetDataBinding()
+        public IDataBinding? GetDataBinding()
         {
             return DataBinding;
         }
 
         /// <inheritdoc />
-        public IDataBinding CreateDataBinding()
+        public IDataBinding? CreateDataBinding()
         {
             if (DataBinding != null)
                 return DataBinding;
 
-            DataBindingEntity dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == PropertyExpression.ToString());
+            DataBindingEntity? dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == PropertyExpression.ToString());
             if (dataBinding == null)
                 return null;
 

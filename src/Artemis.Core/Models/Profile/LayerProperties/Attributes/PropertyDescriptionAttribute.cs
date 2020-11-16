@@ -2,27 +2,30 @@
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a description attribute used to decorate layer properties
+    /// </summary>
     public class PropertyDescriptionAttribute : Attribute
     {
         /// <summary>
         ///     The user-friendly name for this property, shown in the UI
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         ///     The user-friendly description for this property, shown in the UI
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         ///     Input prefix to show before input elements in the UI
         /// </summary>
-        public string InputPrefix { get; set; }
+        public string? InputPrefix { get; set; }
 
         /// <summary>
         ///     Input affix to show behind input elements in the UI
         /// </summary>
-        public string InputAffix { get; set; }
+        public string? InputAffix { get; set; }
 
         /// <summary>
         ///     The input drag step size, used in the UI
@@ -32,12 +35,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Minimum input value, only enforced in the UI
         /// </summary>
-        public object MinInputValue { get; set; }
+        public object? MinInputValue { get; set; }
 
         /// <summary>
         ///     Maximum input value, only enforced in the UI
         /// </summary>
-        public object MaxInputValue { get; set; }
+        public object? MaxInputValue { get; set; }
 
         /// <summary>
         ///     Whether or not keyframes are always disabled

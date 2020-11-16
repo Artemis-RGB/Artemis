@@ -118,7 +118,7 @@ namespace Artemis.UI
             e.Handled = true;
         }
 
-        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }

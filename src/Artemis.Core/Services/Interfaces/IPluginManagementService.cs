@@ -44,6 +44,10 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="plugin">The plugin to enable</param>
         /// <param name="saveState">Whether or not to save the new enabled state</param>
+        /// <param name="ignorePluginLock">
+        ///     Whether or not plugin lock files should be ignored. If set to <see langword="true" />,
+        ///     plugins with lock files will load successfully
+        /// </param>
         void EnablePlugin(Plugin plugin, bool saveState, bool ignorePluginLock = false);
 
         /// <summary>
@@ -95,7 +99,7 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="assembly"></param>
         /// <returns></returns>
-        Plugin GetPluginByAssembly(Assembly assembly);
+        Plugin? GetPluginByAssembly(Assembly? assembly);
 
         /// <summary>
         ///     Returns the plugin info of the current call stack

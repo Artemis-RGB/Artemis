@@ -39,9 +39,9 @@ namespace Artemis.Core
             if (ValueTypeSetExpression == null)
                 return;
 
-            if (DataBinding.LayerProperty.PropertyDescription.MaxInputValue is float max)
+            if (DataBinding!.LayerProperty.PropertyDescription.MaxInputValue is float max)
                 value = Math.Min(value, max);
-            if (DataBinding.LayerProperty.PropertyDescription.MinInputValue is float min)
+            if (DataBinding!.LayerProperty.PropertyDescription.MinInputValue is float min)
                 value = Math.Max(value, min);
 
             base.ApplyValue(value);

@@ -46,7 +46,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Determines whether the provided <paramref name="reference" /> references to a brush provided by this descriptor
         /// </summary>
-        public bool MatchesLayerBrushReference(LayerBrushReference reference)
+        public bool MatchesLayerBrushReference(LayerBrushReference? reference)
         {
             if (reference == null)
                 return false;
