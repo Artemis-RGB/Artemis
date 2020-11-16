@@ -15,6 +15,7 @@ variables:
 
 steps:
 - checkout: self
+  path: s/Artemis
 
 - task: UseDotNet@2
   displayName: 'Install .Net 5 SDK'
@@ -22,13 +23,28 @@ steps:
     packageType: 'sdk'
     version: '5.0.100'
 
+- task: DownloadPipelineArtifact@2
+  inputs:
+    buildType: 'specific'
+    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
+    definition: '3'
+    buildVersionToDownload: 'latest'
+    artifactName: 'RGB.NET development build'
+    targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore Artemis'
   inputs:
     command: 'restore'
     projects: '$(artemisSolution)'
     feedsToUse: 'config'
-    nugetConfigPath: '$(Pipeline.Workspace)/s/src/NuGet.Config'
+    nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
+
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet build Artemis'
+  inputs:
+    command: 'build'
+    projects: '$(artemisSolution)'
 
 - task: PowerShell@2
   displayName: "DockFX build"
@@ -37,7 +53,7 @@ steps:
     script: |
       choco install docfx -y
       docfx.exe .\docfx_project\docfx.json
-    workingDirectory: 'docfx'
+    workingDirectory: '$(Pipeline.Workspace)/s/Artemis/docfx'
 
 - task: FtpUpload@2
   displayName: "DockFX FTP upload"
@@ -46,7 +62,7 @@ steps:
     serverUrl: 'ftp://artemis-rgb.com'
     username: 'devops'
     password: '$(ftp_password)'
-    rootDirectory: 'docfx/docfx_project/_site'
+    rootDirectory: '$(Pipeline.Workspace)/s/Artemis/docfx/docfx_project/_site'
     filePatterns: '**'
     remoteDirectory: '/httpdocs/docs'
     clean: true
