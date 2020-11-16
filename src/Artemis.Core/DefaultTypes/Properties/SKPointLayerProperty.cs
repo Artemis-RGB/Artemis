@@ -22,9 +22,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            float xDiff = NextKeyframe.Value.X - CurrentKeyframe.Value.X;
-            float yDiff = NextKeyframe.Value.Y - CurrentKeyframe.Value.Y;
-            CurrentValue = new SKPoint(CurrentKeyframe.Value.X + xDiff * keyframeProgressEased, CurrentKeyframe.Value.Y + yDiff * keyframeProgressEased);
+            float xDiff = NextKeyframe!.Value.X - CurrentKeyframe!.Value.X;
+            float yDiff = NextKeyframe!.Value.Y - CurrentKeyframe!.Value.Y;
+            CurrentValue = new SKPoint(CurrentKeyframe!.Value.X + xDiff * keyframeProgressEased, CurrentKeyframe!.Value.Y + yDiff * keyframeProgressEased);
         }
     }
 }

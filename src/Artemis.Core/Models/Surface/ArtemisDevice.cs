@@ -1,22 +1,26 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents an RGB device usable by Artemis, provided by a <see cref="DeviceProviders.DeviceProvider" />
+    /// </summary>
     public class ArtemisDevice : CorePropertyChanged
     {
         private ReadOnlyCollection<ArtemisLed> _leds;
         private SKPath _renderPath;
         private SKRect _renderRectangle;
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, PluginFeature pluginFeature, ArtemisSurface surface)
+        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface)
         {
             RgbDevice = rgbDevice;
-            PluginFeature = pluginFeature;
+            DeviceProvider = deviceProvider;
             Surface = surface;
             DeviceEntity = new DeviceEntity();
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
@@ -29,38 +33,60 @@ namespace Artemis.Core
             CalculateRenderProperties();
         }
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, PluginFeature pluginFeature, ArtemisSurface surface, DeviceEntity deviceEntity)
+        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface, DeviceEntity deviceEntity)
         {
             RgbDevice = rgbDevice;
-            PluginFeature = pluginFeature;
+            DeviceProvider = deviceProvider;
             Surface = surface;
             DeviceEntity = deviceEntity;
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
+        /// <summary>
+        ///     Gets the rectangle covering the device, sized to match the render scale
+        /// </summary>
         public SKRect RenderRectangle
         {
             get => _renderRectangle;
             private set => SetAndNotify(ref _renderRectangle, value);
         }
 
+        /// <summary>
+        ///     Gets the path surrounding the device, sized to match the render scale
+        /// </summary>
         public SKPath RenderPath
         {
             get => _renderPath;
             private set => SetAndNotify(ref _renderPath, value);
         }
 
+        /// <summary>
+        ///     Gets the RGB.NET device backing this Artemis device
+        /// </summary>
         public IRGBDevice RgbDevice { get; }
-        public PluginFeature PluginFeature { get; }
-        public ArtemisSurface Surface { get; }
-        public DeviceEntity DeviceEntity { get; }
 
+        /// <summary>
+        ///     Gets the device provider that provided this device
+        /// </summary>
+        public DeviceProvider DeviceProvider { get; }
+
+        /// <summary>
+        ///     Gets the surface containing this device
+        /// </summary>
+        public ArtemisSurface Surface { get; }
+
+        /// <summary>
+        ///     Gets a read only collection containing the LEDs of this device
+        /// </summary>
         public ReadOnlyCollection<ArtemisLed> Leds
         {
             get => _leds;
-            set => SetAndNotify(ref _leds, value);
+            private set => SetAndNotify(ref _leds, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the X-position of the device
+        /// </summary>
         public double X
         {
             get => DeviceEntity.X;
@@ -71,6 +97,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the Y-position of the device
+        /// </summary>
         public double Y
         {
             get => DeviceEntity.Y;
@@ -81,6 +110,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the rotation of the device
+        /// </summary>
         public double Rotation
         {
             get => DeviceEntity.Rotation;
@@ -91,6 +123,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the scale of the device
+        /// </summary>
         public double Scale
         {
             get => DeviceEntity.Scale;
@@ -101,6 +136,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the Z-index of the device
+        /// </summary>
         public int ZIndex
         {
             get => DeviceEntity.ZIndex;
@@ -111,13 +149,22 @@ namespace Artemis.Core
             }
         }
 
+        internal DeviceEntity DeviceEntity { get; }
+
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"[{RgbDevice.DeviceInfo.DeviceType}] {RgbDevice.DeviceInfo.DeviceName} - {X}.{Y}.{ZIndex}";
         }
 
-        public event EventHandler DeviceUpdated;
+        /// <summary>
+        ///     Occurs when the underlying RGB.NET device was updated
+        /// </summary>
+        public event EventHandler? DeviceUpdated;
 
+        /// <summary>
+        ///     Invokes the <see cref="DeviceUpdated" /> event
+        /// </summary>
         protected virtual void OnDeviceUpdated()
         {
             DeviceUpdated?.Invoke(this, EventArgs.Empty);

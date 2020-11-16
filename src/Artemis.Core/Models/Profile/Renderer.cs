@@ -35,7 +35,7 @@ namespace Artemis.Core
                 Bitmap = new SKBitmap(width, height);
                 Path = new SKPath(path);
                 Canvas = new SKCanvas(Bitmap);
-                Path.Transform(SKMatrix.MakeTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
+                Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
                 TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
                 if (parent != null)

@@ -94,7 +94,7 @@ namespace Artemis.Core
             {
                 Type listType = ListPath.GetPropertyType()!;
                 ListType = listType.GetGenericEnumerableType();
-                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+                IsPrimitiveList = ListType == null || ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
 
                 // Create a new root group
                 AddChild(new DataModelConditionGroup(this));
@@ -188,7 +188,7 @@ namespace Artemis.Core
             if (ListPath.IsValid)
             {
                 ListType = listType.GetGenericEnumerableType();
-                IsPrimitiveList = ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
+                IsPrimitiveList = ListType == null || ListType.IsPrimitive || ListType.IsEnum || ListType == typeof(string);
             }
             else
             {

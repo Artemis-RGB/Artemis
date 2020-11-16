@@ -18,7 +18,9 @@ namespace Artemis.Core.JsonConverters
 
         public override int ReadJson(JsonReader reader, Type objectType, int existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
-            JValue jsonValue = serializer.Deserialize<JValue>(reader);
+            JValue? jsonValue = serializer.Deserialize<JValue>(reader);
+            if (jsonValue == null)
+                throw new FormatException();
 
             if (jsonValue.Type == JTokenType.Float)
                 return (int) Math.Round(jsonValue.Value<double>());

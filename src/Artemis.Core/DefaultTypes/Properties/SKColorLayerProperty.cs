@@ -23,7 +23,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            CurrentValue = CurrentKeyframe.Value.Interpolate(NextKeyframe.Value, keyframeProgressEased);
+            CurrentValue = CurrentKeyframe!.Value.Interpolate(NextKeyframe!.Value, keyframeProgressEased);
         }
     }
 }

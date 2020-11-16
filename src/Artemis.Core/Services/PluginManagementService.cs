@@ -138,8 +138,10 @@ namespace Artemis.Core.Services
             }
         }
 
-        public Plugin? GetPluginByAssembly(Assembly assembly)
+        public Plugin? GetPluginByAssembly(Assembly? assembly)
         {
+            if (assembly == null)
+                return null;
             lock (_plugins)
             {
                 return _plugins.FirstOrDefault(p => p.Assembly == assembly);
@@ -159,8 +161,8 @@ namespace Artemis.Core.Services
 
             foreach (StackFrame stackFrame in stackFrames)
             {
-                Assembly assembly = stackFrame.GetMethod().DeclaringType.Assembly;
-                Plugin plugin = GetPluginByAssembly(assembly);
+                Assembly? assembly = stackFrame.GetMethod()?.DeclaringType?.Assembly;
+                Plugin? plugin = GetPluginByAssembly(assembly);
                 if (plugin != null)
                     return plugin;
             }
@@ -179,7 +181,7 @@ namespace Artemis.Core.Services
         {
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
-            
+
             LoadingPlugins = true;
 
             // Unload all currently loaded plugins first
@@ -207,8 +209,10 @@ namespace Artemis.Core.Services
         public void UnloadPlugins()
         {
             // Unload all plugins
+            // ReSharper disable InconsistentlySynchronizedField - UnloadPlugin will lock it when it has to
             while (_plugins.Count > 0)
                 UnloadPlugin(_plugins[0]);
+            // ReSharper restore InconsistentlySynchronizedField
 
             lock (_plugins)
             {
@@ -297,7 +301,11 @@ namespace Artemis.Core.Services
             }
             catch (ReflectionTypeLoadException e)
             {
-                throw new ArtemisPluginException(plugin, "Failed to initialize the plugin assembly", new AggregateException(e.LoaderExceptions));
+                throw new ArtemisPluginException(
+                    plugin,
+                    "Failed to initialize the plugin assembly",
+                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
+                );
             }
 
             if (!featureTypes.Any())
@@ -318,7 +326,7 @@ namespace Artemis.Core.Services
 
                     // Load the enabled state and if not found, default to true
                     instance.Entity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                      new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName};
+                                      new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName!};
                 }
                 catch (Exception e)
                 {
@@ -385,7 +393,7 @@ namespace Artemis.Core.Services
 
             plugin.SetEnabled(false);
 
-            plugin.Kernel.Dispose();
+            plugin.Kernel?.Dispose();
             plugin.Kernel = null;
 
             GC.Collect();
@@ -487,28 +495,22 @@ namespace Artemis.Core.Services
             _pluginRepository.SavePlugin(plugin.Entity);
         }
 
-        private PluginFeatureEntity GetOrCreateFeatureEntity(PluginFeature feature)
-        {
-            return feature.Plugin.Entity.Features.FirstOrDefault(i => i.Type == feature.GetType().FullName) ??
-                   new PluginFeatureEntity {IsEnabled = true, Type = feature.GetType().FullName};
-        }
-
         #endregion
 
         #region Events
 
-        public event EventHandler CopyingBuildInPlugins;
-        public event EventHandler<PluginEventArgs> PluginLoading;
-        public event EventHandler<PluginEventArgs> PluginLoaded;
-        public event EventHandler<PluginEventArgs> PluginUnloaded;
-        public event EventHandler<PluginEventArgs> PluginEnabling;
-        public event EventHandler<PluginEventArgs> PluginEnabled;
-        public event EventHandler<PluginEventArgs> PluginDisabled;
+        public event EventHandler? CopyingBuildInPlugins;
+        public event EventHandler<PluginEventArgs>? PluginLoading;
+        public event EventHandler<PluginEventArgs>? PluginLoaded;
+        public event EventHandler<PluginEventArgs>? PluginUnloaded;
+        public event EventHandler<PluginEventArgs>? PluginEnabling;
+        public event EventHandler<PluginEventArgs>? PluginEnabled;
+        public event EventHandler<PluginEventArgs>? PluginDisabled;
 
-        public event EventHandler<PluginFeatureEventArgs> PluginFeatureEnabling;
-        public event EventHandler<PluginFeatureEventArgs> PluginFeatureEnabled;
-        public event EventHandler<PluginFeatureEventArgs> PluginFeatureDisabled;
-        public event EventHandler<PluginFeatureEventArgs> PluginFeatureEnableFailed;
+        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabling;
+        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnabled;
+        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureDisabled;
+        public event EventHandler<PluginFeatureEventArgs>? PluginFeatureEnableFailed;
 
         protected virtual void OnCopyingBuildInPlugins()
         {

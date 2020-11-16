@@ -3,7 +3,7 @@ using RGB.NET.Core;
 
 namespace Artemis.Core
 {
-    public static class RgbDeviceExtensions
+    internal static class RgbDeviceExtensions
     {
         public static string GetDeviceIdentifier(this IRGBDevice rgbDevice)
         {

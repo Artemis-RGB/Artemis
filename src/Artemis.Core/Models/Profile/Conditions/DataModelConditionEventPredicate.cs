@@ -53,7 +53,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("This data model condition event predicate does not belong to a data model condition event");
         }
 
-        private object? GetEventPathValue(DataModelPath path, object target)
+        private object? GetEventPathValue(DataModelPath path, object? target)
         {
             lock (path)
             {
@@ -67,6 +67,7 @@ namespace Artemis.Core
 
         #region Initialization
 
+        /// <inheritdoc />
         protected override void InitializeLeftPath()
         {
             if (Entity.LeftPath != null)
@@ -75,6 +76,7 @@ namespace Artemis.Core
                     : null;
         }
 
+        /// <inheritdoc />
         protected override void InitializeRightPath()
         {
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)
@@ -122,7 +124,7 @@ namespace Artemis.Core
             return false;
         }
 
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             if (Operator == null || LeftPath == null || !LeftPath.IsValid)
                 return false;

@@ -5,8 +5,16 @@ using System.Text;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     A static class providing <see cref="Process" /> extensions
+    /// </summary>
     public static class ProcessExtensions
     {
+        /// <summary>
+        ///     Gets the file name of the given process
+        /// </summary>
+        /// <param name="p">The process</param>
+        /// <returns>The filename of the given process</returns>
         public static string GetProcessFilename(this Process p)
         {
             int capacity = 2000;
@@ -17,7 +25,7 @@ namespace Artemis.Core
             return builder.ToString();
         }
 
-        [DllImport("kernel32.dll")]
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
         private static extern bool QueryFullProcessImageName([In] IntPtr hProcess, [In] int dwFlags, [Out] StringBuilder lpExeName, ref int lpdwSize);
 
         [DllImport("kernel32.dll")]

@@ -76,7 +76,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="target"></param>
         /// <returns></returns>
-        internal abstract bool EvaluateObject(object target);
+        internal abstract bool EvaluateObject(object? target);
 
         internal abstract void Save();
         internal abstract DataModelConditionPartEntity GetEntity();
@@ -104,14 +104,27 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler ChildAdded;
-        public event EventHandler ChildRemoved;
+        /// <summary>
+        ///     Occurs when a child-condition was added
+        /// </summary>
+        public event EventHandler? ChildAdded;
 
+        /// <summary>
+        ///     Occurs when a child-condition was removed
+        /// </summary>
+        public event EventHandler? ChildRemoved;
+
+        /// <summary>
+        ///     Invokers the <see cref="ChildAdded" /> event
+        /// </summary>
         protected virtual void OnChildAdded()
         {
             ChildAdded?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Invokers the <see cref="ChildRemoved" /> event
+        /// </summary>
         protected virtual void OnChildRemoved()
         {
             ChildRemoved?.Invoke(this, EventArgs.Empty);

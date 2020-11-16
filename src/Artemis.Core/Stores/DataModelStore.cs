@@ -47,7 +47,7 @@ namespace Artemis.Core
             }
         }
 
-        public static DataModelRegistration Get(string id)
+        public static DataModelRegistration? Get(string id)
         {
             lock (Registrations)
             {

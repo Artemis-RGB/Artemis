@@ -6,6 +6,9 @@ using Humanizer;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     A static class providing <see cref="Type" /> extensions
+    /// </summary>
     public static class TypeExtensions
     {
         private static readonly Dictionary<Type, List<Type>> PrimitiveTypeConversions = new Dictionary<Type, List<Type>>
@@ -40,6 +43,12 @@ namespace Artemis.Core
             {typeof(string), "string"}
         };
 
+        /// <summary>
+        ///     Determines whether the provided type is of a specified generic type
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <param name="genericType">The generic type to match</param>
+        /// <returns>True if the <paramref name="type" /> is generic and of generic type <paramref name="genericType" /></returns>
         public static bool IsGenericType(this Type type, Type genericType)
         {
             if (type == null)
@@ -48,11 +57,21 @@ namespace Artemis.Core
             return type.BaseType?.GetGenericTypeDefinition() == genericType;
         }
 
-        public static bool IsStruct(this Type source)
+        /// <summary>
+        ///     Determines whether the provided type is a struct
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns><see langword="true" /> if the type is a struct, otherwise <see langword="false" /></returns>
+        public static bool IsStruct(this Type type)
         {
-            return source.IsValueType && !source.IsPrimitive && !source.IsEnum;
+            return type.IsValueType && !type.IsPrimitive && !type.IsEnum;
         }
 
+        /// <summary>
+        ///     Determines whether the provided type is any kind of numeric type
+        /// </summary>
+        /// <param name="type">The type to check</param>
+        /// <returns><see langword="true" /> if the type a numeric type, otherwise <see langword="false" /></returns>
         public static bool TypeIsNumber(this Type type)
         {
             return type == typeof(sbyte)
@@ -68,6 +87,11 @@ namespace Artemis.Core
                    || type == typeof(decimal);
         }
 
+        /// <summary>
+        ///     Determines whether the provided value is any kind of numeric type
+        /// </summary>
+        /// <param name="value">The value to check</param>
+        /// <returns><see langword="true" /> if the value is of a numeric type, otherwise <see langword="false" /></returns>
         public static bool IsNumber(this object value)
         {
             return value is sbyte
@@ -126,7 +150,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Returns the default value of the given type
         /// </summary>
-        public static object GetDefault(this Type type)
+        public static object? GetDefault(this Type type)
         {
             return type.IsValueType ? Activator.CreateInstance(type) : null;
         }
@@ -157,7 +181,7 @@ namespace Artemis.Core
             if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 return type.GenericTypeArguments[0];
 
-            Type enumerableType = type.GetInterfaces().FirstOrDefault(x =>
+            Type? enumerableType = type.GetInterfaces().FirstOrDefault(x =>
                 x.IsGenericType &&
                 x.GetGenericTypeDefinition() == typeof(IEnumerable<>));
 

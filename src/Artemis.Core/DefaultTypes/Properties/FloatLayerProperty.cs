@@ -27,8 +27,8 @@
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            float diff = NextKeyframe.Value - CurrentKeyframe.Value;
-            CurrentValue = CurrentKeyframe.Value + diff * keyframeProgressEased;
+            float diff = NextKeyframe!.Value - CurrentKeyframe!.Value;
+            CurrentValue = CurrentKeyframe!.Value + diff * keyframeProgressEased;
         }
     }
 }

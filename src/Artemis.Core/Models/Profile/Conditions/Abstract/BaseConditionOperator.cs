@@ -25,7 +25,7 @@ namespace Artemis.Core
         ///     Gets the plugin this condition operator belongs to
         ///     <para>Note: Not set until after registering</para>
         /// </summary>
-        public Plugin Plugin { get; internal set; }
+        public Plugin? Plugin { get; internal set; }
 
         /// <summary>
         ///     Gets the left side type of this condition operator
@@ -64,9 +64,19 @@ namespace Artemis.Core
         internal abstract bool InternalEvaluate(object? leftSideValue, object? rightSideValue);
     }
 
+    /// <summary>
+    ///     Represents a side of a condition parameter
+    /// </summary>
     public enum ConditionParameterSide
     {
+        /// <summary>
+        ///     The left side of a condition parameter
+        /// </summary>
         Left,
+
+        /// <summary>
+        ///     The right side of a condition parameter
+        /// </summary>
         Right
     }
 }

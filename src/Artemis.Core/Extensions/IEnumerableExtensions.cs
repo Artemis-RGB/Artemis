@@ -24,6 +24,10 @@ using System.Collections.Generic;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     A static class providing <see cref="IEnumerable{T}" /> extensions
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
     public static class IEnumerableExtensions
     {
         /// <summary>
@@ -46,7 +50,7 @@ namespace Artemis.Core
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source,
             Func<TSource, TKey> keySelector)
         {
-            return source.DistinctBy(keySelector, null);
+            return source.DistinctBy(keySelector, null!);
         }
 
         /// <summary>

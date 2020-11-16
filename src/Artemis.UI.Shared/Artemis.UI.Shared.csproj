@@ -28,6 +28,7 @@
     <NrtRequiredVcs>git</NrtRequiredVcs>
     <NrtShowRevision>true</NrtShowRevision>
     <Version>2.0.0</Version>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <DocumentationFile>bin\x64\Release\Artemis.UI.Shared.xml</DocumentationFile>

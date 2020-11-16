@@ -63,8 +63,8 @@ namespace Artemis.Core
         public override string ToString()
         {
             if (PredicateType == ProfileRightSideType.Dynamic)
-                return $"[Dynamic] {LeftPath} {Operator.Description} {RightPath}";
-            return $"[Static] {LeftPath} {Operator.Description} {RightStaticValue}";
+                return $"[Dynamic] {LeftPath} {Operator?.Description} {RightPath}";
+            return $"[Static] {LeftPath} {Operator?.Description} {RightStaticValue}";
         }
 
         #region IDisposable
@@ -138,7 +138,14 @@ namespace Artemis.Core
                 }
         }
 
+        /// <summary>
+        ///     Initializes the left path of this condition predicate
+        /// </summary>
         protected abstract void InitializeLeftPath();
+
+        /// <summary>
+        ///     Initializes the right path of this condition predicate
+        /// </summary>
         protected abstract void InitializeRightPath();
 
         #endregion
@@ -315,7 +322,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             return false;
         }
@@ -344,7 +351,7 @@ namespace Artemis.Core
 
             Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue);
 
-            if (Operator != null)
+            if (Operator?.Plugin != null)
             {
                 Entity.OperatorPluginGuid = Operator.Plugin.Guid;
                 Entity.OperatorType = Operator.GetType().Name;
@@ -358,7 +365,7 @@ namespace Artemis.Core
         private void ConditionOperatorStoreOnConditionOperatorAdded(object? sender, ConditionOperatorStoreEvent e)
         {
             BaseConditionOperator conditionOperator = e.Registration.ConditionOperator;
-            if (Entity.OperatorPluginGuid == conditionOperator.Plugin.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
+            if (Entity.OperatorPluginGuid == conditionOperator.Plugin!.Guid && Entity.OperatorType == conditionOperator.GetType().Name)
                 UpdateOperator(conditionOperator);
         }
 

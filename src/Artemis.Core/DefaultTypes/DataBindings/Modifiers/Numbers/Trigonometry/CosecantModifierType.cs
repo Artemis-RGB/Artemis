@@ -5,7 +5,7 @@ namespace Artemis.Core
     internal class CosecantModifierType : DataBindingModifierType<double>
     {
         public override string Name => "Cosecant";
-        public override string Icon => null;
+        public override string? Icon => null;
         public override string Category => "Trigonometry";
         public override string Description => "Treats the input as an angle and calculates the cosecant";
 

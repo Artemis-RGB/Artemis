@@ -2,7 +2,7 @@
 
 namespace Artemis.Core
 {
-    public static class DirectoryInfoExtensions
+    internal static class DirectoryInfoExtensions
     {
         public static void CopyFilesRecursively(this DirectoryInfo source, DirectoryInfo target)
         {

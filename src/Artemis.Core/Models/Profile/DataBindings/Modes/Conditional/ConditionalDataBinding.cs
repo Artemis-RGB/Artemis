@@ -21,12 +21,12 @@ namespace Artemis.Core
             Load();
         }
 
-        internal ConditionalDataBindingEntity Entity { get; }
-
         /// <summary>
         ///     Gets a list of conditions applied to this data binding
         /// </summary>
         public ReadOnlyCollection<DataBindingCondition<TLayerProperty, TProperty>> Conditions => _conditions.AsReadOnly();
+
+        internal ConditionalDataBindingEntity Entity { get; }
 
         /// <inheritdoc />
         public DataBinding<TLayerProperty, TProperty> DataBinding { get; }
@@ -37,9 +37,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
-            DataBindingCondition<TLayerProperty, TProperty> condition = Conditions.FirstOrDefault(c => c.Evaluate());
-            if (condition != null)
-                Console.WriteLine();
+            DataBindingCondition<TLayerProperty, TProperty>? condition = Conditions.FirstOrDefault(c => c.Evaluate());
             return condition == null ? baseValue : condition.Value;
         }
 
@@ -75,7 +73,7 @@ namespace Artemis.Core
 
             return condition;
         }
-        
+
         /// <summary>
         ///     Removes a condition from the conditional data binding's <see cref="Conditions" /> collection and disposes it
         /// </summary>
@@ -111,7 +109,7 @@ namespace Artemis.Core
         }
 
         #endregion
-        
+
         #region Storage
 
         /// <inheritdoc />
@@ -138,8 +136,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when a condition is added or removed
         /// </summary>
-        public event EventHandler ConditionsUpdated;
+        public event EventHandler? ConditionsUpdated;
 
+        /// <summary>
+        ///     Invokes the <see cref="ConditionsUpdated" /> event
+        /// </summary>
         protected virtual void OnConditionsUpdated()
         {
             ConditionsUpdated?.Invoke(this, EventArgs.Empty);

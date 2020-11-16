@@ -42,7 +42,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DirectDataBinding");
 
-            if (SourcePath == null || !SourcePath.IsValid)
+            if (SourcePath == null || !SourcePath.IsValid || DataBinding.Converter == null)
                 return baseValue;
 
             object? dataBindingValue = SourcePath.GetValue();
@@ -188,6 +188,9 @@ namespace Artemis.Core
         /// </summary>
         public event EventHandler? ModifiersUpdated;
 
+        /// <summary>
+        ///     Invokes the <see cref="ModifiersUpdated" /> event
+        /// </summary>
         protected virtual void OnModifiersUpdated()
         {
             ModifiersUpdated?.Invoke(this, EventArgs.Empty);

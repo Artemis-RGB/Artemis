@@ -17,10 +17,10 @@ namespace Artemis.Core
     public sealed class Layer : RenderProfileElement
     {
         private LayerGeneralProperties _general;
-        private BaseLayerBrush _layerBrush;
-        private LayerShape _layerShape;
-        private List<ArtemisLed> _leds;
+        private BaseLayerBrush? _layerBrush;
         private LayerTransformProperties _transform;
+        private LayerShape? _layerShape;
+        private List<ArtemisLed> _leds;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
@@ -37,12 +37,12 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            General = new LayerGeneralProperties();
-            Transform = new LayerTransformProperties();
+            _general = new LayerGeneralProperties();
+            _transform = new LayerTransformProperties();
 
-            _layerEffects = new List<BaseLayerEffect>();
+            LayerEffectsList = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
-            _expandedPropertyGroups = new List<string>();
+            ExpandedPropertyGroups = new List<string>();
 
             Initialize();
             Parent.AddChild(this);
@@ -55,12 +55,12 @@ namespace Artemis.Core
 
             Profile = profile;
             Parent = parent;
-            General = new LayerGeneralProperties();
-            Transform = new LayerTransformProperties();
-   
-            _layerEffects = new List<BaseLayerEffect>();
+            _general = new LayerGeneralProperties();
+            _transform = new LayerTransformProperties();
+
+            LayerEffectsList = new List<BaseLayerEffect>();
             _leds = new List<ArtemisLed>();
-            _expandedPropertyGroups = new List<string>();
+            ExpandedPropertyGroups = new List<string>();
 
             Load();
             Initialize();
@@ -74,7 +74,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
         /// </summary>
-        public LayerShape LayerShape
+        public LayerShape? LayerShape
         {
             get => _layerShape;
             set
@@ -85,24 +85,30 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        /// Gets the general properties of the layer
+        /// </summary>
         [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
         public LayerGeneralProperties General
         {
             get => _general;
-            set => SetAndNotify(ref _general, value);
+            private set => SetAndNotify(ref _general, value);
         }
 
+        /// <summary>
+        /// Gets the transform properties of the layer
+        /// </summary>
         [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
         public LayerTransformProperties Transform
         {
             get => _transform;
-            set => SetAndNotify(ref _transform, value);
+            private set => SetAndNotify(ref _transform, value);
         }
 
         /// <summary>
         ///     The brush that will fill the <see cref="LayerShape" />.
         /// </summary>
-        public BaseLayerBrush LayerBrush
+        public BaseLayerBrush? LayerBrush
         {
             get => _layerBrush;
             internal set => SetAndNotify(ref _layerBrush, value);
@@ -111,20 +117,24 @@ namespace Artemis.Core
         internal LayerEntity LayerEntity { get; set; }
 
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
-        
+
         /// <summary>
         ///     Creates a deep copy of the layer
         /// </summary>
         /// <returns>The newly created copy</returns>
         public Layer CreateCopy()
         {
+            if (Parent == null)
+                throw new ArtemisCoreException("Cannot create a copy of a layer without a parent");
+
             JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
             LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(JsonConvert.SerializeObject(LayerEntity, settings), settings)!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
 
             Layer copy = new Layer(Profile, Parent, entityCopy);
-            copy.ChangeLayerBrush(LayerBrush.Descriptor);
+            if (LayerBrush?.Descriptor != null)
+                copy.ChangeLayerBrush(LayerBrush.Descriptor);
             copy.AddLeds(Leds);
 
             Parent.AddChild(copy, Order + 1);
@@ -162,8 +172,8 @@ namespace Artemis.Core
 
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
-            _general?.Dispose();
-            _transform?.Dispose();
+            _general.Dispose();
+            _transform.Dispose();
             Renderer.Dispose();
 
             base.Dispose(disposing);
@@ -177,14 +187,14 @@ namespace Artemis.Core
             LayerBrushStore.LayerBrushRemoved += LayerBrushStoreOnLayerBrushRemoved;
 
             // Layers have two hardcoded property groups, instantiate them
-            Attribute? generalAttribute = Attribute.GetCustomAttribute(
-                GetType().GetProperty(nameof(General)),
+            Attribute generalAttribute = Attribute.GetCustomAttribute(
+                GetType().GetProperty(nameof(General))!,
                 typeof(PropertyGroupDescriptionAttribute)
-            );
-            Attribute? transformAttribute = Attribute.GetCustomAttribute(
-                GetType().GetProperty(nameof(Transform)),
+            )!;
+            Attribute transformAttribute = Attribute.GetCustomAttribute(
+                GetType().GetProperty(nameof(Transform))!,
                 typeof(PropertyGroupDescriptionAttribute)
-            );
+            )!;
             General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
             General.Initialize(this, "General.", Constants.CorePluginFeature);
             Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
@@ -204,7 +214,7 @@ namespace Artemis.Core
             Enabled = LayerEntity.Enabled;
             Order = LayerEntity.Order;
 
-            _expandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
+            ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
             LoadRenderElement();
         }
 
@@ -221,11 +231,11 @@ namespace Artemis.Core
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
             LayerEntity.ExpandedPropertyGroups.Clear();
-            LayerEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
+            LayerEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             General.ApplyToEntity();
             Transform.ApplyToEntity();
-            LayerBrush?.BaseProperties.ApplyToEntity();
+            LayerBrush?.BaseProperties?.ApplyToEntity();
 
             // LEDs
             LayerEntity.Leds.Clear();
@@ -246,7 +256,7 @@ namespace Artemis.Core
 
         #region Shape management
 
-        private void ShapeTypeOnCurrentValueSet(object sender, EventArgs e)
+        private void ShapeTypeOnCurrentValueSet(object? sender, EventArgs e)
         {
             ApplyShapeType();
         }
@@ -316,8 +326,11 @@ namespace Artemis.Core
         {
             General.Update(timeline);
             Transform.Update(timeline);
-            LayerBrush.BaseProperties?.Update(timeline);
-            LayerBrush.Update(timeline.Delta.TotalSeconds);
+            if (LayerBrush != null)
+            {
+                LayerBrush.BaseProperties?.Update(timeline);
+                LayerBrush.Update(timeline.Delta.TotalSeconds);
+            }
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
             {
@@ -328,6 +341,9 @@ namespace Artemis.Core
 
         private void RenderTimeline(Timeline timeline, SKCanvas canvas)
         {
+            if (Path == null || LayerBrush == null)
+                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+
             if (timeline.IsFinished)
                 return;
 
@@ -392,6 +408,11 @@ namespace Artemis.Core
 
         private void DelegateRendering(SKRect bounds)
         {
+            if (LayerBrush == null)
+                throw new ArtemisCoreException("The layer is not yet ready for rendering");
+            if (Renderer.Canvas == null || Renderer.Paint == null)
+                throw new ArtemisCoreException("Failed to open layer render context");
+
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                 baseLayerEffect.PreProcess(Renderer.Canvas, bounds, Renderer.Paint);
 
@@ -459,11 +480,17 @@ namespace Artemis.Core
         ///     If true, treats the layer as if it is located at 0,0 instead of its actual position on the
         ///     surface
         /// </param>
+        /// <param name="includeTranslation">Whether translation should be included</param>
+        /// <param name="includeScale">Whether the scale should be included</param>
+        /// <param name="includeRotation">Whether the rotation should be included</param>
         /// <returns>The transformation matrix containing the current transformation settings</returns>
         public SKMatrix GetTransformMatrix(bool zeroBased, bool includeTranslation, bool includeScale, bool includeRotation)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
+
+            if (Path == null)
+                return SKMatrix.Empty;
 
             SKSize sizeProperty = Transform.Scale.CurrentValue;
             float rotationProperty = Transform.Rotation.CurrentValue;
@@ -478,25 +505,23 @@ namespace Artemis.Core
             SKMatrix transform = SKMatrix.Empty;
 
             if (includeTranslation)
-            {
                 // transform is always SKMatrix.Empty here...
-                transform = SKMatrix.MakeTranslation(x, y);
-            }
+                transform = SKMatrix.CreateTranslation(x, y);
 
             if (includeScale)
             {
                 if (transform == SKMatrix.Empty)
-                    transform = SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
+                    transform = SKMatrix.CreateScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y);
                 else
-                    transform = transform.PostConcat(SKMatrix.MakeScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
+                    transform = transform.PostConcat(SKMatrix.CreateScale(sizeProperty.Width / 100f, sizeProperty.Height / 100f, anchorPosition.X, anchorPosition.Y));
             }
 
             if (includeRotation)
             {
                 if (transform == SKMatrix.Empty)
-                    transform = SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
+                    transform = SKMatrix.CreateRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y);
                 else
-                    transform = transform.PostConcat(SKMatrix.MakeRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
+                    transform = transform.PostConcat(SKMatrix.CreateRotationDegrees(rotationProperty, anchorPosition.X, anchorPosition.Y));
             }
 
             return transform;
@@ -568,8 +593,8 @@ namespace Artemis.Core
             List<ArtemisLed> availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();
             foreach (LedEntity ledEntity in LayerEntity.Leds)
             {
-                ArtemisLed match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
-                                                                     a.RgbLed.Id.ToString() == ledEntity.LedName);
+                ArtemisLed? match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
+                                                                      a.RgbLed.Id.ToString() == ledEntity.LedName);
                 if (match != null)
                     leds.Add(match);
             }
@@ -598,7 +623,7 @@ namespace Artemis.Core
             }
 
             // Ensure the brush reference matches the brush
-            LayerBrushReference current = General.BrushReference.BaseValue;
+            LayerBrushReference? current = General.BrushReference.BaseValue;
             if (!descriptor.MatchesLayerBrushReference(current))
                 General.BrushReference.BaseValue = new LayerBrushReference(descriptor);
 
@@ -620,11 +645,13 @@ namespace Artemis.Core
 
         internal void ActivateLayerBrush()
         {
-            LayerBrushReference current = General.BrushReference.CurrentValue;
+            LayerBrushReference? current = General.BrushReference.CurrentValue;
             if (current == null)
                 return;
 
-            LayerBrushDescriptor? descriptor = LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor;
+            LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null 
+                ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
+                : null;
             descriptor?.CreateInstance(this);
 
             OnLayerBrushUpdated();
@@ -646,19 +673,19 @@ namespace Artemis.Core
 
         #region Event handlers
 
-        private void LayerBrushStoreOnLayerBrushRemoved(object sender, LayerBrushStoreEvent e)
+        private void LayerBrushStoreOnLayerBrushRemoved(object? sender, LayerBrushStoreEvent e)
         {
             if (LayerBrush?.Descriptor == e.Registration.LayerBrushDescriptor)
                 DeactivateLayerBrush();
         }
 
-        private void LayerBrushStoreOnLayerBrushAdded(object sender, LayerBrushStoreEvent e)
+        private void LayerBrushStoreOnLayerBrushAdded(object? sender, LayerBrushStoreEvent e)
         {
-            if (LayerBrush != null || General.BrushReference?.CurrentValue == null)
+            if (LayerBrush != null || !General.PropertiesInitialized)
                 return;
 
-            LayerBrushReference current = General.BrushReference.CurrentValue;
-            if (e.Registration.PluginFeature.Id == current.LayerBrushProviderId &&
+            LayerBrushReference? current = General.BrushReference.CurrentValue;
+            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId &&
                 e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
                 ActivateLayerBrush();
         }
@@ -667,8 +694,15 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler RenderPropertiesUpdated;
-        public event EventHandler LayerBrushUpdated;
+        /// <summary>
+        ///     Occurs when a property affecting the rendering properties of this layer has been updated
+        /// </summary>
+        public event EventHandler? RenderPropertiesUpdated;
+
+        /// <summary>
+        ///     Occurs when the layer brush of this layer has been updated
+        /// </summary>
+        public event EventHandler? LayerBrushUpdated;
 
         private void OnRenderPropertiesUpdated()
         {
@@ -683,15 +717,35 @@ namespace Artemis.Core
         #endregion
     }
 
+    /// <summary>
+    ///     Represents a type of layer shape
+    /// </summary>
     public enum LayerShapeType
     {
+        /// <summary>
+        ///     A circular layer shape
+        /// </summary>
         Ellipse,
+
+        /// <summary>
+        ///     A rectangular layer shape
+        /// </summary>
         Rectangle
     }
 
+    /// <summary>
+    ///     Represents a layer transform mode
+    /// </summary>
     public enum LayerTransformMode
     {
+        /// <summary>
+        ///     Normal transformation
+        /// </summary>
         Normal,
+
+        /// <summary>
+        ///     Transforms only a clip
+        /// </summary>
         Clip
     }
 }

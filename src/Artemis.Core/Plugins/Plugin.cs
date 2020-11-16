@@ -160,6 +160,7 @@ namespace Artemis.Core
             }
         }
 
+        /// <inheritdoc />
         public void Dispose()
         {
             foreach (PluginFeature feature in Features)

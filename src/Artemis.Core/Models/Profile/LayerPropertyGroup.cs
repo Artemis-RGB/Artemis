@@ -11,6 +11,13 @@ using Humanizer;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a property group on a layer
+    ///     <para>
+    ///         Note: You cannot initialize property groups yourself. If properly placed and annotated, the Artemis core will
+    ///         initialize these for you.
+    ///     </para>
+    /// </summary>
     public abstract class LayerPropertyGroup : IDisposable
     {
         private readonly List<ILayerProperty> _layerProperties;
@@ -18,6 +25,9 @@ namespace Artemis.Core
         private bool _disposed;
         private bool _isHidden;
 
+        /// <summary>
+        ///     A base constructor for a <see cref="LayerPropertyGroup" />
+        /// </summary>
         protected LayerPropertyGroup()
         {
             _layerProperties = new List<ILayerProperty>();
@@ -28,7 +38,7 @@ namespace Artemis.Core
         ///     Gets the description of this group
         /// </summary>
         public PropertyGroupDescriptionAttribute GroupDescription { get; internal set; }
-        
+
         /// <summary>
         ///     Gets the plugin feature this group is associated with
         /// </summary>
@@ -86,22 +96,6 @@ namespace Artemis.Core
         ///     A list of al child groups in this group
         /// </summary>
         public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            _disposed = true;
-            DisableProperties();
-
-            foreach (ILayerProperty layerProperty in _layerProperties)
-                layerProperty.Dispose();
-            foreach (LayerPropertyGroup layerPropertyGroup in _layerPropertyGroups)
-                layerPropertyGroup.Dispose();
-        }
-
-        #endregion
 
         /// <summary>
         ///     Recursively gets all layer properties on this group and any subgroups
@@ -165,7 +159,9 @@ namespace Artemis.Core
             {
                 Attribute? propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 if (propertyDescription != null)
+                {
                     InitializeProperty(propertyInfo, (PropertyDescriptionAttribute) propertyDescription);
+                }
                 else
                 {
                     Attribute? propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
@@ -264,6 +260,22 @@ namespace Artemis.Core
 
             return entity;
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+            DisableProperties();
+
+            foreach (ILayerProperty layerProperty in _layerProperties)
+                layerProperty.Dispose();
+            foreach (LayerPropertyGroup layerPropertyGroup in _layerPropertyGroups)
+                layerPropertyGroup.Dispose();
+        }
+
+        #endregion
 
         #region Events
 

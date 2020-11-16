@@ -9,8 +9,8 @@ namespace Artemis.Core.LayerBrushes
     public abstract class BaseLayerBrush : CorePropertyChanged, IDisposable
     {
         private LayerBrushType _brushType;
-        private ILayerBrushConfigurationDialog _configurationDialog;
-        private LayerBrushDescriptor _descriptor;
+        private ILayerBrushConfigurationDialog? _configurationDialog;
+        private LayerBrushDescriptor? _descriptor;
         private Layer _layer;
         private bool _supportsTransformation = true;
 
@@ -26,7 +26,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Gets the descriptor of this brush
         /// </summary>
-        public LayerBrushDescriptor Descriptor
+        public LayerBrushDescriptor? Descriptor
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);
@@ -35,7 +35,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Gets or sets a configuration dialog complementing the regular properties
         /// </summary>
-        public ILayerBrushConfigurationDialog ConfigurationDialog
+        public ILayerBrushConfigurationDialog? ConfigurationDialog
         {
             get => _configurationDialog;
             protected set => SetAndNotify(ref _configurationDialog, value);
@@ -53,12 +53,12 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Gets the ID of the <see cref="LayerBrushProvider" /> that provided this effect
         /// </summary>
-        public string ProviderId => Descriptor?.Provider?.Id;
+        public string? ProviderId => Descriptor?.Provider.Id;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
-        public virtual LayerPropertyGroup BaseProperties => null;
+        public virtual LayerPropertyGroup? BaseProperties => null;
 
         /// <summary>
         ///     Gets or sets whether the brush supports transformations
@@ -70,7 +70,7 @@ namespace Artemis.Core.LayerBrushes
             protected set
             {
                 if (value && BrushType == LayerBrushType.RgbNet)
-                    throw new ArtemisPluginFeatureException(Descriptor.Provider, "An RGB.NET brush cannot support transformation");
+                    throw new ArtemisPluginFeatureException(Descriptor?.Provider!, "An RGB.NET brush cannot support transformation");
                 _supportsTransformation = value;
             }
         }
@@ -105,7 +105,7 @@ namespace Artemis.Core.LayerBrushes
         public void Dispose()
         {
             DisableLayerBrush();
-            BaseProperties.Dispose();
+            BaseProperties?.Dispose();
 
             Dispose(true);
             GC.SuppressFinalize(this);

@@ -53,7 +53,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("This data model condition list predicate does not belong to a data model condition list");
         }
 
-        private object? GetListPathValue(DataModelPath path, object target)
+        private object? GetListPathValue(DataModelPath path, object? target)
         {
             if (!(path.Target is ListPredicateWrapperDataModel wrapper))
                 throw new ArtemisCoreException("Data model condition list predicate has a path with an invalid target");
@@ -64,6 +64,7 @@ namespace Artemis.Core
 
         #region Initialization
 
+        /// <inheritdoc />
         protected override void InitializeLeftPath()
         {
             if (Entity.LeftPath != null)
@@ -72,6 +73,7 @@ namespace Artemis.Core
                     : null;
         }
 
+        /// <inheritdoc />
         protected override void InitializeRightPath()
         {
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)
@@ -121,7 +123,7 @@ namespace Artemis.Core
             return false;
         }
 
-        internal override bool EvaluateObject(object target)
+        internal override bool EvaluateObject(object? target)
         {
             if (Operator == null || LeftPath == null || !LeftPath.IsValid)
                 return false;

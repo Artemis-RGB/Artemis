@@ -202,8 +202,8 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.Plugin != plugin)
-                        throw new ArtemisPluginException($"Cannot register property editor for type {supportedType.Name} because an editor was already " +
-                                                         $"registered by {existing.Plugin}");
+                        throw new ArtemisSharedUIException($"Cannot register property editor for type {supportedType.Name} because an editor was already " +
+                                                           $"registered by {existing.Plugin}");
                     return existing;
                 }
 

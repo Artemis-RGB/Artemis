@@ -118,7 +118,7 @@ namespace Artemis.UI.Behaviors
             // Recurse into children
             if (recurse)
             {
-                foreach (object? subitem in item.Items)
+                foreach (object subitem in item.Items)
                 {
                     TreeViewItem tvi = item.ItemContainerGenerator.ContainerFromItem(subitem) as TreeViewItem;
                     if (tvi != null)
@@ -131,7 +131,7 @@ namespace Artemis.UI.Behaviors
         private void UpdateAllTreeViewItems()
         {
             TreeView treeView = AssociatedObject;
-            foreach (object? item in treeView.Items)
+            foreach (object item in treeView.Items)
             {
                 TreeViewItem tvi = treeView.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
                 if (tvi != null)

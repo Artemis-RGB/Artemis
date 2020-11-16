@@ -46,12 +46,14 @@ namespace Artemis.Core
 
         #region Initialization
 
+        /// <inheritdoc />
         protected override void InitializeLeftPath()
         {
             if (Entity.LeftPath != null)
                 LeftPath = new DataModelPath(null, Entity.LeftPath);
         }
 
+        /// <inheritdoc />
         protected override void InitializeRightPath()
         {
             if (PredicateType == ProfileRightSideType.Dynamic && Entity.RightPath != null)

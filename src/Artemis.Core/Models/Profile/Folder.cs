@@ -30,8 +30,8 @@ namespace Artemis.Core
             Name = name;
             Enabled = true;
 
-            _layerEffects = new List<BaseLayerEffect>();
-            _expandedPropertyGroups = new List<string>();
+            LayerEffectsList = new List<BaseLayerEffect>();
+            ExpandedPropertyGroups = new List<string>();
 
             Parent.AddChild(this);
         }
@@ -47,8 +47,8 @@ namespace Artemis.Core
             Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
 
-            _layerEffects = new List<BaseLayerEffect>();
-            _expandedPropertyGroups = new List<string>();
+            LayerEffectsList = new List<BaseLayerEffect>();
+            ExpandedPropertyGroups = new List<string>();
 
             Load();
         }
@@ -57,11 +57,6 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether this folder is at the root of the profile tree
         /// </summary>
         public bool IsRootFolder => Parent == Profile;
-
-        /// <summary>
-        ///     Gets the longest timeline of all this folders children
-        /// </summary>
-        public Timeline LongestChildTimeline { get; private set; }
 
         internal FolderEntity FolderEntity { get; set; }
 
@@ -78,6 +73,7 @@ namespace Artemis.Core
             return result;
         }
 
+        /// <inheritdoc />
         public override void Update(double deltaTime)
         {
             if (Disposed)
@@ -129,6 +125,9 @@ namespace Artemis.Core
         /// <returns>The newly created copy</returns>
         public Folder CreateCopy()
         {
+            if (Parent == null)
+                throw new ArtemisCoreException("Cannot create a copy of a folder without a parent");
+
             JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
             FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity, settings), settings)!;
             entityCopy.Id = Guid.NewGuid();
@@ -139,12 +138,13 @@ namespace Artemis.Core
             return new Folder(Profile, Parent, entityCopy);
         }
 
+        /// <inheritdoc />
         public override string ToString()
         {
             return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
-        public void CalculateRenderProperties()
+        internal void CalculateRenderProperties()
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
@@ -163,57 +163,9 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            Disposed = true;
-
-            foreach (ProfileElement profileElement in Children)
-                profileElement.Dispose();
-            Renderer.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        internal override void Load()
-        {
-            _expandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
-
-            // Load child folders
-            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Folder(Profile, this, childFolder));
-            // Load child layers
-            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Layer(Profile, this, childLayer));
-
-            // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
-            for (int index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index + 1;
-
-            LoadRenderElement();
-        }
-
-        internal override void Save()
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Folder");
-
-            FolderEntity.Id = EntityId;
-            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
-
-            FolderEntity.Order = Order;
-            FolderEntity.Name = Name;
-            FolderEntity.Enabled = Enabled;
-
-            FolderEntity.ProfileId = Profile.EntityId;
-            FolderEntity.ExpandedPropertyGroups.Clear();
-            FolderEntity.ExpandedPropertyGroups.AddRange(_expandedPropertyGroups);
-
-            SaveRenderElement();
-        }
-
         #region Rendering
 
+        /// <inheritdoc />
         public override void Render(SKCanvas canvas)
         {
             if (Disposed)
@@ -278,9 +230,62 @@ namespace Artemis.Core
 
         #endregion
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            Disposed = true;
+
+            foreach (ProfileElement profileElement in Children)
+                profileElement.Dispose();
+            Renderer.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        internal override void Load()
+        {
+            ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
+
+            // Load child folders
+            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Folder(Profile, this, childFolder));
+            // Load child layers
+            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Layer(Profile, this, childLayer));
+
+            // Ensure order integrity, should be unnecessary but no one is perfect specially me
+            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            for (int index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index + 1;
+
+            LoadRenderElement();
+        }
+
+        internal override void Save()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            FolderEntity.Id = EntityId;
+            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
+
+            FolderEntity.Order = Order;
+            FolderEntity.Name = Name;
+            FolderEntity.Enabled = Enabled;
+
+            FolderEntity.ProfileId = Profile.EntityId;
+            FolderEntity.ExpandedPropertyGroups.Clear();
+            FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
+
+            SaveRenderElement();
+        }
+
         #region Events
 
-        public event EventHandler RenderPropertiesUpdated;
+        /// <summary>
+        ///     Occurs when a property affecting the rendering properties of this folder has been updated
+        /// </summary>
+        public event EventHandler? RenderPropertiesUpdated;
 
         private void OnRenderPropertiesUpdated()
         {

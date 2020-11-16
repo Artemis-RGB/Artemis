@@ -318,18 +318,24 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs whenever the path becomes invalid
         /// </summary>
-        public event EventHandler PathInvalidated;
+        public event EventHandler? PathInvalidated;
 
         /// <summary>
         ///     Occurs whenever the path becomes valid
         /// </summary>
-        public event EventHandler PathValidated;
+        public event EventHandler? PathValidated;
 
+        /// <summary>
+        ///     Invokes the <see cref="PathInvalidated" /> event
+        /// </summary>
         protected virtual void OnPathValidated()
         {
             PathValidated?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="PathValidated" /> event
+        /// </summary>
         protected virtual void OnPathInvalidated()
         {
             PathInvalidated?.Invoke(this, EventArgs.Empty);

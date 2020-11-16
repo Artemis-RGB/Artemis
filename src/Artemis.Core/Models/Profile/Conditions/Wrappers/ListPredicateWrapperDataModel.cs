@@ -19,6 +19,9 @@ namespace Artemis.Core
             Feature = Constants.CorePluginFeature;
         }
 
+        /// <summary>
+        ///     Gets or sets the value of this list as an object
+        /// </summary>
         [DataModelIgnore]
         public object? UntypedValue { get; set; }
 

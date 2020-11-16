@@ -14,15 +14,15 @@
         /// <inheritdoc />
         protected override void UpdateCurrentValue(float keyframeProgress, float keyframeProgressEased)
         {
-            float startDiff = NextKeyframe.Value.Start - CurrentKeyframe.Value.Start;
-            float endDiff = NextKeyframe.Value.End - CurrentKeyframe.Value.End;
+            float startDiff = NextKeyframe!.Value.Start - CurrentKeyframe!.Value.Start;
+            float endDiff = NextKeyframe!.Value.End - CurrentKeyframe!.Value.End;
             CurrentValue = new FloatRange(
-                (int) (CurrentKeyframe.Value.Start + startDiff * keyframeProgressEased),
-                (int) (CurrentKeyframe.Value.End + endDiff * keyframeProgressEased)
+                (int) (CurrentKeyframe!.Value.Start + startDiff * keyframeProgressEased),
+                (int) (CurrentKeyframe!.Value.End + endDiff * keyframeProgressEased)
             );
         }
 
-        private void OnCurrentValueSet(object sender, LayerPropertyEventArgs<FloatRange> e)
+        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs<FloatRange> e)
         {
             // Don't allow the int range to be null
             BaseValue ??= DefaultValue ?? new FloatRange(0, 0);

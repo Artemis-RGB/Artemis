@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Windows;
 
 namespace Artemis.Core
 {
@@ -42,7 +41,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Opens the provided URL in the default web browser
+        ///     Opens the provided URL in the default web browser
         /// </summary>
         /// <param name="url">The URL to open</param>
         /// <returns>The process created to open the URL</returns>
@@ -67,7 +66,10 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler ShutdownRequested;
+        /// <summary>
+        ///     Occurs when the core has requested an application shutdown
+        /// </summary>
+        public static event EventHandler? ShutdownRequested;
 
         private static void OnShutdownRequested()
         {
@@ -75,7 +77,5 @@ namespace Artemis.Core
         }
 
         #endregion
-
-
     }
 }

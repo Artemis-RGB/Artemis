@@ -14,7 +14,14 @@ namespace Artemis.Core
             RgbSurface = rgbSurface;
         }
 
+        /// <summary>
+        ///     Gets the bitmap brush used to render this frame
+        /// </summary>
         public BitmapBrush BitmapBrush { get; }
+
+        /// <summary>
+        ///     Gets the RGB surface used to render this frame
+        /// </summary>
         public RGBSurface RgbSurface { get; }
     }
 }
