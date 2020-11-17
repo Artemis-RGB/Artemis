@@ -58,8 +58,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler<LayerBrushStoreEvent> LayerBrushAdded;
-        public static event EventHandler<LayerBrushStoreEvent> LayerBrushRemoved;
+        public static event EventHandler<LayerBrushStoreEvent>? LayerBrushAdded;
+        public static event EventHandler<LayerBrushStoreEvent>? LayerBrushRemoved;
 
         private static void OnLayerBrushAdded(LayerBrushStoreEvent e)
         {

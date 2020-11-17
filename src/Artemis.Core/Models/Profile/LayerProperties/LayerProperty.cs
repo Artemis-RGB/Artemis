@@ -25,7 +25,13 @@ namespace Artemis.Core
         /// </summary>
         protected LayerProperty()
         {
-            // Cant define generic types as nullable ¯\_(ツ)_/¯
+            // These are set right after construction to keep the constructor (and inherited constructs) clean
+            ProfileElement = null!;
+            LayerPropertyGroup = null!;
+            Path = null!;
+            Entity = null!;
+            PropertyDescription = null!;
+
             CurrentValue = default!;
             DefaultValue = default!;
 

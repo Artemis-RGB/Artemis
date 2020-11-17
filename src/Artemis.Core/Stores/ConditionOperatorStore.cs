@@ -10,6 +10,9 @@ namespace Artemis.Core
 
         public static ConditionOperatorRegistration Add(BaseConditionOperator conditionOperator)
         {
+            if (conditionOperator.Plugin == null)
+                throw new ArtemisCoreException("Cannot add a condition operator to the store that is not related to a plugin");
+
             ConditionOperatorRegistration registration;
             lock (Registrations)
             {
@@ -74,8 +77,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler<ConditionOperatorStoreEvent> ConditionOperatorAdded;
-        public static event EventHandler<ConditionOperatorStoreEvent> ConditionOperatorRemoved;
+        public static event EventHandler<ConditionOperatorStoreEvent>? ConditionOperatorAdded;
+        public static event EventHandler<ConditionOperatorStoreEvent>? ConditionOperatorRemoved;
 
         private static void OnConditionOperatorAdded(ConditionOperatorStoreEvent e)
         {

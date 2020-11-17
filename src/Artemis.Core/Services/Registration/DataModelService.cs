@@ -11,7 +11,7 @@ namespace Artemis.Core.Services
         public DataModelService(IPluginManagementService pluginManagementService)
         {
             // Add data models of already loaded plugins
-            foreach (Module module in pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled))
+            foreach (Module module in pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled && p.InternalDataModel != null))
                 AddModuleDataModel(module);
             foreach (BaseDataModelExpansion dataModelExpansion in pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
                 AddDataModelExpansionDataModel(dataModelExpansion);
@@ -40,9 +40,9 @@ namespace Artemis.Core.Services
             return DataModelStore.GetAll().Select(d => d.DataModel).ToList();
         }
 
-        public T GetDataModel<T>() where T : DataModel
+        public T? GetDataModel<T>() where T : DataModel
         {
-            return (T) DataModelStore.GetAll().FirstOrDefault(d => d.DataModel is T)?.DataModel;
+            return (T?) DataModelStore.GetAll().FirstOrDefault(d => d.DataModel is T)?.DataModel;
         }
 
         public DataModel? GetPluginDataModel(PluginFeature pluginFeature)
@@ -61,8 +61,7 @@ namespace Artemis.Core.Services
         private void AddModuleDataModel(Module module)
         {
             if (module.InternalDataModel == null)
-                return;
-
+                throw new ArtemisCoreException("Cannot add module data model that is not enabled");
             if (module.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginFeatureException(module, "Module overrides GetDataModelDescription but returned null");
 
@@ -72,6 +71,8 @@ namespace Artemis.Core.Services
 
         private void AddDataModelExpansionDataModel(BaseDataModelExpansion dataModelExpansion)
         {
+            if (dataModelExpansion.InternalDataModel == null)
+                throw new ArtemisCoreException("Cannot add data model expansion that is not enabled");
             if (dataModelExpansion.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginFeatureException(dataModelExpansion, "Data model expansion overrides GetDataModelDescription but returned null");
 

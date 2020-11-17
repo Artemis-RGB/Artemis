@@ -14,7 +14,7 @@ namespace Artemis.Core
     public class ArtemisDevice : CorePropertyChanged
     {
         private ReadOnlyCollection<ArtemisLed> _leds;
-        private SKPath _renderPath;
+        private SKPath? _renderPath;
         private SKRect _renderRectangle;
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface)
@@ -23,7 +23,7 @@ namespace Artemis.Core
             DeviceProvider = deviceProvider;
             Surface = surface;
             DeviceEntity = new DeviceEntity();
-            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
 
             Rotation = 0;
             Scale = 1;
@@ -39,7 +39,7 @@ namespace Artemis.Core
             DeviceProvider = deviceProvider;
             Surface = surface;
             DeviceEntity = deviceEntity;
-            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the path surrounding the device, sized to match the render scale
         /// </summary>
-        public SKPath RenderPath
+        public SKPath? RenderPath
         {
             get => _renderPath;
             private set => SetAndNotify(ref _renderPath, value);

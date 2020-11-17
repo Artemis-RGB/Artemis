@@ -23,7 +23,7 @@ namespace Artemis.Core.Services
     /// </summary>
     internal class CoreService : ICoreService
     {
-        internal static IKernel Kernel;
+        internal static IKernel Kernel = null!;
 
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
@@ -32,10 +32,10 @@ namespace Artemis.Core.Services
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
-        private List<BaseDataModelExpansion> _dataModelExpansions;
-        private List<Module> _modules;
+        private List<BaseDataModelExpansion> _dataModelExpansions = new List<BaseDataModelExpansion>();
+        private List<Module> _modules = new List<Module>();
 
-        // ReSharper disable once UnusedParameter.Local - Storage migration service is injected early to ensure it runs before anything else
+        // ReSharper disable UnusedParameter.Local - Storage migration and module service are injected early to ensure it runs before anything else
         public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
         {
@@ -60,10 +60,11 @@ namespace Artemis.Core.Services
             _pluginManagementService.PluginEnabled += (sender, args) => UpdatePluginCache();
             _pluginManagementService.PluginDisabled += (sender, args) => UpdatePluginCache();
         }
+        // ReSharper restore UnusedParameter.Local
 
         public TimeSpan FrameTime { get; private set; }
         public bool ModuleRenderingDisabled { get; set; }
-        public List<string> StartupArguments { get; set; }
+        public List<string>? StartupArguments { get; set; }
 
         public void Dispose()
         {
@@ -86,13 +87,10 @@ namespace Artemis.Core.Services
 
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
-            _pluginManagementService.LoadPlugins(StartupArguments.Contains("--ignore-plugin-lock"));
+            _pluginManagementService.LoadPlugins(StartupArguments != null && StartupArguments.Contains("--ignore-plugin-lock"));
 
             ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
-            if (surfaceConfig != null)
-                _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
-            else
-                _logger.Information("Initialized without an active surface entity");
+            _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
 
             PlayIntroAnimation();
             OnInitialized();
@@ -121,7 +119,7 @@ namespace Artemis.Core.Services
             FrameRendering += DrawOverlay;
 
             // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
-            TimeSpan introLength = intro.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length);
+            TimeSpan introLength = intro.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length)!;
             Task.Run(async () =>
             {
                 await Task.Delay(introLength.Add(TimeSpan.FromSeconds(1)));
@@ -217,14 +215,14 @@ namespace Artemis.Core.Services
             if (_rgbService.IsRenderPaused)
                 return;
 
-            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush, _rgbService.Surface));
+            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush!, _rgbService.Surface));
         }
 
         #region Events
 
-        public event EventHandler Initialized;
-        public event EventHandler<FrameRenderingEventArgs> FrameRendering;
-        public event EventHandler<FrameRenderedEventArgs> FrameRendered;
+        public event EventHandler? Initialized;
+        public event EventHandler<FrameRenderingEventArgs>? FrameRendering;
+        public event EventHandler<FrameRenderedEventArgs>? FrameRendered;
 
         private void OnInitialized()
         {

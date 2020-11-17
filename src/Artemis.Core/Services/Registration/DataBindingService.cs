@@ -34,7 +34,7 @@ namespace Artemis.Core.Services
             return DataBindingModifierTypeStore.GetForType(type, part).Select(r => r.DataBindingModifierType).ToList();
         }
 
-        public BaseDataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType)
+        public BaseDataBindingModifierType? GetModifierType(Guid modifierTypePluginGuid, string modifierType)
         {
             return DataBindingModifierTypeStore.Get(modifierTypePluginGuid, modifierType)?.DataBindingModifierType;
         }

@@ -36,6 +36,40 @@ namespace Artemis.Core.Services
         public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
         public JsonSerializerSettings ExportSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
+        public ProfileDescriptor? GetLastActiveProfile(ProfileModule module)
+        {
+            List<ProfileEntity> moduleProfiles = _profileRepository.GetByModuleId(module.Id);
+            if (!moduleProfiles.Any())
+                return CreateProfileDescriptor(module, "Default");
+
+            ProfileEntity? profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
+            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
+        }
+
+        private void SaveActiveProfile(ProfileModule module)
+        {
+            if (module.ActiveProfile == null)
+                return;
+
+            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
+            foreach (ProfileEntity profileEntity in profileEntities)
+            {
+                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
+                _profileRepository.Save(profileEntity);
+            }
+        }
+
+        /// <summary>
+        ///     Populates all missing LEDs on all currently active profiles
+        /// </summary>
+        /// <param name="surface"></param>
+        private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
+        {
+            List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
+            foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
+                profileModule.ActiveProfile?.PopulateLeds(surface); // Avoid race condition
+        }
+
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
         {
             List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
@@ -52,14 +86,14 @@ namespace Artemis.Core.Services
 
         public void ActivateLastProfile(ProfileModule profileModule)
         {
-            ProfileDescriptor activeProfile = GetLastActiveProfile(profileModule);
+            ProfileDescriptor? activeProfile = GetLastActiveProfile(profileModule);
             if (activeProfile != null)
                 ActivateProfile(activeProfile);
         }
 
         public async Task ActivateLastProfileAnimated(ProfileModule profileModule)
         {
-            ProfileDescriptor activeProfile = GetLastActiveProfile(profileModule);
+            ProfileDescriptor? activeProfile = GetLastActiveProfile(profileModule);
             if (activeProfile != null)
                 await ActivateProfileAnimated(activeProfile);
         }
@@ -196,7 +230,8 @@ namespace Artemis.Core.Services
                 string top = profile.UndoStack.Pop();
                 string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
                 profile.RedoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings)
+                                        ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
                 InstantiateProfile(profile);
@@ -220,7 +255,8 @@ namespace Artemis.Core.Services
                 string top = profile.RedoStack.Pop();
                 string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
                 profile.UndoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings);
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings) 
+                                        ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
                 InstantiateProfile(profile);
@@ -246,7 +282,9 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule)
         {
-            ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
+            ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
+            if (profileEntity == null)
+                throw new ArtemisCoreException("Failed to import profile but JSON.NET threw no error :(");
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             profileEntity.UpdateGuid(Guid.NewGuid());
@@ -254,40 +292,6 @@ namespace Artemis.Core.Services
 
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);
-        }
-
-        public ProfileDescriptor GetLastActiveProfile(ProfileModule module)
-        {
-            List<ProfileEntity> moduleProfiles = _profileRepository.GetByModuleId(module.Id);
-            if (!moduleProfiles.Any())
-                return CreateProfileDescriptor(module, "Default");
-
-            ProfileEntity profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
-        }
-
-        private void SaveActiveProfile(ProfileModule module)
-        {
-            if (module.ActiveProfile == null)
-                return;
-
-            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
-            foreach (ProfileEntity profileEntity in profileEntities)
-            {
-                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
-                _profileRepository.Save(profileEntity);
-            }
-        }
-
-        /// <summary>
-        ///     Populates all missing LEDs on all currently active profiles
-        /// </summary>
-        /// <param name="surface"></param>
-        private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
-        {
-            List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
-            foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                profileModule.ActiveProfile.PopulateLeds(surface);
         }
 
         #region Event handlers

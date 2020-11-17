@@ -11,7 +11,7 @@ namespace Artemis.Core.LayerEffects
     /// </summary>
     public class LayerEffectDescriptor
     {
-        internal LayerEffectDescriptor(string displayName, string description, string icon, Type layerEffectType, LayerEffectProvider provider)
+        internal LayerEffectDescriptor(string displayName, string description, string icon, Type? layerEffectType, LayerEffectProvider provider)
         {
             DisplayName = displayName;
             Description = description;
@@ -39,12 +39,12 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     The type of the layer effect
         /// </summary>
-        public Type LayerEffectType { get; }
+        public Type? LayerEffectType { get; }
 
         /// <summary>
         ///     The plugin that provided this <see cref="LayerEffectDescriptor" />
         /// </summary>
-        public LayerEffectProvider? Provider { get; }
+        public LayerEffectProvider Provider { get; }
 
         /// <summary>
         ///     Gets the GUID this descriptor is acting as a placeholder for. If null, this descriptor is not a placeholder
@@ -66,8 +66,8 @@ namespace Artemis.Core.LayerEffects
                 return;
             }
 
-            if (Provider == null)
-                throw new ArtemisCoreException("Cannot create an instance of a layer effect because this descriptor is not a placeholder but is still missing its provider");
+            if (LayerEffectType == null)
+                throw new ArtemisCoreException("Cannot create an instance of a layer effect because this descriptor is not a placeholder but is still missing its LayerEffectType");
 
             BaseLayerEffect effect = (BaseLayerEffect) Provider.Plugin.Kernel!.Get(LayerEffectType);
             effect.ProfileElement = renderElement;
@@ -85,7 +85,13 @@ namespace Artemis.Core.LayerEffects
 
         private void CreatePlaceHolderInstance(RenderProfileElement renderElement, LayerEffectEntity entity)
         {
-            PlaceholderLayerEffect effect = new PlaceholderLayerEffect(entity, PlaceholderFor) {ProfileElement = renderElement, Descriptor = this};
+            if (PlaceholderFor == null)
+                throw new ArtemisCoreException("Cannot create a placeholder instance using a layer effect descriptor that is not a placeholder for anything");
+            PlaceholderLayerEffect effect = new PlaceholderLayerEffect(entity, PlaceholderFor)
+            {
+                ProfileElement = renderElement,
+                Descriptor = this
+            };
             effect.Initialize();
             renderElement.ActivateLayerEffect(effect);
         }

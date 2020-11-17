@@ -11,7 +11,7 @@ namespace Artemis.Core
     public class TimedUpdateRegistration : IDisposable
     {
         private DateTime _lastEvent;
-        private Timer _timer;
+        private Timer? _timer;
         private bool _disposed;
         private readonly object _lock = new object();
 
@@ -53,12 +53,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the action that gets called each time the update event fires
         /// </summary>
-        public Action<double> Action { get; }
+        public Action<double>? Action { get; }
 
         /// <summary>
         ///     Gets the task that gets called each time the update event fires
         /// </summary>
-        public Func<double, Task> AsyncAction { get; }
+        public Func<double, Task>? AsyncAction { get; }
 
         /// <summary>
         ///     Starts calling the <see cref="Action" /> or <see cref="AsyncAction"/> at the configured <see cref="Interval" />

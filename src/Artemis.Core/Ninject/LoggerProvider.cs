@@ -22,7 +22,7 @@ namespace Artemis.Core.Ninject
 
         protected override ILogger CreateInstance(IContext context)
         {
-            Type requestingType = context.Request.ParentContext?.Plan?.Type;
+            Type? requestingType = context.Request.ParentContext?.Plan?.Type;
             if (requestingType != null)
                 return Logger.ForContext(requestingType);
             return Logger;

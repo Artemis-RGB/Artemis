@@ -10,11 +10,11 @@ namespace Artemis.Core
         {
             Type type = typeof(TSource);
 
-            MemberExpression member = propertyLambda.Body as MemberExpression;
+            MemberExpression? member = propertyLambda.Body as MemberExpression;
             if (member == null)
                 throw new ArgumentException(string.Format("Expression '{0}' refers to a method, not a property.", propertyLambda));
 
-            PropertyInfo propInfo = member.Member as PropertyInfo;
+            PropertyInfo? propInfo = member.Member as PropertyInfo;
             if (propInfo == null)
                 throw new ArgumentException(string.Format("Expression '{0}' refers to a field, not a property.", propertyLambda));
 

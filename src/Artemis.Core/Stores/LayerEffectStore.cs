@@ -51,14 +51,14 @@ namespace Artemis.Core
         {
             lock (Registrations)
             {
-                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == providerId && d.LayerEffectDescriptor.LayerEffectType.Name == typeName);
+                return Registrations.FirstOrDefault(d => d.PluginFeature.Id == providerId && d.LayerEffectDescriptor.LayerEffectType?.Name == typeName);
             }
         }
 
         #region Events
 
-        public static event EventHandler<LayerEffectStoreEvent> LayerEffectAdded;
-        public static event EventHandler<LayerEffectStoreEvent> LayerEffectRemoved;
+        public static event EventHandler<LayerEffectStoreEvent>? LayerEffectAdded;
+        public static event EventHandler<LayerEffectStoreEvent>? LayerEffectRemoved;
 
         private static void OnLayerEffectAdded(LayerEffectStoreEvent e)
         {

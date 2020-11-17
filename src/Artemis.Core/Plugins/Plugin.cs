@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -19,10 +20,11 @@ namespace Artemis.Core
 
         private bool _isEnabled;
 
-        internal Plugin(PluginInfo info, DirectoryInfo directory)
+        internal Plugin(PluginInfo info, DirectoryInfo directory, PluginEntity? pluginEntity)
         {
             Info = info;
             Directory = directory;
+            Entity = pluginEntity ?? new PluginEntity {Id = Guid, IsEnabled = true};
 
             _features = new List<PluginFeature>();
         }
@@ -41,6 +43,7 @@ namespace Artemis.Core
         ///     The plugins root directory
         /// </summary>
         public DirectoryInfo Directory { get; }
+
 
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
@@ -91,7 +94,8 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="path">The path to resolve</param>
         /// <returns>An absolute path pointing to the provided relative path</returns>
-        public string? ResolveRelativePath(string path)
+        [return: NotNullIfNotNull("path")]
+        public string? ResolveRelativePath(string? path)
         {
             return path == null ? null : Path.Combine(Directory.FullName, path);
         }

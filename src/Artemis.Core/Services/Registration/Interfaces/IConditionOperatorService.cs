@@ -32,6 +32,6 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="operatorPluginGuid">The operator's plugin GUID</param>
         /// <param name="operatorType">The type name of the operator</param>
-        BaseConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType);
+        BaseConditionOperator? GetConditionOperator(Guid operatorPluginGuid, string operatorType);
     }
 }

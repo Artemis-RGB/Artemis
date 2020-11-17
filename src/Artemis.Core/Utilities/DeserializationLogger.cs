@@ -6,7 +6,7 @@ namespace Artemis.Core
 {
     internal static class DeserializationLogger
     {
-        private static ILogger _logger;
+        private static ILogger? _logger;
 
         public static void Initialize(IKernel kernel)
         {
@@ -15,7 +15,7 @@ namespace Artemis.Core
 
         public static void LogPredicateDeserializationFailure(DataModelConditionPredicate dataModelConditionPredicate, JsonException exception)
         {
-            _logger.Warning(
+            _logger?.Warning(
                 exception,
                 "Failed to deserialize display condition predicate {left} {operator} {right}",
                 dataModelConditionPredicate.Entity.LeftPath?.Path,
@@ -26,7 +26,7 @@ namespace Artemis.Core
 
         public static void LogModifierDeserializationFailure(string modifierName, JsonSerializationException exception)
         {
-            _logger.Warning(exception, "Failed to deserialize static parameter for modifier {modifierName}", modifierName);
+            _logger?.Warning(exception, "Failed to deserialize static parameter for modifier {modifierName}", modifierName);
         }
     }
 }

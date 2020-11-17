@@ -149,9 +149,9 @@ namespace Artemis.Core.Services
             UpdateModulePriority(module, category, priority);
         }
 
-        public Module ActiveModuleOverride { get; private set; }
+        public Module? ActiveModuleOverride { get; private set; }
 
-        public async Task SetActiveModuleOverride(Module overrideModule)
+        public async Task SetActiveModuleOverride(Module? overrideModule)
         {
             try
             {

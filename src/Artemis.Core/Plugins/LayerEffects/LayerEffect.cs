@@ -8,7 +8,7 @@ namespace Artemis.Core.LayerEffects
     /// <typeparam name="T"></typeparam>
     public abstract class LayerEffect<T> : BaseLayerEffect where T : LayerPropertyGroup
     {
-        private T _properties;
+        private T _properties = null!;
 
         /// <summary>
         ///     Gets whether all properties on this effect are initialized

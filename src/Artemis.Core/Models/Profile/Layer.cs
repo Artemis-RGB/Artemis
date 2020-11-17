@@ -28,7 +28,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the layer</param>
         /// <param name="name">The name of the layer</param>
-        public Layer(ProfileElement parent, string name)
+        public Layer(ProfileElement parent, string name) : base(parent.Profile)
         {
             LayerEntity = new LayerEntity();
             EntityId = Guid.NewGuid();
@@ -39,16 +39,14 @@ namespace Artemis.Core
             Enabled = true;
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
-
-            LayerEffectsList = new List<BaseLayerEffect>();
+            
             _leds = new List<ArtemisLed>();
-            ExpandedPropertyGroups = new List<string>();
-
+            
             Initialize();
             Parent.AddChild(this);
         }
 
-        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity)
+        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent.Profile)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
@@ -57,10 +55,8 @@ namespace Artemis.Core
             Parent = parent;
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
-
-            LayerEffectsList = new List<BaseLayerEffect>();
+            
             _leds = new List<ArtemisLed>();
-            ExpandedPropertyGroups = new List<string>();
 
             Load();
             Initialize();
@@ -263,17 +259,12 @@ namespace Artemis.Core
 
         private void ApplyShapeType()
         {
-            switch (General.ShapeType.CurrentValue)
+            LayerShape = General.ShapeType.CurrentValue switch
             {
-                case LayerShapeType.Ellipse:
-                    LayerShape = new EllipseShape(this);
-                    break;
-                case LayerShapeType.Rectangle:
-                    LayerShape = new RectangleShape(this);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                LayerShapeType.Ellipse => new EllipseShape(this),
+                LayerShapeType.Rectangle => new RectangleShape(this),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         #endregion

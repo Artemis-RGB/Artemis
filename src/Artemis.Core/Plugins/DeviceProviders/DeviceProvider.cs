@@ -31,7 +31,7 @@ namespace Artemis.Core.DeviceProviders
         ///     A logger used by the device provider internally, ignore this
         /// </summary>
         [Inject]
-        public ILogger Logger { get; set; }
+        public ILogger? Logger { get; set; }
 
         /// <inheritdoc />
         public override void Disable()

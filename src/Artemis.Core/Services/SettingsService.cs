@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
 
         public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)
         {
-            return _pluginSettings.GetSetting(name, defaultValue);
+            return _pluginSettings.GetSetting(name, defaultValue!);
         }
     }
 

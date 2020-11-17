@@ -6,12 +6,11 @@ namespace Artemis.Core.Modules
     public class ModuleTab<T> : ModuleTab where T : IModuleViewModel
     {
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ModuleTab{T}" /> class
+        ///     Creates a new instance of the <see cref="ModuleTab{T}" /> class
         /// </summary>
         /// <param name="title">The title of the tab</param>
-        public ModuleTab(string title)
+        public ModuleTab(string title) : base(title)
         {
-            Title = title;
         }
 
         /// <inheritdoc />
@@ -24,9 +23,13 @@ namespace Artemis.Core.Modules
     public abstract class ModuleTab
     {
         /// <summary>
-        ///     The module this tab belongs to
+        ///     Creates a new instance of the <see cref="ModuleTab" /> class
         /// </summary>
-        internal Module Module { get; set; }
+        /// <param name="title">The title of the tab</param>
+        protected ModuleTab(string title)
+        {
+            Title = title;
+        }
 
         /// <summary>
         ///     The title of the tab

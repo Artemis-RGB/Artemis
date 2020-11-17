@@ -34,7 +34,7 @@ namespace Artemis.Core.Services
             return LayerBrushStore.GetAll().Select(r => r.LayerBrushDescriptor).ToList();
         }
 
-        public LayerBrushDescriptor GetDefaultLayerBrush()
+        public LayerBrushDescriptor? GetDefaultLayerBrush()
         {
             PluginSetting<LayerBrushReference> defaultReference = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
@@ -42,6 +42,8 @@ namespace Artemis.Core.Services
                 BrushType = "ColorBrush"
             });
 
+            defaultReference.Value.LayerBrushProviderId ??= "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba";
+            defaultReference.Value.BrushType ??= "ColorBrush";
             return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
         }
     }

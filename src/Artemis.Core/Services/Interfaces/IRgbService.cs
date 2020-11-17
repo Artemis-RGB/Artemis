@@ -17,7 +17,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets the bitmap brush used to convert the rendered frame to LED-colors
         /// </summary>
-        BitmapBrush BitmapBrush { get; }
+        BitmapBrush? BitmapBrush { get; }
 
         /// <summary>
         ///     Gets the scale the frames are rendered on, a scale of 1.0 means 1 pixel = 1mm

@@ -9,13 +9,13 @@ namespace Artemis.Core
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : CorePropertyChanged
     {
-        private string _description;
+        private string? _description;
         private Guid _guid;
-        private string _icon;
-        private string _main;
-        private string _name;
-        private Plugin _plugin;
-        private Version _version;
+        private string? _icon;
+        private string _main = null!;
+        private string _name = null!;
+        private Plugin _plugin = null!;
+        private Version _version = null!;
 
         internal PluginInfo()
         {
@@ -45,7 +45,7 @@ namespace Artemis.Core
         ///     A short description of the plugin
         /// </summary>
         [JsonProperty]
-        public string Description
+        public string? Description
         {
             get => _description;
             set => SetAndNotify(ref _description, value);
@@ -57,7 +57,7 @@ namespace Artemis.Core
         ///     icons
         /// </summary>
         [JsonProperty]
-        public string Icon
+        public string? Icon
         {
             get => _icon;
             set => SetAndNotify(ref _icon, value);

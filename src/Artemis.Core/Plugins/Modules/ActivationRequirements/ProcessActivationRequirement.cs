@@ -16,7 +16,7 @@ namespace Artemis.Core.Modules
         /// </summary>
         /// <param name="processName">The name of the process that must run</param>
         /// <param name="location">The location of where the process must be running from (optional)</param>
-        public ProcessActivationRequirement(string processName, string location = null)
+        public ProcessActivationRequirement(string? processName, string? location = null)
         {
             ProcessName = processName;
             Location = location;
@@ -25,12 +25,12 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     The name of the process that must run
         /// </summary>
-        public string ProcessName { get; set; }
+        public string? ProcessName { get; set; }
 
         /// <summary>
         ///     The location of where the process must be running from
         /// </summary>
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         /// <inheritdoc />
         public bool Evaluate()

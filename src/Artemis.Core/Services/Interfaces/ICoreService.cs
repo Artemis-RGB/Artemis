@@ -26,7 +26,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets or sets a list of startup arguments
         /// </summary>
-        List<string> StartupArguments { get; set; }
+        List<string>? StartupArguments { get; set; }
 
         /// <summary>
         ///     Initializes the core, only call once

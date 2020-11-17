@@ -8,6 +8,7 @@ namespace Artemis.Core
     /// <summary>
     ///     A static class providing <see cref="Process" /> extensions
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1060:Move pinvokes to native methods class", Justification = "I don't care, piss off")]
     public static class ProcessExtensions
     {
         /// <summary>
