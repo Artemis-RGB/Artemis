@@ -250,19 +250,35 @@ namespace Artemis.Core
 
         #region IDisposable
 
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (_dynamicDataModel != null)
+                {
+                    _dynamicDataModel.DynamicDataModelAdded -= DynamicDataModelOnDynamicDataModelAdded;
+                    _dynamicDataModel.DynamicDataModelRemoved -= DynamicDataModelOnDynamicDataModelRemoved;
+                }
+
+                Type = DataModelPathSegmentType.Invalid;
+
+                _accessorLambda = null;
+                Accessor = null;
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            if (_dynamicDataModel != null)
-            {
-                _dynamicDataModel.DynamicDataModelAdded -= DynamicDataModelOnDynamicDataModelAdded;
-                _dynamicDataModel.DynamicDataModelRemoved -= DynamicDataModelOnDynamicDataModelRemoved;
-            }
-
-            Type = DataModelPathSegmentType.Invalid;
-
-            _accessorLambda = null;
-            Accessor = null;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

@@ -55,7 +55,7 @@ namespace Artemis.Core.Services
             catch (Exception e)
             {
                 _logger.Error(e, "Exception during device loading for device provider {deviceProvider}", deviceProvider.GetType().Name);
-                throw e;
+                throw;
             }
 
             if (deviceProvider.Devices == null || !deviceProvider.Devices.Any())
@@ -86,12 +86,12 @@ namespace Artemis.Core.Services
             Surface.Dispose();
         }
 
-        private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
+        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
             UpdateSurfaceLedGroup();
         }
 
-        private void TargetFrameRateSettingOnSettingChanged(object sender, EventArgs e)
+        private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
         {
             UpdateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
         }
@@ -104,8 +104,8 @@ namespace Artemis.Core.Services
 
         #region Events
 
-        public event EventHandler<DeviceEventArgs> DeviceLoaded;
-        public event EventHandler<DeviceEventArgs> DeviceReloaded;
+        public event EventHandler<DeviceEventArgs>? DeviceLoaded;
+        public event EventHandler<DeviceEventArgs>? DeviceReloaded;
 
         public void UpdateSurfaceLedGroup()
         {

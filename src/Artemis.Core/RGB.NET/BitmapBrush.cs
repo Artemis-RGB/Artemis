@@ -8,7 +8,7 @@ namespace Artemis.Core
     /// <summary>
     ///     The RGB.NET brush Artemis uses to map the SkiaSharp bitmap to LEDs
     /// </summary>
-    public class BitmapBrush : AbstractDecoratable<IBrushDecorator>, IBrush, IDisposable
+    public sealed class BitmapBrush : AbstractDecoratable<IBrushDecorator>, IBrush, IDisposable
     {
         private readonly object _disposeLock;
         private readonly PluginSetting<int> _sampleSizeSetting;
@@ -67,7 +67,7 @@ namespace Artemis.Core
         #region Methods
 
         /// <inheritdoc />
-        public virtual void PerformRender(Rectangle rectangle, IEnumerable<BrushRenderTarget> renderTargets)
+        public void PerformRender(Rectangle rectangle, IEnumerable<BrushRenderTarget> renderTargets)
         {
             lock (_disposeLock)
             {
@@ -155,7 +155,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public virtual void PerformFinalize()
+        public void PerformFinalize()
         {
         }
 

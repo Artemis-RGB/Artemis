@@ -201,7 +201,7 @@ namespace Artemis.Core.Services
 
         #region Event handlers
 
-        private void RgbServiceOnDeviceLoaded(object sender, DeviceEventArgs e)
+        private void RgbServiceOnDeviceLoaded(object? sender, DeviceEventArgs e)
         {
             lock (_surfaceConfigurations)
             {
@@ -212,7 +212,7 @@ namespace Artemis.Core.Services
             UpdateSurfaceConfiguration(ActiveSurface, true);
         }
 
-        private void RenderScaleSettingOnSettingChanged(object sender, EventArgs e)
+        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
             foreach (ArtemisSurface surfaceConfiguration in SurfaceConfigurations)
             {

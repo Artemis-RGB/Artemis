@@ -127,10 +127,30 @@ namespace Artemis.Core
             Disable();
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the plugin feature and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Disable();
+            }
+        }
+
+        #endregion
+
         /// <inheritdoc />
         public void Dispose()
         {
-            Disable();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #region Loading

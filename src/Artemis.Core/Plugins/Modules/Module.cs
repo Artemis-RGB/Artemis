@@ -140,7 +140,7 @@ namespace Artemis.Core.Modules
         internal DataModel? InternalDataModel { get; set; }
 
         internal bool InternalExpandsMainDataModel { get; set; }
-        internal ModuleSettingsEntity? Entity { get; set; }
+        internal ModuleSettingsEntity? SettingsEntity { get; set; }
 
         /// <summary>
         ///     Called each frame when the module should update
@@ -233,12 +233,12 @@ namespace Artemis.Core.Modules
 
         internal void ApplyToEntity()
         {
-            if (Entity == null)
-                Entity = new ModuleSettingsEntity();
+            if (SettingsEntity == null)
+                SettingsEntity = new ModuleSettingsEntity();
 
-            Entity.ModuleId = Id;
-            Entity.PriorityCategory = (int) PriorityCategory;
-            Entity.Priority = Priority;
+            SettingsEntity.ModuleId = Id;
+            SettingsEntity.PriorityCategory = (int) PriorityCategory;
+            SettingsEntity.Priority = Priority;
         }
     }
 

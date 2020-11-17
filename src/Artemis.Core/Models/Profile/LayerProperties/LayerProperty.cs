@@ -28,7 +28,7 @@ namespace Artemis.Core
             // Cant define generic types as nullable ¯\_(ツ)_/¯
             CurrentValue = default!;
             DefaultValue = default!;
-            
+
             _baseValue = default!;
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
@@ -61,14 +61,34 @@ namespace Artemis.Core
             OnUpdated();
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                foreach (IDataBinding dataBinding in _dataBindings)
+                    dataBinding.Dispose();
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _disposed = true;
-
-            foreach (IDataBinding dataBinding in _dataBindings)
-                dataBinding.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
 
         #region Hierarchy
 

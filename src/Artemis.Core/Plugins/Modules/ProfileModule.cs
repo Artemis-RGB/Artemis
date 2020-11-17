@@ -96,6 +96,7 @@ namespace Artemis.Core.Modules
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         protected internal readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+        private readonly object _lock = new object();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileModule" /> class
@@ -154,7 +155,7 @@ namespace Artemis.Core.Modules
             if (IsUpdateAllowed)
                 Update(deltaTime);
 
-            lock (this)
+            lock (_lock)
             {
                 OpacityOverride = AnimatingProfileChange
                     ? Math.Max(0, OpacityOverride - 0.1)
@@ -172,7 +173,7 @@ namespace Artemis.Core.Modules
         {
             Render(deltaTime, surface, canvas, canvasInfo);
 
-            lock (this)
+            lock (_lock)
             {
                 // Render the profile
                 ActiveProfile?.Render(canvas);
@@ -210,7 +211,7 @@ namespace Artemis.Core.Modules
             if (!IsActivated)
                 throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
 
-            lock (this)
+            lock (_lock)
             {
                 if (profile == ActiveProfile)
                     return;

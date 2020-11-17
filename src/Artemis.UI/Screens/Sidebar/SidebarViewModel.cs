@@ -194,27 +194,31 @@ namespace Artemis.UI.Screens.Sidebar
             SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]) : null;
         }
 
+        #region IDisposable
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                _activeModulesUpdateTimer?.Dispose();
+        }
+
         public void Dispose()
         {
-            SelectedItem?.Deactivate();
-            SelectedItem = null;
-
-            _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnabled;
-            _pluginManagementService.PluginFeatureDisabled -= OnFeatureDisabled;
-
-            _activeModulesUpdateTimer.Stop();
-            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
 
         #region Event handlers
 
-        private void OnFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        private void OnFeatureEnabled(object sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature is Module module)
                 AddModule(module);
         }
 
-        private void OnFeatureDisabled(object? sender, PluginFeatureEventArgs e)
+        private void OnFeatureDisabled(object sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature is Module module)
                 RemoveModule(module);

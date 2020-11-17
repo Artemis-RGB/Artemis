@@ -160,19 +160,39 @@ namespace Artemis.Core
             }
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (PluginFeature feature in Features)
+                    feature.Dispose();
+
+                Kernel?.Dispose();
+                PluginLoader?.Dispose();
+
+                _features.Clear();
+                SetEnabled(false);
+            }
+        }
+        
         /// <inheritdoc />
         public void Dispose()
         {
-            foreach (PluginFeature feature in Features)
-                feature.Dispose();
-
-            Kernel?.Dispose();
-            PluginLoader?.Dispose();
-
-            _features.Clear();
-            SetEnabled(false);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
+        #endregion
+        
         #region Events
 
         /// <summary>

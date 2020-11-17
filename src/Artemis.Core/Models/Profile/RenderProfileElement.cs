@@ -287,7 +287,7 @@ namespace Artemis.Core
             OnLayerEffectsUpdated();
         }
 
-        private void LayerEffectStoreOnLayerEffectRemoved(object sender, LayerEffectStoreEvent e)
+        private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
             List<BaseLayerEffect> pluginEffects = LayerEffectsList.Where(ef => ef.Descriptor.Provider != null &&
@@ -303,7 +303,7 @@ namespace Artemis.Core
             }
         }
 
-        private void LayerEffectStoreOnLayerEffectAdded(object sender, LayerEffectStoreEvent e)
+        private void LayerEffectStoreOnLayerEffectAdded(object? sender, LayerEffectStoreEvent e)
         {
             if (RenderElementEntity.LayerEffects.Any(ef => ef.ProviderId == e.Registration.PluginFeature.Id))
                 ActivateEffects();

@@ -270,16 +270,36 @@ namespace Artemis.Core
             // Parameter is done during initialize
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                DataBindingModifierTypeStore.DataBindingModifierAdded -= DataBindingModifierTypeStoreOnDataBindingModifierAdded;
+                DataBindingModifierTypeStore.DataBindingModifierRemoved -= DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
+
+                ParameterPath?.Dispose();
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _disposed = true;
-
-            DataBindingModifierTypeStore.DataBindingModifierAdded -= DataBindingModifierTypeStoreOnDataBindingModifierAdded;
-            DataBindingModifierTypeStore.DataBindingModifierRemoved -= DataBindingModifierTypeStoreOnDataBindingModifierRemoved;
-
-            ParameterPath?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
 
         #region Event handlers
 
