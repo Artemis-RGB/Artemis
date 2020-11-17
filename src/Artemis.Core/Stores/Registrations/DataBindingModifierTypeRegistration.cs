@@ -30,7 +30,7 @@ namespace Artemis.Core
         /// </summary>
         public bool IsInStore { get; internal set; }
 
-        private void OnDisabled(object sender, EventArgs e)
+        private void OnDisabled(object? sender, EventArgs e)
         {
             Plugin.Disabled -= OnDisabled;
             if (IsInStore)

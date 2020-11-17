@@ -7,9 +7,9 @@ namespace Artemis.Core
     public class DataBinding<TLayerProperty, TProperty> : IDataBinding
     {
         private TProperty _currentValue = default!;
-        private TProperty _previousValue = default!;
         private bool _disposed;
         private TimeSpan _easingProgress;
+        private TProperty _previousValue = default!;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -98,6 +98,24 @@ namespace Artemis.Core
             return Registration?.PropertyExpression.ReturnType;
         }
 
+        /// <summary>
+        ///     Updates the smoothing progress of the data binding
+        /// </summary>
+        /// <param name="delta">The delta to apply during update</param>
+        public void UpdateWithDelta(TimeSpan delta)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            // Data bindings cannot go back in time like brushes
+            if (delta < TimeSpan.Zero)
+                delta = TimeSpan.Zero;
+
+            _easingProgress = _easingProgress.Add(delta);
+            if (_easingProgress > EasingTime)
+                _easingProgress = EasingTime;
+        }
+
         private void ResetEasing(TProperty value)
         {
             _previousValue = GetInterpolatedValue();
@@ -143,24 +161,6 @@ namespace Artemis.Core
             UpdateWithDelta(timeline.Delta);
         }
 
-        /// <summary>
-        ///     Updates the smoothing progress of the data binding
-        /// </summary>
-        /// <param name="delta">The delta to apply during update</param>
-        public void UpdateWithDelta(TimeSpan delta)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
-
-            // Data bindings cannot go back in time like brushes
-            if (delta < TimeSpan.Zero)
-                delta = TimeSpan.Zero;
-
-            _easingProgress = _easingProgress.Add(delta);
-            if (_easingProgress > EasingTime)
-                _easingProgress = EasingTime;
-        }
-
         /// <inheritdoc />
         public void Apply()
         {
@@ -175,15 +175,35 @@ namespace Artemis.Core
             Converter.ApplyValue(value);
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                if (Registration != null)
+                    Registration.DataBinding = null;
+                DataBindingMode?.Dispose();
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _disposed = true;
-
-            if (Registration != null) 
-                Registration.DataBinding = null;
-            DataBindingMode?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
 
         #region Mode management
 
@@ -255,7 +275,7 @@ namespace Artemis.Core
                 LayerProperty.Entity.DataBindingEntities.Add(Entity);
 
             // Don't save an invalid state
-            if (Registration != null) 
+            if (Registration != null)
                 Entity.TargetExpression = Registration.PropertyExpression.ToString();
 
             Entity.EasingTime = EasingTime;

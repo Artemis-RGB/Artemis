@@ -13,6 +13,7 @@ namespace Artemis.Core
         private DateTime _lastEvent;
         private Timer _timer;
         private bool _disposed;
+        private readonly object _lock = new object();
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action)
         {
@@ -68,7 +69,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("TimedUpdateRegistration");
 
-            lock (this)
+            lock (_lock)
             {
                 if (!Feature.IsEnabled)
                     throw new ArtemisPluginException("Cannot start a timed update for a disabled plugin feature");
@@ -92,7 +93,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("TimedUpdateRegistration");
 
-            lock (this)
+            lock (_lock)
             {
                 if (_timer == null)
                     return;
@@ -109,7 +110,7 @@ namespace Artemis.Core
             if (!Feature.IsEnabled)
                 return;
 
-            lock (this)
+            lock (_lock)
             {
                 TimeSpan interval = DateTime.Now - _lastEvent;
                 _lastEvent = DateTime.Now;
@@ -138,15 +139,35 @@ namespace Artemis.Core
             Stop();
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                Stop();
+
+                Feature.Enabled -= FeatureOnEnabled;
+                Feature.Disabled -= FeatureOnDisabled;
+
+                _disposed = true;
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            Stop();
-
-            Feature.Enabled -= FeatureOnEnabled;
-            Feature.Disabled -= FeatureOnDisabled;
-
-            _disposed = true;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
     }
 }

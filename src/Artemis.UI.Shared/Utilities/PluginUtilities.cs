@@ -39,8 +39,6 @@ namespace Artemis.UI.Shared
             if (parsedIcon == false)
                 iconEnum = PackIconKind.QuestionMarkCircle;
             return iconEnum;
-
-            return icon;
         }
     }
 }

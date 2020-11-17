@@ -13,6 +13,7 @@ namespace Artemis.Core
     public sealed class Profile : ProfileElement
     {
         private bool _isActivated;
+        private readonly object _lock = new object();
 
         internal Profile(ProfileModule module, string name)
         {
@@ -64,7 +65,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Update(double deltaTime)
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
@@ -79,7 +80,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Render(SKCanvas canvas)
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
@@ -182,7 +183,7 @@ namespace Artemis.Core
 
         internal void Activate(ArtemisSurface surface)
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");

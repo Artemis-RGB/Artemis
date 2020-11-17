@@ -56,7 +56,10 @@ namespace Artemis.Core.LayerBrushes
             UpdateLedGroup();
         }
 
-        internal override void Dispose(bool disposing)
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
         {
             if (disposing)
             {
@@ -67,13 +70,15 @@ namespace Artemis.Core.LayerBrushes
             base.Dispose(disposing);
         }
 
+        #endregion
+
         // Not used in this effect type
         internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
             throw new NotImplementedException("RGB.NET layer effectes do not implement InternalRender");
         }
 
-        private void LayerOnRenderPropertiesUpdated(object sender, EventArgs e)
+        private void LayerOnRenderPropertiesUpdated(object? sender, EventArgs e)
         {
             UpdateLedGroup();
         }

@@ -26,7 +26,7 @@ namespace Artemis.Core.LayerBrushes
             {
                 // I imagine a null reference here can be confusing, so lets throw an exception explaining what to do
                 if (_properties == null)
-                    throw new ArtemisPluginException("Cannot access brush properties until OnPropertiesInitialized has been called");
+                    throw new InvalidOperationException("Cannot access brush properties until OnPropertiesInitialized has been called");
                 return _properties;
             }
             internal set => _properties = value;

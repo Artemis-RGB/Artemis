@@ -46,7 +46,7 @@ namespace Artemis.Core.LayerEffects
             LayerEffectStore.Add(descriptor);
         }
 
-        private void OnDisabled(object sender, EventArgs e)
+        private void OnDisabled(object? sender, EventArgs e)
         {
             // The store will clean up the registrations by itself, the plugin just needs to clear its own list
             _layerEffectDescriptors.Clear();

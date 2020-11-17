@@ -247,15 +247,31 @@ namespace Artemis.Core
 
         #region IDisposable
 
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
+                DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
+
+                Invalidate();
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _disposed = true;
-
-            DataModelStore.DataModelAdded -= DataModelStoreOnDataModelAdded;
-            DataModelStore.DataModelRemoved -= DataModelStoreOnDataModelRemoved;
-
-            Invalidate();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

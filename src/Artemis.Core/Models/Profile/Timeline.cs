@@ -12,6 +12,7 @@ namespace Artemis.Core
     public class Timeline : CorePropertyChanged, IStorageModel
     {
         private const int MaxExtraTimelines = 15;
+        private readonly object _lock = new object();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Timeline" /> class
@@ -19,8 +20,9 @@ namespace Artemis.Core
         public Timeline()
         {
             Entity = new TimelineEntity();
-            _extraTimelines = new List<Timeline>();
             MainSegmentLength = TimeSpan.FromSeconds(5);
+
+            _extraTimelines = new List<Timeline>();
 
             Save();
         }
@@ -35,6 +37,7 @@ namespace Artemis.Core
 
         private Timeline(Timeline parent)
         {
+            Entity = new TimelineEntity();
             Parent = parent;
             StartSegmentLength = Parent.StartSegmentLength;
             MainSegmentLength = Parent.MainSegmentLength;
@@ -303,7 +306,7 @@ namespace Artemis.Core
         /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
         public void Update(TimeSpan delta, bool stickToMainSegment)
         {
-            lock (this)
+            lock (_lock)
             {
                 Delta += delta;
                 Position += delta;
@@ -330,7 +333,7 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToStart()
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Position == TimeSpan.Zero)
                     return;
@@ -345,7 +348,7 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToEndSegment()
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Position >= EndSegmentStartPosition)
                     return;
@@ -360,7 +363,7 @@ namespace Artemis.Core
         /// </summary>
         public void JumpToEnd()
         {
-            lock (this)
+            lock (_lock)
             {
                 if (Position >= EndSegmentEndPosition)
                     return;
@@ -377,7 +380,7 @@ namespace Artemis.Core
         /// <param name="stickToMainSegment">Whether to stick to the main segment, wrapping around if needed</param>
         public void Override(TimeSpan position, bool stickToMainSegment)
         {
-            lock (this)
+            lock (_lock)
             {
                 Delta += position - Position;
                 Position = position;
@@ -395,7 +398,7 @@ namespace Artemis.Core
         /// </summary>
         public void ClearDelta()
         {
-            lock (this)
+            lock (_lock)
             {
                 Delta = TimeSpan.Zero;
             }

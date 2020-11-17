@@ -107,12 +107,12 @@ namespace Artemis.Core.Services
             Profile profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
-            void ActivatingProfileSurfaceUpdate(object sender, SurfaceConfigurationEventArgs e)
+            void ActivatingProfileSurfaceUpdate(object? sender, SurfaceConfigurationEventArgs e)
             {
                 profile.PopulateLeds(e.Surface);
             }
 
-            void ActivatingProfilePluginToggle(object sender, PluginEventArgs e)
+            void ActivatingProfilePluginToggle(object? sender, PluginEventArgs e)
             {
                 InstantiateProfile(profile);
             }
@@ -292,12 +292,12 @@ namespace Artemis.Core.Services
 
         #region Event handlers
 
-        private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
+        private void OnActiveSurfaceConfigurationSelected(object? sender, SurfaceConfigurationEventArgs e)
         {
             ActiveProfilesPopulateLeds(e.Surface);
         }
 
-        private void OnSurfaceConfigurationUpdated(object sender, SurfaceConfigurationEventArgs e)
+        private void OnSurfaceConfigurationUpdated(object? sender, SurfaceConfigurationEventArgs e)
         {
             if (e.Surface.IsActive)
                 ActiveProfilesPopulateLeds(e.Surface);

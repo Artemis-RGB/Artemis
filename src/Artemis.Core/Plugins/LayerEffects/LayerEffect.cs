@@ -27,7 +27,7 @@ namespace Artemis.Core.LayerEffects
             {
                 // I imagine a null reference here can be confusing, so lets throw an exception explaining what to do
                 if (_properties == null)
-                    throw new ArtemisPluginException("Cannot access effect properties until OnPropertiesInitialized has been called");
+                    throw new InvalidOperationException("Cannot access effect properties until OnPropertiesInitialized has been called");
                 return _properties;
             }
             internal set => _properties = value;

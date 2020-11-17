@@ -29,7 +29,7 @@ namespace Artemis.UI.Shared
             set => SetAndNotify(ref _listType, value);
         }
 
-        public object DisplayValue
+        public new object DisplayValue
         {
             get => _displayValue;
             set => SetAndNotify(ref _displayValue, value);

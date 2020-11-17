@@ -139,11 +139,11 @@ namespace Artemis.Core.Services
             ModulePriorityCategory category = module.DefaultPriorityCategory;
             int priority = 1;
 
-            module.Entity = _moduleRepository.GetByModuleId(module.Id);
-            if (module.Entity != null)
+            module.SettingsEntity = _moduleRepository.GetByModuleId(module.Id);
+            if (module.SettingsEntity != null)
             {
-                category = (ModulePriorityCategory) module.Entity.PriorityCategory;
-                priority = module.Entity.Priority;
+                category = (ModulePriorityCategory) module.SettingsEntity.PriorityCategory;
+                priority = module.SettingsEntity.Priority;
             }
 
             UpdateModulePriority(module, category, priority);
@@ -255,10 +255,10 @@ namespace Artemis.Core.Services
                 categoryModule.Priority = index;
 
                 // Don't save modules whose priority hasn't been initialized yet
-                if (categoryModule == module || categoryModule.Entity != null)
+                if (categoryModule == module || categoryModule.SettingsEntity != null)
                 {
                     categoryModule.ApplyToEntity();
-                    _moduleRepository.Save(categoryModule.Entity);
+                    _moduleRepository.Save(categoryModule.SettingsEntity);
                 }
             }
         }
