@@ -16,7 +16,7 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         public T DataModel
         {
-            get => (T) InternalDataModel;
+            get => InternalDataModel as T ?? throw new InvalidOperationException("Internal datamodel does not match the type of the data model");
             internal set => InternalDataModel = value;
         }
 
@@ -48,12 +48,6 @@ namespace Artemis.Core.DataModelExpansions
             DataModel.Feature = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
-        }
-
-        internal override void InternalDisable()
-        {
-            DataModel = null;
-            base.InternalDisable();
         }
     }
 }

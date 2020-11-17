@@ -57,8 +57,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler<DataModelStoreEvent> DataModelAdded;
-        public static event EventHandler<DataModelStoreEvent> DataModelRemoved;
+        public static event EventHandler<DataModelStoreEvent>? DataModelAdded;
+        public static event EventHandler<DataModelStoreEvent>? DataModelRemoved;
 
         private static void OnDataModelAdded(DataModelStoreEvent e)
         {

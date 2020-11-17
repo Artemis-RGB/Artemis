@@ -29,7 +29,7 @@ namespace Artemis.Core.Services
         ///     If found, returns the registered data model of type <typeparamref name="T" />
         /// </summary>
         /// <typeparam name="T">The type of the data model to find</typeparam>
-        T GetDataModel<T>() where T : DataModel;
+        T? GetDataModel<T>() where T : DataModel;
 
         /// <summary>
         ///     If found, returns the data model of the provided plugin

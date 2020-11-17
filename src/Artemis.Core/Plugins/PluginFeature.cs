@@ -16,7 +16,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin that provides this feature
         /// </summary>
-        public Plugin Plugin { get; internal set; }
+        public Plugin Plugin { get; internal set; } = null!; // Will be set right after construction
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -41,7 +41,7 @@ namespace Artemis.Core
         /// </summary>
         public string Id => $"{GetType().FullName}-{Plugin.Guid.ToString().Substring(0, 8)}"; // Not as unique as a GUID but good enough and stays readable
 
-        internal PluginFeatureEntity Entity { get; set; }
+        internal PluginFeatureEntity Entity { get; set; } = null!; // Will be set right after construction
 
         /// <summary>
         ///     Called when the feature is activated

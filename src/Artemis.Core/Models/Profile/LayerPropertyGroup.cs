@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
-using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Humanizer;
 
@@ -30,6 +29,12 @@ namespace Artemis.Core
         /// </summary>
         protected LayerPropertyGroup()
         {
+            // These are set right after construction to keep the constructor (and inherited constructs) clean
+            GroupDescription = null!;
+            Feature = null!;
+            ProfileElement = null!;
+            Path = null!;
+
             _layerProperties = new List<ILayerProperty>();
             _layerPropertyGroups = new List<LayerPropertyGroup>();
         }
@@ -52,7 +57,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The parent group of this group
         /// </summary>
-        public LayerPropertyGroup Parent { get; internal set; }
+        public LayerPropertyGroup? Parent { get; internal set; }
 
         /// <summary>
         ///     The path of this property group
@@ -67,12 +72,12 @@ namespace Artemis.Core
         /// <summary>
         ///     The layer brush this property group belongs to
         /// </summary>
-        public BaseLayerBrush LayerBrush { get; internal set; }
+        public BaseLayerBrush? LayerBrush { get; internal set; }
 
         /// <summary>
         ///     The layer effect this property group belongs to
         /// </summary>
-        public BaseLayerEffect LayerEffect { get; internal set; }
+        public BaseLayerEffect? LayerEffect { get; internal set; }
 
         /// <summary>
         ///     Gets or sets whether the property is hidden in the UI
@@ -139,19 +144,16 @@ namespace Artemis.Core
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
         }
 
-        internal void Initialize(RenderProfileElement profileElement, [NotNull] string path, PluginFeature feature)
+        internal void Initialize(RenderProfileElement profileElement, string path, PluginFeature feature)
         {
-            if (path == null)
-                throw new ArgumentNullException(nameof(path));
-            if (feature == null)
-                throw new ArgumentNullException(nameof(feature));
+            if (path == null) throw new ArgumentNullException(nameof(path));
 
             // Doubt this will happen but let's make sure
             if (PropertiesInitialized)
                 throw new ArtemisCoreException("Layer property group already initialized, wut");
 
-            Feature = feature;
-            ProfileElement = profileElement;
+            Feature = feature ?? throw new ArgumentNullException(nameof(feature));
+            ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
             Path = path.TrimEnd('.');
 
             // Get all properties with a PropertyDescriptionAttribute
@@ -209,8 +211,7 @@ namespace Artemis.Core
             if (!typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
                 throw new ArtemisPluginException($"Layer property with PropertyDescription attribute must be of type LayerProperty at {path}");
 
-            ILayerProperty instance = (ILayerProperty) Activator.CreateInstance(propertyInfo.PropertyType, true);
-            if (instance == null)
+            if (!(Activator.CreateInstance(propertyInfo.PropertyType, true) is ILayerProperty instance))
                 throw new ArtemisPluginException($"Failed to create instance of layer property at {path}");
 
             // Ensure the description has a name, if not this is a good point to set it based on the property info
@@ -230,8 +231,7 @@ namespace Artemis.Core
             if (!typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
                 throw new ArtemisPluginException("Layer property with PropertyGroupDescription attribute must be of type LayerPropertyGroup");
 
-            LayerPropertyGroup instance = (LayerPropertyGroup) Activator.CreateInstance(propertyInfo.PropertyType);
-            if (instance == null)
+            if (!(Activator.CreateInstance(propertyInfo.PropertyType) is LayerPropertyGroup instance))
                 throw new ArtemisPluginException($"Failed to create instance of layer property group at {path + propertyInfo.Name}");
 
             // Ensure the description has a name, if not this is a good point to set it based on the property info
@@ -250,7 +250,7 @@ namespace Artemis.Core
 
         private PropertyEntity GetPropertyEntity(RenderProfileElement profileElement, string path, out bool fromStorage)
         {
-            PropertyEntity entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.FeatureId == Feature.Id && p.Path == path);
+            PropertyEntity? entity = profileElement.RenderElementEntity.PropertyEntities.FirstOrDefault(p => p.FeatureId == Feature.Id && p.Path == path);
             fromStorage = entity != null;
             if (entity == null)
             {
@@ -298,18 +298,18 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when the property group has initialized all its children
         /// </summary>
-        public event EventHandler PropertyGroupInitialized;
+        public event EventHandler? PropertyGroupInitialized;
 
         /// <summary>
         ///     Occurs when one of the current value of one of the layer properties in this group changes by some form of input
         ///     <para>Note: Will not trigger on properties in child groups</para>
         /// </summary>
-        public event EventHandler<LayerPropertyEventArgs> LayerPropertyOnCurrentValueSet;
+        public event EventHandler<LayerPropertyEventArgs>? LayerPropertyOnCurrentValueSet;
 
         /// <summary>
         ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
         /// </summary>
-        public event EventHandler VisibilityChanged;
+        public event EventHandler? VisibilityChanged;
 
         internal virtual void OnVisibilityChanged()
         {

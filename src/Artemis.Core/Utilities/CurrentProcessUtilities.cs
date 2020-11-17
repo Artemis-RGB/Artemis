@@ -23,7 +23,7 @@ namespace Artemis.Core
             string arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill()}";
             // If restart is required, start the executable again after the process was killed 
             if (restart)
-                arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '" + Process.GetCurrentProcess().MainModule.FileName + "'}\"";
+                arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '" + Process.GetCurrentProcess().MainModule!.FileName + "'}\"";
 
             ProcessStartInfo info = new ProcessStartInfo
             {
@@ -45,7 +45,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="url">The URL to open</param>
         /// <returns>The process created to open the URL</returns>
-        public static Process OpenUrl(string url)
+        public static Process? OpenUrl(string url)
         {
             ProcessStartInfo processInfo = new ProcessStartInfo
             {
@@ -61,7 +61,7 @@ namespace Artemis.Core
         /// <returns></returns>
         internal static string GetCurrentLocation()
         {
-            return Process.GetCurrentProcess().MainModule.FileName;
+            return Process.GetCurrentProcess().MainModule!.FileName!;
         }
 
         #region Events

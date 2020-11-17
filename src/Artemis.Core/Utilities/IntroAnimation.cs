@@ -21,21 +21,19 @@ namespace Artemis.Core
             _logger = logger;
             _profileService = profileService;
             _surfaceService = surfaceService;
-            CreateIntroProfile();
+
+            AnimationProfile = CreateIntroProfile();
         }
 
         public Profile AnimationProfile { get; set; }
 
         public void Render(double deltaTime, SKCanvas canvas)
         {
-            if (AnimationProfile == null)
-                return;
-
             AnimationProfile.Update(deltaTime);
             AnimationProfile.Render(canvas);
         }
 
-        private void CreateIntroProfile()
+        private Profile CreateIntroProfile()
         {
             try
             {
@@ -44,24 +42,24 @@ namespace Artemis.Core
                 ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json);
                 // Inject every LED on the surface into each layer
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
-                {
                     profileEntityLayer.Leds.AddRange(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Select(l => new LedEntity
                     {
                         DeviceIdentifier = l.Device.RgbDevice.GetDeviceIdentifier(),
                         LedName = l.RgbLed.Id.ToString()
                     }));
-                }
 
                 Profile profile = new Profile(new DummyModule(), profileEntity);
                 profile.Activate(_surfaceService.ActiveSurface);
 
                 _profileService.InstantiateProfile(profile);
-                AnimationProfile = profile;
+                return profile;
             }
             catch (Exception e)
             {
                 _logger.Warning(e, "Failed to load intro profile");
             }
+
+            return new Profile(new DummyModule(), "Intro");
         }
     }
 

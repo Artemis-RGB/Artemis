@@ -33,6 +33,6 @@ namespace Artemis.Core.Services
         /// <param name="modifierTypePluginGuid">The modifier type's plugin GUID</param>
         /// <param name="modifierType">The type name of the modifier type</param>
         /// <returns></returns>
-        BaseDataBindingModifierType GetModifierType(Guid modifierTypePluginGuid, string modifierType);
+        BaseDataBindingModifierType? GetModifierType(Guid modifierTypePluginGuid, string modifierType);
     }
 }

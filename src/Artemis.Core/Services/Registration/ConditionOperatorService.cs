@@ -34,7 +34,7 @@ namespace Artemis.Core.Services
             return ConditionOperatorStore.GetForType(type, side).Select(r => r.ConditionOperator).ToList();
         }
 
-        public BaseConditionOperator GetConditionOperator(Guid operatorPluginGuid, string operatorType)
+        public BaseConditionOperator? GetConditionOperator(Guid operatorPluginGuid, string operatorType)
         {
             return ConditionOperatorStore.Get(operatorPluginGuid, operatorType)?.ConditionOperator;
         }

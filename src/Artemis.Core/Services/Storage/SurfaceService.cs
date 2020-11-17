@@ -28,6 +28,8 @@ namespace Artemis.Core.Services
             _surfaceConfigurations = new List<ArtemisSurface>();
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
 
+            // LoadFromRepository is guaranteed to set the ActiveSurface
+            ActiveSurface = null!;
             LoadFromRepository();
 
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
@@ -61,6 +63,7 @@ namespace Artemis.Core.Services
 
         public void SetActiveSurfaceConfiguration(ArtemisSurface surface)
         {
+            if (surface == null) throw new ArgumentNullException(nameof(surface));
             if (ActiveSurface == surface)
                 return;
 
@@ -81,11 +84,8 @@ namespace Artemis.Core.Services
             }
 
             // Apply the active surface entity to the devices
-            if (ActiveSurface != null)
-            {
-                foreach (ArtemisDevice device in ActiveSurface.Devices)
-                    device.ApplyToRgbDevice();
-            }
+            foreach (ArtemisDevice device in ActiveSurface.Devices)
+                device.ApplyToRgbDevice();
 
             // Update the RGB service's graphics decorator to work with the new surface entity
             _rgbService.UpdateSurfaceLedGroup();
@@ -134,7 +134,7 @@ namespace Artemis.Core.Services
                 ArtemisSurface surfaceConfiguration = new ArtemisSurface(_rgbService.Surface, surfaceEntity, _renderScaleSetting.Value);
                 foreach (DeviceEntity position in surfaceEntity.DeviceEntities)
                 {
-                    IRGBDevice device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
+                    IRGBDevice? device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
                     if (device != null)
                     {
                         DeviceProvider deviceProvider = _pluginManagementService.GetDeviceProviderByDevice(device);
@@ -150,7 +150,7 @@ namespace Artemis.Core.Services
             }
 
             // When all surface configs are loaded, apply the active surface config
-            ArtemisSurface active = SurfaceConfigurations.FirstOrDefault(c => c.IsActive);
+            ArtemisSurface? active = SurfaceConfigurations.FirstOrDefault(c => c.IsActive);
             if (active != null)
                 SetActiveSurfaceConfiguration(active);
             else
@@ -170,13 +170,13 @@ namespace Artemis.Core.Services
         private void AddDeviceIfMissing(IRGBDevice rgbDevice, ArtemisSurface surface)
         {
             string deviceIdentifier = rgbDevice.GetDeviceIdentifier();
-            ArtemisDevice device = surface.Devices.FirstOrDefault(d => d.DeviceEntity.DeviceIdentifier == deviceIdentifier);
+            ArtemisDevice? device = surface.Devices.FirstOrDefault(d => d.DeviceEntity.DeviceIdentifier == deviceIdentifier);
 
             if (device != null)
                 return;
 
             // Find an existing device config and use that
-            DeviceEntity existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceIdentifier == deviceIdentifier);
+            DeviceEntity? existingDeviceConfig = surface.SurfaceEntity.DeviceEntities.FirstOrDefault(d => d.DeviceIdentifier == deviceIdentifier);
             if (existingDeviceConfig != null)
             {
                 DeviceProvider deviceProvider = _pluginManagementService.GetDeviceProviderByDevice(rgbDevice);
@@ -225,8 +225,8 @@ namespace Artemis.Core.Services
 
         #region Events
 
-        public event EventHandler<SurfaceConfigurationEventArgs> ActiveSurfaceConfigurationSelected;
-        public event EventHandler<SurfaceConfigurationEventArgs> SurfaceConfigurationUpdated;
+        public event EventHandler<SurfaceConfigurationEventArgs>? ActiveSurfaceConfigurationSelected;
+        public event EventHandler<SurfaceConfigurationEventArgs>? SurfaceConfigurationUpdated;
 
         protected virtual void OnActiveSurfaceConfigurationChanged(SurfaceConfigurationEventArgs e)
         {

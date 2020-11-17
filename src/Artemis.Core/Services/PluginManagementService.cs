@@ -242,12 +242,10 @@ namespace Artemis.Core.Services
                     throw new ArtemisCoreException("Cannot load a plugin that is already loaded");
             }
 
-            Plugin plugin = new Plugin(pluginInfo, directory);
-            OnPluginLoading(new PluginEventArgs(plugin));
-
             // Load the entity and fall back on creating a new one
-            plugin.Entity = _pluginRepository.GetPluginByGuid(pluginInfo.Guid) ?? new PluginEntity {Id = plugin.Guid, IsEnabled = true};
-
+            Plugin plugin = new Plugin(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
+            OnPluginLoading(new PluginEventArgs(plugin));
+            
             // Locate the main assembly entry
             string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
             if (!File.Exists(mainFile))

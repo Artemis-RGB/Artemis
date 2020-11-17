@@ -22,7 +22,7 @@ namespace Artemis.Core.Modules
         /// </summary>
         public T DataModel
         {
-            get => (T) InternalDataModel;
+            get => InternalDataModel as T ?? throw new InvalidOperationException("Internal datamodel does not match the type of the data model");
             internal set => InternalDataModel = value;
         }
 
@@ -83,7 +83,6 @@ namespace Artemis.Core.Modules
         {
             Deactivate(true);
             base.InternalDisable();
-            DataModel = null;
         }
     }
 
@@ -182,7 +181,7 @@ namespace Artemis.Core.Modules
             ProfileRendered(deltaTime, surface, canvas, canvasInfo);
         }
 
-        internal async Task ChangeActiveProfileAnimated(Profile profile, ArtemisSurface surface)
+        internal async Task ChangeActiveProfileAnimated(Profile? profile, ArtemisSurface? surface)
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
@@ -204,12 +203,14 @@ namespace Artemis.Core.Modules
                 await Task.Delay(50);
         }
 
-        internal void ChangeActiveProfile(Profile profile, ArtemisSurface surface)
+        internal void ChangeActiveProfile(Profile? profile, ArtemisSurface? surface)
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
             if (!IsActivated)
                 throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
+            if (profile != null && surface == null)
+                throw new ArtemisCoreException("If changing the active profile to a non-null profile, a surface is required");
 
             lock (_lock)
             {
@@ -219,7 +220,7 @@ namespace Artemis.Core.Modules
                 ActiveProfile?.Dispose();
 
                 ActiveProfile = profile;
-                ActiveProfile?.Activate(surface);
+                ActiveProfile?.Activate(surface!);
             }
 
             OnActiveProfileChanged();
@@ -229,7 +230,7 @@ namespace Artemis.Core.Modules
         {
             base.Deactivate(isOverride);
 
-            Profile profile = ActiveProfile;
+            Profile? profile = ActiveProfile;
             ActiveProfile = null;
             profile?.Dispose();
         }
@@ -249,7 +250,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Occurs when the <see cref="ActiveProfile" /> has changed
         /// </summary>
-        public event EventHandler ActiveProfileChanged;
+        public event EventHandler? ActiveProfileChanged;
 
         /// <summary>
         ///     Invokes the <see cref="ActiveProfileChanged" /> event

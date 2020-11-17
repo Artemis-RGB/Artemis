@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Artemis.Storage.Entities.Plugins;
 
 namespace Artemis.Core
 {
@@ -34,13 +35,13 @@ namespace Artemis.Core
         /// </summary>
         public static readonly PluginInfo CorePluginInfo = new PluginInfo
         {
-            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core"
+            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2,0)
         };
 
         /// <summary>
         ///     The plugin used by core components of Artemis
         /// </summary>
-        public static readonly Plugin CorePlugin = new Plugin(CorePluginInfo, new DirectoryInfo(ApplicationFolder));
+        public static readonly Plugin CorePlugin = new Plugin(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
 
         internal static readonly CorePluginFeature CorePluginFeature = new CorePluginFeature {Plugin = CorePlugin};
         internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {Plugin = CorePlugin};

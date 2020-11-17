@@ -20,7 +20,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="parent">The parent of the folder</param>
         /// <param name="name">The name of the folder</param>
-        public Folder(ProfileElement parent, string name)
+        public Folder(ProfileElement parent, string name) : base(parent.Profile)
         {
             FolderEntity = new FolderEntity();
             EntityId = Guid.NewGuid();
@@ -29,14 +29,11 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-
-            LayerEffectsList = new List<BaseLayerEffect>();
-            ExpandedPropertyGroups = new List<string>();
-
+            
             Parent.AddChild(this);
         }
 
-        internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity)
+        internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent.Profile)
         {
             FolderEntity = folderEntity;
             EntityId = folderEntity.Id;
@@ -46,10 +43,7 @@ namespace Artemis.Core
             Name = folderEntity.Name;
             Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
-
-            LayerEffectsList = new List<BaseLayerEffect>();
-            ExpandedPropertyGroups = new List<string>();
-
+            
             Load();
         }
 

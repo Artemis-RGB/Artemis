@@ -20,7 +20,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a the path outlining the shape
         /// </summary>
-        public SKPath Path { get; protected set; }
+        public SKPath? Path { get; protected set; }
 
         /// <summary>
         ///     Calculates the <see cref="Path" />

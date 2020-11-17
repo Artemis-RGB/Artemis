@@ -12,13 +12,13 @@ namespace Artemis.Core.Services
         ///     Gets the current active module override. If set, all other modules are deactivated and only the
         ///     <see cref="ActiveModuleOverride" /> is active.
         /// </summary>
-        Module ActiveModuleOverride { get; }
+        Module? ActiveModuleOverride { get; }
 
         /// <summary>
         ///     Changes the current <see cref="ActiveModuleOverride" /> and deactivates all other modules
         /// </summary>
         /// <param name="overrideModule"></param>
-        Task SetActiveModuleOverride(Module overrideModule);
+        Task SetActiveModuleOverride(Module? overrideModule);
 
         /// <summary>
         ///     Evaluates every enabled module's activation requirements and activates/deactivates modules accordingly

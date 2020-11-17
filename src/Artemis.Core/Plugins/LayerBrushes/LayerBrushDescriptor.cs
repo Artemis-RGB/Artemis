@@ -59,6 +59,7 @@ namespace Artemis.Core.LayerBrushes
         /// </summary>
         internal void CreateInstance(Layer layer)
         {
+            if (layer == null) throw new ArgumentNullException(nameof(layer));
             if (layer.LayerBrush != null)
                 throw new ArtemisCoreException("Layer already has an instantiated layer brush");
 

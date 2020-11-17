@@ -20,6 +20,7 @@ namespace Artemis.Core.LayerBrushes
         /// </summary>
         protected RgbNetLayerBrush()
         {
+            LedGroup = new ListLedGroup();
             BrushType = LayerBrushType.RgbNet;
             SupportsTransformation = false;
         }
@@ -75,7 +76,7 @@ namespace Artemis.Core.LayerBrushes
         // Not used in this effect type
         internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
-            throw new NotImplementedException("RGB.NET layer effectes do not implement InternalRender");
+            throw new NotImplementedException("RGB.NET layer effects do not implement InternalRender");
         }
 
         private void LayerOnRenderPropertiesUpdated(object? sender, EventArgs e)

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -27,11 +29,11 @@ namespace Artemis.Core
             Name = pluginSettingEntity.Name;
             try
             {
-                Value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
+                _value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
             }
             catch (JsonReaderException)
             {
-                Value = default;
+                _value = default!;
             }
         }
 
@@ -43,6 +45,8 @@ namespace Artemis.Core
         /// <summary>
         ///     The value of the setting
         /// </summary>
+        [AllowNull]
+        [CanBeNull]
         public T Value
         {
             get => _value;
@@ -50,7 +54,7 @@ namespace Artemis.Core
             {
                 if (Equals(_value, value)) return;
 
-                _value = value;
+                _value = value!;
                 OnSettingChanged();
                 OnPropertyChanged(nameof(Value));
 
@@ -94,12 +98,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when the value of the setting has been changed
         /// </summary>
-        public event EventHandler SettingChanged;
+        public event EventHandler? SettingChanged;
 
         /// <summary>
         ///     Occurs when the value of the setting has been saved
         /// </summary>
-        public event EventHandler SettingSaved;
+        public event EventHandler? SettingSaved;
 
         /// <inheritdoc />
         public override string ToString()

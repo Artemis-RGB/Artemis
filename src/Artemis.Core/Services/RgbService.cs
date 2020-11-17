@@ -17,7 +17,7 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _sampleSizeSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private ListLedGroup _surfaceLedGroup;
+        private ListLedGroup? _surfaceLedGroup;
 
         public RgbService(ILogger logger, ISettingsService settingsService)
         {
@@ -41,7 +41,7 @@ namespace Artemis.Core.Services
         public RGBSurface Surface { get; set; }
 
         public TimerUpdateTrigger UpdateTrigger { get; }
-        public BitmapBrush BitmapBrush { get; private set; }
+        public BitmapBrush? BitmapBrush { get; private set; }
         public IReadOnlyCollection<IRGBDevice> LoadedDevices => _loadedDevices.AsReadOnly();
         public double RenderScale => _renderScaleSetting.Value;
         public bool IsRenderPaused { get; set; }
@@ -109,7 +109,7 @@ namespace Artemis.Core.Services
 
         public void UpdateSurfaceLedGroup()
         {
-            if (_surfaceLedGroup == null)
+            if (_surfaceLedGroup == null || BitmapBrush == null)
             {
                 // Apply the application wide brush and decorator
                 BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value), _sampleSizeSetting);
@@ -125,10 +125,6 @@ namespace Artemis.Core.Services
                 // Apply the application wide brush and decorator
                 BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
                 _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
-            }
-
-            lock (BitmapBrush)
-            {
             }
         }
 

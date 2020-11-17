@@ -26,7 +26,7 @@ namespace Artemis.Core
             if (IsOpen)
                 throw new ArtemisCoreException("Cannot open render context because it is already open");
 
-            if (!_valid)
+            if (!_valid || Canvas == null)
             {
                 SKRect pathBounds = path.Bounds;
                 int width = (int) pathBounds.Width;
@@ -59,7 +59,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Renderer");
             
-            Canvas.Restore();
+            Canvas?.Restore();
             Paint?.Dispose();
             Paint = null;
 

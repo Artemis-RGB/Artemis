@@ -7,7 +7,7 @@ namespace Artemis.Core.LayerBrushes
     /// </summary>
     public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
     {
-        private T _properties;
+        private T _properties = null!;
 
         /// <summary>
         ///     Gets whether all properties on this brush are initialized
@@ -35,7 +35,7 @@ namespace Artemis.Core.LayerBrushes
         internal void InitializeProperties()
         {
             Properties = Activator.CreateInstance<T>();
-            Properties.GroupDescription ??= new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
+            Properties.GroupDescription = new PropertyGroupDescriptionAttribute {Name = Descriptor.DisplayName, Description = Descriptor.Description};
             Properties.LayerBrush = this;
             Properties.Initialize(Layer, "LayerBrush.", Descriptor.Provider);
             PropertiesInitialized = true;

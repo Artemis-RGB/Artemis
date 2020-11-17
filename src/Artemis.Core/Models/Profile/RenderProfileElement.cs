@@ -16,10 +16,12 @@ namespace Artemis.Core
     /// </summary>
     public abstract class RenderProfileElement : ProfileElement
     {
-        internal RenderProfileElement()
+        internal RenderProfileElement(Profile profile) : base(profile)
         {
             Timeline = new Timeline();
             Renderer = new Renderer();
+            ExpandedPropertyGroups = new List<string>();
+            LayerEffectsList = new List<BaseLayerEffect>();
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -68,7 +70,7 @@ namespace Artemis.Core
                 LayerEffectEntity layerEffectEntity = new LayerEffectEntity
                 {
                     Id = layerEffect.EntityId,
-                    ProviderId = layerEffect.Descriptor.PlaceholderFor ?? layerEffect.ProviderId,
+                    ProviderId = layerEffect.Descriptor?.PlaceholderFor ?? layerEffect.ProviderId,
                     EffectType = layerEffect.GetEffectTypeName(),
                     Name = layerEffect.Name,
                     Enabled = layerEffect.Enabled,
@@ -76,7 +78,7 @@ namespace Artemis.Core
                     Order = layerEffect.Order
                 };
                 RenderElementEntity.LayerEffects.Add(layerEffectEntity);
-                layerEffect.BaseProperties.ApplyToEntity();
+                layerEffect.BaseProperties?.ApplyToEntity();
             }
 
             // Conditions
@@ -290,8 +292,7 @@ namespace Artemis.Core
         private void LayerEffectStoreOnLayerEffectRemoved(object? sender, LayerEffectStoreEvent e)
         {
             // If effects provided by the plugin are on the element, replace them with placeholders
-            List<BaseLayerEffect> pluginEffects = LayerEffectsList.Where(ef => ef.Descriptor.Provider != null &&
-                                                                               ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
+            List<BaseLayerEffect> pluginEffects = LayerEffectsList.Where(ef => ef.ProviderId == e.Registration.PluginFeature.Id).ToList();
             foreach (BaseLayerEffect pluginEffect in pluginEffects)
             {
                 LayerEffectEntity entity = RenderElementEntity.LayerEffects.First(en => en.Id == pluginEffect.EntityId);
@@ -323,13 +324,13 @@ namespace Artemis.Core
             protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private DataModelConditionGroup _displayCondition;
+        private DataModelConditionGroup? _displayCondition;
         private bool _displayConditionMet;
 
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>
-        public DataModelConditionGroup DisplayCondition
+        public DataModelConditionGroup? DisplayCondition
         {
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);

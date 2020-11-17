@@ -11,32 +11,32 @@ namespace Artemis.Core.DataModelExpansions
         /// <summary>
         ///     Gets or sets the user-friendly name for this property, shown in the UI.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         ///     Gets or sets the user-friendly description for this property, shown in the UI.
         /// </summary>
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         /// <summary>
         ///     Gets or sets the an optional prefix to show before displaying elements in the UI.
         /// </summary>
-        public string Prefix { get; set; }
+        public string? Prefix { get; set; }
 
         /// <summary>
         ///     Gets or sets an optional affix to show behind displaying elements in the UI.
         /// </summary>
-        public string Affix { get; set; }
+        public string? Affix { get; set; }
 
         /// <summary>
         ///     Gets or sets an optional maximum value, this value is not enforced but used for percentage calculations.
         /// </summary>
-        public object MaxValue { get; set; }
+        public object? MaxValue { get; set; }
 
         /// <summary>
         ///     Gets or sets an optional minimum value, this value is not enforced but used for percentage calculations.
         /// </summary>
-        public object MinValue { get; set; }
+        public object? MinValue { get; set; }
 
         /// <summary>
         ///     Gets or sets whether this property resets the max depth of the data model, defaults to true

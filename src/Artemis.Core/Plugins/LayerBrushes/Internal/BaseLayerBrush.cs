@@ -10,9 +10,19 @@ namespace Artemis.Core.LayerBrushes
     {
         private LayerBrushType _brushType;
         private ILayerBrushConfigurationDialog? _configurationDialog;
-        private LayerBrushDescriptor? _descriptor;
+        private LayerBrushDescriptor _descriptor;
         private Layer _layer;
         private bool _supportsTransformation = true;
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="BaseLayerBrush" /> class
+        /// </summary>
+        protected BaseLayerBrush()
+        {
+            // Both are set right after construction to keep the constructor of inherited classes clean
+            _layer = null!;
+            _descriptor = null!;
+        }
 
         /// <summary>
         ///     Gets the layer this brush is applied to
@@ -26,7 +36,7 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     Gets the descriptor of this brush
         /// </summary>
-        public LayerBrushDescriptor? Descriptor
+        public LayerBrushDescriptor Descriptor
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);

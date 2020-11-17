@@ -60,7 +60,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the bitmap used to sample the brush
         /// </summary>
-        public SKBitmap Bitmap { get; private set; }
+        public SKBitmap? Bitmap { get; private set; }
 
         #endregion
 
@@ -94,6 +94,9 @@ namespace Artemis.Core
 
         private void TakeCenter(IEnumerable<BrushRenderTarget> renderTargets)
         {
+            if (Bitmap == null)
+                return;
+
             foreach (BrushRenderTarget renderTarget in renderTargets)
             {
                 Point scaledLocation = renderTarget.Point * Scale;
@@ -104,6 +107,9 @@ namespace Artemis.Core
 
         private void TakeSamples(IEnumerable<BrushRenderTarget> renderTargets)
         {
+            if (Bitmap == null)
+                return;
+
             int sampleSize = _sampleSizeSetting.Value;
             int sampleDepth = Math.Sqrt(sampleSize).RoundToInt();
 

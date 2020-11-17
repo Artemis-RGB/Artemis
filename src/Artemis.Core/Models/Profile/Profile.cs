@@ -15,7 +15,7 @@ namespace Artemis.Core
         private bool _isActivated;
         private readonly object _lock = new object();
 
-        internal Profile(ProfileModule module, string name)
+        internal Profile(ProfileModule module, string name) : base(null!)
         {
             ProfileEntity = new ProfileEntity();
             EntityId = Guid.NewGuid();
@@ -30,7 +30,7 @@ namespace Artemis.Core
             Save();
         }
 
-        internal Profile(ProfileModule module, ProfileEntity profileEntity)
+        internal Profile(ProfileModule module, ProfileEntity profileEntity) : base(null!)
         {
             Profile = this;
             ProfileEntity = profileEntity;
@@ -149,7 +149,7 @@ namespace Artemis.Core
                 ChildrenList.Clear();
 
                 // Populate the profile starting at the root, the rest is populated recursively
-                FolderEntity rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
+                FolderEntity? rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
                 {
                     Folder _ = new Folder(this, "Root folder");

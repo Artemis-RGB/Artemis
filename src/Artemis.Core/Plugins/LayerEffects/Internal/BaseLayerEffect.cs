@@ -9,7 +9,7 @@ namespace Artemis.Core.LayerEffects
     /// </summary>
     public abstract class BaseLayerEffect : CorePropertyChanged, IDisposable
     {
-        private ILayerEffectConfigurationDialog _configurationDialog;
+        private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
         private bool _enabled;
         private Guid _entityId;
@@ -17,6 +17,15 @@ namespace Artemis.Core.LayerEffects
         private string _name;
         private int _order;
         private RenderProfileElement _profileElement;
+
+        /// <inheritdoc />
+        protected BaseLayerEffect()
+        {
+            // These are set right after construction to keep the constructor of inherited classes clean
+            _profileElement = null!;
+            _descriptor = null!;
+            _name = null!;
+        }
 
         /// <summary>
         ///     Gets the unique ID of this effect
@@ -76,7 +85,7 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets the <see cref="LayerEffectDescriptor" /> that registered this effect
         /// </summary>
-        public LayerEffectDescriptor? Descriptor
+        public LayerEffectDescriptor Descriptor
         {
             get => _descriptor;
             internal set => SetAndNotify(ref _descriptor, value);
@@ -85,7 +94,7 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets or sets a configuration dialog complementing the regular properties
         /// </summary>
-        public ILayerEffectConfigurationDialog ConfigurationDialog
+        public ILayerEffectConfigurationDialog? ConfigurationDialog
         {
             get => _configurationDialog;
             protected set => SetAndNotify(ref _configurationDialog, value);
@@ -94,12 +103,12 @@ namespace Artemis.Core.LayerEffects
         /// <summary>
         ///     Gets the ID of the <see cref="LayerEffectProvider"/> that provided this effect
         /// </summary>
-        public string ProviderId => Descriptor?.Provider?.Id;
+        public string ProviderId => Descriptor.Provider.Id;
 
         /// <summary>
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
-        public virtual LayerPropertyGroup BaseProperties => null;
+        public virtual LayerPropertyGroup? BaseProperties => null;
 
         internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
 

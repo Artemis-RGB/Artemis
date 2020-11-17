@@ -13,7 +13,7 @@ namespace Artemis.Core
     {
         private bool _enabled;
         private Guid _entityId;
-        private string _name;
+        private string? _name;
         private int _order;
         private ProfileElement? _parent;
         private Profile _profile;
@@ -21,8 +21,9 @@ namespace Artemis.Core
         internal List<ProfileElement> ChildrenList;
         internal bool Disposed;
 
-        internal ProfileElement()
+        internal ProfileElement(Profile profile)
         {
+            _profile = profile;
             ChildrenList = new List<ProfileElement>();
         }
 
@@ -56,7 +57,16 @@ namespace Artemis.Core
         /// <summary>
         ///     The element's children
         /// </summary>
-        public ReadOnlyCollection<ProfileElement> Children => ChildrenList.AsReadOnly();
+        public ReadOnlyCollection<ProfileElement> Children
+        {
+            get
+            {
+                lock (ChildrenList)
+                {
+                    return ChildrenList.AsReadOnly();
+                }
+            }
+        }
 
         /// <summary>
         ///     The order in which this element appears in the update loop and editor
@@ -70,7 +80,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The name which appears in the editor
         /// </summary>
-        public string Name
+        public string? Name
         {
             get => _name;
             set => SetAndNotify(ref _name, value);

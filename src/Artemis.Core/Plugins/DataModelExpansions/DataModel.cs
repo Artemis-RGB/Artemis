@@ -16,6 +16,16 @@ namespace Artemis.Core.DataModelExpansions
         private readonly Dictionary<string, DataModel> _dynamicDataModels = new Dictionary<string, DataModel>();
 
         /// <summary>
+        ///     Creates a new instance of the <see cref="DataModel" /> class
+        /// </summary>
+        protected DataModel()
+        {
+            // These are both set right after construction to keep the constructor of inherited classes clean
+            Feature = null!;
+            DataModelDescription = null!;
+        }
+
+        /// <summary>
         ///     Gets the plugin feature this data model belongs to
         /// </summary>
         [DataModelIgnore]
@@ -60,7 +70,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="key">The key of the child, must be unique to this data model</param>
         /// <param name="name">An optional name, if not provided the key will be used in a humanized form</param>
         /// <param name="description">An optional description</param>
-        public T AddDynamicChild<T>(T dynamicDataModel, string key, string name = null, string description = null) where T : DataModel
+        public T AddDynamicChild<T>(T dynamicDataModel, string key, string? name = null, string? description = null) where T : DataModel
         {
             if (dynamicDataModel == null)
                 throw new ArgumentNullException(nameof(dynamicDataModel));
@@ -140,7 +150,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns>If found, the dynamic data model otherwise <c>null</c></returns>
         public T? DynamicChild<T>(string key) where T : DataModel
         {
-            _dynamicDataModels.TryGetValue(key, out DataModel value);
+            _dynamicDataModels.TryGetValue(key, out DataModel? value);
             return value as T;
         }
 
