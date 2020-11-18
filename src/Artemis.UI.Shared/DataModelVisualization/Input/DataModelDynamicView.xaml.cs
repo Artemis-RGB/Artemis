@@ -8,6 +8,9 @@ namespace Artemis.UI.Shared.Input
     /// </summary>
     public partial class DataModelDynamicView : UserControl
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelDynamicView" /> class
+        /// </summary>
         public DataModelDynamicView()
         {
             InitializeComponent();

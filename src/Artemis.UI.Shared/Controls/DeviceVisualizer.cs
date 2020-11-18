@@ -38,8 +38,8 @@ namespace Artemis.UI.Shared
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
         private readonly DispatcherTimer _timer;
-        private BitmapImage _deviceImage;
-        private ArtemisDevice _oldDevice;
+        private BitmapImage? _deviceImage;
+        private ArtemisDevice? _oldDevice;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DeviceVisualizer" /> class
@@ -60,7 +60,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets the device to visualize
         /// </summary>
-        public ArtemisDevice Device
+        public ArtemisDevice? Device
         {
             get => (ArtemisDevice) GetValue(DeviceProperty);
             set => SetValue(DeviceProperty, value);
@@ -78,16 +78,32 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets a list of LEDs to highlight
         /// </summary>
-        public IEnumerable<ArtemisLed> HighlightedLeds
+        public IEnumerable<ArtemisLed>? HighlightedLeds
         {
             get => (IEnumerable<ArtemisLed>) GetValue(HighlightedLedsProperty);
             set => SetValue(HighlightedLedsProperty, value);
         }
 
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _timer.Stop();
+            }
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _timer.Stop();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <inheritdoc />
@@ -174,7 +190,8 @@ namespace Artemis.UI.Shared
 
             if (_oldDevice != null)
             {
-                Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                if (Device != null) 
+                    Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
                 _oldDevice = null;
             }
         }
@@ -224,7 +241,7 @@ namespace Artemis.UI.Shared
             UpdateTransform();
 
             // Load the device main image
-            if (Device.RgbDevice?.DeviceInfo?.Image?.AbsolutePath != null && File.Exists(Device.RgbDevice.DeviceInfo.Image.AbsolutePath))
+            if (Device.RgbDevice.DeviceInfo?.Image?.AbsolutePath != null && File.Exists(Device.RgbDevice.DeviceInfo.Image.AbsolutePath))
                 _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
 
             // Create all the LEDs
@@ -266,7 +283,7 @@ namespace Artemis.UI.Shared
             InvalidateMeasure();
         }
 
-        private void DevicePropertyChanged(object sender, PropertyChangedEventArgs e)
+        private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Device.RgbDevice.Scale) || e.PropertyName == nameof(Device.RgbDevice.Rotation))
                 UpdateTransform();

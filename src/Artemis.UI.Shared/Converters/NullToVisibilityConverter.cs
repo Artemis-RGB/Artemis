@@ -5,9 +5,13 @@ using System.Windows.Data;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    /// Converts <see langword="null"/> to <see cref="Visibility"/>
+    /// </summary>
     public class NullToVisibilityConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <inheritdoc />
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             Parameters direction;
             if (parameter == null)
@@ -23,7 +27,8 @@ namespace Artemis.UI.Shared
             return value == null ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        /// <inheritdoc />
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -16,6 +16,7 @@ namespace Artemis.UI.Shared.Input
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Window _rootView;
         private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private bool _displaySwitchButton;
         private DataModelDisplayViewModel _displayViewModel;
         private DataModelInputViewModel _inputViewModel;
         private bool _isEnabled;
@@ -23,7 +24,6 @@ namespace Artemis.UI.Shared.Input
         private DataModelPropertyAttribute _targetDescription;
         private Type _targetType;
         private object _value;
-        private bool _displaySwitchButton;
 
         public DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
@@ -42,6 +42,9 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the brush to use for the input button
+        /// </summary>
         public SolidColorBrush ButtonBrush
         {
             get => _buttonBrush;
@@ -52,32 +55,50 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets the brush to use for the switch button
+        /// </summary>
         public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
 
+        /// <summary>
+        ///     Gets the view model used to display the value
+        /// </summary>
         public DataModelDisplayViewModel DisplayViewModel
         {
             get => _displayViewModel;
-            set => SetAndNotify(ref _displayViewModel, value);
+            private set => SetAndNotify(ref _displayViewModel, value);
         }
 
+        /// <summary>
+        ///     Gets the view model used to edit the value
+        /// </summary>
         public DataModelInputViewModel InputViewModel
         {
             get => _inputViewModel;
             private set => SetAndNotify(ref _inputViewModel, value);
         }
 
+        /// <summary>
+        ///     Gets the type of the target property
+        /// </summary>
         public Type TargetType
         {
             get => _targetType;
             private set => SetAndNotify(ref _targetType, value);
         }
 
+        /// <summary>
+        ///     Gets the description of the target property
+        /// </summary>
         public DataModelPropertyAttribute TargetDescription
         {
             get => _targetDescription;
             set => SetAndNotify(ref _targetDescription, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the value of the target
+        /// </summary>
         public object Value
         {
             get => _value;
@@ -88,24 +109,36 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the placeholder text when no value is entered
+        /// </summary>
         public string Placeholder
         {
             get => _placeholder;
             set => SetAndNotify(ref _placeholder, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the enabled state of the input
+        /// </summary>
         public bool IsEnabled
         {
             get => _isEnabled;
             private set => SetAndNotify(ref _isEnabled, value);
         }
 
+        /// <summary>
+        ///     Gets or sets whether the switch button should be displayed
+        /// </summary>
         public bool DisplaySwitchButton
         {
             get => _displaySwitchButton;
             set => SetAndNotify(ref _displaySwitchButton, value);
         }
 
+        /// <summary>
+        ///     Activates the input view model
+        /// </summary>
         public void ActivateInputViewModel()
         {
             InputViewModel = _dataModelUIService.GetDataModelInputViewModel(
@@ -116,6 +149,10 @@ namespace Artemis.UI.Shared.Input
             );
         }
 
+        /// <summary>
+        ///     Updates the target type
+        /// </summary>
+        /// <param name="target">The new target type</param>
         public void UpdateTargetType(Type target)
         {
             TargetType = target;
@@ -135,6 +172,9 @@ namespace Artemis.UI.Shared.Input
                 ApplyFreeInput(TargetType.GetDefault(), true);
         }
 
+        /// <summary>
+        ///     Requests switching the input type to dynamic
+        /// </summary>
         public void SwitchToDynamic()
         {
             InputViewModel?.Cancel();
@@ -154,16 +194,32 @@ namespace Artemis.UI.Shared.Input
 
         #region IDisposable
 
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+                if (_rootView != null)
+                {
+                    _rootView.MouseUp -= RootViewOnMouseUp;
+                    _rootView.KeyUp -= RootViewOnKeyUp;
+                }
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
-            if (_rootView != null)
-            {
-                _rootView.MouseUp -= RootViewOnMouseUp;
-                _rootView.KeyUp -= RootViewOnKeyUp;
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
+
 
         #region Event handlers
 
@@ -191,14 +247,28 @@ namespace Artemis.UI.Shared.Input
 
         #region Events
 
-        public event EventHandler<DataModelInputStaticEventArgs> ValueUpdated;
-        public event EventHandler SwitchToDynamicRequested;
+        /// <summary>
+        ///     Occurs when the value of the property has been updated
+        /// </summary>
+        public event EventHandler<DataModelInputStaticEventArgs>? ValueUpdated;
 
+        /// <summary>
+        ///     Occurs when a switch to dynamic input has been requested
+        /// </summary>
+        public event EventHandler? SwitchToDynamicRequested;
+
+        /// <summary>
+        ///     Invokes the <see cref="ValueUpdated" /> event
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnValueUpdated(DataModelInputStaticEventArgs e)
         {
             ValueUpdated?.Invoke(this, e);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="SwitchToDynamicRequested" /> event
+        /// </summary>
         protected virtual void OnSwitchToDynamicRequested()
         {
             SwitchToDynamicRequested?.Invoke(this, EventArgs.Empty);

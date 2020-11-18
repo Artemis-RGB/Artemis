@@ -9,25 +9,41 @@ using Stylet;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Represents a <see cref="DataModel" /> input view model
+    /// </summary>
+    /// <typeparam name="T">The type of the data model</typeparam>
     public abstract class DataModelInputViewModel<T> : DataModelInputViewModel
     {
         private bool _closed;
         private T _inputValue;
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DataModelInputViewModel{T}" /> class
+        /// </summary>
+        /// <param name="targetDescription">The description of the property this input VM is representing</param>
+        /// <param name="initialValue">The initial value to set the input value to</param>
         protected DataModelInputViewModel(DataModelPropertyAttribute targetDescription, T initialValue)
         {
             TargetDescription = targetDescription;
             InputValue = initialValue;
         }
 
+        /// <summary>
+        ///     Gets or sets the value shown in the input
+        /// </summary>
         public T InputValue
         {
             get => _inputValue;
             set => SetAndNotify(ref _inputValue, value);
         }
 
+        /// <summary>
+        ///     Gets the description of the property this input VM is representing
+        /// </summary>
         public DataModelPropertyAttribute TargetDescription { get; }
-        internal override object InternalGuard { get; } = null;
+
+        internal override object InternalGuard { get; } = new object();
 
         /// <inheritdoc />
         public sealed override void Submit()
@@ -74,23 +90,6 @@ namespace Artemis.UI.Shared
         /// </summary>
         internal IReadOnlyCollection<Type> CompatibleConversionTypes { get; set; }
 
-        public void AttachView(UIElement view)
-        {
-            if (View != null)
-                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
-
-            View = view;
-
-            // After the animation finishes attempt to focus the input field
-            Task.Run(async () =>
-            {
-                await Task.Delay(50);
-                await Execute.OnUIThreadAsync(() => View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
-            });
-        }
-
-        public UIElement View { get; set; }
-
         /// <summary>
         ///     Submits the input value and removes this view model.
         ///     <para>This is called automatically when the user presses enter or clicks outside the view</para>
@@ -116,5 +115,22 @@ namespace Artemis.UI.Shared
         protected virtual void OnCancel()
         {
         }
+
+        public void AttachView(UIElement view)
+        {
+            if (View != null)
+                throw new InvalidOperationException(string.Format("Tried to attach View {0} to ViewModel {1}, but it already has a view attached", view.GetType().Name, GetType().Name));
+
+            View = view;
+
+            // After the animation finishes attempt to focus the input field
+            Task.Run(async () =>
+            {
+                await Task.Delay(50);
+                await Execute.OnUIThreadAsync(() => View.MoveFocus(new TraversalRequest(FocusNavigationDirection.First)));
+            });
+        }
+
+        public UIElement View { get; set; }
     }
 }
