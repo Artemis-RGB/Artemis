@@ -44,14 +44,6 @@ namespace Artemis.UI.PropertyInput
             NotifyOfPropertyChange(nameof(SelectedDescriptor));
         }
 
-
-        public override void Dispose()
-        {
-            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
-            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
-            base.Dispose();
-        }
-
         protected override void OnInputValueApplied()
         {
             if (LayerProperty.ProfileElement is Layer layer)
@@ -67,5 +59,21 @@ namespace Artemis.UI.PropertyInput
         {
             UpdateEnumValues();
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
+                _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
+            }
+
+            base.Dispose(disposing);
+        }
+
+        #endregion
     }
 }
