@@ -7,26 +7,41 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisPluginException : Exception
     {
-        internal ArtemisPluginException(Plugin plugin)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
+        /// </summary>
+        public ArtemisPluginException(Plugin plugin)
         {
             Plugin = plugin;
         }
 
-        internal ArtemisPluginException(Plugin plugin, string message) : base(message)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
+        /// </summary>
+        public ArtemisPluginException(Plugin plugin, string message) : base(message)
         {
             Plugin = plugin;
         }
 
-        internal ArtemisPluginException(Plugin plugin, string message, Exception inner) : base(message, inner)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
+        /// </summary>
+        public ArtemisPluginException(Plugin plugin, string message, Exception inner) : base(message, inner)
         {
             Plugin = plugin;
         }
 
-        internal ArtemisPluginException(string message) : base(message)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
+        /// </summary>
+        public ArtemisPluginException(string message) : base(message)
         {
         }
 
-        internal ArtemisPluginException(string message, Exception inner) : base(message, inner)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ArtemisPluginException" /> class
+        /// </summary>
+        public ArtemisPluginException(string message, Exception inner) : base(message, inner)
         {
         }
 
