@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Windows;
-using System.Windows.Markup;
 using System.Windows.Media.Animation;
 
 // Code from http://www.wpfmentor.com/2009/01/how-to-debug-triggers-using-trigger.html
@@ -22,7 +21,7 @@ using System.Windows.Media.Animation;
 
 namespace Artemis.UI.Shared
 {
-    #if DEBUG
+#if DEBUG
 
     /// <summary>
     ///     Contains attached properties to activate Trigger Tracing on the specified Triggers.
@@ -65,37 +64,31 @@ namespace Artemis.UI.Shared
         /// </summary>
         private class TriggerTraceListener : TraceListener
         {
-            public override void TraceEvent(TraceEventCache eventCache, string source, TraceEventType eventType, int id, string format, params object[] args)
+            public override void TraceEvent(TraceEventCache? eventCache, string source, TraceEventType eventType, int id, string format, params object?[]? args)
             {
                 base.TraceEvent(eventCache, source, eventType, id, format, args);
 
-                if (format.StartsWith("Storyboard has begun;"))
-                {
-                    TriggerTraceStoryboard storyboard = args[1] as TriggerTraceStoryboard;
-                    if (storyboard != null)
+                if (format.StartsWith("Storyboard has begun;") && args != null)
+                    if (args[1] is TriggerTraceStoryboard storyboard)
                     {
                         // add a breakpoint here to see when your trigger has been
                         // entered or exited
 
                         // the element being acted upon
-                        object targetElement = args[5];
-
-                        // the namescope of the element being acted upon
-                        INameScope namescope = (INameScope) args[7];
+                        object? targetElement = args[5];
 
                         TriggerBase triggerBase = storyboard.TriggerBase;
                         string triggerName = GetTriggerName(storyboard.TriggerBase);
 
                         Debug.WriteLine("Element: {0}, {1}: {2}: {3}", targetElement, triggerBase.GetType().Name, triggerName, storyboard.StoryboardType);
                     }
-                }
             }
 
-            public override void Write(string message)
+            public override void Write(string? message)
             {
             }
 
-            public override void WriteLine(string message)
+            public override void WriteLine(string? message)
             {
             }
         }
@@ -118,12 +111,16 @@ namespace Artemis.UI.Shared
         ///     to identify the trigger in the debug output.
         /// </summary>
         /// <param name="trigger">The trigger.</param>
+        /// <param name="value">The value.</param>
         /// <returns></returns>
         public static void SetTriggerName(TriggerBase trigger, string value)
         {
             trigger.SetValue(TriggerNameProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the trigger name property
+        /// </summary>
         public static readonly DependencyProperty TriggerNameProperty =
             DependencyProperty.RegisterAttached(
                 "TriggerName",
@@ -155,6 +152,9 @@ namespace Artemis.UI.Shared
             trigger.SetValue(TraceEnabledProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets whether the trace is enabled
+        /// </summary>
         public static readonly DependencyProperty TraceEnabledProperty =
             DependencyProperty.RegisterAttached(
                 "TraceEnabled",
@@ -164,9 +164,7 @@ namespace Artemis.UI.Shared
 
         private static void OnTraceEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            TriggerBase triggerBase = d as TriggerBase;
-
-            if (triggerBase == null)
+            if (!(d is TriggerBase triggerBase))
                 return;
 
             if (!(e.NewValue is bool))
@@ -187,22 +185,16 @@ namespace Artemis.UI.Shared
                 // remove the dummy storyboards
 
                 foreach (TriggerActionCollection actionCollection in new[] {triggerBase.EnterActions, triggerBase.ExitActions})
-                {
-                    foreach (TriggerAction triggerAction in actionCollection)
+                foreach (TriggerAction triggerAction in actionCollection)
+                    if (triggerAction is BeginStoryboard bsb && bsb.Storyboard is TriggerTraceStoryboard)
                     {
-                        BeginStoryboard bsb = triggerAction as BeginStoryboard;
-
-                        if (bsb != null && bsb.Storyboard != null && bsb.Storyboard is TriggerTraceStoryboard)
-                        {
-                            actionCollection.Remove(bsb);
-                            break;
-                        }
+                        actionCollection.Remove(bsb);
+                        break;
                     }
-                }
             }
         }
 
         #endregion
     }
-    #endif
+#endif
 }

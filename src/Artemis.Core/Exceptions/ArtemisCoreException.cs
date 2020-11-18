@@ -3,7 +3,7 @@
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents errors that occur withing the Artemis Core
+    ///     Represents errors that occur within the Artemis Core
     /// </summary>
     public class ArtemisCoreException : Exception
     {

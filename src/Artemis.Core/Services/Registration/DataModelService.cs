@@ -11,7 +11,7 @@ namespace Artemis.Core.Services
         public DataModelService(IPluginManagementService pluginManagementService)
         {
             // Add data models of already loaded plugins
-            foreach (Module module in pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled && p.InternalDataModel != null))
+            foreach (Module module in pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled))
                 AddModuleDataModel(module);
             foreach (BaseDataModelExpansion dataModelExpansion in pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled))
                 AddDataModelExpansionDataModel(dataModelExpansion);
@@ -61,7 +61,8 @@ namespace Artemis.Core.Services
         private void AddModuleDataModel(Module module)
         {
             if (module.InternalDataModel == null)
-                throw new ArtemisCoreException("Cannot add module data model that is not enabled");
+                return;
+
             if (module.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginFeatureException(module, "Module overrides GetDataModelDescription but returned null");
 

@@ -3,27 +3,93 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
-using Ninject;
 
 namespace Artemis.UI.Shared.Services
 {
+    /// <summary>
+    ///     Provides access the the profile editor back-end logic
+    /// </summary>
     public interface IProfileEditorService : IArtemisSharedUIService
     {
+        /// <summary>
+        ///     Gets the currently selected profile
+        /// </summary>
         Profile SelectedProfile { get; }
+
+        /// <summary>
+        ///     Gets the currently selected profile element
+        /// </summary>
         RenderProfileElement SelectedProfileElement { get; }
+
+        /// <summary>
+        ///     Gets the currently selected data binding property
+        /// </summary>
         ILayerProperty SelectedDataBinding { get; }
+
+        /// <summary>
+        ///     Gets or sets the current time
+        /// </summary>
         TimeSpan CurrentTime { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the pixels per second (zoom level)
+        /// </summary>
         int PixelsPerSecond { get; set; }
+
+        /// <summary>
+        ///     Gets a read-only collection of all registered property editors
+        /// </summary>
         ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors { get; }
-        IKernel Kernel { get; }
+
+        /// <summary>
+        ///     Changes the selected profile
+        /// </summary>
+        /// <param name="profile">The profile to select</param>
         void ChangeSelectedProfile(Profile profile);
+
+        /// <summary>
+        ///     Updates the selected profile and saves it to persistent storage
+        /// </summary>
         void UpdateSelectedProfile();
+
+        /// <summary>
+        ///     Changes the selected profile element
+        /// </summary>
+        /// <param name="profileElement">The profile element to select</param>
         void ChangeSelectedProfileElement(RenderProfileElement profileElement);
+
+        /// <summary>
+        ///     Updates the selected profile element and saves the profile it is contained in to persistent storage
+        /// </summary>
         void UpdateSelectedProfileElement();
+
+        /// <summary>
+        ///     Changes the selected data binding property
+        /// </summary>
+        /// <param name="layerProperty">The data binding property to select</param>
         void ChangeSelectedDataBinding(ILayerProperty layerProperty);
+
+        /// <summary>
+        ///     Updates the profile preview, forcing UI-elements to re-render
+        /// </summary>
         void UpdateProfilePreview();
+
+        /// <summary>
+        ///     Restores the profile to the last <see cref="UpdateSelectedProfile" /> call
+        /// </summary>
+        /// <returns><see langword="true" /> if undo was successful, otherwise <see langword="false" /></returns>
         bool UndoUpdateProfile();
+
+        /// <summary>
+        ///     Restores the profile to the last <see cref="UndoUpdateProfile" /> call
+        /// </summary>
+        /// <returns><see langword="true" /> if redo was successful, otherwise <see langword="false" /></returns>
         bool RedoUpdateProfile();
+
+        /// <summary>
+        ///     Gets the current module the profile editor is initialized for
+        /// </summary>
+        /// <returns>The current module the profile editor is initialized for</returns>
         ProfileModule GetCurrentModule();
 
         /// <summary>
@@ -85,6 +151,10 @@ namespace Artemis.UI.Shared.Services
         /// <returns></returns>
         PropertyInputRegistration RegisterPropertyInput(Type viewModelType, Plugin plugin);
 
+        /// <summary>
+        ///     Removes the property input view model
+        /// </summary>
+        /// <param name="registration"></param>
         void RemovePropertyInput(PropertyInputRegistration registration);
 
         /// <summary>
@@ -97,10 +167,11 @@ namespace Artemis.UI.Shared.Services
         /// <param name="snapToCurrentTime">Enable snapping to the current time of the editor</param>
         /// <param name="snapTimes">An optional extra list of times to snap to</param>
         /// <returns></returns>
-        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null);
+        TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null);
 
         /// <summary>
-        /// If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}"/> supporting <typeparamref name="T"/>
+        ///     If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}" /> supporting
+        ///     <typeparamref name="T" />
         /// </summary>
         PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty);
     }

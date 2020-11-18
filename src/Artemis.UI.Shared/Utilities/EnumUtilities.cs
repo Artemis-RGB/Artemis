@@ -20,7 +20,7 @@ namespace Artemis.UI.Shared
             if (!t.IsEnum)
                 throw new ArgumentException($"{nameof(t)} must be an enum type");
 
-            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription {Value = e, Description = e.Humanize()}).ToList();
+            return Enum.GetValues(t).Cast<Enum>().Select(e => new ValueDescription(e, e.Humanize())).ToList();
         }
 
         /// <summary>
@@ -34,9 +34,30 @@ namespace Artemis.UI.Shared
         }
     }
 
+    /// <summary>
+    ///     Represents a value and a description for an enum value
+    /// </summary>
     public class ValueDescription
     {
-        public object Value { get; set; }
-        public string Description { get; set; }
+        /// <summary>
+        /// Creates a new instance of the <see cref="ValueDescription"/> class
+        /// </summary>
+        /// <param name="value">The enum value</param>
+        /// <param name="description">The description of the value</param>
+        public ValueDescription(object value, string description)
+        {
+            Value = value ?? throw new ArgumentNullException(nameof(value));
+            Description = description ?? throw new ArgumentNullException(nameof(description));
+        }
+
+        /// <summary>
+        ///     The enum value
+        /// </summary>
+        public object Value { get; }
+
+        /// <summary>
+        ///     The description of the value
+        /// </summary>
+        public string Description { get; }
     }
 }

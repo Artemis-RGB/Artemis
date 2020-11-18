@@ -15,7 +15,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.Splash;
-using Artemis.UI.Shared.Ninject;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using Ninject;

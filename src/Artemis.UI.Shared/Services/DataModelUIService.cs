@@ -7,7 +7,6 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.DefaultTypes.DataModel.Display;
 using Artemis.UI.Shared.Input;
-using Artemis.UI.Shared.Ninject.Factories;
 using Ninject;
 using Ninject.Parameters;
 

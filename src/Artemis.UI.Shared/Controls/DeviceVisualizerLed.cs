@@ -30,9 +30,8 @@ namespace Artemis.UI.Shared
 
         public ArtemisLed Led { get; }
         public Rect LedRect { get; set; }
-        public BitmapImage LedImage { get; set; }
-
-        public Geometry DisplayGeometry { get; private set; }
+        public BitmapImage? LedImage { get; set; }
+        public Geometry? DisplayGeometry { get; private set; }
 
         public void RenderColor(DrawingContext drawingContext, bool isDimmed)
         {

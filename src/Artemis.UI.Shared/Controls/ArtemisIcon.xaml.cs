@@ -3,24 +3,37 @@ using System.Windows;
 using System.Windows.Controls;
 using MaterialDesignThemes.Wpf;
 
-namespace Artemis.UI.Shared.Controls
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Interaction logic for ArtemisIcon.xaml
     /// </summary>
     public partial class ArtemisIcon : UserControl
     {
+        /// <summary>
+        ///     Gets or sets the currently displayed icon as either a <see cref="PackIconKind" /> or an <see cref="Uri" /> pointing
+        ///     to an SVG
+        /// </summary>
         public static readonly DependencyProperty IconProperty = DependencyProperty.Register(nameof(Icon), typeof(object), typeof(ArtemisIcon),
             new FrameworkPropertyMetadata(IconPropertyChangedCallback));
 
+        /// <summary>
+        ///     Gets or sets the <see cref="PackIconKind" />
+        /// </summary>
         public static readonly DependencyProperty PackIconProperty = DependencyProperty.Register(nameof(PackIcon), typeof(PackIconKind?), typeof(ArtemisIcon),
             new FrameworkPropertyMetadata(IconPropertyChangedCallback));
 
+        /// <summary>
+        ///     Gets or sets the <see cref="Uri" /> pointing to the SVG
+        /// </summary>
         public static readonly DependencyProperty SvgSourceProperty = DependencyProperty.Register(nameof(SvgSource), typeof(Uri), typeof(ArtemisIcon),
             new FrameworkPropertyMetadata(IconPropertyChangedCallback));
 
         private bool _inCallback;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="ArtemisIcon"/> class
+        /// </summary>
         public ArtemisIcon()
         {
             InitializeComponent();
@@ -30,7 +43,7 @@ namespace Artemis.UI.Shared.Controls
         ///     Gets or sets the currently displayed icon as either a <see cref="PackIconKind" /> or an <see cref="Uri" /> pointing
         ///     to an SVG
         /// </summary>
-        public object Icon
+        public object? Icon
         {
             get => GetValue(IconProperty);
             set => SetValue(IconProperty, value);
@@ -73,9 +86,9 @@ namespace Artemis.UI.Shared.Controls
                 }
                 else if (artemisIcon.Icon is string iconString)
                 {
-                    if (Uri.TryCreate(iconString, UriKind.Absolute, out Uri uriResult))
+                    if (Uri.TryCreate(iconString, UriKind.Absolute, out Uri? uriResult))
                         artemisIcon.Icon = uriResult;
-                    else if (Enum.TryParse(typeof(PackIconKind), iconString, true, out object result))
+                    else if (Enum.TryParse(typeof(PackIconKind), iconString, true, out object? result))
                         artemisIcon.Icon = result;
                 }
             }

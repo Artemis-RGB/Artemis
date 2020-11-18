@@ -1,11 +1,10 @@
 ﻿using System;
-using Artemis.UI.Shared.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject.Extensions.Conventions;
 using Ninject.Modules;
 
-namespace Artemis.UI.Shared.Ninject
+namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     The main <see cref="NinjectModule" /> of the Artemis Shared UI toolkit that binds all services

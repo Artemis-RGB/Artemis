@@ -4,7 +4,7 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
-    public class DialogViewModelHost : PropertyChangedBase
+    internal class DialogViewModelHost : PropertyChangedBase
     {
         private readonly IViewManager _viewManager;
 
