@@ -6,7 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:home="clr-namespace:Artemis.UI.Screens.Home"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="574.026"
              d:DesignWidth="1029.87"
@@ -37,7 +37,7 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
-            <controls:ArtemisIcon SvgSource="/Resources/Images/Logo/bow.svg" Width="100" Height="100"/>
+            <shared:ArtemisIcon SvgSource="/Resources/Images/Logo/bow.svg" Width="100" Height="100"/>
             <StackPanel Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center">
                 <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to Artemis, RGB on steroids.</TextBlock>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"

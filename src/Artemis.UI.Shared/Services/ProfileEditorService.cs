@@ -22,6 +22,7 @@ namespace Artemis.UI.Shared.Services
         private readonly object _selectedProfileLock = new object();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
+        private IKernel _kernel;
 
         public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger, ICoreService coreService)
         {
@@ -29,8 +30,8 @@ namespace Artemis.UI.Shared.Services
             _logger = logger;
             _coreService = coreService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
+            _kernel = kernel;
 
-            Kernel = kernel;
             PixelsPerSecond = 100;
         }
 
@@ -40,7 +41,6 @@ namespace Artemis.UI.Shared.Services
             Execute.PostToUIThread(OnProfilePreviewUpdated);
         }
 
-        public IKernel Kernel { get; }
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
         public Profile SelectedProfile { get; private set; }
         public RenderProfileElement SelectedProfileElement { get; private set; }
@@ -207,7 +207,7 @@ namespace Artemis.UI.Shared.Services
                     return existing;
                 }
 
-                Kernel.Bind(viewModelType).ToSelf();
+                _kernel.Bind(viewModelType).ToSelf();
                 PropertyInputRegistration registration = new PropertyInputRegistration(this, plugin, supportedType, viewModelType);
                 _registeredPropertyEditors.Add(registration);
                 return registration;
@@ -223,7 +223,7 @@ namespace Artemis.UI.Shared.Services
                     registration.Unsubscribe();
                     _registeredPropertyEditors.Remove(registration);
 
-                    Kernel.Unbind(registration.ViewModelType);
+                    _kernel.Unbind(registration.ViewModelType);
                 }
             }
         }
@@ -282,7 +282,7 @@ namespace Artemis.UI.Shared.Services
                 return null;
 
             ConstructorArgument parameter = new ConstructorArgument("layerProperty", layerProperty);
-            IKernel kernel = registration != null ? registration.Plugin.Kernel : Kernel;
+            IKernel kernel = registration != null ? registration.Plugin.Kernel : _kernel;
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using Artemis.Core;
-using Artemis.UI.Shared.Controls;
 using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Shared

@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Artemis.UI.Shared
@@ -12,15 +11,32 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     Interaction logic for DraggableFloat.xaml
     /// </summary>
-    public partial class DraggableFloat : UserControl, INotifyPropertyChanged
+    public partial class DraggableFloat : INotifyPropertyChanged
     {
+        /// <summary>
+        ///     Gets or sets the current value
+        /// </summary>
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(float), typeof(DraggableFloat),
             new FrameworkPropertyMetadata(default(float), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, FloatPropertyChangedCallback));
 
+        /// <summary>
+        ///     Gets or sets the step size when dragging
+        /// </summary>
         public static readonly DependencyProperty StepSizeProperty = DependencyProperty.Register(nameof(StepSize), typeof(float), typeof(DraggableFloat));
+
+        /// <summary>
+        ///     Gets or sets the minimum value
+        /// </summary>
         public static readonly DependencyProperty MinProperty = DependencyProperty.Register(nameof(Min), typeof(float?), typeof(DraggableFloat));
+
+        /// <summary>
+        ///     Gets or sets the maximum value
+        /// </summary>
         public static readonly DependencyProperty MaxProperty = DependencyProperty.Register(nameof(Max), typeof(float?), typeof(DraggableFloat));
 
+        /// <summary>
+        ///     Occurs when the value has changed
+        /// </summary>
         public static readonly RoutedEvent ValueChangedEvent =
             EventManager.RegisterRoutedEvent(
                 nameof(Value),
@@ -28,42 +44,61 @@ namespace Artemis.UI.Shared
                 typeof(RoutedPropertyChangedEventHandler<float>),
                 typeof(DraggableFloat));
 
+        private readonly Regex _inputRegex = new Regex("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
+
         private bool _calledDragStarted;
 
         private bool _inCallback;
-        private readonly Regex _inputRegex = new Regex("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
         private Point _mouseDragStartPoint;
         private float _startValue;
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DraggableFloat" /> class
+        /// </summary>
         public DraggableFloat()
         {
             InitializeComponent();
         }
 
+        /// <summary>
+        ///     Gets or sets the current value
+        /// </summary>
         public float Value
         {
             get => (float) GetValue(ValueProperty);
             set => SetValue(ValueProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the current value as a string
+        /// </summary>
         public string InputValue
         {
             get => Value.ToString("N3", CultureInfo.InvariantCulture);
             set => UpdateValue(value);
         }
 
+        /// <summary>
+        ///     Gets or sets the step size when dragging
+        /// </summary>
         public float StepSize
         {
             get => (float) GetValue(StepSizeProperty);
             set => SetValue(StepSizeProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the minimum value
+        /// </summary>
         public float? Min
         {
             get => (float?) GetValue(MinProperty);
             set => SetValue(MinProperty, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the maximum value
+        /// </summary>
         public float? Max
         {
             get => (float?) GetValue(MaxProperty);
@@ -135,7 +170,9 @@ namespace Artemis.UI.Shared
 
             Point position = e.GetPosition((IInputElement) sender);
             if (position == _mouseDragStartPoint)
+            {
                 DisplayInput();
+            }
             else
             {
                 OnDragEnded();
@@ -186,10 +223,12 @@ namespace Artemis.UI.Shared
         private void InputKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
+            {
                 DisplayDragHandle();
+            }
             else if (e.Key == Key.Escape)
             {
-                DraggableFloatInputTextBox.Text = _startValue.ToString();
+                DraggableFloatInputTextBox.Text = _startValue.ToString(CultureInfo.InvariantCulture);
                 DisplayDragHandle();
             }
         }
@@ -208,32 +247,51 @@ namespace Artemis.UI.Shared
         {
             if (e.DataObject.GetDataPresent(typeof(string)))
             {
-                string text = (string) e.DataObject.GetData(typeof(string));
-                if (!_inputRegex.IsMatch(text))
+                if (e.DataObject.GetData(typeof(string)) is string text && !_inputRegex.IsMatch(text))
                     e.CancelCommand();
             }
             else
+            {
                 e.CancelCommand();
+            }
         }
 
         #endregion
 
         #region Events
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public event EventHandler DragStarted;
-        public event EventHandler DragEnded;
+        /// <inheritdoc />
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        /// <summary>
+        ///     Occurs when dragging has started
+        /// </summary>
+        public event EventHandler? DragStarted;
+
+        /// <summary>
+        ///     Occurs when dragging has ended
+        /// </summary>
+        public event EventHandler? DragEnded;
+
+        /// <summary>
+        ///     Invokes the <see cref="PropertyChanged" /> event
+        /// </summary>
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="DragStarted" /> event
+        /// </summary>
         protected virtual void OnDragStarted()
         {
             DragStarted?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="DragEnded" /> event
+        /// </summary>
         protected virtual void OnDragEnded()
         {
             DragEnded?.Invoke(this, EventArgs.Empty);

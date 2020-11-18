@@ -6,7 +6,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Plugins"
-             xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
@@ -34,7 +33,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <controls:ArtemisIcon Icon="{Binding Icon}"
+                <shared:ArtemisIcon Icon="{Binding Icon}"
                                       Width="48"
                                       Height="48"
                                       Margin="0 5 0 0"
