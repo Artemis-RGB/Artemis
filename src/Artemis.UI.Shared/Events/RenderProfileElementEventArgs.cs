@@ -3,20 +3,30 @@ using Artemis.Core;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Provides data on profile element related events raised by the profile editor
+    /// </summary>
     public class RenderProfileElementEventArgs : EventArgs
     {
-        public RenderProfileElementEventArgs(RenderProfileElement renderProfileElement)
+        internal RenderProfileElementEventArgs(RenderProfileElement renderProfileElement)
         {
             RenderProfileElement = renderProfileElement;
         }
 
-        public RenderProfileElementEventArgs(RenderProfileElement renderProfileElement, RenderProfileElement previousRenderProfileElement)
+        internal RenderProfileElementEventArgs(RenderProfileElement renderProfileElement, RenderProfileElement previousRenderProfileElement)
         {
             RenderProfileElement = renderProfileElement;
             PreviousRenderProfileElement = previousRenderProfileElement;
         }
 
+        /// <summary>
+        ///     Gets the profile element the event was raised for
+        /// </summary>
         public RenderProfileElement RenderProfileElement { get; }
-        public RenderProfileElement PreviousRenderProfileElement { get; }
+
+        /// <summary>
+        ///     If applicable, the previous active profile element before the event was raised
+        /// </summary>
+        public RenderProfileElement? PreviousRenderProfileElement { get; }
     }
 }

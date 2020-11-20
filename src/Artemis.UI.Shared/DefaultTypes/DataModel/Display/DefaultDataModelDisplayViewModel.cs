@@ -2,12 +2,16 @@
 
 namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
 {
-    public class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<object>
+    /// <summary>
+    ///     Represents the default data model display view model that is used when no display viewmodel specific for the type
+    ///     is registered
+    /// </summary>
+    internal class DefaultDataModelDisplayViewModel : DataModelDisplayViewModel<object>
     {
         private bool _showNull;
         private bool _showToString;
 
-        public DefaultDataModelDisplayViewModel()
+        internal DefaultDataModelDisplayViewModel()
         {
             ShowNull = true;
         }
@@ -15,7 +19,7 @@ namespace Artemis.UI.Shared.DefaultTypes.DataModel.Display
         public bool ShowToString
         {
             get => _showToString;
-            set => SetAndNotify(ref _showToString, value);
+            private set => SetAndNotify(ref _showToString, value);
         }
 
         public bool ShowNull

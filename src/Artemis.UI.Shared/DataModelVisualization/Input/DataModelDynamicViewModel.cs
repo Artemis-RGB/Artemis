@@ -10,9 +10,6 @@ using Artemis.UI.Shared.Services;
 using MaterialDesignColors.ColorManipulation;
 using Stylet;
 
-// Remove, annoying while working on it
-#pragma warning disable 1591
-
 namespace Artemis.UI.Shared.Input
 {
     public class DataModelDynamicViewModel : PropertyChangedBase, IDisposable
