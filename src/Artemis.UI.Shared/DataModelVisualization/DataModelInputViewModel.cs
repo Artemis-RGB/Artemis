@@ -116,6 +116,7 @@ namespace Artemis.UI.Shared
         {
         }
 
+        /// <inheritdoc />
         public void AttachView(UIElement view)
         {
             if (View != null)
@@ -131,6 +132,7 @@ namespace Artemis.UI.Shared
             });
         }
 
+        /// <inheritdoc />
         public UIElement View { get; set; }
     }
 }

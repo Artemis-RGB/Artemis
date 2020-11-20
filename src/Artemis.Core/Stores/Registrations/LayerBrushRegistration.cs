@@ -1,10 +1,11 @@
 ﻿using System;
 using Artemis.Core.LayerBrushes;
+using Artemis.Core.Services;
 
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Represents a layer brush registration
+    ///     Represents a layer brush registration returned by calling <see cref="ILayerBrushService.RegisterLayerBrush"/>
     /// </summary>
     public class LayerBrushRegistration
     {

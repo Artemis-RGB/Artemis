@@ -5,27 +5,38 @@ using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Represents a view model that visualizes a class (POCO) data model property containing child properties
+    /// </summary>
     public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
     {
         private object _displayValue;
         private Type _displayValueType;
 
-        internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
+        internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
+            : base(dataModel, parent, dataModelPath)
         {
         }
 
+        /// <summary>
+        ///     Gets the type of the property that is being visualized
+        /// </summary>
         public Type DisplayValueType
         {
             get => _displayValueType;
-            set => SetAndNotify(ref _displayValueType, value);
+            private set => SetAndNotify(ref _displayValueType, value);
         }
 
+        /// <summary>
+        ///     Gets the value of the property that is being visualized
+        /// </summary>
         public object DisplayValue
         {
             get => _displayValue;
-            set => SetAndNotify(ref _displayValue, value);
+            private set => SetAndNotify(ref _displayValue, value);
         }
 
+        /// <inheritdoc />
         public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
@@ -48,6 +59,7 @@ namespace Artemis.UI.Shared
                 dataModelVisualizationViewModel.Update(dataModelUIService, configuration);
         }
 
+        /// <inheritdoc />
         public override object GetCurrentValue()
         {
             if (Parent == null || Parent.IsRootViewModel || IsRootViewModel)

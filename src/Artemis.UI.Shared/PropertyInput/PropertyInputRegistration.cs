@@ -5,7 +5,7 @@ using Artemis.UI.Shared.Services;
 namespace Artemis.UI.Shared
 {
     /// <summary>
-    ///     Represents a property input registration, registered through <see cref="IProfileEditorService.RegisterPropertyInput"/>
+    ///     Represents a property input registration registered through <see cref="IProfileEditorService.RegisterPropertyInput"/>
     /// </summary>
     public class PropertyInputRegistration
     {

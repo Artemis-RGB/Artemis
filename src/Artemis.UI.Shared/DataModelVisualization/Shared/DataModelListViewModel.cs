@@ -7,44 +7,69 @@ using Stylet;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Represents a view model that visualizes a list data model property
+    /// </summary>
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
         private string _countDisplay;
-        private IEnumerable _list;
-        private int _listCount;
         private Type _displayValueType;
+        private IEnumerable _list;
+        private BindableCollection<DataModelVisualizationViewModel> _listChildren;
+        private int _listCount;
 
-        internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
+        internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
+            : base(dataModel, parent, dataModelPath)
         {
             ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
+        /// <summary>
+        ///     Gets the instance of the list that is being visualized
+        /// </summary>
         public IEnumerable List
         {
             get => _list;
-            set => SetAndNotify(ref _list, value);
+            private set => SetAndNotify(ref _list, value);
         }
 
+        /// <summary>
+        ///     Gets amount of elements in the list that is being visualized
+        /// </summary>
         public int ListCount
         {
             get => _listCount;
-            set => SetAndNotify(ref _listCount, value);
+            private set => SetAndNotify(ref _listCount, value);
         }
 
+        /// <summary>
+        ///     Gets the type of elements this list contains and that must be displayed as children
+        /// </summary>
         public Type DisplayValueType
         {
             get => _displayValueType;
             set => SetAndNotify(ref _displayValueType, value);
         }
 
+        /// <summary>
+        ///     Gets a human readable display count
+        /// </summary>
         public string CountDisplay
         {
             get => _countDisplay;
             set => SetAndNotify(ref _countDisplay, value);
         }
 
-        public BindableCollection<DataModelVisualizationViewModel> ListChildren { get; set; }
-        
+        /// <summary>
+        ///     Gets a list of child view models that visualize the elements in the list
+        /// </summary>
+        public BindableCollection<DataModelVisualizationViewModel> ListChildren
+        {
+            get => _listChildren;
+            private set => SetAndNotify(ref _listChildren, value);
+        }
+
+        /// <inheritdoc />
         public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded)
@@ -101,7 +126,7 @@ namespace Artemis.UI.Shared
             return $"[List] {DisplayPath ?? Path} - {ListCount} item(s)";
         }
 
-        protected DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
+        private DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
         {
             // If a display VM was found, prefer to use that in any case
             DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
