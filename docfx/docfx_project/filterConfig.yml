@@ -9,7 +9,7 @@ apiRules:
       uidRegex: ^System\.ComponentModel
       type: Type
 - exclude:
-      uidRegex: ^Stylet\.PropertyChangedBase
+      uidRegex: ^Stylet
       type: Type
 - exclude:
       uidRegex: ^Artemis\.Core\.Properties
@@ -20,3 +20,6 @@ apiRules:
 - exclude:
       uidRegex: ^Artemis\.UI\.Shared\.Properties
       type: Type
+- exclude:
+      uidRegex: ^Artemis\.Core\.TypeExtensions\.IsNumber
+      type: Method
