@@ -114,7 +114,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
         }
 
-        private void DisplayConditionOnChildrenModified(object? sender, EventArgs e)
+        private void DisplayConditionOnChildrenModified(object sender, EventArgs e)
         {
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
             IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);

@@ -125,34 +125,27 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private PackIconKind GetIconKind()
         {
-            switch (Feature)
+            return Feature switch
             {
-                case BaseDataModelExpansion _:
-                    return PackIconKind.TableAdd;
-                case DeviceProvider _:
-                    return PackIconKind.Devices;
-                case ProfileModule _:
-                    return PackIconKind.VectorRectangle;
-                case Module _:
-                    return PackIconKind.GearBox;
-                case LayerBrushProvider _:
-                    return PackIconKind.Brush;
-                case LayerEffectProvider _:
-                    return PackIconKind.AutoAwesome;
-            }
-
-            return PackIconKind.Plugin;
+                BaseDataModelExpansion => PackIconKind.TableAdd,
+                DeviceProvider => PackIconKind.Devices,
+                ProfileModule => PackIconKind.VectorRectangle,
+                Module => PackIconKind.GearBox,
+                LayerBrushProvider => PackIconKind.Brush,
+                LayerEffectProvider => PackIconKind.AutoAwesome,
+                _ => PackIconKind.Plugin
+            };
         }
 
         #region Event handlers
 
-        private void OnFeatureEnabling(object? sender, PluginFeatureEventArgs e)
+        private void OnFeatureEnabling(object sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature != Feature) return;
             Enabling = true;
         }
 
-        private void OnFeatureEnableStopped(object? sender, PluginFeatureEventArgs e)
+        private void OnFeatureEnableStopped(object sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature != Feature) return;
             Enabling = false;

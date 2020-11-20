@@ -10,10 +10,10 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class DataModelPropertiesViewModel : DataModelVisualizationViewModel
     {
-        private object _displayValue;
-        private Type _displayValueType;
+        private object? _displayValue;
+        private Type? _displayValueType;
 
-        internal DataModelPropertiesViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
+        internal DataModelPropertiesViewModel(DataModel? dataModel, DataModelVisualizationViewModel? parent, DataModelPath? dataModelPath)
             : base(dataModel, parent, dataModelPath)
         {
         }
@@ -21,7 +21,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the type of the property that is being visualized
         /// </summary>
-        public Type DisplayValueType
+        public Type? DisplayValueType
         {
             get => _displayValueType;
             private set => SetAndNotify(ref _displayValueType, value);
@@ -30,19 +30,19 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the value of the property that is being visualized
         /// </summary>
-        public object DisplayValue
+        public object? DisplayValue
         {
             get => _displayValue;
             private set => SetAndNotify(ref _displayValue, value);
         }
 
         /// <inheritdoc />
-        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
 
             // Only set a display value if ToString returns useful information and not just the type name
-            object currentValue = GetCurrentValue();
+            object? currentValue = GetCurrentValue();
             if (currentValue != null && currentValue.ToString() != currentValue.GetType().ToString())
                 DisplayValue = currentValue.ToString();
             else
@@ -60,7 +60,7 @@ namespace Artemis.UI.Shared
         }
 
         /// <inheritdoc />
-        public override object GetCurrentValue()
+        public override object? GetCurrentValue()
         {
             if (Parent == null || Parent.IsRootViewModel || IsRootViewModel)
                 return DataModel;
@@ -68,7 +68,7 @@ namespace Artemis.UI.Shared
         }
 
         /// <inheritdoc />
-        public override string ToString()
+        public override string? ToString()
         {
             return DisplayPath ?? Path;
         }

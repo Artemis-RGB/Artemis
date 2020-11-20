@@ -10,17 +10,17 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingViewModel<TLayerProperty, TProperty> : Conductor<IDataBindingModeViewModel>, IDataBindingViewModel
+    public sealed class DataBindingViewModel<TLayerProperty, TProperty> : Conductor<IDataBindingModeViewModel>, IDataBindingViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly Timer _updateTimer;
+        private bool _applyTestResultToLayer;
         private int _easingTime;
         private bool _isDataBindingEnabled;
         private bool _isEasingTimeEnabled;
         private DataBindingModeType _selectedDataBindingMode;
         private TimelineEasingViewModel _selectedEasingViewModel;
-        private bool _applyTestResultToLayer;
 
         private bool _updating;
         private bool _updatingTestResult;
@@ -44,12 +44,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
             TestInputValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
             TestResultValue = dataModelUIService.GetDataModelDisplayViewModel(typeof(TProperty), null, true);
-        }
-
-        protected override void OnInitialActivate()
-        {
-            base.OnInitialActivate();
-            Initialize();
         }
 
         public DataBindingRegistration<TLayerProperty, TProperty> Registration { get; }
@@ -115,12 +109,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
         }
 
-        public void Dispose()
+        protected override void OnInitialActivate()
         {
-            _updateTimer.Dispose();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-
-            Registration.LayerProperty.Updated -= LayerPropertyOnUpdated;
+            base.OnInitialActivate();
+            Initialize();
         }
 
         private void Initialize()
@@ -171,18 +163,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             EasingTime = (int) Registration.DataBinding.EasingTime.TotalMilliseconds;
             SelectedEasingViewModel = EasingViewModels.First(vm => vm.EasingFunction == Registration.DataBinding.EasingFunction);
             IsEasingTimeEnabled = EasingTime > 0;
-            switch (Registration.DataBinding.DataBindingMode)
+            SelectedDataBindingMode = Registration.DataBinding.DataBindingMode switch
             {
-                case DirectDataBinding<TLayerProperty, TProperty> _:
-                    SelectedDataBindingMode = DataBindingModeType.Direct;
-                    break;
-                case ConditionalDataBinding<TLayerProperty, TProperty> _:
-                    SelectedDataBindingMode = DataBindingModeType.Conditional;
-                    break;
-                default:
-                    SelectedDataBindingMode = DataBindingModeType.None;
-                    break;
-            }
+                DirectDataBinding<TLayerProperty, TProperty> _ => DataBindingModeType.Direct,
+                ConditionalDataBinding<TLayerProperty, TProperty> _ => DataBindingModeType.Conditional,
+                _ => DataBindingModeType.None
+            };
 
             ActiveItem?.Update();
 
@@ -250,7 +236,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(currentValue) : default);
             }
             else
+            {
                 TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(default) : default);
+            }
 
             if (ApplyTestResultToLayer)
             {
@@ -288,11 +276,24 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             UpdateTestResult();
         }
 
-        private void LayerPropertyOnUpdated(object? sender, LayerPropertyEventArgs<TLayerProperty> e)
+        private void LayerPropertyOnUpdated(object sender, LayerPropertyEventArgs<TLayerProperty> e)
         {
-            if (ApplyTestResultToLayer) 
+            if (ApplyTestResultToLayer)
                 Registration.DataBinding?.Apply();
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _updateTimer.Dispose();
+            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+
+            Registration.LayerProperty.Updated -= LayerPropertyOnUpdated;
+        }
+
+        #endregion
     }
 
     public interface IDataBindingViewModel : IScreen, IDisposable

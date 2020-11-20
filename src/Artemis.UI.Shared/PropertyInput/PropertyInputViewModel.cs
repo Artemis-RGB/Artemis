@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -12,7 +13,7 @@ namespace Artemis.UI.Shared
     public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     {
         private bool _inputDragging;
-        private T _inputValue;
+        [AllowNull] private T _inputValue = default!;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="PropertyInputViewModel" /> class
@@ -73,6 +74,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets the input value
         /// </summary>
+        [AllowNull]
         public T InputValue
         {
             get => _inputValue;

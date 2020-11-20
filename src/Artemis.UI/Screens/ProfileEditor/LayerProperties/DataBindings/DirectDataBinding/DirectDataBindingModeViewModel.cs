@@ -12,7 +12,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding
 {
-    public class DirectDataBindingModeViewModel<TLayerProperty, TProperty> : Screen, IDataBindingModeViewModel
+    public sealed class DirectDataBindingModeViewModel<TLayerProperty, TProperty> : Screen, IDataBindingModeViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
@@ -70,6 +70,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         #region IDisposable
 
+        /// <inheritdoc />
         public void Dispose()
         {
             TargetSelectionViewModel.PropertySelected -= TargetSelectionViewModelOnPropertySelected;

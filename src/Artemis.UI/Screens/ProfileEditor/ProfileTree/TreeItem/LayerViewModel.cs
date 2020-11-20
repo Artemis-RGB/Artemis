@@ -21,12 +21,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             _profileEditorService = profileEditorService;
         }
 
-        public async void CopyElement()
+        public void CopyElement()
         {
             Layer layer = Layer.CreateCopy();
             
             _profileEditorService.UpdateSelectedProfile();
-            // await Task.Delay(200);
             _profileEditorService.ChangeSelectedProfileElement(layer);
         }
 

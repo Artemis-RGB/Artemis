@@ -6,14 +6,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineViewModel : Screen, IDisposable
+    public sealed class TimelineViewModel : Screen, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
         private RectangleGeometry _selectionRectangle;
@@ -88,7 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Update();
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
             if (e.PreviousRenderProfileElement != null)
                 e.PreviousRenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
@@ -98,6 +97,18 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Update();
         }
 
+        #region IDisposable
+
+        public void Dispose()
+        {
+            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
+        }
+
+        #endregion
+
         #region Command handlers
 
         public void KeyframeMouseDown(object sender, MouseButtonEventArgs e)
@@ -105,8 +116,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             // if (e.LeftButton == MouseButtonState.Released)
             //     return;
 
-            ITimelineKeyframeViewModel viewModel = (sender as Ellipse)?.DataContext as ITimelineKeyframeViewModel;
-            if (viewModel == null)
+            if (!((sender as Ellipse)?.DataContext is ITimelineKeyframeViewModel viewModel))
                 return;
 
             ((IInputElement) sender).CaptureMouse();
@@ -206,7 +216,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 keyframeViewModel.SaveOffsetToKeyframe(sourceKeyframeViewModel);
 
             if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
-            {
                 cursorTime = _profileEditorService.SnapToTimeline(
                     cursorTime,
                     TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 5),
@@ -214,7 +223,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                     false,
                     keyframeViewModels.Where(k => k != sourceKeyframeViewModel).Select(k => k.Position).ToList()
                 );
-            }
 
             sourceKeyframeViewModel.UpdatePosition(cursorTime);
 
@@ -306,15 +314,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
                 int clickedIndex = keyframeViewModels.IndexOf(clicked);
                 if (clickedIndex < selectedIndex)
-                {
                     foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Skip(clickedIndex).Take(selectedIndex - clickedIndex + 1))
                         keyframeViewModel.IsSelected = true;
-                }
                 else
-                {
                     foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Skip(selectedIndex).Take(clickedIndex - selectedIndex + 1))
                         keyframeViewModel.IsSelected = true;
-                }
             }
             else if (toggle)
             {
@@ -337,18 +341,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
 
             return viewModels;
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
-            if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
         }
 
         #endregion

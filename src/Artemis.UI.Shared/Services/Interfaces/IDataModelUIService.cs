@@ -37,7 +37,7 @@ namespace Artemis.UI.Shared.Services
         /// <param name="pluginFeature">The plugin feature to create hte data model visualization view model for</param>
         /// <param name="includeMainDataModel">Whether or not also to include the main data model</param>
         /// <returns>A data model visualization view model containing the data model of the provided feature</returns>
-        DataModelPropertiesViewModel GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel);
+        DataModelPropertiesViewModel? GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel);
 
         /// <summary>
         ///     Updates the children of the provided main data model visualization, removing disabled children and adding newly
@@ -89,7 +89,7 @@ namespace Artemis.UI.Shared.Services
         ///     returned if nothing else is found
         /// </param>
         /// <returns>The most appropriate display view model for the provided <paramref name="propertyType"></paramref></returns>
-        DataModelDisplayViewModel GetDataModelDisplayViewModel(Type propertyType, DataModelPropertyAttribute description, bool fallBackToDefault = false);
+        DataModelDisplayViewModel? GetDataModelDisplayViewModel(Type propertyType, DataModelPropertyAttribute? description, bool fallBackToDefault = false);
 
         /// <summary>
         ///     Creates the most appropriate input view model for the provided <paramref name="propertyType" /> that allows
@@ -100,7 +100,7 @@ namespace Artemis.UI.Shared.Services
         /// <param name="initialValue">The initial value to show in the input</param>
         /// <param name="updateCallback">A function to call whenever the input was updated (submitted or not)</param>
         /// <returns>The most appropriate input view model for the provided <paramref name="propertyType" /></returns>
-        DataModelInputViewModel GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute description, object initialValue, Action<object, bool> updateCallback);
+        DataModelInputViewModel? GetDataModelInputViewModel(Type propertyType, DataModelPropertyAttribute? description, object? initialValue, Action<object?, bool> updateCallback);
 
         /// <summary>
         ///     Creates a view model that allows selecting a value from the data model

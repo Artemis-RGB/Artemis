@@ -11,7 +11,7 @@ namespace Artemis.UI.Shared
     public class TypeToStringConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object value, Type targetType, object? parameter, CultureInfo culture)
         {
             bool humanizeProvided = bool.TryParse(parameter?.ToString(), out bool humanize);
             if (value is Type type)

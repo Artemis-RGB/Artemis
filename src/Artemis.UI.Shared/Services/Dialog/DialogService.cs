@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Core;
@@ -16,13 +14,12 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
-    // TODO: Become plugin-aware and use plugin kernel if injected into a plugin
     internal class DialogService : IDialogService
     {
         private readonly IKernel _kernel;
+        private readonly IPluginManagementService _pluginManagementService;
         private readonly IViewManager _viewManager;
         private readonly IWindowManager _windowManager;
-        private readonly IPluginManagementService _pluginManagementService;
 
         public DialogService(IKernel kernel, IViewManager viewManager, IWindowManager windowManager, IPluginManagementService pluginManagementService)
         {
@@ -35,12 +32,12 @@ namespace Artemis.UI.Shared.Services
         private async Task<object> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
-            return await ShowDialog("RootDialog", _kernel.Get<T>(parameters));
+            return await ShowDialog("RootDialog", GetBestKernel().Get<T>(parameters));
         }
 
-        private async Task<object> ShowDialog(string identifier, DialogViewModelBase viewModel)
+        private async Task<object> ShowDialog(string? identifier, DialogViewModelBase viewModel)
         {
-            Task<object> result = null;
+            Task<object>? result = null;
             await Execute.OnUIThreadAsync(() =>
             {
                 UIElement view = _viewManager.CreateViewForModel(viewModel);
@@ -52,12 +49,22 @@ namespace Artemis.UI.Shared.Services
                     result = DialogHost.Show(view, identifier, viewModel.OnDialogOpened, viewModel.OnDialogClosed);
             });
 
+            if (result == null)
+                throw new ArtemisSharedUIException("Failed to show dialog host");
             return await result;
+        }
+
+        private async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
+        {
+            if (parameters == null)
+                throw new ArgumentNullException(nameof(parameters));
+            return await ShowDialog(identifier, GetBestKernel().Get<T>(parameters));
         }
 
         public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            IParameter[] arguments = {
+            IParameter[] arguments =
+            {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
@@ -69,7 +76,9 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
         {
-            IParameter[] arguments = {
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            IParameter[] arguments =
+            {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
@@ -81,7 +90,7 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<object> ShowDialog<T>() where T : DialogViewModelBase
         {
-            return await ShowDialog("RootDialog", _kernel.Get<T>());
+            return await ShowDialog("RootDialog", GetBestKernel().Get<T>());
         }
 
         public Task<object> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase
@@ -95,32 +104,28 @@ namespace Artemis.UI.Shared.Services
 
         public async Task<object> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase
         {
-            return await ShowDialog(identifier, _kernel.Get<T>());
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            return await ShowDialog(identifier, GetBestKernel().Get<T>());
         }
 
         public async Task<object> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase
         {
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
+            if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
 
             IParameter[] paramsArray = parameters.Select(kv => new ConstructorArgument(kv.Key, kv.Value)).Cast<IParameter>().ToArray();
             return await ShowDialogAt<T>(identifier, paramsArray);
         }
 
-        private async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
-        {
-            Plugin callingPlugin = _pluginManagementService.GetCallingPlugin();
-            if (parameters == null)
-                throw new ArgumentNullException(nameof(parameters));
-
-            if (callingPlugin != null)
-                return await ShowDialog(identifier, callingPlugin.Kernel.Get<T>(parameters));
-            return await ShowDialog(identifier, _kernel.Get<T>(parameters));
-        }
-
         public void ShowExceptionDialog(string message, Exception exception)
         {
             _windowManager.ShowDialog(new ExceptionViewModel(message, exception));
+        }
+
+        private IKernel GetBestKernel()
+        {
+            Plugin? callingPlugin = _pluginManagementService.GetCallingPlugin();
+            return callingPlugin?.Kernel ?? _kernel;
         }
     }
 }

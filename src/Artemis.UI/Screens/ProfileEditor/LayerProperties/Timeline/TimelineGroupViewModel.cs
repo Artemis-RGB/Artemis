@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineGroupViewModel : PropertyChangedBase, IDisposable
+    public sealed class TimelineGroupViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IProfileEditorService _profileEditorService;
 

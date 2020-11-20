@@ -5,43 +5,63 @@ using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Represents a view model that wraps a regular <see cref="DataModelPropertiesViewModel" /> but contained in
+    ///     a <see cref="DataModelListViewModel" />
+    /// </summary>
     public class DataModelListPropertiesViewModel : DataModelPropertiesViewModel
     {
-        private object _displayValue;
+        private readonly ListPredicateWrapperDataModel _listPredicateWrapper;
+        private object? _displayValue;
         private int _index;
-        private Type _listType;
+        private Type? _listType;
 
-        public DataModelListPropertiesViewModel(Type listType) : base(null, null, null)
+        internal DataModelListPropertiesViewModel(Type listType) : base(null, null, null)
         {
-            DataModel = ListPredicateWrapperDataModel.Create(listType);
+            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType);
+            DataModel = _listPredicateWrapper;
             ListType = listType;
         }
 
+        /// <summary>
+        ///     Gets the index of the element within the list
+        /// </summary>
         public int Index
         {
             get => _index;
             set => SetAndNotify(ref _index, value);
         }
 
-        public Type ListType
+        /// <summary>
+        ///     Gets the type of elements contained in the list
+        /// </summary>
+        public Type? ListType
         {
             get => _listType;
             set => SetAndNotify(ref _listType, value);
         }
 
-        public new object DisplayValue
+        /// <summary>
+        ///     Gets the value of the property that is being visualized
+        /// </summary>
+        public new object? DisplayValue
         {
             get => _displayValue;
             set => SetAndNotify(ref _displayValue, value);
         }
 
-        public DataModelVisualizationViewModel DisplayViewModel => Children.FirstOrDefault();
+        /// <summary>
+        ///     Gets the view model that handles displaying the property
+        /// </summary>
+        public DataModelVisualizationViewModel? DisplayViewModel => Children.FirstOrDefault();
 
-        public override string DisplayPath => null;
+        /// <inheritdoc />
+        public override string? DisplayPath => null;
 
-        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
+        /// <inheritdoc />
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration)
         {
-            ((ListPredicateWrapperDataModel) DataModel).UntypedValue = DisplayValue;
+            _listPredicateWrapper.UntypedValue = DisplayValue;
 
             PopulateProperties(dataModelUIService, configuration);
             if (DisplayViewModel == null)
@@ -52,7 +72,8 @@ namespace Artemis.UI.Shared
             DisplayViewModel.Update(dataModelUIService, null);
         }
 
-        public override object GetCurrentValue()
+        /// <inheritdoc />
+        public override object? GetCurrentValue()
         {
             return DisplayValue;
         }

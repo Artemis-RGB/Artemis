@@ -14,18 +14,18 @@ namespace Artemis.UI.Shared
     public class SKColorToStringConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             return value?.ToString();
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (string.IsNullOrWhiteSpace((string) value))
+            if (string.IsNullOrWhiteSpace(value as string))
                 return SKColor.Empty;
 
-            return SKColor.TryParse((string) value, out SKColor color) ? color : SKColor.Empty;
+            return SKColor.TryParse((string) value!, out SKColor color) ? color : SKColor.Empty;
         }
     }
 }

@@ -391,7 +391,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             UpdateCanSelectEditTool();
         }
         
-        private void TransformValueChanged(object? sender, LayerPropertyEventArgs e)
+        private void TransformValueChanged(object sender, LayerPropertyEventArgs e)
         {
             if (ActiveToolIndex != 1)
                 ActivateToolByIndex(1);

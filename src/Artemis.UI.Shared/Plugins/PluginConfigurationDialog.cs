@@ -16,11 +16,6 @@ namespace Artemis.UI.Shared
     public abstract class PluginConfigurationDialog : IPluginConfigurationDialog
     {
         /// <summary>
-        ///     The layer brush this dialog belongs to
-        /// </summary>
-        internal PluginFeature PluginFeature { get; set; }
-
-        /// <summary>
         ///     The type of view model the tab contains
         /// </summary>
         public abstract Type Type { get; }

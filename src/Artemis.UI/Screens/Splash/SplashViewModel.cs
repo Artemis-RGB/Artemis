@@ -81,12 +81,12 @@ namespace Artemis.UI.Screens.Splash
             Status = "Enabling plugin: " + args.Plugin.Info.Name;
         }
 
-        private void PluginManagementServiceOnPluginFeatureEnabling(object? sender, PluginFeatureEventArgs e)
+        private void PluginManagementServiceOnPluginFeatureEnabling(object sender, PluginFeatureEventArgs e)
         {
             Status = "Enabling: " + e.PluginFeature.GetType().Name.Humanize();
         }
 
-        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        private void PluginManagementServiceOnPluginFeatureEnabled(object sender, PluginFeatureEventArgs e)
         {
             Status = "Initializing UI";
         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 

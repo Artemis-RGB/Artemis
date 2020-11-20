@@ -11,7 +11,7 @@ using Humanizer;
 
 namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
-    public class DataModelConditionListViewModel : DataModelConditionViewModel, IDisposable
+    public sealed class DataModelConditionListViewModel : DataModelConditionViewModel, IDisposable
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
@@ -92,7 +92,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             Update();
         }
-        
+
         public override void Update()
         {
             LeftSideSelectionViewModel.ChangeDataModelPath(DataModelConditionList.ListPath);
@@ -130,15 +130,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             base.OnInitialActivate();
         }
 
-        private void LeftSideSelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)
+        private void LeftSideSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             ApplyList();
         }
+
+        #region IDisposable
 
         public void Dispose()
         {
             LeftSideSelectionViewModel.Dispose();
             LeftSideSelectionViewModel.PropertySelected -= LeftSideSelectionViewModelOnPropertySelected;
         }
+
+        #endregion
     }
 }

@@ -4,7 +4,6 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
-using Artemis.UI.Shared.Services;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 
@@ -14,7 +13,7 @@ namespace Artemis.UI.Services
     {
         private readonly ISettingsService _settingsService;
 
-        public LayerEditorService(ISettingsService settingsService, IProfileEditorService profileEditorService)
+        public LayerEditorService(ISettingsService settingsService)
         {
             _settingsService = settingsService;
         }
@@ -93,11 +92,11 @@ namespace Artemis.UI.Services
             SKPath path = new SKPath();
             path.AddRect(layerBounds);
             if (includeTranslation)
-                path.Transform(SKMatrix.MakeTranslation(x, y));
+                path.Transform(SKMatrix.CreateTranslation(x, y));
             if (includeScale)
-                path.Transform(SKMatrix.MakeScale(layer.Transform.Scale.CurrentValue.Width / 100f, layer.Transform.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.CreateScale(layer.Transform.Scale.CurrentValue.Width / 100f, layer.Transform.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
             if (includeRotation)
-                path.Transform(SKMatrix.MakeRotationDegrees(layer.Transform.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
+                path.Transform(SKMatrix.CreateRotationDegrees(layer.Transform.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
 
             return path;
         }
@@ -107,12 +106,10 @@ namespace Artemis.UI.Services
         {
             double renderScale = _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
             if (absolute)
-            {
                 return new SKPoint(
                     100f / layer.Bounds.Width * ((float) (point.X * renderScale) - layer.Bounds.Left) / 100f,
                     100f / layer.Bounds.Height * ((float) (point.Y * renderScale) - layer.Bounds.Top) / 100f
                 );
-            }
 
             return new SKPoint(
                 100f / layer.Bounds.Width * (float) (point.X * renderScale) / 100f,

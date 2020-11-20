@@ -6,21 +6,28 @@ using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
 {
+    /// <summary>
+    ///     Represents a view model that visualizes an event data model property
+    /// </summary>
     public class DataModelEventViewModel : DataModelVisualizationViewModel
     {
-        private Type _displayValueType;
+        private Type? _displayValueType;
 
         internal DataModelEventViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath) : base(dataModel, parent, dataModelPath)
         {
         }
 
-        public Type DisplayValueType
+        /// <summary>
+        ///     Gets the type of event arguments this event triggers and that must be displayed as children
+        /// </summary>
+        public Type? DisplayValueType
         {
             get => _displayValueType;
             set => SetAndNotify(ref _displayValueType, value);
         }
 
-        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
+        /// <inheritdoc />
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration)
         {
             DisplayValueType = DataModelPath?.GetPropertyType();
 
@@ -40,13 +47,16 @@ namespace Artemis.UI.Shared
                 dataModelVisualizationViewModel.Update(dataModelUIService, configuration);
         }
 
-        public override object GetCurrentValue()
+        /// <summary>
+        /// Always returns <see langword="null"/> for data model events
+        /// </summary>
+        public override object? GetCurrentValue()
         {
             return null;
         }
 
         /// <inheritdoc />
-        public override string ToString()
+        public override string? ToString()
         {
             return DisplayPath ?? Path;
         }

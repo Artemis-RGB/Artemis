@@ -10,11 +10,11 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding
 {
-    public class DataBindingConditionViewModel<TLayerProperty, TProperty> : Conductor<DataModelConditionGroupViewModel>, IDisposable
+    public sealed class DataBindingConditionViewModel<TLayerProperty, TProperty> : Conductor<DataModelConditionGroupViewModel>, IDisposable
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly IProfileEditorService _profileEditorService;
 
         public DataBindingConditionViewModel(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition,
             IProfileEditorService profileEditorService,
@@ -44,11 +44,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             ValueViewModel.Value = DataBindingCondition.Value;
         }
 
-        public void Dispose()
-        {
-            ValueViewModel.Dispose();
-        }
-
         private void ActiveItemOnUpdated(object sender, EventArgs e)
         {
             if (!ActiveItem.GetChildren().Any())
@@ -60,5 +55,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             DataBindingCondition.Value = (TProperty) Convert.ChangeType(e.Value, typeof(TProperty));
             _profileEditorService.UpdateSelectedProfileElement();
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            ValueViewModel?.Dispose();
+        }
+
+        #endregion
     }
 }

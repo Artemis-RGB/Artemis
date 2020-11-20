@@ -15,10 +15,11 @@ namespace Artemis.UI.Shared.LayerEffects
     /// </summary>
     public abstract class LayerEffectConfigurationDialog : ILayerEffectConfigurationDialog
     {
+        // TODO: See if this is still in use
         /// <summary>
         ///     The layer effect this dialog belongs to
         /// </summary>
-        internal BaseLayerEffect LayerEffect { get; set; }
+        public BaseLayerEffect? LayerEffect { get; set; }
 
         /// <summary>
         ///     The type of view model the tab contains

@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Stylet;
@@ -26,7 +25,7 @@ namespace Artemis.UI.Stylet
         {
             // If someone's calling us synchronously, and ValidationAsync does not complete synchronously,
             // we'll deadlock unless we continue on another thread.
-            return (await _validator.ValidateAsync(_subject, CancellationToken.None, propertyName).ConfigureAwait(false))
+            return (await _validator.ValidateAsync(_subject, options => options.IncludeProperties(propertyName)).ConfigureAwait(false))
                 .Errors.Select(x => x.ErrorMessage);
         }
 

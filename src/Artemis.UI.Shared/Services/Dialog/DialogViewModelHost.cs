@@ -13,7 +13,7 @@ namespace Artemis.UI.Shared.Services
             _viewManager = viewManager;
         }
 
-        public DialogViewModelBase ActiveDialogViewModel { get; set; }
+        public DialogViewModelBase? ActiveDialogViewModel { get; set; }
         public bool IsOpen { get; set; }
 
         public void OpenDialog(DialogViewModelBase viewModel, string dialogIdentifier)

@@ -13,20 +13,20 @@ namespace Artemis.UI.Shared
     public class ColorToStringConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             return value?.ToString()?.ToUpper();
         }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object? ConvertBack(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace((string) value))
+                if (string.IsNullOrWhiteSpace(value as string))
                     return default(Color);
 
-                object color = ColorConverter.ConvertFromString((string) value);
+                object? color = ColorConverter.ConvertFromString((string) value!);
                 if (color is Color c)
                     return c;
 

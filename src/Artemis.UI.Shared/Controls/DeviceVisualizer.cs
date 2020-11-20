@@ -184,7 +184,7 @@ namespace Artemis.UI.Shared
             return rotationRect.Size;
         }
 
-        private void OnUnloaded(object sender, RoutedEventArgs e)
+        private void OnUnloaded(object? sender, RoutedEventArgs e)
         {
             _timer.Stop();
 
@@ -196,12 +196,12 @@ namespace Artemis.UI.Shared
             }
         }
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
+        private void OnLoaded(object? sender, RoutedEventArgs e)
         {
             _timer.Start();
         }
 
-        private void TimerOnTick(object sender, EventArgs e)
+        private void TimerOnTick(object? sender, EventArgs e)
         {
             if (ShowColors && Visibility == Visibility.Visible)
                 Render();

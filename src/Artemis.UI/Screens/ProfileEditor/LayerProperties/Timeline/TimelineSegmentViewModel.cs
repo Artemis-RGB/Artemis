@@ -7,7 +7,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.Core;
-using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -15,19 +14,19 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineSegmentViewModel : Screen, IDisposable
+    public sealed class TimelineSegmentViewModel : Screen, IDisposable
     {
         private readonly IDialogService _dialogService;
         private bool _draggingSegment;
+        private bool _segmentEnabled;
+        private TimeSpan _segmentEnd;
+        private TimeSpan _segmentLength;
+        private TimeSpan _segmentStart;
+        private double _segmentStartPosition;
+        private double _segmentWidth;
         private bool _showDisableButton;
         private bool _showRepeatButton;
         private bool _showSegmentName;
-        private TimeSpan _segmentLength;
-        private TimeSpan _segmentStart;
-        private TimeSpan _segmentEnd;
-        private double _segmentWidth;
-        private bool _segmentEnabled;
-        private double _segmentStartPosition;
 
         public TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
             IProfileEditorService profileEditorService, IDialogService dialogService)
@@ -138,6 +137,40 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             await _dialogService.ShowDialog<TimelineSegmentDialogViewModel>(new Dictionary<string, object> {{"segment", this}});
         }
+
+        public void ShiftNextSegment(TimeSpan amount)
+        {
+            if (Segment == SegmentViewModelType.Start)
+                ShiftKeyframes(SelectedProfileElement.Timeline.StartSegmentEndPosition, null, amount);
+            else if (Segment == SegmentViewModelType.Main)
+                ShiftKeyframes(SelectedProfileElement.Timeline.MainSegmentEndPosition, null, amount);
+            else if (Segment == SegmentViewModelType.End)
+                ShiftKeyframes(SelectedProfileElement.Timeline.EndSegmentEndPosition, null, amount);
+        }
+
+        private void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        {
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.WipeKeyframes(start, end);
+        }
+
+        private void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
+        {
+            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
+                layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
+        }
+
+        #region IDIsposable
+
+        public void Dispose()
+        {
+            ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
+            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            if (SelectedProfileElement != null)
+                SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
+        }
+
+        #endregion
 
         #region Updating
 
@@ -283,7 +316,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
             // If holding down control, round to the closest 50ms
             else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
                 newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
+            }
 
             UpdateLength(newTime);
         }
@@ -304,7 +339,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 SelectedProfileElement.Timeline.MainSegmentEndPosition = newTime;
             else if (Segment == SegmentViewModelType.End)
                 SelectedProfileElement.Timeline.EndSegmentEndPosition = newTime;
-            
+
             if (difference < TimeSpan.Zero)
                 ShiftNextSegment(difference);
 
@@ -313,21 +348,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #endregion
 
-        #region IDIsposable
-
-        public void Dispose()
-        {
-            ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
-            if (SelectedProfileElement != null)
-                SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
-        }
-
-        #endregion
-
         #region Event handlers
 
-        private void ProfileEditorServiceOnProfileElementSelected(object? sender, RenderProfileElementEventArgs e)
+        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
         {
             if (e.PreviousRenderProfileElement != null)
                 e.PreviousRenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
@@ -347,34 +370,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 NotifyOfPropertyChange(nameof(RepeatSegment));
         }
 
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             Update();
         }
 
         #endregion
-
-        public void ShiftNextSegment(TimeSpan amount)
-        {
-            if (Segment == SegmentViewModelType.Start)
-                ShiftKeyframes(SelectedProfileElement.Timeline.StartSegmentEndPosition, null, amount);
-            else if (Segment == SegmentViewModelType.Main)
-                ShiftKeyframes(SelectedProfileElement.Timeline.MainSegmentEndPosition, null, amount);
-            else if (Segment == SegmentViewModelType.End)
-                ShiftKeyframes(SelectedProfileElement.Timeline.EndSegmentEndPosition, null, amount);
-        }
-
-        private void WipeKeyframes(TimeSpan? start, TimeSpan? end)
-        {
-            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
-                layerPropertyGroupViewModel.WipeKeyframes(start, end);
-        }
-
-        private void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
-        {
-            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
-                layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
-        }
     }
 
     public enum SegmentViewModelType

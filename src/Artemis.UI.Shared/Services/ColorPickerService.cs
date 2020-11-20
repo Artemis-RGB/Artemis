@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared.Services
             _overlayColor = new SKColor(color.R, color.G, color.B, color.A);
         }
 
-        private void RenderColorPickerOverlay(object sender, FrameRenderingEventArgs e)
+        private void RenderColorPickerOverlay(object? sender, FrameRenderingEventArgs e)
         {
             if (_mustRenderOverlay)
                 _overlayOpacity += 0.2f;

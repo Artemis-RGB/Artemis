@@ -16,11 +16,6 @@ namespace Artemis.UI.Shared.LayerBrushes
     public abstract class LayerBrushConfigurationDialog : ILayerBrushConfigurationDialog
     {
         /// <summary>
-        ///     The layer brush this dialog belongs to
-        /// </summary>
-        internal BaseLayerBrush LayerBrush { get; set; }
-
-        /// <summary>
         ///     The type of view model the tab contains
         /// </summary>
         public abstract Type Type { get; }

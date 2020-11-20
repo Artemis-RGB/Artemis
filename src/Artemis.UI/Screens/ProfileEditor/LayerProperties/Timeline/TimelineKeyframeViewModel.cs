@@ -7,11 +7,10 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public class TimelineKeyframeViewModel<T> : Screen, ITimelineKeyframeViewModel
+    public sealed class TimelineKeyframeViewModel<T> : Screen, ITimelineKeyframeViewModel
     {
         private readonly IProfileEditorService _profileEditorService;
 
-        private BindableCollection<TimelineEasingViewModel> _easingViewModels;
         private bool _isSelected;
         private string _timestamp;
         private double _x;
@@ -65,7 +64,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Timestamp = $"{Math.Floor(LayerPropertyKeyframe.Position.TotalSeconds):00}.{LayerPropertyKeyframe.Position.Milliseconds:000}";
         }
 
-        private void ProfileEditorServiceOnPixelsPerSecondChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
         {
             Update();
         }

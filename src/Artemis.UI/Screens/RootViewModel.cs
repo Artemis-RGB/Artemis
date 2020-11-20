@@ -20,22 +20,22 @@ using Stylet;
 
 namespace Artemis.UI.Screens
 {
-    public class RootViewModel : Conductor<IScreen>
+    public sealed class RootViewModel : Conductor<IScreen>, IDisposable
     {
         private readonly IRegistrationService _builtInRegistrationService;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
+        private readonly Timer _frameTimeUpdateTimer;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly ThemeWatcher _themeWatcher;
-        private readonly Timer _frameTimeUpdateTimer;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _activeItemReady;
+        private string _frameTime;
         private bool _lostFocus;
         private ISnackbarMessageQueue _mainMessageQueue;
         private string _windowTitle;
-        private string _frameTime;
 
         public RootViewModel(
             IEventAggregator eventAggregator,
@@ -64,7 +64,7 @@ namespace Artemis.UI.Screens
             ActiveItem = SidebarViewModel.SelectedItem;
             ActiveItemReady = true;
 
-            AssemblyInformationalVersionAttribute? versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
         }
 
@@ -141,19 +141,18 @@ namespace Artemis.UI.Screens
 
         private void UpdateFrameTime()
         {
-            
             FrameTime = $"Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
         }
-        
+
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(SidebarViewModel.SelectedItem) && ActiveItem != SidebarViewModel.SelectedItem)
             {
                 SidebarViewModel.IsSidebarOpen = false;
                 // Don't do a fade when selecting a module because the editor is so bulky the animation slows things down
-                if (!(SidebarViewModel.SelectedItem is ModuleRootViewModel)) 
+                if (!(SidebarViewModel.SelectedItem is ModuleRootViewModel))
                     ActiveItemReady = false;
-                
+
                 // Allow the menu to close, it's slower but feels more responsive, funny how that works right
                 Execute.PostToUIThreadAsync(async () =>
                 {
@@ -209,13 +208,25 @@ namespace Artemis.UI.Screens
             ApplyColorSchemeSetting();
         }
 
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _frameTimeUpdateTimer?.Dispose();
+        }
+
+        #endregion
+
         #region Overrides of Screen
 
         protected override void OnViewLoaded()
         {
             MaterialWindow window = (MaterialWindow) View;
             if (_windowSize.Value != null)
+            {
                 _windowSize.Value.ApplyToWindow(window);
+            }
             else
             {
                 _windowSize.Value = new WindowSize();
@@ -269,7 +280,7 @@ namespace Artemis.UI.Screens
         protected override void OnClose()
         {
             SidebarViewModel.Dispose();
-            
+
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.
             Task.Run(async () =>

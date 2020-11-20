@@ -22,7 +22,7 @@ namespace Artemis.UI.Shared.Services
         private readonly object _selectedProfileLock = new object();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
-        private IKernel _kernel;
+        private readonly IKernel _kernel;
 
         public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger, ICoreService coreService)
         {
@@ -42,9 +42,9 @@ namespace Artemis.UI.Shared.Services
         }
 
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
-        public Profile SelectedProfile { get; private set; }
-        public RenderProfileElement SelectedProfileElement { get; private set; }
-        public ILayerProperty SelectedDataBinding { get; private set; }
+        public Profile? SelectedProfile { get; private set; }
+        public RenderProfileElement? SelectedProfileElement { get; private set; }
+        public ILayerProperty? SelectedDataBinding { get; private set; }
 
         public TimeSpan CurrentTime
         {
@@ -71,7 +71,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void ChangeSelectedProfile(Profile profile)
+        public void ChangeSelectedProfile(Profile? profile)
         {
             lock (_selectedProfileLock)
             {
@@ -103,14 +103,16 @@ namespace Artemis.UI.Shared.Services
             lock (_selectedProfileLock)
             {
                 _logger.Verbose("UpdateSelectedProfile {profile}", SelectedProfile);
-                _profileService.UpdateProfile(SelectedProfile, true);
+                if (SelectedProfile == null)
+                    return;
 
+                _profileService.UpdateProfile(SelectedProfile, true);
                 OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile));
                 UpdateProfilePreview();
             }
         }
 
-        public void ChangeSelectedProfileElement(RenderProfileElement profileElement)
+        public void ChangeSelectedProfileElement(RenderProfileElement? profileElement)
         {
             lock (_selectedProfileElementLock)
             {
@@ -131,13 +133,16 @@ namespace Artemis.UI.Shared.Services
             lock (_selectedProfileElementLock)
             {
                 _logger.Verbose("UpdateSelectedProfileElement {profile}", SelectedProfileElement);
+                if (SelectedProfile == null)
+                    return;
+
                 _profileService.UpdateProfile(SelectedProfile, true);
-                UpdateProfilePreview();
                 OnSelectedProfileElementUpdated(new RenderProfileElementEventArgs(SelectedProfileElement));
+                UpdateProfilePreview();
             }
         }
 
-        public void ChangeSelectedDataBinding(ILayerProperty layerProperty)
+        public void ChangeSelectedDataBinding(ILayerProperty? layerProperty)
         {
             SelectedDataBinding = layerProperty;
             OnSelectedDataBindingChanged();
@@ -159,6 +164,9 @@ namespace Artemis.UI.Shared.Services
 
         public bool UndoUpdateProfile()
         {
+            if (SelectedProfile == null)
+                return false;
+
             bool undid = _profileService.UndoUpdateProfile(SelectedProfile);
             if (!undid)
                 return false;
@@ -169,6 +177,9 @@ namespace Artemis.UI.Shared.Services
 
         public bool RedoUpdateProfile()
         {
+            if (SelectedProfile == null)
+                return false;
+
             bool redid = _profileService.RedoUpdateProfile(SelectedProfile);
             if (!redid)
                 return false;
@@ -189,7 +200,8 @@ namespace Artemis.UI.Shared.Services
 
             lock (_registeredPropertyEditors)
             {
-                Type supportedType = viewModelType.BaseType.GetGenericArguments()[0];
+                // Indirectly checked if there's a BaseType above
+                Type supportedType = viewModelType.BaseType!.GetGenericArguments()[0];
                 // If the supported type is a generic, assume there is a base type
                 if (supportedType.IsGenericParameter)
                 {
@@ -198,7 +210,7 @@ namespace Artemis.UI.Shared.Services
                     supportedType = supportedType.BaseType;
                 }
 
-                PropertyInputRegistration existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
+                PropertyInputRegistration? existing = _registeredPropertyEditors.FirstOrDefault(r => r.SupportedType == supportedType);
                 if (existing != null)
                 {
                     if (existing.Plugin != plugin)
@@ -228,9 +240,9 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan> snapTimes = null)
+        public TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null)
         {
-            if (snapToSegments)
+            if (snapToSegments && SelectedProfileElement != null)
             {
                 // Snap to the end of the start segment
                 if (Math.Abs(time.TotalMilliseconds - SelectedProfileElement.Timeline.StartSegmentEndPosition.TotalMilliseconds) < tolerance.TotalMilliseconds)
@@ -255,7 +267,7 @@ namespace Artemis.UI.Shared.Services
             if (snapTimes != null)
             {
                 // Find the closest keyframe
-                TimeSpan closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds);
+                TimeSpan closeSnapTime = snapTimes.FirstOrDefault(s => Math.Abs(time.TotalMilliseconds - s.TotalMilliseconds) < tolerance.TotalMilliseconds)!;
                 if (closeSnapTime != TimeSpan.Zero)
                     return closeSnapTime;
             }
@@ -263,10 +275,10 @@ namespace Artemis.UI.Shared.Services
             return time;
         }
 
-        public PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
+        public PropertyInputViewModel<T>? CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
         {
-            Type viewModelType = null;
-            PropertyInputRegistration registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
+            Type? viewModelType = null;
+            PropertyInputRegistration? registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(T));
 
             // Check for enums if no supported type was found
             if (registration == null && typeof(T).IsEnum)
@@ -281,22 +293,30 @@ namespace Artemis.UI.Shared.Services
             else
                 return null;
 
+            if (viewModelType == null)
+                return null;
+
             ConstructorArgument parameter = new ConstructorArgument("layerProperty", layerProperty);
-            IKernel kernel = registration != null ? registration.Plugin.Kernel : _kernel;
+            // ReSharper disable once InconsistentlySynchronizedField
+            // When you've just spent the last 2 hours trying to figure out a deadlock and reach this line, I'm so, so sorry. I thought this would be fine.
+            IKernel kernel = registration?.Plugin.Kernel ?? _kernel;
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 
-        public ProfileModule GetCurrentModule()
+        public ProfileModule? GetCurrentModule()
         {
             return SelectedProfile?.Module;
         }
 
         private void ReloadProfile()
         {
+            if (SelectedProfile == null)
+                return;
+
             // Trigger a profile change
             OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
             // Trigger a selected element change
-            RenderProfileElement previousSelectedProfileElement = SelectedProfileElement;
+            RenderProfileElement? previousSelectedProfileElement = SelectedProfileElement;
             if (SelectedProfileElement is Folder folder)
                 SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
             else if (SelectedProfileElement is Layer layer)
@@ -305,22 +325,24 @@ namespace Artemis.UI.Shared.Services
             // Trigger selected data binding change
             if (SelectedDataBinding != null)
             {
-                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties()?.FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
+                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties().FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
                 OnSelectedDataBindingChanged();
             }
 
             UpdateProfilePreview();
         }
 
-        public event EventHandler<ProfileEventArgs> ProfileSelected;
-        public event EventHandler<ProfileEventArgs> SelectedProfileUpdated;
-        public event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
-        public event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
-        public event EventHandler SelectedDataBindingChanged;
-        public event EventHandler CurrentTimeChanged;
-        public event EventHandler PixelsPerSecondChanged;
-        public event EventHandler ProfilePreviewUpdated;
-        public event EventHandler CurrentTimelineChanged;
+        #region Events
+
+        public event EventHandler<ProfileEventArgs>? ProfileSelected;
+        public event EventHandler<ProfileEventArgs>? SelectedProfileUpdated;
+        public event EventHandler<RenderProfileElementEventArgs>? ProfileElementSelected;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementUpdated;
+        public event EventHandler? SelectedDataBindingChanged;
+        public event EventHandler? CurrentTimeChanged;
+        public event EventHandler? PixelsPerSecondChanged;
+        public event EventHandler? ProfilePreviewUpdated;
+        public event EventHandler? CurrentTimelineChanged;
 
         protected virtual void OnSelectedProfileChanged(ProfileEventArgs e)
         {
@@ -367,10 +389,13 @@ namespace Artemis.UI.Shared.Services
             SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void SelectedProfileOnDeactivated(object sender, EventArgs e)
+        private void SelectedProfileOnDeactivated(object? sender, EventArgs e)
         {
             // Execute.PostToUIThread(() => ChangeSelectedProfile(null));
             ChangeSelectedProfile(null);
         }
+
+        #endregion
+
     }
 }

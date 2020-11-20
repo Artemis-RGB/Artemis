@@ -10,7 +10,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding
 {
-    public class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Conductor<DataBindingConditionViewModel<TLayerProperty, TProperty>>.Collection.AllActive, IDataBindingModeViewModel
+    public sealed class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Conductor<DataBindingConditionViewModel<TLayerProperty, TProperty>>.Collection.AllActive, IDataBindingModeViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
@@ -109,7 +109,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         }
 
         #region IDisposable
-
+        
+        /// <inheritdoc />
         public void Dispose()
         {
             ConditionalDataBinding.ConditionsUpdated -= ConditionalDataBindingOnConditionsUpdated;
