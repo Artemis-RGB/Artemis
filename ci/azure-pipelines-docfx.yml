@@ -17,12 +17,6 @@ steps:
 - checkout: self
   path: s/Artemis
 
-- task: UseDotNet@2
-  displayName: 'Install .Net 5 SDK'
-  inputs:
-    packageType: 'sdk'
-    version: '5.0.100'
-
 - task: DownloadPipelineArtifact@2
   inputs:
     buildType: 'specific'
@@ -39,12 +33,6 @@ steps:
     projects: '$(artemisSolution)'
     feedsToUse: 'config'
     nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
-
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet build Artemis'
-  inputs:
-    command: 'build'
-    projects: '$(artemisSolution)'
 
 - task: PowerShell@2
   displayName: "DockFX build"
