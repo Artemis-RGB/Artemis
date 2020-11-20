@@ -49,6 +49,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 _profileEditorService.ChangeSelectedDataBinding(LayerProperty);
         }
 
+        public void ResetToDefault()
+        {
+            LayerProperty.ApplyDefaultValue();
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
         private void ApplyKeyframesEnabled(bool enable)
         {
             // If enabling keyframes for the first time, add a keyframe with the current value at the current position
