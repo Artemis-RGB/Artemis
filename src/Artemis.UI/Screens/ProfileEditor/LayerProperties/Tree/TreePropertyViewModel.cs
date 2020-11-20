@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
         public void ResetToDefault()
         {
-            LayerProperty.ApplyDefaultValue();
+            LayerProperty.ApplyDefaultValue(_profileEditorService.CurrentTime);
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
