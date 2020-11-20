@@ -9,12 +9,12 @@ namespace Artemis.UI.Shared.Screens.Exceptions
     {
         private List<DialogException> _exceptions;
 
-        public ExceptionViewModel(string message, Exception exception)
+        public ExceptionViewModel(string message, Exception? exception)
         {
             Header = message;
-            Exceptions = new List<DialogException>();
+            _exceptions = new List<DialogException>();
 
-            Exception currentException = exception;
+            Exception? currentException = exception;
             while (currentException != null)
             {
                 Exceptions.Add(new DialogException(currentException));

@@ -9,7 +9,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertyGroupViewModel : PropertyChangedBase, IDisposable
+    public sealed class LayerPropertyGroupViewModel : PropertyChangedBase, IDisposable
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private bool _isVisible;
@@ -40,9 +40,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             get => _isVisible;
             set => SetAndNotify(ref _isVisible, value);
         }
-
-        public bool IsHighlighted => false;
-
+        
         public bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);
@@ -53,6 +51,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
+        #region IDisposable
+        
+        /// <inheritdoc />
         public void Dispose()
         {
             TimelineGroupViewModel.Dispose();
@@ -63,6 +64,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                     disposableChild.Dispose();
             }
         }
+
+        #endregion
 
         public void UpdateOrder(int order)
         {
@@ -93,7 +96,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         /// </summary>
         /// <param name="start">The position at which to start removing keyframes, if null this will start at the first keyframe</param>
         /// <param name="end">The position at which to start removing keyframes, if null this will end at the last keyframe</param>
-        public virtual void WipeKeyframes(TimeSpan? start, TimeSpan? end)
+        public void WipeKeyframes(TimeSpan? start, TimeSpan? end)
         {
             foreach (PropertyChangedBase child in Children)
             {
@@ -139,7 +142,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             {
                 PropertyDescriptionAttribute propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
                 PropertyGroupDescriptionAttribute groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                object? value = propertyInfo.GetValue(LayerPropertyGroup);
+                object value = propertyInfo.GetValue(LayerPropertyGroup);
 
                 // Create VMs for properties on the group
                 if (propertyAttribute != null && value is ILayerProperty layerProperty)

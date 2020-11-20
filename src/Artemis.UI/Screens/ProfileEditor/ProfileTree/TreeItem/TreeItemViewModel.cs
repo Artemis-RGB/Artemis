@@ -16,9 +16,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
     public abstract class TreeItemViewModel : Conductor<TreeItemViewModel>.Collection.AllActive, IDisposable
     {
         private readonly IDialogService _dialogService;
+        private readonly ILayerBrushService _layerBrushService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
-        private readonly ILayerBrushService _layerBrushService;
         private readonly ISurfaceService _surfaceService;
         private ProfileElement _profileElement;
 
@@ -48,11 +48,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         }
 
         public abstract bool SupportsChildren { get; }
-
-        public void Dispose()
-        {
-            Unsubscribe();
-        }
 
         public List<TreeItemViewModel> GetAllChildren()
         {
@@ -142,7 +137,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             Layer layer = new Layer(ProfileElement, "New layer");
 
             // Could be null if the default brush got disabled
-            LayerBrushDescriptor? brush = _layerBrushService.GetDefaultLayerBrush();
+            LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
             if (brush != null)
                 layer.ChangeLayerBrush(brush);
 
@@ -212,7 +207,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
             List<TreeItemViewModel> newChildren = new List<TreeItemViewModel>();
             foreach (ProfileElement profileElement in ProfileElement.Children.OrderBy(c => c.Order))
-            {
                 if (profileElement is Folder folder)
                 {
                     if (Items.FirstOrDefault(p => p is FolderViewModel vm && vm.ProfileElement == folder) == null)
@@ -223,7 +217,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                     if (Items.FirstOrDefault(p => p is LayerViewModel vm && vm.ProfileElement == layer) == null)
                         newChildren.Add(_profileTreeVmFactory.LayerViewModel(layer));
                 }
-            }
 
             if (!newChildren.Any())
                 return;
@@ -262,5 +255,21 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         {
             UpdateProfileElements();
         }
+
+        #region IDisposable
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing) Unsubscribe();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion
     }
 }

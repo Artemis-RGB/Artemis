@@ -17,24 +17,24 @@ namespace Artemis.UI.Shared
     {
         private const int MaxDepth = 4;
         private BindableCollection<DataModelVisualizationViewModel> _children;
-        private DataModel _dataModel;
+        private DataModel? _dataModel;
         private bool _isMatchingFilteredTypes;
         private bool _isVisualizationExpanded;
-        private DataModelVisualizationViewModel _parent;
-        private DataModelPropertyAttribute _propertyDescription;
+        private DataModelVisualizationViewModel? _parent;
+        private DataModelPropertyAttribute? _propertyDescription;
 
-        internal DataModelVisualizationViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
+        internal DataModelVisualizationViewModel(DataModel? dataModel, DataModelVisualizationViewModel? parent, DataModelPath? dataModelPath)
         {
-            DataModel = dataModel;
-            Parent = parent;
+            _dataModel = dataModel;
+            _children = new BindableCollection<DataModelVisualizationViewModel>();
+            _parent = parent;
             DataModelPath = dataModelPath;
-            Children = new BindableCollection<DataModelVisualizationViewModel>();
             IsMatchingFilteredTypes = true;
 
             if (parent == null)
                 IsRootViewModel = true;
             else
-                PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel.DataModelDescription;
+                PropertyDescription = DataModelPath?.GetPropertyDescription() ?? DataModel?.DataModelDescription;
         }
 
         /// <summary>
@@ -45,12 +45,12 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the data model path to the property this view model is visualizing
         /// </summary>
-        public DataModelPath DataModelPath { get; }
+        public DataModelPath? DataModelPath { get; }
 
         /// <summary>
         ///     Gets a string representation of the path backing this model
         /// </summary>
-        public string Path => DataModelPath?.Path;
+        public string? Path => DataModelPath?.Path;
 
         /// <summary>
         ///     Gets the property depth of the view model
@@ -60,7 +60,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the data model backing this view model
         /// </summary>
-        public DataModel DataModel
+        public DataModel? DataModel
         {
             get => _dataModel;
             protected set => SetAndNotify(ref _dataModel, value);
@@ -69,7 +69,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the property description of the property this view model is visualizing
         /// </summary>
-        public DataModelPropertyAttribute PropertyDescription
+        public DataModelPropertyAttribute? PropertyDescription
         {
             get => _propertyDescription;
             protected set => SetAndNotify(ref _propertyDescription, value);
@@ -78,7 +78,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the parent of this view model
         /// </summary>
-        public DataModelVisualizationViewModel Parent
+        public DataModelVisualizationViewModel? Parent
         {
             get => _parent;
             protected set => SetAndNotify(ref _parent, value);
@@ -119,7 +119,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets a user-friendly representation of the <see cref="DataModelPath" />
         /// </summary>
-        public virtual string DisplayPath => DataModelPath != null
+        public virtual string? DisplayPath => DataModelPath != null
             ? string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier))
             : null;
 
@@ -128,18 +128,18 @@ namespace Artemis.UI.Shared
         /// </summary>
         /// <param name="dataModelUIService">The data model UI service used during update</param>
         /// <param name="configuration">The configuration to apply while updating</param>
-        public abstract void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration);
+        public abstract void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration);
 
         /// <summary>
         ///     Gets the current value of the property being visualized
         /// </summary>
         /// <returns>The current value of the property being visualized</returns>
-        public virtual object GetCurrentValue()
+        public virtual object? GetCurrentValue()
         {
             if (IsRootViewModel)
                 return null;
 
-            return DataModelPath.GetValue();
+            return DataModelPath?.GetValue();
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Artemis.UI.Shared
         /// </summary>
         /// <param name="looseMatch">Whether the type may be a loose match, meaning it can be cast or converted</param>
         /// <param name="filteredTypes">The types to filter</param>
-        public void ApplyTypeFilter(bool looseMatch, params Type[] filteredTypes)
+        public void ApplyTypeFilter(bool looseMatch, params Type[]? filteredTypes)
         {
             if (filteredTypes != null)
             {
@@ -176,7 +176,7 @@ namespace Artemis.UI.Shared
             }
 
             // If the type couldn't be retrieved either way, assume false
-            Type type = DataModelPath?.GetPropertyType();
+            Type? type = DataModelPath?.GetPropertyType();
             if (type == null)
             {
                 IsMatchingFilteredTypes = false;
@@ -197,12 +197,14 @@ namespace Artemis.UI.Shared
             return 0;
         }
 
-        internal void PopulateProperties(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration dataModelUpdateConfiguration)
+        internal void PopulateProperties(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? dataModelUpdateConfiguration)
         {
             if (IsRootViewModel && DataModel == null)
                 return;
 
-            Type modelType = IsRootViewModel ? DataModel.GetType() : DataModelPath.GetPropertyType();
+            Type? modelType = IsRootViewModel ? DataModel?.GetType() : DataModelPath?.GetPropertyType();
+            if (modelType == null)
+                throw new ArtemisSharedUIException("Failed to populate data model visualization properties, couldn't get a property type");
 
             // Add missing static children
             foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
@@ -212,27 +214,30 @@ namespace Artemis.UI.Shared
                     continue;
                 if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
                     continue;
-                MethodInfo getMethod = propertyInfo.GetGetMethod();
+                MethodInfo? getMethod = propertyInfo.GetGetMethod();
                 if (getMethod == null || getMethod.GetParameters().Any())
                     continue;
 
-                DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth());
+                DataModelVisualizationViewModel? child = CreateChild(dataModelUIService, childPath, GetChildDepth());
                 if (child != null)
                     Children.Add(child);
             }
 
             // Remove static children that should be hidden
-            ReadOnlyCollection<PropertyInfo> hiddenProperties = DataModel.GetHiddenProperties();
-            foreach (PropertyInfo hiddenProperty in hiddenProperties)
+            if (DataModel != null)
             {
-                string childPath = AppendToPath(hiddenProperty.Name);
-                DataModelVisualizationViewModel toRemove = Children.FirstOrDefault(c => c.Path != null && c.Path == childPath);
-                if (toRemove != null)
-                    Children.Remove(toRemove);
+                ReadOnlyCollection<PropertyInfo> hiddenProperties = DataModel.GetHiddenProperties();
+                foreach (PropertyInfo hiddenProperty in hiddenProperties)
+                {
+                    string childPath = AppendToPath(hiddenProperty.Name);
+                    DataModelVisualizationViewModel? toRemove = Children.FirstOrDefault(c => c.Path != null && c.Path == childPath);
+                    if (toRemove != null)
+                        Children.Remove(toRemove);
+                }
             }
 
             // Add missing dynamic children
-            object value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath.GetValue();
+            object? value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath?.GetValue();
             if (value is DataModel dataModel)
                 foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
                 {
@@ -240,19 +245,21 @@ namespace Artemis.UI.Shared
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
-                    DataModelVisualizationViewModel child = CreateChild(dataModelUIService, childPath, GetChildDepth());
+                    DataModelVisualizationViewModel? child = CreateChild(dataModelUIService, childPath, GetChildDepth());
                     if (child != null)
                         Children.Add(child);
                 }
 
             // Remove dynamic children that have been removed from the data model
-            List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => !c.DataModelPath.IsValid).ToList();
+            List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => c.DataModelPath != null && !c.DataModelPath.IsValid).ToList();
             if (toRemoveDynamic.Any())
                 Children.RemoveRange(toRemoveDynamic);
         }
 
-        private DataModelVisualizationViewModel CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
+        private DataModelVisualizationViewModel? CreateChild(IDataModelUIService dataModelUIService, string path, int depth)
         {
+            if (DataModel == null)
+                throw new ArtemisSharedUIException("Cannot create a data model visualization child VM for a parent without a data model");
             if (depth > MaxDepth)
                 return null;
 
@@ -260,8 +267,8 @@ namespace Artemis.UI.Shared
             if (!dataModelPath.IsValid)
                 return null;
 
-            PropertyInfo propertyInfo = dataModelPath.GetPropertyInfo();
-            Type propertyType = dataModelPath.GetPropertyType();
+            PropertyInfo? propertyInfo = dataModelPath.GetPropertyInfo();
+            Type? propertyType = dataModelPath.GetPropertyType();
 
             // Skip properties decorated with DataModelIgnore
             if (propertyInfo != null && Attribute.IsDefined(propertyInfo, typeof(DataModelIgnoreAttribute)))
@@ -270,8 +277,11 @@ namespace Artemis.UI.Shared
             if (DataModel.GetHiddenProperties().Any(p => p.Equals(propertyInfo)))
                 return null;
 
+            if (propertyType == null)
+                return null;
+
             // If a display VM was found, prefer to use that in any case
-            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType, PropertyDescription);
+            DataModelDisplayViewModel? typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(propertyType, PropertyDescription);
             if (typeViewModel != null)
                 return new DataModelPropertyViewModel(DataModel, this, dataModelPath) {DisplayViewModel = typeViewModel, Depth = depth};
             // For primitives, create a property view model, it may be null that is fine

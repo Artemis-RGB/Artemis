@@ -12,21 +12,25 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Input
 {
+    /// <summary>
+    ///     Represents a view model that allows selecting a data model property used by boolean operations on a certain data
+    ///     model property
+    /// </summary>
     public class DataModelDynamicViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Module _module;
         private readonly Timer _updateTimer;
         private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
-        private DataModelPath _dataModelPath;
-        private DataModelPropertiesViewModel _dataModelViewModel;
+        private DataModelPath? _dataModelPath;
+        private DataModelPropertiesViewModel? _dataModelViewModel;
         private bool _displaySwitchButton;
-        private Type[] _filterTypes;
+        private Type[] _filterTypes = new Type[0];
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
 
-        public DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
+        internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
             _module = module;
             _dataModelUIService = dataModelUIService;
@@ -39,6 +43,9 @@ namespace Artemis.UI.Shared.Input
             Initialize();
         }
 
+        /// <summary>
+        ///     Gets or sets the brush to use for the input button
+        /// </summary>
         public SolidColorBrush ButtonBrush
         {
             get => _buttonBrush;
@@ -49,26 +56,41 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets the brush to use for the switch button
+        /// </summary>
         public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
 
+        /// <summary>
+        ///     Gets or sets the placeholder text when no value is entered
+        /// </summary>
         public string Placeholder
         {
             get => _placeholder;
             set => SetAndNotify(ref _placeholder, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the enabled state of the input
+        /// </summary>
         public bool IsEnabled
         {
             get => _isEnabled;
             set => SetAndNotify(ref _isEnabled, value);
         }
 
+        /// <summary>
+        ///     Gets or sets whether the switch button should be displayed
+        /// </summary>
         public bool DisplaySwitchButton
         {
             get => _displaySwitchButton;
             set => SetAndNotify(ref _displaySwitchButton, value);
         }
 
+        /// <summary>
+        ///     Gets or sets the types of properties this view model will allow to be selected
+        /// </summary>
         public Type[] FilterTypes
         {
             get => _filterTypes;
@@ -79,18 +101,38 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets a bindable collection of extra data model view models to show
+        /// </summary>
         public BindableCollection<DataModelPropertiesViewModel> ExtraDataModelViewModels { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether there are any extra data models
+        /// </summary>
         public bool HasExtraDataModels => ExtraDataModelViewModels.Any();
 
+        /// <summary>
+        ///     Command used by view
+        /// </summary>
         public DelegateCommand SelectPropertyCommand { get; }
+
+        /// <summary>
+        ///     Setting used by view
+        /// </summary>
         public PluginSetting<bool> ShowDataModelValues { get; }
 
-        public DataModelPropertiesViewModel DataModelViewModel
+        /// <summary>
+        ///     Gets or sets root the data model view model
+        /// </summary>
+        public DataModelPropertiesViewModel? DataModelViewModel
         {
             get => _dataModelViewModel;
             private set => SetAndNotify(ref _dataModelViewModel, value);
         }
 
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether the data model is open
+        /// </summary>
         public bool IsDataModelViewModelOpen
         {
             get => _isDataModelViewModelOpen;
@@ -101,7 +143,10 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
-        public DataModelPath DataModelPath
+        /// <summary>
+        ///     Gets or sets the data model path of the currently selected data model property
+        /// </summary>
+        public DataModelPath? DataModelPath
         {
             get => _dataModelPath;
             private set
@@ -113,9 +158,19 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets a boolean indicating whether the current selection is valid
+        /// </summary>
         public bool IsValid => DataModelPath?.IsValid ?? true;
-        public string DisplayValue => DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
 
+        /// <summary>
+        ///     Gets the display name of the currently selected property
+        /// </summary>
+        public string? DisplayValue => DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+
+        /// <summary>
+        ///     Gets the human readable path of the currently selected property
+        /// </summary>
         public string DisplayPath
         {
             get
@@ -128,8 +183,16 @@ namespace Artemis.UI.Shared.Input
             }
         }
 
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether event child VMs should be loaded, defaults to <see langword="true" />
+        /// </summary>
         public bool LoadEventChildren { get; set; } = true;
 
+        /// <summary>
+        ///     Changes the root data model VM stored in <see cref="DataModelViewModel" /> to the provided
+        ///     <paramref name="dataModel" />
+        /// </summary>
+        /// <param name="dataModel">The data model VM to set the new root data model to</param>
         public void ChangeDataModel(DataModelPropertiesViewModel dataModel)
         {
             if (DataModelViewModel != null)
@@ -141,12 +204,19 @@ namespace Artemis.UI.Shared.Input
                 DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
         }
 
-        public void ChangeDataModelPath(DataModelPath dataModelPath)
+        /// <summary>
+        ///     Changes the currently selected property by its path
+        /// </summary>
+        /// <param name="dataModelPath">The path of the property to set the selection to</param>
+        public void ChangeDataModelPath(DataModelPath? dataModelPath)
         {
             DataModelPath?.Dispose();
             DataModelPath = dataModelPath != null ? new DataModelPath(dataModelPath) : null;
         }
 
+        /// <summary>
+        ///     Requests switching the input type to static using a <see cref="DataModelStaticViewModel" />
+        /// </summary>
         public void SwitchToStatic()
         {
             ChangeDataModelPath(null);
@@ -158,13 +228,14 @@ namespace Artemis.UI.Shared.Input
         {
             // Get the data models
             DataModelViewModel = _dataModelUIService.GetPluginDataModelVisualization(_module, true);
-            DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
+            if (DataModelViewModel != null)
+                DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
             ExtraDataModelViewModels.CollectionChanged += ExtraDataModelViewModelsOnCollectionChanged;
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
         }
 
-        private void ExecuteSelectPropertyCommand(object context)
+        private void ExecuteSelectPropertyCommand(object? context)
         {
             if (!(context is DataModelVisualizationViewModel selected))
                 return;
@@ -173,40 +244,61 @@ namespace Artemis.UI.Shared.Input
             OnPropertySelected(new DataModelInputDynamicEventArgs(DataModelPath));
         }
 
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _updateTimer.Stop();
+                _updateTimer.Dispose();
+                _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+
+                DataModelPath?.Dispose();
+            }
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
-            _updateTimer.Stop();
-            _updateTimer.Dispose();
-            _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-
-            DataModelPath?.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        #endregion
 
         #region Event handlers
 
-        private void DataModelOnUpdateRequested(object sender, EventArgs e)
+        private void DataModelOnUpdateRequested(object? sender, EventArgs e)
         {
-            DataModelViewModel.ApplyTypeFilter(true, FilterTypes);
+            DataModelViewModel?.ApplyTypeFilter(true, FilterTypes);
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
                 extraDataModelViewModel.ApplyTypeFilter(true, FilterTypes);
         }
 
-        private void ExtraDataModelViewModelsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void ExtraDataModelViewModelsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(HasExtraDataModels));
         }
 
-        private void OnUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
+        private void OnUpdateTimerOnElapsed(object? sender, ElapsedEventArgs e)
         {
             if (!IsDataModelViewModelOpen)
                 return;
-            
+
             UpdateDataModelVisualization();
         }
 
         private void UpdateDataModelVisualization()
         {
-            DataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
+            DataModelViewModel?.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
                 extraDataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
         }
@@ -215,14 +307,28 @@ namespace Artemis.UI.Shared.Input
 
         #region Events
 
-        public event EventHandler<DataModelInputDynamicEventArgs> PropertySelected;
-        public event EventHandler SwitchToStaticRequested;
+        /// <summary>
+        ///     Occurs when anew property has been selected
+        /// </summary>
+        public event EventHandler<DataModelInputDynamicEventArgs>? PropertySelected;
 
+        /// <summary>
+        ///     Occurs when a switch to static input has been requested
+        /// </summary>
+        public event EventHandler? SwitchToStaticRequested;
+
+        /// <summary>
+        ///     Invokes the <see cref="PropertySelected" /> event
+        /// </summary>
+        /// <param name="e"></param>
         protected virtual void OnPropertySelected(DataModelInputDynamicEventArgs e)
         {
             PropertySelected?.Invoke(this, e);
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="SwitchToStaticRequested" /> event
+        /// </summary>
         protected virtual void OnSwitchToStaticRequested()
         {
             SwitchToStaticRequested?.Invoke(this, EventArgs.Empty);

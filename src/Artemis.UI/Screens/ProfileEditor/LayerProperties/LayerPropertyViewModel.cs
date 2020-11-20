@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertyViewModel : PropertyChangedBase, IDisposable
+    public sealed class LayerPropertyViewModel : PropertyChangedBase, IDisposable
     {
         private bool _isVisible;
         private bool _isHighlighted;

@@ -8,7 +8,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class DataModelInputStaticEventArgs : EventArgs
     {
-        internal DataModelInputStaticEventArgs(object value)
+        internal DataModelInputStaticEventArgs(object? value)
         {
             Value = value;
         }
@@ -16,6 +16,6 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     The value that was submitted
         /// </summary>
-        public object Value { get; }
+        public object? Value { get; }
     }
 }

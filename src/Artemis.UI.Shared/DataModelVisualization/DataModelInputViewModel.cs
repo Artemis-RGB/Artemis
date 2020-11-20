@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
@@ -16,7 +17,7 @@ namespace Artemis.UI.Shared
     public abstract class DataModelInputViewModel<T> : DataModelInputViewModel
     {
         private bool _closed;
-        private T _inputValue;
+        [AllowNull] private T _inputValue = default!;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelInputViewModel{T}" /> class
@@ -32,6 +33,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets the value shown in the input
         /// </summary>
+        [AllowNull]
         public T InputValue
         {
             get => _inputValue;
@@ -82,13 +84,13 @@ namespace Artemis.UI.Shared
         // ReSharper disable once UnusedMember.Global
         internal abstract object InternalGuard { get; }
 
-        internal Action<object, bool> UpdateCallback { get; set; }
+        internal Action<object?, bool> UpdateCallback { get; set; } = null!; // Set right after construction
 
         /// <summary>
         ///     Gets the types this input view model can support through type conversion. This list is defined when registering the
         ///     view model.
         /// </summary>
-        internal IReadOnlyCollection<Type> CompatibleConversionTypes { get; set; }
+        internal IReadOnlyCollection<Type>? CompatibleConversionTypes { get; set; }
 
         /// <summary>
         ///     Submits the input value and removes this view model.
@@ -133,6 +135,6 @@ namespace Artemis.UI.Shared
         }
 
         /// <inheritdoc />
-        public UIElement View { get; set; }
+        public UIElement? View { get; set; }
     }
 }

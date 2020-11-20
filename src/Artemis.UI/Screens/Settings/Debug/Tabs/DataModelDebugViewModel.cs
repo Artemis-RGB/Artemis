@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.Timers;
 using Artemis.Core;
@@ -10,14 +10,14 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug.Tabs
 {
-    public class DataModelDebugViewModel : Screen
+    public sealed class DataModelDebugViewModel : Screen, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly Timer _updateTimer;
+
         private bool _isModuleFilterEnabled;
         private DataModelPropertiesViewModel _mainDataModel;
-        private List<Module> _modules;
         private string _propertySearch;
         private Module _selectedModule;
 
@@ -68,6 +68,17 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                     GetDataModel();
             }
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _updateTimer.Dispose();
+            base.OnClose();
+        }
+
+        #endregion
 
         protected override void OnActivate()
         {
@@ -126,5 +137,15 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             else if (!SelectedModule.IsEnabled)
                 SelectedModule = null;
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _updateTimer?.Dispose();
+        }
+
+        #endregion
     }
 }

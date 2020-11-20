@@ -8,12 +8,12 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class RenderProfileElementEventArgs : EventArgs
     {
-        internal RenderProfileElementEventArgs(RenderProfileElement renderProfileElement)
+        internal RenderProfileElementEventArgs(RenderProfileElement? renderProfileElement)
         {
             RenderProfileElement = renderProfileElement;
         }
 
-        internal RenderProfileElementEventArgs(RenderProfileElement renderProfileElement, RenderProfileElement previousRenderProfileElement)
+        internal RenderProfileElementEventArgs(RenderProfileElement? renderProfileElement, RenderProfileElement? previousRenderProfileElement)
         {
             RenderProfileElement = renderProfileElement;
             PreviousRenderProfileElement = previousRenderProfileElement;
@@ -22,7 +22,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the profile element the event was raised for
         /// </summary>
-        public RenderProfileElement RenderProfileElement { get; }
+        public RenderProfileElement? RenderProfileElement { get; }
 
         /// <summary>
         ///     If applicable, the previous active profile element before the event was raised

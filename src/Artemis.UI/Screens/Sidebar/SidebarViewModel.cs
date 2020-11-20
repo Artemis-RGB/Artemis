@@ -22,7 +22,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>, IDisposable
+    public sealed class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>, IDisposable
     {
         private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
@@ -196,16 +196,9 @@ namespace Artemis.UI.Screens.Sidebar
 
         #region IDisposable
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-                _activeModulesUpdateTimer?.Dispose();
-        }
-
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            _activeModulesUpdateTimer?.Dispose();
         }
 
         #endregion

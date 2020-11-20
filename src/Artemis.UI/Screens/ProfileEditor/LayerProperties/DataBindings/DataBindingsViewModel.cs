@@ -52,7 +52,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             SelectedItemIndex = 0;
         }
 
-        private void ProfileEditorServiceOnSelectedDataBindingChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {
             CreateDataBindingViewModels();
         }

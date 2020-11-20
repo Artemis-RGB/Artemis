@@ -12,7 +12,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding
 {
-    public class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase, IDisposable
+    public sealed class DataBindingModifierViewModel<TLayerProperty, TProperty> : PropertyChangedBase, IDisposable
     {
         private readonly IDataBindingService _dataBindingService;
         private readonly IDataModelUIService _dataModelUIService;
@@ -161,6 +161,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         #region IDisposable
 
+        /// <inheritdoc />
         public void Dispose()
         {
             DisposeDynamicSelectionViewModel();
@@ -193,13 +194,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
         #region Event handlers
 
-        private void DynamicSelectionViewModelOnSwitchToStaticRequested(object? sender, EventArgs e)
+        private void DynamicSelectionViewModelOnSwitchToStaticRequested(object sender, EventArgs e)
         {
             Modifier.ParameterType = ProfileRightSideType.Static;
             Update();
         }
 
-        private void StaticInputViewModelOnSwitchToDynamicRequested(object? sender, EventArgs e)
+        private void StaticInputViewModelOnSwitchToDynamicRequested(object sender, EventArgs e)
         {
             Modifier.ParameterType = ProfileRightSideType.Dynamic;
             Update();

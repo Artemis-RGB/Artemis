@@ -491,6 +491,9 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
+
+            if (PropertyDescription.DisableKeyframes)
+                KeyframesSupported = false;
         }
 
         /// <inheritdoc />

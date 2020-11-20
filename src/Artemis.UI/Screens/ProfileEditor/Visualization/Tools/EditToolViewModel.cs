@@ -192,7 +192,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                     height = layer.Transform.Scale.CurrentValue.Height;
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(e));
             }
 
             // Make the sides even if shift is held down
@@ -326,10 +326,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             {
                 // Keep the X position static if dragging vertically
                 if (_draggingVertically)
+                {
                     position.X = _dragStart.X;
+                }
                 // Keep the Y position static if dragging horizontally
                 else if (_draggingHorizontally)
+                {
                     position.Y = _dragStart.Y;
+                }
                 // Snap into place only if the mouse moved atleast a full pixel
                 else if (Math.Abs(position.X - _dragStart.X) > 1 || Math.Abs(position.Y - _dragStart.Y) > 1)
                 {
@@ -386,23 +390,23 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         #region Private methods
 
-        private SKPoint RoundPoint(SKPoint point, int decimals)
+        private static SKPoint RoundPoint(SKPoint point, int decimals)
         {
             return new SKPoint((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
         }
 
-        private SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
+        private static SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
         {
             using SKPath counterRotatePath = new SKPath();
             counterRotatePath.AddPoly(skPoints, false);
-            counterRotatePath.Transform(SKMatrix.MakeRotationDegrees(layer.Transform.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
+            counterRotatePath.Transform(SKMatrix.CreateRotationDegrees(layer.Transform.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)
-                counterRotatePath.Transform(SKMatrix.MakeScale(1f / (layer.Transform.Scale.CurrentValue.Width / 100f), 1f / (layer.Transform.Scale.CurrentValue.Height / 100f)));
+                counterRotatePath.Transform(SKMatrix.CreateScale(1f / (layer.Transform.Scale.CurrentValue.Width / 100f), 1f / (layer.Transform.Scale.CurrentValue.Height / 100f)));
 
             return counterRotatePath.Points;
         }
 
-        private Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
+        private static Point GetRelativePosition(object sender, MouseEventArgs mouseEventArgs)
         {
             DependencyObject parent = VisualTreeHelper.GetParent((DependencyObject) sender);
             return mouseEventArgs.GetPosition((IInputElement) parent);
@@ -410,7 +414,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private float CalculateAngle(Layer layer, object mouseEventSender, MouseEventArgs mouseEvent)
         {
-            Rect layerBounds = _layerEditorService.GetLayerBounds(layer);
             Point start = _layerEditorService.GetLayerAnchorPosition(layer);
             Point arrival = GetRelativePosition(mouseEventSender, mouseEvent);
 

@@ -20,12 +20,12 @@ namespace Artemis.UI.Shared
         ///     If not matching item can be found,
         ///     a null parent is being returned.
         /// </returns>
-        public static T FindChild<T>(DependencyObject parent, string childName) where T : DependencyObject
+        public static T? FindChild<T>(DependencyObject? parent, string? childName) where T : DependencyObject
         {
             // Confirm parent and childName are valid. 
             if (parent == null) return null;
 
-            T foundChild = null;
+            T? foundChild = null;
 
             int childrenCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childrenCount; i++)
@@ -72,10 +72,10 @@ namespace Artemis.UI.Shared
         ///     If not matching item can be found,
         ///     a null parent is being returned.
         /// </returns>
-        public static T FindParent<T>(DependencyObject child, string parentName) where T : DependencyObject
+        public static T? FindParent<T>(DependencyObject child, string? parentName) where T : DependencyObject
         {
             // Get parent item
-            DependencyObject parentObject = VisualTreeHelper.GetParent(child);
+            DependencyObject? parentObject = VisualTreeHelper.GetParent(child);
 
             // We've reached the end of the tree
             if (parentObject == null)

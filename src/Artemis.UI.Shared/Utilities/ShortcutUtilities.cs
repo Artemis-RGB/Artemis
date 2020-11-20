@@ -9,8 +9,8 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class ShortcutUtilities
     {
-        private static readonly Type m_type = Type.GetTypeFromProgID("WScript.Shell");
-        private static readonly object m_shell = Activator.CreateInstance(m_type);
+        private static readonly Type MType = Type.GetTypeFromProgID("WScript.Shell")!;
+        private static readonly object MShell = Activator.CreateInstance(MType)!;
 
         /// <summary>
         ///     Creates a shortcut
@@ -24,7 +24,10 @@ namespace Artemis.UI.Shared
         /// <param name="iconPath">The icon path of the shortcut</param>
         public static void Create(string fileName, string targetPath, string arguments, string workingDirectory, string description, string hotkey, string iconPath)
         {
-            IWshShortcut shortcut = (IWshShortcut) m_type.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, m_shell, new object[] {fileName});
+            IWshShortcut? shortcut = (IWshShortcut?) MType.InvokeMember("CreateShortcut", BindingFlags.InvokeMethod, null, MShell, new object[] {fileName});
+            if (shortcut == null)
+                throw new ArtemisSharedUIException("InvokeMember CreateShortcut returned null");
+
             shortcut.Description = description;
             shortcut.Hotkey = hotkey;
             shortcut.TargetPath = targetPath;
@@ -34,7 +37,7 @@ namespace Artemis.UI.Shared
                 shortcut.IconLocation = iconPath;
             shortcut.Save();
         }
-
+            
         [ComImport]
         [TypeLibType(0x1040)]
         [Guid("F935DC23-1CF0-11D0-ADB9-00C04FD58A0B")]
@@ -118,14 +121,7 @@ namespace Artemis.UI.Shared
             }
 
             [DispId(0x3ee)]
-            int WindowStyle
-            {
-                [DispId(0x3ee)]
-                get;
-                [param: In]
-                [DispId(0x3ee)]
-                set;
-            }
+            int WindowStyle { [DispId(0x3ee)] get; [param: In] [DispId(0x3ee)] set; }
 
             [DispId(0x3ef)]
             string WorkingDirectory
@@ -141,6 +137,7 @@ namespace Artemis.UI.Shared
 
             [TypeLibFunc(0x40)]
             [DispId(0x7d0)]
+            // ReSharper disable once InconsistentNaming - No idea if that breaks it and cba to test
             void Load([In] [MarshalAs(UnmanagedType.BStr)] string PathLink);
 
             [DispId(0x7d1)]

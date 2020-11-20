@@ -19,13 +19,13 @@ namespace Artemis.UI.Shared.Screens.Dialogs
 
         public void Confirm()
         {
-            if (!Session.IsEnded)
+            if (Session != null && !Session.IsEnded)
                 Session.Close(true);
         }
 
         public void Cancel()
         {
-            if (!Session.IsEnded)
+            if (Session != null && !Session.IsEnded)
                 Session.Close(false);
         }
     }

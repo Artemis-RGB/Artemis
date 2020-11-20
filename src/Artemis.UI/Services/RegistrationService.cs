@@ -74,7 +74,7 @@ namespace Artemis.UI.Services
             _registeredBuiltInPropertyEditors = true;
         }
 
-        private void PluginServiceOnPluginLoaded(object? sender, PluginEventArgs e)
+        private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
         {
             e.Plugin.Kernel.Load(new[] {new PluginUIModule(e.Plugin)});
         }

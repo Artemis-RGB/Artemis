@@ -11,7 +11,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     {
         private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly ISurfaceService _surfaceService;
-        private BindableCollection<DeviceSettingsViewModel> _deviceSettingsViewModels;
 
         public DeviceSettingsTabViewModel(ISurfaceService surfaceService, ISettingsVmFactory settingsVmFactory)
         {

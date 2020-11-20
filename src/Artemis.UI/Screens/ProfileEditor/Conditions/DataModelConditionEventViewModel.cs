@@ -10,7 +10,7 @@ using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
-    public class DataModelConditionEventViewModel : DataModelConditionViewModel, IDisposable
+    public sealed class DataModelConditionEventViewModel : DataModelConditionViewModel, IDisposable
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
@@ -90,7 +90,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         #region Event handlers
 
-        private void LeftSideSelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)
+        private void LeftSideSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             ApplyEvent();
         }
@@ -104,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             LeftSideSelectionViewModel.Dispose();
             LeftSideSelectionViewModel.PropertySelected -= LeftSideSelectionViewModelOnPropertySelected;
         }
-
+        
         #endregion
     }
 }

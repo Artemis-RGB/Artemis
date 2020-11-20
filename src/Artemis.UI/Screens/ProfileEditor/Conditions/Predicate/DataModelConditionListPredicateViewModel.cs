@@ -5,6 +5,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
+using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 

@@ -14,7 +14,6 @@ using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
-using Artemis.UI.Screens.Splash;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
@@ -88,7 +87,8 @@ namespace Artemis.UI
 
         protected override void ConfigureIoC(IKernel kernel)
         {
-            // kernel.Settings.InjectNonPublic = true;
+            // This is kinda needed for the VM factories in the Shared UI but perhaps there's a less global solution
+            kernel.Settings.InjectNonPublic = true;
 
             // Load the UI modules
             kernel.Load<UIModule>();
@@ -123,7 +123,7 @@ namespace Artemis.UI
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 
-        private void CreateDataDirectory(ILogger logger)
+        private static void CreateDataDirectory(ILogger logger)
         {
             // Ensure the data folder exists
             if (Directory.Exists(Constants.DataFolder))
@@ -159,15 +159,6 @@ namespace Artemis.UI
                     MessageBoxImage.Error
                 );
                 Environment.Exit(1);
-            });
-        }
-
-        private void ShowMainWindow(IWindowManager windowManager, SplashViewModel splashViewModel)
-        {
-            Execute.OnUIThread(() =>
-            {
-                windowManager.ShowWindow(RootViewModel);
-                splashViewModel.RequestClose();
             });
         }
     }

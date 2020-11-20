@@ -1,11 +1,12 @@
-﻿using System.Timers;
+﻿using System;
+using System.Timers;
 using Artemis.Core.Modules;
 using Humanizer;
 using Stylet;
 
 namespace Artemis.UI.Screens.Modules.Tabs
 {
-    public class ActivationRequirementViewModel : Screen
+    public sealed class ActivationRequirementViewModel : Screen, IDisposable
     {
         private readonly IModuleActivationRequirement _activationRequirement;
         private readonly Timer _updateTimer;
@@ -60,5 +61,15 @@ namespace Artemis.UI.Screens.Modules.Tabs
             RequirementDescription = _activationRequirement.GetUserFriendlyDescription();
             RequirementMet = _activationRequirement.Evaluate();
         }
+
+        #region IDisposable
+        
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _updateTimer?.Dispose();
+        }
+
+        #endregion
     }
 }

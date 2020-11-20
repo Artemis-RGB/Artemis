@@ -13,21 +13,22 @@ namespace Artemis.UI.Shared
     public class DataModelListViewModel : DataModelVisualizationViewModel
     {
         private string _countDisplay;
-        private Type _displayValueType;
-        private IEnumerable _list;
+        private Type? _displayValueType;
+        private IEnumerable? _list;
         private BindableCollection<DataModelVisualizationViewModel> _listChildren;
         private int _listCount;
 
         internal DataModelListViewModel(DataModel dataModel, DataModelVisualizationViewModel parent, DataModelPath dataModelPath)
             : base(dataModel, parent, dataModelPath)
         {
-            ListChildren = new BindableCollection<DataModelVisualizationViewModel>();
+            _countDisplay = "0 items";
+            _listChildren = new BindableCollection<DataModelVisualizationViewModel>();
         }
 
         /// <summary>
         ///     Gets the instance of the list that is being visualized
         /// </summary>
-        public IEnumerable List
+        public IEnumerable? List
         {
             get => _list;
             private set => SetAndNotify(ref _list, value);
@@ -45,7 +46,7 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the type of elements this list contains and that must be displayed as children
         /// </summary>
-        public Type DisplayValueType
+        public Type? DisplayValueType
         {
             get => _displayValueType;
             set => SetAndNotify(ref _displayValueType, value);
@@ -70,7 +71,7 @@ namespace Artemis.UI.Shared
         }
 
         /// <inheritdoc />
-        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
+        public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration)
         {
             if (Parent != null && !Parent.IsVisualizationExpanded)
                 return;
@@ -86,10 +87,12 @@ namespace Artemis.UI.Shared
                 if (item == null)
                     continue;
 
-                DataModelVisualizationViewModel child;
+                DataModelVisualizationViewModel? child;
                 if (ListChildren.Count <= index)
                 {
                     child = CreateListChild(dataModelUIService, item.GetType());
+                    if (child == null)
+                        continue;
                     ListChildren.Add(child);
                 }
                 else
@@ -126,10 +129,10 @@ namespace Artemis.UI.Shared
             return $"[List] {DisplayPath ?? Path} - {ListCount} item(s)";
         }
 
-        private DataModelVisualizationViewModel CreateListChild(IDataModelUIService dataModelUIService, Type listType)
+        private DataModelVisualizationViewModel? CreateListChild(IDataModelUIService dataModelUIService, Type listType)
         {
             // If a display VM was found, prefer to use that in any case
-            DataModelDisplayViewModel typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
+            DataModelDisplayViewModel? typeViewModel = dataModelUIService.GetDataModelDisplayViewModel(listType, PropertyDescription);
             if (typeViewModel != null)
                 return new DataModelListPropertyViewModel(listType, typeViewModel);
             // For primitives, create a property view model, it may be null that is fine

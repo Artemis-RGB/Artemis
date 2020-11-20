@@ -11,29 +11,33 @@ using Stylet;
 
 namespace Artemis.UI.Shared.Input
 {
+    /// <summary>
+    ///     Represents a view model that allows inputting a static value used by boolean operations on a certain data model
+    ///     property
+    /// </summary>
     public class DataModelStaticViewModel : PropertyChangedBase, IDisposable
     {
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly Window _rootView;
+        private readonly Window? _rootView;
         private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
         private bool _displaySwitchButton;
-        private DataModelDisplayViewModel _displayViewModel;
-        private DataModelInputViewModel _inputViewModel;
+        private DataModelDisplayViewModel? _displayViewModel;
+        private DataModelInputViewModel? _inputViewModel;
         private bool _isEnabled;
         private string _placeholder = "Enter a value";
         private DataModelPropertyAttribute _targetDescription;
         private Type _targetType;
-        private object _value;
+        private object? _value;
 
-        public DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
+        internal DataModelStaticViewModel(Type targetType, DataModelPropertyAttribute targetDescription, IDataModelUIService dataModelUIService)
         {
             _dataModelUIService = dataModelUIService;
             _rootView = Application.Current.Windows.OfType<Window>().SingleOrDefault(x => x.IsActive);
 
-            TargetType = targetType;
-            TargetDescription = targetDescription;
-            IsEnabled = TargetType != null;
-            DisplayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), TargetDescription, true);
+            _targetType = targetType;
+            _targetDescription = targetDescription;
+            _isEnabled = TargetType != null;
+            _displayViewModel = _dataModelUIService.GetDataModelDisplayViewModel(TargetType ?? typeof(object), TargetDescription, true);
 
             if (_rootView != null)
             {
@@ -63,7 +67,7 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets the view model used to display the value
         /// </summary>
-        public DataModelDisplayViewModel DisplayViewModel
+        public DataModelDisplayViewModel? DisplayViewModel
         {
             get => _displayViewModel;
             private set => SetAndNotify(ref _displayViewModel, value);
@@ -72,7 +76,7 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets the view model used to edit the value
         /// </summary>
-        public DataModelInputViewModel InputViewModel
+        public DataModelInputViewModel? InputViewModel
         {
             get => _inputViewModel;
             private set => SetAndNotify(ref _inputViewModel, value);
@@ -99,7 +103,7 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets or sets the value of the target
         /// </summary>
-        public object Value
+        public object? Value
         {
             get => _value;
             set
@@ -173,7 +177,7 @@ namespace Artemis.UI.Shared.Input
         }
 
         /// <summary>
-        ///     Requests switching the input type to dynamic
+        ///     Requests switching the input type to dynamic using a <see cref="DataModelDynamicViewModel"/>
         /// </summary>
         public void SwitchToDynamic()
         {
@@ -183,7 +187,7 @@ namespace Artemis.UI.Shared.Input
             OnSwitchToDynamicRequested();
         }
 
-        private void ApplyFreeInput(object value, bool submitted)
+        private void ApplyFreeInput(object? value, bool submitted)
         {
             if (submitted)
                 OnValueUpdated(new DataModelInputStaticEventArgs(value));
@@ -204,11 +208,13 @@ namespace Artemis.UI.Shared.Input
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
+            {
                 if (_rootView != null)
                 {
                     _rootView.MouseUp -= RootViewOnMouseUp;
                     _rootView.KeyUp -= RootViewOnKeyUp;
                 }
+            }
         }
 
         /// <inheritdoc />

@@ -5,27 +5,25 @@ using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Input;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor.Conditions
+namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 {
     public abstract class DataModelConditionPredicateViewModel : DataModelConditionViewModel, IDisposable
     {
         private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
-        private BindableCollection<BaseConditionOperator> _operators;
         private DataModelStaticViewModel _rightSideInputViewModel;
         private DataModelDynamicViewModel _rightSideSelectionViewModel;
         private BaseConditionOperator _selectedOperator;
 
         private List<Type> _supportedInputTypes;
 
-        public DataModelConditionPredicateViewModel(
+        protected DataModelConditionPredicateViewModel(
             DataModelConditionPredicate dataModelConditionPredicate,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
@@ -199,17 +197,27 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         #region IDisposable
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (LeftSideSelectionViewModel != null)
+                {
+                    LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
+                    LeftSideSelectionViewModel.Dispose();
+                    LeftSideSelectionViewModel = null;
+                }
+
+                DisposeRightSideStaticViewModel();
+                DisposeRightSideDynamicViewModel();
+            }
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
-            if (LeftSideSelectionViewModel != null)
-            {
-                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
-                LeftSideSelectionViewModel.Dispose();
-                LeftSideSelectionViewModel = null;
-            }
-
-            DisposeRightSideStaticViewModel();
-            DisposeRightSideDynamicViewModel();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion
@@ -284,7 +292,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        private void RightSideInputViewModelOnSwitchToDynamicRequested(object? sender, EventArgs e)
+        private void RightSideInputViewModelOnSwitchToDynamicRequested(object sender, EventArgs e)
         {
             DataModelConditionPredicate.PredicateType = ProfileRightSideType.Dynamic;
             Update();

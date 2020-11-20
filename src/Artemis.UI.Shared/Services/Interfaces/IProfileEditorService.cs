@@ -14,17 +14,17 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Gets the currently selected profile
         /// </summary>
-        Profile SelectedProfile { get; }
+        Profile? SelectedProfile { get; }
 
         /// <summary>
         ///     Gets the currently selected profile element
         /// </summary>
-        RenderProfileElement SelectedProfileElement { get; }
+        RenderProfileElement? SelectedProfileElement { get; }
 
         /// <summary>
         ///     Gets the currently selected data binding property
         /// </summary>
-        ILayerProperty SelectedDataBinding { get; }
+        ILayerProperty? SelectedDataBinding { get; }
 
         /// <summary>
         ///     Gets or sets the current time
@@ -45,7 +45,7 @@ namespace Artemis.UI.Shared.Services
         ///     Changes the selected profile
         /// </summary>
         /// <param name="profile">The profile to select</param>
-        void ChangeSelectedProfile(Profile profile);
+        void ChangeSelectedProfile(Profile? profile);
 
         /// <summary>
         ///     Updates the selected profile and saves it to persistent storage
@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared.Services
         ///     Changes the selected profile element
         /// </summary>
         /// <param name="profileElement">The profile element to select</param>
-        void ChangeSelectedProfileElement(RenderProfileElement profileElement);
+        void ChangeSelectedProfileElement(RenderProfileElement? profileElement);
 
         /// <summary>
         ///     Updates the selected profile element and saves the profile it is contained in to persistent storage
@@ -67,7 +67,7 @@ namespace Artemis.UI.Shared.Services
         ///     Changes the selected data binding property
         /// </summary>
         /// <param name="layerProperty">The data binding property to select</param>
-        void ChangeSelectedDataBinding(ILayerProperty layerProperty);
+        void ChangeSelectedDataBinding(ILayerProperty? layerProperty);
 
         /// <summary>
         ///     Updates the profile preview, forcing UI-elements to re-render
@@ -90,7 +90,7 @@ namespace Artemis.UI.Shared.Services
         ///     Gets the current module the profile editor is initialized for
         /// </summary>
         /// <returns>The current module the profile editor is initialized for</returns>
-        ProfileModule GetCurrentModule();
+        ProfileModule? GetCurrentModule();
 
         /// <summary>
         ///     Occurs when a new profile is selected
@@ -173,6 +173,6 @@ namespace Artemis.UI.Shared.Services
         ///     If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}" /> supporting
         ///     <typeparamref name="T" />
         /// </summary>
-        PropertyInputViewModel<T> CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty);
+        PropertyInputViewModel<T>? CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty);
     }
 }

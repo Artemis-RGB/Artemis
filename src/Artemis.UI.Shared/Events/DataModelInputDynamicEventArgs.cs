@@ -9,7 +9,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class DataModelInputDynamicEventArgs : EventArgs
     {
-        internal DataModelInputDynamicEventArgs(DataModelPath dataModelPath)
+        internal DataModelInputDynamicEventArgs(DataModelPath? dataModelPath)
         {
             DataModelPath = dataModelPath;
         }
@@ -17,6 +17,6 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets the data model path that was selected
         /// </summary>
-        public DataModelPath DataModelPath { get; }
+        public DataModelPath? DataModelPath { get; }
     }
 }
