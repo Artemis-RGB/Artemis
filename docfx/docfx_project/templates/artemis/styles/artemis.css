@@ -1,0 +1,17 @@
+.sidefilter {
+	width: 320px;
+}
+
+.sidetoc {
+	width: 320px;
+}
+
+.article.grid-right {
+	margin-left: 340px;
+}
+
+@media (min-width: 1500px) {
+.container {
+    width: 1470px;
+}
+}
