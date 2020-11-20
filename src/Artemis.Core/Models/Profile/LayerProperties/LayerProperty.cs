@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -208,8 +208,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            BaseValue = DefaultValue;
-            CurrentValue = DefaultValue;
+            string json = JsonConvert.SerializeObject(DefaultValue, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            
+            BaseValue = JsonConvert.DeserializeObject<T>(json);
+            CurrentValue = JsonConvert.DeserializeObject<T>(json);
         }
 
         private void ReapplyUpdate()
