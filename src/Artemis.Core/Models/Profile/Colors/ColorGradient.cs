@@ -119,11 +119,13 @@ namespace Artemis.Core
         /// <returns></returns>
         public static ColorGradient GetUnicornBarf()
         {
+            const int amount = 8;
             ColorGradient gradient = new ColorGradient();
-            for (int i = 0; i < 9; i++)
+
+            for (int i = 0; i <= amount; i++)
             {
-                SKColor color = i != 8 ? SKColor.FromHsv(i * 32, 100, 100) : SKColor.FromHsv(0, 100, 100);
-                gradient.Stops.Add(new ColorGradientStop(color, 0.125f * i));
+                float percent = i / (float)amount;
+                gradient.Stops.Add(new ColorGradientStop(SKColor.FromHsv(360f * percent, 100, 100), percent));
             }
 
             return gradient;
