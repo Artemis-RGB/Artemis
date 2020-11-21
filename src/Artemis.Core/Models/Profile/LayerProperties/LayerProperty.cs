@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -203,13 +203,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Overrides the property value with the default value
         /// </summary>
-        public void ApplyDefaultValue()
+        public void ApplyDefaultValue(TimeSpan? time)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            BaseValue = DefaultValue;
-            CurrentValue = DefaultValue;
+            string json = JsonConvert.SerializeObject(DefaultValue, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+
+            SetCurrentValue(JsonConvert.DeserializeObject<T>(json), time);
         }
 
         private void ReapplyUpdate()
@@ -506,7 +507,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
             if (!IsLoadedFromStorage)
-                ApplyDefaultValue();
+                ApplyDefaultValue(null);
             else
                 try
                 {
