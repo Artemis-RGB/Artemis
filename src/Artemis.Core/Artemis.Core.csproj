@@ -6,7 +6,6 @@
     <AssemblyTitle>Artemis.Core</AssemblyTitle>
     <Product>Artemis Core</Product>
     <Copyright>Copyright © Robert Beekman - 2020</Copyright>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <Platforms>x64</Platforms>
   </PropertyGroup>
