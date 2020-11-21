@@ -14,6 +14,7 @@ using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
+using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
@@ -42,6 +43,7 @@ namespace Artemis.UI
 
             ILogger logger = Kernel.Get<ILogger>();
             IViewManager viewManager = Kernel.Get<IViewManager>();
+            IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
 
             StartupArguments = Args.ToList();
             CreateDataDirectory(logger);
@@ -70,7 +72,7 @@ namespace Artemis.UI
                 {
                     if (StartupArguments.Contains("--autorun"))
                     {
-                        logger.Information("Sleeping for 15 seconds on auto run to allow applications like iCUE and LGS to start");
+                        logger.Information("Sleeping for 15 seconds on auto run to allow vendor applications required for SDKs to start");
                         await Task.Delay(TimeSpan.FromSeconds(15));
                     }
 
@@ -83,6 +85,8 @@ namespace Artemis.UI
                     throw;
                 }
             });
+
+            registrationService.RegisterInputProvider();
         }
 
         protected override void ConfigureIoC(IKernel kernel)

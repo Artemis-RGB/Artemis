@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
@@ -22,6 +23,7 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
+            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             DeviceEntity = new DeviceEntity();
             _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
 
@@ -38,6 +40,7 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
+            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             DeviceEntity = deviceEntity;
             _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
@@ -83,6 +86,11 @@ namespace Artemis.Core
             get => _leds;
             private set => SetAndNotify(ref _leds, value);
         }
+
+        /// <summary>
+        /// Gets a list of input identifiers associated with this device
+        /// </summary>
+        public List<ArtemisDeviceInputIdentifier> InputIdentifiers { get; }
 
         /// <summary>
         ///     Gets or sets the X-position of the device
@@ -174,6 +182,16 @@ namespace Artemis.Core
         {
             // Other properties are computed
             DeviceEntity.DeviceIdentifier = RgbDevice.GetDeviceIdentifier();
+
+            DeviceEntity.InputIdentifier.Clear();
+            foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
+            {
+                DeviceEntity.InputIdentifier.Add(new DeviceInputIdentifierEntity
+                {
+                    InputProvider = identifier.InputProvider,
+                    Identifier = identifier.Identifier
+                });
+            }
         }
 
         internal void ApplyToRgbDevice()
@@ -185,6 +203,10 @@ namespace Artemis.Core
             if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
                 RgbDevice.Location = new Point(1, 1);
             RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
+
+            InputIdentifiers.Clear();
+            foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifier)
+                InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
 
             CalculateRenderProperties();
             OnDeviceUpdated();
