@@ -23,6 +23,23 @@
                Source="/Resources/Images/Sidebar/sidebar-header.png"
                Stretch="UniformToFill"
                VerticalAlignment="Top" Height="120" />
+
+        <ToggleButton Grid.Row="0"
+            Style="{StaticResource MaterialDesignSwitchLightToggleButton}"
+            ToolTip="Pin sidebar"
+            HorizontalAlignment="Right" 
+            IsChecked="{Binding PinSidebar.Value, Delay=300}"
+            Margin="10 0">
+            <materialDesign:PackIcon Kind="Pin" RenderTransformOrigin=".5,.5">
+                <materialDesign:PackIcon.RenderTransform>
+                    <RotateTransform Angle="45" />
+                </materialDesign:PackIcon.RenderTransform>
+            </materialDesign:PackIcon>
+            <materialDesign:ToggleButtonAssist.OnContent>
+                <materialDesign:PackIcon Kind="Pin" />
+            </materialDesign:ToggleButtonAssist.OnContent>
+        </ToggleButton>
+
         <TextBlock Grid.Row="1"
                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                    Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"

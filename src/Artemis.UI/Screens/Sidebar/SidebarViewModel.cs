@@ -26,6 +26,7 @@ namespace Artemis.UI.Screens.Sidebar
     {
         private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
+        private readonly ISettingsService _settingsService;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginManagementService _pluginManagementService;
         private string _activeModules;
@@ -34,14 +35,17 @@ namespace Artemis.UI.Screens.Sidebar
         private BindableCollection<INavigationItem> _sidebarItems;
         private Dictionary<INavigationItem, Module> _sidebarModules;
 
-        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService)
+        public SidebarViewModel(IKernel kernel, ISettingsService settingsService, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService)
         {
             _kernel = kernel;
+            _settingsService = settingsService;
             _moduleVmFactory = moduleVmFactory;
             _pluginManagementService = pluginManagementService;
 
             SidebarModules = new Dictionary<INavigationItem, Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
+            PinSidebar = settingsService.GetSetting("UI.PinSidebar", false);
+            PinSidebar.AutoSave = true;
 
             _activeModulesUpdateTimer = new Timer(1000);
             _activeModulesUpdateTimer.Start();
@@ -53,6 +57,8 @@ namespace Artemis.UI.Screens.Sidebar
             SetupSidebar();
             eventAggregator.Subscribe(this);
         }
+
+        public PluginSetting<bool> PinSidebar { get; }
 
         public BindableCollection<INavigationItem> SidebarItems
         {
@@ -107,6 +113,10 @@ namespace Artemis.UI.Screens.Sidebar
             List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
             foreach (Module module in modules)
                 AddModule(module);
+
+            // Set the sidebar as open if it's pinned
+            if (PinSidebar.Value)
+                IsSidebarOpen = true;
 
             // Select the top item, which will be one of the defaults
             Task.Run(() => SelectSidebarItem(SidebarItems[0]));
