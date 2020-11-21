@@ -8,7 +8,6 @@
     <Company>Artemis.UI.Shared</Company>
     <Product>Artemis.UI.Shared</Product>
     <Copyright>Copyright © Robert Beekman - 2020</Copyright>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
@@ -52,13 +51,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="WriteableBitmapEx" Version="1.6.5" />
-  </ItemGroup>
-  <ItemGroup>
-    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="obj\x64\Debug\ColorPicker.g.cs" />
