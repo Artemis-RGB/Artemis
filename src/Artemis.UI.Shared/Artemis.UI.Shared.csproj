@@ -54,6 +54,13 @@
     <PackageReference Include="WriteableBitmapEx" Version="1.6.5" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Remove="obj\x64\Debug\ColorPicker.g.cs" />
     <Compile Remove="obj\x64\Debug\ColorPicker.g.i.cs" />
     <Compile Remove="obj\x64\Debug\DraggableDouble.g.i.cs" />

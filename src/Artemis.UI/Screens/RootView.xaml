@@ -7,6 +7,7 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:screens="clr-namespace:Artemis.UI.Screens"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
+                    xmlns:converters="clr-namespace:Artemis.UI.Converters"
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Resources/Images/Logo/logo-512.png"
@@ -48,6 +49,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </mde:MaterialWindow.Resources>
     <materialDesign:DialogHost IsTabStop="False"
                                Focusable="False"
@@ -55,25 +57,47 @@
                                DialogTheme="Inherit"
                                SnackbarMessageQueue="{Binding MainMessageQueue}">
 
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen}" >
+        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding DockedSidebarViewModel.IsSidebarOpen}">
             <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding SidebarViewModel}" Width="280"  />
+                <ContentControl s:View.Model="{Binding DockedSidebarViewModel}" 
+                                Width="280" 
+                                Visibility="{Binding PinSidebar.Value, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"/>
             </materialDesign:DrawerHost.LeftDrawerContent>
             <DockPanel>
+                <Border DockPanel.Dock="Left" 
+                        DockPanel.ZIndex="2"  
+                        ClipToBounds="True"
+                        Background="{DynamicResource MaterialDesignToolBarBackground}"
+                        Visibility="{Binding PinSidebar.Value, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <ContentControl Grid.Column="0" s:View.Model="{Binding PinnedSidebarViewModel}" Width="280" />
+                        <Rectangle Grid.Column="1" Fill="DarkGray" Width="1" Margin="0 0 -1 0">
+                            <Rectangle.Effect>
+                                <DropShadowEffect ShadowDepth="0" BlurRadius="10" Color="{StaticResource MaterialDesignShadow}"/>
+                            </Rectangle.Effect>
+                        </Rectangle>
+                    </Grid>
+                </Border>
+
                 <mde:AppBar Type="Dense"
-                            IsNavigationDrawerOpen="{Binding SidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
+                            IsNavigationDrawerOpen="{Binding DockedSidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
                             Title="{Binding ActiveItem.DisplayName}"
-                            ShowNavigationDrawerButton="True"
-                            DockPanel.Dock="Top">
+                            ShowNavigationDrawerButton="{Binding PinSidebar.Value, Converter={StaticResource InverseBooleanConverter}}"
+                            DockPanel.Dock="Top"
+                            DockPanel.ZIndex="1">
                     <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FrameTime}" 
+                        <TextBlock Text="{Binding FrameTime}"
                                    VerticalAlignment="Center"
-                                   FontSize="14" 
-                                   Margin="10 0" 
-                                   ToolTip="The time the last frame took to render"/>
+                                   FontSize="14"
+                                   Margin="10 0"
+                                   ToolTip="The time the last frame took to render" />
 
                         <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
-                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                                 ToolTip="Open debugger"
                                 Command="{s:Action ShowDebugger}"
                                 materialDesign:RippleAssist.RippleOnTop="True">
@@ -84,7 +108,7 @@
 
                 <Grid>
                     <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
-                    <materialDesign:Snackbar x:Name="MainSnackbar" 
+                    <materialDesign:Snackbar x:Name="MainSnackbar"
                                              MessageQueue="{Binding MainMessageQueue}"
                                              materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
                                              materialDesign:SnackbarMessage.ContentMaxHeight="200" />

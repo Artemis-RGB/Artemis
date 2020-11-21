@@ -28,6 +28,7 @@ namespace Artemis.UI.Screens
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
         private readonly Timer _frameTimeUpdateTimer;
+        private readonly SidebarViewModel _sidebarViewModel;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly ThemeWatcher _themeWatcher;
         private readonly PluginSetting<WindowSize> _windowSize;
@@ -35,6 +36,7 @@ namespace Artemis.UI.Screens
         private string _frameTime;
         private bool _lostFocus;
         private ISnackbarMessageQueue _mainMessageQueue;
+        private MaterialWindow _window;
         private string _windowTitle;
 
         public RootViewModel(
@@ -46,12 +48,12 @@ namespace Artemis.UI.Screens
             ISnackbarMessageQueue snackbarMessageQueue,
             SidebarViewModel sidebarViewModel)
         {
-            SidebarViewModel = sidebarViewModel;
             _eventAggregator = eventAggregator;
             _coreService = coreService;
             _debugService = debugService;
             _builtInRegistrationService = builtInRegistrationService;
             _snackbarMessageQueue = snackbarMessageQueue;
+            _sidebarViewModel = sidebarViewModel;
 
             _frameTimeUpdateTimer = new Timer(500);
 
@@ -61,14 +63,19 @@ namespace Artemis.UI.Screens
             _themeWatcher = new ThemeWatcher();
             ApplyColorSchemeSetting();
 
-            ActiveItem = SidebarViewModel.SelectedItem;
+            ActiveItem = sidebarViewModel.SelectedItem;
             ActiveItemReady = true;
-
+            PinSidebar = settingsService.GetSetting("UI.PinSidebar", false);
+            
             AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
         }
 
-        public SidebarViewModel SidebarViewModel { get; }
+        public PluginSetting<bool> PinSidebar { get; }
+
+        // Just a litte trick to get the non-active variant completely removed from XAML (that should probably be done in the view)
+        public SidebarViewModel PinnedSidebarViewModel => PinSidebar.Value ? _sidebarViewModel : null;
+        public SidebarViewModel DockedSidebarViewModel => PinSidebar.Value ? null : _sidebarViewModel;
 
         public ISnackbarMessageQueue MainMessageQueue
         {
@@ -138,6 +145,13 @@ namespace Artemis.UI.Screens
             _eventAggregator.Publish(new MainWindowMouseEvent(sender, false, e));
         }
 
+        private void UpdateSidebarPinState()
+        {
+            _sidebarViewModel.IsSidebarOpen = true;
+
+            NotifyOfPropertyChange(nameof(PinnedSidebarViewModel));
+            NotifyOfPropertyChange(nameof(DockedSidebarViewModel));
+        }
 
         private void UpdateFrameTime()
         {
@@ -146,18 +160,25 @@ namespace Artemis.UI.Screens
 
         private void SidebarViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(SidebarViewModel.SelectedItem) && ActiveItem != SidebarViewModel.SelectedItem)
+            if (e.PropertyName == nameof(_sidebarViewModel.SelectedItem) && ActiveItem != _sidebarViewModel.SelectedItem)
             {
-                SidebarViewModel.IsSidebarOpen = false;
+                // Unless the sidebar is pinned, close it upon selecting an item
+                if (!PinSidebar.Value)
+                    _sidebarViewModel.IsSidebarOpen = false;
+
                 // Don't do a fade when selecting a module because the editor is so bulky the animation slows things down
-                if (!(SidebarViewModel.SelectedItem is ModuleRootViewModel))
+                if (!(_sidebarViewModel.SelectedItem is ModuleRootViewModel))
                     ActiveItemReady = false;
 
                 // Allow the menu to close, it's slower but feels more responsive, funny how that works right
                 Execute.PostToUIThreadAsync(async () =>
                 {
-                    await Task.Delay(400);
-                    ActiveItem = SidebarViewModel.SelectedItem;
+                    if (PinSidebar.Value)
+                        await Task.Delay(200);
+                    else
+                        await Task.Delay(400);
+
+                    ActiveItem = _sidebarViewModel.SelectedItem;
                     ActiveItemReady = true;
                 });
             }
@@ -208,6 +229,11 @@ namespace Artemis.UI.Screens
             ApplyColorSchemeSetting();
         }
 
+        private void PinSidebarOnSettingChanged(object sender, EventArgs e)
+        {
+            UpdateSidebarPinState();
+        }
+
         #region IDisposable
 
         /// <inheritdoc />
@@ -236,7 +262,7 @@ namespace Artemis.UI.Screens
             base.OnViewLoaded();
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             MainMessageQueue = _snackbarMessageQueue;
             UpdateFrameTime();
@@ -248,14 +274,17 @@ namespace Artemis.UI.Screens
             _frameTimeUpdateTimer.Elapsed += OnFrameTimeUpdateTimerOnElapsed;
             _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
             _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
-            SidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
+            _sidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
+            PinSidebar.SettingChanged += PinSidebarOnSettingChanged;
 
             _frameTimeUpdateTimer.Start();
 
-            base.OnActivate();
+            _window = (MaterialWindow) View;
+
+            base.OnInitialActivate();
         }
 
-        protected override void OnDeactivate()
+        protected override void OnClose()
         {
             // Ensure no element with focus can leak, if we don't do this the root VM is retained by Window.EffectiveValues
             // https://stackoverflow.com/a/30864434
@@ -264,22 +293,17 @@ namespace Artemis.UI.Screens
             MainMessageQueue = null;
             _frameTimeUpdateTimer.Stop();
 
-            MaterialWindow window = (MaterialWindow) View;
             _windowSize.Value ??= new WindowSize();
-            _windowSize.Value.ApplyFromWindow(window);
+            _windowSize.Value.ApplyFromWindow(_window);
             _windowSize.Save();
 
             _frameTimeUpdateTimer.Elapsed -= OnFrameTimeUpdateTimerOnElapsed;
             _colorScheme.SettingChanged -= ColorSchemeOnSettingChanged;
             _themeWatcher.ThemeChanged -= ThemeWatcherOnThemeChanged;
-            SidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;
+            _sidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;
+            PinSidebar.SettingChanged -= PinSidebarOnSettingChanged;
 
-            base.OnDeactivate();
-        }
-
-        protected override void OnClose()
-        {
-            SidebarViewModel.Dispose();
+            _sidebarViewModel.Dispose();
 
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.
@@ -290,6 +314,7 @@ namespace Artemis.UI.Screens
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
             });
+
 
             base.OnClose();
         }
