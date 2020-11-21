@@ -245,7 +245,7 @@ namespace Artemis.Core.Services
             // Load the entity and fall back on creating a new one
             Plugin plugin = new Plugin(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
             OnPluginLoading(new PluginEventArgs(plugin));
-            
+
             // Locate the main assembly entry
             string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
             if (!File.Exists(mainFile))
@@ -289,6 +289,8 @@ namespace Artemis.Core.Services
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
+            OnPluginEnabling(new PluginEventArgs(plugin));
+
             plugin.SetEnabled(true);
 
             // Get the Plugin feature from the main assembly and if there is only one, instantiate it

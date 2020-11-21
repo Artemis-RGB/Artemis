@@ -80,6 +80,15 @@
           "Ninject.Extensions.Factory": "3.3.2"
         }
       },
+      "RawInput.Sharp": {
+        "type": "Direct",
+        "requested": "[0.0.3, )",
+        "resolved": "0.0.3",
+        "contentHash": "X5EuJYuU0RWzOnA68cHmLEJ4czhgu0EsQj3o5RtYSdTNnTnXo/zVNAXQWPWbBXgoLsws1WTsT567yX0HKjS4aA==",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1"
+        }
+      },
       "Serilog": {
         "type": "Direct",
         "requested": "[2.9.0, )",
