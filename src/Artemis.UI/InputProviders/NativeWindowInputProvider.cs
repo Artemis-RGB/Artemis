@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
-using RGB.NET.Core;
+using MouseButton = Artemis.Core.Services.MouseButton;
 
 namespace Artemis.UI.InputProviders
 {
@@ -15,25 +14,19 @@ namespace Artemis.UI.InputProviders
     {
         private const int WM_INPUT = 0x00FF;
 
-        private readonly ISurfaceService _surfaceService;
-        private List<ArtemisDevice> _keyboards;
+        private readonly IInputService _inputService;
         private DateTime _lastMouseUpdate;
-        private List<ArtemisDevice> _mice;
         private SpongeWindow _sponge;
 
-        public NativeWindowInputProvider(ISurfaceService surfaceService)
+        public NativeWindowInputProvider(IInputService inputService)
         {
-            _surfaceService = surfaceService;
+            _inputService = inputService;
 
             _sponge = new SpongeWindow();
             _sponge.WndProcCalled += SpongeOnWndProcCalled;
 
             RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.ExInputSink | RawInputDeviceFlags.NoLegacy, _sponge.Handle);
             RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle);
-
-            _surfaceService.ActiveSurfaceConfigurationSelected += SurfaceConfigurationChanged;
-            _surfaceService.SurfaceConfigurationUpdated += SurfaceConfigurationChanged;
-            GetDevices(surfaceService.ActiveSurface);
         }
 
         #region IDisposable
@@ -45,26 +38,12 @@ namespace Artemis.UI.InputProviders
             {
                 _sponge?.DestroyHandle();
                 _sponge = null;
-
-                _surfaceService.ActiveSurfaceConfigurationSelected -= SurfaceConfigurationChanged;
-                _surfaceService.SurfaceConfigurationUpdated -= SurfaceConfigurationChanged;
             }
 
             base.Dispose(disposing);
         }
 
         #endregion
-
-        private void SurfaceConfigurationChanged(object sender, SurfaceConfigurationEventArgs e)
-        {
-            GetDevices(e.Surface);
-        }
-
-        private void GetDevices(ArtemisSurface surface)
-        {
-            _keyboards = surface.Devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard).ToList();
-            _mice = surface.Devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse).ToList();
-        }
 
         private void SpongeOnWndProcCalled(object sender, Message message)
         {
@@ -75,67 +54,168 @@ namespace Artemis.UI.InputProviders
             switch (data)
             {
                 case RawInputMouseData mouse:
-                    HandleMouseData(mouse);
+                    HandleMouseData(data, mouse);
                     break;
                 case RawInputKeyboardData keyboard:
-                    HandleKeyboardData(keyboard);
+                    HandleKeyboardData(data, keyboard);
                     break;
             }
         }
 
-        private void HandleKeyboardData(RawInputKeyboardData data)
+        #region Keyboard
+
+        private void HandleKeyboardData(RawInputData data, RawInputKeyboardData keyboardData)
         {
-            // Get the keyboard that submitted the data
-            ArtemisDevice match = _keyboards?.FirstOrDefault();
-            if (match == null)
-                return;
-
-            InputKey key = (InputKey) KeyInterop.KeyFromVirtualKey(data.Keyboard.VirutalKey);
-
-            // Debug.WriteLine($"VK: {key} ({data.Keyboard.VirutalKey}), Flags: {data.Keyboard.Flags}, Scan code: {data.Keyboard.ScanCode}");
-
+            KeyboardKey key = (KeyboardKey) KeyInterop.KeyFromVirtualKey(keyboardData.Keyboard.VirutalKey);
+            // Debug.WriteLine($"VK: {key} ({keyboardData.Keyboard.VirutalKey}), Flags: {keyboardData.Keyboard.Flags}, Scan code: {keyboardData.Keyboard.ScanCode}");
+            
             // Sometimes we get double hits and they resolve to None, ignore those
-            if (key == InputKey.None)
+            if (key == KeyboardKey.None)
                 return;
 
             // Right alt triggers LeftCtrl with a different scan code for some reason, ignore those
-            if (key == InputKey.LeftCtrl && data.Keyboard.ScanCode == 56)
+            if (key == KeyboardKey.LeftCtrl && keyboardData.Keyboard.ScanCode == 56)
                 return;
+
+            string identifier = data.Device?.DevicePath;
+
+            // Let the core know there is an identifier so it can store new identifications if applicable
+            if (identifier != null)
+                OnIdentifierReceived(identifier);
+
+            ArtemisDevice device = null;
+            if (identifier != null)
+                device = _inputService.GetDeviceByIdentifier(this, identifier, InputFallbackDeviceType.Keyboard);
 
             // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
-            if (data.Keyboard.Flags == RawKeyboardFlags.LeftKey || data.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
+            if (keyboardData.Keyboard.Flags == RawKeyboardFlags.LeftKey || keyboardData.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
             {
-                if (key == InputKey.Enter)
-                    key = InputKey.NumPadEnter;
-                if (key == InputKey.LeftCtrl)
-                    key = InputKey.RightCtrl;
-                if (key == InputKey.LeftAlt)
-                    key = InputKey.RightAlt;
+                if (key == KeyboardKey.Enter)
+                    key = KeyboardKey.NumPadEnter;
+                if (key == KeyboardKey.LeftCtrl)
+                    key = KeyboardKey.RightCtrl;
+                if (key == KeyboardKey.LeftAlt)
+                    key = KeyboardKey.RightAlt;
             }
 
-            if (key == InputKey.LeftShift && data.Keyboard.ScanCode == 54)
-                key = InputKey.RightShift;
+            if (key == KeyboardKey.LeftShift && keyboardData.Keyboard.ScanCode == 54)
+                key = KeyboardKey.RightShift;
 
-            bool isDown = data.Keyboard.Flags != RawKeyboardFlags.Up &&
-                          data.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.LeftKey) &&
-                          data.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.RightKey);
+            bool isDown = keyboardData.Keyboard.Flags != RawKeyboardFlags.Up &&
+                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.LeftKey) &&
+                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.RightKey);
 
-            OnKeyboardDataReceived(new InputProviderKeyboardEventArgs(match, key, isDown));
+            OnKeyboardDataReceived(new InputProviderKeyboardEventArgs(device, key, isDown));
         }
 
-        private void HandleMouseData(RawInputMouseData data)
+        #endregion
+
+        #region Mouse
+
+        private int _mouseDeltaX;
+        private int _mouseDeltaY;
+
+        private void HandleMouseData(RawInputData data, RawInputMouseData mouseData)
         {
-            // Only handle mouse movement 25 times per second
-            if (data.Mouse.Buttons == RawMouseButtonFlags.None)
+            // Only submit mouse movement 25 times per second but increment the delta
+            // This can create a small inaccuracy of course, but Artemis is not a shooter :')
+            if (mouseData.Mouse.Buttons == RawMouseButtonFlags.None)
+            {
+                _mouseDeltaX += mouseData.Mouse.LastX;
+                _mouseDeltaY += mouseData.Mouse.LastY;
                 if (DateTime.Now - _lastMouseUpdate < TimeSpan.FromMilliseconds(40))
                     return;
+            }
 
-            _lastMouseUpdate = DateTime.Now;
+            ArtemisDevice device = null;
+            string identifier = data.Device?.DevicePath;
+            if (identifier != null)
+                device = _inputService.GetDeviceByIdentifier(this, identifier, InputFallbackDeviceType.Mouse);
 
-            // Get the keyboard that submitted the data
-            ArtemisDevice match = _mice?.FirstOrDefault();
-            if (match == null)
+            // Debug.WriteLine($"Buttons: {data.Mouse.Buttons}, Data: {data.Mouse.ButtonData}, Flags: {data.Mouse.Flags}, XY: {data.Mouse.LastX},{data.Mouse.LastY}");
+
+            // Movement
+            if (mouseData.Mouse.Buttons == RawMouseButtonFlags.None)
+            {
+                Win32Point cursorPosition = GetCursorPosition();
+                OnMouseMoveDataReceived(new InputProviderMouseMoveEventArgs(device, cursorPosition.X, cursorPosition.Y, _mouseDeltaX, _mouseDeltaY));
+                _mouseDeltaX = 0;
+                _mouseDeltaY = 0;
+                _lastMouseUpdate = DateTime.Now;
                 return;
+            }
+
+            // Now we know its not movement, let the core know there is an identifier so it can store new identifications if applicable
+            if (identifier != null)
+                OnIdentifierReceived(identifier);
+
+            // Scrolling
+            if (mouseData.Mouse.ButtonData != 0)
+            {
+                if (mouseData.Mouse.Buttons == RawMouseButtonFlags.MouseWheel)
+                    OnMouseScrollDataReceived(new InputProviderMouseScrollEventArgs(device, MouseScrollDirection.Vertical, mouseData.Mouse.ButtonData));
+                else if (mouseData.Mouse.Buttons == RawMouseButtonFlags.MouseHorizontalWheel)
+                    OnMouseScrollDataReceived(new InputProviderMouseScrollEventArgs(device, MouseScrollDirection.Horizontal, mouseData.Mouse.ButtonData));
+                return;
+            }
+
+            // Button presses
+            MouseButton button = MouseButton.Left;
+            bool isDown = false;
+
+            // Left
+            if (DetermineMouseButton(mouseData, RawMouseButtonFlags.LeftButtonDown, RawMouseButtonFlags.LeftButtonUp, ref isDown))
+                button = MouseButton.Left;
+            // Middle
+            else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.MiddleButtonDown, RawMouseButtonFlags.MiddleButtonUp, ref isDown))
+                button = MouseButton.Middle;
+            // Right
+            else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.RightButtonDown, RawMouseButtonFlags.RightButtonUp, ref isDown))
+                button = MouseButton.Right;
+            // Button 4
+            else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.Button4Down, RawMouseButtonFlags.Button4Up, ref isDown))
+                button = MouseButton.Button4;
+            else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.Button5Down, RawMouseButtonFlags.Button5Up, ref isDown))
+                button = MouseButton.Button5;
+
+            OnMouseButtonDataReceived(new InputProviderMouseButtonEventArgs(device, button, isDown));
         }
+
+        private bool DetermineMouseButton(RawInputMouseData data, RawMouseButtonFlags downButton, RawMouseButtonFlags upButton, ref bool isDown)
+        {
+            if (data.Mouse.Buttons == downButton || data.Mouse.Buttons == upButton)
+            {
+                isDown = data.Mouse.Buttons == downButton;
+                return true;
+            }
+
+            isDown = false;
+            return false;
+        }
+
+        #endregion
+
+        #region Native
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetCursorPos(ref Win32Point pt);
+
+        [StructLayout(LayoutKind.Sequential)]
+        private struct Win32Point
+        {
+            public readonly int X;
+            public readonly int Y;
+        }
+
+        private static Win32Point GetCursorPosition()
+        {
+            Win32Point w32Mouse = new Win32Point();
+            GetCursorPos(ref w32Mouse);
+
+            return w32Mouse;
+        }
+
+        #endregion
     }
 }

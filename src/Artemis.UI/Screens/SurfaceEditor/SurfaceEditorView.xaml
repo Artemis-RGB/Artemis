@@ -144,6 +144,14 @@
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
+                                            <MenuItem Header="Identify input" 
+                                                      Command="{s:Action DetectInput}" 
+                                                      CommandParameter="{Binding}"
+                                                      ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="GestureDoubleTap" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
                                             <MenuItem Header="View properties" Command="{s:Action ViewProperties}" CommandParameter="{Binding}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="Gear" />
