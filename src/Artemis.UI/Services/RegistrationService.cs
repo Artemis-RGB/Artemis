@@ -85,7 +85,7 @@ namespace Artemis.UI.Services
 
         public void RegisterInputProvider()
         {
-            _inputService.AddInputProvider(new NativeWindowInputProvider(_surfaceService));
+            _inputService.AddInputProvider(new NativeWindowInputProvider(_inputService));
         }
 
         private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs e)

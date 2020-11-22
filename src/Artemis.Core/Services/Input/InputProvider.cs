@@ -12,13 +12,70 @@ namespace Artemis.Core.Services
         ///     Occurs when the input provided has received keyboard data
         /// </summary>
         public event EventHandler<InputProviderKeyboardEventArgs>? KeyboardDataReceived;
-        
+
         /// <summary>
-        ///     Invokes the <see cref="KeyboardDataReceived" /> event
+        ///     Occurs when the input provided has received mouse button data
+        /// </summary>
+        public event EventHandler<InputProviderMouseButtonEventArgs>? MouseButtonDataReceived;
+
+        /// <summary>
+        ///     Occurs when the input provided has received mouse scroll data
+        /// </summary>
+        public event EventHandler<InputProviderMouseScrollEventArgs>? MouseScrollDataReceived;
+
+        /// <summary>
+        ///     Occurs when the input provided has received mouse move data
+        /// </summary>
+        public event EventHandler<InputProviderMouseMoveEventArgs>? MouseMoveDataReceived;
+
+        /// <summary>
+        ///     Occurs when the input provided received a device identifier
+        /// </summary>
+        public event EventHandler<object>? IdentifierReceived;
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyboardDataReceived" /> event which the <see cref="IInputService" /> listens to as long as
+        ///     this provider is registered
         /// </summary>
         protected virtual void OnKeyboardDataReceived(InputProviderKeyboardEventArgs e)
         {
             KeyboardDataReceived?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="MouseButtonDataReceived" /> event which the <see cref="IInputService" /> listens to as long
+        ///     as this provider is registered
+        /// </summary>
+        protected virtual void OnMouseButtonDataReceived(InputProviderMouseButtonEventArgs e)
+        {
+            MouseButtonDataReceived?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="MouseScrollDataReceived" /> event which the <see cref="IInputService" /> listens to as long
+        ///     as this provider is registered
+        /// </summary>
+        protected virtual void OnMouseScrollDataReceived(InputProviderMouseScrollEventArgs e)
+        {
+            MouseScrollDataReceived?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="MouseMoveDataReceived" /> event which the <see cref="IInputService" /> listens to as long as
+        ///     this provider is registered
+        /// </summary>
+        protected virtual void OnMouseMoveDataReceived(InputProviderMouseMoveEventArgs e)
+        {
+            MouseMoveDataReceived?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="IdentifierReceived" /> event which the <see cref="IInputService" /> listens to as long as
+        ///     this provider is registered
+        /// </summary>
+        protected virtual void OnIdentifierReceived(object identifier)
+        {
+            IdentifierReceived?.Invoke(this, identifier);
         }
 
         #region IDisposable
