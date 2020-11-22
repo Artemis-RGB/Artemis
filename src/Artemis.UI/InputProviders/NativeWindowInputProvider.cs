@@ -25,7 +25,7 @@ namespace Artemis.UI.InputProviders
             _sponge = new SpongeWindow();
             _sponge.WndProcCalled += SpongeOnWndProcCalled;
 
-            RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.ExInputSink | RawInputDeviceFlags.NoLegacy, _sponge.Handle);
+            RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _sponge.Handle);
             RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle);
         }
 
