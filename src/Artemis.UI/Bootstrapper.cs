@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Security.AccessControl;
-using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
-using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
@@ -40,13 +36,12 @@ namespace Artemis.UI
         protected override void Launch()
         {
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+            Core.Utilities.PrepareFirstLaunch();
 
             ILogger logger = Kernel.Get<ILogger>();
             IViewManager viewManager = Kernel.Get<IViewManager>();
-            IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
 
             StartupArguments = Args.ToList();
-            CreateDataDirectory(logger);
 
             // Create the Artemis core
             try
@@ -86,7 +81,7 @@ namespace Artemis.UI
                 }
             });
 
-            registrationService.RegisterInputProvider();
+            Kernel.Get<IRegistrationService>().RegisterInputProvider();
         }
 
         protected override void ConfigureIoC(IKernel kernel)
@@ -125,29 +120,6 @@ namespace Artemis.UI
         private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
             Execute.OnUIThread(() => Application.Current.Shutdown());
-        }
-
-        private static void CreateDataDirectory(ILogger logger)
-        {
-            // Ensure the data folder exists
-            if (Directory.Exists(Constants.DataFolder))
-                return;
-
-            logger.Information("Creating data directory at {dataDirectoryFolder}", Constants.DataFolder);
-            Directory.CreateDirectory(Constants.DataFolder);
-
-            // During creation ensure all local users can access the data folder
-            // This is needed when later running Artemis as a different user or when Artemis is first run as admin
-            DirectoryInfo directoryInfo = new DirectoryInfo(Constants.DataFolder);
-            DirectorySecurity accessControl = directoryInfo.GetAccessControl();
-            accessControl.AddAccessRule(new FileSystemAccessRule(
-                new SecurityIdentifier(WellKnownSidType.BuiltinUsersSid, null),
-                FileSystemRights.FullControl,
-                InheritanceFlags.ObjectInherit | InheritanceFlags.ContainerInherit,
-                PropagationFlags.InheritOnly,
-                AccessControlType.Allow)
-            );
-            directoryInfo.SetAccessControl(accessControl);
         }
 
         private void HandleFatalException(Exception e, ILogger logger)

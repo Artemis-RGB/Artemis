@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
+using System.Security.AccessControl;
+using System.Security.Principal;
 
 namespace Artemis.Core
 {
@@ -8,6 +11,15 @@ namespace Artemis.Core
     /// </summary>
     public static class Utilities
     {
+        /// <summary>
+        ///     Call this before even initializing the Core to make sure the folders required for operation are in place
+        /// </summary>
+        public static void PrepareFirstLaunch()
+        {
+            CreateArtemisFolderIfMissing(Constants.DataFolder);
+            CreateArtemisFolderIfMissing(Constants.DataFolder + "plugins");
+        }
+
         /// <summary>
         ///     Attempts to gracefully shut down the application with a delayed kill to ensure the application shut down
         ///     <para>
@@ -62,6 +74,28 @@ namespace Artemis.Core
         internal static string GetCurrentLocation()
         {
             return Process.GetCurrentProcess().MainModule!.FileName!;
+        }
+
+        private static void CreateArtemisFolderIfMissing(string path)
+        {
+            if (!Directory.Exists(path))
+            {
+                DirectoryInfo dataDirectory = Directory.CreateDirectory(path);
+
+                if (!OperatingSystem.IsWindows())
+                    return;
+
+                // On Windows, ensure everyone has permission (important when running as admin)
+                DirectorySecurity security = dataDirectory.GetAccessControl();
+                SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                security.AddAccessRule(new FileSystemAccessRule(
+                    everyone,
+                    FileSystemRights.Modify | FileSystemRights.Synchronize,
+                    InheritanceFlags.ContainerInherit | InheritanceFlags.ObjectInherit,
+                    PropagationFlags.None, AccessControlType.Allow)
+                );
+                dataDirectory.SetAccessControl(security);
+            }
         }
 
         #region Events

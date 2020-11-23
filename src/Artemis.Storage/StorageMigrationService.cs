@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
@@ -32,9 +33,17 @@ namespace Artemis.Storage
                     storageMigration.GetType().Name, _repository.Database.UserVersion, storageMigration.UserVersion);
 
                 _repository.Database.BeginTrans();
-                storageMigration.Apply(_repository);
+                try
+                {
+                    storageMigration.Apply(_repository);
+                }
+                catch (Exception)
+                {
+                    _repository.Database.Rollback();
+                    throw;
+                }
                 _repository.Database.Commit();
-                
+
                 _repository.Database.UserVersion = storageMigration.UserVersion;
             }
         }

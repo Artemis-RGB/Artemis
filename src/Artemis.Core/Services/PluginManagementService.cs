@@ -35,10 +35,6 @@ namespace Artemis.Core.Services
             _logger = logger;
             _pluginRepository = pluginRepository;
             _plugins = new List<Plugin>();
-
-            // Ensure the plugins directory exists
-            if (!Directory.Exists(Constants.DataFolder + "plugins"))
-                Directory.CreateDirectory(Constants.DataFolder + "plugins");
         }
 
         private void CopyBuiltInPlugin(FileInfo zipFileInfo, ZipArchive zipArchive)
