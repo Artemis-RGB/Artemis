@@ -9,6 +9,8 @@ namespace Artemis.Storage.Migrations
 
         public void Apply(LiteRepository repository)
         {
+            // DropCollection will open a transaction so commit the current one
+            repository.Database.Commit();
             if (repository.Database.CollectionExists("ProfileEntity"))
                 repository.Database.DropCollection("ProfileEntity");
         }
