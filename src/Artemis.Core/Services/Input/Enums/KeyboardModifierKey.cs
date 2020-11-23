@@ -6,7 +6,7 @@ namespace Artemis.Core.Services
     ///     Specifies the set of modifier keys.
     /// </summary>
     [Flags]
-    public enum KeyboardModifierKeys
+    public enum KeyboardModifierKey
     {
         /// <summary>No modifiers are pressed.</summary>
         None = 0,

@@ -28,11 +28,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
             Session.Close(ProfileName);
         }
-
-        public void Cancel()
-        {
-            Session.Close();
-        }
     }
 
     public class ProfileCreateViewModelValidator : AbstractValidator<ProfileCreateViewModel>

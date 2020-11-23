@@ -22,7 +22,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Identifies the provided <paramref name="device" /> by assigning the next received device identification to it
         /// </summary>
-        /// <param name="device">The device to identify</param>
+        /// <param name="device">The device to identify - Must be a keyboard or mouse</param>
         void IdentifyDevice(ArtemisDevice device);
 
         /// <summary>
@@ -40,12 +40,37 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Occurs whenever a key on a keyboard was pressed
         /// </summary>
-        event EventHandler<KeyboardEventArgs> KeyboardKeyDown;
+        event EventHandler<KeyboardKeyEventArgs> KeyboardKeyDown;
 
         /// <summary>
         ///     Occurs whenever a key on a keyboard was released
         /// </summary>
-        event EventHandler<KeyboardEventArgs> KeyboardKeyUp;
+        event EventHandler<KeyboardKeyEventArgs> KeyboardKeyUp;
+
+        /// <summary>
+        ///     Occurs whenever a button on a mouse was pressed or released
+        /// </summary>
+        event EventHandler<MouseButtonUpDownEventArgs> MouseButtonUpDown;
+
+        /// <summary>
+        ///     Occurs whenever a button on a mouse was pressed
+        /// </summary>
+        event EventHandler<MouseButtonEventArgs> MouseButtonDown;
+
+        /// <summary>
+        ///     Occurs whenever a button on a mouse was released
+        /// </summary>
+        event EventHandler<MouseButtonEventArgs> MouseButtonUp;
+
+        /// <summary>
+        ///     Occurs whenever a the scroll wheel of a mouse is turned
+        /// </summary>
+        event EventHandler<MouseScrollEventArgs> MouseScroll;
+
+        /// <summary>
+        ///     Occurs whenever a a mouse is moved
+        /// </summary>
+        event EventHandler<MouseMoveEventArgs> MouseMove;
 
         /// <summary>
         ///     Occurs when a device has been identified after calling <see cref="IdentifyDevice" />
@@ -61,9 +86,9 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="provider">The input provider to identify the device for</param>
         /// <param name="identifier">The value to use to identify the device</param>
-        /// <param name="fallbackType">A device type to fall back to if no match is found</param>
+        /// <param name="type">A device type to fall back to if no match is found</param>
         /// <returns>If found, the Artemis device matching the provider and identifier</returns>
-        ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputFallbackDeviceType fallbackType);
+        ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputDeviceType type);
 
         /// <summary>
         ///     Clears the identifier cache

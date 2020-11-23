@@ -81,11 +81,11 @@ namespace Artemis.UI.InputProviders
 
             // Let the core know there is an identifier so it can store new identifications if applicable
             if (identifier != null)
-                OnIdentifierReceived(identifier);
+                OnIdentifierReceived(identifier, InputDeviceType.Keyboard);
 
             ArtemisDevice device = null;
             if (identifier != null)
-                device = _inputService.GetDeviceByIdentifier(this, identifier, InputFallbackDeviceType.Keyboard);
+                device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
 
             // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
             if (keyboardData.Keyboard.Flags == RawKeyboardFlags.LeftKey || keyboardData.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
@@ -105,7 +105,7 @@ namespace Artemis.UI.InputProviders
                           keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.LeftKey) &&
                           keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.RightKey);
 
-            OnKeyboardDataReceived(new InputProviderKeyboardEventArgs(device, key, isDown));
+            OnKeyboardDataReceived(device, key, isDown);
         }
 
         #endregion
@@ -130,7 +130,7 @@ namespace Artemis.UI.InputProviders
             ArtemisDevice device = null;
             string identifier = data.Device?.DevicePath;
             if (identifier != null)
-                device = _inputService.GetDeviceByIdentifier(this, identifier, InputFallbackDeviceType.Mouse);
+                device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Mouse);
 
             // Debug.WriteLine($"Buttons: {data.Mouse.Buttons}, Data: {data.Mouse.ButtonData}, Flags: {data.Mouse.Flags}, XY: {data.Mouse.LastX},{data.Mouse.LastY}");
 
@@ -138,7 +138,7 @@ namespace Artemis.UI.InputProviders
             if (mouseData.Mouse.Buttons == RawMouseButtonFlags.None)
             {
                 Win32Point cursorPosition = GetCursorPosition();
-                OnMouseMoveDataReceived(new InputProviderMouseMoveEventArgs(device, cursorPosition.X, cursorPosition.Y, _mouseDeltaX, _mouseDeltaY));
+                OnMouseMoveDataReceived(device, cursorPosition.X, cursorPosition.Y, _mouseDeltaX, _mouseDeltaY);
                 _mouseDeltaX = 0;
                 _mouseDeltaY = 0;
                 _lastMouseUpdate = DateTime.Now;
@@ -147,15 +147,15 @@ namespace Artemis.UI.InputProviders
 
             // Now we know its not movement, let the core know there is an identifier so it can store new identifications if applicable
             if (identifier != null)
-                OnIdentifierReceived(identifier);
+                OnIdentifierReceived(identifier, InputDeviceType.Mouse);
 
             // Scrolling
             if (mouseData.Mouse.ButtonData != 0)
             {
                 if (mouseData.Mouse.Buttons == RawMouseButtonFlags.MouseWheel)
-                    OnMouseScrollDataReceived(new InputProviderMouseScrollEventArgs(device, MouseScrollDirection.Vertical, mouseData.Mouse.ButtonData));
+                    OnMouseScrollDataReceived(device, MouseScrollDirection.Vertical, mouseData.Mouse.ButtonData);
                 else if (mouseData.Mouse.Buttons == RawMouseButtonFlags.MouseHorizontalWheel)
-                    OnMouseScrollDataReceived(new InputProviderMouseScrollEventArgs(device, MouseScrollDirection.Horizontal, mouseData.Mouse.ButtonData));
+                    OnMouseScrollDataReceived(device, MouseScrollDirection.Horizontal, mouseData.Mouse.ButtonData);
                 return;
             }
 
@@ -178,7 +178,7 @@ namespace Artemis.UI.InputProviders
             else if (DetermineMouseButton(mouseData, RawMouseButtonFlags.Button5Down, RawMouseButtonFlags.Button5Up, ref isDown))
                 button = MouseButton.Button5;
 
-            OnMouseButtonDataReceived(new InputProviderMouseButtonEventArgs(device, button, isDown));
+            OnMouseButtonDataReceived(device, button, isDown);
         }
 
         private bool DetermineMouseButton(RawInputMouseData data, RawMouseButtonFlags downButton, RawMouseButtonFlags upButton, ref bool isDown)

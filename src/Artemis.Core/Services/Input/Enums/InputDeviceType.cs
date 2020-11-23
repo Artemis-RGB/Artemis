@@ -3,7 +3,7 @@
     /// <summary>
     ///     Represents a device that provides input to the <see cref="IInputService" />
     /// </summary>
-    public enum InputFallbackDeviceType
+    public enum InputDeviceType
     {
         /// <summary>
         ///     None

@@ -10,14 +10,13 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly ISurfaceService _surfaceService;
-        private readonly List<InputProvider> _inputProviders;
 
         public InputService(ILogger logger, ISurfaceService surfaceService)
         {
             _logger = logger;
             _surfaceService = surfaceService;
             _inputProviders = new List<InputProvider>();
-            _keyboardModifier = new Dictionary<ArtemisDevice, KeyboardModifierKeys>();
+            _keyboardModifier = new Dictionary<ArtemisDevice, KeyboardModifierKey>();
             _deviceCache = new Dictionary<Tuple<InputProvider, object>, ArtemisDevice>();
             _devices = new List<ArtemisDevice>();
 
@@ -25,6 +24,21 @@ namespace Artemis.Core.Services
             _surfaceService.SurfaceConfigurationUpdated += SurfaceConfigurationChanged;
             BustIdentifierCache();
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            while (_inputProviders.Any())
+                RemoveInputProvider(_inputProviders.First());
+        }
+
+        #endregion
+
+        #region Providers
+
+        private readonly List<InputProvider> _inputProviders;
 
         public void AddInputProvider(InputProvider inputProvider)
         {
@@ -49,6 +63,8 @@ namespace Artemis.Core.Services
             inputProvider.MouseMoveDataReceived -= InputProviderOnMouseMoveDataReceived;
         }
 
+        #endregion
+
         #region Identification
 
         private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache;
@@ -59,6 +75,10 @@ namespace Artemis.Core.Services
 
         public void IdentifyDevice(ArtemisDevice device)
         {
+            if (device.RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard && device.RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Mouse)
+                throw new ArtemisCoreException($"Cannot initialize input-identification for a device of type {device.RgbDevice.DeviceInfo.DeviceType}. \r\n" +
+                                               "Only keyboard and mouse is supported.");
+
             _identifyingDevice = device;
             _logger.Debug("Start identifying device {device}", device);
         }
@@ -73,7 +93,7 @@ namespace Artemis.Core.Services
             BustIdentifierCache();
         }
 
-        public ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputFallbackDeviceType fallbackType)
+        public ArtemisDevice? GetDeviceByIdentifier(InputProvider provider, object identifier, InputDeviceType type)
         {
             if (provider == null) throw new ArgumentNullException(nameof(provider));
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
@@ -84,7 +104,7 @@ namespace Artemis.Core.Services
                 return cacheMatch;
 
             string providerName = provider.GetType().FullName!;
-            ArtemisDevice? match = _devices.FirstOrDefault(m => m.InputIdentifiers.Any(i => Equals(i.InputProvider,providerName) && Equals(i.Identifier, identifier)));
+            ArtemisDevice? match = _devices.FirstOrDefault(m => m.InputIdentifiers.Any(i => Equals(i.InputProvider, providerName) && Equals(i.Identifier, identifier)));
 
             // If a match was found cache it to speed up the next event and return the match
             if (match != null)
@@ -94,9 +114,9 @@ namespace Artemis.Core.Services
             }
 
             // If there is no match, apply our fallback type
-            if (fallbackType == InputFallbackDeviceType.None)
+            if (type == InputDeviceType.None)
                 return null;
-            if (fallbackType == InputFallbackDeviceType.Keyboard)
+            if (type == InputDeviceType.Keyboard)
             {
                 if (_cachedFallbackKeyboard != null)
                     return _cachedFallbackKeyboard;
@@ -104,7 +124,7 @@ namespace Artemis.Core.Services
                 return _cachedFallbackKeyboard;
             }
 
-            if (fallbackType == InputFallbackDeviceType.Mouse)
+            if (type == InputDeviceType.Mouse)
             {
                 if (_cachedFallbackMouse != null)
                     return _cachedFallbackMouse;
@@ -140,18 +160,21 @@ namespace Artemis.Core.Services
             BustIdentifierCache();
         }
 
-        private void InputProviderOnIdentifierReceived(object? sender, object identifier)
+        private void InputProviderOnIdentifierReceived(object? sender, InputProviderIdentifierEventArgs e)
         {
-            if (_identifyingDevice == null)
+            // Don't match if there is no device or if the device type differs from the event device type
+            if (_identifyingDevice == null ||
+                _identifyingDevice.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard && e.DeviceType == InputDeviceType.Mouse ||
+                _identifyingDevice.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse && e.DeviceType == InputDeviceType.Keyboard)
                 return;
-            if (!(sender is InputProvider inputProvider)) 
+            if (!(sender is InputProvider inputProvider))
                 return;
 
             string providerName = inputProvider.GetType().FullName!;
 
             // Remove existing identification
             _identifyingDevice.InputIdentifiers.RemoveAll(i => i.InputProvider == providerName);
-            _identifyingDevice.InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(providerName, identifier));
+            _identifyingDevice.InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(providerName, e.Identifier));
 
             StopIdentify();
             OnDeviceIdentified();
@@ -161,12 +184,12 @@ namespace Artemis.Core.Services
 
         #region Keyboard
 
-        private readonly Dictionary<ArtemisDevice, KeyboardModifierKeys> _keyboardModifier;
-        private KeyboardModifierKeys _globalModifiers;
-        
+        private readonly Dictionary<ArtemisDevice, KeyboardModifierKey> _keyboardModifier;
+        private KeyboardModifierKey _globalModifiers;
+
         private void InputProviderOnKeyboardDataReceived(object? sender, InputProviderKeyboardEventArgs e)
         {
-            KeyboardModifierKeys keyboardModifierKeys = UpdateModifierKeys(e.Device, e.Key, e.IsDown);
+            KeyboardModifierKey keyboardModifierKey = UpdateModifierKeys(e.Device, e.Key, e.IsDown);
 
             // Get the LED - TODO: leverage a lookup
             bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
@@ -175,49 +198,49 @@ namespace Artemis.Core.Services
                 led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
 
             // Create the UpDown event args because it can be used for every event
-            KeyboardKeyUpDownEventArgs eventArgs = new KeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKeys, e.IsDown);
+            KeyboardKeyUpDownEventArgs eventArgs = new KeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);
             OnKeyboardKeyUpDown(eventArgs);
             if (e.IsDown)
                 OnKeyboardKeyDown(eventArgs);
             else
                 OnKeyboardKeyUp(eventArgs);
 
-            _logger.Verbose("Keyboard data: LED ID: {ledId}, key: {key}, is down: {isDown}, modifiers: {modifiers}, device: {device} ", ledId, e.Key, e.IsDown, keyboardModifierKeys, e.Device);
+            // _logger.Verbose("Keyboard data: LED ID: {ledId}, key: {key}, is down: {isDown}, modifiers: {modifiers}, device: {device} ", ledId, e.Key, e.IsDown, keyboardModifierKey, e.Device);
         }
 
-        private KeyboardModifierKeys UpdateModifierKeys(ArtemisDevice? device, KeyboardKey key, in bool isDown)
+        private KeyboardModifierKey UpdateModifierKeys(ArtemisDevice? device, KeyboardKey key, in bool isDown)
         {
-            KeyboardModifierKeys modifiers = _globalModifiers;
+            KeyboardModifierKey modifiers = _globalModifiers;
             if (device != null)
                 _keyboardModifier.TryGetValue(device, out modifiers);
 
             if (key == KeyboardKey.LeftAlt || key == KeyboardKey.RightAlt)
             {
                 if (isDown)
-                    modifiers = modifiers | KeyboardModifierKeys.Alt;
+                    modifiers |= KeyboardModifierKey.Alt;
                 else
-                    modifiers = modifiers & ~KeyboardModifierKeys.Alt;
+                    modifiers &= ~KeyboardModifierKey.Alt;
             }
             else if (key == KeyboardKey.LeftCtrl || key == KeyboardKey.RightCtrl)
             {
                 if (isDown)
-                    modifiers = modifiers | KeyboardModifierKeys.Control;
+                    modifiers |= KeyboardModifierKey.Control;
                 else
-                    modifiers = modifiers & ~KeyboardModifierKeys.Control;
+                    modifiers &= ~KeyboardModifierKey.Control;
             }
             else if (key == KeyboardKey.LeftShift || key == KeyboardKey.RightShift)
             {
                 if (isDown)
-                    modifiers = modifiers | KeyboardModifierKeys.Shift;
+                    modifiers |= KeyboardModifierKey.Shift;
                 else
-                    modifiers = modifiers & ~KeyboardModifierKeys.Shift;
+                    modifiers &= ~KeyboardModifierKey.Shift;
             }
             else if (key == KeyboardKey.LWin || key == KeyboardKey.RWin)
             {
                 if (isDown)
-                    modifiers = modifiers | KeyboardModifierKeys.Windows;
+                    modifiers |= KeyboardModifierKey.Windows;
                 else
-                    modifiers = modifiers & ~KeyboardModifierKeys.Windows;
+                    modifiers &= ~KeyboardModifierKey.Windows;
             }
 
             if (device != null)
@@ -235,16 +258,30 @@ namespace Artemis.Core.Services
         private void InputProviderOnMouseButtonDataReceived(object? sender, InputProviderMouseButtonEventArgs e)
         {
             bool foundLedId = InputKeyUtilities.MouseButtonLedIdMap.TryGetValue(e.Button, out LedId ledId);
+            ArtemisLed? led = null;
+            if (foundLedId && e.Device != null)
+                led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
+
+            // Create the UpDown event args because it can be used for every event
+            MouseButtonUpDownEventArgs eventArgs = new MouseButtonUpDownEventArgs(e.Device, led, e.Button, e.IsDown);
+            OnMouseButtonUpDown(eventArgs);
+            if (e.IsDown)
+                OnMouseButtonDown(eventArgs);
+            else
+                OnMouseButtonUp(eventArgs);
+
             // _logger.Verbose("Mouse button data: LED ID: {ledId}, button: {button}, is down: {isDown}, device: {device} ", ledId, e.Button, e.IsDown, e.Device);
         }
 
         private void InputProviderOnMouseScrollDataReceived(object? sender, InputProviderMouseScrollEventArgs e)
         {
+            OnMouseScroll(new MouseScrollEventArgs(e.Device, e.Direction, e.Delta));
             // _logger.Verbose("Mouse scroll data: Direction: {direction}, delta: {delta}, device: {device} ", e.Direction, e.Delta, e.Device);
         }
 
         private void InputProviderOnMouseMoveDataReceived(object? sender, InputProviderMouseMoveEventArgs e)
         {
+            OnMouseMove(new MouseMoveEventArgs(e.Device, e.CursorX, e.CursorY, e.DeltaX, e.DeltaY));
             // _logger.Verbose("Mouse move data: XY: {X},{Y} - delta XY: {deltaX},{deltaY} - device: {device} ", e.CursorX, e.CursorY, e.DeltaX, e.DeltaY, e.Device);
         }
 
@@ -253,8 +290,13 @@ namespace Artemis.Core.Services
         #region Events
 
         public event EventHandler<KeyboardKeyUpDownEventArgs>? KeyboardKeyUpDown;
-        public event EventHandler<KeyboardEventArgs>? KeyboardKeyDown;
-        public event EventHandler<KeyboardEventArgs>? KeyboardKeyUp;
+        public event EventHandler<KeyboardKeyEventArgs>? KeyboardKeyDown;
+        public event EventHandler<KeyboardKeyEventArgs>? KeyboardKeyUp;
+        public event EventHandler<MouseButtonUpDownEventArgs>? MouseButtonUpDown;
+        public event EventHandler<MouseButtonEventArgs>? MouseButtonDown;
+        public event EventHandler<MouseButtonEventArgs>? MouseButtonUp;
+        public event EventHandler<MouseScrollEventArgs>? MouseScroll;
+        public event EventHandler<MouseMoveEventArgs>? MouseMove;
         public event EventHandler? DeviceIdentified;
 
         protected virtual void OnKeyboardKeyUpDown(KeyboardKeyUpDownEventArgs e)
@@ -262,30 +304,44 @@ namespace Artemis.Core.Services
             KeyboardKeyUpDown?.Invoke(this, e);
         }
 
-        protected virtual void OnKeyboardKeyDown(KeyboardEventArgs e)
+        protected virtual void OnKeyboardKeyDown(KeyboardKeyEventArgs e)
         {
             KeyboardKeyDown?.Invoke(this, e);
         }
 
-        protected virtual void OnKeyboardKeyUp(KeyboardEventArgs e)
+        protected virtual void OnKeyboardKeyUp(KeyboardKeyEventArgs e)
         {
             KeyboardKeyUp?.Invoke(this, e);
+        }
+
+        protected virtual void OnMouseButtonUpDown(MouseButtonUpDownEventArgs e)
+        {
+            MouseButtonUpDown?.Invoke(this, e);
+        }
+
+        protected virtual void OnMouseButtonDown(MouseButtonEventArgs e)
+        {
+            MouseButtonDown?.Invoke(this, e);
+        }
+
+        protected virtual void OnMouseButtonUp(MouseButtonEventArgs e)
+        {
+            MouseButtonUp?.Invoke(this, e);
+        }
+
+        protected virtual void OnMouseScroll(MouseScrollEventArgs e)
+        {
+            MouseScroll?.Invoke(this, e);
+        }
+
+        protected virtual void OnMouseMove(MouseMoveEventArgs e)
+        {
+            MouseMove?.Invoke(this, e);
         }
 
         protected virtual void OnDeviceIdentified()
         {
             DeviceIdentified?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            while (_inputProviders.Any())
-                RemoveInputProvider(_inputProviders.First());
         }
 
         #endregion

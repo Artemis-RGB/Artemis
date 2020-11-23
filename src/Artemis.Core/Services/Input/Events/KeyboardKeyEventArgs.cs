@@ -5,9 +5,9 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Contains data for keyboard input events
     /// </summary>
-    public class KeyboardEventArgs : EventArgs
+    public class KeyboardKeyEventArgs : EventArgs
     {
-        internal KeyboardEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKeys modifiers)
+        internal KeyboardKeyEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKey modifiers)
         {
             Device = device;
             Led = led;
@@ -33,22 +33,6 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets the modifiers that are pressed
         /// </summary>
-        public KeyboardModifierKeys Modifiers { get; }
-    }
-
-    /// <summary>
-    ///     Contains data for keyboard input events
-    /// </summary>
-    public class KeyboardKeyUpDownEventArgs : KeyboardEventArgs
-    {
-        internal KeyboardKeyUpDownEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKeys modifiers, bool isDown) : base(device, led, key, modifiers)
-        {
-            IsDown = isDown;
-        }
-
-        /// <summary>
-        /// Whether the key is being pressed down, if <see langword="false"/> the key is being released
-        /// </summary>
-        public bool IsDown { get; set; }
+        public KeyboardModifierKey Modifiers { get; }
     }
 }

@@ -3,9 +3,9 @@
 namespace Artemis.Core.Services
 {
     /// <summary>
-    ///     Contains data for input provider mouse movement events
+    ///     Contains data for mouse movement events
     /// </summary>
-    public class InputProviderMouseMoveEventArgs : EventArgs
+    public class MouseMoveEventArgs : EventArgs
     {
         /// <summary>
         /// </summary>
@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
         /// <param name="cursorY">The Y position of the mouse cursor (not necessarily tied to the specific device)</param>
         /// <param name="deltaX">The movement delta in the horizontal direction</param>
         /// <param name="deltaY">The movement delta in the vertical direction</param>
-        public InputProviderMouseMoveEventArgs(ArtemisDevice? device, int cursorX, int cursorY, int deltaX, int deltaY)
+        internal MouseMoveEventArgs(ArtemisDevice? device, int cursorX, int cursorY, int deltaX, int deltaY)
         {
             Device = device;
             CursorX = cursorX;
@@ -29,22 +29,22 @@ namespace Artemis.Core.Services
         public ArtemisDevice? Device { get; }
 
         /// <summary>
-        /// Gets the X position of the mouse cursor in pixels (not necessarily tied to the specific device)
+        /// Gets the X position of the mouse cursor (not necessarily tied to the specific device)
         /// </summary>
         public int CursorX { get; }
 
         /// <summary>
-        /// Gets the Y position of the mouse cursor in pixels (not necessarily tied to the specific device)
+        /// Gets the Y position of the mouse cursor (not necessarily tied to the specific device)
         /// </summary>
         public int CursorY { get; }
 
         /// <summary>
-        ///     Gets the movement delta in the horizontal direction in pixels
+        ///     Gets the movement delta in the horizontal direction
         /// </summary>
         public int DeltaX { get; }
 
         /// <summary>
-        ///     Gets the movement delta in the vertical direction in pixels
+        ///     Gets the movement delta in the vertical direction
         /// </summary>
         public int DeltaY { get; }
     }
