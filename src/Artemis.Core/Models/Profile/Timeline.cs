@@ -387,7 +387,12 @@ namespace Artemis.Core
                 IsOverridden = true;
 
                 if (stickToMainSegment && Position >= MainSegmentStartPosition)
-                    Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                {
+                    if (MainSegmentLength > TimeSpan.Zero)
+                        Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                    else
+                        Position = MainSegmentStartPosition;
+                }
 
                 _extraTimelines.Clear();
             }
