@@ -62,5 +62,11 @@ namespace Artemis.Core
                 (RgbLed.AbsoluteLedRectangle.Size.Height * Device.Surface.Scale).RoundToInt()
             );
         }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return RgbLed.ToString();
+        }
     }
 }

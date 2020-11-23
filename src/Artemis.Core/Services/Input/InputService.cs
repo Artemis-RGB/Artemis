@@ -15,10 +15,6 @@ namespace Artemis.Core.Services
         {
             _logger = logger;
             _surfaceService = surfaceService;
-            _inputProviders = new List<InputProvider>();
-            _keyboardModifier = new Dictionary<ArtemisDevice, KeyboardModifierKey>();
-            _deviceCache = new Dictionary<Tuple<InputProvider, object>, ArtemisDevice>();
-            _devices = new List<ArtemisDevice>();
 
             _surfaceService.ActiveSurfaceConfigurationSelected += SurfaceConfigurationChanged;
             _surfaceService.SurfaceConfigurationUpdated += SurfaceConfigurationChanged;
@@ -38,7 +34,7 @@ namespace Artemis.Core.Services
 
         #region Providers
 
-        private readonly List<InputProvider> _inputProviders;
+        private readonly List<InputProvider> _inputProviders = new List<InputProvider>();
 
         public void AddInputProvider(InputProvider inputProvider)
         {
@@ -67,8 +63,8 @@ namespace Artemis.Core.Services
 
         #region Identification
 
-        private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache;
-        private List<ArtemisDevice> _devices;
+        private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache = new Dictionary<Tuple<InputProvider, object>, ArtemisDevice>();
+        private List<ArtemisDevice> _devices = new List<ArtemisDevice>();
         private ArtemisDevice? _cachedFallbackKeyboard;
         private ArtemisDevice? _cachedFallbackMouse;
         private ArtemisDevice? _identifyingDevice;
@@ -184,12 +180,17 @@ namespace Artemis.Core.Services
 
         #region Keyboard
 
-        private readonly Dictionary<ArtemisDevice, KeyboardModifierKey> _keyboardModifier;
+        private readonly Dictionary<ArtemisDevice, HashSet<KeyboardKey>> _pressedKeys = new Dictionary<ArtemisDevice, HashSet<KeyboardKey>>();
+        private readonly Dictionary<ArtemisDevice, KeyboardModifierKey> _keyboardModifier = new Dictionary<ArtemisDevice, KeyboardModifierKey>();
         private KeyboardModifierKey _globalModifiers;
 
         private void InputProviderOnKeyboardDataReceived(object? sender, InputProviderKeyboardEventArgs e)
         {
             KeyboardModifierKey keyboardModifierKey = UpdateModifierKeys(e.Device, e.Key, e.IsDown);
+
+            // if UpdatePressedKeys is true, the key is already pressed, then we skip this event
+            if (UpdatePressedKeys(e.Device, e.Key, e.IsDown))
+                return;
 
             // Get the LED - TODO: leverage a lookup
             bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
@@ -206,6 +207,31 @@ namespace Artemis.Core.Services
                 OnKeyboardKeyUp(eventArgs);
 
             // _logger.Verbose("Keyboard data: LED ID: {ledId}, key: {key}, is down: {isDown}, modifiers: {modifiers}, device: {device} ", ledId, e.Key, e.IsDown, keyboardModifierKey, e.Device);
+        }
+
+        private bool UpdatePressedKeys(ArtemisDevice? device, KeyboardKey key, bool isDown)
+        {
+            if (device != null)
+            {
+                // Ensure the device is in the dictionary
+                _pressedKeys.TryAdd(device, new HashSet<KeyboardKey>());
+                // Get the hash set of the device
+                HashSet<KeyboardKey> pressedDeviceKeys = _pressedKeys[device];
+                // See if the key is already pressed
+                bool alreadyPressed = pressedDeviceKeys.Contains(key);
+
+                // Prevent triggering already down keys again. When a key is held, we don't want to spam events like Windows does
+                if (isDown && alreadyPressed)
+                    return true;
+
+                // Either add or remove the key depending on its status
+                if (isDown && !alreadyPressed)
+                    pressedDeviceKeys.Add(key);
+                else if (!isDown && alreadyPressed)
+                    pressedDeviceKeys.Remove(key);
+            }
+
+            return false;
         }
 
         private KeyboardModifierKey UpdateModifierKeys(ArtemisDevice? device, KeyboardKey key, in bool isDown)
