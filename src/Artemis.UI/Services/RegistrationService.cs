@@ -3,6 +3,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.DefaultTypes.DataModel.Display;
 using Artemis.UI.DefaultTypes.DataModel.Input;
+using Artemis.UI.InputProviders;
 using Artemis.UI.Ninject;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
@@ -15,18 +16,26 @@ namespace Artemis.UI.Services
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly ISurfaceService _surfaceService;
+        private readonly IInputService _inputService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
 
-        public RegistrationService(IDataModelUIService dataModelUIService, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService)
+        public RegistrationService(IDataModelUIService dataModelUIService, 
+            IProfileEditorService profileEditorService, 
+            IPluginManagementService pluginManagementService,
+            ISurfaceService surfaceService,
+            IInputService inputService)
         {
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
             _pluginManagementService = pluginManagementService;
+            _surfaceService = surfaceService;
+            _inputService = inputService;
 
             LoadPluginModules();
-            pluginManagementService.PluginLoaded += PluginServiceOnPluginLoaded;
+            pluginManagementService.PluginEnabling += PluginServiceOnPluginEnabling;
         }
 
         public void RegisterBuiltInDataModelDisplays()
@@ -74,7 +83,12 @@ namespace Artemis.UI.Services
             _registeredBuiltInPropertyEditors = true;
         }
 
-        private void PluginServiceOnPluginLoaded(object sender, PluginEventArgs e)
+        public void RegisterInputProvider()
+        {
+            _inputService.AddInputProvider(new NativeWindowInputProvider(_inputService));
+        }
+
+        private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs e)
         {
             e.Plugin.Kernel.Load(new[] {new PluginUIModule(e.Plugin)});
         }
@@ -91,5 +105,6 @@ namespace Artemis.UI.Services
         void RegisterBuiltInDataModelDisplays();
         void RegisterBuiltInDataModelInputs();
         void RegisterBuiltInPropertyEditors();
+        void RegisterInputProvider();
     }
 }

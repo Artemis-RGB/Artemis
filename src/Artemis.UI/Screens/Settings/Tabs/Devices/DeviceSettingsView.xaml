@@ -54,8 +54,31 @@
                 </CheckBox>
                 <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0">
                     <StackPanel>
-                        <Button Content="Show device debugger" Command="{s:Action ShowDeviceDebugger}" />
-                        <Button Content="Open plugin directory" Command="{s:Action OpenPluginDirectory}" />
+                        <Button Command="{s:Action ShowDeviceDebugger}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Tools" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center">Show device debugger</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action OpenPluginDirectory}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Separator/>
+                        <Button Command="{s:Action DetectInput}" ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="GestureDoubleTap" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center">Identify input</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action ViewProperties}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Gear" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <TextBlock VerticalAlignment="Center">View surface properties</TextBlock>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </materialDesign:PopupBox>
             </StackPanel>

@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
+using RGB.NET.Core;
 using Stylet;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
@@ -44,6 +46,9 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
             : new Rect(Device.X, Device.Y, Device.RgbDevice.DeviceRectangle.Size.Width, Device.RgbDevice.DeviceRectangle.Size.Height);
+
+        public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
+                                      Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
 
         public void StartMouseDrag(Point mouseStartPosition)
         {

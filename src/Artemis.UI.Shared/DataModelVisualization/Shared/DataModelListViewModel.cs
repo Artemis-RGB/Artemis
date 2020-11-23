@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Windows.Documents;
 using Artemis.Core;
 using Artemis.Core.DataModelExpansions;
 using Artemis.UI.Shared.Services;
