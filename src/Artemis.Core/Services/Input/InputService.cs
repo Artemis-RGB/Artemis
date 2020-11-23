@@ -198,7 +198,7 @@ namespace Artemis.Core.Services
                 led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
 
             // Create the UpDown event args because it can be used for every event
-            KeyboardKeyUpDownEventArgs eventArgs = new KeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);
+            ArtemisKeyboardKeyUpDownEventArgs eventArgs = new ArtemisKeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);
             OnKeyboardKeyUpDown(eventArgs);
             if (e.IsDown)
                 OnKeyboardKeyDown(eventArgs);
@@ -263,7 +263,7 @@ namespace Artemis.Core.Services
                 led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
 
             // Create the UpDown event args because it can be used for every event
-            MouseButtonUpDownEventArgs eventArgs = new MouseButtonUpDownEventArgs(e.Device, led, e.Button, e.IsDown);
+            ArtemisMouseButtonUpDownEventArgs eventArgs = new ArtemisMouseButtonUpDownEventArgs(e.Device, led, e.Button, e.IsDown);
             OnMouseButtonUpDown(eventArgs);
             if (e.IsDown)
                 OnMouseButtonDown(eventArgs);
@@ -275,13 +275,13 @@ namespace Artemis.Core.Services
 
         private void InputProviderOnMouseScrollDataReceived(object? sender, InputProviderMouseScrollEventArgs e)
         {
-            OnMouseScroll(new MouseScrollEventArgs(e.Device, e.Direction, e.Delta));
+            OnMouseScroll(new ArtemisMouseScrollEventArgs(e.Device, e.Direction, e.Delta));
             // _logger.Verbose("Mouse scroll data: Direction: {direction}, delta: {delta}, device: {device} ", e.Direction, e.Delta, e.Device);
         }
 
         private void InputProviderOnMouseMoveDataReceived(object? sender, InputProviderMouseMoveEventArgs e)
         {
-            OnMouseMove(new MouseMoveEventArgs(e.Device, e.CursorX, e.CursorY, e.DeltaX, e.DeltaY));
+            OnMouseMove(new ArtemisMouseMoveEventArgs(e.Device, e.CursorX, e.CursorY, e.DeltaX, e.DeltaY));
             // _logger.Verbose("Mouse move data: XY: {X},{Y} - delta XY: {deltaX},{deltaY} - device: {device} ", e.CursorX, e.CursorY, e.DeltaX, e.DeltaY, e.Device);
         }
 
@@ -289,52 +289,52 @@ namespace Artemis.Core.Services
 
         #region Events
 
-        public event EventHandler<KeyboardKeyUpDownEventArgs>? KeyboardKeyUpDown;
-        public event EventHandler<KeyboardKeyEventArgs>? KeyboardKeyDown;
-        public event EventHandler<KeyboardKeyEventArgs>? KeyboardKeyUp;
-        public event EventHandler<MouseButtonUpDownEventArgs>? MouseButtonUpDown;
-        public event EventHandler<MouseButtonEventArgs>? MouseButtonDown;
-        public event EventHandler<MouseButtonEventArgs>? MouseButtonUp;
-        public event EventHandler<MouseScrollEventArgs>? MouseScroll;
-        public event EventHandler<MouseMoveEventArgs>? MouseMove;
+        public event EventHandler<ArtemisKeyboardKeyUpDownEventArgs>? KeyboardKeyUpDown;
+        public event EventHandler<ArtemisKeyboardKeyEventArgs>? KeyboardKeyDown;
+        public event EventHandler<ArtemisKeyboardKeyEventArgs>? KeyboardKeyUp;
+        public event EventHandler<ArtemisMouseButtonUpDownEventArgs>? MouseButtonUpDown;
+        public event EventHandler<ArtemisMouseButtonEventArgs>? MouseButtonDown;
+        public event EventHandler<ArtemisMouseButtonEventArgs>? MouseButtonUp;
+        public event EventHandler<ArtemisMouseScrollEventArgs>? MouseScroll;
+        public event EventHandler<ArtemisMouseMoveEventArgs>? MouseMove;
         public event EventHandler? DeviceIdentified;
 
-        protected virtual void OnKeyboardKeyUpDown(KeyboardKeyUpDownEventArgs e)
+        protected virtual void OnKeyboardKeyUpDown(ArtemisKeyboardKeyUpDownEventArgs e)
         {
             KeyboardKeyUpDown?.Invoke(this, e);
         }
 
-        protected virtual void OnKeyboardKeyDown(KeyboardKeyEventArgs e)
+        protected virtual void OnKeyboardKeyDown(ArtemisKeyboardKeyEventArgs e)
         {
             KeyboardKeyDown?.Invoke(this, e);
         }
 
-        protected virtual void OnKeyboardKeyUp(KeyboardKeyEventArgs e)
+        protected virtual void OnKeyboardKeyUp(ArtemisKeyboardKeyEventArgs e)
         {
             KeyboardKeyUp?.Invoke(this, e);
         }
 
-        protected virtual void OnMouseButtonUpDown(MouseButtonUpDownEventArgs e)
+        protected virtual void OnMouseButtonUpDown(ArtemisMouseButtonUpDownEventArgs e)
         {
             MouseButtonUpDown?.Invoke(this, e);
         }
 
-        protected virtual void OnMouseButtonDown(MouseButtonEventArgs e)
+        protected virtual void OnMouseButtonDown(ArtemisMouseButtonEventArgs e)
         {
             MouseButtonDown?.Invoke(this, e);
         }
 
-        protected virtual void OnMouseButtonUp(MouseButtonEventArgs e)
+        protected virtual void OnMouseButtonUp(ArtemisMouseButtonEventArgs e)
         {
             MouseButtonUp?.Invoke(this, e);
         }
 
-        protected virtual void OnMouseScroll(MouseScrollEventArgs e)
+        protected virtual void OnMouseScroll(ArtemisMouseScrollEventArgs e)
         {
             MouseScroll?.Invoke(this, e);
         }
 
-        protected virtual void OnMouseMove(MouseMoveEventArgs e)
+        protected virtual void OnMouseMove(ArtemisMouseMoveEventArgs e)
         {
             MouseMove?.Invoke(this, e);
         }

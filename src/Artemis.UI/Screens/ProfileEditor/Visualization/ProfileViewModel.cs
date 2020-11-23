@@ -12,7 +12,6 @@ using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
-using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {

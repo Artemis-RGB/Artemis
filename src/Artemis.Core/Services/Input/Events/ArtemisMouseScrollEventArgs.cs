@@ -5,14 +5,14 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Contains data for mouse scroll events
     /// </summary>
-    public class MouseScrollEventArgs : EventArgs
+    public class ArtemisMouseScrollEventArgs : EventArgs
     {
         /// <summary>
         /// </summary>
         /// <param name="device">The device that triggered the event</param>
         /// <param name="direction">The direction in which was scrolled</param>
         /// <param name="delta">The scroll delta (can positive or negative)</param>
-        internal MouseScrollEventArgs(ArtemisDevice? device, MouseScrollDirection direction, int delta)
+        internal ArtemisMouseScrollEventArgs(ArtemisDevice? device, MouseScrollDirection direction, int delta)
         {
             Device = device;
             Direction = direction;

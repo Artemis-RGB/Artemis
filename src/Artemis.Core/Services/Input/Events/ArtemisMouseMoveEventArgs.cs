@@ -5,7 +5,7 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Contains data for mouse movement events
     /// </summary>
-    public class MouseMoveEventArgs : EventArgs
+    public class ArtemisMouseMoveEventArgs : EventArgs
     {
         /// <summary>
         /// </summary>
@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
         /// <param name="cursorY">The Y position of the mouse cursor (not necessarily tied to the specific device)</param>
         /// <param name="deltaX">The movement delta in the horizontal direction</param>
         /// <param name="deltaY">The movement delta in the vertical direction</param>
-        internal MouseMoveEventArgs(ArtemisDevice? device, int cursorX, int cursorY, int deltaX, int deltaY)
+        internal ArtemisMouseMoveEventArgs(ArtemisDevice? device, int cursorX, int cursorY, int deltaX, int deltaY)
         {
             Device = device;
             CursorX = cursorX;
