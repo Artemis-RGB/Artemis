@@ -3,9 +3,9 @@
     /// <summary>
     ///     Contains data for keyboard input events
     /// </summary>
-    public class KeyboardKeyUpDownEventArgs : KeyboardKeyEventArgs
+    public class ArtemisKeyboardKeyUpDownEventArgs : ArtemisKeyboardKeyEventArgs
     {
-        internal KeyboardKeyUpDownEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKey modifiers, bool isDown) : base(device, led, key, modifiers)
+        internal ArtemisKeyboardKeyUpDownEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKey modifiers, bool isDown) : base(device, led, key, modifiers)
         {
             IsDown = isDown;
         }

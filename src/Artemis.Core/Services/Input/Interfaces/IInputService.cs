@@ -35,42 +35,42 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Occurs whenever a key on a keyboard was pressed or released
         /// </summary>
-        event EventHandler<KeyboardKeyUpDownEventArgs> KeyboardKeyUpDown;
+        event EventHandler<ArtemisKeyboardKeyUpDownEventArgs> KeyboardKeyUpDown;
 
         /// <summary>
         ///     Occurs whenever a key on a keyboard was pressed
         /// </summary>
-        event EventHandler<KeyboardKeyEventArgs> KeyboardKeyDown;
+        event EventHandler<ArtemisKeyboardKeyEventArgs> KeyboardKeyDown;
 
         /// <summary>
         ///     Occurs whenever a key on a keyboard was released
         /// </summary>
-        event EventHandler<KeyboardKeyEventArgs> KeyboardKeyUp;
+        event EventHandler<ArtemisKeyboardKeyEventArgs> KeyboardKeyUp;
 
         /// <summary>
         ///     Occurs whenever a button on a mouse was pressed or released
         /// </summary>
-        event EventHandler<MouseButtonUpDownEventArgs> MouseButtonUpDown;
+        event EventHandler<ArtemisMouseButtonUpDownEventArgs> MouseButtonUpDown;
 
         /// <summary>
         ///     Occurs whenever a button on a mouse was pressed
         /// </summary>
-        event EventHandler<MouseButtonEventArgs> MouseButtonDown;
+        event EventHandler<ArtemisMouseButtonEventArgs> MouseButtonDown;
 
         /// <summary>
         ///     Occurs whenever a button on a mouse was released
         /// </summary>
-        event EventHandler<MouseButtonEventArgs> MouseButtonUp;
+        event EventHandler<ArtemisMouseButtonEventArgs> MouseButtonUp;
 
         /// <summary>
         ///     Occurs whenever a the scroll wheel of a mouse is turned
         /// </summary>
-        event EventHandler<MouseScrollEventArgs> MouseScroll;
+        event EventHandler<ArtemisMouseScrollEventArgs> MouseScroll;
 
         /// <summary>
         ///     Occurs whenever a a mouse is moved
         /// </summary>
-        event EventHandler<MouseMoveEventArgs> MouseMove;
+        event EventHandler<ArtemisMouseMoveEventArgs> MouseMove;
 
         /// <summary>
         ///     Occurs when a device has been identified after calling <see cref="IdentifyDevice" />

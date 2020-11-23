@@ -17,7 +17,6 @@ using Artemis.UI.Utilities;
 using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
 using Stylet;
-using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens
 {

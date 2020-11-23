@@ -8,7 +8,6 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Properties;
 using Artemis.UI.Shared.Services;
-using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 {

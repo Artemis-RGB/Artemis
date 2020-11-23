@@ -5,9 +5,9 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Contains data for mouse input events
     /// </summary>
-    public class MouseButtonEventArgs : EventArgs
+    public class ArtemisMouseButtonEventArgs : EventArgs
     {
-        internal MouseButtonEventArgs(ArtemisDevice? device, ArtemisLed? led, MouseButton button)
+        internal ArtemisMouseButtonEventArgs(ArtemisDevice? device, ArtemisLed? led, MouseButton button)
         {
             Device = device;
             Led = led;

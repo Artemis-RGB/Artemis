@@ -3,9 +3,9 @@
     /// <summary>
     ///     Contains data for mouse input events
     /// </summary>
-    public class MouseButtonUpDownEventArgs : MouseButtonEventArgs
+    public class ArtemisMouseButtonUpDownEventArgs : ArtemisMouseButtonEventArgs
     {
-        internal MouseButtonUpDownEventArgs(ArtemisDevice? device, ArtemisLed? led, MouseButton button, bool isDown) : base(device, led, button)
+        internal ArtemisMouseButtonUpDownEventArgs(ArtemisDevice? device, ArtemisLed? led, MouseButton button, bool isDown) : base(device, led, button)
         {
             IsDown = isDown;
         }

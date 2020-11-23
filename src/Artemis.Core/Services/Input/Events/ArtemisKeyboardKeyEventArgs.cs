@@ -5,9 +5,9 @@ namespace Artemis.Core.Services
     /// <summary>
     ///     Contains data for keyboard input events
     /// </summary>
-    public class KeyboardKeyEventArgs : EventArgs
+    public class ArtemisKeyboardKeyEventArgs : EventArgs
     {
-        internal KeyboardKeyEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKey modifiers)
+        internal ArtemisKeyboardKeyEventArgs(ArtemisDevice? device, ArtemisLed? led, KeyboardKey key, KeyboardModifierKey modifiers)
         {
             Device = device;
             Led = led;

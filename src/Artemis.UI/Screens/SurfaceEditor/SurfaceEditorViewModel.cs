@@ -16,7 +16,6 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
-using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.SurfaceEditor
 {
