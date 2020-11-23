@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using LiteDB;
@@ -32,7 +33,7 @@ namespace Artemis.Storage.Repositories
 
         public List<SurfaceEntity> GetAll()
         {
-            return _repository.Query<SurfaceEntity>().Include(s => s.DeviceEntities).ToList();
+            return _repository.Query<SurfaceEntity>().Include(s => s.DeviceEntities.Select(de => de.InputIdentifiers)).ToList();
         }
 
         public void Save(SurfaceEntity surfaceEntity)

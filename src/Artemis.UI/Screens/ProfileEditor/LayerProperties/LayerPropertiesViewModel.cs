@@ -19,6 +19,7 @@ using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using Stylet;
 using static Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree.TreeGroupViewModel.LayerPropertyGroupType;
+using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {

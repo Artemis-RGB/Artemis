@@ -30,10 +30,5 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
             Session.Close();
         }
-
-        public void Cancel()
-        {
-            Session.Close();
-        }
     }
 }

@@ -38,11 +38,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs
             Segment.UpdateLength(TimelineSegmentDialogViewModelValidator.CreateTime(InputValue));
             Session.Close();
         }
-
-        public void Cancel()
-        {
-            Session.Close();
-        }
     }
 
     public class TimelineSegmentDialogViewModelValidator : AbstractValidator<TimelineSegmentDialogViewModel>

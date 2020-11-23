@@ -49,6 +49,15 @@ namespace Artemis.UI.Shared.Services
         {
         }
 
+        /// <summary>
+        ///     If not yet closed, closes the current session passing <see langword="false" />
+        /// </summary>
+        public virtual void Cancel()
+        {
+            if (Session != null && !Session.IsEnded)
+                Session.Close(false);
+        }
+
         internal void OnDialogOpened(object sender, DialogOpenedEventArgs e)
         {
             Session = e.Session;

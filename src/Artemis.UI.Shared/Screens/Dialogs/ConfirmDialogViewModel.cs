@@ -22,11 +22,5 @@ namespace Artemis.UI.Shared.Screens.Dialogs
             if (Session != null && !Session.IsEnded)
                 Session.Close(true);
         }
-
-        public void Cancel()
-        {
-            if (Session != null && !Session.IsEnded)
-                Session.Close(false);
-        }
     }
 }

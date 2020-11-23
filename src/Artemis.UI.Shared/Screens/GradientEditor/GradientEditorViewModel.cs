@@ -91,15 +91,14 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
                 Session.Close(true);
         }
 
-        public void Cancel()
+        public override void Cancel()
         {
             // Restore the saved state
             ColorGradient.Stops.Clear();
             ColorGradient.Stops.AddRange(_originalStops);
             ColorGradient.OnColorValuesUpdated();
 
-            if (Session != null && !Session.IsEnded)
-                Session.Close(false);
+            base.Cancel();
         }
 
         private void UpdateColorStopViewModels(object? sender, PropertyChangedEventArgs e)
