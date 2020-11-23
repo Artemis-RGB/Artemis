@@ -17,13 +17,39 @@
             that is currently showing a <Bold Foreground="Yellow">yellow</Bold> color.
         </TextBlock>
 
-        <materialDesign:PackIcon Kind="GestureDoubleTap" Width="300" Height="340" HorizontalAlignment="Center" />
+        <materialDesign:PackIcon Kind="Keyboard" 
+                                 Width="300" 
+                                 Height="340"
+                                 HorizontalAlignment="Center"
+                                 Visibility="{Binding IsMouse, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+        <materialDesign:PackIcon Kind="Mouse" 
+                                 Width="250" 
+                                 Height="340" 
+                                 HorizontalAlignment="Center"
+                                 Visibility="{Binding IsMouse, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
 
         <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap">
             This will teach Artemis to associate button/key presses with this specific device.
         </TextBlock>
 
-        <Button HorizontalAlignment="Right" Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
+        <Button HorizontalAlignment="Right" 
+                Style="{StaticResource MaterialDesignFlatButton}" 
+                IsCancel="True" 
+                Command="{s:Action Cancel}" 
+                Visibility="{Binding IsMouse, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <Button.CommandParameter>
+                <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
+                    False
+                </system:Boolean>
+            </Button.CommandParameter>
+            PRESS ESC TO CANCEL
+        </Button>
+
+        <Button HorizontalAlignment="Right" 
+                Style="{StaticResource MaterialDesignFlatButton}"
+                IsCancel="True"
+                Command="{s:Action Cancel}" 
+                Visibility="{Binding IsMouse, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
             <Button.CommandParameter>
                 <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                     False

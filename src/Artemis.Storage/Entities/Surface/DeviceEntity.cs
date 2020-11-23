@@ -6,7 +6,7 @@ namespace Artemis.Storage.Entities.Surface
     {
         public DeviceEntity()
         {
-            InputIdentifier = new List<DeviceInputIdentifierEntity>();
+            InputIdentifiers = new List<DeviceInputIdentifierEntity>();
         }
 
         public string DeviceIdentifier { get; set; }
@@ -16,7 +16,7 @@ namespace Artemis.Storage.Entities.Surface
         public double Scale { get; set; }
         public int ZIndex { get; set; }
 
-        public List<DeviceInputIdentifierEntity> InputIdentifier { get; set; }
+        public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
     }
 
     public class DeviceInputIdentifierEntity

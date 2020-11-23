@@ -27,10 +27,5 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 
             Session.Close(SurfaceName);
         }
-
-        public void Cancel()
-        {
-            Session.Close();
-        }
     }
 }

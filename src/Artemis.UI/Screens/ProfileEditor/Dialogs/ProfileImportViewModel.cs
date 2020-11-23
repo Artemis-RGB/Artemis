@@ -37,10 +37,5 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
             _mainMessageQueue.Enqueue("Profile imported.");
             Session.Close(descriptor);
         }
-
-        public void Cancel()
-        {
-            Session.Close();
-        }
     }
 }

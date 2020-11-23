@@ -6,6 +6,7 @@ using Humanizer;
 using MaterialDesignExtensions.Controls;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
+using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.Splash
 {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
+using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -15,20 +15,21 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         private int _x;
         private int _y;
 
-        public SurfaceDeviceConfigViewModel(SurfaceDeviceViewModel surfaceDeviceViewModel, ICoreService coreService, IModelValidator<SurfaceDeviceConfigViewModel> validator)
-            : base(validator)
+        public SurfaceDeviceConfigViewModel(ArtemisDevice device, ICoreService coreService, IModelValidator<SurfaceDeviceConfigViewModel> validator) : base(validator)
         {
             _coreService = coreService;
-            SurfaceDeviceViewModel = surfaceDeviceViewModel;
-            Title = $"{SurfaceDeviceViewModel.Device.RgbDevice.DeviceInfo.DeviceName} - Properties";
 
-            X = (int) SurfaceDeviceViewModel.Device.X;
-            Y = (int) SurfaceDeviceViewModel.Device.Y;
-            Scale = SurfaceDeviceViewModel.Device.Scale;
-            Rotation = (int) SurfaceDeviceViewModel.Device.Rotation;
+            Device = device;
+            Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Properties";
+
+            X = (int) Device.X;
+            Y = (int) Device.Y;
+            Scale = Device.Scale;
+            Rotation = (int) Device.Rotation;
         }
 
-        public SurfaceDeviceViewModel SurfaceDeviceViewModel { get; }
+        public ArtemisDevice Device { get; }
+
 
         public string Title
         {
@@ -69,19 +70,14 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             _coreService.ModuleRenderingDisabled = true;
             await Task.Delay(100);
 
-            SurfaceDeviceViewModel.Device.X = X;
-            SurfaceDeviceViewModel.Device.Y = Y;
-            SurfaceDeviceViewModel.Device.Scale = Scale;
-            SurfaceDeviceViewModel.Device.Rotation = Rotation;
+            Device.X = X;
+            Device.Y = Y;
+            Device.Scale = Scale;
+            Device.Rotation = Rotation;
 
             _coreService.ModuleRenderingDisabled = false;
 
             Session.Close(true);
-        }
-
-        public void Cancel()
-        {
-            Session.Close(false);
         }
     }
 }

@@ -144,9 +144,11 @@
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
+                                            <!-- Stylet can't disable it for us here, do it ourselves -->
                                             <MenuItem Header="Identify input" 
                                                       Command="{s:Action DetectInput}" 
                                                       CommandParameter="{Binding}"
+                                                      IsEnabled="{Binding CanDetectInput}"
                                                       ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="GestureDoubleTap" />

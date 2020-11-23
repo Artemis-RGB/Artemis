@@ -23,8 +23,10 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             DeviceEntity = new DeviceEntity();
+
+            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
+
             _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
 
             Rotation = 0;
@@ -40,8 +42,12 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             DeviceEntity = deviceEntity;
+
+            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
+            foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
+                InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
+
             _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
         }
 
@@ -183,10 +189,10 @@ namespace Artemis.Core
             // Other properties are computed
             DeviceEntity.DeviceIdentifier = RgbDevice.GetDeviceIdentifier();
 
-            DeviceEntity.InputIdentifier.Clear();
+            DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
             {
-                DeviceEntity.InputIdentifier.Add(new DeviceInputIdentifierEntity
+                DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
                 {
                     InputProvider = identifier.InputProvider,
                     Identifier = identifier.Identifier
@@ -205,7 +211,7 @@ namespace Artemis.Core
             RgbDevice.Location = new Point(DeviceEntity.X, DeviceEntity.Y);
 
             InputIdentifiers.Clear();
-            foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifier)
+            foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
 
             CalculateRenderProperties();

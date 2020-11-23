@@ -16,6 +16,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
+using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.SurfaceEditor
 {
@@ -35,11 +36,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private ObservableCollection<ArtemisSurface> _surfaceConfigurations;
         private PluginSetting<GridLength> _surfaceListWidth;
 
-        public SurfaceEditorViewModel(IRgbService rgbService, 
-            ISurfaceService surfaceService, 
-            IDialogService dialogService, 
+        public SurfaceEditorViewModel(IRgbService rgbService,
+            ISurfaceService surfaceService,
+            IDialogService dialogService,
             ISettingsService settingsService,
-            IDeviceService deviceService, 
+            IDeviceService deviceService,
             IInputService inputService)
         {
             DisplayName = "Surface Editor";
@@ -286,10 +287,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(new Dictionary<string, object>
-            {
-                {"surfaceDeviceViewModel", surfaceDeviceViewModel}
-            });
+            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(
+                new Dictionary<string, object> {{"device", surfaceDeviceViewModel.Device}}
+            );
 
             if ((bool) madeChanges)
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
@@ -297,12 +297,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public async Task DetectInput(SurfaceDeviceViewModel surfaceDeviceViewModel)
         {
-            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(new Dictionary<string, object>
-            {
-                {"surfaceDeviceViewModel", surfaceDeviceViewModel}
-            });
+            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(
+                new Dictionary<string, object> {{"device", surfaceDeviceViewModel.Device}}
+            );
 
-            if ((bool)madeChanges)
+            if ((bool) madeChanges)
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
         }
 
