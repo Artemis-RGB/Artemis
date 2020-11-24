@@ -46,6 +46,12 @@ namespace Artemis.Core
             _extraTimelines = new List<Timeline>();
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Progress: {Position}/{Length} - delta: {Delta}";
+        }
+
         #region Extra timelines
 
         /// <summary>
@@ -95,7 +101,8 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the cumulative delta of all calls to <see cref="Update" /> that took place after the last call to <see cref="ClearDelta"/>
+        ///     Gets the cumulative delta of all calls to <see cref="Update" /> that took place after the last call to
+        ///     <see cref="ClearDelta" />
         ///     <para>
         ///         Note: If this is an extra timeline <see cref="Delta" /> is always equal to <see cref="DeltaToParent" />
         ///     </para>
@@ -150,7 +157,7 @@ namespace Artemis.Core
         public bool IsFinished => (Position > Length || Length == TimeSpan.Zero) && !ExtraTimelines.Any();
 
         /// <summary>
-        /// Gets a boolean indicating whether the timeline progress has been overridden
+        ///     Gets a boolean indicating whether the timeline progress has been overridden
         /// </summary>
         public bool IsOverridden { get; private set; }
 
@@ -312,14 +319,14 @@ namespace Artemis.Core
                 Position += delta;
                 IsOverridden = false;
 
-                if (stickToMainSegment && Position >= MainSegmentStartPosition)
+                if (stickToMainSegment && Position >= MainSegmentEndPosition)
                 {
                     // If the main segment has no length, simply stick to the start of the segment
                     if (MainSegmentLength == TimeSpan.Zero)
                         Position = MainSegmentStartPosition;
                     // Ensure wrapping back around retains the delta time
                     else
-                        Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                        Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(delta.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
                 }
 
                 _extraTimelines.RemoveAll(t => t.IsFinished);
@@ -436,12 +443,6 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"Progress: {Position}/{Length} - delta: {Delta}";
-        }
     }
 
     internal enum TimelineSegment
