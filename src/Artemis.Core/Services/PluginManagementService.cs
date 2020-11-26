@@ -10,7 +10,6 @@ using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
-using Newtonsoft.Json;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
 using Ninject.Parameters;
@@ -78,7 +77,7 @@ namespace Artemis.Core.Services
                     throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
                 using StreamReader reader = new StreamReader(metaDataFileEntry.Open());
-                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(reader.ReadToEnd(), Constants.JsonConvertSettings)!;
+                PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
 
                 // Find the matching plugin in the plugin folder
                 DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == Path.GetFileNameWithoutExtension(zipFile.Name));
@@ -99,7 +98,7 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Compare versions, copy if the same when debugging
-                            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile), Constants.JsonConvertSettings)!;
+                            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
 
                             if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
@@ -186,7 +185,6 @@ namespace Artemis.Core.Services
             // Load the plugin assemblies into the plugin context
             DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
-            {
                 try
                 {
                     Plugin plugin = LoadPlugin(subDirectory);
@@ -197,7 +195,6 @@ namespace Artemis.Core.Services
                 {
                     _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                 }
-            }
 
             LoadingPlugins = false;
         }
@@ -226,7 +223,7 @@ namespace Artemis.Core.Services
                 _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
 
             // PluginInfo contains the ID which we need to move on
-            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile), Constants.JsonConvertSettings)!;
+            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
 
             if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
                 throw new ArtemisPluginException($"Plugin cannot use reserved GUID {pluginInfo.Guid}");
@@ -300,7 +297,7 @@ namespace Artemis.Core.Services
                 throw new ArtemisPluginException(
                     plugin,
                     "Failed to initialize the plugin assembly",
-                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
+                    new AggregateException(e.LoaderExceptions.Where(le => le != null).ToArray())
                 );
             }
 
@@ -310,7 +307,6 @@ namespace Artemis.Core.Services
             // Create instances of each feature and add them to the plugin
             // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
             foreach (Type featureType in featureTypes)
-            {
                 try
                 {
                     plugin.Kernel.Bind(featureType).ToSelf().InSingletonScope();
@@ -328,11 +324,9 @@ namespace Artemis.Core.Services
                 {
                     throw new ArtemisPluginException(plugin, "Failed to instantiate feature", e);
                 }
-            }
 
             // Activate plugins after they are all loaded
             foreach (PluginFeature pluginFeature in plugin.Features.Where(i => i.Entity.IsEnabled))
-            {
                 try
                 {
                     EnablePluginFeature(pluginFeature, false, !ignorePluginLock);
@@ -341,7 +335,6 @@ namespace Artemis.Core.Services
                 {
                     // ignored, logged in EnablePluginFeature
                 }
-            }
 
             if (saveState)
             {
@@ -483,10 +476,8 @@ namespace Artemis.Core.Services
         private void SavePlugin(Plugin plugin)
         {
             foreach (PluginFeature pluginFeature in plugin.Features)
-            {
                 if (plugin.Entity.Features.All(i => i.Type != pluginFeature.GetType().FullName))
                     plugin.Entity.Features.Add(pluginFeature.Entity);
-            }
 
             _pluginRepository.SavePlugin(plugin.Entity);
         }

@@ -4,7 +4,6 @@ using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 using Serilog;
 using SkiaSharp;
 
@@ -39,7 +38,7 @@ namespace Artemis.Core
             {
                 // Load the intro profile from JSON into a ProfileEntity
                 string json = File.ReadAllText(Path.Combine(Constants.ApplicationFolder, "Resources", "intro-profile.json"));
-                ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, Constants.JsonConvertSettings)!;
+                ProfileEntity profileEntity = CoreJson.DeserializeObject<ProfileEntity>(json)!;
                 // Inject every LED on the surface into each layer
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
                     profileEntityLayer.Leds.AddRange(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Select(l => new LedEntity

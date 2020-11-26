@@ -208,9 +208,8 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            string json = JsonConvert.SerializeObject(DefaultValue, Constants.JsonConvertTypedSettings);
-
-            SetCurrentValue(JsonConvert.DeserializeObject<T>(json), time);
+            string json = CoreJson.SerializeObject(DefaultValue, true);
+            SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, time);
         }
 
         private void ReapplyUpdate()
@@ -512,7 +511,7 @@ namespace Artemis.Core
                 try
                 {
                     if (Entity.Value != null)
-                        BaseValue = JsonConvert.DeserializeObject<T>(Entity.Value, Constants.JsonConvertSettings)!;
+                        BaseValue = CoreJson.DeserializeObject<T>(Entity.Value)!;
                 }
                 catch (JsonException)
                 {
@@ -528,7 +527,7 @@ namespace Artemis.Core
                 _keyframes.AddRange(Entity.KeyframeEntities
                     .Where(k => k.Position <= ProfileElement.Timeline.Length)
                     .Select(k => new LayerPropertyKeyframe<T>(
-                        JsonConvert.DeserializeObject<T>(k.Value, Constants.JsonConvertSettings)!, k.Position, (Easings.Functions) k.EasingFunction, this
+                        CoreJson.DeserializeObject<T>(k.Value)!, k.Position, (Easings.Functions) k.EasingFunction, this
                     ))
                 );
             }
@@ -557,12 +556,12 @@ namespace Artemis.Core
             if (!_isInitialized)
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
-            Entity.Value = JsonConvert.SerializeObject(BaseValue, Constants.JsonConvertSettings);
+            Entity.Value = CoreJson.SerializeObject(BaseValue);
             Entity.KeyframesEnabled = KeyframesEnabled;
             Entity.KeyframeEntities.Clear();
             Entity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
             {
-                Value = JsonConvert.SerializeObject(k.Value, Constants.JsonConvertSettings),
+                Value = CoreJson.SerializeObject(k.Value),
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));

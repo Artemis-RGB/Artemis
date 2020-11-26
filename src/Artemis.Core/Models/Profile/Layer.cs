@@ -123,9 +123,7 @@ namespace Artemis.Core
             if (Parent == null)
                 throw new ArtemisCoreException("Cannot create a copy of a layer without a parent");
 
-            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(
-                JsonConvert.SerializeObject(LayerEntity, Constants.JsonConvertTypedSettings), Constants.JsonConvertTypedSettings
-            )!;
+            LayerEntity entityCopy = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(LayerEntity, true), true)!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.DataBindings;
-using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
@@ -74,7 +73,7 @@ namespace Artemis.Core
             Entity.Condition = Condition.Entity;
             Condition.Save();
 
-            Entity.Value = JsonConvert.SerializeObject(Value, Constants.JsonConvertSettings);
+            Entity.Value = CoreJson.SerializeObject(Value);
             Entity.Order = Order;
         }
 
@@ -88,7 +87,7 @@ namespace Artemis.Core
                 ? new DataModelConditionGroup(null, Entity.Condition)
                 : new DataModelConditionGroup(null);
 
-            Value = (Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value, Constants.JsonConvertSettings))!;
+            Value = (Entity.Value == null ? default : CoreJson.DeserializeObject<TProperty>(Entity.Value))!;
             Order = Entity.Order;
         }
 
