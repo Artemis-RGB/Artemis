@@ -18,7 +18,7 @@
                         <materialDesign:PackIcon Kind="RenameBox" />
                     </MenuItem.Icon>
                 </MenuItem>   
-                <MenuItem Header="Copy" Command="{s:Action CopyElement}">
+                <MenuItem Header="Duplicate" Command="{s:Action DuplicateElement}">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="ContentCopy" />
                     </MenuItem.Icon>

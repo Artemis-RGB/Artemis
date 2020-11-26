@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             _profileEditorService = profileEditorService;
         }
 
-        public void CopyElement()
+        public void DuplicateElement()
         {
             Layer layer = Layer.CreateCopy();
             
