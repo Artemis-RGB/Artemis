@@ -114,7 +114,6 @@ namespace Artemis.Core
 
         #region Properties
 
-        private ProfileElement? _parent;
         private SKPath? _path;
         internal abstract RenderElementEntity RenderElementEntity { get; }
 
@@ -123,10 +122,11 @@ namespace Artemis.Core
         /// </summary>
         public new ProfileElement? Parent
         {
-            get => _parent;
+            get => base.Parent;
             internal set
             {
-                SetAndNotify(ref _parent, value);
+                base.Parent = value;
+                OnPropertyChanged(nameof(Parent));
                 Renderer.Invalidate();
             }
         }
