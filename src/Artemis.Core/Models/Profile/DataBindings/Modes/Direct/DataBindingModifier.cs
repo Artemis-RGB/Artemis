@@ -209,8 +209,8 @@ namespace Artemis.Core
                 try
                 {
                     staticValue = parameterType != null 
-                        ? JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType) 
-                        : JsonConvert.DeserializeObject(Entity.ParameterStaticValue);
+                        ? JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType, Constants.JsonConvertSettings) 
+                        : JsonConvert.DeserializeObject(Entity.ParameterStaticValue, Constants.JsonConvertSettings);
                 }
                 // If deserialization fails, use the type's default
                 catch (JsonSerializationException e)
@@ -252,7 +252,7 @@ namespace Artemis.Core
             ParameterPath?.Save();
             Entity.ParameterPath = ParameterPath?.Entity;
 
-            Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue);
+            Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue, Constants.JsonConvertSettings);
         }
 
         /// <inheritdoc />

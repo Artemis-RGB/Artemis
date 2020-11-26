@@ -51,7 +51,6 @@ namespace Artemis.Core.Services
             _frameStopWatch = new Stopwatch();
 
             UpdatePluginCache();
-            ConfigureJsonConvert();
 
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
@@ -133,14 +132,6 @@ namespace Artemis.Core.Services
         {
             _modules = _pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).ToList();
             _dataModelExpansions = _pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
-        }
-
-        private void ConfigureJsonConvert()
-        {
-            JsonConvert.DefaultSettings = () => new JsonSerializerSettings
-            {
-                Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
-            };
         }
 
         private void ApplyLoggingLevel()

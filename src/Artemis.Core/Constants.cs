@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Artemis.Core.JsonConverters;
 using Artemis.Storage.Entities.Plugins;
+using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
@@ -35,7 +37,7 @@ namespace Artemis.Core
         /// </summary>
         public static readonly PluginInfo CorePluginInfo = new PluginInfo
         {
-            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2,0)
+            Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2, 0)
         };
 
         /// <summary>
@@ -45,6 +47,16 @@ namespace Artemis.Core
 
         internal static readonly CorePluginFeature CorePluginFeature = new CorePluginFeature {Plugin = CorePlugin};
         internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {Plugin = CorePlugin};
+
+        internal static JsonSerializerSettings JsonConvertSettings = new JsonSerializerSettings
+        {
+            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
+        };
+        internal static JsonSerializerSettings JsonConvertTypedSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.All,
+            Converters = new List<JsonConverter> { new SKColorConverter(), new ForgivingIntConverter() }
+        };
 
         /// <summary>
         ///     A read-only collection containing all primitive numeric types

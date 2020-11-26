@@ -74,7 +74,7 @@ namespace Artemis.Core
             Entity.Condition = Condition.Entity;
             Condition.Save();
 
-            Entity.Value = JsonConvert.SerializeObject(Value);
+            Entity.Value = JsonConvert.SerializeObject(Value, Constants.JsonConvertSettings);
             Entity.Order = Order;
         }
 
@@ -88,7 +88,7 @@ namespace Artemis.Core
                 ? new DataModelConditionGroup(null, Entity.Condition)
                 : new DataModelConditionGroup(null);
 
-            Value = (Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value))!;
+            Value = (Entity.Value == null ? default : JsonConvert.DeserializeObject<TProperty>(Entity.Value, Constants.JsonConvertSettings))!;
             Order = Entity.Order;
         }
 

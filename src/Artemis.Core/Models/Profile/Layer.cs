@@ -39,9 +39,9 @@ namespace Artemis.Core
             Enabled = true;
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
-            
+
             _leds = new List<ArtemisLed>();
-            
+
             Initialize();
             Parent.AddChild(this);
         }
@@ -55,7 +55,7 @@ namespace Artemis.Core
             Parent = parent;
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
-            
+
             _leds = new List<ArtemisLed>();
 
             Load();
@@ -123,8 +123,9 @@ namespace Artemis.Core
             if (Parent == null)
                 throw new ArtemisCoreException("Cannot create a copy of a layer without a parent");
 
-            JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(JsonConvert.SerializeObject(LayerEntity, settings), settings)!;
+            LayerEntity entityCopy = JsonConvert.DeserializeObject<LayerEntity>(
+                JsonConvert.SerializeObject(LayerEntity, Constants.JsonConvertTypedSettings), Constants.JsonConvertTypedSettings
+            )!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
 
@@ -640,7 +641,7 @@ namespace Artemis.Core
             if (current == null)
                 return;
 
-            LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null 
+            LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null
                 ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
                 : null;
             descriptor?.CreateInstance(this);

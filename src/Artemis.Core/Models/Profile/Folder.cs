@@ -29,7 +29,7 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Enabled = true;
-            
+
             Parent.AddChild(this);
         }
 
@@ -43,7 +43,7 @@ namespace Artemis.Core
             Name = folderEntity.Name;
             Enabled = folderEntity.Enabled;
             Order = folderEntity.Order;
-            
+
             Load();
         }
 
@@ -122,8 +122,9 @@ namespace Artemis.Core
             if (Parent == null)
                 throw new ArtemisCoreException("Cannot create a copy of a folder without a parent");
 
-            JsonSerializerSettings settings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(JsonConvert.SerializeObject(FolderEntity, settings), settings)!;
+            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(
+                JsonConvert.SerializeObject(FolderEntity, Constants.JsonConvertTypedSettings), Constants.JsonConvertTypedSettings
+            )!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
 

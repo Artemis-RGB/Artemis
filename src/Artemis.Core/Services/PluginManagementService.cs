@@ -78,7 +78,7 @@ namespace Artemis.Core.Services
                     throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
                 using StreamReader reader = new StreamReader(metaDataFileEntry.Open());
-                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(reader.ReadToEnd());
+                PluginInfo builtInPluginInfo = JsonConvert.DeserializeObject<PluginInfo>(reader.ReadToEnd(), Constants.JsonConvertSettings)!;
 
                 // Find the matching plugin in the plugin folder
                 DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == Path.GetFileNameWithoutExtension(zipFile.Name));
@@ -99,7 +99,7 @@ namespace Artemis.Core.Services
                         try
                         {
                             // Compare versions, copy if the same when debugging
-                            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+                            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile), Constants.JsonConvertSettings)!;
 
                             if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
@@ -226,7 +226,7 @@ namespace Artemis.Core.Services
                 _logger.Warning(new ArtemisPluginException("Couldn't find the plugins metadata file at " + metadataFile), "Plugin exception");
 
             // PluginInfo contains the ID which we need to move on
-            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile));
+            PluginInfo pluginInfo = JsonConvert.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile), Constants.JsonConvertSettings)!;
 
             if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
                 throw new ArtemisPluginException($"Plugin cannot use reserved GUID {pluginInfo.Guid}");
