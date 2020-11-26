@@ -45,7 +45,12 @@ namespace Artemis.Core
                 // If not found, create a new one
                 if (settingEntity == null)
                 {
-                    settingEntity = new PluginSettingEntity {Name = name, PluginGuid = Plugin.Guid, Value = JsonConvert.SerializeObject(defaultValue)};
+                    settingEntity = new PluginSettingEntity
+                    {
+                        Name = name, 
+                        PluginGuid = Plugin.Guid, 
+                        Value = JsonConvert.SerializeObject(defaultValue, Constants.JsonConvertSettings)
+                    };
                     _pluginRepository.AddSetting(settingEntity);
                 }
 

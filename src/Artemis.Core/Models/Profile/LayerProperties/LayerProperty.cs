@@ -208,7 +208,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            string json = JsonConvert.SerializeObject(DefaultValue, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All });
+            string json = JsonConvert.SerializeObject(DefaultValue, Constants.JsonConvertTypedSettings);
 
             SetCurrentValue(JsonConvert.DeserializeObject<T>(json), time);
         }
@@ -512,7 +512,7 @@ namespace Artemis.Core
                 try
                 {
                     if (Entity.Value != null)
-                        BaseValue = JsonConvert.DeserializeObject<T>(Entity.Value);
+                        BaseValue = JsonConvert.DeserializeObject<T>(Entity.Value, Constants.JsonConvertSettings)!;
                 }
                 catch (JsonException)
                 {
@@ -525,9 +525,11 @@ namespace Artemis.Core
             _keyframes.Clear();
             try
             {
-                _keyframes.AddRange(
-                    Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length)
-                        .Select(k => new LayerPropertyKeyframe<T>(JsonConvert.DeserializeObject<T>(k.Value), k.Position, (Easings.Functions) k.EasingFunction, this))
+                _keyframes.AddRange(Entity.KeyframeEntities
+                    .Where(k => k.Position <= ProfileElement.Timeline.Length)
+                    .Select(k => new LayerPropertyKeyframe<T>(
+                        JsonConvert.DeserializeObject<T>(k.Value, Constants.JsonConvertSettings)!, k.Position, (Easings.Functions) k.EasingFunction, this
+                    ))
                 );
             }
             catch (JsonException)
@@ -555,12 +557,12 @@ namespace Artemis.Core
             if (!_isInitialized)
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
-            Entity.Value = JsonConvert.SerializeObject(BaseValue);
+            Entity.Value = JsonConvert.SerializeObject(BaseValue, Constants.JsonConvertSettings);
             Entity.KeyframesEnabled = KeyframesEnabled;
             Entity.KeyframeEntities.Clear();
             Entity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
             {
-                Value = JsonConvert.SerializeObject(k.Value),
+                Value = JsonConvert.SerializeObject(k.Value, Constants.JsonConvertSettings),
                 Position = k.Position,
                 EasingFunction = (int) k.EasingFunction
             }));

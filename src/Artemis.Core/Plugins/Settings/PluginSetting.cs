@@ -29,7 +29,7 @@ namespace Artemis.Core
             Name = pluginSettingEntity.Name;
             try
             {
-                _value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value);
+                _value = JsonConvert.DeserializeObject<T>(pluginSettingEntity.Value, Constants.JsonConvertSettings);
             }
             catch (JsonReaderException)
             {
@@ -66,7 +66,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Determines whether the setting has been changed
         /// </summary>
-        public bool HasChanged => JsonConvert.SerializeObject(Value) != _pluginSettingEntity.Value;
+        public bool HasChanged => JsonConvert.SerializeObject(Value, Constants.JsonConvertSettings) != _pluginSettingEntity.Value;
 
         /// <summary>
         ///     Gets or sets whether changes must automatically be saved
@@ -79,7 +79,7 @@ namespace Artemis.Core
         /// </summary>
         public void RejectChanges()
         {
-            Value = JsonConvert.DeserializeObject<T>(_pluginSettingEntity.Value);
+            Value = JsonConvert.DeserializeObject<T>(_pluginSettingEntity.Value, Constants.JsonConvertSettings);
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace Artemis.Core
             if (!HasChanged)
                 return;
 
-            _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value);
+            _pluginSettingEntity.Value = JsonConvert.SerializeObject(Value, Constants.JsonConvertSettings);
             _pluginRepository.SaveSetting(_pluginSettingEntity);
             OnSettingSaved();
         }
