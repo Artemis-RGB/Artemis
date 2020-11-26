@@ -6,7 +6,6 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -18,9 +17,9 @@ namespace Artemis.Core
     {
         private LayerGeneralProperties _general;
         private BaseLayerBrush? _layerBrush;
-        private LayerTransformProperties _transform;
         private LayerShape? _layerShape;
         private List<ArtemisLed> _leds;
+        private LayerTransformProperties _transform;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Layer" /> class and adds itself to the child collection of the provided
@@ -46,7 +45,13 @@ namespace Artemis.Core
             Parent.AddChild(this);
         }
 
-        internal Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent.Profile)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Layer" /> class based on the provided layer entity
+        /// </summary>
+        /// <param name="profile">The profile the layer belongs to</param>
+        /// <param name="parent">The parent of the layer</param>
+        /// <param name="layerEntity">The entity of the layer</param>
+        public Layer(Profile profile, ProfileElement parent, LayerEntity layerEntity) : base(parent.Profile)
         {
             LayerEntity = layerEntity;
             EntityId = layerEntity.Id;
@@ -82,7 +87,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Gets the general properties of the layer
+        ///     Gets the general properties of the layer
         /// </summary>
         [PropertyGroupDescription(Name = "General", Description = "A collection of general properties")]
         public LayerGeneralProperties General
@@ -92,7 +97,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Gets the transform properties of the layer
+        ///     Gets the transform properties of the layer
         /// </summary>
         [PropertyGroupDescription(Name = "Transform", Description = "A collection of transformation properties")]
         public LayerTransformProperties Transform
@@ -110,7 +115,10 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _layerBrush, value);
         }
 
-        internal LayerEntity LayerEntity { get; set; }
+        /// <summary>
+        ///     Gets the layer entity this layer uses for persistent storage
+        /// </summary>
+        public LayerEntity LayerEntity { get; internal set; }
 
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
 

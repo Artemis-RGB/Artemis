@@ -143,6 +143,8 @@ namespace Artemis.Core
                 // Shift everything after the given order
                 else
                 {
+                    if (order < 0)
+                        order = 0;
                     foreach (ProfileElement profileElement in ChildrenList.Where(c => c.Order >= order).ToList())
                         profileElement.Order++;
 

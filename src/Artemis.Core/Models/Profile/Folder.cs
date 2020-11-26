@@ -52,7 +52,10 @@ namespace Artemis.Core
         /// </summary>
         public bool IsRootFolder => Parent == Profile;
 
-        internal FolderEntity FolderEntity { get; set; }
+        /// <summary>
+        ///     Gets the folder entity this folder uses for persistent storage
+        /// </summary>
+        public FolderEntity FolderEntity { get; internal set; }
 
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
 

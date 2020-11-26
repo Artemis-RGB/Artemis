@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
@@ -183,6 +185,29 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
             _profileEditorService.UpdateSelectedProfile();
             _profileEditorService.ChangeSelectedProfileElement(null);
+        }
+
+        public void CopyElement()
+        {
+            if (ProfileElement is Layer layer)
+                JsonClipboard.SetObject(layer.LayerEntity);
+            else if (ProfileElement is Folder folder)
+                JsonClipboard.SetObject(folder.FolderEntity);
+        }
+
+        public void PasteElement()
+        {
+            object? clipboardObject = JsonClipboard.GetData();
+            if (clipboardObject is LayerEntity layerEntity)
+            {
+                layerEntity.Id = Guid.NewGuid();
+                layerEntity.Name += " - copy";
+                Layer pasted = new Layer(ProfileElement.Profile, ProfileElement.Parent, layerEntity);
+                ProfileElement.Parent.AddChild(pasted, ProfileElement.Order - 1);
+            }
+            else if (clipboardObject is FolderEntity folderEntity)
+            {
+            }
         }
 
         public void UpdateProfileElements()
