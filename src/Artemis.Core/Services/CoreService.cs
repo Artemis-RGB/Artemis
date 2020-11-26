@@ -5,10 +5,8 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.JsonConverters;
 using Artemis.Core.Ninject;
 using Artemis.Storage;
-using Newtonsoft.Json;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -114,7 +112,11 @@ namespace Artemis.Core.Services
             IntroAnimation intro = new IntroAnimation(_logger, _profileService, _surfaceService);
 
             // Draw a white overlay over the device
-            void DrawOverlay(object? sender, FrameRenderingEventArgs args) => intro.Render(args.DeltaTime, args.Canvas);
+            void DrawOverlay(object? sender, FrameRenderingEventArgs args)
+            {
+                intro.Render(args.DeltaTime, args.Canvas);
+            }
+
             FrameRendering += DrawOverlay;
 
             // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
@@ -181,11 +183,9 @@ namespace Artemis.Core.Services
                     using SKCanvas canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)
-                    {
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
                         foreach (Module module in modules.Where(m => m.IsActivated))
                             module.InternalRender(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
-                    }
 
                     OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
                 }

@@ -49,7 +49,7 @@ namespace Artemis.Core
                     {
                         Name = name, 
                         PluginGuid = Plugin.Guid, 
-                        Value = JsonConvert.SerializeObject(defaultValue, Constants.JsonConvertSettings)
+                        Value = CoreJson.SerializeObject(defaultValue)
                     };
                     _pluginRepository.AddSetting(settingEntity);
                 }

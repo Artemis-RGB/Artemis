@@ -115,7 +115,7 @@ namespace Artemis.Core
 
                         try
                         {
-                            rightSideValue = JsonConvert.DeserializeObject(Entity.RightStaticValue, leftSideType, Constants.JsonConvertSettings);
+                            rightSideValue = CoreJson.DeserializeObject(Entity.RightStaticValue, leftSideType);
                         }
                         // If deserialization fails, use the type's default
                         catch (JsonSerializationException e)
@@ -129,7 +129,7 @@ namespace Artemis.Core
                     else
                     {
                         // Hope for the best...
-                        UpdateRightSideStatic(JsonConvert.DeserializeObject(Entity.RightStaticValue, Constants.JsonConvertSettings));
+                        UpdateRightSideStatic(CoreJson.DeserializeObject(Entity.RightStaticValue));
                     }
                 }
                 catch (JsonReaderException e)
@@ -349,7 +349,7 @@ namespace Artemis.Core
             RightPath?.Save();
             Entity.RightPath = RightPath?.Entity;
 
-            Entity.RightStaticValue = JsonConvert.SerializeObject(RightStaticValue, Constants.JsonConvertSettings);
+            Entity.RightStaticValue = CoreJson.SerializeObject(RightStaticValue);
 
             if (Operator?.Plugin != null)
             {

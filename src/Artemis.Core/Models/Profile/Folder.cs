@@ -122,9 +122,7 @@ namespace Artemis.Core
             if (Parent == null)
                 throw new ArtemisCoreException("Cannot create a copy of a folder without a parent");
 
-            FolderEntity entityCopy = JsonConvert.DeserializeObject<FolderEntity>(
-                JsonConvert.SerializeObject(FolderEntity, Constants.JsonConvertTypedSettings), Constants.JsonConvertTypedSettings
-            )!;
+            FolderEntity entityCopy = CoreJson.DeserializeObject<FolderEntity>(CoreJson.SerializeObject(FolderEntity, true), true)!;
             entityCopy.Id = Guid.NewGuid();
             entityCopy.Name += " - Copy";
 

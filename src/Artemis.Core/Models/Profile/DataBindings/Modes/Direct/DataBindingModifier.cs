@@ -112,30 +112,6 @@ namespace Artemis.Core
             ValidateParameter();
         }
 
-        private void ValidateParameter()
-        {
-            if (ModifierType == null)
-                return;
-
-            if (ParameterType == ProfileRightSideType.Dynamic)
-            {
-                if (ParameterPath == null || !ParameterPath.IsValid)
-                    return;
-
-                Type parameterType = ParameterPath.GetPropertyType()!;
-                if (!ModifierType.SupportsType(parameterType, ModifierTypePart.Parameter))
-                    UpdateParameterDynamic(null);
-            }
-            else
-            {
-                if (ParameterStaticValue == null)
-                    return;
-
-                if (!ModifierType.SupportsType(ParameterStaticValue.GetType(), ModifierTypePart.Parameter))
-                    UpdateParameterStatic(null);
-            }
-        }
-
         /// <summary>
         ///     Updates the parameter of the modifier and makes the modifier dynamic
         /// </summary>
@@ -181,6 +157,30 @@ namespace Artemis.Core
                 ParameterStaticValue = null;
         }
 
+        private void ValidateParameter()
+        {
+            if (ModifierType == null)
+                return;
+
+            if (ParameterType == ProfileRightSideType.Dynamic)
+            {
+                if (ParameterPath == null || !ParameterPath.IsValid)
+                    return;
+
+                Type parameterType = ParameterPath.GetPropertyType()!;
+                if (!ModifierType.SupportsType(parameterType, ModifierTypePart.Parameter))
+                    UpdateParameterDynamic(null);
+            }
+            else
+            {
+                if (ParameterStaticValue == null)
+                    return;
+
+                if (!ModifierType.SupportsType(ParameterStaticValue.GetType(), ModifierTypePart.Parameter))
+                    UpdateParameterStatic(null);
+            }
+        }
+
         private void Initialize()
         {
             DataBindingModifierTypeStore.DataBindingModifierAdded += DataBindingModifierTypeStoreOnDataBindingModifierAdded;
@@ -208,9 +208,9 @@ namespace Artemis.Core
 
                 try
                 {
-                    staticValue = parameterType != null 
-                        ? JsonConvert.DeserializeObject(Entity.ParameterStaticValue, parameterType, Constants.JsonConvertSettings) 
-                        : JsonConvert.DeserializeObject(Entity.ParameterStaticValue, Constants.JsonConvertSettings);
+                    staticValue = parameterType != null
+                        ? CoreJson.DeserializeObject(Entity.ParameterStaticValue, parameterType)
+                        : CoreJson.DeserializeObject(Entity.ParameterStaticValue);
                 }
                 // If deserialization fails, use the type's default
                 catch (JsonSerializationException e)
@@ -252,7 +252,7 @@ namespace Artemis.Core
             ParameterPath?.Save();
             Entity.ParameterPath = ParameterPath?.Entity;
 
-            Entity.ParameterStaticValue = JsonConvert.SerializeObject(ParameterStaticValue, Constants.JsonConvertSettings);
+            Entity.ParameterStaticValue = CoreJson.SerializeObject(ParameterStaticValue);
         }
 
         /// <inheritdoc />
