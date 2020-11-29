@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.Sidebar
         private BindableCollection<INavigationItem> _sidebarItems;
         private Dictionary<INavigationItem, Module> _sidebarModules;
 
-        public SidebarViewModel(IKernel kernel, ISettingsService settingsService, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService)
+        public SidebarViewModel(IKernel kernel, ISettingsService settingsService, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService, IModuleService moduleService)
         {
             _kernel = kernel;
             _settingsService = settingsService;
@@ -53,6 +53,7 @@ namespace Artemis.UI.Screens.Sidebar
 
             _pluginManagementService.PluginFeatureEnabled += OnFeatureEnabled;
             _pluginManagementService.PluginFeatureDisabled += OnFeatureDisabled;
+            moduleService.ModulePriorityUpdated += OnModulePriorityUpdated;
 
             SetupSidebar();
             eventAggregator.Subscribe(this);
@@ -97,22 +98,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void SetupSidebar()
         {
-            SidebarItems.Clear();
-            SidebarModules.Clear();
-
-            // Add all default sidebar items
-            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Home, Label = "Home"});
-            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Newspaper, Label = "News"});
-            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.TestTube, Label = "Workshop"});
-            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Edit, Label = "Surface Editor"});
-            SidebarItems.Add(new FirstLevelNavigationItem {Icon = PackIconKind.Settings, Label = "Settings"});
-
-            // Add all activated modules
-            SidebarItems.Add(new DividerNavigationItem());
-            SidebarItems.Add(new SubheaderNavigationItem {Subheader = "Modules"});
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-            foreach (Module module in modules)
-                AddModule(module);
+            UpdateSidebarItems();
 
             // Set the sidebar as open if it's pinned
             if (PinSidebar.Value)
@@ -120,6 +106,32 @@ namespace Artemis.UI.Screens.Sidebar
 
             // Select the top item, which will be one of the defaults
             Task.Run(() => SelectSidebarItem(SidebarItems[0]));
+        }
+
+        private void UpdateSidebarItems()
+        {
+            SidebarItems.Clear();
+            SidebarModules.Clear();
+
+            // Add all default sidebar items
+            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Home, Label = "Home" });
+            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Newspaper, Label = "News" });
+            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.TestTube, Label = "Workshop" });
+            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Edit, Label = "Surface Editor" });
+            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Settings, Label = "Settings" });
+
+            // Add all activated modules
+            SidebarItems.Add(new DividerNavigationItem());
+            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
+
+            foreach (IGrouping<ModulePriorityCategory, Module> category in modules.OrderByDescending(m => m.PriorityCategory).GroupBy(m => m.PriorityCategory))
+            {
+                SidebarItems.Add(new SubheaderNavigationItem { Subheader = category.Key.ToString() });
+                foreach(Module module in category.OrderBy(m => m.Priority))
+                {
+                    AddModule(module);
+                }
+            }
         }
 
         // ReSharper disable once UnusedMember.Global - Called by view
@@ -217,14 +229,19 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void OnFeatureEnabled(object sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature is Module module)
-                AddModule(module);
+            if (e.PluginFeature is Module)
+                UpdateSidebarItems();
         }
 
         private void OnFeatureDisabled(object sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature is Module module)
-                RemoveModule(module);
+            if (e.PluginFeature is Module)
+                UpdateSidebarItems();
+        }
+
+        private void OnModulePriorityUpdated(object sender, EventArgs e)
+        {
+            UpdateSidebarItems();
         }
 
         public void Handle(RequestSelectSidebarItemEvent message)
