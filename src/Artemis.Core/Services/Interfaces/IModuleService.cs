@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Artemis.Core.Modules;
 
 namespace Artemis.Core.Services
@@ -8,6 +9,11 @@ namespace Artemis.Core.Services
     /// </summary>
     public interface IModuleService : IArtemisService
     {
+        /// <summary>
+        ///     Occurs when the priorty of a module is updated.
+        /// </summary>
+        event EventHandler ModulePriorityUpdated;
+
         /// <summary>
         ///     Gets the current active module override. If set, all other modules are deactivated and only the
         ///     <see cref="ActiveModuleOverride" /> is active.
