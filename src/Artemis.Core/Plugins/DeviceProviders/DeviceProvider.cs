@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using Ninject;
 using RGB.NET.Core;
@@ -33,6 +34,8 @@ namespace Artemis.Core.DeviceProviders
         [Inject]
         public ILogger? Logger { get; set; }
 
+        internal Dictionary<IRGBDevice, string> DeviceLayoutPaths { get; set; } = new Dictionary<IRGBDevice, string>();
+
         /// <inheritdoc />
         public override void Disable()
         {
@@ -54,12 +57,16 @@ namespace Artemis.Core.DeviceProviders
                 else if (e.RelativePath != null)
                     e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePath);
 
-                IRGBDeviceInfo deviceInfo = ((IRGBDevice) sender).DeviceInfo;
+                IRGBDevice device = (IRGBDevice) sender;
+                IRGBDeviceInfo deviceInfo = device.DeviceInfo;
                 if (e.FileName != null && !File.Exists(e.FinalPath))
                 {
                     Logger?.Information("Couldn't find a layout for device {deviceName}, model {deviceModel} at {filePath}",
                         deviceInfo.DeviceName, deviceInfo.Model, e.FinalPath);
                 }
+
+                if (e.FileName != null)
+                    DeviceLayoutPaths[device] = e.FinalPath;
             }
         }
     }

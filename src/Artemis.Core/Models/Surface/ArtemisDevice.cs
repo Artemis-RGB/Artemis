@@ -23,16 +23,17 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-            DeviceEntity = new DeviceEntity();
-
-            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
-
-            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
-
             Rotation = 0;
             Scale = 1;
             ZIndex = 1;
+            DeviceEntity = new DeviceEntity();
 
+            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
+            LayoutPath = layoutPath;
+            
+            InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
+
+            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             ApplyToEntity();
             CalculateRenderProperties();
         }
@@ -43,6 +44,9 @@ namespace Artemis.Core
             DeviceProvider = deviceProvider;
             Surface = surface;
             DeviceEntity = deviceEntity;
+
+            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
+            LayoutPath = layoutPath;
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
@@ -94,7 +98,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Gets a list of input identifiers associated with this device
+        ///     Gets a list of input identifiers associated with this device
         /// </summary>
         public List<ArtemisDeviceInputIdentifier> InputIdentifiers { get; }
 
@@ -163,6 +167,11 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets the path to where the layout of the device was (attempted to be) loaded from
+        /// </summary>
+        public string? LayoutPath { get; internal set; }
+
         internal DeviceEntity DeviceEntity { get; }
 
         /// <inheritdoc />
@@ -191,13 +200,11 @@ namespace Artemis.Core
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
-            {
                 DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
                 {
                     InputProvider = identifier.InputProvider,
                     Identifier = identifier.Identifier
                 });
-            }
         }
 
         internal void ApplyToRgbDevice()

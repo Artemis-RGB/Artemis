@@ -8,11 +8,13 @@ using Artemis.UI.Ninject;
 using Artemis.UI.PropertyInput;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
+using Serilog;
 
 namespace Artemis.UI.Services
 {
     public class RegistrationService : IRegistrationService
     {
+        private readonly ILogger _logger;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginManagementService _pluginManagementService;
@@ -22,12 +24,14 @@ namespace Artemis.UI.Services
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
 
-        public RegistrationService(IDataModelUIService dataModelUIService, 
-            IProfileEditorService profileEditorService, 
+        public RegistrationService(ILogger logger,
+            IDataModelUIService dataModelUIService,
+            IProfileEditorService profileEditorService,
             IPluginManagementService pluginManagementService,
             ISurfaceService surfaceService,
             IInputService inputService)
         {
+            _logger = logger;
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
             _pluginManagementService = pluginManagementService;
@@ -85,7 +89,7 @@ namespace Artemis.UI.Services
 
         public void RegisterInputProvider()
         {
-            _inputService.AddInputProvider(new NativeWindowInputProvider(_inputService));
+            _inputService.AddInputProvider(new NativeWindowInputProvider(_logger, _inputService));
         }
 
         private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs e)
@@ -95,7 +99,7 @@ namespace Artemis.UI.Services
 
         private void LoadPluginModules()
         {
-            foreach (Plugin plugin in _pluginManagementService.GetAllPlugins().Where(p => p.IsEnabled)) 
+            foreach (Plugin plugin in _pluginManagementService.GetAllPlugins().Where(p => p.IsEnabled))
                 plugin.Kernel.Load(new[] {new PluginUIModule(plugin)});
         }
     }

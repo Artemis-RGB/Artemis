@@ -6,6 +6,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
+using Serilog;
 using MouseButton = Artemis.Core.Services.MouseButton;
 
 namespace Artemis.UI.InputProviders
@@ -14,12 +15,14 @@ namespace Artemis.UI.InputProviders
     {
         private const int WM_INPUT = 0x00FF;
 
+        private readonly ILogger _logger;
         private readonly IInputService _inputService;
         private DateTime _lastMouseUpdate;
         private SpongeWindow _sponge;
 
-        public NativeWindowInputProvider(IInputService inputService)
+        public NativeWindowInputProvider(ILogger logger, IInputService inputService)
         {
+            _logger = logger;
             _inputService = inputService;
 
             _sponge = new SpongeWindow();
@@ -68,7 +71,7 @@ namespace Artemis.UI.InputProviders
         {
             KeyboardKey key = (KeyboardKey) KeyInterop.KeyFromVirtualKey(keyboardData.Keyboard.VirutalKey);
             // Debug.WriteLine($"VK: {key} ({keyboardData.Keyboard.VirutalKey}), Flags: {keyboardData.Keyboard.Flags}, Scan code: {keyboardData.Keyboard.ScanCode}");
-            
+
             // Sometimes we get double hits and they resolve to None, ignore those
             if (key == KeyboardKey.None)
                 return;
@@ -85,7 +88,16 @@ namespace Artemis.UI.InputProviders
 
             ArtemisDevice device = null;
             if (identifier != null)
-                device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
+            {
+                try
+                {
+                    device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warning(e, "Failed to retrieve input device by its identifier");
+                }
+            }
 
             // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
             if (keyboardData.Keyboard.Flags == RawKeyboardFlags.LeftKey || keyboardData.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
@@ -130,7 +142,16 @@ namespace Artemis.UI.InputProviders
             ArtemisDevice device = null;
             string identifier = data.Device?.DevicePath;
             if (identifier != null)
-                device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Mouse);
+            {
+                try
+                {
+                    device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warning(e, "Failed to retrieve input device by its identifier");
+                }
+            }
 
             // Debug.WriteLine($"Buttons: {data.Mouse.Buttons}, Data: {data.Mouse.ButtonData}, Flags: {data.Mouse.Flags}, XY: {data.Mouse.LastX},{data.Mouse.LastY}");
 
