@@ -10,11 +10,6 @@ namespace Artemis.Core.Services
     public interface IModuleService : IArtemisService
     {
         /// <summary>
-        ///     Occurs when the priorty of a module is updated.
-        /// </summary>
-        event EventHandler ModulePriorityUpdated;
-
-        /// <summary>
         ///     Gets the current active module override. If set, all other modules are deactivated and only the
         ///     <see cref="ActiveModuleOverride" /> is active.
         /// </summary>
@@ -38,5 +33,10 @@ namespace Artemis.Core.Services
         /// <param name="category">The new priority category of the module</param>
         /// <param name="priority">The new priority of the module</param>
         void UpdateModulePriority(Module module, ModulePriorityCategory category, int priority);
+
+        /// <summary>
+        ///     Occurs when the priority of a module is updated.
+        /// </summary>
+        event EventHandler? ModulePriorityUpdated;
     }
 }
