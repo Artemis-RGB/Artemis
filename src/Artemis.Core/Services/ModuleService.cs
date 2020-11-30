@@ -149,8 +149,6 @@ namespace Artemis.Core.Services
             UpdateModulePriority(module, category, priority);
         }
 
-        public event EventHandler ModulePriorityUpdated;
-
         public Module? ActiveModuleOverride { get; private set; }
 
         public async Task SetActiveModuleOverride(Module? overrideModule)
@@ -266,5 +264,11 @@ namespace Artemis.Core.Services
 
             ModulePriorityUpdated?.Invoke(this, EventArgs.Empty);
         }
+
+        #region Events
+
+        public event EventHandler? ModulePriorityUpdated;
+
+        #endregion
     }
 }
