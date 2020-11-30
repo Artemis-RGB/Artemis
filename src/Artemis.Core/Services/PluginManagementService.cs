@@ -297,7 +297,8 @@ namespace Artemis.Core.Services
                 throw new ArtemisPluginException(
                     plugin,
                     "Failed to initialize the plugin assembly",
-                    new AggregateException(e.LoaderExceptions.Where(le => le != null).ToArray())
+                    // ReSharper disable once RedundantEnumerableCastCall - Casting from nullable to non-nullable here
+                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
                 );
             }
 

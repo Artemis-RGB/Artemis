@@ -47,212 +47,244 @@
             </StackPanel>
         </mde:AppBar>
 
-        <Grid Margin="10, 10, 10, 10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-            <TextBlock TextWrapping="Wrap">
+        <ScrollViewer>
+            <Grid Margin="15">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" Margin="0 0 00 10">
                 In this window you can view detailed information of the device.
                 Please note that having this window open can have a performance impact on your system.
-            </TextBlock>
+                </TextBlock>
 
-            <shared:DeviceVisualizer Grid.Row="1" Device="{Binding Device}" HighlightedLeds="{Binding SelectedLeds}" HorizontalAlignment="Center" MaxHeight="500" ShowColors="True" />
+                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Padding="15">
+                    <shared:DeviceVisualizer Device="{Binding Device}" 
+                                         HighlightedLeds="{Binding SelectedLeds}" 
+                                         HorizontalAlignment="Center" 
+                                         MaxHeight="400" 
+                                         ShowColors="True"/>
+                </materialDesign:Card>
 
-            <Expander Grid.Row="2" Width="800" VerticalAlignment="Center" Header="Device properties">
-                <StackPanel Orientation="Horizontal">
-                    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="0,0,5,0" Width="395">
-                        <StackPanel Margin="15" HorizontalAlignment="Stretch">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device name</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                <Expander Grid.Row="2" VerticalAlignment="Center" Header="Device properties" Margin="0 15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="0,0,5,0">
+                            <StackPanel Margin="15" HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device name</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Manufacturer</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Manufacturer</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Lighting support</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Lighting support</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.DeviceInfo.Lighting}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device type</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device type</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device image</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
-                                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
-                                               TextWrapping="Wrap"
-                                               Text="{Binding Device.RgbDevice.DeviceInfo.Image}" />
-                                </StackPanel>
-                            </Grid>
-                        </StackPanel>
-                    </materialDesign:Card>
-                    <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="0,0,5,0" Width="395">
-                        <StackPanel Margin="15" HorizontalAlignment="Stretch">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Size (1px = 1mm)</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device image</TextBlock>
+                                        <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                                             TextWrapping="Wrap"
+                                             Text="{Binding Device.RgbDevice.DeviceInfo.Image, Mode=OneWay}"
+                                             IsReadOnly="True" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                        <materialDesign:Card Grid.Column="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="5,0,0,0" >
+                            <StackPanel Margin="15" HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Size (1px = 1mm)</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.Size}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Location (1px = 1mm)</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Location (1px = 1mm)</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.Location}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Rotation (degrees)</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Rotation (degrees)</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition />
-                                    <RowDefinition />
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0">
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Syncback supported</TextBlock>
-                                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Syncback supported</TextBlock>
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                                TextWrapping="Wrap"
                                                Text="{Binding Device.RgbDevice.DeviceInfo.SupportsSyncBack}" />
-                                </StackPanel>
-                            </Grid>
-                            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-                        </StackPanel>
-                    </materialDesign:Card>
-                </StackPanel>
-            </Expander>
+                                    </StackPanel>
+                                </Grid>
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
 
-            <DataGrid Grid.Row="3"
-                      Margin="0 8 0 0"
-                      ItemsSource="{Binding Device.Leds}"
-                      d:DataContext="{d:DesignInstance Type=core:ArtemisLed}"
-                      CanUserSortColumns="True"
-                      IsReadOnly="True"
-                      CanUserAddRows="False"
-                      AutoGenerateColumns="False"
-                      materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                      materialDesign:DataGridAssist.ColumnHeaderPadding="8"
-                      SelectedItem="{Binding SelectedLed}"
-                      CanUserResizeRows="False">
-                <DataGrid.Columns>
-                    <materialDesign:DataGridTextColumn Binding="{Binding LedIndex}" Header="#" Width="Auto" />
-                    <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Id}" Header="LED ID" Width="Auto" />
-                    <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Color}" Header="Color (ARGB)" Width="Auto" />
-                    <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Image}" Header="Image path" />
-                    <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Shape}" Header="Shape" />
-                    <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Size}" Header="Size" Width="Auto" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Grid>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Layout file path</TextBlock>
+                                        <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                                             TextWrapping="Wrap"
+                                             Text="{Binding Device.LayoutPath, Mode=OneWay}"
+                                             IsReadOnly="True" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </Grid>
+                </Expander>
+
+                <materialDesign:Card Grid.Row="3" materialDesign:ShadowAssist.ShadowDepth="Depth1" Padding="15" MaxHeight="413">
+                    <DataGrid ItemsSource="{Binding Device.Leds}"
+                              d:DataContext="{d:DesignInstance Type=core:ArtemisLed}"
+                              CanUserSortColumns="True"
+                              IsReadOnly="True"
+                              CanUserAddRows="False"
+                              AutoGenerateColumns="False"
+                              materialDesign:DataGridAssist.CellPadding="13 8 8 8"
+                              materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                              SelectedItem="{Binding SelectedLed}"
+                              CanUserResizeRows="False"
+                              >
+                        <DataGrid.Columns>
+                            <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Id}" Header="LED ID" Width="Auto" />
+                            <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Color}" Header="Color (ARGB)" Width="Auto" />
+                            <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Image}" Header="Image path" />
+                            <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Shape}" Header="Shape" />
+                            <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Size}" Header="Size" Width="Auto" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </materialDesign:Card>
+
+              
+            </Grid>
+        </ScrollViewer>
+        
     </DockPanel>
 </mde:MaterialWindow>
