@@ -12,8 +12,8 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Profile : ProfileElement
     {
-        private bool _isActivated;
         private readonly object _lock = new object();
+        private bool _isActivated;
 
         internal Profile(ProfileModule module, string name) : base(null!)
         {
@@ -57,7 +57,10 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _isActivated, value);
         }
 
-        internal ProfileEntity ProfileEntity { get; set; }
+        /// <summary>
+        ///     Gets the profile entity this profile uses for persistent storage
+        /// </summary>
+        public ProfileEntity ProfileEntity { get; internal set; }
 
         internal Stack<string> UndoStack { get; set; }
         internal Stack<string> RedoStack { get; set; }
@@ -116,6 +119,19 @@ namespace Artemis.Core
         public override string ToString()
         {
             return $"[Profile] {nameof(Name)}: {Name}, {nameof(IsActivated)}: {IsActivated}, {nameof(Module)}: {Module}";
+        }
+
+        /// <summary>
+        ///     Populates all the LEDs on the elements in this profile
+        /// </summary>
+        /// <param name="surface">The currently active surface that contains the LEDs</param>
+        public void PopulateLeds(ArtemisSurface surface)
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Profile");
+
+            foreach (Layer layer in GetAllLayers())
+                layer.PopulateLeds(surface);
         }
 
         /// <inheritdoc />
@@ -194,15 +210,6 @@ namespace Artemis.Core
                 OnActivated();
                 IsActivated = true;
             }
-        }
-
-        internal void PopulateLeds(ArtemisSurface surface)
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Profile");
-
-            foreach (Layer layer in GetAllLayers())
-                layer.PopulateLeds(surface);
         }
 
         #region Events
