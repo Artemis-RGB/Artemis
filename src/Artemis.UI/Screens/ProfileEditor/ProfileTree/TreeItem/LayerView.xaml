@@ -13,17 +13,28 @@
     <StackPanel Margin="-10" Background="Transparent">
         <StackPanel.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Rename" Command="{s:Action RenameElement}">
+                <MenuItem Header="Duplicate" Command="{s:Action DuplicateElement}" InputGestureText="Ctrl+D">
                     <MenuItem.Icon>
-                        <materialDesign:PackIcon Kind="RenameBox" />
+                        <materialDesign:PackIcon Kind="ContentDuplicate" />
                     </MenuItem.Icon>
-                </MenuItem>   
-                <MenuItem Header="Copy" Command="{s:Action CopyElement}">
+                </MenuItem>
+                <MenuItem Header="Copy" Command="{s:Action CopyElement}" InputGestureText="Ctrl+C">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="ContentCopy" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Delete" Command="{s:Action DeleteElement}">
+                <MenuItem Header="Paste" Command="{s:Action PasteElement}" InputGestureText="Ctrl+V">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Rename" Command="{s:Action RenameElement}" InputGestureText="F2">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="RenameBox" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Delete" Command="{s:Action DeleteElement}" InputGestureText="Del">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="TrashCan" />
                     </MenuItem.Icon>

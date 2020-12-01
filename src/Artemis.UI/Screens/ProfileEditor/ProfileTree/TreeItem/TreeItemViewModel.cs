@@ -6,6 +6,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Shared.Services;
@@ -176,13 +177,44 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!result)
                 return;
 
+            ProfileElement newSelection = null;
+            if (ProfileElement.Parent != null)
+            {
+                int index = ProfileElement.Parent.Children.IndexOf(ProfileElement);
+                // If there is a next element, select that
+                if (index < ProfileElement.Parent.Children.Count - 1)
+                    newSelection = ProfileElement.Parent.Children[index + 1];
+                // Otherwise select the previous element
+                else if (index > 0)
+                    newSelection = ProfileElement.Parent.Children[index - 1];
+                // And if that's not there, fall back to the parent
+                else
+                    newSelection = ProfileElement.Parent;
+            }
+
             // Farewell, cruel world
             TreeItemViewModel parent = (TreeItemViewModel) Parent;
             ProfileElement.Parent?.RemoveChild(ProfileElement);
             parent.RemoveExistingElement(this);
 
             _profileEditorService.UpdateSelectedProfile();
-            _profileEditorService.ChangeSelectedProfileElement(null);
+            _profileEditorService.ChangeSelectedProfileElement(newSelection as RenderProfileElement);
+        }
+
+        public void DuplicateElement()
+        {
+            _profileEditorService.DuplicateProfileElement(ProfileElement);
+        }
+
+        public void CopyElement()
+        {
+            _profileEditorService.CopyProfileElement(ProfileElement);
+        }
+
+        public void PasteElement()
+        {
+            if (ProfileElement.Parent is Folder parent)
+                _profileEditorService.PasteProfileElement(parent, ProfileElement.Order);
         }
 
         public void UpdateProfileElements()
@@ -192,19 +224,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             foreach (TreeItemViewModel treeItemViewModel in toRemove)
                 Items.Remove(treeItemViewModel);
 
-            // Order the children
-            List<TreeItemViewModel> vmsList = Items.OrderBy(v => v.ProfileElement.Order).ToList();
-            for (int index = 0; index < vmsList.Count; index++)
-            {
-                TreeItemViewModel profileElementViewModel = vmsList[index];
-                if (Items.IndexOf(profileElementViewModel) != index)
-                    ((BindableCollection<TreeItemViewModel>) Items).Move(Items.IndexOf(profileElementViewModel), index);
-            }
-
-            // Ensure every child element has an up-to-date VM
-            if (ProfileElement.Children == null)
-                return;
-
+            // Add missing children
             List<TreeItemViewModel> newChildren = new List<TreeItemViewModel>();
             foreach (ProfileElement profileElement in ProfileElement.Children.OrderBy(c => c.Order))
                 if (profileElement is Folder folder)
@@ -218,15 +238,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                         newChildren.Add(_profileTreeVmFactory.LayerViewModel(layer));
                 }
 
-            if (!newChildren.Any())
-                return;
-
             // Add the new children in one call, prevent extra UI events
             foreach (TreeItemViewModel treeItemViewModel in newChildren)
             {
                 treeItemViewModel.UpdateProfileElements();
                 Items.Add(treeItemViewModel);
             }
+
+            // Order the children
+            ((BindableCollection<TreeItemViewModel>) Items).Sort(i => i.ProfileElement.Order);
         }
 
         public void EnableToggled()
