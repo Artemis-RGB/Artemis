@@ -20,14 +20,15 @@ namespace Artemis.Core
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface)
         {
+            DeviceEntity = new DeviceEntity();
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
+
             Rotation = 0;
             Scale = 1;
             ZIndex = 1;
-            DeviceEntity = new DeviceEntity();
-
+            
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
             
@@ -40,11 +41,11 @@ namespace Artemis.Core
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface, DeviceEntity deviceEntity)
         {
+            DeviceEntity = deviceEntity;
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-            DeviceEntity = deviceEntity;
-
+            
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
 
