@@ -382,6 +382,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             else
                 _previousSelectedLayer = null;
 
+            ApplyActiveProfile();
             UpdateLedsDimStatus();
             UpdateCanSelectEditTool();
         }

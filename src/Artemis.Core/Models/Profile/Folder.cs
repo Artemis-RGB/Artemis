@@ -33,7 +33,13 @@ namespace Artemis.Core
             Parent.AddChild(this);
         }
 
-        internal Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent.Profile)
+        /// <summary>
+        ///     Creates a new instance of the <see cref="Folder" /> class based on the provided folder entity
+        /// </summary>
+        /// <param name="profile">The profile the folder belongs to</param>
+        /// <param name="parent">The parent of the folder</param>
+        /// <param name="folderEntity">The entity of the folder</param>
+        public Folder(Profile profile, ProfileElement parent, FolderEntity folderEntity) : base(parent.Profile)
         {
             FolderEntity = folderEntity;
             EntityId = folderEntity.Id;

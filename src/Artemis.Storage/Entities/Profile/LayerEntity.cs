@@ -15,9 +15,6 @@ namespace Artemis.Storage.Entities.Profile
             ExpandedPropertyGroups = new List<string>();
         }
 
-        public Guid Id { get; set; }
-        public Guid ParentId { get; set; }
-
         public int Order { get; set; }
         public string Name { get; set; }
         public bool Enabled { get; set; }

@@ -13,8 +13,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 {
     public class ProfileTreeViewModel : Conductor<FolderViewModel>, IProfileEditorPanelViewModel, IDropTarget
     {
-        private readonly IProfileTreeVmFactory _profileTreeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly IProfileTreeVmFactory _profileTreeVmFactory;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
 
@@ -38,6 +38,73 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                     _profileEditorService.ChangeSelectedProfileElement(renderElement);
                 else
                     _profileEditorService.ChangeSelectedProfileElement(null);
+            }
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void AddFolder()
+        {
+            ActiveItem?.AddFolder();
+        }
+
+        // ReSharper disable once UnusedMember.Global - Called from view
+        public void AddLayer()
+        {
+            ActiveItem?.AddLayer();
+        }
+
+        protected override void OnInitialActivate()
+        {
+            Subscribe();
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            Unsubscribe();
+            base.OnClose();
+        }
+
+        private void CreateRootFolderViewModel()
+        {
+            _updatingTree = true;
+            ProfileElement firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
+            if (!(firstChild is Folder folder))
+            {
+                ActivateItem(null);
+                return;
+            }
+
+            ActivateItem(_profileTreeVmFactory.FolderViewModel(folder));
+            _updatingTree = false;
+        }
+
+        private static DragDropType GetDragDropType(IDropInfo dropInfo)
+        {
+            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
+            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
+            if (source == target)
+                return DragDropType.None;
+
+            TreeItemViewModel parent = target;
+            while (parent != null)
+            {
+                if (parent == source)
+                    return DragDropType.None;
+                parent = parent.Parent as TreeItemViewModel;
+            }
+
+            switch (dropInfo.InsertPosition)
+            {
+                case RelativeInsertPosition.AfterTargetItem | RelativeInsertPosition.TargetItemCenter:
+                case RelativeInsertPosition.BeforeTargetItem | RelativeInsertPosition.TargetItemCenter:
+                    return target.SupportsChildren ? DragDropType.Add : DragDropType.None;
+                case RelativeInsertPosition.BeforeTargetItem:
+                    return DragDropType.InsertBefore;
+                case RelativeInsertPosition.AfterTargetItem:
+                    return DragDropType.InsertAfter;
+                default:
+                    return DragDropType.None;
             }
         }
 
@@ -84,80 +151,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             Subscribe();
         }
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void AddFolder()
-        {
-            ActiveItem?.AddFolder();
-        }
-
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void AddLayer()
-        {
-            ActiveItem?.AddLayer();
-        }
-
-        protected override void OnInitialActivate()
-        {
-            Subscribe();
-            base.OnInitialActivate();
-        }
-
-        protected override void OnClose()
-        {
-            Unsubscribe();
-            base.OnClose();
-        }
-
-        private void CreateRootFolderViewModel()
-        {
-            _updatingTree = true;
-            ProfileElement firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
-            if (!(firstChild is Folder folder))
-            {
-                ActivateItem(null);
-                return;
-            }
-
-            ActivateItem(_profileTreeVmFactory.FolderViewModel(folder));
-            _updatingTree = false;
-
-            // Auto-select the first layer
-            // if (_profileEditorService.SelectedProfile != null && SelectedTreeItem == null)
-            // {
-            //     if (_profileEditorService.SelectedProfile.GetRootFolder().Children.FirstOrDefault() is RenderProfileElement firstElement)
-            //         Execute.PostToUIThread(() => _profileEditorService.ChangeSelectedProfileElement(firstElement));
-            // }
-        }
-
-        private static DragDropType GetDragDropType(IDropInfo dropInfo)
-        {
-            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
-            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
-            if (source == target)
-                return DragDropType.None;
-
-            TreeItemViewModel parent = target;
-            while (parent != null)
-            {
-                if (parent == source)
-                    return DragDropType.None;
-                parent = parent.Parent as TreeItemViewModel;
-            }
-
-            switch (dropInfo.InsertPosition)
-            {
-                case RelativeInsertPosition.AfterTargetItem | RelativeInsertPosition.TargetItemCenter:
-                case RelativeInsertPosition.BeforeTargetItem | RelativeInsertPosition.TargetItemCenter:
-                    return target.SupportsChildren ? DragDropType.Add : DragDropType.None;
-                case RelativeInsertPosition.BeforeTargetItem:
-                    return DragDropType.InsertBefore;
-                case RelativeInsertPosition.AfterTargetItem:
-                    return DragDropType.InsertAfter;
-                default:
-                    return DragDropType.None;
-            }
-        }
-
         #region Event handlers
 
         private void Subscribe()
@@ -187,7 +180,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             ActiveItem.UpdateProfileElements();
             _updatingTree = false;
             if (e.RenderProfileElement == null)
+            {
                 SelectedTreeItem = null;
+            }
             else
             {
                 TreeItemViewModel match = ActiveItem.GetAllChildren().FirstOrDefault(vm => vm.ProfileElement == e.RenderProfileElement);

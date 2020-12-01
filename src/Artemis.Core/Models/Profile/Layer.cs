@@ -122,29 +122,6 @@ namespace Artemis.Core
 
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
-        /// <summary>
-        ///     Creates a deep copy of the layer
-        /// </summary>
-        /// <returns>The newly created copy</returns>
-        public Layer CreateCopy()
-        {
-            if (Parent == null)
-                throw new ArtemisCoreException("Cannot create a copy of a layer without a parent");
-
-            LayerEntity entityCopy = CoreJson.DeserializeObject<LayerEntity>(CoreJson.SerializeObject(LayerEntity, true), true)!;
-            entityCopy.Id = Guid.NewGuid();
-            entityCopy.Name += " - Copy";
-
-            Layer copy = new Layer(Profile, Parent, entityCopy);
-            if (LayerBrush?.Descriptor != null)
-                copy.ChangeLayerBrush(LayerBrush.Descriptor);
-            copy.AddLeds(Leds);
-
-            Parent.AddChild(copy, Order + 1);
-
-            return copy;
-        }
-
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
@@ -399,7 +376,14 @@ namespace Artemis.Core
             }
             finally
             {
-                canvas.Restore();
+                try
+                {
+                    canvas.Restore();
+                }
+                catch
+                {
+                    // ignored
+                }
                 Renderer.Close();
             }
         }

@@ -5,6 +5,9 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile;
+using Artemis.UI.Shared.Services.Models;
+using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
@@ -14,23 +17,25 @@ namespace Artemis.UI.Shared.Services
 {
     internal class ProfileEditorService : IProfileEditorService
     {
-        private readonly ILogger _logger;
         private readonly ICoreService _coreService;
+        private readonly ISurfaceService _surfaceService;
+        private readonly IKernel _kernel;
+        private readonly ILogger _logger;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private readonly object _selectedProfileElementLock = new object();
         private readonly object _selectedProfileLock = new object();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
-        private readonly IKernel _kernel;
 
-        public ProfileEditorService(IProfileService profileService, IKernel kernel, ILogger logger, ICoreService coreService)
+        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, ISurfaceService surfaceService)
         {
-            _profileService = profileService;
-            _logger = logger;
-            _coreService = coreService;
-            _registeredPropertyEditors = new List<PropertyInputRegistration>();
             _kernel = kernel;
+            _logger = logger;
+            _profileService = profileService;
+            _coreService = coreService;
+            _surfaceService = surfaceService;
+            _registeredPropertyEditors = new List<PropertyInputRegistration>();
 
             PixelsPerSecond = 100;
         }
@@ -39,6 +44,30 @@ namespace Artemis.UI.Shared.Services
         {
             _coreService.FrameRendered -= CoreServiceOnFrameRendered;
             Execute.PostToUIThread(OnProfilePreviewUpdated);
+        }
+
+        private void ReloadProfile()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            // Trigger a profile change
+            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
+            // Trigger a selected element change
+            RenderProfileElement? previousSelectedProfileElement = SelectedProfileElement;
+            if (SelectedProfileElement is Folder folder)
+                SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
+            else if (SelectedProfileElement is Layer layer)
+                SelectedProfileElement = SelectedProfile.GetAllLayers().FirstOrDefault(l => l.EntityId == layer.EntityId);
+            OnSelectedProfileElementChanged(new RenderProfileElementEventArgs(SelectedProfileElement, previousSelectedProfileElement));
+            // Trigger selected data binding change
+            if (SelectedDataBinding != null)
+            {
+                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties().FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
+                OnSelectedDataBindingChanged();
+            }
+
+            UpdateProfilePreview();
         }
 
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
@@ -107,7 +136,7 @@ namespace Artemis.UI.Shared.Services
                     return;
 
                 _profileService.UpdateProfile(SelectedProfile, true);
-                OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile));
+                OnSelectedProfileUpdated(new ProfileEventArgs(SelectedProfile));
                 UpdateProfilePreview();
             }
         }
@@ -206,7 +235,7 @@ namespace Artemis.UI.Shared.Services
                 if (supportedType.IsGenericParameter)
                 {
                     if (supportedType.BaseType == null)
-                        throw new ArtemisSharedUIException($"Generic property input VM type must have a type constraint");
+                        throw new ArtemisSharedUIException("Generic property input VM type must have a type constraint");
                     supportedType = supportedType.BaseType;
                 }
 
@@ -258,11 +287,9 @@ namespace Artemis.UI.Shared.Services
             }
 
             if (snapToCurrentTime)
-            {
                 // Snap to the current time
                 if (Math.Abs(time.TotalMilliseconds - CurrentTime.TotalMilliseconds) < tolerance.TotalMilliseconds)
                     return CurrentTime;
-            }
 
             if (snapTimes != null)
             {
@@ -289,9 +316,13 @@ namespace Artemis.UI.Shared.Services
                     viewModelType = registration.ViewModelType.MakeGenericType(layerProperty.GetType().GenericTypeArguments);
             }
             else if (registration != null)
+            {
                 viewModelType = registration.ViewModelType;
+            }
             else
+            {
                 return null;
+            }
 
             if (viewModelType == null)
                 return null;
@@ -308,29 +339,79 @@ namespace Artemis.UI.Shared.Services
             return SelectedProfile?.Module;
         }
 
-        private void ReloadProfile()
-        {
-            if (SelectedProfile == null)
-                return;
+        #region Copy/paste
 
-            // Trigger a profile change
-            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
-            // Trigger a selected element change
-            RenderProfileElement? previousSelectedProfileElement = SelectedProfileElement;
-            if (SelectedProfileElement is Folder folder)
-                SelectedProfileElement = SelectedProfile.GetAllFolders().FirstOrDefault(f => f.EntityId == folder.EntityId);
-            else if (SelectedProfileElement is Layer layer)
-                SelectedProfileElement = SelectedProfile.GetAllLayers().FirstOrDefault(l => l.EntityId == layer.EntityId);
-            OnSelectedProfileElementChanged(new RenderProfileElementEventArgs(SelectedProfileElement, previousSelectedProfileElement));
-            // Trigger selected data binding change
-            if (SelectedDataBinding != null)
+        public ProfileElement? DuplicateProfileElement(ProfileElement profileElement)
+        {
+            if (!(profileElement.Parent is Folder parent))
+                return null;
+
+            object? clipboardModel = null;
+            switch (profileElement)
             {
-                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties().FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
-                OnSelectedDataBindingChanged();
+                case Folder folder:
+                {
+                    clipboardModel = CoreJson.DeserializeObject(CoreJson.SerializeObject(new FolderClipboardModel(folder), true), true);
+                    break;
+                }
+                case Layer layer:
+                    clipboardModel = CoreJson.DeserializeObject(CoreJson.SerializeObject(layer.LayerEntity, true), true);
+                    break;
             }
 
-            UpdateProfilePreview();
+            return clipboardModel == null ? null : PasteClipboardData(clipboardModel, parent, profileElement.Order);
         }
+
+        public void CopyProfileElement(ProfileElement profileElement)
+        {
+            switch (profileElement)
+            {
+                case Folder folder:
+                {
+                    FolderClipboardModel clipboardModel = new FolderClipboardModel(folder);
+                    JsonClipboard.SetObject(clipboardModel);
+                    break;
+                }
+                case Layer layer:
+                    JsonClipboard.SetObject(layer.LayerEntity);
+                    break;
+            }
+        }
+
+        public ProfileElement? PasteProfileElement(Folder target, int position)
+        {
+            object? clipboardObject = JsonClipboard.GetData();
+            return clipboardObject != null ? PasteClipboardData(clipboardObject, target, position) : null;
+        }
+
+        private RenderProfileElement? PasteClipboardData(object clipboardObject, Folder target, int position)
+        {
+            RenderProfileElement? pasted = null;
+            switch (clipboardObject)
+            {
+                case FolderClipboardModel folderClipboardModel:
+                    pasted = folderClipboardModel.Paste(target.Profile, target);
+                    target.AddChild(pasted, position);
+                    break;
+                case LayerEntity layerEntity:
+                    layerEntity.Id = Guid.NewGuid();
+                    layerEntity.Name += " - copy";
+                    pasted = new Layer(target.Profile, target, layerEntity);
+                    target.AddChild(pasted, position);
+                    break;
+            }
+
+            if (pasted != null)
+            {
+                target.Profile.PopulateLeds(_surfaceService.ActiveSurface);
+                UpdateSelectedProfile();
+                ChangeSelectedProfileElement(pasted);
+            }
+
+            return pasted;
+        }
+
+        #endregion
 
         #region Events
 
@@ -396,6 +477,5 @@ namespace Artemis.UI.Shared.Services
         }
 
         #endregion
-
     }
 }

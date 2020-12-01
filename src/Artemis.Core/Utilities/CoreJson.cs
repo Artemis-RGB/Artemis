@@ -5,7 +5,10 @@ using Newtonsoft.Json;
 
 namespace Artemis.Core
 {
-    internal static class CoreJson
+    /// <summary>
+    ///     A static helper class that serializes and deserializes JSON with the Artemis Core JSON settings
+    /// </summary>
+    public static class CoreJson
     {
         #region Serialize
 
