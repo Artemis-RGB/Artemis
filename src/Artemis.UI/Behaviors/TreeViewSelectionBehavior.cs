@@ -104,8 +104,15 @@ namespace Artemis.UI.Behaviors
             if (SelectedItem == model && !item.IsSelected)
             {
                 item.IsSelected = true;
+                // Focus the newly selected item as if was clicked
+                item.Focus();
                 if (ExpandSelected)
                     item.IsExpanded = true;
+            }
+            else if (SelectedItem == model && !item.IsFocused)
+            {
+                // Focus the newly selected item as if was clicked
+                item.Focus();
             }
             // If the selected item is a parent of this model - expand
             else
@@ -117,14 +124,12 @@ namespace Artemis.UI.Behaviors
 
             // Recurse into children
             if (recurse)
-            {
                 foreach (object subitem in item.Items)
                 {
                     TreeViewItem tvi = item.ItemContainerGenerator.ContainerFromItem(subitem) as TreeViewItem;
                     if (tvi != null)
                         UpdateTreeViewItem(tvi, true);
                 }
-            }
         }
 
         // Update state of all items
@@ -143,11 +148,9 @@ namespace Artemis.UI.Behaviors
         private void UpdateTreeViewItemStyle()
         {
             if (AssociatedObject.ItemContainerStyle == null)
-            {
                 AssociatedObject.ItemContainerStyle = new Style(
                     typeof(TreeViewItem),
                     Application.Current.TryFindResource(typeof(TreeViewItem)) as Style);
-            }
 
             if (!AssociatedObject.ItemContainerStyle.Setters.Contains(_treeViewItemEventSetter))
                 AssociatedObject.ItemContainerStyle.Setters.Add(_treeViewItemEventSetter);
