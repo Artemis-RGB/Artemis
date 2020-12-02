@@ -160,7 +160,9 @@
                                   VerticalScrollBarVisibility="Hidden"
                                   ScrollChanged="TimelineScrollChanged">
                         <Border BorderThickness="0,0,1,0" BorderBrush="{DynamicResource MaterialDesignDivider}">
-                            <ContentControl s:View.Model="{Binding TreeViewModel}" />
+                            <ContentControl s:View.Model="{Binding TreeViewModel}"
+                                            shared:SizeObserver.Observe="True"
+                                            shared:SizeObserver.ObservedHeight="{Binding TreeViewModelHeight, Mode=OneWayToSource}"/>
                         </Border>
                     </ScrollViewer>
                     <materialDesign:TransitionerSlide>

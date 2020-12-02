@@ -35,6 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private int _rightSideIndex;
         private RenderProfileElement _selectedProfileElement;
         private DateTime _lastEffectsViewModelToggle;
+        private double _treeViewModelHeight;
 
         public LayerPropertiesViewModel(IProfileEditorService profileEditorService,
             ICoreService coreService,
@@ -156,6 +157,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public Layer SelectedLayer => SelectedProfileElement as Layer;
         public Folder SelectedFolder => SelectedProfileElement as Folder;
+
+        public double TreeViewModelHeight
+        {
+            get => _treeViewModelHeight;
+            set => SetAndNotify(ref _treeViewModelHeight, value);
+        }
 
 
         #region Segments

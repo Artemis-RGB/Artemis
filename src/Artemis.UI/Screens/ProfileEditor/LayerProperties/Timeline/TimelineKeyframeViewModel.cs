@@ -48,6 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         }
 
         public TimeSpan Position => LayerPropertyKeyframe.Position;
+        public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
 
         public void Dispose()
         {
@@ -158,35 +159,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         #endregion
 
         #region Context menu actions
-
-        public void Copy()
-        {
-            LayerPropertyKeyframe<T> newKeyframe = new LayerPropertyKeyframe<T>(
-                LayerPropertyKeyframe.Value,
-                LayerPropertyKeyframe.Position,
-                LayerPropertyKeyframe.EasingFunction,
-                LayerPropertyKeyframe.LayerProperty
-            );
-            // If possible, shift the keyframe to the right by 11 pixels
-            TimeSpan desiredPosition = newKeyframe.Position + TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
-            if (desiredPosition <= newKeyframe.LayerProperty.ProfileElement.Timeline.Length)
-                newKeyframe.Position = desiredPosition;
-            // Otherwise if possible shift it to the left by 11 pixels
-            else
-            {
-                desiredPosition = newKeyframe.Position - TimeSpan.FromMilliseconds(1000f / _profileEditorService.PixelsPerSecond * 11);
-                if (desiredPosition > TimeSpan.Zero)
-                    newKeyframe.Position = desiredPosition;
-            }
-
-            LayerPropertyKeyframe.LayerProperty.AddKeyframe(newKeyframe);
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        public void Delete()
+        
+        public void Delete(bool save = true)
         {
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
-            _profileEditorService.UpdateSelectedProfileElement();
+            if (save)
+                _profileEditorService.UpdateSelectedProfileElement();
         }
 
         #endregion
@@ -196,6 +174,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
     {
         bool IsSelected { get; set; }
         TimeSpan Position { get; }
+        ILayerPropertyKeyframe Keyframe { get; }
 
         #region Movement
 
@@ -210,8 +189,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         void PopulateEasingViewModels();
         void ClearEasingViewModels();
-        void Copy();
-        void Delete();
+        void Delete(bool save = true);
 
         #endregion
     }

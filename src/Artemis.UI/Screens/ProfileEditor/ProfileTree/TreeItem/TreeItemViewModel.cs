@@ -48,6 +48,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             set => SetAndNotify(ref _profileElement, value);
         }
 
+        public bool CanPasteElement => _profileEditorService.GetCanPaste();
+
         public abstract bool SupportsChildren { get; }
 
         public List<TreeItemViewModel> GetAllChildren()
@@ -252,6 +254,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public void EnableToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
+        }
+
+        public void ContextMenuOpening(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanPasteElement));
         }
 
         private void Subscribe()

@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows;
 using Artemis.Core;
+using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Shared;
@@ -41,17 +42,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             }
         }
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void AddFolder()
-        {
-            ActiveItem?.AddFolder();
-        }
-
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public void AddLayer()
-        {
-            ActiveItem?.AddLayer();
-        }
+        public bool CanPasteElement => _profileEditorService.GetCanPaste();
 
         protected override void OnInitialActivate()
         {
@@ -79,10 +70,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             _updatingTree = false;
         }
 
+        #region IDropTarget
+
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
-            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
-            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
+            TreeItemViewModel source = (TreeItemViewModel)dropInfo.Data;
+            TreeItemViewModel target = (TreeItemViewModel)dropInfo.TargetItem;
             if (source == target)
                 return DragDropType.None;
 
@@ -128,14 +121,14 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         public void Drop(IDropInfo dropInfo)
         {
-            TreeItemViewModel source = (TreeItemViewModel) dropInfo.Data;
-            TreeItemViewModel target = (TreeItemViewModel) dropInfo.TargetItem;
+            TreeItemViewModel source = (TreeItemViewModel)dropInfo.Data;
+            TreeItemViewModel target = (TreeItemViewModel)dropInfo.TargetItem;
 
             DragDropType dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
             {
                 case DragDropType.Add:
-                    ((TreeItemViewModel) source.Parent).RemoveExistingElement(source);
+                    ((TreeItemViewModel)source.Parent).RemoveExistingElement(source);
                     target.AddExistingElement(source);
                     break;
                 case DragDropType.InsertBefore:
@@ -150,6 +143,34 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             _profileEditorService.UpdateSelectedProfile();
             Subscribe();
         }
+
+        #endregion
+
+        #region Context menu
+
+        public void AddFolder()
+        {
+            ActiveItem?.AddFolder();
+        }
+
+        public void AddLayer()
+        {
+            ActiveItem?.AddLayer();
+        }
+
+        public void PasteElement()
+        {
+            Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
+            if (rootFolder != null)
+                _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
+        }
+
+        public void ContextMenuOpening(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanPasteElement));
+        }
+
+        #endregion
 
         #region Event handlers
 
