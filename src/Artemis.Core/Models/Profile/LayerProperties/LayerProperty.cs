@@ -559,12 +559,7 @@ namespace Artemis.Core
             Entity.Value = CoreJson.SerializeObject(BaseValue);
             Entity.KeyframesEnabled = KeyframesEnabled;
             Entity.KeyframeEntities.Clear();
-            Entity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
-            {
-                Value = CoreJson.SerializeObject(k.Value),
-                Position = k.Position,
-                EasingFunction = (int) k.EasingFunction
-            }));
+            Entity.KeyframeEntities.AddRange(Keyframes.Select(k => k.GetKeyframeEntity()));
 
             Entity.DataBindingEntities.Clear();
             foreach (IDataBinding dataBinding in _dataBindings)

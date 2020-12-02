@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using Artemis.Core;
+using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Models;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Shared.Services.Models;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
@@ -151,31 +155,108 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Context menu actions
 
-        public void ContextMenuOpening(object sender, EventArgs e)
+        public bool CanDuplicateKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
+        public bool CanCopyKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
+        public bool CanDeleteKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
+        public bool CanPasteKeyframes => JsonClipboard.GetData() is KeyframeClipboardModel;
+
+        private TimeSpan? _contextMenuOpenPosition;
+
+        public void ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
-            if (sender is Ellipse ellipse && ellipse.DataContext is ITimelineKeyframeViewModel viewModel)
+            _contextMenuOpenPosition = GetCursorTime(new Point(e.CursorLeft, e.CursorTop));
+        }
+
+        public void ContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+            _contextMenuOpenPosition = null;
+        }
+
+        public void KeyframeContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (sender is FrameworkElement fe && fe.DataContext is ITimelineKeyframeViewModel viewModel)
                 viewModel.PopulateEasingViewModels();
         }
 
-        public void ContextMenuClosing(object sender, EventArgs e)
+        public void KeyframeContextMenuClosing(object sender, ContextMenuEventArgs e)
         {
             if (sender is Ellipse ellipse && ellipse.DataContext is ITimelineKeyframeViewModel viewModel)
                 viewModel.ClearEasingViewModels();
         }
 
-        public void Copy(ITimelineKeyframeViewModel viewModel)
+        public void DeleteKeyframes()
         {
-            // viewModel.Copy();
-            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
-                keyframeViewModel.Copy();
+            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels().Where(k => k.IsSelected).ToList();
+            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels)
+                keyframeViewModel.Delete(false);
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public void Delete(ITimelineKeyframeViewModel viewModel)
+        public void DuplicateKeyframes(ITimelineKeyframeViewModel viewModel = null)
         {
-            List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
-            foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels.Where(k => k.IsSelected))
-                keyframeViewModel.Delete();
+            TimeSpan pastePosition = GetPastePosition(viewModel);
+
+            List<ILayerPropertyKeyframe> keyframes = GetAllKeyframeViewModels().Where(k => k.IsSelected).Select(k => k.Keyframe).ToList();
+            DuplicateKeyframes(keyframes, pastePosition);
+        }
+
+        public void CopyKeyframes()
+        {
+            List<ILayerPropertyKeyframe> keyframes = GetAllKeyframeViewModels().Where(k => k.IsSelected).Select(k => k.Keyframe).ToList();
+            CopyKeyframes(keyframes);
+        }
+
+        public void PasteKeyframes(ITimelineKeyframeViewModel viewModel = null)
+        {
+            TimeSpan pastePosition = GetPastePosition(viewModel);
+            PasteKeyframes(pastePosition);
+        }
+
+        private TimeSpan GetPastePosition(ITimelineKeyframeViewModel viewModel)
+        {
+            TimeSpan pastePosition = _profileEditorService.CurrentTime;
+
+            // If a keyframe VM is provided, paste onto there
+            if (viewModel != null)
+                pastePosition = viewModel.Position;
+            // Paste at the position the context menu was opened
+            else if (_contextMenuOpenPosition != null)
+                pastePosition = _contextMenuOpenPosition.Value;
+
+            return pastePosition;
+        }
+        
+        public List<ILayerPropertyKeyframe> DuplicateKeyframes(List<ILayerPropertyKeyframe> keyframes, TimeSpan pastePosition)
+        {
+            KeyframeClipboardModel clipboardModel = CoreJson.DeserializeObject<KeyframeClipboardModel>(CoreJson.SerializeObject(new KeyframeClipboardModel(keyframes), true), true);
+            return PasteClipboardData(clipboardModel, pastePosition);
+        }
+
+        public void CopyKeyframes(List<ILayerPropertyKeyframe> keyframes)
+        {
+            KeyframeClipboardModel clipboardModel = new KeyframeClipboardModel(keyframes);
+            JsonClipboard.SetObject(clipboardModel);
+        }
+
+        public List<ILayerPropertyKeyframe> PasteKeyframes(TimeSpan pastePosition)
+        {
+            KeyframeClipboardModel clipboardObject = JsonClipboard.GetData<KeyframeClipboardModel>();
+            return PasteClipboardData(clipboardObject, pastePosition);
+        }
+
+        private List<ILayerPropertyKeyframe> PasteClipboardData(KeyframeClipboardModel clipboardModel, TimeSpan pastePosition)
+        {
+            List<ILayerPropertyKeyframe> pasted = new List<ILayerPropertyKeyframe>();
+            if (clipboardModel == null)
+                return pasted;
+            RenderProfileElement target = _profileEditorService.SelectedProfileElement;
+            if (target == null)
+                return pasted;
+
+            clipboardModel.Paste(target, pastePosition);
+            
+            return pasted;
         }
 
         #endregion
@@ -254,6 +335,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         // ReSharper disable once UnusedMember.Global - Called from view
         public void TimelineCanvasMouseDown(object sender, MouseButtonEventArgs e)
         {
+            // Workaround for focus not being applied to the grid causing keybinds not to function
+            ((IInputElement) sender).Focus();
+
             if (e.LeftButton == MouseButtonState.Released)
                 return;
 
