@@ -199,6 +199,12 @@
                     <materialDesign:CircleWipe />
                 </materialDesign:TransitionerSlide.BackwardWipe>
                 <Grid>
+                    <Grid.InputBindings>
+                        <KeyBinding Key="Delete" Command="{s:Action DeleteKeyframes}" s:View.ActionTarget="{Binding TimelineViewModel}"/>
+                        <KeyBinding Key="D" Modifiers="Control" Command="{s:Action DuplicateKeyframes}" s:View.ActionTarget="{Binding TimelineViewModel}" />
+                        <KeyBinding Key="C" Modifiers="Control" Command="{s:Action CopyKeyframes}" s:View.ActionTarget="{Binding TimelineViewModel}"/>
+                        <KeyBinding Key="V" Modifiers="Control" Command="{s:Action PasteKeyframes}" s:View.ActionTarget="{Binding TimelineViewModel}"/>
+                    </Grid.InputBindings>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="48" />
                         <RowDefinition Height="*" />
@@ -206,7 +212,11 @@
                     </Grid.RowDefinitions>
 
                     <!-- Timeline headers -->
-                    <ScrollViewer Grid.Row="0" x:Name="TimelineHeaderScrollViewer" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" ScrollChanged="TimelineScrollChanged">
+                    <ScrollViewer Grid.Row="0" 
+                                  x:Name="TimelineHeaderScrollViewer" 
+                                  HorizontalScrollBarVisibility="Hidden"
+                                  VerticalScrollBarVisibility="Hidden" 
+                                  ScrollChanged="TimelineScrollChanged">
                         <Canvas Background="{DynamicResource MaterialDesignCardBackground}" Width="{Binding ActualWidth, ElementName=PropertyTimeLine}">
                             <!-- Timeline segments -->
                             <ContentControl Canvas.Left="{Binding EndTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding EndTimelineSegmentViewModel}" />

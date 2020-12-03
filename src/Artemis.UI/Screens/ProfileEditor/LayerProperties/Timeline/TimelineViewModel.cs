@@ -158,13 +158,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         public bool CanDuplicateKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
         public bool CanCopyKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
         public bool CanDeleteKeyframes => GetAllKeyframeViewModels().Any(k => k.IsSelected);
-        public bool CanPasteKeyframes => JsonClipboard.GetData() is KeyframeClipboardModel;
+        public bool CanPasteKeyframes => JsonClipboard.GetData() is KeyframesClipboardModel;
 
         private TimeSpan? _contextMenuOpenPosition;
 
         public void ContextMenuOpening(object sender, ContextMenuEventArgs e)
         {
             _contextMenuOpenPosition = GetCursorTime(new Point(e.CursorLeft, e.CursorTop));
+            NotifyOfPropertyChange(nameof(CanDuplicateKeyframes));
+            NotifyOfPropertyChange(nameof(CanCopyKeyframes));
+            NotifyOfPropertyChange(nameof(CanDeleteKeyframes));
+            NotifyOfPropertyChange(nameof(CanPasteKeyframes));
         }
 
         public void ContextMenuClosing(object sender, ContextMenuEventArgs e)
@@ -193,12 +197,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
-        public void DuplicateKeyframes(ITimelineKeyframeViewModel viewModel = null)
+        public void DuplicateKeyframes(object sender)
         {
-            TimeSpan pastePosition = GetPastePosition(viewModel);
+            TimeSpan pastePosition = GetPastePosition(sender as ITimelineKeyframeViewModel);
 
             List<ILayerPropertyKeyframe> keyframes = GetAllKeyframeViewModels().Where(k => k.IsSelected).Select(k => k.Keyframe).ToList();
-            DuplicateKeyframes(keyframes, pastePosition);
+            List<ILayerPropertyKeyframe> newKeyframes = DuplicateKeyframes(keyframes, pastePosition);
+            // Select only the newly duplicated keyframes
+            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in GetAllKeyframeViewModels())
+                timelineKeyframeViewModel.IsSelected = newKeyframes.Contains(timelineKeyframeViewModel.Keyframe);
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         public void CopyKeyframes()
@@ -207,10 +216,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             CopyKeyframes(keyframes);
         }
 
-        public void PasteKeyframes(ITimelineKeyframeViewModel viewModel = null)
+        public void PasteKeyframes(object sender)
         {
-            TimeSpan pastePosition = GetPastePosition(viewModel);
-            PasteKeyframes(pastePosition);
+            TimeSpan pastePosition = GetPastePosition(sender as ITimelineKeyframeViewModel);
+            List<ILayerPropertyKeyframe> newKeyframes = PasteKeyframes(pastePosition);
+            // Select only the newly pasted keyframes
+            foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in GetAllKeyframeViewModels())
+                timelineKeyframeViewModel.IsSelected = newKeyframes.Contains(timelineKeyframeViewModel.Keyframe);
+
+            _profileEditorService.UpdateSelectedProfileElement();
         }
 
         private TimeSpan GetPastePosition(ITimelineKeyframeViewModel viewModel)
@@ -226,26 +240,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             return pastePosition;
         }
-        
-        public List<ILayerPropertyKeyframe> DuplicateKeyframes(List<ILayerPropertyKeyframe> keyframes, TimeSpan pastePosition)
+
+        private List<ILayerPropertyKeyframe> DuplicateKeyframes(List<ILayerPropertyKeyframe> keyframes, TimeSpan pastePosition)
         {
-            KeyframeClipboardModel clipboardModel = CoreJson.DeserializeObject<KeyframeClipboardModel>(CoreJson.SerializeObject(new KeyframeClipboardModel(keyframes), true), true);
+            KeyframesClipboardModel clipboardModel = CoreJson.DeserializeObject<KeyframesClipboardModel>(CoreJson.SerializeObject(new KeyframesClipboardModel(keyframes), true), true);
             return PasteClipboardData(clipboardModel, pastePosition);
         }
 
-        public void CopyKeyframes(List<ILayerPropertyKeyframe> keyframes)
+        private void CopyKeyframes(List<ILayerPropertyKeyframe> keyframes)
         {
-            KeyframeClipboardModel clipboardModel = new KeyframeClipboardModel(keyframes);
+            KeyframesClipboardModel clipboardModel = new KeyframesClipboardModel(keyframes);
             JsonClipboard.SetObject(clipboardModel);
         }
 
-        public List<ILayerPropertyKeyframe> PasteKeyframes(TimeSpan pastePosition)
+        private List<ILayerPropertyKeyframe> PasteKeyframes(TimeSpan pastePosition)
         {
-            KeyframeClipboardModel clipboardObject = JsonClipboard.GetData<KeyframeClipboardModel>();
+            KeyframesClipboardModel clipboardObject = JsonClipboard.GetData<KeyframesClipboardModel>();
             return PasteClipboardData(clipboardObject, pastePosition);
         }
 
-        private List<ILayerPropertyKeyframe> PasteClipboardData(KeyframeClipboardModel clipboardModel, TimeSpan pastePosition)
+        private List<ILayerPropertyKeyframe> PasteClipboardData(KeyframesClipboardModel clipboardModel, TimeSpan pastePosition)
         {
             List<ILayerPropertyKeyframe> pasted = new List<ILayerPropertyKeyframe>();
             if (clipboardModel == null)
@@ -254,9 +268,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (target == null)
                 return pasted;
 
-            clipboardModel.Paste(target, pastePosition);
-            
-            return pasted;
+            return clipboardModel.Paste(target, pastePosition);
         }
 
         #endregion
