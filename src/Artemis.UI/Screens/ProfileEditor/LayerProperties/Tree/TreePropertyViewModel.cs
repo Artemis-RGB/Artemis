@@ -23,6 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
             LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
             LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
 
@@ -100,6 +101,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
             LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
+            LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
         }
 
         #endregion
@@ -119,6 +121,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         private void LayerPropertyOnDataBindingChange(object sender, LayerPropertyEventArgs<T> e)
         {
             NotifyOfPropertyChange(nameof(HasDataBinding));
+        }
+
+        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
+        {
+            NotifyOfPropertyChange(nameof(KeyframesEnabled));
         }
 
         #endregion

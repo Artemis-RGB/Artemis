@@ -276,6 +276,9 @@ namespace Artemis.Core
             keyframe.LayerProperty = this;
             _keyframes.Add(keyframe);
 
+            if (!KeyframesEnabled)
+                KeyframesEnabled = true;
+
             SortKeyframes();
             OnKeyframeAdded();
         }
