@@ -118,9 +118,7 @@ namespace Artemis.Core
         /// </summary>
         public RenderProfileElement ProfileElement { get; internal set; }
 
-        /// <summary>
-        ///     The parent group of this layer property, set after construction
-        /// </summary>
+        /// <inheritdoc />
         public LayerPropertyGroup LayerPropertyGroup { get; internal set; }
 
         #endregion
@@ -280,6 +278,22 @@ namespace Artemis.Core
 
             SortKeyframes();
             OnKeyframeAdded();
+        }
+
+        /// <inheritdoc />
+        public ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity)
+        {
+            if (keyframeEntity.Position > ProfileElement.Timeline.Length)
+                return null;
+            T value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
+            if (value == null) 
+                return null;
+          
+            LayerPropertyKeyframe<T> keyframe = new LayerPropertyKeyframe<T>(
+                CoreJson.DeserializeObject<T>(keyframeEntity.Value)!, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction, this
+            );
+            AddKeyframe(keyframe);
+            return keyframe;
         }
 
         /// <summary>
@@ -508,6 +522,7 @@ namespace Artemis.Core
             if (!IsLoadedFromStorage)
                 ApplyDefaultValue(null);
             else
+            {
                 try
                 {
                     if (Entity.Value != null)
@@ -517,6 +532,7 @@ namespace Artemis.Core
                 {
                     // ignored for now
                 }
+            }
 
             CurrentValue = BaseValue;
             KeyframesEnabled = Entity.KeyframesEnabled;
@@ -524,12 +540,8 @@ namespace Artemis.Core
             _keyframes.Clear();
             try
             {
-                _keyframes.AddRange(Entity.KeyframeEntities
-                    .Where(k => k.Position <= ProfileElement.Timeline.Length)
-                    .Select(k => new LayerPropertyKeyframe<T>(
-                        CoreJson.DeserializeObject<T>(k.Value)!, k.Position, (Easings.Functions) k.EasingFunction, this
-                    ))
-                );
+                foreach (KeyframeEntity keyframeEntity in Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length)) 
+                    AddKeyframeEntity(keyframeEntity);
             }
             catch (JsonException)
             {
@@ -559,12 +571,7 @@ namespace Artemis.Core
             Entity.Value = CoreJson.SerializeObject(BaseValue);
             Entity.KeyframesEnabled = KeyframesEnabled;
             Entity.KeyframeEntities.Clear();
-            Entity.KeyframeEntities.AddRange(Keyframes.Select(k => new KeyframeEntity
-            {
-                Value = CoreJson.SerializeObject(k.Value),
-                Position = k.Position,
-                EasingFunction = (int) k.EasingFunction
-            }));
+            Entity.KeyframeEntities.AddRange(Keyframes.Select(k => k.GetKeyframeEntity()));
 
             Entity.DataBindingEntities.Clear();
             foreach (IDataBinding dataBinding in _dataBindings)

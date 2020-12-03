@@ -5,33 +5,61 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="25"
              d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:TimelineViewModel}">
-    <Grid x:Name="TimelineContainerGrid"
-          Background="{DynamicResource MaterialDesignToolBarBackground}"
+    <Grid Background="{DynamicResource MaterialDesignToolBarBackground}"
           MouseDown="{s:Action TimelineCanvasMouseDown}"
           MouseUp="{s:Action TimelineCanvasMouseUp}"
           MouseMove="{s:Action TimelineCanvasMouseMove}"
-          Margin="0 0 -1 0">
+          ContextMenuOpening="{s:Action ContextMenuOpening}"
+          ContextMenuClosing="{s:Action ContextMenuClosing}"
+          Height="{Binding LayerPropertiesViewModel.TreeViewModelHeight}"
+          VerticalAlignment="Top"
+          Focusable="True">
         <Grid.Triggers>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                 <BeginStoryboard>
                     <Storyboard Storyboard.TargetName="MultiSelectionPath" Storyboard.TargetProperty="Opacity">
-                        <DoubleAnimation From="0" To="1" Duration="0:0:0.1" />
+                        <DoubleAnimation To="1" Duration="0:0:0.1" />
                     </Storyboard>
                 </BeginStoryboard>
             </EventTrigger>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonUp">
                 <BeginStoryboard>
                     <Storyboard Storyboard.TargetName="MultiSelectionPath" Storyboard.TargetProperty="Opacity">
-                        <DoubleAnimation From="1" To="0" Duration="0:0:0.2" />
+                        <DoubleAnimation To="0" Duration="0:0:0.2" />
                     </Storyboard>
                 </BeginStoryboard>
             </EventTrigger>
         </Grid.Triggers>
-
+        <Grid.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Duplicate" Command="{s:Action DuplicateKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+D">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" Command="{s:Action CopyKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+C">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Command="{s:Action PasteKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+V" >
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Delete" Command="{s:Action DeleteKeyframes}" InputGestureText="Del">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="Delete" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Grid.ContextMenu>
         <ItemsControl ItemsSource="{Binding LayerPropertyGroups}"
                       MinWidth="{Binding TotalTimelineWidth}"
                       HorizontalAlignment="Left">
@@ -48,7 +76,7 @@
               X1="{Binding StartSegmentEndPosition}"
               X2="{Binding StartSegmentEndPosition}"
               Y1="0"
-              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
+              Y2="{Binding LayerPropertiesViewModel.TreeViewModelHeight}"
               HorizontalAlignment="Left"
               Visibility="{Binding LayerPropertiesViewModel.StartTimelineSegmentViewModel.SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
         <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
@@ -57,14 +85,14 @@
               X1="{Binding MainSegmentEndPosition}"
               X2="{Binding MainSegmentEndPosition}"
               Y1="0"
-              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}" />
+              Y2="{Binding LayerPropertiesViewModel.TreeViewModelHeight}" />
         <Line Stroke="{StaticResource PrimaryHueDarkBrush}"
               Opacity="0.5"
               StrokeDashArray="4 2"
               X1="{Binding EndSegmentEndPosition}"
               X2="{Binding EndSegmentEndPosition}"
               Y1="0"
-              Y2="{Binding ActualHeight, ElementName=TimelineContainerGrid}"
+              Y2="{Binding LayerPropertiesViewModel.TreeViewModelHeight}"
               Visibility="{Binding LayerPropertiesViewModel.EndTimelineSegmentViewModel.SegmentEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}}" />
 
         <!-- Multi-selection rectangle -->

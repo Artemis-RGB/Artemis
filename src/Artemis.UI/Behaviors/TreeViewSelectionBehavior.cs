@@ -1,6 +1,7 @@
 ﻿using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Microsoft.Xaml.Behaviors;
 
 namespace Artemis.UI.Behaviors
@@ -105,7 +106,8 @@ namespace Artemis.UI.Behaviors
             {
                 item.IsSelected = true;
                 // Focus the newly selected item as if was clicked
-                item.Focus();
+                if (FocusManager.GetIsFocusScope(item))
+                    item.Focus();
                 if (ExpandSelected)
                     item.IsExpanded = true;
             }

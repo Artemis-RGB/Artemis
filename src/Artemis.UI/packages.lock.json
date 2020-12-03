@@ -107,9 +107,9 @@
       },
       "Stylet": {
         "type": "Direct",
-        "requested": "[1.3.4, )",
-        "resolved": "1.3.4",
-        "contentHash": "bCEdA+AIi+TM9SQQGLYMsFRIfzZcDUDg2Mznyr72kOkcC/cdBj01/jel4/v2aoKwbFcxVjiqmpgnbsFgMEZ4zQ==",
+        "requested": "[1.3.5, )",
+        "resolved": "1.3.5",
+        "contentHash": "9vjjaTgf5sZAGHnxQWIslD32MG5gXj7ANgS+w965L5Eh//UC3qwZDrEf226Pf+v1P/ldAJDpUySnOyGlb3TSSw==",
         "dependencies": {
           "System.Drawing.Common": "4.6.0"
         }
@@ -1410,7 +1410,7 @@
           "SharpVectors.Reloaded": "1.6.0",
           "SkiaSharp": "2.80.2",
           "SkiaSharp.Views.WPF": "2.80.2",
-          "Stylet": "1.3.4",
+          "Stylet": "1.3.5",
           "System.Buffers": "4.5.0",
           "System.Numerics.Vectors": "4.5.0",
           "WriteableBitmapEx": "1.6.5"
