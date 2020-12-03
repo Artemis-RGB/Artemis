@@ -10,7 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type treeItem1:FolderViewModel}}">
     <!-- Capture clicks on full tree view item -->
-    <StackPanel Margin="-10" Background="Transparent">
+    <StackPanel Margin="-10" Background="Transparent" ContextMenuOpening="{s:Action ContextMenuOpening}">
         <StackPanel.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Add new folder" Command="{s:Action AddFolder}">

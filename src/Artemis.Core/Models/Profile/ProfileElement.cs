@@ -123,7 +123,7 @@ namespace Artemis.Core
         ///     Adds a profile element to the <see cref="Children" /> collection, optionally at the given position (1-based)
         /// </summary>
         /// <param name="child">The profile element to add</param>
-        /// <param name="order">The order where to place the child (1-based), defaults to the end of the collection</param>
+        /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>
         public virtual void AddChild(ProfileElement child, int? order = null)
         {
             if (Disposed)
@@ -136,31 +136,19 @@ namespace Artemis.Core
 
                 // Add to the end of the list
                 if (order == null)
-                {
                     ChildrenList.Add(child);
-                    child.Order = ChildrenList.Count;
-                }
-                // Shift everything after the given order
+                // Insert at the given index
                 else
                 {
                     if (order < 0)
                         order = 0;
-                    foreach (ProfileElement profileElement in ChildrenList.Where(c => c.Order >= order).ToList())
-                        profileElement.Order++;
-
-                    int targetIndex;
-                    if (order == 0)
-                        targetIndex = 0;
-                    else if (order > ChildrenList.Count)
-                        targetIndex = ChildrenList.Count;
-                    else
-                        targetIndex = ChildrenList.FindIndex(c => c.Order == order + 1);
-
-                    ChildrenList.Insert(targetIndex, child);
-                    child.Order = order.Value;
+                    if (order > ChildrenList.Count)
+                        order = ChildrenList.Count;
+                    ChildrenList.Insert(order.Value, child);
                 }
 
                 child.Parent = this;
+                StreamlineOrder();
             }
 
             OnChildAdded();
@@ -178,15 +166,18 @@ namespace Artemis.Core
             lock (ChildrenList)
             {
                 ChildrenList.Remove(child);
-
-                // Shift everything after the given order
-                foreach (ProfileElement profileElement in ChildrenList.Where(c => c.Order > child.Order).ToList())
-                    profileElement.Order--;
+                StreamlineOrder();
 
                 child.Parent = null;
             }
 
             OnChildRemoved();
+        }
+
+        private void StreamlineOrder()
+        {
+            for (int index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index;
         }
 
         /// <summary>

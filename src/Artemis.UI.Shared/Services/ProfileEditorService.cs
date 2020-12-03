@@ -384,6 +384,12 @@ namespace Artemis.UI.Shared.Services
             return clipboardObject != null ? PasteClipboardData(clipboardObject, target, position) : null;
         }
 
+        public bool GetCanPasteProfileElement()
+        {
+            object? clipboardObject = JsonClipboard.GetData();
+            return clipboardObject is LayerEntity || clipboardObject is FolderClipboardModel;
+        }
+
         private RenderProfileElement? PasteClipboardData(object clipboardObject, Folder target, int position)
         {
             RenderProfileElement? pasted = null;

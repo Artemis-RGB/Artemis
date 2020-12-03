@@ -157,6 +157,11 @@ namespace Artemis.UI.Shared.Services
         ProfileElement? PasteProfileElement(Folder target, int position);
 
         /// <summary>
+        ///     Gets a boolean indicating whether a profile element is on the clipboard
+        /// </summary>
+        bool GetCanPasteProfileElement();
+        
+        /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>
         event EventHandler<ProfileEventArgs> ProfileSelected;

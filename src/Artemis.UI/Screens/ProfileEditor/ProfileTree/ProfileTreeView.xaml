@@ -32,7 +32,8 @@
                       HorizontalContentAlignment="Stretch"
                       dd:DragDrop.IsDragSource="True"
                       dd:DragDrop.IsDropTarget="True"
-                      dd:DragDrop.DropHandler="{Binding}">
+                      dd:DragDrop.DropHandler="{Binding}"
+                      ContextMenuOpening="{s:Action ContextMenuOpening}">
                 <TreeView.InputBindings>
                     <KeyBinding Key="F2" Command="{s:Action RenameElement}" s:View.ActionTarget="{Binding SelectedTreeItem}" />
                     <KeyBinding Key="Delete" Command="{s:Action DeleteElement}" s:View.ActionTarget="{Binding SelectedTreeItem}" />
@@ -40,6 +41,47 @@
                     <KeyBinding Key="C" Modifiers="Control" Command="{s:Action CopyElement}" s:View.ActionTarget="{Binding SelectedTreeItem}" />
                     <KeyBinding Key="V" Modifiers="Control" Command="{s:Action PasteElement}" s:View.ActionTarget="{Binding SelectedTreeItem}" />
                 </TreeView.InputBindings>
+                <TreeView.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add new folder" Command="{s:Action AddFolder}">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="CreateNewFolder" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Add new layer" Command="{s:Action AddLayer}">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="LayersPlus" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Duplicate" Command="{s:Action DuplicateElement}" InputGestureText="Ctrl+D" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentDuplicate" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Copy" Command="{s:Action CopyElement}" InputGestureText="Ctrl+C" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentCopy" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Paste" Command="{s:Action PasteElement}" InputGestureText="Ctrl+V">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentPaste" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
+                        <MenuItem Header="Rename" Command="{s:Action RenameElement}" InputGestureText="F2" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="RenameBox" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem Header="Delete" Command="{s:Action DeleteElement}" InputGestureText="Del" IsEnabled="False">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="TrashCan" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </TreeView.ContextMenu>
                 <b:Interaction.Behaviors>
                     <behaviors:TreeViewSelectionBehavior ExpandSelected="True" SelectedItem="{Binding SelectedTreeItem}" />
                 </b:Interaction.Behaviors>
