@@ -105,7 +105,7 @@ namespace Artemis.Core
             if (disposing)
             {
                 _disposed = true;
-                ConditionalDataBinding.Dispose();
+                Condition.Dispose();
             }
         }
 
