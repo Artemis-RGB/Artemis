@@ -87,6 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private void UpdateKeyframes()
         {
+            NotifyOfPropertyChange(nameof(LayerProperty.KeyframesEnabled));
             // Only show keyframes if they are enabled
             if (LayerProperty.KeyframesEnabled)
             {
