@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
@@ -209,6 +210,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Expanded status is also undone because undoing works a bit crude, that's annoying
             List<LayerPropertyGroupViewModel> beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             List<string> expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+            // Store the focused element so we can restore it later
+            IInputElement focusedElement = FocusManager.GetFocusedElement(Window.GetWindow(View));
 
             if (!_profileEditorService.UndoUpdateProfile())
             {
@@ -219,7 +222,13 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Restore the expanded status
             foreach (LayerPropertyGroupViewModel allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
-
+            // Restore the focused element
+            Execute.PostToUIThread(async () =>
+            {
+                await Task.Delay(50);
+                focusedElement?.Focus();
+            });
+            
             _snackbarMessageQueue.Enqueue("Undid profile update", "REDO", Redo);
         }
 
@@ -228,6 +237,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Expanded status is also undone because undoing works a bit crude, that's annoying
             List<LayerPropertyGroupViewModel> beforeGroups = LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels();
             List<string> expandedPaths = beforeGroups.Where(g => g.IsExpanded).Select(g => g.LayerPropertyGroup.Path).ToList();
+            // Store the focused element so we can restore it later
+            IInputElement focusedElement = FocusManager.GetFocusedElement(Window.GetWindow(View));
 
             if (!_profileEditorService.RedoUpdateProfile())
             {
@@ -238,6 +249,12 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Restore the expanded status
             foreach (LayerPropertyGroupViewModel allLayerPropertyGroupViewModel in LayerPropertiesViewModel.GetAllLayerPropertyGroupViewModels())
                 allLayerPropertyGroupViewModel.IsExpanded = expandedPaths.Contains(allLayerPropertyGroupViewModel.LayerPropertyGroup.Path);
+            // Restore the focused element
+            Execute.PostToUIThread(async () =>
+            {
+                await Task.Delay(50);
+                focusedElement?.Focus();
+            });
 
             _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
         }

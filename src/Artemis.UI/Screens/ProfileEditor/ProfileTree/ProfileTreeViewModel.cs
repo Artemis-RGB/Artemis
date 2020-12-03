@@ -42,7 +42,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             }
         }
 
-        public bool CanPasteElement => _profileEditorService.GetCanPaste();
+        public bool CanPasteElement => _profileEditorService.GetCanPasteProfileElement();
 
         protected override void OnInitialActivate()
         {

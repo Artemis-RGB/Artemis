@@ -19,12 +19,6 @@
           Height="{Binding LayerPropertiesViewModel.TreeViewModelHeight}"
           VerticalAlignment="Top"
           Focusable="True">
-        <Grid.InputBindings>
-            <KeyBinding Key="Delete" Command="{s:Action DeleteKeyframes}" />
-            <KeyBinding Key="D" Modifiers="Control" Command="{s:Action DuplicateKeyframes}" />
-            <KeyBinding Key="C" Modifiers="Control" Command="{s:Action CopyKeyframes}" />
-            <KeyBinding Key="V" Modifiers="Control" Command="{s:Action PasteKeyframes}" />
-        </Grid.InputBindings>
         <Grid.Triggers>
             <EventTrigger RoutedEvent="UIElement.MouseLeftButtonDown">
                 <BeginStoryboard>
@@ -43,12 +37,12 @@
         </Grid.Triggers>
         <Grid.ContextMenu>
             <ContextMenu>
-                <MenuItem Header="Duplicate" Command="{s:Action DuplicateKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+D" IsEnabled="False">
+                <MenuItem Header="Duplicate" Command="{s:Action DuplicateKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+D">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="ContentDuplicate" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="Copy" Command="{s:Action CopyKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+C" IsEnabled="False">
+                <MenuItem Header="Copy" Command="{s:Action CopyKeyframes}" CommandParameter="{Binding}" InputGestureText="Ctrl+C">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="ContentCopy" />
                     </MenuItem.Icon>
@@ -59,7 +53,7 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="Delete" Command="{s:Action DeleteKeyframes}" InputGestureText="Del" IsEnabled="False">
+                <MenuItem Header="Delete" Command="{s:Action DeleteKeyframes}" InputGestureText="Del">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="Delete" />
                     </MenuItem.Icon>

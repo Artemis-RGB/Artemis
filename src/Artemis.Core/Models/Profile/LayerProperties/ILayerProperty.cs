@@ -16,10 +16,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the description attribute applied to this property
         /// </summary>
-        public PropertyDescriptionAttribute PropertyDescription { get; }
+        PropertyDescriptionAttribute PropertyDescription { get; }
 
         /// <summary>
-        /// Gets the unique path of the property on the layer
+        ///     The parent group of this layer property, set after construction
+        /// </summary>
+        LayerPropertyGroup LayerPropertyGroup { get; }
+
+        /// <summary>
+        ///     Gets the unique path of the property on the layer
         /// </summary>
         public string Path { get; }
 
@@ -30,7 +35,7 @@ namespace Artemis.Core
         ///         <see cref="LayerProperty{T}" />
         ///     </para>
         /// </summary>
-        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup @group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
+        void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
 
         /// <summary>
         ///     Returns a list off all data binding registrations
@@ -38,7 +43,14 @@ namespace Artemis.Core
         List<IDataBindingRegistration> GetAllDataBindingRegistrations();
 
         /// <summary>
-        /// Updates the layer properties internal state
+        ///     Attempts to load and add the provided keyframe entity to the layer property
+        /// </summary>
+        /// <param name="keyframeEntity">The entity representing the keyframe to add</param>
+        /// <returns>If succeeded the resulting keyframe, otherwise <see langword="null" /></returns>
+        ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity);
+
+        /// <summary>
+        ///     Updates the layer properties internal state
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>
         void Update(Timeline timeline);

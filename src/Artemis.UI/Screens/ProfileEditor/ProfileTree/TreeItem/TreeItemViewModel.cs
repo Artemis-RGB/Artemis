@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             set => SetAndNotify(ref _profileElement, value);
         }
 
-        public bool CanPasteElement => _profileEditorService.GetCanPaste();
+        public bool CanPasteElement => _profileEditorService.GetCanPasteProfileElement();
 
         public abstract bool SupportsChildren { get; }
 
