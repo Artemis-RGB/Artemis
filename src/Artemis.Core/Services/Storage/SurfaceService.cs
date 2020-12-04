@@ -88,7 +88,7 @@ namespace Artemis.Core.Services
                 device.ApplyToRgbDevice();
 
             // Update the RGB service's graphics decorator to work with the new surface entity
-            _rgbService.UpdateSurfaceLedGroup();
+            _rgbService.UpdateSurfaceLedGroup(ActiveSurface);
             OnActiveSurfaceConfigurationChanged(new SurfaceConfigurationEventArgs(ActiveSurface));
         }
 
@@ -104,9 +104,10 @@ namespace Artemis.Core.Services
                         deviceConfiguration.ApplyToRgbDevice();
                 }
             }
+            surface.UpdateLedMap();
 
             _surfaceRepository.Save(surface.SurfaceEntity);
-            _rgbService.UpdateSurfaceLedGroup();
+            _rgbService.UpdateSurfaceLedGroup(ActiveSurface);
             OnSurfaceConfigurationUpdated(new SurfaceConfigurationEventArgs(surface));
         }
 
@@ -195,6 +196,19 @@ namespace Artemis.Core.Services
             }
 
             surface.Devices.Add(device);
+        }
+
+        #endregion
+
+        #region AutoLayout
+
+        public void AutoLayout()
+        {
+            // Phase one, bottom layer
+            // Keyboard
+
+            // Phase two, top layer
+
         }
 
         #endregion

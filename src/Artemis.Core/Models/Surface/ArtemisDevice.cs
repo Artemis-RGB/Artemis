@@ -14,7 +14,6 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisDevice : CorePropertyChanged
     {
-        private ReadOnlyCollection<ArtemisLed> _leds;
         private SKPath? _renderPath;
         private SKRect _renderRectangle;
 
@@ -28,13 +27,14 @@ namespace Artemis.Core
             Rotation = 0;
             Scale = 1;
             ZIndex = 1;
-            
+
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
-            
+
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
 
-            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
             ApplyToEntity();
             CalculateRenderProperties();
         }
@@ -45,7 +45,7 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-            
+
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
 
@@ -53,7 +53,8 @@ namespace Artemis.Core
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
 
-            _leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
         }
 
         /// <summary>
@@ -92,11 +93,13 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read only collection containing the LEDs of this device
         /// </summary>
-        public ReadOnlyCollection<ArtemisLed> Leds
-        {
-            get => _leds;
-            private set => SetAndNotify(ref _leds, value);
-        }
+        public ReadOnlyCollection<ArtemisLed> Leds { get; }
+
+        /// <summary>
+        ///     Gets a dictionary containing all the LEDs of this device with their corresponding RGB.NET <see cref="LedId" /> as
+        ///     key
+        /// </summary>
+        public ReadOnlyDictionary<LedId, ArtemisLed> LedIds { get; }
 
         /// <summary>
         ///     Gets a list of input identifiers associated with this device
@@ -182,16 +185,24 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Occurs when the underlying RGB.NET device was updated
+        ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="Led" />
         /// </summary>
-        public event EventHandler? DeviceUpdated;
+        /// <param name="led">The RGB.NET <see cref="Led" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
+        /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
+        public ArtemisLed? GetLed(Led led)
+        {
+            return GetLed(led.Id);
+        }
 
         /// <summary>
-        ///     Invokes the <see cref="DeviceUpdated" /> event
+        ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="LedId" />
         /// </summary>
-        protected virtual void OnDeviceUpdated()
+        /// <param name="ledId">The RGB.NET <see cref="LedId" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
+        /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
+        public ArtemisLed? GetLed(LedId ledId)
         {
-            DeviceUpdated?.Invoke(this, EventArgs.Empty);
+            LedIds.TryGetValue(ledId, out ArtemisLed? artemisLed);
+            return artemisLed;
         }
 
         internal void ApplyToEntity()
@@ -247,5 +258,22 @@ namespace Artemis.Core
 
             RenderPath = path;
         }
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when the underlying RGB.NET device was updated
+        /// </summary>
+        public event EventHandler? DeviceUpdated;
+
+        /// <summary>
+        ///     Invokes the <see cref="DeviceUpdated" /> event
+        /// </summary>
+        protected virtual void OnDeviceUpdated()
+        {
+            DeviceUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
     }
 }

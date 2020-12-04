@@ -192,11 +192,11 @@ namespace Artemis.Core.Services
             if (UpdatePressedKeys(e.Device, e.Key, e.IsDown))
                 return;
 
-            // Get the LED - TODO: leverage a lookup
+            // Get the LED
             bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
             ArtemisLed? led = null;
             if (foundLedId && e.Device != null)
-                led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
+                led = e.Device.GetLed(ledId);
 
             // Create the UpDown event args because it can be used for every event
             ArtemisKeyboardKeyUpDownEventArgs eventArgs = new ArtemisKeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);

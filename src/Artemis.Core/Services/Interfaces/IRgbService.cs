@@ -58,6 +58,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Recalculates the LED group used by the <see cref="BitmapBrush" />
         /// </summary>
-        void UpdateSurfaceLedGroup();
+        /// <param name="artemisSurface"></param>
+        void UpdateSurfaceLedGroup(ArtemisSurface artemisSurface);
     }
 }
