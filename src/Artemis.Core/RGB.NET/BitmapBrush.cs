@@ -176,6 +176,7 @@ namespace Artemis.Core
         }
 
         internal bool IsDisposed { get; set; }
+        internal ArtemisSurface? Surface { get; set; }
 
         #endregion
     }

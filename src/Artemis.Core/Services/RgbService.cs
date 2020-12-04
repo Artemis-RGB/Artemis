@@ -88,7 +88,8 @@ namespace Artemis.Core.Services
 
         private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
-            UpdateSurfaceLedGroup();
+            // The surface hasn't changed so we can safely reuse it
+            UpdateSurfaceLedGroup(BitmapBrush?.Surface);
         }
 
         private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
@@ -107,8 +108,11 @@ namespace Artemis.Core.Services
         public event EventHandler<DeviceEventArgs>? DeviceLoaded;
         public event EventHandler<DeviceEventArgs>? DeviceReloaded;
 
-        public void UpdateSurfaceLedGroup()
+        public void UpdateSurfaceLedGroup(ArtemisSurface? artemisSurface)
         {
+            if (artemisSurface == null)
+                return;
+
             if (_surfaceLedGroup == null || BitmapBrush == null)
             {
                 // Apply the application wide brush and decorator
@@ -124,6 +128,7 @@ namespace Artemis.Core.Services
 
                 // Apply the application wide brush and decorator
                 BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
+                BitmapBrush.Surface = artemisSurface;
                 _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
             }
         }
