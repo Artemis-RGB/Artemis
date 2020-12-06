@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
@@ -202,13 +203,11 @@ namespace Artemis.Core.Services
 
         #region AutoLayout
 
-        public void AutoLayout()
+        public void AutoArrange()
         {
-            // Phase one, bottom layer
-            // Keyboard
-
-            // Phase two, top layer
-
+            SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
+            surfaceArrangement.Arrange(ActiveSurface);
+            UpdateSurfaceConfiguration(ActiveSurface, true);
         }
 
         #endregion

@@ -178,23 +178,32 @@
                     </Path.Fill>
                 </Path>
 
-                <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                            Margin="0, 0, 15, 15">
-                    <Slider Margin="0,0,14,0"
-                            Orientation="Vertical"
-                            Minimum="10"
-                            Maximum="400"
-                            Height="100"
-                            FocusVisualStyle="{x:Null}"
-                            Value="{Binding PanZoomViewModel.ZoomPercentage}"
-                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
-                    <Button Command="{s:Action ResetZoomAndPan}"
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 15, 15">
+                    <Button Command="{s:Action AutoArrange}"
                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                             HorizontalAlignment="Right"
-                            ToolTip="Reset zoom &amp; position">
-                        <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
+                            ToolTip="Apply auto-arrange"
+                            VerticalAlignment="Bottom">
+                        <materialDesign:PackIcon Kind="Wand" Height="24" Width="24" />
                     </Button>
+                    <StackPanel Orientation="Vertical">
+                        <Slider Margin="0,0,14,0"
+                                Orientation="Vertical"
+                                Minimum="10"
+                                Maximum="400"
+                                Height="100"
+                                FocusVisualStyle="{x:Null}"
+                                Value="{Binding PanZoomViewModel.ZoomPercentage}"
+                                Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                        <Button Command="{s:Action ResetZoomAndPan}"
+                                Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                                HorizontalAlignment="Right"
+                                ToolTip="Reset zoom &amp; position">
+                            <materialDesign:PackIcon Kind="ImageFilterCenterFocus" Height="24" Width="24" />
+                        </Button>
+                    </StackPanel>
                 </StackPanel>
+                
             </Grid>
         </materialDesign:Card>
 
