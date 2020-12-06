@@ -114,6 +114,16 @@ namespace Artemis.UI.Screens.SurfaceEditor
             return config;
         }
 
+        public async Task AutoArrange()
+        {
+            bool confirmed = await _dialogService.ShowConfirmDialog("Auto-arrange layout", "Are you sure you want to auto-arrange your layout? Your current settings will be overwritten.");
+            if (!confirmed)
+                return;
+            
+            _surfaceService.AutoArrange();
+
+        }
+
         private void LoadWorkspaceSettings()
         {
             SurfaceListWidth = _settingsService.GetSetting("SurfaceEditor.SurfaceListWidth", new GridLength(300.0));

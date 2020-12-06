@@ -45,6 +45,11 @@ namespace Artemis.Core.Services
         void DeleteSurfaceConfiguration(ArtemisSurface surface);
 
         /// <summary>
+        ///     Applies auto-arranging logic to the current active surface
+        /// </summary>
+        void AutoArrange();
+
+        /// <summary>
         ///     Occurs when the active device entity has been changed
         /// </summary>
         event EventHandler<SurfaceConfigurationEventArgs> ActiveSurfaceConfigurationSelected;
