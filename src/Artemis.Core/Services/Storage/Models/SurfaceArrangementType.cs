@@ -7,13 +7,17 @@ namespace Artemis.Core.Services.Models
 {
     internal class SurfaceArrangementType
     {
-        public SurfaceArrangementType(RGBDeviceType deviceType)
+        public SurfaceArrangementType(SurfaceArrangement surfaceArrangement, RGBDeviceType deviceType, int zIndex)
         {
+            SurfaceArrangement = surfaceArrangement;
             DeviceType = deviceType;
+            ZIndex = zIndex;
             Configurations = new List<SurfaceArrangementConfiguration>();
         }
 
+        public SurfaceArrangement SurfaceArrangement { get; }
         public RGBDeviceType DeviceType { get; }
+        public int ZIndex { get; }
         public List<SurfaceArrangementConfiguration> Configurations { get; }
         public SurfaceArrangementConfiguration? AppliedConfiguration { get; set; }
 
@@ -35,6 +39,8 @@ namespace Artemis.Core.Services.Models
                 if (applied)
                 {
                     AppliedConfiguration = configuration;
+                    foreach (ArtemisDevice artemisDevice in devices) 
+                        artemisDevice.ZIndex = ZIndex;
                     return;
                 }
             }
@@ -45,14 +51,14 @@ namespace Artemis.Core.Services.Models
                 HorizontalArrangementPosition.Right,
                 VerticalArrangementPosition.Equal,
                 10
-            );
+            ) {SurfaceArrangement = SurfaceArrangement};
             fallback.Apply(devices, surface);
             AppliedConfiguration = fallback;
         }
 
         public Point GetEdge(HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition, ArtemisSurface surface)
         {
-            List<ArtemisDevice> devices = surface.Devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType || DeviceType == RGBDeviceType.All).ToList();
+            List<ArtemisDevice> devices = SurfaceArrangement.ArrangedDevices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType || DeviceType == RGBDeviceType.All).ToList();
             if (!devices.Any())
                 return new Point();
 
@@ -74,6 +80,12 @@ namespace Artemis.Core.Services.Models
             };
 
             return new Point(x, y);
+        }
+
+        public void AddConfiguration(SurfaceArrangementConfiguration surfaceArrangementConfiguration)
+        {
+            surfaceArrangementConfiguration.SurfaceArrangement = SurfaceArrangement;
+            Configurations.Add(surfaceArrangementConfiguration);
         }
     }
 

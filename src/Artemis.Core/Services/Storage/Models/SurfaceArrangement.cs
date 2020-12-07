@@ -9,82 +9,80 @@ namespace Artemis.Core.Services.Models
         public SurfaceArrangement()
         {
             Types = new List<SurfaceArrangementType>();
+            ArrangedDevices = new List<ArtemisDevice>();
         }
 
         public List<SurfaceArrangementType> Types { get; }
+        public List<ArtemisDevice> ArrangedDevices { get; }
 
         internal static SurfaceArrangement GetDefaultArrangement()
         {
             SurfaceArrangement arrangement = new SurfaceArrangement();
 
-            SurfaceArrangementType keypad = new SurfaceArrangementType(RGBDeviceType.Keypad);
-            keypad.Configurations.Add(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
-            arrangement.Types.Add(keypad);
+            SurfaceArrangementType keypad = arrangement.AddType(RGBDeviceType.Keypad, 1);
+            keypad.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
 
-            SurfaceArrangementType keyboard = new SurfaceArrangementType(RGBDeviceType.Keyboard);
-            keyboard.Configurations.Add(new SurfaceArrangementConfiguration(keypad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 20));
-            arrangement.Types.Add(keyboard);
+            SurfaceArrangementType keyboard = arrangement.AddType(RGBDeviceType.Keyboard, 1);
+            keyboard.AddConfiguration(new SurfaceArrangementConfiguration(keypad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 20));
 
-            SurfaceArrangementType mousepad = new SurfaceArrangementType(RGBDeviceType.Mousepad);
-            mousepad.Configurations.Add(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
-            arrangement.Types.Add(mousepad);
+            SurfaceArrangementType mousepad = arrangement.AddType(RGBDeviceType.Mousepad, 1);
+            mousepad.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 10));
 
-            SurfaceArrangementType mouse = new SurfaceArrangementType(RGBDeviceType.Mouse);
-            mouse.Configurations.Add(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
-            mouse.Configurations.Add(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Center, 100));
-            arrangement.Types.Add(mouse);
+            SurfaceArrangementType mouse = arrangement.AddType(RGBDeviceType.Mouse, 2);
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
+            mouse.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Center, 100));
 
-            SurfaceArrangementType headset = new SurfaceArrangementType(RGBDeviceType.Headset);
-            headset.Configurations.Add(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Bottom, 100));
-            arrangement.Types.Add(headset);
+            SurfaceArrangementType headset = arrangement.AddType(RGBDeviceType.Headset, 1);
+            headset.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Bottom, 100));
 
-            SurfaceArrangementType headsetStand = new SurfaceArrangementType(RGBDeviceType.HeadsetStand);
-            headsetStand.Configurations.Add(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Top, 100));
-            headsetStand.Configurations.Add(new SurfaceArrangementConfiguration(mouse, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Top, 100));
-            headsetStand.Configurations.Add(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Top, 100));
-            arrangement.Types.Add(headsetStand);
+            SurfaceArrangementType headsetStand = arrangement.AddType(RGBDeviceType.HeadsetStand, 1);
+            headsetStand.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Top, 100));
+            headsetStand.AddConfiguration(new SurfaceArrangementConfiguration(mouse, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Top, 100));
+            headsetStand.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Top, 100));
 
-            SurfaceArrangementType mainboard = new SurfaceArrangementType(RGBDeviceType.Mainboard);
-            mainboard.Configurations.Add(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
-            mainboard.Configurations.Add(new SurfaceArrangementConfiguration(mouse, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
-            mainboard.Configurations.Add(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
-            arrangement.Types.Add(mainboard);
+            SurfaceArrangementType mainboard = arrangement.AddType(RGBDeviceType.Mainboard, 1);
+            mainboard.AddConfiguration(new SurfaceArrangementConfiguration(mousepad, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
+            mainboard.AddConfiguration(new SurfaceArrangementConfiguration(mouse, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
+            mainboard.AddConfiguration(new SurfaceArrangementConfiguration(keyboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 500));
 
-            SurfaceArrangementType cooler = new SurfaceArrangementType(RGBDeviceType.Cooler);
-            cooler.Configurations.Add(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
-            arrangement.Types.Add(cooler);
+            SurfaceArrangementType cooler = arrangement.AddType(RGBDeviceType.Cooler, 2);
+            cooler.AddConfiguration(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
 
-            SurfaceArrangementType dram = new SurfaceArrangementType(RGBDeviceType.DRAM);
-            dram.Configurations.Add(new SurfaceArrangementConfiguration(cooler, HorizontalArrangementPosition.Left, VerticalArrangementPosition.Equal, 10));
-            dram.Configurations.Add(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
-            arrangement.Types.Add(dram);
+            SurfaceArrangementType dram = arrangement.AddType(RGBDeviceType.DRAM, 2);
+            dram.AddConfiguration(new SurfaceArrangementConfiguration(cooler, HorizontalArrangementPosition.Left, VerticalArrangementPosition.Equal, 10));
+            dram.AddConfiguration(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
 
-            SurfaceArrangementType graphicsCard = new SurfaceArrangementType(RGBDeviceType.GraphicsCard);
-            graphicsCard.Configurations.Add(new SurfaceArrangementConfiguration(cooler, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 10));
-            graphicsCard.Configurations.Add(new SurfaceArrangementConfiguration(dram, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 10));
-            graphicsCard.Configurations.Add(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
-            arrangement.Types.Add(graphicsCard);
+            SurfaceArrangementType graphicsCard = arrangement.AddType(RGBDeviceType.GraphicsCard, 2);
+            graphicsCard.AddConfiguration(new SurfaceArrangementConfiguration(cooler, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 10));
+            graphicsCard.AddConfiguration(new SurfaceArrangementConfiguration(dram, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Bottom, 10));
+            graphicsCard.AddConfiguration(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Center, VerticalArrangementPosition.Center, 0));
 
-            SurfaceArrangementType fan = new SurfaceArrangementType(RGBDeviceType.Fan);
-            fan.Configurations.Add(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 100));
-            arrangement.Types.Add(fan);
+            SurfaceArrangementType fan = arrangement.AddType(RGBDeviceType.Fan, 2);
+            fan.AddConfiguration(new SurfaceArrangementConfiguration(mainboard, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 100));
 
-            SurfaceArrangementType ledStripe = new SurfaceArrangementType(RGBDeviceType.LedStripe);
-            ledStripe.Configurations.Add(new SurfaceArrangementConfiguration(fan, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 100));
-            arrangement.Types.Add(ledStripe);
+            SurfaceArrangementType ledStripe = arrangement.AddType(RGBDeviceType.LedStripe, 2);
+            ledStripe.AddConfiguration(new SurfaceArrangementConfiguration(fan, HorizontalArrangementPosition.Right, VerticalArrangementPosition.Equal, 100));
 
-            SurfaceArrangementType speaker = new SurfaceArrangementType(RGBDeviceType.Speaker);
-            arrangement.Types.Add(speaker);
+            arrangement.AddType(RGBDeviceType.Speaker, 1);
+            arrangement.AddType(RGBDeviceType.None, 1);
 
             return arrangement;
         }
 
+        private SurfaceArrangementType AddType(RGBDeviceType type, int zIndex)
+        {
+            SurfaceArrangementType surfaceArrangementType = new SurfaceArrangementType(this, type, zIndex);
+            Types.Add(surfaceArrangementType);
+            return surfaceArrangementType;
+        }
+
         public void Arrange(ArtemisSurface surface)
         {
+            ArrangedDevices.Clear();
             foreach (ArtemisDevice surfaceDevice in surface.Devices)
             {
                 surfaceDevice.X = 0;
-                surfaceDevice.X = 0;
+                surfaceDevice.Y = 0;
                 surfaceDevice.ApplyToRgbDevice();
             }
 
@@ -102,6 +100,7 @@ namespace Artemis.Core.Services.Models
                     surfaceDevice.ApplyToRgbDevice();
                 }
             }
+
             if (y < 0)
             {
                 foreach (ArtemisDevice surfaceDevice in surface.Devices)

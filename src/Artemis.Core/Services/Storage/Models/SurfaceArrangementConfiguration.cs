@@ -19,18 +19,6 @@ namespace Artemis.Core.Services.Models
             MarginBottom = margin;
         }
 
-        public SurfaceArrangementConfiguration(SurfaceArrangementType? anchor, HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition,
-            int marginLeft, int marginTop, int marginRight, int marginBottom)
-        {
-            Anchor = anchor;
-            HorizontalPosition = horizontalPosition;
-            VerticalPosition = verticalPosition;
-
-            MarginLeft = marginLeft;
-            MarginTop = marginTop;
-            MarginRight = marginRight;
-            MarginBottom = marginBottom;
-        }
 
         public SurfaceArrangementType? Anchor { get; }
         public HorizontalArrangementPosition HorizontalPosition { get; }
@@ -40,6 +28,7 @@ namespace Artemis.Core.Services.Models
         public int MarginTop { get; }
         public int MarginRight { get; }
         public int MarginBottom { get; }
+        public SurfaceArrangement SurfaceArrangement { get; set; }
 
         public bool Apply(List<ArtemisDevice> devices, ArtemisSurface surface)
         {
@@ -48,7 +37,7 @@ namespace Artemis.Core.Services.Models
 
             // Start at the edge of the anchor, if there is no anchor start at any device
             Point startPoint = Anchor?.GetEdge(HorizontalPosition, VerticalPosition, surface) ??
-                               new SurfaceArrangementType(RGBDeviceType.All).GetEdge(HorizontalPosition, VerticalPosition, surface);
+                               new SurfaceArrangementType(SurfaceArrangement, RGBDeviceType.All, 1).GetEdge(HorizontalPosition, VerticalPosition, surface);
 
             // Stack multiple devices of the same type vertically if they are wider than they are tall
             bool stackVertically = devices.Average(d => d.RgbDevice.Size.Width) >= devices.Average(d => d.RgbDevice.Size.Height);
@@ -91,6 +80,8 @@ namespace Artemis.Core.Services.Models
 
                 artemisDevice.ApplyToRgbDevice();
                 previous = artemisDevice;
+
+                SurfaceArrangement.ArrangedDevices.Add(artemisDevice);
             }
 
             return true;
