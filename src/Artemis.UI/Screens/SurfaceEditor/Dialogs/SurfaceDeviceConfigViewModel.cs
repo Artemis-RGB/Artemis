@@ -2,6 +2,7 @@
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
@@ -14,6 +15,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         private string _title;
         private int _x;
         private int _y;
+        public double _redScale;
+        public double _greenScale;
+        public double _blueScale;
+        private SKColor _currentColor;
+        private bool _displayOnDevices;
 
         public SurfaceDeviceConfigViewModel(ArtemisDevice device, ICoreService coreService, IModelValidator<SurfaceDeviceConfigViewModel> validator) : base(validator)
         {
@@ -22,10 +28,27 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             Device = device;
             Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Properties";
 
-            X = (int) Device.X;
-            Y = (int) Device.Y;
+            X = (int)Device.X;
+            Y = (int)Device.Y;
             Scale = Device.Scale;
-            Rotation = (int) Device.Rotation;
+            Rotation = (int)Device.Rotation;
+            RedScale = Device.RedScale * 100d;
+            GreenScale = Device.GreenScale * 100d;
+            BlueScale = Device.BlueScale * 100d;
+            CurrentColor = SKColors.White;
+            _coreService.FrameRendering += OnFrameRendering;
+        }
+
+        private void OnFrameRendering(object sender, FrameRenderingEventArgs e)
+        {
+            if (!_displayOnDevices)
+                return;
+
+            using SKPaint overlayPaint = new SKPaint
+            {
+                Color = CurrentColor
+            };
+            e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
         }
 
         public ArtemisDevice Device { get; }
@@ -61,6 +84,36 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _rotation, value);
         }
 
+        public double RedScale
+        {
+            get => _redScale;
+            set => SetAndNotify(ref _redScale, value);
+        }
+
+        public double GreenScale
+        {
+            get => _greenScale;
+            set => SetAndNotify(ref _greenScale, value);
+        }
+
+        public double BlueScale
+        {
+            get => _blueScale;
+            set => SetAndNotify(ref _blueScale, value);
+        }
+
+        public SKColor CurrentColor
+        {
+            get => _currentColor;
+            set => SetAndNotify(ref _currentColor, value);
+        }
+
+        public bool DisplayOnDevices
+        {
+            get => _displayOnDevices;
+            set => SetAndNotify(ref _displayOnDevices, value);
+        }
+
         public async Task Accept()
         {
             await ValidateAsync();
@@ -74,10 +127,22 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             Device.Y = Y;
             Device.Scale = Scale;
             Device.Rotation = Rotation;
+            Device.RedScale = RedScale / 100d;
+            Device.GreenScale = GreenScale / 100d;
+            Device.BlueScale = BlueScale / 100d;
 
             _coreService.ModuleRenderingDisabled = false;
-
+            _coreService.FrameRendering -= OnFrameRendering;
             Session.Close(true);
+        }
+
+        public void ApplyScaling()
+        {
+            //TODO: we should either save or revert changes when the user clicks save or cancel.
+            //we might have to revert these changes below.
+            Device.RedScale = RedScale / 100d;
+            Device.GreenScale = GreenScale / 100d;
+            Device.BlueScale = BlueScale / 100d;
         }
     }
 }

@@ -4,37 +4,115 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:surfaceEditor="clr-namespace:Artemis.UI.Screens.SurfaceEditor.Dialogs"
              mc:Ignorable="d"
-             d:DesignHeight="351.305" d:DesignWidth="262.163"
              d:DataContext="{d:DesignInstance {x:Type surfaceEditor:SurfaceDeviceConfigViewModel}}">
+    <UserControl.Resources>
+        <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
     <StackPanel Margin="16">
-        <TextBlock Text="{Binding Title}" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-        <TextBlock Text="Note: These are not being validated yet" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
+        <TextBlock Text="{Binding Title}"
+                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+        <TextBlock Text="Note: These are not being validated yet"
+                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
 
-        <TextBox materialDesign:HintAssist.Hint="X-coordinate"
-                 materialDesign:TextFieldAssist.SuffixText="mm"
-                 Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Margin="0 10" />
-        <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
-                 materialDesign:TextFieldAssist.SuffixText="mm"
-                 Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Margin="0 10" />
-        <TextBox materialDesign:HintAssist.Hint="Scale"
-                 materialDesign:TextFieldAssist.SuffixText="times"
-                 Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Margin="0 10" />
-        <TextBox materialDesign:HintAssist.Hint="Rotation"
-                 materialDesign:TextFieldAssist.SuffixText="deg"
-                 Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                 Margin="0 10" />
+        <StackPanel Orientation="Horizontal">
+            <StackPanel Orientation="Vertical"
+                        Width="150"
+                        Margin="8">
+                <TextBox materialDesign:HintAssist.Hint="X-coordinate"
+                         materialDesign:TextFieldAssist.SuffixText="mm"
+                         Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Margin="0 10" />
+                <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
+                         materialDesign:TextFieldAssist.SuffixText="mm"
+                         Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Margin="0 10" />
+                <TextBox materialDesign:HintAssist.Hint="Scale"
+                         materialDesign:TextFieldAssist.SuffixText="times"
+                         Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Margin="0 10" />
+                <TextBox materialDesign:HintAssist.Hint="Rotation"
+                         materialDesign:TextFieldAssist.SuffixText="deg"
+                         Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                         Margin="0 10" />
+            </StackPanel>
+            <StackPanel Orientation="Vertical"
+                        Width="250"
+                        Margin="8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"
+                                          MinWidth="41" />
+                        <ColumnDefinition Width="Auto"
+                                          MinWidth="184.937" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0"
+                    <Label Grid.Column="0"
+                           Grid.Row="0"
+                           Content="Red"
+                           VerticalAlignment="Bottom" />
+                    <Slider Grid.Column="1"
+                            Grid.Row="0"
+                            Minimum="0"
+                            Maximum="200"
+                            ValueChanged="{s:Action ApplyScaling}"
+                            Value="{Binding RedScale, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
+
+                    <Label Grid.Column="0"
+                           Grid.Row="1"
+                           Content="Green"
+                           VerticalAlignment="Bottom" />
+                    <Slider Grid.Column="1"
+                            Grid.Row="1"
+                            Minimum="0"
+                            Maximum="200"
+                            ValueChanged="{s:Action ApplyScaling}"
+                            Value="{Binding GreenScale, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
+
+                    <Label Grid.Column="0"
+                           Grid.Row="2"
+                           Content="Blue"
+                           VerticalAlignment="Bottom" />
+                    <Slider Grid.Column="1"
+                            Grid.Row="2"
+                            Minimum="0"
+                            Maximum="200"
+                            ValueChanged="{s:Action ApplyScaling}"
+                            Value="{Binding BlueScale, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                </Grid>
+                <DockPanel>
+                    <CheckBox IsChecked="{Binding DisplayOnDevices}"
+                              Margin="5,0,0,0"
+                              Content="Display on Devices"
+                              HorizontalAlignment="Left" />
+                    <shared:ColorPicker Margin="0,0,5,0"
+                                        HorizontalAlignment="Right"
+                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" />
+                </DockPanel>
+
+            </StackPanel>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right">
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    IsCancel="True"
+                    Margin="0 8 8 0"
                     Command="{s:Action Cancel}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
@@ -43,7 +121,9 @@
                 </Button.CommandParameter>
                 CANCEL
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0"
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    IsDefault="True"
+                    Margin="0 8 8 0"
                     Command="{s:Action Accept}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
@@ -53,5 +133,6 @@
                 APPLY
             </Button>
         </StackPanel>
+
     </StackPanel>
 </UserControl>

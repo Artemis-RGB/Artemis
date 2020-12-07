@@ -27,6 +27,9 @@ namespace Artemis.Core
             Rotation = 0;
             Scale = 1;
             ZIndex = 1;
+            RedScale = 1;
+            GreenScale = 1;
+            BlueScale = 1;
 
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
@@ -168,6 +171,36 @@ namespace Artemis.Core
             {
                 DeviceEntity.ZIndex = value;
                 OnPropertyChanged(nameof(ZIndex));
+            }
+        }
+
+        public double RedScale
+        {
+            get => DeviceEntity.RedScale;
+            set
+            {
+                DeviceEntity.RedScale = value;
+                OnPropertyChanged(nameof(RedScale));
+            }
+        }
+
+        public double GreenScale
+        {
+            get => DeviceEntity.GreenScale;
+            set
+            {
+                DeviceEntity.GreenScale = value;
+                OnPropertyChanged(nameof(GreenScale));
+            }
+        }
+
+        public double BlueScale
+        {
+            get => DeviceEntity.BlueScale;
+            set
+            {
+                DeviceEntity.BlueScale = value;
+                OnPropertyChanged(nameof(BlueScale));
             }
         }
 
