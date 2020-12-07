@@ -12,6 +12,7 @@ using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
+using HidSharp;
 using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.Services
@@ -78,6 +79,9 @@ namespace Artemis.Core.Services
 
             AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
+            // This should prevent a certain someone from removing HidSharp as an unused dependency as well
+            _logger.Information("Forcing plugins to use HidSharp {hidSharpVersion}", Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version);
+
             ApplyLoggingLevel();
 
             DeserializationLogger.Initialize(Kernel);
