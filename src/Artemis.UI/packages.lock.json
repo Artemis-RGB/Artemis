@@ -195,6 +195,11 @@
           "System.Xml.XmlDocument": "4.3.0"
         }
       },
+      "HidSharp": {
+        "type": "Transitive",
+        "resolved": "2.1.0",
+        "contentHash": "UTdxWvbgp2xzT1Ajaa2va+Qi3oNHJPasYmVhbKI2VVdu1VYP6yUG+RikhsHvpD7iM0S8e8UYb5Qm/LTWxx9QAA=="
+      },
       "LiteDB": {
         "type": "Transitive",
         "resolved": "5.0.9",
@@ -1362,6 +1367,7 @@
         "dependencies": {
           "Artemis.Storage": "1.0.0",
           "Ben.Demystifier": "0.1.6",
+          "HidSharp": "2.1.0",
           "Humanizer.Core": "2.8.26",
           "LiteDB": "5.0.9",
           "McMaster.NETCore.Plugins": "1.3.1",

@@ -12,6 +12,12 @@
           "System.Threading.Tasks.Extensions": "4.5.3"
         }
       },
+      "HidSharp": {
+        "type": "Direct",
+        "requested": "[2.1.0, )",
+        "resolved": "2.1.0",
+        "contentHash": "UTdxWvbgp2xzT1Ajaa2va+Qi3oNHJPasYmVhbKI2VVdu1VYP6yUG+RikhsHvpD7iM0S8e8UYb5Qm/LTWxx9QAA=="
+      },
       "Humanizer.Core": {
         "type": "Direct",
         "requested": "[2.8.26, )",
