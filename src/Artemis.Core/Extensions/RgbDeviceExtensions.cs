@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using RGB.NET.Core;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -18,6 +19,19 @@ namespace Artemis.Core
             builder.Append('-');
             builder.Append(rgbDevice.DeviceInfo.Lighting);
             return builder.ToString();
+        }
+    }
+
+    internal static class RgbRectangleExtensions
+    {
+        public static SKRect ToSKRect(this Rectangle rectangle)
+        {
+            return SKRect.Create(
+                (float) rectangle.Location.X,
+                (float) rectangle.Location.Y,
+                (float) rectangle.Size.Width,
+                (float) rectangle.Size.Height
+            );
         }
     }
 }

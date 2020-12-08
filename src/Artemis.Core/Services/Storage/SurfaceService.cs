@@ -15,26 +15,23 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly PluginSetting<double> _renderScaleSetting;
         private readonly IRgbService _rgbService;
         private readonly List<ArtemisSurface> _surfaceConfigurations;
         private readonly ISurfaceRepository _surfaceRepository;
 
-        public SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginManagementService pluginManagementService, ISettingsService settingsService)
+        public SurfaceService(ILogger logger, ISurfaceRepository surfaceRepository, IRgbService rgbService, IPluginManagementService pluginManagementService)
         {
             _logger = logger;
             _surfaceRepository = surfaceRepository;
             _rgbService = rgbService;
             _pluginManagementService = pluginManagementService;
             _surfaceConfigurations = new List<ArtemisSurface>();
-            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
 
             // LoadFromRepository is guaranteed to set the ActiveSurface
             ActiveSurface = null!;
             LoadFromRepository();
 
             _rgbService.DeviceLoaded += RgbServiceOnDeviceLoaded;
-            _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
         }
 
         public ArtemisSurface ActiveSurface { get; private set; }
@@ -43,7 +40,7 @@ namespace Artemis.Core.Services
         public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
             // Create a blank config
-            ArtemisSurface configuration = new ArtemisSurface(_rgbService.Surface, name, _renderScaleSetting.Value);
+            ArtemisSurface configuration = new ArtemisSurface(_rgbService.Surface, name);
 
             // Add all current devices
             foreach (IRGBDevice rgbDevice in _rgbService.LoadedDevices)
@@ -133,7 +130,7 @@ namespace Artemis.Core.Services
             foreach (SurfaceEntity surfaceEntity in configs)
             {
                 // Create the surface entity
-                ArtemisSurface surfaceConfiguration = new ArtemisSurface(_rgbService.Surface, surfaceEntity, _renderScaleSetting.Value);
+                ArtemisSurface surfaceConfiguration = new ArtemisSurface(_rgbService.Surface, surfaceEntity);
                 foreach (DeviceEntity position in surfaceEntity.DeviceEntities)
                 {
                     IRGBDevice? device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);
@@ -223,15 +220,6 @@ namespace Artemis.Core.Services
             }
 
             UpdateSurfaceConfiguration(ActiveSurface, true);
-        }
-
-        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            foreach (ArtemisSurface surfaceConfiguration in SurfaceConfigurations)
-            {
-                surfaceConfiguration.UpdateScale(_renderScaleSetting.Value);
-                OnSurfaceConfigurationUpdated(new SurfaceConfigurationEventArgs(surfaceConfiguration));
-            }
         }
 
         #endregion

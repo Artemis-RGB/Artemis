@@ -14,8 +14,8 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisDevice : CorePropertyChanged
     {
-        private SKPath? _renderPath;
-        private SKRect _renderRectangle;
+        private SKPath? _path;
+        private SKRect _rectangle;
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface)
         {
@@ -58,21 +58,21 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the rectangle covering the device, sized to match the render scale
+        ///     Gets the rectangle covering the device
         /// </summary>
-        public SKRect RenderRectangle
+        public SKRect Rectangle
         {
-            get => _renderRectangle;
-            private set => SetAndNotify(ref _renderRectangle, value);
+            get => _rectangle;
+            private set => SetAndNotify(ref _rectangle, value);
         }
 
         /// <summary>
-        ///     Gets the path surrounding the device, sized to match the render scale
+        ///     Gets the path surrounding the device
         /// </summary>
-        public SKPath? RenderPath
+        public SKPath? Path
         {
-            get => _renderPath;
-            private set => SetAndNotify(ref _renderPath, value);
+            get => _path;
+            private set => SetAndNotify(ref _path, value);
         }
 
         /// <summary>
@@ -239,24 +239,18 @@ namespace Artemis.Core
 
         internal void CalculateRenderProperties()
         {
-            RenderRectangle = SKRect.Create(
-                (RgbDevice.Location.X * Surface.Scale).RoundToInt(),
-                (RgbDevice.Location.Y * Surface.Scale).RoundToInt(),
-                (RgbDevice.DeviceRectangle.Size.Width * Surface.Scale).RoundToInt(),
-                (RgbDevice.DeviceRectangle.Size.Height * Surface.Scale).RoundToInt()
-            );
-
+            Rectangle = RgbDevice.DeviceRectangle.ToSKRect();
             if (!Leds.Any())
                 return;
 
             foreach (ArtemisLed led in Leds)
-                led.CalculateRenderRectangle();
+                led.CalculateRectangles();
 
             SKPath path = new SKPath {FillType = SKPathFillType.Winding};
             foreach (ArtemisLed artemisLed in Leds)
-                path.AddRect(artemisLed.AbsoluteRenderRectangle);
+                path.AddRect(artemisLed.AbsoluteRectangle);
 
-            RenderPath = path;
+            Path = path;
         }
 
         #region Events

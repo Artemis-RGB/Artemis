@@ -8,14 +8,14 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisLed : CorePropertyChanged
     {
-        private SKRect _absoluteRenderRectangle;
-        private SKRect _renderRectangle;
+        private SKRect _absoluteRectangle;
+        private SKRect _rectangle;
 
         internal ArtemisLed(Led led, ArtemisDevice device)
         {
             RgbLed = led;
             Device = device;
-            CalculateRenderRectangle();
+            CalculateRectangles();
         }
 
         /// <summary>
@@ -29,38 +29,27 @@ namespace Artemis.Core
         public ArtemisDevice Device { get; }
 
         /// <summary>
-        ///     Gets the rectangle covering the LED, sized to match the render scale and positioned relative to the
-        ///     <see cref="Device" />
+        ///     Gets the rectangle covering the LED positioned relative to the<see cref="Device" />
         /// </summary>
-        public SKRect RenderRectangle
+        public SKRect Rectangle
         {
-            get => _renderRectangle;
-            private set => SetAndNotify(ref _renderRectangle, value);
+            get => _rectangle;
+            private set => SetAndNotify(ref _rectangle, value);
         }
 
         /// <summary>
-        ///     Gets the rectangle covering the LED, sized to match the render scale
+        ///     Gets the rectangle covering the LED
         /// </summary>
-        public SKRect AbsoluteRenderRectangle
+        public SKRect AbsoluteRectangle
         {
-            get => _absoluteRenderRectangle;
-            private set => SetAndNotify(ref _absoluteRenderRectangle, value);
+            get => _absoluteRectangle;
+            private set => SetAndNotify(ref _absoluteRectangle, value);
         }
 
-        internal void CalculateRenderRectangle()
+        internal void CalculateRectangles()
         {
-            RenderRectangle = SKRect.Create(
-                (RgbLed.LedRectangle.Location.X * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.LedRectangle.Location.Y * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.LedRectangle.Size.Width * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.LedRectangle.Size.Height * Device.Surface.Scale).RoundToInt()
-            );
-            AbsoluteRenderRectangle = SKRect.Create(
-                (RgbLed.AbsoluteLedRectangle.Location.X * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.AbsoluteLedRectangle.Location.Y * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.AbsoluteLedRectangle.Size.Width * Device.Surface.Scale).RoundToInt(),
-                (RgbLed.AbsoluteLedRectangle.Size.Height * Device.Surface.Scale).RoundToInt()
-            );
+            Rectangle = RgbLed.LedRectangle.ToSKRect();
+            AbsoluteRectangle = RgbLed.AbsoluteLedRectangle.ToSKRect();
         }
 
         /// <inheritdoc />

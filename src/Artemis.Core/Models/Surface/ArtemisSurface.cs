@@ -16,28 +16,25 @@ namespace Artemis.Core
         private ReadOnlyDictionary<Led, ArtemisLed> _ledMap = new ReadOnlyDictionary<Led, ArtemisLed>(new Dictionary<Led, ArtemisLed>());
         private bool _isActive;
         private string _name;
-        private double _scale;
 
-        internal ArtemisSurface(RGBSurface rgbSurface, string name, double scale)
+        internal ArtemisSurface(RGBSurface rgbSurface, string name)
         {
             SurfaceEntity = new SurfaceEntity {DeviceEntities = new List<DeviceEntity>()};
             EntityId = Guid.NewGuid();
             RgbSurface = rgbSurface;
 
             _name = name;
-            _scale = scale;
             _isActive = false;
 
             ApplyToEntity();
         }
 
-        internal ArtemisSurface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity, double scale)
+        internal ArtemisSurface(RGBSurface rgbSurface, SurfaceEntity surfaceEntity)
         {
             SurfaceEntity = surfaceEntity;
             EntityId = surfaceEntity.Id;
             RgbSurface = rgbSurface;
 
-            _scale = scale;
             _name = surfaceEntity.Name;
             _isActive = surfaceEntity.IsActive;
         }
@@ -46,15 +43,6 @@ namespace Artemis.Core
         ///     Gets the RGB.NET surface backing this Artemis surface
         /// </summary>
         public RGBSurface RgbSurface { get; }
-
-        /// <summary>
-        ///     Gets the scale at which this surface is rendered
-        /// </summary>
-        public double Scale
-        {
-            get => _scale;
-            private set => SetAndNotify(ref _scale, value);
-        }
 
         /// <summary>
         ///     Gets the name of the surface
@@ -95,19 +83,6 @@ namespace Artemis.Core
 
         internal SurfaceEntity SurfaceEntity { get; set; }
         internal Guid EntityId { get; set; }
-
-        /// <summary>
-        ///     Updates the scale of the surface
-        /// </summary>
-        /// <param name="value"></param>
-        public void UpdateScale(double value)
-        {
-            Scale = value;
-            foreach (ArtemisDevice device in Devices)
-                device.CalculateRenderProperties();
-
-            OnScaleChanged();
-        }
 
         /// <summary>
         ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="Led" />

@@ -22,12 +22,11 @@ namespace Artemis.UI.Services
         public Rect GetLayerBounds(Layer layer)
         {
             // Adjust the render rectangle for the difference in render scale
-            double renderScale = _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
             return new Rect(
-                layer.Bounds.Left / renderScale * 1,
-                layer.Bounds.Top / renderScale * 1,
-                Math.Max(0, layer.Bounds.Width / renderScale * 1),
-                Math.Max(0, layer.Bounds.Height / renderScale * 1)
+                layer.Bounds.Left,
+                layer.Bounds.Top,
+                Math.Max(0, layer.Bounds.Width),
+                Math.Max(0, layer.Bounds.Height)
             );
         }
 
