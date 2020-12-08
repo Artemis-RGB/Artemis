@@ -7,7 +7,7 @@ namespace Artemis.Core
     ///     <see cref="DataBinding{TLayerProperty, TProperty}" /> and a <see cref="LayerProperty{T}" /> and does not support
     ///     sum or interpolation
     /// </summary>
-    public class GeneralDataBindingConverter<T> : DataBindingConverter<T, object> where T : ILayerProperty
+    public class GeneralDataBindingConverter<T> : DataBindingConverter<T, T>
     {
         /// <summary>
         ///     Creates a new instance of the <see cref="GeneralDataBindingConverter{T}" /> class
@@ -19,13 +19,13 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override object Sum(object a, object b)
+        public override T Sum(T a, T b)
         {
             throw new NotSupportedException();
         }
 
         /// <inheritdoc />
-        public override object Interpolate(object a, object b, double progress)
+        public override T Interpolate(T a, T b, double progress)
         {
             throw new NotSupportedException();
         }
