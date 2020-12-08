@@ -12,7 +12,6 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         private readonly ICoreService _coreService;
         private int _rotation;
         private double _scale;
-        private string _title;
         private int _x;
         private int _y;
         public double _redScale;
@@ -26,7 +25,6 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             _coreService = coreService;
 
             Device = device;
-            Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Properties";
 
             X = (int)Device.X;
             Y = (int)Device.Y;
@@ -52,13 +50,6 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         }
 
         public ArtemisDevice Device { get; }
-
-
-        public string Title
-        {
-            get => _title;
-            set => SetAndNotify(ref _title, value);
-        }
 
         public int X
         {
