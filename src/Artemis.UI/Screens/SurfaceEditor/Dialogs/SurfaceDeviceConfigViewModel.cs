@@ -10,13 +10,16 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
     public class SurfaceDeviceConfigViewModel : DialogViewModelBase
     {
         private readonly ICoreService _coreService;
+        private readonly double _initialRedScale;
+        private readonly double _initialGreenScale;
+        private readonly double _initialBlueScale;
         private int _rotation;
         private double _scale;
         private int _x;
         private int _y;
-        public double _redScale;
-        public double _greenScale;
-        public double _blueScale;
+        private double _redScale;
+        private double _greenScale;
+        private double _blueScale;
         private SKColor _currentColor;
         private bool _displayOnDevices;
 
@@ -33,6 +36,10 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             RedScale = Device.RedScale * 100d;
             GreenScale = Device.GreenScale * 100d;
             BlueScale = Device.BlueScale * 100d;
+            //we need to store the initial values to be able to restore them when the user clicks "Cancel"
+            _initialRedScale =  Device.RedScale;
+            _initialGreenScale = Device.GreenScale;
+            _initialBlueScale = Device.BlueScale;
             CurrentColor = SKColors.White;
             _coreService.FrameRendering += OnFrameRendering;
         }
@@ -129,11 +136,18 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 
         public void ApplyScaling()
         {
-            //TODO: we should either save or revert changes when the user clicks save or cancel.
-            //we might have to revert these changes below.
             Device.RedScale = RedScale / 100d;
             Device.GreenScale = GreenScale / 100d;
             Device.BlueScale = BlueScale / 100d;
+        }
+
+        public override void Cancel()
+        {
+            Device.RedScale = _initialRedScale;
+            Device.GreenScale = _initialGreenScale;
+            Device.BlueScale = _initialBlueScale;
+
+            base.Cancel();
         }
     }
 }
