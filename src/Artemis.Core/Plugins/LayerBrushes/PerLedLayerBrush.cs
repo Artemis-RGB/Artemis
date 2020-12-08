@@ -41,7 +41,7 @@ namespace Artemis.Core.LayerBrushes
                 pointsPath.AddPoly(new[]
                 {
                     new SKPoint(0, 0),
-                    new SKPoint(artemisLed.AbsoluteRenderRectangle.Left - Layer.Bounds.Left, artemisLed.AbsoluteRenderRectangle.Top - Layer.Bounds.Top)
+                    new SKPoint(artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left, artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top)
                 });
             }
 
@@ -61,10 +61,10 @@ namespace Artemis.Core.LayerBrushes
                 ledPaint.Color = GetColor(artemisLed, renderPoint);
 
                 SKRect ledRectangle = SKRect.Create(
-                    artemisLed.AbsoluteRenderRectangle.Left - Layer.Bounds.Left,
-                    artemisLed.AbsoluteRenderRectangle.Top - Layer.Bounds.Top,
-                    artemisLed.AbsoluteRenderRectangle.Width,
-                    artemisLed.AbsoluteRenderRectangle.Height
+                    artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,
+                    artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top,
+                    artemisLed.AbsoluteRectangle.Width,
+                    artemisLed.AbsoluteRectangle.Height
                 );
 
                 canvas.DrawRect(ledRectangle, ledPaint);

@@ -417,7 +417,7 @@ namespace Artemis.Core
             {
                 SKPath path = new SKPath {FillType = SKPathFillType.Winding};
                 foreach (ArtemisLed artemisLed in Leds)
-                    path.AddRect(artemisLed.AbsoluteRenderRectangle);
+                    path.AddRect(artemisLed.AbsoluteRectangle);
 
                 Path = path;
             }

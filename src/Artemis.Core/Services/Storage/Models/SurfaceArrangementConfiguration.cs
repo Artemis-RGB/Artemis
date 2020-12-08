@@ -17,6 +17,8 @@ namespace Artemis.Core.Services.Models
             MarginTop = margin;
             MarginRight = margin;
             MarginBottom = margin;
+
+            SurfaceArrangement = null!;
         }
 
 

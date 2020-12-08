@@ -27,13 +27,14 @@ namespace Artemis.Core.Services
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
+        private readonly PluginSetting<double> _renderScale;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
         private List<BaseDataModelExpansion> _dataModelExpansions = new List<BaseDataModelExpansion>();
         private List<Module> _modules = new List<Module>();
-
+        
         // ReSharper disable UnusedParameter.Local - Storage migration and module service are injected early to ensure it runs before anything else
         public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
@@ -47,6 +48,7 @@ namespace Artemis.Core.Services
             _surfaceService = surfaceService;
             _profileService = profileService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
+            _renderScale = settingsService.GetSetting("Core.RenderScale", 0.5);
             _frameStopWatch = new Stopwatch();
 
             UpdatePluginCache();
@@ -185,6 +187,7 @@ namespace Artemis.Core.Services
 
                     // Render all active modules
                     using SKCanvas canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
+                    canvas.Scale((float) _renderScale.Value);
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
