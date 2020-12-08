@@ -6,7 +6,7 @@
         internal BoolLayerProperty()
         {
             KeyframesSupported = false;
-            DataBindingsSupported = false;
+            RegisterDataBindingProperty(b => b, new GeneralDataBindingConverter<bool>());
         }
 
         /// <summary>
