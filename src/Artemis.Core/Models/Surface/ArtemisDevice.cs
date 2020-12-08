@@ -174,6 +174,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the scale of the red color component used for calibration
+        /// </summary>
         public double RedScale
         {
             get => DeviceEntity.RedScale;
@@ -184,6 +187,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the scale of the green color component used for calibration
+        /// </summary>
         public double GreenScale
         {
             get => DeviceEntity.GreenScale;
@@ -194,6 +200,9 @@ namespace Artemis.Core
             }
         }
 
+        /// <summary>
+        ///     Gets or sets the scale of the blue color component used for calibration
+        /// </summary>
         public double BlueScale
         {
             get => DeviceEntity.BlueScale;
