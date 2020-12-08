@@ -12,102 +12,131 @@
     <UserControl.Resources>
         <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
-    <StackPanel Margin="16">
-        <TextBlock Text="{Binding Title}"
-                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
-        <TextBlock Text="Note: These are not being validated yet"
-                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}" />
+    <StackPanel Margin="16" Width="400">
+        <!-- Title -->
+        <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" Style="{StaticResource MaterialDesignHeadline6TextBlock}" />
+        
+        <!-- Body -->
+        <Grid Margin="0 25 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <StackPanel Orientation="Vertical"
-                        Width="150"
-                        Margin="8">
+            <!-- Left side -->
+            <StackPanel Grid.Column="0" Orientation="Vertical">
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                    Properties
+                </TextBlock>
+
                 <TextBox materialDesign:HintAssist.Hint="X-coordinate"
                          materialDesign:TextFieldAssist.SuffixText="mm"
                          Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Margin="0 10" />
+                         Margin="0 5" />
                 <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
                          materialDesign:TextFieldAssist.SuffixText="mm"
                          Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Margin="0 10" />
+                         Margin="0 5" />
                 <TextBox materialDesign:HintAssist.Hint="Scale"
                          materialDesign:TextFieldAssist.SuffixText="times"
                          Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Margin="0 10" />
+                         Margin="0 5" />
                 <TextBox materialDesign:HintAssist.Hint="Rotation"
                          materialDesign:TextFieldAssist.SuffixText="deg"
                          Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                         Margin="0 10" />
+                         Margin="0 5 0 12" />
             </StackPanel>
-            <StackPanel Orientation="Vertical"
-                        Width="250"
-                        Margin="8">
-                <Grid>
+
+            <!-- Center divider -->
+            <Rectangle Grid.Column="1" VerticalAlignment="Stretch" Fill="{StaticResource MaterialDesignTextBoxBorder}" Width="1" Margin="0 0 0 5" />
+
+            <!-- Right side -->
+            <Grid Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="3" Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                    Color calibration
+                </TextBlock>
+
+                <TextBlock Grid.Row="1" 
+                           Grid.Column="0"
+                           Grid.ColumnSpan="3"
+                           Style="{StaticResource MaterialDesignCaptionTextBlock}" 
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextWrapping="Wrap" 
+                           TextAlignment="Justify">
+                    Use the sliders below to adjust the colors of your device so that it matches your other devices.
+                </TextBlock>
+
+                <Label Grid.Row="2" Grid.Column="0" Content="R-" VerticalAlignment="Center" />
+                <Slider Grid.Row="2"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="200"
+                        ValueChanged="{s:Action ApplyScaling}"
+                        Value="{Binding RedScale, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="10 0"
+                        VerticalAlignment="Center" />
+                <Label Grid.Row="2" Grid.Column="2" Content="R+" VerticalAlignment="Center" />
+
+                <Label Grid.Row="3" Grid.Column="0" Content="G-" VerticalAlignment="Center" />
+                <Slider Grid.Row="3"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="200"
+                        ValueChanged="{s:Action ApplyScaling}"
+                        Value="{Binding GreenScale, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="10 0"
+                        VerticalAlignment="Center" />
+                <Label Grid.Row="3" Grid.Column="2" Content="G+" VerticalAlignment="Center" />
+
+                <Label Grid.Row="4" Grid.Column="0" Content="B-" VerticalAlignment="Center" />
+                <Slider Grid.Row="4"
+                        Grid.Column="1"
+                        Minimum="0"
+                        Maximum="200"
+                        ValueChanged="{s:Action ApplyScaling}"
+                        Value="{Binding BlueScale, UpdateSourceTrigger=PropertyChanged}"
+                        Margin="10 0"
+                        VerticalAlignment="Center" />
+                <Label Grid.Row="4" Grid.Column="2" Content="B+" VerticalAlignment="Center" />
+
+                <Grid Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"
-                                          MinWidth="41" />
-                        <ColumnDefinition Width="Auto"
-                                          MinWidth="184.937" />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <Label Grid.Column="0"
-                           Grid.Row="0"
-                           Content="Red"
-                           VerticalAlignment="Bottom" />
-                    <Slider Grid.Column="1"
-                            Grid.Row="0"
-                            Minimum="0"
-                            Maximum="200"
-                            ValueChanged="{s:Action ApplyScaling}"
-                            Value="{Binding RedScale, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
-
-                    <Label Grid.Column="0"
-                           Grid.Row="1"
-                           Content="Green"
-                           VerticalAlignment="Bottom" />
-                    <Slider Grid.Column="1"
-                            Grid.Row="1"
-                            Minimum="0"
-                            Maximum="200"
-                            ValueChanged="{s:Action ApplyScaling}"
-                            Value="{Binding GreenScale, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
-
-                    <Label Grid.Column="0"
-                           Grid.Row="2"
-                           Content="Blue"
-                           VerticalAlignment="Bottom" />
-                    <Slider Grid.Column="1"
-                            Grid.Row="2"
-                            Minimum="0"
-                            Maximum="200"
-                            ValueChanged="{s:Action ApplyScaling}"
-                            Value="{Binding BlueScale, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource MaterialDesignDiscreteSlider}" />
-                </Grid>
-                <DockPanel>
-                    <CheckBox IsChecked="{Binding DisplayOnDevices}"
-                              Margin="5,0,0,0"
-                              Content="Display on Devices"
-                              HorizontalAlignment="Left" />
-                    <shared:ColorPicker Margin="0,0,5,0"
+                    <CheckBox Grid.Column="0"
+                              IsChecked="{Binding DisplayOnDevices}"
+                              Content="Show preview"
+                              VerticalAlignment="Center" />
+                    <shared:ColorPicker Grid.Column="1"
+                                        Margin="0,0,5,0"
                                         HorizontalAlignment="Right"
-                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" />
-                </DockPanel>
+                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" 
+                                        VerticalAlignment="Center"/>
+                </Grid>
+            </Grid>
+        </Grid>
 
-            </StackPanel>
-        </StackPanel>
-
+        <!-- Buttons -->
         <StackPanel Orientation="Horizontal"
                     HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}"
@@ -133,6 +162,5 @@
                 APPLY
             </Button>
         </StackPanel>
-
     </StackPanel>
 </UserControl>
