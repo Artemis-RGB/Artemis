@@ -1,4 +1,4 @@
-﻿using Artemis.Storage.Migrations.Interfaces;
+using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
 
 namespace Artemis.Storage.Migrations
@@ -15,9 +15,9 @@ namespace Artemis.Storage.Migrations
             {
                 foreach (BsonValue bsonDevice in bsonDocument["DeviceEntities"].AsArray)
                 {
-                    bsonDevice["RedScale"] = 1;
-                    bsonDevice["GreenScale"] = 1;
-                    bsonDevice["BlueScale"] = 1;
+                    bsonDevice["RedScale"] = 1d;
+                    bsonDevice["GreenScale"] = 1d;
+                    bsonDevice["BlueScale"] = 1d;
                 }
 
                 collection.Update(bsonDocument);
