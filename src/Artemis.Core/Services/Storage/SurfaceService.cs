@@ -49,6 +49,9 @@ namespace Artemis.Core.Services
                 configuration.Devices.Add(new ArtemisDevice(rgbDevice, deviceProvider, configuration));
             }
 
+            // Auto-arrange the new config
+            AutoArrange(configuration);
+
             lock (_surfaceConfigurations)
             {
                 _surfaceRepository.Add(configuration.SurfaceEntity);
@@ -102,6 +105,7 @@ namespace Artemis.Core.Services
                         deviceConfiguration.ApplyToRgbDevice();
                 }
             }
+
             surface.UpdateLedMap();
 
             _surfaceRepository.Save(surface.SurfaceEntity);
@@ -200,11 +204,13 @@ namespace Artemis.Core.Services
 
         #region AutoLayout
 
-        public void AutoArrange()
+        public void AutoArrange(ArtemisSurface? artemisSurface = null)
         {
+            artemisSurface ??= ActiveSurface;
+
             SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
-            surfaceArrangement.Arrange(ActiveSurface);
-            UpdateSurfaceConfiguration(ActiveSurface, true);
+            surfaceArrangement.Arrange(artemisSurface);
+            UpdateSurfaceConfiguration(artemisSurface, true);
         }
 
         #endregion
