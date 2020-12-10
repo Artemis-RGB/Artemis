@@ -216,7 +216,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public void PasteElement()
         {
             if (ProfileElement.Parent is Folder parent)
-                _profileEditorService.PasteProfileElement(parent, ProfileElement.Order);
+                _profileEditorService.PasteProfileElement(parent, ProfileElement.Order - 1);
         }
 
         public void UpdateProfileElements()

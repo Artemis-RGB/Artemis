@@ -42,7 +42,7 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
 
             Initialize();
-            Parent.AddChild(this);
+            Parent.AddChild(this, 0);
         }
 
         /// <summary>

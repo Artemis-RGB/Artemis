@@ -119,7 +119,7 @@ namespace Artemis.UI.Behaviors
             // If the selected item is a parent of this model - expand
             else
             {
-                bool isParentOfModel = HierarchyPredicate?.Invoke(SelectedItem, model) ?? true;
+                bool isParentOfModel = HierarchyPredicate?.Invoke(SelectedItem, model) ?? false;
                 if (isParentOfModel)
                     item.IsExpanded = true;
             }
