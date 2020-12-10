@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Ninject;
 using Artemis.Storage;
+using HidSharp;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
-using HidSharp;
 using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.Services
@@ -27,14 +27,16 @@ namespace Artemis.Core.Services
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
-        private readonly PluginSetting<double> _renderScale;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
+        private readonly PluginSetting<double> _renderScale;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
+        private readonly List<Exception> _updateExceptions = new List<Exception>();
         private List<BaseDataModelExpansion> _dataModelExpansions = new List<BaseDataModelExpansion>();
+        private DateTime _lastExceptionLog;
         private List<Module> _modules = new List<Module>();
-        
+
         // ReSharper disable UnusedParameter.Local - Storage migration and module service are injected early to ensure it runs before anything else
         public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
             IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
@@ -199,13 +201,33 @@ namespace Artemis.Core.Services
             }
             catch (Exception e)
             {
-                throw new ArtemisCoreException("Exception during update", e);
+                _updateExceptions.Add(e);
             }
             finally
             {
                 _frameStopWatch.Stop();
                 FrameTime = _frameStopWatch.Elapsed;
+
+                LogUpdateExceptions();
             }
+        }
+
+        private void LogUpdateExceptions()
+        {
+            // Only log update exceptions every 10 seconds to avoid spamming the logs
+            if (DateTime.Now - _lastExceptionLog < TimeSpan.FromSeconds(10))
+                return;
+            _lastExceptionLog = DateTime.Now;
+
+            if (!_updateExceptions.Any())
+                return;
+
+            // Group by stack trace, that should gather up duplicate exceptions
+            foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
+                _logger.Warning(exceptions.First(), "Exception was thrown {count} times during update in the last 10 seconds", exceptions.Count());
+
+            // When logging is finished start with a fresh slate
+            _updateExceptions.Clear();
         }
 
         private void SurfaceOnUpdated(UpdatedEventArgs args)
