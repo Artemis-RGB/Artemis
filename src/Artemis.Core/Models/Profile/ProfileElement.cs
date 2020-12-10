@@ -120,7 +120,7 @@ namespace Artemis.Core
         #region Hierarchy
 
         /// <summary>
-        ///     Adds a profile element to the <see cref="Children" /> collection, optionally at the given position (1-based)
+        ///     Adds a profile element to the <see cref="Children" /> collection, optionally at the given position (0-based)
         /// </summary>
         /// <param name="child">The profile element to add</param>
         /// <param name="order">The order where to place the child (0-based), defaults to the end of the collection</param>

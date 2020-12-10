@@ -39,11 +39,11 @@ namespace Artemis.Core.Services
             PluginSetting<LayerBrushReference> defaultReference = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
                 LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
-                BrushType = "ColorBrush"
+                BrushType = "SolidBrush"
             });
 
             defaultReference.Value.LayerBrushProviderId ??= "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba";
-            defaultReference.Value.BrushType ??= "ColorBrush";
+            defaultReference.Value.BrushType ??= "SolidBrush";
             return LayerBrushStore.Get(defaultReference.Value.LayerBrushProviderId, defaultReference.Value.BrushType)?.LayerBrushDescriptor;
         }
     }
