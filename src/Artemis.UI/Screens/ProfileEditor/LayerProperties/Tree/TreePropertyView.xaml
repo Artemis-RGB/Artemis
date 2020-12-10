@@ -69,12 +69,14 @@
                        Text="{Binding LayerProperty.PropertyDescription.Name}"
                        ToolTip="{Binding LayerProperty.PropertyDescription.Description}"
                        HorizontalAlignment="Left" />
-            
-            <ContentControl Grid.Column="2" Margin="20 0" s:View.Model="{Binding PropertyInputViewModel, IsAsync=True}">
+
+            <ContentControl Grid.Column="2" Margin="5 0" s:View.Model="{Binding PropertyInputViewModel, IsAsync=True}"  ToolTip="{Binding LayerProperty.PropertyDescription.Description}">
                 <ContentControl.Resources>
                     <Style TargetType="TextBlock">
                         <Setter Property="Margin" Value="0 0 5 4" />
                         <Setter Property="VerticalAlignment" Value="Bottom" />
+                        <Setter Property="FontSize" Value="11" />
+                        <Setter Property="FontWeight" Value="Light" />
                     </Style>
                 </ContentControl.Resources>
             </ContentControl>

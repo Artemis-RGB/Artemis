@@ -13,7 +13,7 @@
         <artemis:SKColorToColorConverter x:Key="SKColorToColorConverter" />
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <artemis:ColorPicker Width="132"
                              Margin="0 -2 0 3"
                              Padding="0 -1"
@@ -21,6 +21,6 @@
                              IsEnabled="{Binding IsEnabled}"
                              DragStarted="{s:Action InputDragStarted}"
                              DragEnded="{s:Action InputDragEnded}"/>
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

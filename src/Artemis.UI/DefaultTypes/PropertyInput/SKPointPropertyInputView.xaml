@@ -10,7 +10,7 @@
              d:DesignHeight="25" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance propertyInput:SKPointPropertyInputViewModel}">
     <StackPanel Orientation="Horizontal" KeyboardNavigation.IsTabStop="True">
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <shared:DraggableFloat ToolTip="X-coordinate (horizontal)"
                                Value="{Binding X}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
@@ -28,6 +28,6 @@
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
                                IsEnabled="{Binding IsYEnabled}"/>
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>

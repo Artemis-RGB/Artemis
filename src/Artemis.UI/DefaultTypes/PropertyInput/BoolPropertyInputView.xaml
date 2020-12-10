@@ -11,7 +11,7 @@
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <ComboBox Width="132"
                   Margin="0 2"
                   Padding="0 -1"
@@ -22,6 +22,6 @@
             <ComboBoxItem Content="True" IsSelected="{Binding InputValue}" />
             <ComboBoxItem Content="False" IsSelected="{Binding InputValue, Converter={StaticResource InverseBooleanConverter}}" />
         </ComboBox>
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>
