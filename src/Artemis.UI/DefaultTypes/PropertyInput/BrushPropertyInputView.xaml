@@ -18,7 +18,7 @@
         </ResourceDictionary>
     </UserControl.Resources>
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
         <ComboBox Width="132"
                   Margin="0 2"
                   Padding="0 -1"
@@ -31,6 +31,6 @@
                   ItemTemplateSelector="{dataTemplateSelectors:ComboBoxTemplateSelector
                                          SelectedItemTemplate={StaticResource SimpleLayerBrushDescriptorTemplate},
                                          DropdownItemsTemplate={StaticResource ExtendedLayerBrushDescriptorTemplate}}" />
-        <TextBlock Width="10" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
     </StackPanel>
 </UserControl>
