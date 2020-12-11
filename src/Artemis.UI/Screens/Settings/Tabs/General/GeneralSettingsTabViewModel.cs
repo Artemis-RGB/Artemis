@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.SetupWizard;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Ninject;
 using Serilog.Events;
 using Stylet;
 
@@ -18,6 +20,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
     public class GeneralSettingsTabViewModel : Screen
     {
         private readonly IDebugService _debugService;
+        private readonly IKernel _kernel;
+        private readonly IWindowManager _windowManager;
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
         private List<Tuple<string, double>> _renderScales;
@@ -25,10 +29,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private List<Tuple<string, int>> _targetFrameRates;
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
 
-        public GeneralSettingsTabViewModel(IDialogService dialogService, IDebugService debugService, ISettingsService settingsService, IPluginManagementService pluginManagementService)
+        public GeneralSettingsTabViewModel(
+            IKernel kernel, 
+            IWindowManager windowManager, 
+            IDialogService dialogService, 
+            IDebugService debugService,
+            ISettingsService settingsService, 
+            IPluginManagementService pluginManagementService)
         {
             DisplayName = "GENERAL";
 
+            _kernel = kernel;
+            _windowManager = windowManager;
             _dialogService = dialogService;
             _debugService = debugService;
             _settingsService = settingsService;
@@ -197,6 +209,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             {
                 _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the logs folder for you", e);
             }
+        }
+
+        public void ShowSetupWizard()
+        {
+            _windowManager.ShowDialog(_kernel.Get<SetupWizardViewModel>());
         }
 
         public void ShowDataFolder()

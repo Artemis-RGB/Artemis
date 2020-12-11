@@ -90,6 +90,29 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Setup wizard</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                Opens the setup wizard usually shown when Artemis first starts.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowSetupWizard}" Width="150">
+                                SHOW WIZARD
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Debugger</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
                                 Use the debugger to see the raw image Artemis is rendering on the surface.
@@ -148,7 +171,7 @@
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
+                 
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />

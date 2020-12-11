@@ -10,12 +10,14 @@ using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Settings.Tabs.General;
+using Artemis.UI.Screens.SetupWizard;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
 using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
+using Ninject;
 using Stylet;
 
 namespace Artemis.UI.Screens
@@ -25,8 +27,11 @@ namespace Artemis.UI.Screens
         private readonly IRegistrationService _builtInRegistrationService;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
+        private readonly IWindowManager _windowManager;
         private readonly IDebugService _debugService;
+        private readonly IKernel _kernel;
         private readonly IEventAggregator _eventAggregator;
+        private readonly ISettingsService _settingsService;
         private readonly Timer _frameTimeUpdateTimer;
         private readonly SidebarViewModel _sidebarViewModel;
         private readonly ISnackbarMessageQueue _snackbarMessageQueue;
@@ -40,16 +45,21 @@ namespace Artemis.UI.Screens
         private string _windowTitle;
 
         public RootViewModel(
+            IKernel kernel,
             IEventAggregator eventAggregator,
             ISettingsService settingsService,
             ICoreService coreService,
+            IWindowManager windowManager,
             IDebugService debugService,
             IRegistrationService builtInRegistrationService,
             ISnackbarMessageQueue snackbarMessageQueue,
             SidebarViewModel sidebarViewModel)
         {
+            _kernel = kernel;
             _eventAggregator = eventAggregator;
+            _settingsService = settingsService;
             _coreService = coreService;
+            _windowManager = windowManager;
             _debugService = debugService;
             _builtInRegistrationService = builtInRegistrationService;
             _snackbarMessageQueue = snackbarMessageQueue;
@@ -57,16 +67,16 @@ namespace Artemis.UI.Screens
 
             _frameTimeUpdateTimer = new Timer(500);
 
-            _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
-            _windowSize = settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
+            _colorScheme = _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+            _windowSize = _settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
 
             _themeWatcher = new ThemeWatcher();
             ApplyColorSchemeSetting();
 
             ActiveItem = sidebarViewModel.SelectedItem;
             ActiveItemReady = true;
-            PinSidebar = settingsService.GetSetting("UI.PinSidebar", false);
-            
+            PinSidebar = _settingsService.GetSetting("UI.PinSidebar", false);
+
             AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
         }
@@ -281,7 +291,16 @@ namespace Artemis.UI.Screens
 
             _window = (MaterialWindow) View;
 
+            PluginSetting<bool> setupWizardCompleted = _settingsService.GetSetting("UI.SetupWizardCompleted", false);
+            if (!setupWizardCompleted.Value)
+                ShowSetupWizard();
+
             base.OnInitialActivate();
+        }
+
+        private void ShowSetupWizard()
+        {
+            _windowManager.ShowDialog(_kernel.Get<SetupWizardViewModel>());
         }
 
         protected override void OnClose()

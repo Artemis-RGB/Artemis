@@ -31,4 +31,15 @@
         </Style.Resources>
         <Setter Property="MaxWidth" Value="500" />
     </Style>
+
+    <Style TargetType="Hyperlink" x:Key="ArtemisHyperlink">
+        <Setter Property="Foreground" Value="{DynamicResource PrimaryHueMidBrush}" />
+        <Setter Property="TextDecorations">
+            <Setter.Value>
+                <TextDecorationCollection>
+                    <TextDecoration />
+                </TextDecorationCollection>
+            </Setter.Value>
+        </Setter>
+    </Style>
 </ResourceDictionary>
