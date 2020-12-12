@@ -1,22 +1,19 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.SetupWizard.Steps;
+using Artemis.UI.Screens.StartupWizard.Steps;
 using MaterialDesignExtensions.Controllers;
 using MaterialDesignExtensions.Controls;
-using MaterialDesignExtensions.Model;
 using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard
+namespace Artemis.UI.Screens.StartupWizard
 {
-    public class SetupWizardViewModel : Conductor<Screen>.Collection.OneActive
+    public class StartupWizardViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly ISettingsService _settingsService;
         private StepperController _stepperController;
 
-        public SetupWizardViewModel(ISettingsService settingsService,
+        public StartupWizardViewModel(ISettingsService settingsService,
             WelcomeStepViewModel welcome,
             DevicesStepViewModel devices,
             LayoutStepViewModel layout,

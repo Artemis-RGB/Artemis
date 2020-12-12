@@ -9,7 +9,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard.Steps
+namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class SettingsStepViewModel : Conductor<PluginFeatureViewModel>.Collection.AllActive
     {

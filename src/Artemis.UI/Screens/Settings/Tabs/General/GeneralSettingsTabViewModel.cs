@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
-using Artemis.UI.Screens.SetupWizard;
+using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -213,7 +213,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
         public void ShowSetupWizard()
         {
-            _windowManager.ShowDialog(_kernel.Get<SetupWizardViewModel>());
+            _windowManager.ShowDialog(_kernel.Get<StartupWizardViewModel>());
         }
 
         public void ShowDataFolder()

@@ -6,7 +6,7 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard.Steps
+namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class DevicesStepViewModel : Conductor<PluginFeatureViewModel>.Collection.AllActive
     {

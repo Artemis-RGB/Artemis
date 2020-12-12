@@ -1,7 +1,7 @@
 ﻿using Artemis.Core.Services;
 using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard.Steps
+namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class LayoutStepViewModel : Screen
     {
@@ -15,15 +15,15 @@ namespace Artemis.UI.Screens.SetupWizard.Steps
         public void ApplyLeftHandedPreset()
         {
             _surfaceService.AutoArrange();
-            SetupWizardViewModel setupWizardViewModel = (SetupWizardViewModel) Parent;
-            setupWizardViewModel.Continue();
+            StartupWizardViewModel startupWizardViewModel = (StartupWizardViewModel) Parent;
+            startupWizardViewModel.Continue();
         }
 
         public void ApplyRightHandedPreset()
         {
             _surfaceService.AutoArrange();
-            SetupWizardViewModel setupWizardViewModel = (SetupWizardViewModel) Parent;
-            setupWizardViewModel.Continue();
+            StartupWizardViewModel startupWizardViewModel = (StartupWizardViewModel) Parent;
+            startupWizardViewModel.Continue();
         }
     }
 }

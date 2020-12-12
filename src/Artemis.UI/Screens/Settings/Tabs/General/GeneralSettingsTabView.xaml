@@ -92,7 +92,7 @@
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Setup wizard</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                Opens the setup wizard usually shown when Artemis first starts.
+                                Opens the startup wizard usually shown when Artemis first starts.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
