@@ -38,7 +38,7 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
-            RGB.NET.Core.Color originalColor = Led.RgbLed.Color.DivideRGB(Led.Device.RedScale, Led.Device.GreenScale, Led.Device.BlueScale);
+            RGB.NET.Core.Color originalColor = Led.GetOriginalColor();
             byte r = originalColor.GetR();
             byte g = originalColor.GetG();
             byte b = originalColor.GetB();

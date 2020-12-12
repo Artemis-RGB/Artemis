@@ -68,5 +68,14 @@ namespace Artemis.Core
         {
             return RgbLed.ToString();
         }
+
+        /// <summary>
+        ///     Gets the color of this led, reverting the correction done to the parent device
+        /// </summary>
+        /// <returns></returns>
+        public Color GetOriginalColor()
+        {
+            return RgbLed.Color.DivideRGB(Device.RedScale, Device.GreenScale, Device.BlueScale);
+        }
     }
 }
