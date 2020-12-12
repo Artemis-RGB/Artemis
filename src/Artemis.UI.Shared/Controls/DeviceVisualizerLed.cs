@@ -38,9 +38,10 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
-            byte r = Led.RgbLed.Color.GetR();
-            byte g = Led.RgbLed.Color.GetG();
-            byte b = Led.RgbLed.Color.GetB();
+            RGB.NET.Core.Color originalColor = Led.GetOriginalColor();
+            byte r = originalColor.GetR();
+            byte g = originalColor.GetG();
+            byte b = originalColor.GetB();
 
             drawingContext.DrawRectangle(isDimmed
                 ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
