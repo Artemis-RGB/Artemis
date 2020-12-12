@@ -207,7 +207,9 @@ namespace Artemis.Core.Services
         public void AutoArrange(ArtemisSurface? artemisSurface = null)
         {
             artemisSurface ??= ActiveSurface;
-
+            if (!artemisSurface.Devices.Any())
+                return;
+            
             SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
             surfaceArrangement.Arrange(artemisSurface);
             UpdateSurfaceConfiguration(artemisSurface, true);

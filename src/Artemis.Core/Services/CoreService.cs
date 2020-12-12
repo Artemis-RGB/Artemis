@@ -97,7 +97,6 @@ namespace Artemis.Core.Services
             ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
             _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
 
-            PlayIntroAnimation();
             OnInitialized();
         }
 
@@ -111,12 +110,8 @@ namespace Artemis.Core.Services
             FrameRendered?.Invoke(this, e);
         }
 
-        private void PlayIntroAnimation()
+        public void PlayIntroAnimation()
         {
-            // The intro is cool and all, but sometimes you just wanna see what you're working on straight away ^^
-            if (Debugger.IsAttached)
-                return;
-
             IntroAnimation intro = new IntroAnimation(_logger, _profileService, _surfaceService);
 
             // Draw a white overlay over the device

@@ -185,6 +185,7 @@ namespace Artemis.Core.Services
             // Load the plugin assemblies into the plugin context
             DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
+            {
                 try
                 {
                     Plugin plugin = LoadPlugin(subDirectory);
@@ -195,6 +196,7 @@ namespace Artemis.Core.Services
                 {
                     _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                 }
+            }
 
             LoadingPlugins = false;
         }
@@ -308,6 +310,7 @@ namespace Artemis.Core.Services
             // Create instances of each feature and add them to the plugin
             // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
             foreach (Type featureType in featureTypes)
+            {
                 try
                 {
                     plugin.Kernel.Bind(featureType).ToSelf().InSingletonScope();
@@ -319,15 +322,17 @@ namespace Artemis.Core.Services
 
                     // Load the enabled state and if not found, default to true
                     instance.Entity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                      new PluginFeatureEntity {IsEnabled = true, Type = featureType.FullName!};
+                                      new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName!};
                 }
                 catch (Exception e)
                 {
                     throw new ArtemisPluginException(plugin, "Failed to instantiate feature", e);
                 }
+            }
 
             // Activate plugins after they are all loaded
             foreach (PluginFeature pluginFeature in plugin.Features.Where(i => i.Entity.IsEnabled))
+            {
                 try
                 {
                     EnablePluginFeature(pluginFeature, false, !ignorePluginLock);
@@ -336,6 +341,7 @@ namespace Artemis.Core.Services
                 {
                     // ignored, logged in EnablePluginFeature
                 }
+            }
 
             if (saveState)
             {
@@ -477,8 +483,10 @@ namespace Artemis.Core.Services
         private void SavePlugin(Plugin plugin)
         {
             foreach (PluginFeature pluginFeature in plugin.Features)
+            {
                 if (plugin.Entity.Features.All(i => i.Type != pluginFeature.GetType().FullName))
                     plugin.Entity.Features.Add(pluginFeature.Entity);
+            }
 
             _pluginRepository.SavePlugin(plugin.Entity);
         }

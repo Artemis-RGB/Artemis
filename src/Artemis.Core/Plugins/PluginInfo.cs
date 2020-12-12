@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -9,6 +10,7 @@ namespace Artemis.Core
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : CorePropertyChanged
     {
+        private bool _autoEnableFeatures = true;
         private string? _description;
         private Guid _guid;
         private string? _icon;
@@ -81,6 +83,17 @@ namespace Artemis.Core
         {
             get => _main;
             internal set => SetAndNotify(ref _main, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this plugin should automatically enable all its features when it is first loaded
+        /// </summary>
+        [DefaultValue(true)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+        public bool AutoEnableFeatures
+        {
+            get => _autoEnableFeatures;
+            set => SetAndNotify(ref _autoEnableFeatures, value);
         }
 
         /// <summary>
