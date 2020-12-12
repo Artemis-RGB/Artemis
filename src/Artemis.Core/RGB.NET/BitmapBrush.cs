@@ -102,9 +102,9 @@ namespace Artemis.Core
                 Point scaledLocation = renderTarget.Point * Scale;
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
                 {
-                    var pixel = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
-                    var artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
-                    if (artemisDevice is not null)
+                    Color pixel = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
+                    ArtemisDevice? artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
+                    if (artemisDevice != null)
                         pixel = pixel.MultiplyRGB(artemisDevice.RedScale, artemisDevice.GreenScale, artemisDevice.BlueScale);
                     RenderedTargets[renderTarget] = pixel;
                 }
@@ -154,12 +154,13 @@ namespace Artemis.Core
                         // Bitmap.SetPixel(x, y, new SKColor(0, 255, 0));
                     }
                 }
-                var pixel = new Color(a / sampleSize, r / sampleSize, g / sampleSize, b / sampleSize);
 
-                var artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
+                Color pixel = new Color(a / sampleSize, r / sampleSize, g / sampleSize, b / sampleSize);
+
+                ArtemisDevice? artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
                 if (artemisDevice is not null)
                     pixel = pixel.MultiplyRGB(artemisDevice.RedScale, artemisDevice.GreenScale, artemisDevice.BlueScale);
-  
+
                 RenderedTargets[renderTarget] = pixel;
             }
         }
