@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Artemis.Core.Services
 {
     /// <summary>
-    /// A service that initializes the Core and manages the render loop
+    ///     A service that initializes the Core and manages the render loop
     /// </summary>
     public interface ICoreService : IArtemisService, IDisposable
     {
@@ -32,6 +32,11 @@ namespace Artemis.Core.Services
         ///     Initializes the core, only call once
         /// </summary>
         void Initialize();
+
+        /// <summary>
+        ///     Plays the into animation profile defined in <c>Resources/intro-profile.json</c>
+        /// </summary>
+        void PlayIntroAnimation();
 
         /// <summary>
         ///     Occurs the core has finished initializing
