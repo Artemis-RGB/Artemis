@@ -1,8 +1,6 @@
-﻿using System;
-using Artemis.UI.Shared;
-using Stylet;
+﻿using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard.Steps
+namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class WelcomeStepViewModel : Screen
     {

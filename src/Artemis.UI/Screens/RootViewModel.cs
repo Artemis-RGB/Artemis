@@ -10,8 +10,8 @@ using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Settings.Tabs.General;
-using Artemis.UI.Screens.SetupWizard;
 using Artemis.UI.Screens.Sidebar;
+using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Utilities;
@@ -300,7 +300,7 @@ namespace Artemis.UI.Screens
 
         private void ShowSetupWizard()
         {
-            _windowManager.ShowDialog(_kernel.Get<SetupWizardViewModel>());
+            _windowManager.ShowDialog(_kernel.Get<StartupWizardViewModel>());
         }
 
         protected override void OnClose()

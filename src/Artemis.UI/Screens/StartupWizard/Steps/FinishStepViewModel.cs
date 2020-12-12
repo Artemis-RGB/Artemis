@@ -2,7 +2,7 @@
 using Artemis.Core.Services;
 using Stylet;
 
-namespace Artemis.UI.Screens.SetupWizard.Steps
+namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class FinishStepViewModel : Screen
     {
@@ -20,7 +20,7 @@ namespace Artemis.UI.Screens.SetupWizard.Steps
 
         public void Finish()
         {
-            ((SetupWizardViewModel) Parent).SkipOrFinishWizard();
+            ((StartupWizardViewModel) Parent).SkipOrFinishWizard();
         }
 
         protected override void OnActivate()
