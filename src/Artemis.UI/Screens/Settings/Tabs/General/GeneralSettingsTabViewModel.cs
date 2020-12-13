@@ -108,6 +108,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             {
                 _settingsService.GetSetting("UI.AutoRun", false).Value = value;
                 _settingsService.GetSetting("UI.AutoRun", false).Save();
+                NotifyOfPropertyChange(nameof(StartWithWindows));
                 Task.Run(ApplyAutorun);
             }
         }
@@ -119,6 +120,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             {
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Value = !value;
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Save();
+                NotifyOfPropertyChange(nameof(StartMinimized));
             }
         }
 
@@ -245,6 +247,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                     File.Delete(autoRunFile);
                 if (StartWithWindows)
                     ShortcutUtilities.Create(autoRunFile, executableFile, "--autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
+                else
+                    StartMinimized = false;
             }
             catch (Exception e)
             {
