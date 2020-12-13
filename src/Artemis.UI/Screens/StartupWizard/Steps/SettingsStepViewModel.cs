@@ -33,6 +33,7 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             {
                 _settingsService.GetSetting("UI.AutoRun", false).Value = value;
                 _settingsService.GetSetting("UI.AutoRun", false).Save();
+                NotifyOfPropertyChange(nameof(StartWithWindows));
                 Task.Run(ApplyAutorun);
             }
         }
@@ -44,9 +45,9 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             {
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Value = !value;
                 _settingsService.GetSetting("UI.ShowOnStartup", true).Save();
+                NotifyOfPropertyChange(nameof(StartMinimized));
             }
         }
-
 
         public ApplicationColorScheme SelectedColorScheme
         {
@@ -69,6 +70,8 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
                     File.Delete(autoRunFile);
                 if (StartWithWindows)
                     ShortcutUtilities.Create(autoRunFile, executableFile, "--autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
+                else
+                    StartMinimized = false;
             }
             catch (Exception e)
             {

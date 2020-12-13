@@ -15,6 +15,7 @@
                     Foreground="{DynamicResource MaterialDesignBody}"
                     Background="{DynamicResource MaterialDesignPaper}"
                     FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                    UseLayoutRounding="True"
                     d:DesignHeight="450" d:DesignWidth="800">
 
     <mde:Stepper IsLinear="True" Layout="Horizontal" ActiveStepChanged="{s:Action ActiveStepChanged}" CancelNavigation="{s:Action SkipOrFinishWizard}" Margin="15">
@@ -44,7 +45,7 @@
         </mde:Step>
         <mde:Step>
             <mde:Step.Header>
-                <mde:StepTitleHeader FirstLevelTitle="Settings" SecondLevelTitle="Choose your preferences" />
+                <mde:StepTitleHeader FirstLevelTitle="Settings" SecondLevelTitle="Set your preferences" />
             </mde:Step.Header>
             <mde:Step.Content>
                 <ContentControl s:View.Model="{Binding ActiveItem}" />
