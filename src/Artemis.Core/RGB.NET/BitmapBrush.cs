@@ -17,9 +17,9 @@ namespace Artemis.Core
 
         internal BitmapBrush(Scale scale, PluginSetting<int> sampleSizeSetting)
         {
+            _disposeLock = new object();
             _sampleSizeSetting = sampleSizeSetting;
             Scale = scale;
-            _disposeLock = new object();
         }
 
         #endregion

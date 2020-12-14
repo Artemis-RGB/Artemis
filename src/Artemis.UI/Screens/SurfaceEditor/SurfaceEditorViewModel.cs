@@ -119,9 +119,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             bool confirmed = await _dialogService.ShowConfirmDialog("Auto-arrange layout", "Are you sure you want to auto-arrange your layout? Your current settings will be overwritten.");
             if (!confirmed)
                 return;
-            
-            _surfaceService.AutoArrange();
 
+            _surfaceService.AutoArrange();
         }
 
         private void LoadWorkspaceSettings()
@@ -405,9 +404,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                         device.SelectionStatus = SelectionStatus.None;
             }
             else
-            {
                 _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
-            }
 
             _mouseDragStatus = MouseDragStatus.None;
             _rgbService.IsRenderPaused = false;

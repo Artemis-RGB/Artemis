@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using RGB.NET.Core;
+using SkiaSharp;
 using Stylet;
 using Point = System.Windows.Point;
 
@@ -58,11 +61,24 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         public void UpdateMouseDrag(Point mousePosition)
         {
-            double roundedX = Math.Round((mousePosition.X + _dragOffsetX) / 10, 0, MidpointRounding.AwayFromZero) * 10;
-            double roundedY = Math.Round((mousePosition.Y + _dragOffsetY) / 10, 0, MidpointRounding.AwayFromZero) * 10;
-            Device.X = Math.Max(0, roundedX);
-            Device.Y = Math.Max(0, roundedY);
+            float roundedX = (float) Math.Round((mousePosition.X + _dragOffsetX) / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
+            float roundedY = (float) Math.Round((mousePosition.Y + _dragOffsetY) / 10d, 0, MidpointRounding.AwayFromZero) * 10f;
+
+            if (Fits(roundedX, roundedY))
+            {
+                Device.X = roundedX;
+                Device.Y = roundedY;
+            }
+            else if (Fits(roundedX, (float) Device.Y))
+            {
+                Device.X = roundedX;
+            }
+            else if (Fits((float) Device.X, roundedY))
+            {
+                Device.Y = roundedY;
+            }
         }
+
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void MouseEnter(object sender, MouseEventArgs e)
@@ -89,6 +105,23 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             if ((new Point(0, 0) - position).LengthSquared < 5) return MouseDevicePosition.TopLeft;
 
             return MouseDevicePosition.Regular;
+        }
+
+        private bool Fits(float x, float y)
+        {
+            if (x < 0 || y < 0)
+                return false;
+
+            List<SKRect> own = Device.Leds
+                .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height))
+                .ToList();
+            List<SKRect> others = Device.Surface.Devices
+                .Where(d => d != Device)
+                .SelectMany(d => d.Leds)
+                .Select(l => SKRect.Create(l.Rectangle.Left + (float) l.Device.X, l.Rectangle.Top + (float) l.Device.Y, l.Rectangle.Width, l.Rectangle.Height))
+                .ToList();
+
+            return !own.Any(o => others.Any(l => l.IntersectsWith(o)));
         }
     }
 
