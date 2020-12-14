@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Windows;
 using Artemis.Core;
-using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Shared;
@@ -74,8 +73,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         private static DragDropType GetDragDropType(IDropInfo dropInfo)
         {
-            TreeItemViewModel source = (TreeItemViewModel)dropInfo.Data;
-            TreeItemViewModel target = (TreeItemViewModel)dropInfo.TargetItem;
+            if (!(dropInfo.Data is TreeItemViewModel source) || !(dropInfo.TargetItem is TreeItemViewModel target))
+                return DragDropType.None;
             if (source == target)
                 return DragDropType.None;
 
@@ -121,14 +120,16 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         public void Drop(IDropInfo dropInfo)
         {
-            TreeItemViewModel source = (TreeItemViewModel)dropInfo.Data;
-            TreeItemViewModel target = (TreeItemViewModel)dropInfo.TargetItem;
+            if (!(dropInfo.Data is TreeItemViewModel source) || !(dropInfo.TargetItem is TreeItemViewModel target))
+                return;
+            if (source == target)
+                return;
 
             DragDropType dragDropType = GetDragDropType(dropInfo);
             switch (dragDropType)
             {
                 case DragDropType.Add:
-                    ((TreeItemViewModel)source.Parent).RemoveExistingElement(source);
+                    ((TreeItemViewModel) source.Parent).RemoveExistingElement(source);
                     target.AddExistingElement(source);
                     break;
                 case DragDropType.InsertBefore:
