@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 using Artemis.Core;
+using Stylet;
 
 namespace Artemis.UI.Shared
 {
@@ -37,7 +38,7 @@ namespace Artemis.UI.Shared
 
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
-        private readonly DispatcherTimer _timer;
+        private readonly Timer _timer;
         private BitmapImage? _deviceImage;
         private ArtemisDevice? _oldDevice;
 
@@ -50,8 +51,8 @@ namespace Artemis.UI.Shared
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
 
             // Run an update timer at 25 fps
-            _timer = new DispatcherTimer {Interval = TimeSpan.FromMilliseconds(40)};
-            _timer.Tick += TimerOnTick;
+            _timer = new Timer(40);
+            _timer.Elapsed += TimerOnTick;
 
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
@@ -93,17 +94,7 @@ namespace Artemis.UI.Shared
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                _timer.Stop();
-            }
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            if (disposing) _timer.Stop();
         }
 
         /// <inheritdoc />
@@ -190,7 +181,7 @@ namespace Artemis.UI.Shared
 
             if (_oldDevice != null)
             {
-                if (Device != null) 
+                if (Device != null)
                     Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
                 _oldDevice = null;
             }
@@ -203,8 +194,11 @@ namespace Artemis.UI.Shared
 
         private void TimerOnTick(object? sender, EventArgs e)
         {
-            if (ShowColors && Visibility == Visibility.Visible)
-                Render();
+            Execute.PostToUIThread(() =>
+            {
+                if (ShowColors && Visibility == Visibility.Visible)
+                    Render();
+            });
         }
 
         private void UpdateTransform()
@@ -295,17 +289,20 @@ namespace Artemis.UI.Shared
             DrawingContext drawingContext = _backingStore.Open();
 
             if (HighlightedLeds != null && HighlightedLeds.Any())
-            {
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
-            }
             else
-            {
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(drawingContext, false);
-            }
 
             drawingContext.Close();
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

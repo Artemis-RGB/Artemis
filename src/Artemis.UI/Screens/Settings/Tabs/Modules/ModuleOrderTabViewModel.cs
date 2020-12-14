@@ -53,8 +53,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Modules
             if (dropInfo.TargetItem == dropInfo.Data)
                 return;
 
-            ModuleOrderModuleViewModel viewModel = (ModuleOrderModuleViewModel) dropInfo.Data;
-            BindableCollection<ModuleOrderModuleViewModel> targetCollection = (BindableCollection<ModuleOrderModuleViewModel>) dropInfo.TargetCollection;
+            if (!(dropInfo.Data is ModuleOrderModuleViewModel viewModel))
+                return;
+            if (!(dropInfo.TargetCollection is BindableCollection<ModuleOrderModuleViewModel> targetCollection))
+                return;
+
             int insertIndex = dropInfo.InsertIndex;
 
             ModulePriorityCategory category;
