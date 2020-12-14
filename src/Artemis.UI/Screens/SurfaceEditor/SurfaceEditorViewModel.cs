@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Shared;
@@ -112,6 +113,11 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ArtemisSurface config = _surfaceService.CreateSurfaceConfiguration(name);
             Execute.PostToUIThread(() => SurfaceConfigurations.Add(config));
             return config;
+        }
+
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
+        {
+            Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
         }
 
         public async Task AutoArrange()

@@ -20,7 +20,7 @@
     <Grid>
         <!-- Content -->
         <Grid>
-            <shared:DeviceVisualizer Device="{Binding Device}" VerticalAlignment="Top" HorizontalAlignment="Left" />
+            <shared:DeviceVisualizer Device="{Binding Device}" ShowColors="True" VerticalAlignment="Top" HorizontalAlignment="Left" />
 
             <Rectangle Fill="{DynamicResource MaterialDesignCardBackground}"
                        Stroke="{DynamicResource MaterialDesignTextBoxBorder}"
