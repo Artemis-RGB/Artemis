@@ -167,18 +167,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             }
         }
 
-        // ReSharper disable once UnusedMember.Global - Called from view
-        public async Task DeleteElement()
+        public void DeleteElement()
         {
-            bool result = await _dialogService.ShowConfirmDialogAt(
-                "ProfileTreeDialog",
-                "Delete profile element",
-                "Are you sure?"
-            );
-
-            if (!result)
-                return;
-
             ProfileElement newSelection = null;
             if (ProfileElement.Parent != null)
             {
