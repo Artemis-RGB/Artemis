@@ -136,19 +136,16 @@ namespace Artemis.UI.Shared
                 Validate();
             // Only apply the input value to the layer property if the validator found no errors
             if (!HasErrors)
-                SetCurrentValue(_inputValue, !InputDragging);
+            {
+                OnInputValueChanged();
+                LayerProperty.SetCurrentValue(_inputValue, ProfileEditorService.CurrentTime);
+                OnInputValueApplied();
 
-            OnInputValueChanged();
-            OnInputValueApplied();
-        }
-
-        private void SetCurrentValue(T value, bool saveChanges)
-        {
-            LayerProperty.SetCurrentValue(value, ProfileEditorService.CurrentTime);
-            if (saveChanges)
-                ProfileEditorService.UpdateSelectedProfileElement();
-            else
-                ProfileEditorService.UpdateProfilePreview();
+                if (InputDragging)
+                    ProfileEditorService.UpdateProfilePreview();
+                else
+                    ProfileEditorService.UpdateSelectedProfileElement();
+            }
         }
 
         private void UpdateInputValue()
