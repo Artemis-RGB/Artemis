@@ -6,10 +6,12 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBinding<TLayerProperty, TProperty> : IDataBinding
     {
-        private TProperty _currentValue = default!;
         private bool _disposed;
         private TimeSpan _easingProgress;
+        private bool _reapplyValue;
+        private TProperty _currentValue = default!;
         private TProperty _previousValue = default!;
+        private TProperty _lastAppliedValue = default!;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -114,6 +116,9 @@ namespace Artemis.Core
             _easingProgress = _easingProgress.Add(delta);
             if (_easingProgress > EasingTime)
                 _easingProgress = EasingTime;
+
+            // Tell Apply() to apply a new value next call
+            _reapplyValue = false;
         }
 
         private void ResetEasing(TProperty value)
@@ -158,6 +163,11 @@ namespace Artemis.Core
         /// <param name="timeline">The timeline to apply during update</param>
         public void Update(Timeline timeline)
         {
+            // Don't update data bindings if there is no delta, otherwise this creates an inconsistency between
+            // data bindings with easing and data bindings without easing (the ones with easing will seemingly not update)
+            if (timeline.Delta == TimeSpan.Zero) 
+                return;
+            
             UpdateWithDelta(timeline.Delta);
         }
 
@@ -170,9 +180,19 @@ namespace Artemis.Core
             if (Converter == null)
                 return;
 
+            // If Update() has not been called, reapply the previous value
+            if (_reapplyValue)
+            {
+                Converter.ApplyValue(_lastAppliedValue);
+                return;
+            }
+
             TProperty converterValue = Converter.GetValue();
             TProperty value = GetValue(converterValue);
             Converter.ApplyValue(value);
+
+            _lastAppliedValue = value;
+            _reapplyValue = true;
         }
 
         #region IDisposable
