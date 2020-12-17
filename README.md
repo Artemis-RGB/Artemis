@@ -65,3 +65,9 @@ _With the keyframe engine you can animate almost any property of the layer. In t
 
 ![Conditions](https://i.imgur.com/ERHRFQj.png)
 _Using visual programming you can create conditions to dictate when a layer may show. The data available to these conditions is provided by plugins, allowing easy expansion._
+
+### Special thanks
+Over the years several companies have supported Artemis by providing both hardware and software, thank you!
+[![Corsair](https://i.imgur.com/UKUdDOy.png)](https://www.corsair.com/) 
+[![JetBrains](https://i.imgur.com/JYfXjjB.png)](https://www.jetbrains.com/?from=ArtemisRGB) 
+[![Wooting](https://i.imgur.com/Zh3bVza.png)](https://wooting.io/) 
