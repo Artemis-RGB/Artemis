@@ -182,6 +182,21 @@ namespace Artemis.UI.Screens.ProfileEditor
                 RemoveProfile(SelectedProfile);
         }
 
+        public async Task RenameActiveProfile()
+        {
+            if (_profileEditorService.SelectedProfile == null)
+                return;
+
+            Profile profile = _profileEditorService.SelectedProfile;
+            object result = await DialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object> {{"profile", profile}});
+            if (result is string name)
+            {
+                profile.Name = name;
+                _profileEditorService.UpdateSelectedProfile();
+                SelectedProfile.Update();
+            }
+        }
+
         public async Task ExportActiveProfile()
         {
             await DialogService.ShowDialog<ProfileExportViewModel>(new Dictionary<string, object>
@@ -228,7 +243,7 @@ namespace Artemis.UI.Screens.ProfileEditor
                 await Task.Delay(50);
                 focusedElement?.Focus();
             });
-            
+
             _snackbarMessageQueue.Enqueue("Undid profile update", "REDO", Redo);
         }
 
