@@ -118,7 +118,8 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="json">The content of the profile as JSON</param>
         /// <param name="profileModule">The module to import the profile in to</param>
+        /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
         /// <returns></returns>
-        ProfileDescriptor ImportProfile(string json, ProfileModule profileModule);
+        ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix = "imported");
     }
 }
