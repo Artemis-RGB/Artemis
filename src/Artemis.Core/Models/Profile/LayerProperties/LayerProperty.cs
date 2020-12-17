@@ -289,9 +289,9 @@ namespace Artemis.Core
             if (keyframeEntity.Position > ProfileElement.Timeline.Length)
                 return null;
             T value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
-            if (value == null) 
+            if (value == null)
                 return null;
-          
+
             LayerPropertyKeyframe<T> keyframe = new LayerPropertyKeyframe<T>(
                 CoreJson.DeserializeObject<T>(keyframeEntity.Value)!, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction, this
             );
@@ -470,10 +470,6 @@ namespace Artemis.Core
 
         private void UpdateDataBindings(Timeline timeline)
         {
-            // To avoid data bindings applying at non-regular updating (during editing) only update when not overriden
-            if (timeline.IsOverridden)
-                return;
-
             foreach (IDataBinding dataBinding in _dataBindings)
             {
                 dataBinding.Update(timeline);
@@ -543,7 +539,7 @@ namespace Artemis.Core
             _keyframes.Clear();
             try
             {
-                foreach (KeyframeEntity keyframeEntity in Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length)) 
+                foreach (KeyframeEntity keyframeEntity in Entity.KeyframeEntities.Where(k => k.Position <= ProfileElement.Timeline.Length))
                     AddKeyframeEntity(keyframeEntity);
             }
             catch (JsonException)

@@ -15,7 +15,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private readonly Timer _updateTimer;
-        private bool _applyTestResultToLayer;
         private int _easingTime;
         private bool _isDataBindingEnabled;
         private bool _isEasingTimeEnabled;
@@ -68,17 +67,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             get => _isDataBindingEnabled;
             set => SetAndNotify(ref _isDataBindingEnabled, value);
         }
-
-        public bool ApplyTestResultToLayer
-        {
-            get => _applyTestResultToLayer;
-            set
-            {
-                if (!SetAndNotify(ref _applyTestResultToLayer, value)) return;
-                _profileEditorService.UpdateProfilePreview();
-            }
-        }
-
+        
         public TimelineEasingViewModel SelectedEasingViewModel
         {
             get => _selectedEasingViewModel;
@@ -121,7 +110,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
-            Registration.LayerProperty.Updated += LayerPropertyOnUpdated;
 
             CreateDataBindingModeModeViewModel();
             Update();
@@ -239,15 +227,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             {
                 TestResultValue.UpdateValue(Registration.DataBinding != null ? Registration.DataBinding.GetValue(default) : default);
             }
-
-            if (ApplyTestResultToLayer)
-            {
-                // TODO: A bit crappy, the ProfileEditorService should really be doing this
-                bool playing = ((Parent as Screen)?.Parent as LayerPropertiesViewModel)?.Playing ?? true;
-                if (!playing)
-                    _profileEditorService.UpdateProfilePreview();
-            }
-
+            
+            _profileEditorService.UpdateProfilePreview();
             _updatingTestResult = false;
         }
 
@@ -276,12 +257,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             UpdateTestResult();
         }
 
-        private void LayerPropertyOnUpdated(object sender, LayerPropertyEventArgs<TLayerProperty> e)
-        {
-            if (ApplyTestResultToLayer)
-                Registration.DataBinding?.Apply();
-        }
-
         #region IDisposable
 
         /// <inheritdoc />
@@ -289,8 +264,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             _updateTimer.Dispose();
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-
-            Registration.LayerProperty.Updated -= LayerPropertyOnUpdated;
         }
 
         #endregion
