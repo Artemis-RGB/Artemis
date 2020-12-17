@@ -19,11 +19,19 @@
             Import profile to current module
         </TextBlock>
 
-        <TextBlock Margin="0 10" TextAlignment="Justify" TextWrapping="Wrap" Grid.Row="1">
+        <TextBlock Grid.Row="1"
+                   Margin="0 10"
+                   TextWrapping="Wrap"
+                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                   Foreground="{DynamicResource MaterialDesignBodyLight}">
             Please note that importing profiles like this is placeholder functionality. The idea is that this will eventually happen via the workshop.
         </TextBlock>
 
-        <TextBlock Margin="0 10" TextAlignment="Justify" TextWrapping="Wrap" Grid.Row="2">
+        <TextBlock Grid.Row="2"
+                   Margin="0 10"
+                   TextWrapping="Wrap"
+                   Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                   Foreground="{DynamicResource MaterialDesignBodyLight}">
             The workshop will include tools to make profiles convert easily and look good on different layouts.
             That means right now when you import this profile unless you have the exact same setup as
             the person who exported it, you'll have to select LEDs for each layer in the profile.

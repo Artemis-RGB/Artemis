@@ -1,0 +1,29 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.Dialogs.ProfileEditView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="213.053" d:DesignWidth="254.425">
+    <StackPanel Margin="16">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+            Edit profile
+        </TextBlock>
+
+        <TextBox materialDesign:HintAssist.Hint="Profile name"
+                 Margin="0 8 0 16"
+                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
+                CANCEL
+            </Button>
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Accept}">
+                ACCEPT
+            </Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
