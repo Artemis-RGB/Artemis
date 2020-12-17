@@ -15,6 +15,7 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
+using Newtonsoft.Json;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
@@ -193,8 +194,21 @@ namespace Artemis.UI.Screens.ProfileEditor
             {
                 profile.Name = name;
                 _profileEditorService.UpdateSelectedProfile();
-                SelectedProfile.Update();
+
+                // The descriptors are immutable and need to be reloaded to reflect the name change
+                LoadProfiles();
+                SelectedProfile = Profiles.FirstOrDefault(p => p.Id == _profileEditorService.SelectedProfile.EntityId) ?? Profiles.FirstOrDefault();
             }
+        }
+
+        public void DuplicateActiveProfile()
+        {
+            string encoded = _profileService.ExportProfile(SelectedProfile);
+            ProfileDescriptor copy = _profileService.ImportProfile(encoded, Module, "copy");
+
+            Profiles.Add(copy);
+            Profiles.Sort(p => p.Name);
+            SelectedProfile = copy;
         }
 
         public async Task ExportActiveProfile()

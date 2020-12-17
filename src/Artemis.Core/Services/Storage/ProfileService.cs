@@ -280,7 +280,7 @@ namespace Artemis.Core.Services
             return JsonConvert.SerializeObject(profileEntity, ExportSettings);
         }
 
-        public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule)
+        public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix)
         {
             ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
             if (profileEntity == null)
@@ -288,7 +288,7 @@ namespace Artemis.Core.Services
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             profileEntity.UpdateGuid(Guid.NewGuid());
-            profileEntity.Name = $"{profileEntity.Name} - Imported";
+            profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
 
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);
