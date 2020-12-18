@@ -32,10 +32,10 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<double> _renderScale;
         private readonly IRgbService _rgbService;
         private readonly ISurfaceService _surfaceService;
-        private readonly List<Exception> _updateExceptions = new List<Exception>();
-        private List<BaseDataModelExpansion> _dataModelExpansions = new List<BaseDataModelExpansion>();
+        private readonly List<Exception> _updateExceptions = new();
+        private List<BaseDataModelExpansion> _dataModelExpansions = new();
         private DateTime _lastExceptionLog;
-        private List<Module> _modules = new List<Module>();
+        private List<Module> _modules = new();
 
         // ReSharper disable UnusedParameter.Local - Storage migration and module service are injected early to ensure it runs before anything else
         public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
@@ -112,7 +112,7 @@ namespace Artemis.Core.Services
 
         public void PlayIntroAnimation()
         {
-            IntroAnimation intro = new IntroAnimation(_logger, _profileService, _surfaceService);
+            IntroAnimation intro = new(_logger, _profileService, _surfaceService);
 
             // Draw a white overlay over the device
             void DrawOverlay(object? sender, FrameRenderingEventArgs args)
@@ -183,7 +183,7 @@ namespace Artemis.Core.Services
                         return;
 
                     // Render all active modules
-                    using SKCanvas canvas = new SKCanvas(_rgbService.BitmapBrush.Bitmap);
+                    using SKCanvas canvas = new(_rgbService.BitmapBrush.Bitmap);
                     canvas.Scale((float) _renderScale.Value);
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)

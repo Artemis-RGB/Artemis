@@ -11,7 +11,7 @@ namespace Artemis.Core
     /// </summary>
     public class ConditionalDataBinding<TLayerProperty, TProperty> : IDataBindingMode<TLayerProperty, TProperty>
     {
-        private readonly List<DataBindingCondition<TLayerProperty, TProperty>> _conditions = new List<DataBindingCondition<TLayerProperty, TProperty>>();
+        private readonly List<DataBindingCondition<TLayerProperty, TProperty>> _conditions = new();
         private bool _disposed;
 
         internal ConditionalDataBinding(DataBinding<TLayerProperty, TProperty> dataBinding, ConditionalDataBindingEntity entity)
@@ -81,7 +81,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ConditionalDataBinding");
 
-            DataBindingCondition<TLayerProperty, TProperty> condition = new DataBindingCondition<TLayerProperty, TProperty>(this);
+            DataBindingCondition<TLayerProperty, TProperty> condition = new(this);
             _conditions.Add(condition);
 
             ApplyOrder();

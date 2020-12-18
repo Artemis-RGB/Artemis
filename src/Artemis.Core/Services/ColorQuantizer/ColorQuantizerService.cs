@@ -29,7 +29,7 @@ namespace Artemis.Core.Services
             if ((amount & (amount - 1)) != 0)
                 throw new ArgumentException("Must be power of two", nameof(amount));
 
-            Queue<ColorCube> cubes = new Queue<ColorCube>(amount);
+            Queue<ColorCube> cubes = new(amount);
             cubes.Enqueue(new ColorCube(colors));
 
             while (cubes.Count < amount)

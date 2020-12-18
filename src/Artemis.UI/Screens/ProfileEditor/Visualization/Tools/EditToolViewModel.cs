@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
             Execute.PostToUIThread(() =>
             {
-                RectangleGeometry shapeGeometry = new RectangleGeometry(_layerEditorService.GetLayerBounds(layer))
+                RectangleGeometry shapeGeometry = new(_layerEditorService.GetLayerBounds(layer))
                 {
                     Transform = _layerEditorService.GetLayerTransformGroup(layer)
                 };
@@ -392,12 +392,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private static SKPoint RoundPoint(SKPoint point, int decimals)
         {
-            return new SKPoint((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
+            return new((float) Math.Round(point.X, decimals, MidpointRounding.AwayFromZero), (float) Math.Round(point.Y, decimals, MidpointRounding.AwayFromZero));
         }
 
         private static SKPoint[] UnTransformPoints(SKPoint[] skPoints, Layer layer, SKPoint pivot, bool includeScale)
         {
-            using SKPath counterRotatePath = new SKPath();
+            using SKPath counterRotatePath = new();
             counterRotatePath.AddPoly(skPoints, false);
             counterRotatePath.Transform(SKMatrix.CreateRotationDegrees(layer.Transform.Rotation.CurrentValue * -1, pivot.X, pivot.Y));
             if (includeScale)

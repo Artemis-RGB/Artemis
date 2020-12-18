@@ -181,7 +181,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.RemoveChild(predicateViewModel.Model);
 
             // Insert a list in the same position
-            DataModelConditionList list = new DataModelConditionList(DataModelConditionGroup);
+            DataModelConditionList list = new(DataModelConditionGroup);
             list.UpdateList(predicateViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(list, index);
 
@@ -196,7 +196,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.RemoveChild(listViewModel.Model);
 
             // Insert a list in the same position
-            DataModelConditionGeneralPredicate predicate = new DataModelConditionGeneralPredicate(DataModelConditionGroup, ProfileRightSideType.Dynamic);
+            DataModelConditionGeneralPredicate predicate = new(DataModelConditionGroup, ProfileRightSideType.Dynamic);
             predicate.UpdateLeftSide(listViewModel.LeftSideSelectionViewModel.DataModelPath);
             DataModelConditionGroup.AddChild(predicate, index);
 

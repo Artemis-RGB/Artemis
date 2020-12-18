@@ -174,7 +174,7 @@ namespace Artemis.UI.Shared
             {
                 // insert dummy story-boards which can later be traced using WPF animation tracing
 
-                TriggerTraceStoryboard storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Enter);
+                TriggerTraceStoryboard storyboard = new(triggerBase, TriggerTraceStoryboardType.Enter);
                 triggerBase.EnterActions.Insert(0, new BeginStoryboard {Storyboard = storyboard});
 
                 storyboard = new TriggerTraceStoryboard(triggerBase, TriggerTraceStoryboardType.Exit);

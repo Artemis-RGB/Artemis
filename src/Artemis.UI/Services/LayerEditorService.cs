@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
@@ -11,18 +10,11 @@ namespace Artemis.UI.Services
 {
     public class LayerEditorService : ILayerEditorService
     {
-        private readonly ISettingsService _settingsService;
-
-        public LayerEditorService(ISettingsService settingsService)
-        {
-            _settingsService = settingsService;
-        }
-
         /// <inheritdoc />
         public Rect GetLayerBounds(Layer layer)
         {
             // Adjust the render rectangle for the difference in render scale
-            return new Rect(
+            return new(
                 layer.Bounds.Left,
                 layer.Bounds.Top,
                 Math.Max(0, layer.Bounds.Width),
@@ -39,7 +31,7 @@ namespace Artemis.UI.Services
                 positionProperty = positionOverride.Value;
 
             // Start at the center of the shape
-            Point position = new Point(layerBounds.MidX, layerBounds.MidY);
+            Point position = new(layerBounds.MidX, layerBounds.MidY);
 
             // Apply translation
             position.X += positionProperty.X * layerBounds.Width;
@@ -64,7 +56,7 @@ namespace Artemis.UI.Services
             double x = anchorPosition.X - layerBounds.MidX - anchorProperty.X * layerBounds.Width;
             double y = anchorPosition.Y - layerBounds.MidY - anchorProperty.Y * layerBounds.Height;
 
-            TransformGroup transformGroup = new TransformGroup();
+            TransformGroup transformGroup = new();
             transformGroup.Children.Add(new TranslateTransform(x, y));
             transformGroup.Children.Add(new ScaleTransform(layer.Transform.Scale.CurrentValue.Width / 100f, layer.Transform.Scale.CurrentValue.Height / 100f, anchorPosition.X, anchorPosition.Y));
             transformGroup.Children.Add(new RotateTransform(layer.Transform.Rotation.CurrentValue, anchorPosition.X, anchorPosition.Y));
@@ -88,7 +80,7 @@ namespace Artemis.UI.Services
             float x = anchorPosition.X - layerBounds.MidX - anchorProperty.X * layerBounds.Width;
             float y = anchorPosition.Y - layerBounds.MidY - anchorProperty.Y * layerBounds.Height;
 
-            SKPath path = new SKPath();
+            SKPath path = new();
             path.AddRect(layerBounds);
             if (includeTranslation)
                 path.Transform(SKMatrix.CreateTranslation(x, y));

@@ -7,7 +7,7 @@ namespace Artemis.UI.Extensions
     {
         public static Rect ToWindowsRect(this Rectangle rectangle, double scale)
         {
-            return new Rect(
+            return new(
                 (int) (rectangle.Location.X * scale),
                 (int) (rectangle.Location.Y * scale),
                 (int) (rectangle.Size.Width * scale),

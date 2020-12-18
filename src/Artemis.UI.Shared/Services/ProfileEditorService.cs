@@ -23,8 +23,8 @@ namespace Artemis.UI.Shared.Services
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
-        private readonly object _selectedProfileElementLock = new object();
-        private readonly object _selectedProfileLock = new object();
+        private readonly object _selectedProfileElementLock = new();
+        private readonly object _selectedProfileLock = new();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
 
@@ -113,7 +113,7 @@ namespace Artemis.UI.Shared.Services
                 _logger.Verbose("ChangeSelectedProfile {profile}", profile);
                 ChangeSelectedProfileElement(null);
 
-                ProfileEventArgs profileElementEvent = new ProfileEventArgs(profile, SelectedProfile);
+                ProfileEventArgs profileElementEvent = new(profile, SelectedProfile);
 
                 // Ensure there is never a deactivated profile as the selected profile
                 if (SelectedProfile != null)
@@ -149,7 +149,7 @@ namespace Artemis.UI.Shared.Services
                     return;
 
                 _logger.Verbose("ChangeSelectedProfileElement {profile}", profileElement);
-                RenderProfileElementEventArgs profileElementEvent = new RenderProfileElementEventArgs(profileElement, SelectedProfileElement);
+                RenderProfileElementEventArgs profileElementEvent = new(profileElement, SelectedProfileElement);
                 SelectedProfileElement = profileElement;
                 OnSelectedProfileElementChanged(profileElementEvent);
 
@@ -249,7 +249,7 @@ namespace Artemis.UI.Shared.Services
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
-                PropertyInputRegistration registration = new PropertyInputRegistration(this, plugin, supportedType, viewModelType);
+                PropertyInputRegistration registration = new(this, plugin, supportedType, viewModelType);
                 _registeredPropertyEditors.Add(registration);
                 return registration;
             }
@@ -327,7 +327,7 @@ namespace Artemis.UI.Shared.Services
             if (viewModelType == null)
                 return null;
 
-            ConstructorArgument parameter = new ConstructorArgument("layerProperty", layerProperty);
+            ConstructorArgument parameter = new("layerProperty", layerProperty);
             // ReSharper disable once InconsistentlySynchronizedField
             // When you've just spent the last 2 hours trying to figure out a deadlock and reach this line, I'm so, so sorry. I thought this would be fine.
             IKernel kernel = registration?.Plugin.Kernel ?? _kernel;
@@ -368,7 +368,7 @@ namespace Artemis.UI.Shared.Services
             {
                 case Folder folder:
                 {
-                    FolderClipboardModel clipboardModel = new FolderClipboardModel(folder);
+                    FolderClipboardModel clipboardModel = new(folder);
                     JsonClipboard.SetObject(clipboardModel);
                     break;
                 }

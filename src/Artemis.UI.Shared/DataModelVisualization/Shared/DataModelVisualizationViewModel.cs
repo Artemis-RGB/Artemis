@@ -263,7 +263,7 @@ namespace Artemis.UI.Shared
             if (depth > MaxDepth)
                 return null;
 
-            DataModelPath dataModelPath = new DataModelPath(DataModel, path);
+            DataModelPath dataModelPath = new(DataModel, path);
             if (!dataModelPath.IsValid)
                 return null;
 

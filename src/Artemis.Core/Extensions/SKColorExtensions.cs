@@ -16,7 +16,7 @@ namespace Artemis.Core
         /// <returns>The RGB.NET color</returns>
         public static Color ToRgbColor(this SKColor color)
         {
-            return new Color(color.Alpha, color.Red, color.Green, color.Blue);
+            return new(color.Alpha, color.Red, color.Green, color.Blue);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Artemis.Core
         /// <returns>The sum of the two colors</returns>
         public static SKColor Sum(this SKColor a, SKColor b)
         {
-            return new SKColor(
+            return new(
                 ClampToByte(a.Red + b.Red),
                 ClampToByte(a.Green + b.Green),
                 ClampToByte(a.Blue + b.Blue),

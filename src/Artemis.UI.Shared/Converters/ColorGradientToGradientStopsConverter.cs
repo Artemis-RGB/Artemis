@@ -21,7 +21,7 @@ namespace Artemis.UI.Shared
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             List<ColorGradientStop> colorGradients = (List<ColorGradientStop>) value;
-            GradientStopCollection collection = new GradientStopCollection();
+            GradientStopCollection collection = new();
             if (colorGradients == null)
                 return collection;
 
@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             GradientStopCollection collection = (GradientStopCollection) value;
-            List<ColorGradientStop> colorGradients = new List<ColorGradientStop>();
+            List<ColorGradientStop> colorGradients = new();
             if (collection == null)
                 return colorGradients;
 

@@ -37,7 +37,7 @@ namespace Artemis.Core
             if (restart)
                 arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '" + Process.GetCurrentProcess().MainModule!.FileName + "'}\"";
 
-            ProcessStartInfo info = new ProcessStartInfo
+            ProcessStartInfo info = new()
             {
                 Arguments = arguments,
                 WindowStyle = ProcessWindowStyle.Hidden,
@@ -59,7 +59,7 @@ namespace Artemis.Core
         /// <returns>The process created to open the URL</returns>
         public static Process? OpenUrl(string url)
         {
-            ProcessStartInfo processInfo = new ProcessStartInfo
+            ProcessStartInfo processInfo = new()
             {
                 FileName = url,
                 UseShellExecute = true
@@ -87,7 +87,7 @@ namespace Artemis.Core
 
                 // On Windows, ensure everyone has permission (important when running as admin)
                 DirectorySecurity security = dataDirectory.GetAccessControl();
-                SecurityIdentifier everyone = new SecurityIdentifier(WellKnownSidType.WorldSid, null);
+                SecurityIdentifier everyone = new(WellKnownSidType.WorldSid, null);
                 security.AddAccessRule(new FileSystemAccessRule(
                     everyone,
                     FileSystemRights.Modify | FileSystemRights.Synchronize,

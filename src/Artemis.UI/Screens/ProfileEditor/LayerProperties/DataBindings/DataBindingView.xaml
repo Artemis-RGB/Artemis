@@ -84,8 +84,8 @@
                 <materialDesign:Card Grid.Row="3" Grid.ColumnSpan="2" Margin="0 5 0 0">
                     <Grid>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -95,7 +95,12 @@
                         <TextBlock Grid.Row="0" Margin="10 10 0 0">
                             Data binding result
                         </TextBlock>
-                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="0 10 10 0" TextAlignment="Right" ToolTip="Click Play to ensure all other data bindings update as well." Cursor="Help">
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="1"
+                                   Margin="0 10 10 0"
+                                   Visibility="{Binding AlwaysApplyDataBindings.Value, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
+                                   ToolTip="Click Play to ensure all other data bindings update as well or enable 'Constantly apply data bindings in editor'"
+                                   Cursor="Help">
                             Other data bindings not updating?
                         </TextBlock>
                         <Separator Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignLightSeparator}" Margin="0" />

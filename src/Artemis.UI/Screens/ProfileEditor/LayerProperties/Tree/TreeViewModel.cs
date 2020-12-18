@@ -24,7 +24,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 return;
 
             e.Handled = true;
-            MouseWheelEventArgs eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+            MouseWheelEventArgs eventArg = new(e.MouseDevice, e.Timestamp, e.Delta)
                                            {
                                                RoutedEvent = UIElement.MouseWheelEvent,
                                                Source = sender

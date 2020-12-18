@@ -9,7 +9,7 @@ namespace Artemis.Core.Ninject
     // TODO: Investigate if this can't just be set as a constant on the plugin child kernel
     internal class PluginSettingsProvider : Provider<PluginSettings>
     {
-        private static readonly List<PluginSettings> PluginSettings = new List<PluginSettings>();
+        private static readonly List<PluginSettings> PluginSettings = new();
         private readonly IPluginRepository _pluginRepository;
         private readonly IPluginManagementService _pluginManagementService;
 
@@ -41,7 +41,7 @@ namespace Artemis.Core.Ninject
                 if (existingSettings != null)
                     return existingSettings;
 
-                PluginSettings? settings = new PluginSettings(plugin, _pluginRepository);
+                PluginSettings? settings = new(plugin, _pluginRepository);
                 PluginSettings.Add(settings);
                 return settings;
             }

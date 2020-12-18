@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared
             if (scrollPos == scrollViewer.ScrollableHeight && e.Delta < 0 || scrollPos == 0 && e.Delta > 0)
             {
                 e.Handled = true;
-                MouseWheelEventArgs e2 = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta);
+                MouseWheelEventArgs e2 = new(e.MouseDevice, e.Timestamp, e.Delta);
                 e2.RoutedEvent = UIElement.MouseWheelEvent;
                 AssociatedObject.RaiseEvent(e2);
             }

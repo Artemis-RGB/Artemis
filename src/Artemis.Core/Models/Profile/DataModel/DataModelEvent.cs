@@ -47,7 +47,7 @@ namespace Artemis.Core
         ///     <para>Always empty if <see cref="TrackHistory" /> is <see langword="false" /></para>
         /// </summary>
         [DataModelProperty(Description = "The arguments of the last time this event triggered")]
-        public Queue<T> EventArgumentsHistory { get; } = new Queue<T>(20);
+        public Queue<T> EventArgumentsHistory { get; } = new(20);
 
         /// <summary>
         ///     Trigger the event with the given <paramref name="eventArgs" />
@@ -157,14 +157,14 @@ namespace Artemis.Core
         ///     <para>Always empty if <see cref="TrackHistory" /> is <see langword="false" /></para>
         /// </summary>
         [DataModelProperty(Description = "The arguments of the last time this event triggered")]
-        public Queue<DataModelEventArgs> EventArgumentsHistory { get; } = new Queue<DataModelEventArgs>(20);
+        public Queue<DataModelEventArgs> EventArgumentsHistory { get; } = new(20);
 
         /// <summary>
         ///     Trigger the event
         /// </summary>
         public void Trigger()
         {
-            DataModelEventArgs eventArgs = new DataModelEventArgs {TriggerTime = DateTime.Now};
+            DataModelEventArgs eventArgs = new() {TriggerTime = DateTime.Now};
 
             LastEventArguments = eventArgs;
             LastTrigger = DateTime.Now;

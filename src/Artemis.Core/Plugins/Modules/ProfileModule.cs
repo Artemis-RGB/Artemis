@@ -46,7 +46,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+            return new() {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
 
         /// <summary>
@@ -94,8 +94,8 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
-        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
-        private readonly object _lock = new object();
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+        private readonly object _lock = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileModule" /> class

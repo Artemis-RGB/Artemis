@@ -34,8 +34,8 @@ namespace Artemis.Core.LayerBrushes
             if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
                 canvas.SetMatrix(canvas.TotalMatrix.PreConcat(Layer.GetTransformMatrix(true, false, false, true).Invert()));
 
-            using SKPath pointsPath = new SKPath();
-            using SKPaint ledPaint = new SKPaint();
+            using SKPath pointsPath = new();
+            using SKPaint ledPaint = new();
             foreach (ArtemisLed artemisLed in Layer.Leds)
             {
                 pointsPath.AddPoly(new[]

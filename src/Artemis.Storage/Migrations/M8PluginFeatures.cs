@@ -50,7 +50,7 @@ namespace Artemis.Storage.Migrations
 
         public void Apply(LiteRepository repository)
         {
-            Dictionary<string, string> pluginMap = new Dictionary<string, string>
+            Dictionary<string, string> pluginMap = new()
             {
                 {"ffffffff-ffff-ffff-ffff-ffffffffffff", "Artemis.Core.CorePluginFeature-ffffffff"},
                 {"ab41d601-35e0-4a73-bf0b-94509b006ab0", "Artemis.Plugins.DataModelExpansions.TestData.PluginDataModelExpansion-ab41d601"},

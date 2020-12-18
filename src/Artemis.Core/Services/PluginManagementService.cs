@@ -38,7 +38,7 @@ namespace Artemis.Core.Services
 
         private void CopyBuiltInPlugin(FileInfo zipFileInfo, ZipArchive zipArchive)
         {
-            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins", Path.GetFileNameWithoutExtension(zipFileInfo.Name)));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins", Path.GetFileNameWithoutExtension(zipFileInfo.Name)));
             bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
@@ -58,10 +58,10 @@ namespace Artemis.Core.Services
         public void CopyBuiltInPlugins()
         {
             OnCopyingBuildInPlugins();
-            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
 
             // Iterate built-in plugins
-            DirectoryInfo builtInPluginDirectory = new DirectoryInfo(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
+            DirectoryInfo builtInPluginDirectory = new(Path.Combine(Directory.GetCurrentDirectory(), "Plugins"));
             if (!builtInPluginDirectory.Exists)
             {
                 _logger.Warning("No built-in plugins found at {pluginDir}, skipping CopyBuiltInPlugins", builtInPluginDirectory.FullName);
@@ -76,7 +76,7 @@ namespace Artemis.Core.Services
                 if (metaDataFileEntry == null)
                     throw new ArtemisPluginException("Couldn't find a plugin.json in " + zipFile.FullName);
 
-                using StreamReader reader = new StreamReader(metaDataFileEntry.Open());
+                using StreamReader reader = new(metaDataFileEntry.Open());
                 PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
 
                 // Find the matching plugin in the plugin folder
@@ -151,7 +151,7 @@ namespace Artemis.Core.Services
 
         public Plugin? GetCallingPlugin()
         {
-            StackTrace stackTrace = new StackTrace(); // get call stack
+            StackTrace stackTrace = new(); // get call stack
             StackFrame[] stackFrames = stackTrace.GetFrames(); // get method calls (frames)
 
             foreach (StackFrame stackFrame in stackFrames)
@@ -183,7 +183,7 @@ namespace Artemis.Core.Services
             UnloadPlugins();
 
             // Load the plugin assemblies into the plugin context
-            DirectoryInfo pluginDirectory = new DirectoryInfo(Path.Combine(Constants.DataFolder, "plugins"));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
             {
                 try
@@ -238,7 +238,7 @@ namespace Artemis.Core.Services
             }
 
             // Load the entity and fall back on creating a new one
-            Plugin plugin = new Plugin(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
+            Plugin plugin = new(pluginInfo, directory, _pluginRepository.GetPluginByGuid(pluginInfo.Guid));
             OnPluginLoading(new PluginEventArgs(plugin));
 
             // Locate the main assembly entry

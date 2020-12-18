@@ -33,8 +33,8 @@ namespace Artemis.Core.Services
             _surfaceService.SurfaceConfigurationUpdated += OnSurfaceConfigurationUpdated;
         }
 
-        public JsonSerializerSettings MementoSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
-        public JsonSerializerSettings ExportSettings { get; set; } = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+        public JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
+        public JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
         public ProfileDescriptor? GetLastActiveProfile(ProfileModule module)
         {
@@ -78,7 +78,7 @@ namespace Artemis.Core.Services
 
         public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
         {
-            ProfileEntity profileEntity = new ProfileEntity {Id = Guid.NewGuid(), Name = name, ModuleId = module.Id};
+            ProfileEntity profileEntity = new() {Id = Guid.NewGuid(), Name = name, ModuleId = module.Id};
             _profileRepository.Add(profileEntity);
 
             return new ProfileDescriptor(module, profileEntity);
@@ -107,7 +107,7 @@ namespace Artemis.Core.Services
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
 
-            Profile profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
@@ -122,7 +122,7 @@ namespace Artemis.Core.Services
                 return;
 
             ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
-            Profile profile = new Profile(module, entity);
+            Profile profile = new(module, entity);
             InstantiateProfile(profile);
 
             module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
@@ -138,7 +138,7 @@ namespace Artemis.Core.Services
             if (profileEntity == null)
                 throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
 
-            Profile profile = new Profile(profileDescriptor.ProfileModule, profileEntity);
+            Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
             void ActivatingProfileSurfaceUpdate(object? sender, SurfaceConfigurationEventArgs e)

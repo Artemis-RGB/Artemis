@@ -30,7 +30,7 @@ namespace Artemis.UI.Utilities
 
             try
             {
-                ManagementEventWatcher watcher = new ManagementEventWatcher(query);
+                ManagementEventWatcher watcher = new(query);
                 watcher.EventArrived += (sender, args) =>
                 {
                     WindowsTheme newWindowsTheme = GetWindowsTheme();

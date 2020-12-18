@@ -75,7 +75,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels(bool expandedOnly)
         {
-            List<ITimelineKeyframeViewModel> result = new List<ITimelineKeyframeViewModel>();
+            List<ITimelineKeyframeViewModel> result = new();
             if (expandedOnly && !IsExpanded)
                 return result;
 

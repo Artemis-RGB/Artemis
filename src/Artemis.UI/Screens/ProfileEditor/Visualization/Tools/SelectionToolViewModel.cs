@@ -21,7 +21,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ILayerBrushService layerBrushService) : base(profileViewModel, profileEditorService)
         {
             _layerBrushService = layerBrushService;
-            using (MemoryStream stream = new MemoryStream(Resources.aero_crosshair))
+            using (MemoryStream stream = new(Resources.aero_crosshair))
             {
                 Cursor = new Cursor(stream);
             }
@@ -38,7 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             base.MouseUp(sender, e);
 
             Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            Rect selectedRect = new Rect(MouseDownStartPosition, position);
+            Rect selectedRect = new(MouseDownStartPosition, position);
 
             // Get selected LEDs
             List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
@@ -78,7 +78,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             }
 
             Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            Rect selectedRect = new Rect(MouseDownStartPosition, position);
+            Rect selectedRect = new(MouseDownStartPosition, position);
             List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
             // Unless shift is held down, clear the current selection
@@ -91,7 +91,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private void CreateLayer(Folder folder, List<ArtemisLed> selectedLeds)
         {
-            Layer newLayer = new Layer(folder, "New layer");
+            Layer newLayer = new(folder, "New layer");
 
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
             if (brush != null)

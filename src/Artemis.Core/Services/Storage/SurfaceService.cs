@@ -40,7 +40,7 @@ namespace Artemis.Core.Services
         public ArtemisSurface CreateSurfaceConfiguration(string name)
         {
             // Create a blank config
-            ArtemisSurface configuration = new ArtemisSurface(_rgbService.Surface, name);
+            ArtemisSurface configuration = new(_rgbService.Surface, name);
 
             // Add all current devices
             foreach (IRGBDevice rgbDevice in _rgbService.LoadedDevices)
@@ -134,7 +134,7 @@ namespace Artemis.Core.Services
             foreach (SurfaceEntity surfaceEntity in configs)
             {
                 // Create the surface entity
-                ArtemisSurface surfaceConfiguration = new ArtemisSurface(_rgbService.Surface, surfaceEntity);
+                ArtemisSurface surfaceConfiguration = new(_rgbService.Surface, surfaceEntity);
                 foreach (DeviceEntity position in surfaceEntity.DeviceEntities)
                 {
                     IRGBDevice? device = _rgbService.Surface.Devices.FirstOrDefault(d => d.GetDeviceIdentifier() == position.DeviceIdentifier);

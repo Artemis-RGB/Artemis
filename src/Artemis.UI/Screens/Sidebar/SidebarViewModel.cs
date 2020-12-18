@@ -152,7 +152,7 @@ namespace Artemis.UI.Screens.Sidebar
             if (SidebarModules.Any(io => io.Value == module))
                 return;
 
-            FirstLevelNavigationItem sidebarItem = new FirstLevelNavigationItem
+            FirstLevelNavigationItem sidebarItem = new()
             {
                 Icon = PluginUtilities.GetPluginIcon(module.Plugin, module.DisplayIcon),
                 Label = module.DisplayName

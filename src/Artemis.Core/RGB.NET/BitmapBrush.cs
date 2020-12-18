@@ -45,7 +45,7 @@ namespace Artemis.Core
         public Rectangle RenderedRectangle { get; private set; }
 
         /// <inheritdoc />
-        public Dictionary<BrushRenderTarget, Color> RenderedTargets { get; } = new Dictionary<BrushRenderTarget, Color>();
+        public Dictionary<BrushRenderTarget, Color> RenderedTargets { get; } = new();
 
         /// <summary>
         ///     Gets or sets the desired scale of the bitmap brush
@@ -155,7 +155,7 @@ namespace Artemis.Core
                     }
                 }
 
-                Color pixel = new Color(a / sampleSize, r / sampleSize, g / sampleSize, b / sampleSize);
+                Color pixel = new(a / sampleSize, r / sampleSize, g / sampleSize, b / sampleSize);
 
                 ArtemisDevice? artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
                 if (artemisDevice is not null)

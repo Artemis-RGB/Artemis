@@ -192,7 +192,7 @@ namespace Artemis.Core
             if (Target == null)
                 return;
 
-            DataModelPathSegment startSegment = new DataModelPathSegment(this, "target", "target");
+            DataModelPathSegment startSegment = new(this, "target", "target");
             startSegment.Node = _segments.AddFirst(startSegment);
 
             // On an empty path don't bother processing segments

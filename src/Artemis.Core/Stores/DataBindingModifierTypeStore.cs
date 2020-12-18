@@ -6,7 +6,7 @@ namespace Artemis.Core
 {
     internal class DataBindingModifierTypeStore
     {
-        private static readonly List<DataBindingModifierTypeRegistration> Registrations = new List<DataBindingModifierTypeRegistration>();
+        private static readonly List<DataBindingModifierTypeRegistration> Registrations = new();
 
         public static DataBindingModifierTypeRegistration Add(BaseDataBindingModifierType modifierType)
         {

@@ -19,8 +19,8 @@ namespace Artemis.UI.Shared
         /// <returns></returns>
         public static List<T> GetHitViewModels<T>(Visual container, RectangleGeometry rectangleGeometry)
         {
-            List<T> result = new List<T>();
-            GeometryHitTestParameters hitTestParams = new GeometryHitTestParameters(rectangleGeometry);
+            List<T> result = new();
+            GeometryHitTestParameters hitTestParams = new(rectangleGeometry);
             
             HitTestResultBehavior ResultCallback(HitTestResult r) => HitTestResultBehavior.Continue;
             HitTestFilterBehavior FilterCallback(DependencyObject e)

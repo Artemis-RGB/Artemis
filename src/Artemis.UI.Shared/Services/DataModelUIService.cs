@@ -34,7 +34,7 @@ namespace Artemis.UI.Shared.Services
 
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
-            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
+            DataModelPropertiesViewModel viewModel = new(null, null, null);
             foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
@@ -86,7 +86,7 @@ namespace Artemis.UI.Shared.Services
             if (dataModel == null)
                 return null;
 
-            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(null, null, null);
+            DataModelPropertiesViewModel viewModel = new(null, null, null);
             viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, new DataModelPath(dataModel)));
 
             // Update to populate children
@@ -114,7 +114,7 @@ namespace Artemis.UI.Shared.Services
                 _kernel.Bind(viewModelType).ToSelf();
 
                 // Create the registration
-                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Input, plugin, supportedType, viewModelType)
+                DataModelVisualizationRegistration registration = new(this, RegistrationType.Input, plugin, supportedType, viewModelType)
                 {
                     // Apply the compatible conversion types to the registration
                     CompatibleConversionTypes = compatibleConversionTypes
@@ -141,7 +141,7 @@ namespace Artemis.UI.Shared.Services
                 }
 
                 _kernel.Bind(viewModelType).ToSelf();
-                DataModelVisualizationRegistration registration = new DataModelVisualizationRegistration(this, RegistrationType.Display, plugin, supportedType, viewModelType);
+                DataModelVisualizationRegistration registration = new(this, RegistrationType.Display, plugin, supportedType, viewModelType);
                 _registeredDataModelDisplays.Add(registration);
                 return registration;
             }

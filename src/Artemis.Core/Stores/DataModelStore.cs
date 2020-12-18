@@ -7,7 +7,7 @@ namespace Artemis.Core
 {
     internal class DataModelStore
     {
-        private static readonly List<DataModelRegistration> Registrations = new List<DataModelRegistration>();
+        private static readonly List<DataModelRegistration> Registrations = new();
 
         public static DataModelRegistration Add(DataModel dataModel)
         {

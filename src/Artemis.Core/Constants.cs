@@ -35,7 +35,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The plugin info used by core components of Artemis
         /// </summary>
-        public static readonly PluginInfo CorePluginInfo = new PluginInfo
+        public static readonly PluginInfo CorePluginInfo = new()
         {
             Guid = Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), Name = "Artemis Core", Version = new Version(2, 0)
         };
@@ -43,16 +43,16 @@ namespace Artemis.Core
         /// <summary>
         ///     The plugin used by core components of Artemis
         /// </summary>
-        public static readonly Plugin CorePlugin = new Plugin(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
+        public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
 
-        internal static readonly CorePluginFeature CorePluginFeature = new CorePluginFeature {Plugin = CorePlugin};
-        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new EffectPlaceholderPlugin {Plugin = CorePlugin};
+        internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin};
+        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin};
 
-        internal static JsonSerializerSettings JsonConvertSettings = new JsonSerializerSettings
+        internal static JsonSerializerSettings JsonConvertSettings = new()
         {
             Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
         };
-        internal static JsonSerializerSettings JsonConvertTypedSettings = new JsonSerializerSettings
+        internal static JsonSerializerSettings JsonConvertTypedSettings = new()
         {
             TypeNameHandling = TypeNameHandling.All,
             Converters = new List<JsonConverter> { new SKColorConverter(), new ForgivingIntConverter() }

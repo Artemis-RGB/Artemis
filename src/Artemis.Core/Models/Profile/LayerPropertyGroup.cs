@@ -113,7 +113,7 @@ namespace Artemis.Core
             if (!PropertiesInitialized)
                 return new List<ILayerProperty>();
 
-            List<ILayerProperty> result = new List<ILayerProperty>(LayerProperties);
+            List<ILayerProperty> result = new(LayerProperties);
             foreach (LayerPropertyGroup layerPropertyGroup in LayerPropertyGroups)
                 result.AddRange(layerPropertyGroup.GetAllLayerProperties());
 

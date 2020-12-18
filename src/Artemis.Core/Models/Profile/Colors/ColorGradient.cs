@@ -34,7 +34,7 @@ namespace Artemis.Core
                 return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
 
             List<SKColor> colors = Stops.OrderBy(c => c.Position).Select(c => c.Color).ToList();
-            List<SKColor> result = new List<SKColor>();
+            List<SKColor> result = new();
 
             for (int i = 0; i <= timesToRepeat; i++)
                 result.AddRange(colors);
@@ -57,7 +57,7 @@ namespace Artemis.Core
 
             // Create stops and a list of divided stops
             List<float> stops = Stops.OrderBy(c => c.Position).Select(c => c.Position / (timesToRepeat + 1)).ToList();
-            List<float> result = new List<float>();
+            List<float> result = new();
 
             // For each repeat cycle, add the base stops to the end result
             for (int i = 0; i <= timesToRepeat; i++)
@@ -120,7 +120,7 @@ namespace Artemis.Core
         public static ColorGradient GetUnicornBarf()
         {
             const int amount = 8;
-            ColorGradient gradient = new ColorGradient();
+            ColorGradient gradient = new();
 
             for (int i = 0; i <= amount; i++)
             {

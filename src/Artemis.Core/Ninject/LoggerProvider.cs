@@ -8,7 +8,7 @@ namespace Artemis.Core.Ninject
 {
     internal class LoggerProvider : Provider<ILogger>
     {
-        internal static readonly LoggingLevelSwitch LoggingLevelSwitch = new LoggingLevelSwitch(LogEventLevel.Verbose);
+        internal static readonly LoggingLevelSwitch LoggingLevelSwitch = new(LogEventLevel.Verbose);
 
         private static readonly ILogger Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()

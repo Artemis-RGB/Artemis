@@ -74,7 +74,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             }
         }
 
-        public Thickness LayerPosition => new Thickness(ViewportRectangle.Left, ViewportRectangle.Top, 0, 0);
+        public Thickness LayerPosition => new(ViewportRectangle.Left, ViewportRectangle.Top, 0, 0);
 
         public bool IsSelected
         {

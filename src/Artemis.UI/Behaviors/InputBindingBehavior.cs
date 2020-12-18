@@ -8,7 +8,7 @@ namespace Artemis.UI.Behaviors
 {
     public class InputBindingBehavior
     {
-        private static List<Tuple<FrameworkElement, Window, InputBinding>> _movedInputBindings = new List<Tuple<FrameworkElement, Window, InputBinding>>();
+        private static List<Tuple<FrameworkElement, Window, InputBinding>> _movedInputBindings = new();
 
         public static readonly DependencyProperty PropagateInputBindingsToWindowProperty =
             DependencyProperty.RegisterAttached("PropagateInputBindingsToWindow", typeof(bool), typeof(InputBindingBehavior),

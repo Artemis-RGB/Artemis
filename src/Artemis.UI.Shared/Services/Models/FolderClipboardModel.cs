@@ -54,7 +54,7 @@ namespace Artemis.UI.Shared.Services.Models
 
             // Let the folder initialize and load as usual
             FolderEntity.Name += " - copy";
-            Folder folder = new Folder(profile, parent, FolderEntity);
+            Folder folder = new(profile, parent, FolderEntity);
             return folder;
         }
 

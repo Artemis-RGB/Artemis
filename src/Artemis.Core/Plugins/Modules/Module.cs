@@ -42,7 +42,7 @@ namespace Artemis.Core.Modules
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+            return new() {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
 
         internal override void InternalEnable()
@@ -98,7 +98,7 @@ namespace Artemis.Core.Modules
         ///     A list of activation requirements
         ///     <para>Note: if empty the module is always activated</para>
         /// </summary>
-        public List<IModuleActivationRequirement> ActivationRequirements { get; } = new List<IModuleActivationRequirement>();
+        public List<IModuleActivationRequirement> ActivationRequirements { get; } = new();
 
         /// <summary>
         ///     Gets or sets the activation requirement mode, defaults to <see cref="ActivationRequirementType.Any" />

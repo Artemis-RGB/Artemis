@@ -45,7 +45,7 @@ namespace Artemis.UI.Shared
         /// </summary>
         public DataModelPropertyAttribute TargetDescription { get; }
 
-        internal override object InternalGuard { get; } = new object();
+        internal override object InternalGuard { get; } = new();
 
         /// <inheritdoc />
         public sealed override void Submit()

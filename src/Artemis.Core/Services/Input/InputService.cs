@@ -34,7 +34,7 @@ namespace Artemis.Core.Services
 
         #region Providers
 
-        private readonly List<InputProvider> _inputProviders = new List<InputProvider>();
+        private readonly List<InputProvider> _inputProviders = new();
 
         public void AddInputProvider(InputProvider inputProvider)
         {
@@ -63,8 +63,8 @@ namespace Artemis.Core.Services
 
         #region Identification
 
-        private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache = new Dictionary<Tuple<InputProvider, object>, ArtemisDevice>();
-        private List<ArtemisDevice> _devices = new List<ArtemisDevice>();
+        private readonly Dictionary<Tuple<InputProvider, object>, ArtemisDevice> _deviceCache = new();
+        private List<ArtemisDevice> _devices = new();
         private ArtemisDevice? _cachedFallbackKeyboard;
         private ArtemisDevice? _cachedFallbackMouse;
         private ArtemisDevice? _identifyingDevice;
@@ -180,8 +180,8 @@ namespace Artemis.Core.Services
 
         #region Keyboard
 
-        private readonly Dictionary<ArtemisDevice, HashSet<KeyboardKey>> _pressedKeys = new Dictionary<ArtemisDevice, HashSet<KeyboardKey>>();
-        private readonly Dictionary<ArtemisDevice, KeyboardModifierKey> _keyboardModifier = new Dictionary<ArtemisDevice, KeyboardModifierKey>();
+        private readonly Dictionary<ArtemisDevice, HashSet<KeyboardKey>> _pressedKeys = new();
+        private readonly Dictionary<ArtemisDevice, KeyboardModifierKey> _keyboardModifier = new();
         private KeyboardModifierKey _globalModifiers;
 
         private void InputProviderOnKeyboardDataReceived(object? sender, InputProviderKeyboardEventArgs e)
@@ -199,7 +199,7 @@ namespace Artemis.Core.Services
                 led = e.Device.GetLed(ledId);
 
             // Create the UpDown event args because it can be used for every event
-            ArtemisKeyboardKeyUpDownEventArgs eventArgs = new ArtemisKeyboardKeyUpDownEventArgs(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);
+            ArtemisKeyboardKeyUpDownEventArgs eventArgs = new(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);
             OnKeyboardKeyUpDown(eventArgs);
             if (e.IsDown)
                 OnKeyboardKeyDown(eventArgs);
@@ -289,7 +289,7 @@ namespace Artemis.Core.Services
                 led = e.Device.Leds.FirstOrDefault(l => l.RgbLed.Id == ledId);
 
             // Create the UpDown event args because it can be used for every event
-            ArtemisMouseButtonUpDownEventArgs eventArgs = new ArtemisMouseButtonUpDownEventArgs(e.Device, led, e.Button, e.IsDown);
+            ArtemisMouseButtonUpDownEventArgs eventArgs = new(e.Device, led, e.Button, e.IsDown);
             OnMouseButtonUpDown(eventArgs);
             if (e.IsDown)
                 OnMouseButtonDown(eventArgs);

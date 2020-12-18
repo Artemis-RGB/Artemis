@@ -10,7 +10,7 @@ namespace Artemis.Core
     /// </summary>
     public class DirectDataBinding<TLayerProperty, TProperty> : IDataBindingMode<TLayerProperty, TProperty>
     {
-        private readonly List<DataBindingModifier<TLayerProperty, TProperty>> _modifiers = new List<DataBindingModifier<TLayerProperty, TProperty>>();
+        private readonly List<DataBindingModifier<TLayerProperty, TProperty>> _modifiers = new();
         private bool _disposed;
 
         internal DirectDataBinding(DataBinding<TLayerProperty, TProperty> dataBinding, DirectDataBindingEntity entity)
@@ -156,7 +156,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DirectDataBinding");
 
-            DataBindingModifier<TLayerProperty, TProperty> modifier = new DataBindingModifier<TLayerProperty, TProperty>(this, type);
+            DataBindingModifier<TLayerProperty, TProperty> modifier = new(this, type);
             _modifiers.Add(modifier);
 
             ApplyOrder();

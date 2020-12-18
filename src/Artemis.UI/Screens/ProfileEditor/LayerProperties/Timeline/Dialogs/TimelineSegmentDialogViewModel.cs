@@ -42,7 +42,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs
 
     public class TimelineSegmentDialogViewModelValidator : AbstractValidator<TimelineSegmentDialogViewModel>
     {
-        private readonly Regex _inputRegex = new Regex("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
+        private readonly Regex _inputRegex = new("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
 
         public TimelineSegmentDialogViewModelValidator()
         {

@@ -80,7 +80,7 @@ namespace Artemis.UI.Screens.Shared
             set => SetAndNotify(ref _limitToZero, value);
         }
 
-        public Rect BackgroundViewport => new Rect(PanX, PanY, 20, 20);
+        public Rect BackgroundViewport => new(PanX, PanY, 20, 20);
 
         public void ProcessMouseScroll(object sender, MouseWheelEventArgs e)
         {
@@ -152,7 +152,7 @@ namespace Artemis.UI.Screens.Shared
         public Rect TransformContainingRect(Rect rect)
         {
             // Create the same transform group the view is using
-            TransformGroup transformGroup = new TransformGroup();
+            TransformGroup transformGroup = new();
             transformGroup.Children.Add(new ScaleTransform(Zoom, Zoom));
             transformGroup.Children.Add(new TranslateTransform(PanX, PanY));
 

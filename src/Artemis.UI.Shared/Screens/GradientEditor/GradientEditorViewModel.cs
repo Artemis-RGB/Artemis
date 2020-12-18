@@ -52,12 +52,12 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         {
             Canvas? child = VisualTreeUtilities.FindChild<Canvas>((DependencyObject) sender, null);
             float position = (float) (e.GetPosition(child).X / PreviewWidth);
-            ColorGradientStop stop = new ColorGradientStop(ColorGradient.GetColor(position), position);
+            ColorGradientStop stop = new(ColorGradient.GetColor(position), position);
             ColorGradient.Stops.Add(stop);
             ColorGradient.OnColorValuesUpdated();
 
             int index = ColorGradient.Stops.OrderBy(s => s.Position).ToList().IndexOf(stop);
-            ColorStopViewModel viewModel = new ColorStopViewModel(this, stop);
+            ColorStopViewModel viewModel = new(this, stop);
             ColorStopViewModels.Insert(index, viewModel);
 
             SelectColorStop(viewModel);

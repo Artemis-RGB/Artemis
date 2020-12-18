@@ -106,7 +106,7 @@ namespace Artemis.UI.Shared
             // Determine the scale required to fit the desired size of the control
             Size measureSize = MeasureDevice();
             double scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
-            Rect scaledRect = new Rect(0, 0, measureSize.Width * scale, measureSize.Height * scale);
+            Rect scaledRect = new(0, 0, measureSize.Width * scale, measureSize.Height * scale);
 
             // Center and scale the visualization in the desired bounding box
             if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
@@ -116,7 +116,7 @@ namespace Artemis.UI.Shared
             }
 
             // Determine the offset required to rotate within bounds
-            Rect rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            Rect rotationRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
             // Apply device rotation
@@ -169,7 +169,7 @@ namespace Artemis.UI.Shared
             if (Device == null)
                 return Size.Empty;
 
-            Rect rotationRect = new Rect(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
+            Rect rotationRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
             rotationRect.Transform(new RotateTransform(Device.Rotation).Value);
 
             return rotationRect.Size;
@@ -249,16 +249,16 @@ namespace Artemis.UI.Shared
             }
 
             // Create the opacity drawing group
-            DrawingGroup opacityDrawingGroup = new DrawingGroup();
+            DrawingGroup opacityDrawingGroup = new();
             DrawingContext drawingContext = opacityDrawingGroup.Open();
             foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                 deviceVisualizerLed.RenderOpacityMask(drawingContext);
             drawingContext.Close();
 
             // Render the store as a bitmap 
-            DrawingImage drawingImage = new DrawingImage(opacityDrawingGroup);
-            Image image = new Image {Source = drawingImage};
-            RenderTargetBitmap bitmap = new RenderTargetBitmap(
+            DrawingImage drawingImage = new(opacityDrawingGroup);
+            Image image = new() {Source = drawingImage};
+            RenderTargetBitmap bitmap = new(
                 Math.Max(1, (int) (opacityDrawingGroup.Bounds.Width * 2.5)),
                 Math.Max(1, (int) (opacityDrawingGroup.Bounds.Height * 2.5)),
                 96,
@@ -270,7 +270,7 @@ namespace Artemis.UI.Shared
             bitmap.Freeze();
 
             // Set the bitmap as the opacity mask for the colors backing store
-            ImageBrush bitmapBrush = new ImageBrush(bitmap);
+            ImageBrush bitmapBrush = new(bitmap);
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
 
