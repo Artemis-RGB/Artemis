@@ -41,7 +41,7 @@ namespace Artemis.Core.LayerEffects
             if (!IsEnabled)
                 throw new ArtemisPluginFeatureException(this, "Can only add a layer effect descriptor when the plugin is enabled");
 
-            LayerEffectDescriptor descriptor = new LayerEffectDescriptor(displayName, description, icon, typeof(T), this);
+            LayerEffectDescriptor descriptor = new(displayName, description, icon, typeof(T), this);
             _layerEffectDescriptors.Add(descriptor);
             LayerEffectStore.Add(descriptor);
         }

@@ -177,7 +177,7 @@ namespace Artemis.Core
                 return;
 
             // Ensure the list path is valid and points to a list
-            DataModelPath listPath = new DataModelPath(null, Entity.ListPath);
+            DataModelPath listPath = new(null, Entity.ListPath);
             Type listType = listPath.GetPropertyType()!;
             // Can't check this on an invalid list, if it becomes valid later lets hope for the best
             if (listPath.IsValid && !PointsToList(listPath))

@@ -49,7 +49,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             if (!_displayOnDevices)
                 return;
 
-            using SKPaint overlayPaint = new SKPaint
+            using SKPaint overlayPaint = new()
             {
                 Color = CurrentColor
             };

@@ -21,7 +21,7 @@ namespace Artemis.UI.Shared.Input
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Module _module;
         private readonly Timer _updateTimer;
-        private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private SolidColorBrush _buttonBrush = new(Color.FromRgb(171, 71, 188));
         private DataModelPath? _dataModelPath;
         private DataModelPropertiesViewModel? _dataModelViewModel;
         private bool _displaySwitchButton;
@@ -59,7 +59,7 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets the brush to use for the switch button
         /// </summary>
-        public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
+        public SolidColorBrush SwitchButtonBrush => new(ButtonBrush.Color.Darken());
 
         /// <summary>
         ///     Gets or sets the placeholder text when no value is entered

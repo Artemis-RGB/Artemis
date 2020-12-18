@@ -18,7 +18,7 @@ namespace Artemis.UI.Shared
         /// <returns>The created view model</returns>
         public static DataModelPropertiesViewModel CreateViewModel(this EventPredicateWrapperDataModel wrapper, IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
-            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(wrapper, null, new DataModelPath(wrapper));
+            DataModelPropertiesViewModel viewModel = new(wrapper, null, new DataModelPath(wrapper));
             viewModel.Update(dataModelUIService, configuration);
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(dataModelUIService, configuration);
             viewModel.Children.First().IsVisualizationExpanded = true;
@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared
         /// <returns>The created view model</returns>
         public static DataModelPropertiesViewModel CreateViewModel(this ListPredicateWrapperDataModel wrapper, IDataModelUIService dataModelUIService, DataModelUpdateConfiguration configuration)
         {
-            DataModelPropertiesViewModel viewModel = new DataModelPropertiesViewModel(wrapper, null, new DataModelPath(wrapper));
+            DataModelPropertiesViewModel viewModel = new(wrapper, null, new DataModelPath(wrapper));
             viewModel.Update(dataModelUIService, configuration);
             viewModel.UpdateRequested += (sender, args) => viewModel.Update(dataModelUIService, configuration);
             viewModel.Children.First().IsVisualizationExpanded = true;

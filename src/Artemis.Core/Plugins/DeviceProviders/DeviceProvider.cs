@@ -34,7 +34,7 @@ namespace Artemis.Core.DeviceProviders
         [Inject]
         public ILogger? Logger { get; set; }
 
-        internal Dictionary<IRGBDevice, string> DeviceLayoutPaths { get; set; } = new Dictionary<IRGBDevice, string>();
+        internal Dictionary<IRGBDevice, string> DeviceLayoutPaths { get; set; } = new();
 
         /// <inheritdoc />
         public override void Disable()

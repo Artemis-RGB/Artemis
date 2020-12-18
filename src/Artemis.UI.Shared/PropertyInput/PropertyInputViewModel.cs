@@ -85,7 +85,7 @@ namespace Artemis.UI.Shared
             }
         }
 
-        internal override object InternalGuard { get; } = new object();
+        internal override object InternalGuard { get; } = new();
 
         #region IDisposable
 

@@ -249,7 +249,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private void CopyKeyframes(List<ILayerPropertyKeyframe> keyframes)
         {
-            KeyframesClipboardModel clipboardModel = new KeyframesClipboardModel(keyframes);
+            KeyframesClipboardModel clipboardModel = new(keyframes);
             JsonClipboard.SetObject(clipboardModel);
         }
 
@@ -261,7 +261,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private List<ILayerPropertyKeyframe> PasteClipboardData(KeyframesClipboardModel clipboardModel, TimeSpan pastePosition)
         {
-            List<ILayerPropertyKeyframe> pasted = new List<ILayerPropertyKeyframe>();
+            List<ILayerPropertyKeyframe> pasted = new();
             if (clipboardModel == null)
                 return pasted;
             RenderProfileElement target = _profileEditorService.SelectedProfileElement;
@@ -368,7 +368,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 return;
 
             Point position = e.GetPosition((IInputElement) sender);
-            Rect selectedRect = new Rect(_mouseDragStartPoint, position);
+            Rect selectedRect = new(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
             List<ITimelineKeyframeViewModel> keyframeViewModels = GetAllKeyframeViewModels();
@@ -386,7 +386,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (_mouseDragging && e.LeftButton == MouseButtonState.Pressed)
             {
                 Point position = e.GetPosition((IInputElement) sender);
-                Rect selectedRect = new Rect(_mouseDragStartPoint, position);
+                Rect selectedRect = new(_mouseDragStartPoint, position);
                 SelectionRectangle.Rect = selectedRect;
                 e.Handled = true;
             }
@@ -432,7 +432,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         private List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels()
         {
-            List<ITimelineKeyframeViewModel> viewModels = new List<ITimelineKeyframeViewModel>();
+            List<ITimelineKeyframeViewModel> viewModels = new();
             foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
                 viewModels.AddRange(layerPropertyGroupViewModel.GetAllKeyframeViewModels(false));
 

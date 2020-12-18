@@ -13,7 +13,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
-        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new List<PropertyInfo>();
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
 
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
@@ -41,7 +41,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public virtual DataModelPropertyAttribute GetDataModelDescription()
         {
-            return new DataModelPropertyAttribute {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+            return new() {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
         }
     }
 }

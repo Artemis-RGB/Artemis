@@ -12,8 +12,8 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisSurface : CorePropertyChanged
     {
-        private List<ArtemisDevice> _devices = new List<ArtemisDevice>();
-        private ReadOnlyDictionary<Led, ArtemisLed> _ledMap = new ReadOnlyDictionary<Led, ArtemisLed>(new Dictionary<Led, ArtemisLed>());
+        private List<ArtemisDevice> _devices = new();
+        private ReadOnlyDictionary<Led, ArtemisLed> _ledMap = new(new Dictionary<Led, ArtemisLed>());
         private bool _isActive;
         private string _name;
 

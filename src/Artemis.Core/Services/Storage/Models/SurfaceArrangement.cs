@@ -17,7 +17,7 @@ namespace Artemis.Core.Services.Models
 
         internal static SurfaceArrangement GetDefaultArrangement()
         {
-            SurfaceArrangement arrangement = new SurfaceArrangement();
+            SurfaceArrangement arrangement = new();
 
             SurfaceArrangementType keypad = arrangement.AddType(RGBDeviceType.Keypad, 1);
             keypad.AddConfiguration(new SurfaceArrangementConfiguration(null, HorizontalArrangementPosition.Equal, VerticalArrangementPosition.Equal, 20));
@@ -71,7 +71,7 @@ namespace Artemis.Core.Services.Models
 
         private SurfaceArrangementType AddType(RGBDeviceType type, int zIndex)
         {
-            SurfaceArrangementType surfaceArrangementType = new SurfaceArrangementType(this, type, zIndex);
+            SurfaceArrangementType surfaceArrangementType = new(this, type, zIndex);
             Types.Add(surfaceArrangementType);
             return surfaceArrangementType;
         }

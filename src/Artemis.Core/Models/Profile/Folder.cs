@@ -68,7 +68,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
-            List<ILayerProperty> result = new List<ILayerProperty>();
+            List<ILayerProperty> result = new();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
@@ -151,7 +151,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
-            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+            SKPath path = new() {FillType = SKPathFillType.Winding};
             foreach (ProfileElement child in Children)
                 if (child is RenderProfileElement effectChild && effectChild.Path != null)
                     path.AddPath(effectChild.Path);

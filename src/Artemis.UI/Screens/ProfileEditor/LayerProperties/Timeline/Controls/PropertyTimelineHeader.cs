@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             base.OnRender(drawingContext);
             UpdateTimeScale();
 
-            Pen linePen = new Pen(Fill, 1);
+            Pen linePen = new(Fill, 1);
             double width = HorizontalOffset + VisibleWidth;
             int frameStart = 0;
 
@@ -126,8 +126,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
 
         private void RenderLabel(DrawingContext drawingContext, string text, double x)
         {
-            Typeface typeFace = new Typeface(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
-            FormattedText formattedText = new FormattedText(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            Typeface typeFace = new(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
+            FormattedText formattedText = new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             if (x == 0 && OffsetFirstValue)
                 drawingContext.DrawText(formattedText, new Point(2, 5));
             else

@@ -47,7 +47,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
-            RenderScales = new List<Tuple<string, double>> {new Tuple<string, double>("10%", 0.1)};
+            RenderScales = new List<Tuple<string, double>> {new("10%", 0.1)};
             for (int i = 25; i <= 100; i += 25)
                 RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
 

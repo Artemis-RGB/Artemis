@@ -54,7 +54,7 @@ namespace Artemis.Core
                     _pluginRepository.AddSetting(settingEntity);
                 }
 
-                PluginSetting<T> pluginSetting = new PluginSetting<T>(Plugin, _pluginRepository, settingEntity);
+                PluginSetting<T> pluginSetting = new(Plugin, _pluginRepository, settingEntity);
 
                 // This overrides null with the default value, I'm not sure if that's desirable because you
                 // might expect something to go null and you might not

@@ -188,7 +188,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             base.OnInitialActivate();
         }
-        
+
         protected override void OnClose()
         {
             _coreService.FrameRendered -= OnFrameRendered;
@@ -367,13 +367,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             TimeSpan delta = DateTime.Now - _lastUpdate;
             _lastUpdate = DateTime.Now;
-            
-            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null)
+
+            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null || ((ProfileEditorViewModel) Parent).LayerPropertiesViewModel.Playing)
                 return;
-            
+
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
                 .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
-                .SelectMany(p => p.GetAllDataBindingRegistrations())) 
+                .SelectMany(p => p.GetAllDataBindingRegistrations()))
                 dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllLayers()
                 .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
@@ -420,13 +420,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             UpdateCanSelectEditTool();
         }
-        
+
         private void TransformValueChanged(object sender, LayerPropertyEventArgs e)
         {
             if (ActiveToolIndex != 1)
                 ActivateToolByIndex(1);
         }
-        
+
         private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
         {
             ApplyActiveProfile();

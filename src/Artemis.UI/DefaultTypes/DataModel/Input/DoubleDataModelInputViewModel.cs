@@ -15,7 +15,7 @@ namespace Artemis.UI.DefaultTypes.DataModel.Input
         public void NumberValidationTextBox(object sender, TextCompositionEventArgs e)
         {
             string seperator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator;
-            Regex regex = new Regex("^[" + seperator + "][0-9]+$|^[0-9]*[" + seperator + "]{0,1}[0-9]*$");
+            Regex regex = new("^[" + seperator + "][0-9]+$|^[0-9]*[" + seperator + "]{0,1}[0-9]*$");
             e.Handled = !regex.IsMatch(e.Text);
         }
     }

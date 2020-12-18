@@ -46,7 +46,7 @@ namespace Artemis.Core.Services.Models
             }
 
             // If nothing applied fall back to just basing on whatever is the furthers to the right
-            SurfaceArrangementConfiguration fallback = new SurfaceArrangementConfiguration(
+            SurfaceArrangementConfiguration fallback = new(
                 null,
                 HorizontalArrangementPosition.Right,
                 VerticalArrangementPosition.Equal,

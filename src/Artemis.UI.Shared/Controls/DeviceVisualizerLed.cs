@@ -61,9 +61,9 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
-            SolidColorBrush fillBrush = new SolidColorBrush(Color.FromArgb(100, 255, 255, 255));
+            SolidColorBrush fillBrush = new(Color.FromArgb(100, 255, 255, 255));
             fillBrush.Freeze();
-            SolidColorBrush penBrush = new SolidColorBrush(Color.FromArgb(255, 255, 255, 255));
+            SolidColorBrush penBrush = new(Color.FromArgb(255, 255, 255, 255));
             penBrush.Freeze();
 
             // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size

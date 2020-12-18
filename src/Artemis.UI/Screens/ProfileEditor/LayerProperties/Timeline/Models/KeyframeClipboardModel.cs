@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Models
             if (HasBeenPasted)
                 throw new ArtemisUIException("Clipboard model can only be pasted once");
 
-            List<ILayerPropertyKeyframe> results = new List<ILayerPropertyKeyframe>();
+            List<ILayerPropertyKeyframe> results = new();
             if (!ClipboardModels.Any())
                 return results;
 

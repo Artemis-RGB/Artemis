@@ -173,7 +173,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 lock (Devices)
                 {
                     List<SurfaceDeviceViewModel> existing = Devices.ToList();
-                    List<SurfaceDeviceViewModel> deviceViewModels = new List<SurfaceDeviceViewModel>();
+                    List<SurfaceDeviceViewModel> deviceViewModels = new();
 
                     // Add missing/update existing
                     foreach (ArtemisDevice surfaceDeviceConfiguration in SelectedSurface.Devices.OrderBy(d => d.ZIndex).ToList())
@@ -367,7 +367,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private void StartMouseDrag(object sender, Point position, Point relative)
         {
             // If drag started on top of a device, initialise dragging
-            RectangleGeometry selectedRect = new RectangleGeometry(new Rect(position, new Size(1, 1)));
+            RectangleGeometry selectedRect = new(new Rect(position, new Size(1, 1)));
             SurfaceDeviceViewModel device = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect).FirstOrDefault();
             if (device != null)
             {
@@ -401,7 +401,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             if (_mouseDragStatus != MouseDragStatus.Dragging)
             {
-                RectangleGeometry selectedRect = new RectangleGeometry(new Rect(_mouseDragStartPoint, position));
+                RectangleGeometry selectedRect = new(new Rect(_mouseDragStartPoint, position));
                 List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect);
                 foreach (SurfaceDeviceViewModel device in Devices)
                     if (devices.Contains(device))
@@ -421,7 +421,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (IsPanKeyDown())
                 return;
 
-            Rect selectedRect = new Rect(_mouseDragStartPoint, position);
+            Rect selectedRect = new(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
             List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, SelectionRectangle);

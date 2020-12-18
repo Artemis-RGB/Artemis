@@ -69,9 +69,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                 {
                     using (SKImage skiaImage = SKImage.FromPixels(e.BitmapBrush.Bitmap.PeekPixels()))
                     {
-                        SKImageInfo info = new SKImageInfo(skiaImage.Width, skiaImage.Height);
+                        SKImageInfo info = new(skiaImage.Width, skiaImage.Height);
                         writeableBitmap.Lock();
-                        using (SKPixmap pixmap = new SKPixmap(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
+                        using (SKPixmap pixmap = new(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
                         {
                             skiaImage.ReadPixels(pixmap, 0, 0);
                         }

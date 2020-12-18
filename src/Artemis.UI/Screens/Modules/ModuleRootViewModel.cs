@@ -40,11 +40,11 @@ namespace Artemis.UI.Screens.Modules
 
             if (Module.ModuleTabs != null)
             {
-                List<ModuleTab> moduleTabs = new List<ModuleTab>(Module.ModuleTabs);
+                List<ModuleTab> moduleTabs = new(Module.ModuleTabs);
                 foreach (ModuleTab moduleTab in moduleTabs.Where(m => m != null))
                 {
-                    ConstructorArgument module = new ConstructorArgument("module", Module);
-                    ConstructorArgument displayName = new ConstructorArgument("displayName", DisplayName);
+                    ConstructorArgument module = new("module", Module);
+                    ConstructorArgument displayName = new("displayName", DisplayName);
 
                     ModuleViewModel viewModel = (ModuleViewModel) Module.Plugin.Kernel.Get(moduleTab.Type, module, displayName);
                     Items.Add(viewModel);

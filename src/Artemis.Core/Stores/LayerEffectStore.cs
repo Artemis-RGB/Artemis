@@ -7,7 +7,7 @@ namespace Artemis.Core
 {
     internal class LayerEffectStore
     {
-        private static readonly List<LayerEffectRegistration> Registrations = new List<LayerEffectRegistration>();
+        private static readonly List<LayerEffectRegistration> Registrations = new();
 
         public static LayerEffectRegistration Add(LayerEffectDescriptor descriptor)
         {

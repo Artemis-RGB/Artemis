@@ -44,7 +44,7 @@ namespace Artemis.UI.Shared
                 typeof(RoutedPropertyChangedEventHandler<float>),
                 typeof(DraggableFloat));
 
-        private readonly Regex _inputRegex = new Regex("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
+        private readonly Regex _inputRegex = new("^[.][-|0-9]+$|^-?[0-9]*[.]{0,1}[0-9]*$");
 
         private bool _calledDragStarted;
 
@@ -196,10 +196,10 @@ namespace Artemis.UI.Shared
             }
 
             // Use decimals for everything to avoid floating point errors
-            decimal startValue = new decimal(_startValue);
-            decimal startX = new decimal(_mouseDragStartPoint.X);
-            decimal x = new decimal(e.GetPosition((IInputElement) sender).X);
-            decimal stepSize = new decimal(StepSize);
+            decimal startValue = new(_startValue);
+            decimal startX = new(_mouseDragStartPoint.X);
+            decimal x = new(e.GetPosition((IInputElement) sender).X);
+            decimal stepSize = new(StepSize);
             if (stepSize == 0)
                 stepSize = 0.1m;
 

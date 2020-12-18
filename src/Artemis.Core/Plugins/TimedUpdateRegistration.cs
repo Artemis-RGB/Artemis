@@ -13,7 +13,7 @@ namespace Artemis.Core
         private DateTime _lastEvent;
         private Timer? _timer;
         private bool _disposed;
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action)
         {

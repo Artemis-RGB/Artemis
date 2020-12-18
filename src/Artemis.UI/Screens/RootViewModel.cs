@@ -215,12 +215,12 @@ namespace Artemis.UI.Screens
 
         private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
         {
-            PaletteHelper paletteHelper = new PaletteHelper();
+            PaletteHelper paletteHelper = new();
             ITheme theme = paletteHelper.GetTheme();
             theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
             paletteHelper.SetTheme(theme);
 
-            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new MaterialDesignExtensions.Themes.PaletteHelper();
+            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new();
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
 

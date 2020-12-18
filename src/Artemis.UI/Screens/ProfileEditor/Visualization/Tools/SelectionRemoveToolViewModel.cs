@@ -15,7 +15,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         public SelectionRemoveToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
         {
-            using (MemoryStream stream = new MemoryStream(Resources.aero_pen_min))
+            using (MemoryStream stream = new(Resources.aero_pen_min))
             {
                 Cursor = new Cursor(stream);
             }
@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             base.MouseUp(sender, e);
 
             Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            Rect selectedRect = new Rect(MouseDownStartPosition, position);
+            Rect selectedRect = new(MouseDownStartPosition, position);
 
             // Get selected LEDs
             List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             }
 
             Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
-            Rect selectedRect = new Rect(MouseDownStartPosition, position);
+            Rect selectedRect = new(MouseDownStartPosition, position);
             List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
 
             // Unless shift is held down, clear the current selection

@@ -27,7 +27,7 @@ namespace Artemis.UI.Shared
             }
         }
 
-        internal override object InternalGuard => new object();
+        internal override object InternalGuard => new();
 
         /// <inheritdoc />
         public override void UpdateValue(object? model)

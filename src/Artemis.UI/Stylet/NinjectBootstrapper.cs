@@ -39,7 +39,7 @@ namespace Artemis.UI.Stylet
         /// </summary>
         protected virtual void DefaultConfigureIoC(IKernel kernel)
         {
-            ViewManagerConfig viewManagerConfig = new ViewManagerConfig
+            ViewManagerConfig viewManagerConfig = new()
             {
                 ViewFactory = GetInstance,
                 ViewAssemblies = new List<Assembly> {GetType().Assembly}

@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             LeftSideSelectionViewModel.LoadEventChildren = false;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
-            List<Type> supportedInputTypes = new List<Type> {typeof(DataModelEvent), typeof(DataModelEvent<>)};
+            List<Type> supportedInputTypes = new() {typeof(DataModelEvent), typeof(DataModelEvent<>)};
             
             LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
@@ -54,7 +54,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (DataModelConditionEvent.EventPath == null || !DataModelConditionEvent.EventPath.IsValid)
                 return;
 
-            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
+            List<DataModelConditionViewModel> viewModels = new();
             foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))

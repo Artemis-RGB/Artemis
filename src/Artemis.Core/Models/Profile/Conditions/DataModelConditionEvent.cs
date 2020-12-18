@@ -153,7 +153,7 @@ namespace Artemis.Core
                 return;
 
             // Ensure the list path is valid and points to a list
-            DataModelPath eventPath = new DataModelPath(null, Entity.EventPath);
+            DataModelPath eventPath = new(null, Entity.EventPath);
             // Can't check this on an invalid list, if it becomes valid later lets hope for the best
             if (eventPath.IsValid && !PointsToEvent(eventPath))
                 return;

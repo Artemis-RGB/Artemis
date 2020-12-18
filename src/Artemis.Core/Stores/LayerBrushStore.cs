@@ -7,7 +7,7 @@ namespace Artemis.Core
 {
     internal class LayerBrushStore
     {
-        private static readonly List<LayerBrushRegistration> Registrations = new List<LayerBrushRegistration>();
+        private static readonly List<LayerBrushRegistration> Registrations = new();
 
         public static LayerBrushRegistration Add(LayerBrushDescriptor descriptor)
         {

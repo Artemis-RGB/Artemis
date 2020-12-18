@@ -125,7 +125,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override List<ILayerProperty> GetAllLayerProperties()
         {
-            List<ILayerProperty> result = new List<ILayerProperty>();
+            List<ILayerProperty> result = new();
             result.AddRange(General.GetAllLayerProperties());
             result.AddRange(Transform.GetAllLayerProperties());
             if (LayerBrush?.BaseProperties != null)
@@ -221,7 +221,7 @@ namespace Artemis.Core
             LayerEntity.Leds.Clear();
             foreach (ArtemisLed artemisLed in Leds)
             {
-                LedEntity ledEntity = new LedEntity
+                LedEntity ledEntity = new()
                 {
                     DeviceIdentifier = artemisLed.Device.RgbDevice.GetDeviceIdentifier(),
                     LedName = artemisLed.RgbLed.Id.ToString()
@@ -336,7 +336,7 @@ namespace Artemis.Core
                 Renderer.Paint.BlendMode = General.BlendMode.CurrentValue;
                 Renderer.Paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
-                using SKPath renderPath = new SKPath();
+                using SKPath renderPath = new();
                 if (General.ShapeType.CurrentValue == LayerShapeType.Rectangle)
                     renderPath.AddRect(Renderer.Path.Bounds);
                 else
@@ -415,7 +415,7 @@ namespace Artemis.Core
             }
             else
             {
-                SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+                SKPath path = new() {FillType = SKPathFillType.Winding};
                 foreach (ArtemisLed artemisLed in Leds)
                     path.AddRect(artemisLed.AbsoluteRectangle);
 
@@ -569,7 +569,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            List<ArtemisLed> leds = new List<ArtemisLed>();
+            List<ArtemisLed> leds = new();
 
             // Get the surface LEDs for this layer
             List<ArtemisLed> availableLeds = surface.Devices.SelectMany(d => d.Leds).ToList();

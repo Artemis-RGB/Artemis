@@ -9,7 +9,7 @@ namespace Artemis.UI.Shared
     /// </summary>
     public static class JsonClipboard
     {
-        private static readonly JsonSerializerSettings JsonSettings = new JsonSerializerSettings {TypeNameHandling = TypeNameHandling.All};
+        private static readonly JsonSerializerSettings JsonSettings = new() {TypeNameHandling = TypeNameHandling.All};
 
         /// <summary>
         ///     Sets the provided object on the clipboard

@@ -104,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (DataModelConditionList.ListPath == null || !DataModelConditionList.ListPath.IsValid)
                 return;
 
-            List<DataModelConditionViewModel> viewModels = new List<DataModelConditionViewModel>();
+            List<DataModelConditionViewModel> viewModels = new();
             foreach (DataModelConditionPart childModel in Model.Children)
             {
                 if (Items.Any(c => c.Model == childModel))

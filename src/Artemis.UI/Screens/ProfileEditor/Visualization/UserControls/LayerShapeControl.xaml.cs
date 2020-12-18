@@ -161,7 +161,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.UserControls
 
         private void UpdateControlPosition(UIElement control, SKPoint point1, SKPoint point2)
         {
-            SKPoint point = new SKPoint((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
+            SKPoint point = new((point1.X + point2.X) / 2, (point1.Y + point2.Y) / 2);
             UpdateControlPosition(control, point);
         }
 

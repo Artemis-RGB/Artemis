@@ -12,7 +12,7 @@ namespace Artemis.Core
     public class Timeline : CorePropertyChanged, IStorageModel
     {
         private const int MaxExtraTimelines = 15;
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Timeline" /> class

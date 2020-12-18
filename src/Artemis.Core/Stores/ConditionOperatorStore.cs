@@ -6,7 +6,7 @@ namespace Artemis.Core
 {
     internal class ConditionOperatorStore
     {
-        private static readonly List<ConditionOperatorRegistration> Registrations = new List<ConditionOperatorRegistration>();
+        private static readonly List<ConditionOperatorRegistration> Registrations = new();
 
         public static ConditionOperatorRegistration Add(BaseConditionOperator conditionOperator)
         {

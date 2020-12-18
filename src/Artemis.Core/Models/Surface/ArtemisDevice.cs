@@ -288,7 +288,7 @@ namespace Artemis.Core
             foreach (ArtemisLed led in Leds)
                 led.CalculateRectangles();
 
-            SKPath path = new SKPath {FillType = SKPathFillType.Winding};
+            SKPath path = new() {FillType = SKPathFillType.Winding};
             foreach (ArtemisLed artemisLed in Leds)
                 path.AddRect(artemisLed.AbsoluteRectangle);
 

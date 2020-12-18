@@ -189,7 +189,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            List<Folder> folders = new List<Folder>();
+            List<Folder> folders = new();
             foreach (Folder childFolder in Children.Where(c => c is Folder).Cast<Folder>())
             {
                 // Add all folders in this element
@@ -210,7 +210,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException(GetType().Name);
 
-            List<Layer> layers = new List<Layer>();
+            List<Layer> layers = new();
 
             // Add all layers in this element
             layers.AddRange(Children.Where(c => c is Layer).Cast<Layer>());

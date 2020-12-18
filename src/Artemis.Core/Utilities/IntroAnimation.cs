@@ -47,7 +47,7 @@ namespace Artemis.Core
                         LedName = l.RgbLed.Id.ToString()
                     }));
 
-                Profile profile = new Profile(new DummyModule(), profileEntity);
+                Profile profile = new(new DummyModule(), profileEntity);
                 profile.Activate(_surfaceService.ActiveSurface);
 
                 _profileService.InstantiateProfile(profile);

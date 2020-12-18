@@ -14,7 +14,7 @@ namespace Artemis.Core.Services
 {
     internal class ModuleService : IModuleService
     {
-        private static readonly SemaphoreSlim ActiveModuleSemaphore = new SemaphoreSlim(1, 1);
+        private static readonly SemaphoreSlim ActiveModuleSemaphore = new(1, 1);
         private readonly ILogger _logger;
         private readonly IModuleRepository _moduleRepository;
         private readonly IPluginManagementService _pluginManagementService;
@@ -28,7 +28,7 @@ namespace Artemis.Core.Services
             _profileService = profileService;
             _pluginManagementService.PluginFeatureEnabled += OnPluginFeatureEnabled;
 
-            Timer activationUpdateTimer = new Timer(2000);
+            Timer activationUpdateTimer = new(2000);
             activationUpdateTimer.Start();
             activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
 
@@ -204,11 +204,11 @@ namespace Artemis.Core.Services
                     return;
                 }
 
-                Stopwatch stopwatch = new Stopwatch();
+                Stopwatch stopwatch = new();
                 stopwatch.Start();
 
                 List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-                List<Task> tasks = new List<Task>();
+                List<Task> tasks = new();
                 foreach (Module module in modules)
                     lock (module)
                     {

@@ -231,7 +231,7 @@ namespace Artemis.UI.InputProviders
 
         private static Win32Point GetCursorPosition()
         {
-            Win32Point w32Mouse = new Win32Point();
+            Win32Point w32Mouse = new();
             GetCursorPos(ref w32Mouse);
 
             return w32Mouse;

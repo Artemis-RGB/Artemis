@@ -67,7 +67,7 @@ namespace Artemis.Core
             RenderElementEntity.LayerEffects.Clear();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
             {
-                LayerEffectEntity layerEffectEntity = new LayerEffectEntity
+                LayerEffectEntity layerEffectEntity = new()
                 {
                     Id = layerEffect.EntityId,
                     ProviderId = layerEffect.Descriptor?.PlaceholderFor ?? layerEffect.ProviderId,
@@ -208,7 +208,7 @@ namespace Artemis.Core
             if (descriptor == null)
                 throw new ArgumentNullException(nameof(descriptor));
 
-            LayerEffectEntity entity = new LayerEffectEntity
+            LayerEffectEntity entity = new()
             {
                 Id = Guid.NewGuid(),
                 Enabled = true,

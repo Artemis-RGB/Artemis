@@ -54,7 +54,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public List<TreeItemViewModel> GetAllChildren()
         {
-            List<TreeItemViewModel> children = new List<TreeItemViewModel>();
+            List<TreeItemViewModel> children = new();
             foreach (TreeItemViewModel childFolder in Items)
             {
                 // Add all children in this element
@@ -128,7 +128,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a folder to a profile element of type " + ProfileElement.GetType().Name);
 
-            Folder _ = new Folder(ProfileElement, "New folder");
+            Folder _ = new(ProfileElement, "New folder");
             _profileEditorService.UpdateSelectedProfile();
         }
 
@@ -137,7 +137,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (!SupportsChildren)
                 throw new ArtemisUIException("Cannot add a layer to a profile element of type " + ProfileElement.GetType().Name);
 
-            Layer layer = new Layer(ProfileElement, "New layer");
+            Layer layer = new(ProfileElement, "New layer");
 
             // Could be null if the default brush got disabled
             LayerBrushDescriptor brush = _layerBrushService.GetDefaultLayerBrush();
@@ -217,7 +217,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 Items.Remove(treeItemViewModel);
 
             // Add missing children
-            List<TreeItemViewModel> newChildren = new List<TreeItemViewModel>();
+            List<TreeItemViewModel> newChildren = new();
             foreach (ProfileElement profileElement in ProfileElement.Children.OrderBy(c => c.Order))
                 if (profileElement is Folder folder)
                 {

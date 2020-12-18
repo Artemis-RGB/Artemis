@@ -122,7 +122,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             }
 
             // Modifier type
-            ModifierTypeCategoryViewModel root = new ModifierTypeCategoryViewModel(null, null);
+            ModifierTypeCategoryViewModel root = new(null, null);
             IEnumerable<IGrouping<string, BaseDataBindingModifierType>> modifierTypes = _dataBindingService.GetCompatibleModifierTypes(sourceType, ModifierTypePart.Value).GroupBy(t => t.Category);
             foreach (IGrouping<string, BaseDataBindingModifierType> dataBindingModifierTypes in modifierTypes)
             {

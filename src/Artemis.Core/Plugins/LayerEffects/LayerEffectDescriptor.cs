@@ -87,7 +87,7 @@ namespace Artemis.Core.LayerEffects
         {
             if (PlaceholderFor == null)
                 throw new ArtemisCoreException("Cannot create a placeholder instance using a layer effect descriptor that is not a placeholder for anything");
-            PlaceholderLayerEffect effect = new PlaceholderLayerEffect(entity, PlaceholderFor)
+            PlaceholderLayerEffect effect = new(entity, PlaceholderFor)
             {
                 ProfileElement = renderElement,
                 Descriptor = this

@@ -13,7 +13,7 @@ namespace Artemis.Core.DataModelExpansions
     /// </summary>
     public abstract class DataModel
     {
-        private readonly Dictionary<string, DataModel> _dynamicDataModels = new Dictionary<string, DataModel>();
+        private readonly Dictionary<string, DataModel> _dynamicDataModels = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModel" /> class
@@ -47,7 +47,7 @@ namespace Artemis.Core.DataModelExpansions
         ///     Gets an read-only dictionary of all dynamic data models
         /// </summary>
         [DataModelIgnore]
-        public ReadOnlyDictionary<string, DataModel> DynamicDataModels => new ReadOnlyDictionary<string, DataModel>(_dynamicDataModels);
+        public ReadOnlyDictionary<string, DataModel> DynamicDataModels => new(_dynamicDataModels);
 
         /// <summary>
         ///     Returns a read-only collection of all properties in this datamodel that are to be ignored

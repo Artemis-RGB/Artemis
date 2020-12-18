@@ -292,7 +292,7 @@ namespace Artemis.Core
             if (value == null)
                 return null;
 
-            LayerPropertyKeyframe<T> keyframe = new LayerPropertyKeyframe<T>(
+            LayerPropertyKeyframe<T> keyframe = new(
                 CoreJson.DeserializeObject<T>(keyframeEntity.Value)!, keyframeEntity.Position, (Easings.Functions) keyframeEntity.EasingFunction, this
             );
             AddKeyframe(keyframe);
@@ -366,9 +366,9 @@ namespace Artemis.Core
         #region Data bindings
 
         // ReSharper disable InconsistentNaming
-        internal readonly List<IDataBindingRegistration> _dataBindingRegistrations = new List<IDataBindingRegistration>();
+        internal readonly List<IDataBindingRegistration> _dataBindingRegistrations = new();
 
-        internal readonly List<IDataBinding> _dataBindings = new List<IDataBinding>();
+        internal readonly List<IDataBinding> _dataBindings = new();
         // ReSharper restore InconsistentNaming
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace Artemis.Core
             if (dataBindingRegistration.DataBinding != null)
                 throw new ArtemisCoreException("Provided data binding registration already has an enabled data binding");
 
-            DataBinding<T, TProperty> dataBinding = new DataBinding<T, TProperty>(dataBindingRegistration);
+            DataBinding<T, TProperty> dataBinding = new(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
             OnDataBindingEnabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));

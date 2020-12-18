@@ -84,7 +84,7 @@ namespace Artemis.Core
 
             IEnumerable<TSource> _()
             {
-                HashSet<TKey> knownKeys = new HashSet<TKey>(comparer);
+                HashSet<TKey> knownKeys = new(comparer);
                 foreach (TSource element in source)
                 {
                     if (knownKeys.Add(keySelector(element)))

@@ -11,7 +11,7 @@ namespace Artemis.Core
     /// </summary>
     public static class TypeExtensions
     {
-        private static readonly Dictionary<Type, List<Type>> PrimitiveTypeConversions = new Dictionary<Type, List<Type>>
+        private static readonly Dictionary<Type, List<Type>> PrimitiveTypeConversions = new()
         {
             {typeof(decimal), new List<Type> {typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char)}},
             {typeof(double), new List<Type> {typeof(sbyte), typeof(byte), typeof(short), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(char), typeof(float)}},
@@ -24,7 +24,7 @@ namespace Artemis.Core
             {typeof(short), new List<Type> {typeof(byte)}}
         };
 
-        private static readonly Dictionary<Type, string> TypeKeywords = new Dictionary<Type, string>
+        private static readonly Dictionary<Type, string> TypeKeywords = new()
         {
             {typeof(bool), "bool"},
             {typeof(byte), "byte"},

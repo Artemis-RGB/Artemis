@@ -11,7 +11,7 @@ namespace Artemis.Core
     /// </summary>
     public abstract class DataModelConditionPart : IDisposable
     {
-        private readonly List<DataModelConditionPart> _children = new List<DataModelConditionPart>();
+        private readonly List<DataModelConditionPart> _children = new();
 
         /// <summary>
         ///     Gets the parent of this part

@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Input
     {
         private readonly IDataModelUIService _dataModelUIService;
         private readonly Window? _rootView;
-        private SolidColorBrush _buttonBrush = new SolidColorBrush(Color.FromRgb(171, 71, 188));
+        private SolidColorBrush _buttonBrush = new(Color.FromRgb(171, 71, 188));
         private bool _displaySwitchButton;
         private DataModelDisplayViewModel? _displayViewModel;
         private DataModelInputViewModel? _inputViewModel;
@@ -62,7 +62,7 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets the brush to use for the switch button
         /// </summary>
-        public SolidColorBrush SwitchButtonBrush => new SolidColorBrush(ButtonBrush.Color.Darken());
+        public SolidColorBrush SwitchButtonBrush => new(ButtonBrush.Color.Darken());
 
         /// <summary>
         ///     Gets the view model used to display the value

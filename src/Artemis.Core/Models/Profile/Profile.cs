@@ -12,7 +12,7 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Profile : ProfileElement
     {
-        private readonly object _lock = new object();
+        private readonly object _lock = new();
         private bool _isActivated;
 
         internal Profile(ProfileModule module, string name) : base(null!)
@@ -26,7 +26,7 @@ namespace Artemis.Core
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
 
-            Folder _ = new Folder(this, "Root folder");
+            Folder _ = new(this, "Root folder");
             Save();
         }
 
@@ -168,7 +168,7 @@ namespace Artemis.Core
                 FolderEntity? rootFolder = ProfileEntity.Folders.FirstOrDefault(f => f.ParentId == EntityId);
                 if (rootFolder == null)
                 {
-                    Folder _ = new Folder(this, "Root folder");
+                    Folder _ = new(this, "Root folder");
                 }
                 else
                 {
