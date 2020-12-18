@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
@@ -18,6 +18,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
     public class ProfileViewModel : Screen, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
+        private readonly ICoreService _coreService;
         private readonly IProfileLayerVmFactory _profileLayerVmFactory;
         private readonly ISettingsService _settingsService;
         private readonly ISurfaceService _surfaceService;
@@ -31,13 +32,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
         private PluginSetting<bool> _highlightSelectedLayer;
-        private PluginSetting<bool> _onlyShowSelectedShape;
+        private PluginSetting<bool> _alwaysApplyDataBindings;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
         private BindableCollection<ArtemisLed> _selectedLeds;
+        private DateTime _lastUpdate;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
+            ICoreService coreService,
             ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
@@ -45,6 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             IProfileLayerVmFactory profileLayerVmFactory)
         {
             _profileEditorService = profileEditorService;
+            _coreService = coreService;
             _surfaceService = surfaceService;
             _settingsService = settingsService;
             _visualizationToolVmFactory = visualizationToolVmFactory;
@@ -102,10 +106,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _selectedLeds, value);
         }
 
-        public PluginSetting<bool> OnlyShowSelectedShape
+        public PluginSetting<bool> AlwaysApplyDataBindings
         {
-            get => _onlyShowSelectedShape;
-            set => SetAndNotify(ref _onlyShowSelectedShape, value);
+            get => _alwaysApplyDataBindings;
+            set => SetAndNotify(ref _alwaysApplyDataBindings, value);
         }
 
         public PluginSetting<bool> HighlightSelectedLayer
@@ -170,8 +174,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             ApplyActiveProfile();
 
-            OnlyShowSelectedShape = _settingsService.GetSetting("ProfileEditor.OnlyShowSelectedShape", true);
+            AlwaysApplyDataBindings = _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
             HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
+
+            _lastUpdate = DateTime.Now;
+            _coreService.FrameRendered += OnFrameRendered;
 
             HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
             _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
@@ -181,9 +188,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             base.OnInitialActivate();
         }
-
+        
         protected override void OnClose()
         {
+            _coreService.FrameRendered -= OnFrameRendered;
             HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
             _surfaceService.ActiveSurfaceConfigurationSelected -= OnActiveSurfaceConfigurationSelected;
             _profileEditorService.ProfileSelected -= OnProfileSelected;
@@ -192,7 +200,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             if (_previousSelectedLayer != null)
                 _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
-            OnlyShowSelectedShape.Save();
+            AlwaysApplyDataBindings.Save();
             HighlightSelectedLayer.Save();
 
             foreach (CanvasViewModel canvasViewModel in CanvasViewModels)
@@ -354,6 +362,27 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         #endregion
 
         #region Event handlers
+
+        private void OnFrameRendered(object sender, FrameRenderedEventArgs e)
+        {
+            TimeSpan delta = DateTime.Now - _lastUpdate;
+            _lastUpdate = DateTime.Now;
+            
+            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null)
+                return;
+            
+            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
+                .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
+                .SelectMany(p => p.GetAllDataBindingRegistrations())) 
+                dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
+            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllLayers()
+                .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
+                .SelectMany(p => p.GetAllDataBindingRegistrations()))
+                dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
+
+            // TODO: Only update when there are data bindings
+            _profileEditorService.UpdateProfilePreview();
+        }
 
         private void HighlightSelectedLayerOnSettingChanged(object sender, EventArgs e)
         {

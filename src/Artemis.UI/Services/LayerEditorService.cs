@@ -103,16 +103,15 @@ namespace Artemis.UI.Services
         /// <inheritdoc />
         public SKPoint GetScaledPoint(Layer layer, SKPoint point, bool absolute)
         {
-            double renderScale = _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
             if (absolute)
                 return new SKPoint(
-                    100f / layer.Bounds.Width * ((float) (point.X * renderScale) - layer.Bounds.Left) / 100f,
-                    100f / layer.Bounds.Height * ((float) (point.Y * renderScale) - layer.Bounds.Top) / 100f
+                    100f / layer.Bounds.Width * (point.X - layer.Bounds.Left) / 100f,
+                    100f / layer.Bounds.Height * (point.Y - layer.Bounds.Top) / 100f
                 );
 
             return new SKPoint(
-                100f / layer.Bounds.Width * (float) (point.X * renderScale) / 100f,
-                100f / layer.Bounds.Height * (float) (point.Y * renderScale) / 100f
+                100f / layer.Bounds.Width * point.X / 100f,
+                100f / layer.Bounds.Height * point.Y / 100f
             );
         }
 
