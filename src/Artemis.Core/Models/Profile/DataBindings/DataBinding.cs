@@ -144,7 +144,7 @@ namespace Artemis.Core
         {
             // Don't update data bindings if there is no delta, otherwise this creates an inconsistency between
             // data bindings with easing and data bindings without easing (the ones with easing will seemingly not update)
-            if (timeline.Delta == TimeSpan.Zero)
+            if (timeline.Delta == TimeSpan.Zero || timeline.IsOverridden)
                 return;
 
             UpdateWithDelta(timeline.Delta);

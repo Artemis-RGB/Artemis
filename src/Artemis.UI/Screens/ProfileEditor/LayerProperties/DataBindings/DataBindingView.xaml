@@ -99,7 +99,7 @@
                                    Grid.Column="1"
                                    Margin="0 10 10 0"
                                    Visibility="{Binding AlwaysApplyDataBindings.Value, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}"
-                                   ToolTip="Click Play to ensure all other data bindings update as well or enable 'Constantly apply data bindings in editor'"
+                                   ToolTip="Check 'Apply data bindings in editor'"
                                    Cursor="Help">
                             Other data bindings not updating?
                         </TextBlock>
