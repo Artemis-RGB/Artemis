@@ -126,14 +126,19 @@
                 </ItemsControl>
             </Grid>
 
-            <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10">
+            <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Cursor="Arrow">
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding OnlyShowSelectedShape.Value}" IsEnabled="False">
-                            Only show shape of selected layer (NYI)
-                        </CheckBox>
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" Margin="10 0 0 0" IsChecked="{Binding HighlightSelectedLayer.Value}">
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                                  IsChecked="{Binding HighlightSelectedLayer.Value}"
+                                  ToolTip="If selected, dims all LEDs that are not part of the selected layer">
                             Highlight LEDs of selected layer
+                        </CheckBox>
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                                  Margin="10 0 0 0" 
+                                  IsChecked="{Binding AlwaysApplyDataBindings.Value}"
+                                  ToolTip="If selected, constantly updates all data bindings instead of only when playing">
+                            Constantly apply data bindings in editor
                         </CheckBox>
                     </StackPanel>
                 </materialDesign:Card>

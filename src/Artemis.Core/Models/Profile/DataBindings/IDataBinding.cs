@@ -10,6 +10,12 @@ namespace Artemis.Core
     public interface IDataBinding : IStorageModel, IUpdateModel, IDisposable
     {
         /// <summary>
+        ///     Updates the smoothing progress of the data binding and recalculates the value next <see cref="Apply" /> call
+        /// </summary>
+        /// <param name="delta">The delta to apply during update</param>
+        void UpdateWithDelta(TimeSpan delta);
+
+        /// <summary>
         ///     Applies the data binding to the layer property
         /// </summary>
         void Apply();

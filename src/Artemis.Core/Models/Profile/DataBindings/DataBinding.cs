@@ -6,12 +6,12 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBinding<TLayerProperty, TProperty> : IDataBinding
     {
+        private TProperty _currentValue = default!;
         private bool _disposed;
         private TimeSpan _easingProgress;
-        private bool _reapplyValue;
-        private TProperty _currentValue = default!;
-        private TProperty _previousValue = default!;
         private TProperty _lastAppliedValue = default!;
+        private TProperty _previousValue = default!;
+        private bool _reapplyValue;
 
         internal DataBinding(DataBindingRegistration<TLayerProperty, TProperty> dataBindingRegistration)
         {
@@ -100,27 +100,6 @@ namespace Artemis.Core
             return Registration?.PropertyExpression.ReturnType;
         }
 
-        /// <summary>
-        ///     Updates the smoothing progress of the data binding
-        /// </summary>
-        /// <param name="delta">The delta to apply during update</param>
-        public void UpdateWithDelta(TimeSpan delta)
-        {
-            if (_disposed)
-                throw new ObjectDisposedException("DataBinding");
-
-            // Data bindings cannot go back in time like brushes
-            if (delta < TimeSpan.Zero)
-                delta = TimeSpan.Zero;
-
-            _easingProgress = _easingProgress.Add(delta);
-            if (_easingProgress > EasingTime)
-                _easingProgress = EasingTime;
-
-            // Tell Apply() to apply a new value next call
-            _reapplyValue = false;
-        }
-
         private void ResetEasing(TProperty value)
         {
             _previousValue = GetInterpolatedValue();
@@ -165,10 +144,28 @@ namespace Artemis.Core
         {
             // Don't update data bindings if there is no delta, otherwise this creates an inconsistency between
             // data bindings with easing and data bindings without easing (the ones with easing will seemingly not update)
-            if (timeline.Delta == TimeSpan.Zero) 
+            if (timeline.Delta == TimeSpan.Zero)
                 return;
-            
+
             UpdateWithDelta(timeline.Delta);
+        }
+
+        /// <inheritdoc />
+        public void UpdateWithDelta(TimeSpan delta)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("DataBinding");
+
+            // Data bindings cannot go back in time like brushes
+            if (delta < TimeSpan.Zero)
+                delta = TimeSpan.Zero;
+
+            _easingProgress = _easingProgress.Add(delta);
+            if (_easingProgress > EasingTime)
+                _easingProgress = EasingTime;
+
+            // Tell Apply() to apply a new value next call
+            _reapplyValue = false;
         }
 
         /// <inheritdoc />
