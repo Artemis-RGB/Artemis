@@ -64,7 +64,6 @@ namespace Artemis.UI.Screens
             _builtInRegistrationService = builtInRegistrationService;
             _snackbarMessageQueue = snackbarMessageQueue;
             _sidebarViewModel = sidebarViewModel;
-
             _frameTimeUpdateTimer = new Timer(500);
 
             _colorScheme = _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
@@ -72,6 +71,8 @@ namespace Artemis.UI.Screens
 
             _themeWatcher = new ThemeWatcher();
             ApplyColorSchemeSetting();
+
+            _sidebarViewModel.ConductWith(this);
 
             ActiveItem = sidebarViewModel.SelectedItem;
             ActiveItemReady = true;
@@ -333,7 +334,6 @@ namespace Artemis.UI.Screens
                 GC.WaitForPendingFinalizers();
                 GC.Collect();
             });
-
 
             base.OnClose();
         }

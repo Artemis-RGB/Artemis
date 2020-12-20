@@ -15,7 +15,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : Screen, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
+    public class ProfileViewModel : Conductor<CanvasViewModel>.Collection.AllActive, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly ICoreService _coreService;
@@ -28,7 +28,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private VisualizationToolViewModel _activeToolViewModel;
         private bool _canApplyToLayer;
         private bool _canSelectEditTool;
-        private BindableCollection<CanvasViewModel> _canvasViewModels;
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
         private PluginSetting<bool> _highlightSelectedLayer;
@@ -36,7 +35,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
-        private BindableCollection<ArtemisLed> _selectedLeds;
         private DateTime _lastUpdate;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
@@ -54,21 +52,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             _visualizationToolVmFactory = visualizationToolVmFactory;
             _profileLayerVmFactory = profileLayerVmFactory;
 
-            Execute.OnUIThreadSync(() =>
-            {
-                PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
-
-                CanvasViewModels = new BindableCollection<CanvasViewModel>();
-                Devices = new BindableCollection<ArtemisDevice>();
-                HighlightedLeds = new BindableCollection<ArtemisLed>();
-                SelectedLeds = new BindableCollection<ArtemisLed>();
-            });
-
-            ApplySurfaceConfiguration(_surfaceService.ActiveSurface);
-            ActivateToolByIndex(0);
-
             eventAggregator.Subscribe(this);
         }
+
 
         public bool CanSelectEditTool
         {
@@ -82,12 +68,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _panZoomViewModel, value);
         }
 
-        public BindableCollection<CanvasViewModel> CanvasViewModels
-        {
-            get => _canvasViewModels;
-            set => SetAndNotify(ref _canvasViewModels, value);
-        }
-
         public BindableCollection<ArtemisDevice> Devices
         {
             get => _devices;
@@ -98,12 +78,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             get => _highlightedLeds;
             set => SetAndNotify(ref _highlightedLeds, value);
-        }
-
-        public BindableCollection<ArtemisLed> SelectedLeds
-        {
-            get => _selectedLeds;
-            set => SetAndNotify(ref _selectedLeds, value);
         }
 
         public PluginSetting<bool> AlwaysApplyDataBindings
@@ -126,10 +100,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 // Remove the tool from the canvas
                 if (_activeToolViewModel != null)
                 {
-                    lock (CanvasViewModels)
+                    lock (Items)
                     {
-                        CanvasViewModels.Remove(_activeToolViewModel);
-                        NotifyOfPropertyChange(() => CanvasViewModels);
+                        Items.Remove(_activeToolViewModel);
+                        NotifyOfPropertyChange(() => Items);
                     }
                 }
 
@@ -138,10 +112,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 // Add the new tool to the canvas
                 if (_activeToolViewModel != null)
                 {
-                    lock (CanvasViewModels)
+                    lock (Items)
                     {
-                        CanvasViewModels.Add(_activeToolViewModel);
-                        NotifyOfPropertyChange(() => CanvasViewModels);
+                        Items.Add(_activeToolViewModel);
+                        NotifyOfPropertyChange(() => Items);
                     }
                 }
             }
@@ -163,15 +137,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _canApplyToLayer, value);
         }
 
-        public List<ArtemisLed> GetLedsInRectangle(Rect selectedRect)
-        {
-            return Devices.SelectMany(d => d.Leds)
-                .Where(led => led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1).IntersectsWith(selectedRect))
-                .ToList();
-        }
-
         protected override void OnInitialActivate()
         {
+            PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
+
+            Devices = new BindableCollection<ArtemisDevice>();
+            HighlightedLeds = new BindableCollection<ArtemisLed>();
+
+            ApplySurfaceConfiguration(_surfaceService.ActiveSurface);
+            ActivateToolByIndex(0);
+
             ApplyActiveProfile();
 
             AlwaysApplyDataBindings = _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
@@ -203,10 +178,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             AlwaysApplyDataBindings.Save();
             HighlightSelectedLayer.Save();
 
-            foreach (CanvasViewModel canvasViewModel in CanvasViewModels)
-                canvasViewModel.Dispose();
-            CanvasViewModels.Clear();
-
             base.OnClose();
         }
 
@@ -217,23 +188,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void ApplyActiveProfile()
         {
-            List<ProfileLayerViewModel> layerViewModels = CanvasViewModels.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
+            List<ProfileLayerViewModel> layerViewModels = Items.Where(vm => vm is ProfileLayerViewModel).Cast<ProfileLayerViewModel>().ToList();
             List<Layer> layers = _profileEditorService.SelectedProfile?.GetAllLayers() ?? new List<Layer>();
 
             // Add new layers missing a VM
             foreach (Layer layer in layers)
             {
                 if (layerViewModels.All(vm => vm.Layer != layer))
-                    CanvasViewModels.Add(_profileLayerVmFactory.Create(layer, this));
+                    Items.Add(_profileLayerVmFactory.Create(layer, PanZoomViewModel));
             }
 
             // Remove layers that no longer exist
             IEnumerable<ProfileLayerViewModel> toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
             foreach (ProfileLayerViewModel profileLayerViewModel in toRemove)
-            {
-                profileLayerViewModel.Dispose();
-                CanvasViewModels.Remove(profileLayerViewModel);
-            }
+                Items.Remove(profileLayerViewModel);
         }
 
         private void ApplySurfaceConfiguration(ArtemisSurface surface)
@@ -270,20 +238,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void ActivateToolByIndex(int value)
         {
-            // Consider using DI if dependencies start to add up
             switch (value)
             {
                 case 0:
-                    ActiveToolViewModel = _visualizationToolVmFactory.ViewpointMoveToolViewModel(this);
+                    ActiveToolViewModel = _visualizationToolVmFactory.ViewpointMoveToolViewModel(PanZoomViewModel);
                     break;
                 case 1:
-                    ActiveToolViewModel = _visualizationToolVmFactory.EditToolViewModel(this);
+                    ActiveToolViewModel = _visualizationToolVmFactory.EditToolViewModel(PanZoomViewModel);
                     break;
                 case 2:
-                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionToolViewModel(this);
+                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionToolViewModel(PanZoomViewModel);
                     break;
                 case 3:
-                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionRemoveToolViewModel(this);
+                    ActiveToolViewModel = _visualizationToolVmFactory.SelectionRemoveToolViewModel(PanZoomViewModel);
                     break;
             }
 
@@ -324,43 +291,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         #endregion
 
-        #region Context menu actions
-
-        public void CreateLayer()
-        {
-        }
-
-        public void ApplyToLayer()
-        {
-            if (!(_profileEditorService.SelectedProfileElement is Layer layer))
-                return;
-
-            layer.ClearLeds();
-            layer.AddLeds(SelectedLeds);
-
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        public void SelectAll()
-        {
-            SelectedLeds.Clear();
-            SelectedLeds.AddRange(Devices.SelectMany(d => d.Leds));
-        }
-
-        public void InverseSelection()
-        {
-            List<ArtemisLed> current = SelectedLeds.ToList();
-            SelectedLeds.Clear();
-            SelectedLeds.AddRange(Devices.SelectMany(d => d.Leds).Except(current));
-        }
-
-        public void ClearSelection()
-        {
-            SelectedLeds.Clear();
-        }
-
-        #endregion
-
         #region Event handlers
 
         private void OnFrameRendered(object sender, FrameRenderedEventArgs e)
@@ -368,7 +298,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             TimeSpan delta = DateTime.Now - _lastUpdate;
             _lastUpdate = DateTime.Now;
 
-            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null || ((ProfileEditorViewModel) Parent).LayerPropertiesViewModel.Playing)
+            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null || _profileEditorService.Playing)
                 return;
 
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()

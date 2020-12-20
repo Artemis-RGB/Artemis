@@ -5,9 +5,9 @@ using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Extensions;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
-using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
@@ -15,25 +15,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
     {
         private readonly ILayerEditorService _layerEditorService;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly ProfileViewModel _profileViewModel;
+        private readonly PanZoomViewModel _panZoomViewModel;
         private bool _isSelected;
         private Geometry _shapeGeometry;
         private Rect _viewportRectangle;
 
-        public ProfileLayerViewModel(Layer layer, ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+        public ProfileLayerViewModel(Layer layer, PanZoomViewModel panZoomViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
         {
-            _profileViewModel = profileViewModel;
+            _panZoomViewModel = panZoomViewModel;
             _profileEditorService = profileEditorService;
             _layerEditorService = layerEditorService;
             Layer = layer;
-
-
-            Update();
-            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
-            _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
-            _profileViewModel.PanZoomViewModel.PropertyChanged += PanZoomViewModelOnPropertyChanged;
         }
 
         public Layer Layer { get; }
@@ -59,8 +51,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             get
             {
                 if (IsSelected)
-                    return Math.Max(2 / _profileViewModel.PanZoomViewModel.Zoom, 1);
-                return Math.Max(2 / _profileViewModel.PanZoomViewModel.Zoom, 1) / 2;
+                    return Math.Max(2 / _panZoomViewModel.Zoom, 1);
+                return Math.Max(2 / _panZoomViewModel.Zoom, 1) / 2;
             }
         }
 
@@ -86,23 +78,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             }
         }
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-                _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
-                _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
-                _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
-                _profileViewModel.PanZoomViewModel.PropertyChanged -= PanZoomViewModelOnPropertyChanged;
-            }
-
-            base.Dispose(disposing);
-        }
-
         private void PanZoomViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(_profileViewModel.PanZoomViewModel.Zoom))
+            if (e.PropertyName == nameof(_panZoomViewModel.Zoom))
             {
                 NotifyOfPropertyChange(nameof(StrokeThickness));
                 NotifyOfPropertyChange(nameof(LayerStrokeThickness));
@@ -192,6 +170,33 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 return CreateRectangleGeometry(led);
             }
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            Update();
+            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
+            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
+            _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
+            _panZoomViewModel.PropertyChanged += PanZoomViewModelOnPropertyChanged;
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
+            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
+            _panZoomViewModel.PropertyChanged -= PanZoomViewModelOnPropertyChanged;
+            base.OnClose();
+        }
+
+        #endregion
 
         #region Event handlers
 

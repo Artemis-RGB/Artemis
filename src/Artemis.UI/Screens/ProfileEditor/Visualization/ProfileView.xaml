@@ -106,7 +106,7 @@
                         <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                     </TransformGroup>
                 </Grid.RenderTransform>
-                <ItemsControl ItemsSource="{Binding CanvasViewModels}">
+                <ItemsControl ItemsSource="{Binding Items}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas />

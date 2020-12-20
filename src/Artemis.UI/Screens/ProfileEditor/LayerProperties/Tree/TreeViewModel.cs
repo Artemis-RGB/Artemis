@@ -7,7 +7,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
     public class TreeViewModel : Screen
     {
-        public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
+        public TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups)
         {
             LayerPropertiesViewModel = layerPropertiesViewModel;
 
@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+        public IObservableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
         public void PropertyTreePreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

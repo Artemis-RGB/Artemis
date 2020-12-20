@@ -19,12 +19,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             LayerPropertyViewModel = layerPropertyViewModel;
 
             PropertyInputViewModel = _profileEditorService.CreatePropertyInputViewModel(LayerProperty);
-            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
-            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
-            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
-            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
-            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
-            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
+            PropertyInputViewModel.ConductWith(this);
         }
 
         public LayerProperty<T> LayerProperty { get; }
@@ -89,19 +84,30 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
             return depth;
         }
+        
+        #region Overrides of Screen
 
-        public bool HasPropertyInputViewModel => PropertyInputViewModel != null;
-
-        #region IDisposable
-
-        public void Dispose()
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
         {
-            _propertyInputViewModel?.Dispose();
+            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
+            LayerProperty.VisibilityChanged += LayerPropertyOnVisibilityChanged;
+            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
+            LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
             _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
             LayerProperty.VisibilityChanged -= LayerPropertyOnVisibilityChanged;
             LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
             LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
             LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
+            base.OnClose();
         }
 
         #endregion
@@ -131,9 +137,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         #endregion
     }
 
-    public interface ITreePropertyViewModel : IScreen, IDisposable
+    public interface ITreePropertyViewModel : IScreen
     {
-        bool HasPropertyInputViewModel { get; }
         bool HasDataBinding { get; }
         double GetDepth();
     }

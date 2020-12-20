@@ -48,7 +48,7 @@
         <Rectangle Grid.Row="1" HorizontalAlignment="Stretch" Fill="{DynamicResource MaterialDesignDivider}" Height="1" />
 
         <ItemsControl Grid.Row="2"
-                      ItemsSource="{Binding LayerPropertyGroupViewModel.Children}"
+                      ItemsSource="{Binding LayerPropertyGroupViewModel.Items}"
                       Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch">

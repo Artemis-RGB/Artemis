@@ -22,13 +22,13 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public sealed class SidebarViewModel : PropertyChangedBase, IHandle<RequestSelectSidebarItemEvent>, IDisposable
+    public sealed class SidebarViewModel : Screen, IHandle<RequestSelectSidebarItemEvent>, IDisposable
     {
         private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
-        private readonly ISettingsService _settingsService;
         private readonly IModuleVmFactory _moduleVmFactory;
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly IModuleService _moduleService;
         private string _activeModules;
         private bool _isSidebarOpen;
         private IScreen _selectedItem;
@@ -38,9 +38,9 @@ namespace Artemis.UI.Screens.Sidebar
         public SidebarViewModel(IKernel kernel, ISettingsService settingsService, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService, IModuleService moduleService)
         {
             _kernel = kernel;
-            _settingsService = settingsService;
             _moduleVmFactory = moduleVmFactory;
             _pluginManagementService = pluginManagementService;
+            _moduleService = moduleService;
 
             SidebarModules = new Dictionary<INavigationItem, Module>();
             SidebarItems = new BindableCollection<INavigationItem>();
@@ -48,14 +48,6 @@ namespace Artemis.UI.Screens.Sidebar
             PinSidebar.AutoSave = true;
 
             _activeModulesUpdateTimer = new Timer(1000);
-            _activeModulesUpdateTimer.Start();
-            _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
-
-            _pluginManagementService.PluginFeatureEnabled += OnFeatureEnabled;
-            _pluginManagementService.PluginFeatureDisabled += OnFeatureDisabled;
-            moduleService.ModulePriorityUpdated += OnModulePriorityUpdated;
-
-            SetupSidebar();
             eventAggregator.Subscribe(this);
         }
 
@@ -247,6 +239,37 @@ namespace Artemis.UI.Screens.Sidebar
         public void Handle(RequestSelectSidebarItemEvent message)
         {
             ActivateViewModel(message.Label);
+        }
+
+        #endregion
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _activeModulesUpdateTimer.Start();
+            _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
+
+            _pluginManagementService.PluginFeatureEnabled += OnFeatureEnabled;
+            _pluginManagementService.PluginFeatureDisabled += OnFeatureDisabled;
+            _moduleService.ModulePriorityUpdated += OnModulePriorityUpdated;
+
+            SetupSidebar();
+            
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _activeModulesUpdateTimer.Stop();
+            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
+
+            _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnabled;
+            _pluginManagementService.PluginFeatureDisabled -= OnFeatureDisabled;
+            _moduleService.ModulePriorityUpdated -= OnModulePriorityUpdated;
+            base.OnClose();
         }
 
         #endregion

@@ -14,14 +14,10 @@ namespace Artemis.UI.PropertyInput
         private readonly IPluginManagementService _pluginManagementService;
         private BindableCollection<LayerBrushDescriptor> _descriptors;
 
-        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty,
-            IProfileEditorService profileEditorService,
-            IPluginManagementService pluginManagementService) : base(layerProperty, profileEditorService)
+        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService)
+            : base(layerProperty, profileEditorService)
         {
             _pluginManagementService = pluginManagementService;
-
-            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementLoaded;
-            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementLoaded;
             UpdateEnumValues();
         }
 
@@ -60,18 +56,22 @@ namespace Artemis.UI.PropertyInput
             UpdateEnumValues();
         }
 
-        #region IDisposable
+        #region Overrides of Screen
 
         /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        protected override void OnInitialActivate()
         {
-            if (disposing)
-            {
-                _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
-                _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
-            }
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginManagementLoaded;
+            base.OnInitialActivate();
+        }
 
-            base.Dispose(disposing);
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginManagementLoaded;
+            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginManagementLoaded;
+            base.OnClose();
         }
 
         #endregion

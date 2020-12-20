@@ -17,6 +17,7 @@ using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
+using Artemis.UI.Screens.Shared;
 using Stylet;
 
 namespace Artemis.UI.Ninject.Factories
@@ -53,15 +54,15 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IProfileLayerVmFactory : IVmFactory
     {
-        ProfileLayerViewModel Create(Layer layer, ProfileViewModel profileViewModel);
+        ProfileLayerViewModel Create(Layer layer, PanZoomViewModel panZoomViewModel);
     }
 
     public interface IVisualizationToolVmFactory : IVmFactory
     {
-        ViewpointMoveToolViewModel ViewpointMoveToolViewModel(ProfileViewModel profileViewModel);
-        EditToolViewModel EditToolViewModel(ProfileViewModel profileViewModel);
-        SelectionToolViewModel SelectionToolViewModel(ProfileViewModel profileViewModel);
-        SelectionRemoveToolViewModel SelectionRemoveToolViewModel(ProfileViewModel profileViewModel);
+        ViewpointMoveToolViewModel ViewpointMoveToolViewModel(PanZoomViewModel panZoomViewModel);
+        EditToolViewModel EditToolViewModel(PanZoomViewModel panZoomViewModel);
+        SelectionToolViewModel SelectionToolViewModel(PanZoomViewModel panZoomViewModel);
+        SelectionRemoveToolViewModel SelectionRemoveToolViewModel(PanZoomViewModel panZoomViewModel);
     }
 
     public interface IDataModelConditionsVmFactory : IVmFactory
@@ -82,10 +83,10 @@ namespace Artemis.UI.Ninject.Factories
         TreeGroupViewModel TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
         TimelineGroupViewModel TimelineGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel);
 
-        TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+        TreeViewModel TreeViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
         EffectsViewModel EffectsViewModel(LayerPropertiesViewModel layerPropertiesViewModel);
-        TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
-        TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+        TimelineViewModel TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
+        TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
     }
 
     public interface IDataBindingsVmFactory

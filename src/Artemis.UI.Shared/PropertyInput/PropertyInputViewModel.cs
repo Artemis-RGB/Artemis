@@ -13,7 +13,8 @@ namespace Artemis.UI.Shared
     public abstract class PropertyInputViewModel<T> : PropertyInputViewModel
     {
         private bool _inputDragging;
-        [AllowNull] private T _inputValue = default!;
+        [AllowNull]
+        private T _inputValue = default!;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="PropertyInputViewModel" /> class
@@ -24,11 +25,6 @@ namespace Artemis.UI.Shared
         {
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
-            LayerProperty.Updated += LayerPropertyOnUpdated;
-            LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
-            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
-            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
-            UpdateInputValue();
         }
 
         /// <summary>
@@ -41,11 +37,6 @@ namespace Artemis.UI.Shared
         {
             LayerProperty = layerProperty;
             ProfileEditorService = profileEditorService;
-            LayerProperty.Updated += LayerPropertyOnUpdated;
-            LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
-            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
-            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
-            UpdateInputValue();
         }
 
         /// <summary>
@@ -87,20 +78,27 @@ namespace Artemis.UI.Shared
 
         internal override object InternalGuard { get; } = new();
 
-        #region IDisposable
+        #region Overrides of Screen
 
         /// <inheritdoc />
-        protected override void Dispose(bool disposing)
+        protected override void OnInitialActivate()
         {
-            if (disposing)
-            {
-                LayerProperty.Updated -= LayerPropertyOnUpdated;
-                LayerProperty.CurrentValueSet -= LayerPropertyOnUpdated;
-                LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
-                LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
-            }
+            LayerProperty.Updated += LayerPropertyOnUpdated;
+            LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
+            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
+            UpdateInputValue();
+            base.OnInitialActivate();
+        }
 
-            base.Dispose(disposing);
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            LayerProperty.Updated -= LayerPropertyOnUpdated;
+            LayerProperty.CurrentValueSet -= LayerPropertyOnUpdated;
+            LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
+            base.OnClose();
         }
 
         #endregion
@@ -207,7 +205,7 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     For internal use only, implement <see cref="PropertyInputViewModel{T}" /> instead.
     /// </summary>
-    public abstract class PropertyInputViewModel : ValidatingModelBase, IDisposable
+    public abstract class PropertyInputViewModel : Screen
     {
         /// <summary>
         ///     For internal use only, implement <see cref="PropertyInputViewModel{T}" /> instead.
@@ -228,30 +226,5 @@ namespace Artemis.UI.Shared
         /// </summary>
         // ReSharper disable once UnusedMember.Global
         internal abstract object InternalGuard { get; }
-
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
     }
 }

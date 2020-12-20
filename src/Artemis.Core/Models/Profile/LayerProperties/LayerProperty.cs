@@ -39,19 +39,14 @@ namespace Artemis.Core
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
 
-        /// <summary>
-        ///     Returns the type of the property
-        /// </summary>
-        public Type GetPropertyType()
-        {
-            return typeof(T);
-        }
-
         /// <inheritdoc />
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
         /// <inheritdoc />
         public string Path { get; private set; }
+
+        /// <inheritdoc />
+        public Type PropertyType => typeof(T);
 
         /// <inheritdoc />
         public void Update(Timeline timeline)

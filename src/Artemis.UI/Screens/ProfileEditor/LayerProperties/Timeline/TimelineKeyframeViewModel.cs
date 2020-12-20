@@ -20,12 +20,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             _profileEditorService = profileEditorService;
             LayerPropertyKeyframe = layerPropertyKeyframe;
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
-
-            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            LayerPropertyKeyframe.PropertyChanged += LayerPropertyKeyframeOnPropertyChanged;
         }
-
-
+        
         public LayerPropertyKeyframe<T> LayerPropertyKeyframe { get; }
         public BindableCollection<TimelineEasingViewModel> EasingViewModels { get; }
 
@@ -50,14 +46,28 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         public TimeSpan Position => LayerPropertyKeyframe.Position;
         public ILayerPropertyKeyframe Keyframe => LayerPropertyKeyframe;
 
-        public void Dispose()
+        #region Overrides of Screen
+
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyKeyframe.PropertyChanged += LayerPropertyKeyframeOnPropertyChanged;
+
+            base.OnInitialActivate();
+        }
+        
+        protected override void OnClose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyKeyframe.PropertyChanged -= LayerPropertyKeyframeOnPropertyChanged;
 
             foreach (TimelineEasingViewModel timelineEasingViewModel in EasingViewModels)
                 timelineEasingViewModel.EasingModeSelected -= TimelineEasingViewModelOnEasingModeSelected;
+
+            base.OnClose();
         }
+
+        #endregion
 
         public void Update()
         {
@@ -159,7 +169,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         #endregion
 
         #region Context menu actions
-        
+
         public void Delete(bool save = true)
         {
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
@@ -170,7 +180,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         #endregion
     }
 
-    public interface ITimelineKeyframeViewModel : IScreen, IDisposable
+    public interface ITimelineKeyframeViewModel : IScreen
     {
         bool IsSelected { get; set; }
         TimeSpan Position { get; }

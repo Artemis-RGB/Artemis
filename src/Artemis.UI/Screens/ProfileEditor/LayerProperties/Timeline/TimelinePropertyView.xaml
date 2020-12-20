@@ -10,9 +10,7 @@
              d:DesignHeight="450" d:DesignWidth="800"
              HorizontalAlignment="Stretch">
     <Border Height="25" BorderThickness="0,0,0,1" BorderBrush="{DynamicResource MaterialDesignDivider}">
-        <ItemsControl ItemsSource="{Binding Items}"
-                      Background="{DynamicResource MaterialDesignToolBarBackground}"
-                      HorizontalAlignment="Left">
+        <ItemsControl ItemsSource="{Binding Items}" Background="{DynamicResource MaterialDesignToolBarBackground}" HorizontalAlignment="Left">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
                     <Canvas />

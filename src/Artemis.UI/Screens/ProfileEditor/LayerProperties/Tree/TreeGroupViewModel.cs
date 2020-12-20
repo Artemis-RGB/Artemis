@@ -18,7 +18,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 {
-    public class TreeGroupViewModel : PropertyChangedBase
+    public class TreeGroupViewModel : Screen
     {
         public enum LayerPropertyGroupType
         {
@@ -30,26 +30,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         }
 
         private readonly IDialogService _dialogService;
-        private readonly IKernel _kernel;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowManager _windowManager;
 
-        public TreeGroupViewModel(
-            LayerPropertyGroupViewModel layerPropertyGroupViewModel,
-            IProfileEditorService profileEditorService,
-            IDialogService dialogService,
-            IWindowManager windowManager,
-            IKernel kernel)
+        public TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel, IProfileEditorService profileEditorService, IDialogService dialogService, IWindowManager windowManager)
         {
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
             _windowManager = windowManager;
-            _kernel = kernel;
 
             LayerPropertyGroupViewModel = layerPropertyGroupViewModel;
             LayerPropertyGroup = LayerPropertyGroupViewModel.LayerPropertyGroup;
-
-            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
 
             DetermineGroupType();
         }
@@ -58,10 +49,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         public LayerPropertyGroup LayerPropertyGroup { get; }
         public LayerPropertyGroupType GroupType { get; set; }
 
-        public BindableCollection<PropertyChangedBase> Children =>
-            LayerPropertyGroupViewModel.IsExpanded && LayerPropertyGroupViewModel.IsVisible
-                ? LayerPropertyGroupViewModel.Children
-                : null;
+        public IObservableCollection<Screen> Items => LayerPropertyGroupViewModel.IsExpanded &&
+                                                      LayerPropertyGroupViewModel.IsVisible
+            ? LayerPropertyGroupViewModel.Items
+            : null;
 
         public void OpenBrushSettings()
         {
@@ -164,7 +155,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         private void LayerPropertyGroupViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(LayerPropertyGroupViewModel.IsExpanded) || e.PropertyName == nameof(LayerPropertyGroupViewModel.IsVisible))
-                NotifyOfPropertyChange(nameof(Children));
+                NotifyOfPropertyChange(nameof(Items));
         }
 
         private void DetermineGroupType()
@@ -180,5 +171,23 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             else
                 GroupType = LayerPropertyGroupType.None;
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            LayerPropertyGroupViewModel.PropertyChanged -= LayerPropertyGroupViewModelOnPropertyChanged;
+            base.OnClose();
+        }
+
+        #endregion
     }
 }

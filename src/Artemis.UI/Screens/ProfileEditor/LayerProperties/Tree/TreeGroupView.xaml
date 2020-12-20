@@ -224,7 +224,7 @@
         Do not bind directly to the LayerPropertyGroupViewModel.Children collection
         Instead use a reference provided by the VM that is null when collapsed, virtualization for noobs 
         -->
-        <ItemsControl ItemsSource="{Binding Children}"
+        <ItemsControl ItemsSource="{Binding Items}"
                       Visibility="{Binding LayerPropertyGroupViewModel.IsExpanded, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                       HorizontalAlignment="Stretch"
                       HorizontalContentAlignment="Stretch"

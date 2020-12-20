@@ -1,20 +1,21 @@
 ﻿using System.Windows.Input;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 {
     public class ViewpointMoveToolViewModel : VisualizationToolViewModel
     {
-        public ViewpointMoveToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService) : base(profileViewModel, profileEditorService)
+        public ViewpointMoveToolViewModel(PanZoomViewModel panZoomViewModel, IProfileEditorService profileEditorService) : base(panZoomViewModel, profileEditorService)
         {
             Cursor = Cursors.Hand;
-            ProfileViewModel.PanZoomViewModel.LastPanPosition = null;
+            PanZoomViewModel.LastPanPosition = null;
         }
 
         public override void MouseMove(object sender, MouseEventArgs e)
         {
             base.MouseMove(sender, e);
-            ProfileViewModel.PanZoomViewModel.ProcessMouseMove(sender, e);
+            PanZoomViewModel.ProcessMouseMove(sender, e);
         }
     }
 }

@@ -11,33 +11,26 @@ using Artemis.Core;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Models;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.Shared.Services.Models;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public sealed class TimelineViewModel : Screen, IDisposable
+    public sealed class TimelineViewModel : Screen
     {
         private readonly IProfileEditorService _profileEditorService;
         private RectangleGeometry _selectionRectangle;
 
-        public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups, IProfileEditorService profileEditorService)
+        public TimelineViewModel(LayerPropertiesViewModel layerPropertiesViewModel, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups, IProfileEditorService profileEditorService)
         {
             _profileEditorService = profileEditorService;
 
             LayerPropertiesViewModel = layerPropertiesViewModel;
             LayerPropertyGroups = layerPropertyGroups;
             SelectionRectangle = new RectangleGeometry();
-
-            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
-            if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
-            Update();
         }
 
         public LayerPropertiesViewModel LayerPropertiesViewModel { get; }
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+        public IObservableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
 
         public RectangleGeometry SelectionRectangle
         {
@@ -101,14 +94,27 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Update();
         }
 
-        #region IDisposable
+        #region Overrides of Screen
 
-        public void Dispose()
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
+            Update();
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             if (_profileEditorService.SelectedProfileElement != null)
                 _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
+            base.OnClose();
         }
 
         #endregion

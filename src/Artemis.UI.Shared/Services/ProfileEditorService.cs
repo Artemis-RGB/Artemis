@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
@@ -11,6 +12,7 @@ using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
+using SkiaSharp.Views.WPF;
 using Stylet;
 
 namespace Artemis.UI.Shared.Services
@@ -71,6 +73,8 @@ namespace Artemis.UI.Shared.Services
         }
 
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
+
+        public bool Playing { get; set; }
         public Profile? SelectedProfile { get; private set; }
         public RenderProfileElement? SelectedProfileElement { get; private set; }
         public ILayerProperty? SelectedDataBinding { get; private set; }
@@ -302,6 +306,15 @@ namespace Artemis.UI.Shared.Services
             return time;
         }
 
+        public bool CanCreatePropertyInputViewModel(ILayerProperty layerProperty)
+        {
+            PropertyInputRegistration? registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == layerProperty.PropertyType);
+            if (registration == null && layerProperty.PropertyType.IsEnum) 
+                registration = RegisteredPropertyEditors.FirstOrDefault(r => r.SupportedType == typeof(Enum));
+
+            return registration != null;
+        }
+
         public PropertyInputViewModel<T>? CreatePropertyInputViewModel<T>(LayerProperty<T> layerProperty)
         {
             Type? viewModelType = null;
@@ -337,6 +350,11 @@ namespace Artemis.UI.Shared.Services
         public ProfileModule? GetCurrentModule()
         {
             return SelectedProfile?.Module;
+        }
+
+        public List<ArtemisLed> GetLedsInRectangle(Rect rect)
+        {
+            return _surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Where(led => led.AbsoluteRectangle.IntersectsWith(rect.ToSKRect())).ToList();
         }
 
         #region Copy/paste

@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Properties;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
@@ -16,9 +17,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private readonly ILayerBrushService _layerBrushService;
         private Rect _dragRectangle;
 
-        public SelectionToolViewModel(ProfileViewModel profileViewModel,
-            IProfileEditorService profileEditorService,
-            ILayerBrushService layerBrushService) : base(profileViewModel, profileEditorService)
+        public SelectionToolViewModel(PanZoomViewModel panZoomViewModel, IProfileEditorService profileEditorService, ILayerBrushService layerBrushService) 
+            : base(panZoomViewModel, profileEditorService)
         {
             _layerBrushService = layerBrushService;
             using (MemoryStream stream = new(Resources.aero_crosshair))
@@ -37,11 +37,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         {
             base.MouseUp(sender, e);
 
-            Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Point position = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             Rect selectedRect = new(MouseDownStartPosition, position);
 
             // Get selected LEDs
-            List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
+            List<ArtemisLed> selectedLeds = ProfileEditorService.GetLedsInRectangle(selectedRect);
 
             // Apply the selection to the selected layer layer
             if (ProfileEditorService.SelectedProfileElement is Layer layer)
@@ -77,14 +77,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                 return;
             }
 
-            Point position = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            Point position = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             Rect selectedRect = new(MouseDownStartPosition, position);
-            List<ArtemisLed> selectedLeds = ProfileViewModel.GetLedsInRectangle(selectedRect);
-
-            // Unless shift is held down, clear the current selection
-            if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                ProfileViewModel.SelectedLeds.Clear();
-            ProfileViewModel.SelectedLeds.AddRange(selectedLeds.Except(ProfileViewModel.SelectedLeds));
+            List<ArtemisLed> selectedLeds = ProfileEditorService.GetLedsInRectangle(selectedRect);
 
             DragRectangle = selectedRect;
         }

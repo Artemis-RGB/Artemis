@@ -15,12 +15,11 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : Conductor<IProfileEditorPanelViewModel>.Collection.AllActive
+    public class ProfileEditorViewModel : Screen
     {
         private readonly IModuleService _moduleService;
         private readonly IProfileEditorService _profileEditorService;
@@ -64,14 +63,13 @@ namespace Artemis.UI.Screens.ProfileEditor
 
             // Populate the panels
             ProfileViewModel = profileViewModel;
+            ProfileViewModel.ConductWith(this);
             ProfileTreeViewModel = profileTreeViewModel;
+            ProfileTreeViewModel.ConductWith(this);
             DisplayConditionsViewModel = dataModelConditionsViewModel;
+            DisplayConditionsViewModel.ConductWith(this);
             LayerPropertiesViewModel = layerPropertiesViewModel;
-
-            Items.Add(ProfileViewModel);
-            Items.Add(ProfileTreeViewModel);
-            Items.Add(dataModelConditionsViewModel);
-            Items.Add(LayerPropertiesViewModel);
+            LayerPropertiesViewModel.ConductWith(this);
         }
 
         public ProfileModule Module { get; }
