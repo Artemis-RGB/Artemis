@@ -59,8 +59,8 @@ namespace Artemis.Core.Services
             _rgbService.Surface.Updated += SurfaceOnUpdated;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
 
-            _pluginManagementService.PluginEnabled += (sender, args) => UpdatePluginCache();
-            _pluginManagementService.PluginDisabled += (sender, args) => UpdatePluginCache();
+            _pluginManagementService.PluginFeatureEnabled += (sender, args) => UpdatePluginCache();
+            _pluginManagementService.PluginFeatureDisabled += (sender, args) => UpdatePluginCache();
         }
         // ReSharper restore UnusedParameter.Local
 
