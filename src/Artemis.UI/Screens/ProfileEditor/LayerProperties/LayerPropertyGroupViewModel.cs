@@ -5,42 +5,53 @@ using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public sealed class LayerPropertyGroupViewModel : PropertyChangedBase, IDisposable
+    public sealed class LayerPropertyGroupViewModel : Conductor<Screen>.Collection.AllActive
     {
+        private readonly IProfileEditorService _profileEditorService;
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private bool _isVisible;
+        private TreeGroupViewModel _treeGroupViewModel;
+        private TimelineGroupViewModel _timelineGroupViewModel;
 
-        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, ILayerPropertyVmFactory layerPropertyVmFactory)
+        public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
         {
+            _profileEditorService = profileEditorService;
             _layerPropertyVmFactory = layerPropertyVmFactory;
 
             LayerPropertyGroup = layerPropertyGroup;
-            Children = new BindableCollection<PropertyChangedBase>();
-
-            TreeGroupViewModel = layerPropertyVmFactory.TreeGroupViewModel(this);
-            TimelineGroupViewModel = layerPropertyVmFactory.TimelineGroupViewModel(this);
-
-            LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
             IsVisible = !LayerPropertyGroup.IsHidden;
 
-            PopulateChildren();
+            TreeGroupViewModel = _layerPropertyVmFactory.TreeGroupViewModel(this);
+            TreeGroupViewModel.ConductWith(this);
+            TimelineGroupViewModel = _layerPropertyVmFactory.TimelineGroupViewModel(this);
+            TimelineGroupViewModel.ConductWith(this);
         }
 
         public LayerPropertyGroup LayerPropertyGroup { get; }
-        public TreeGroupViewModel TreeGroupViewModel { get; }
-        public TimelineGroupViewModel TimelineGroupViewModel { get; }
-        public BindableCollection<PropertyChangedBase> Children { get; }
+
+        public TreeGroupViewModel TreeGroupViewModel
+        {
+            get => _treeGroupViewModel;
+            set => SetAndNotify(ref _treeGroupViewModel, value);
+        }
+
+        public TimelineGroupViewModel TimelineGroupViewModel
+        {
+            get => _timelineGroupViewModel;
+            set => SetAndNotify(ref _timelineGroupViewModel, value);
+        }
 
         public bool IsVisible
         {
             get => _isVisible;
             set => SetAndNotify(ref _isVisible, value);
         }
-        
+
         public bool IsExpanded
         {
             get => LayerPropertyGroup.ProfileElement.IsPropertyGroupExpanded(LayerPropertyGroup);
@@ -51,25 +62,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
-        #region IDisposable
-        
-        /// <inheritdoc />
-        public void Dispose()
+
+        protected override void OnInitialActivate()
         {
-            TimelineGroupViewModel.Dispose();
-            LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
-            foreach (PropertyChangedBase child in Children)
-            {
-                if (child is IDisposable disposableChild)
-                    disposableChild.Dispose();
-            }
+            LayerPropertyGroup.VisibilityChanged += LayerPropertyGroupOnVisibilityChanged;
+
+            PopulateChildren();
+
+            base.OnInitialActivate();
         }
 
-        #endregion
+        protected override void OnClose()
+        {
+            LayerPropertyGroup.VisibilityChanged -= LayerPropertyGroupOnVisibilityChanged;
+            base.OnClose();
+        }
 
         public void UpdateOrder(int order)
         {
-            LayerPropertyGroup.LayerEffect.Order = order;
+            if (LayerPropertyGroup.LayerEffect != null)
+                LayerPropertyGroup.LayerEffect.Order = order;
             NotifyOfPropertyChange(nameof(IsExpanded));
         }
 
@@ -79,7 +91,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             if (expandedOnly && !IsExpanded)
                 return result;
 
-            foreach (PropertyChangedBase child in Children)
+            foreach (Screen child in Items)
             {
                 if (child is LayerPropertyViewModel layerPropertyViewModel)
                     result.AddRange(layerPropertyViewModel.TimelinePropertyViewModel.GetAllKeyframeViewModels());
@@ -98,11 +110,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         /// <param name="end">The position at which to start removing keyframes, if null this will end at the last keyframe</param>
         public void WipeKeyframes(TimeSpan? start, TimeSpan? end)
         {
-            foreach (PropertyChangedBase child in Children)
+            foreach (Screen item in Items)
             {
-                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                if (item is LayerPropertyViewModel layerPropertyViewModel)
                     layerPropertyViewModel.TimelinePropertyViewModel.WipeKeyframes(start, end);
-                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                else if (item is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
                     layerPropertyGroupViewModel.WipeKeyframes(start, end);
             }
 
@@ -118,11 +130,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         /// <param name="amount">The amount to shift the keyframes for</param>
         public void ShiftKeyframes(TimeSpan? start, TimeSpan? end, TimeSpan amount)
         {
-            foreach (PropertyChangedBase child in Children)
+            foreach (Screen item in Items)
             {
-                if (child is LayerPropertyViewModel layerPropertyViewModel)
+                if (item is LayerPropertyViewModel layerPropertyViewModel)
                     layerPropertyViewModel.TimelinePropertyViewModel.ShiftKeyframes(start, end, amount);
-                else if (child is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
+                else if (item is LayerPropertyGroupViewModel layerPropertyGroupViewModel)
                     layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
             }
 
@@ -147,16 +159,13 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // Create VMs for properties on the group
                 if (propertyAttribute != null && value is ILayerProperty layerProperty)
                 {
-                    LayerPropertyViewModel layerPropertyViewModel = _layerPropertyVmFactory.LayerPropertyViewModel(layerProperty);
-                    // After creation ensure a supported input VM was found, if not, discard the VM
-                    if (!layerPropertyViewModel.TreePropertyViewModel.HasPropertyInputViewModel)
-                        layerPropertyViewModel.Dispose();
-                    else
-                        Children.Add(layerPropertyViewModel);
+                    // Ensure a supported input VM was found, otherwise don't add it
+                    if (_profileEditorService.CanCreatePropertyInputViewModel(layerProperty))
+                        Items.Add(_layerPropertyVmFactory.LayerPropertyViewModel(layerProperty));
                 }
                 // Create VMs for child groups on this group, resulting in a nested structure
                 else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
-                    Children.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup));
+                    Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup));
             }
         }
     }

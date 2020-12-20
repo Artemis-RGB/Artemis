@@ -17,9 +17,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             _profileEditorService = profileEditorService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
-
-            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
-            CreateDataBindingViewModels();
         }
 
         public int SelectedItemIndex
@@ -27,13 +24,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             get => _selectedItemIndex;
             set => SetAndNotify(ref _selectedItemIndex, value);
         }
-
-        protected override void OnClose()
-        {
-            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
-            base.OnClose();
-        }
-
+        
         private void CreateDataBindingViewModels()
         {
             Items.Clear();
@@ -48,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             // and creating the actual data bindings
             foreach (IDataBindingRegistration registration in registrations)
                 Items.Add(_dataBindingsVmFactory.DataBindingViewModel(registration));
-            
+
             SelectedItemIndex = 0;
         }
 
@@ -56,5 +47,23 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         {
             CreateDataBindingViewModels();
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
+            CreateDataBindingViewModels();
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _profileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
+            base.OnClose();
+        }
+
+        #endregion
     }
 }

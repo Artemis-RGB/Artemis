@@ -4,6 +4,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using SkiaSharp;
@@ -22,17 +23,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private SKPath _shapePath;
         private SKPoint _topLeft;
 
-        public EditToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
-            : base(profileViewModel, profileEditorService)
+        public EditToolViewModel(PanZoomViewModel panZoomViewModel, IProfileEditorService profileEditorService, ILayerEditorService layerEditorService)
+            : base(panZoomViewModel, profileEditorService)
         {
             _layerEditorService = layerEditorService;
             Cursor = Cursors.Arrow;
             Update();
-
-            profileEditorService.ProfileSelected += (sender, args) => Update();
-            profileEditorService.ProfileElementSelected += (sender, args) => Update();
-            profileEditorService.SelectedProfileElementUpdated += (sender, args) => Update();
-            profileEditorService.ProfilePreviewUpdated += (sender, args) => Update();
         }
 
         public SKPath ShapePath
@@ -60,12 +56,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
             ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
+
+            Rect layerBounds = _layerEditorService.GetLayerBounds(layer);
+            TransformGroup layerTransformGroup = _layerEditorService.GetLayerTransformGroup(layer);
             Execute.PostToUIThread(() =>
             {
-                RectangleGeometry shapeGeometry = new(_layerEditorService.GetLayerBounds(layer))
-                {
-                    Transform = _layerEditorService.GetLayerTransformGroup(layer)
-                };
+                RectangleGeometry shapeGeometry = new(layerBounds) {Transform = layerTransformGroup};
                 shapeGeometry.Freeze();
                 ShapeGeometry = shapeGeometry;
             });
@@ -73,6 +69,37 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             // Store the last top-left for easy later on
             _topLeft = _layerEditorService.GetLayerPath(layer, true, true, true).Points[0];
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            ProfileEditorService.ProfileSelected += UpdateEventHandler;
+            ProfileEditorService.ProfileElementSelected += UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementUpdated += UpdateEventHandler;
+            ProfileEditorService.ProfilePreviewUpdated += UpdateEventHandler;
+
+            Update();
+            base.OnInitialActivate();
+        }
+
+        private void UpdateEventHandler(object sender, EventArgs e)
+        {
+            Update();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            ProfileEditorService.ProfileSelected -= UpdateEventHandler;
+            ProfileEditorService.ProfileElementSelected -= UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementUpdated -= UpdateEventHandler;
+            ProfileEditorService.ProfilePreviewUpdated -= UpdateEventHandler;
+            base.OnClose();
+        }
+
+        #endregion
 
         #region Rotation
 

@@ -14,7 +14,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public sealed class TimelineSegmentViewModel : Screen, IDisposable
+    public sealed class TimelineSegmentViewModel : Screen
     {
         private readonly IDialogService _dialogService;
         private bool _draggingSegment;
@@ -28,7 +28,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         private bool _showRepeatButton;
         private bool _showSegmentName;
 
-        public TimelineSegmentViewModel(SegmentViewModelType segment, BindableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
+        public TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups,
             IProfileEditorService profileEditorService, IDialogService dialogService)
         {
             _dialogService = dialogService;
@@ -43,18 +43,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else if (Segment == SegmentViewModelType.End)
                 ToolTip = "This segment is played once a condition is no longer met";
             IsMainSegment = Segment == SegmentViewModelType.Main;
-
-            ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
-            if (ProfileEditorService.SelectedProfileElement != null)
-                ProfileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
-
-            Update();
         }
 
         public RenderProfileElement SelectedProfileElement => ProfileEditorService.SelectedProfileElement;
         public SegmentViewModelType Segment { get; }
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
+        public IObservableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
         public IProfileEditorService ProfileEditorService { get; }
 
         public string ToolTip { get; }
@@ -160,14 +153,28 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 layerPropertyGroupViewModel.ShiftKeyframes(start, end, amount);
         }
 
-        #region IDIsposable
+        #region Overrides of Screen
 
-        public void Dispose()
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            if (ProfileEditorService.SelectedProfileElement != null)
+                ProfileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
+
+            Update();
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
         {
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
             if (SelectedProfileElement != null)
                 SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
+            base.OnClose();
         }
 
         #endregion

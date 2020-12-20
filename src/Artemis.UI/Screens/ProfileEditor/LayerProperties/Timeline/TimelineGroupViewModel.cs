@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 {
-    public sealed class TimelineGroupViewModel : PropertyChangedBase, IDisposable
+    public sealed class TimelineGroupViewModel : Screen
     {
         private readonly IProfileEditorService _profileEditorService;
 
@@ -19,13 +19,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             LayerPropertyGroup = LayerPropertyGroupViewModel.LayerPropertyGroup;
             KeyframePositions = new BindableCollection<double>();
 
-            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
-            
-            UpdateKeyframePositions();
+           UpdateKeyframePositions();
         }
-
-
+        
         public LayerPropertyGroupViewModel LayerPropertyGroupViewModel { get; }
         public LayerPropertyGroup LayerPropertyGroup { get; }
 
@@ -39,16 +35,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 .Select(p => p.Position.TotalSeconds * _profileEditorService.PixelsPerSecond));
         }
 
-        #region IDisposable
+        #region Overrides of Screen
 
-        public void Dispose()
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
+            LayerPropertyGroupViewModel.PropertyChanged += LayerPropertyGroupViewModelOnPropertyChanged;
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
             LayerPropertyGroupViewModel.PropertyChanged -= LayerPropertyGroupViewModelOnPropertyChanged;
+            base.OnClose();
         }
 
         #endregion
-        
+
         #region Event handlers
 
         private void LayerPropertyGroupViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)

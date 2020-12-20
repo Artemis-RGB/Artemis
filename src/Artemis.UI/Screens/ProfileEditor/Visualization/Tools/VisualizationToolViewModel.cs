@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
+using Artemis.Core;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
@@ -11,18 +14,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         private bool _isMouseDown;
         private Point _mouseDownStartPosition;
 
-        protected VisualizationToolViewModel(ProfileViewModel profileViewModel, IProfileEditorService profileEditorService)
+        protected VisualizationToolViewModel(PanZoomViewModel panZoomViewModel, IProfileEditorService profileEditorService)
         {
             // Not relevant for visualization tools as they overlay the entire canvas
             X = 0;
             Y = 0;
 
-            ProfileViewModel = profileViewModel;
+            PanZoomViewModel = panZoomViewModel;
             ProfileEditorService = profileEditorService;
             Cursor = Cursors.Arrow;
         }
 
-        public ProfileViewModel ProfileViewModel { get; }
+        public PanZoomViewModel PanZoomViewModel { get; }
         public IProfileEditorService ProfileEditorService { get; }
 
         public Cursor Cursor
@@ -46,7 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         public virtual void MouseDown(object sender, MouseButtonEventArgs e)
         {
             IsMouseDown = true;
-            MouseDownStartPosition = ProfileViewModel.PanZoomViewModel.GetRelativeMousePosition(sender, e);
+            MouseDownStartPosition = PanZoomViewModel.GetRelativeMousePosition(sender, e);
         }
 
         public virtual void MouseUp(object sender, MouseButtonEventArgs e)

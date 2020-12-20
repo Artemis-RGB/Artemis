@@ -288,13 +288,10 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
-            lock (Timeline)
-            {
-                RenderTimeline(Timeline, canvas);
-                foreach (Timeline extraTimeline in Timeline.ExtraTimelines)
-                    RenderTimeline(extraTimeline, canvas);
-                Timeline.ClearDelta();
-            }
+            RenderTimeline(Timeline, canvas);
+            foreach (Timeline extraTimeline in Timeline.ExtraTimelines.ToList())
+                RenderTimeline(extraTimeline, canvas);
+            Timeline.ClearDelta();
         }
 
         private void ApplyTimeline(Timeline timeline)
@@ -384,6 +381,7 @@ namespace Artemis.Core
                 {
                     // ignored
                 }
+
                 Renderer.Close();
             }
         }

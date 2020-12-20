@@ -23,11 +23,10 @@ using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 {
-    public class LayerPropertiesViewModel : Conductor<IScreen>.Collection.AllActive, IProfileEditorPanelViewModel, IDropTarget
+    public class LayerPropertiesViewModel : Conductor<LayerPropertyGroupViewModel>.Collection.AllActive, IProfileEditorPanelViewModel, IDropTarget
     {
         private readonly ILayerPropertyVmFactory _layerPropertyVmFactory;
         private LayerPropertyGroupViewModel _brushPropertyGroup;
-        private bool _playing;
         private bool _repeating;
         private bool _repeatSegment;
         private bool _repeatTimeline = true;
@@ -49,30 +48,26 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             CoreService = coreService;
             SettingsService = settingsService;
 
-            LayerPropertyGroups = new BindableCollection<LayerPropertyGroupViewModel>();
             PropertyChanged += HandlePropertyTreeIndexChanged;
 
             // Left side 
-            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, LayerPropertyGroups);
+            TreeViewModel = _layerPropertyVmFactory.TreeViewModel(this, Items);
+            TreeViewModel.ConductWith(this);
             EffectsViewModel = _layerPropertyVmFactory.EffectsViewModel(this);
-            Items.Add(TreeViewModel);
-            Items.Add(EffectsViewModel);
+            EffectsViewModel.ConductWith(this);
 
             // Right side
-            StartTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Start, LayerPropertyGroups);
-            MainTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Main, LayerPropertyGroups);
-            EndTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.End, LayerPropertyGroups);
-            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, LayerPropertyGroups);
+            StartTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Start, Items);
+            StartTimelineSegmentViewModel.ConductWith(this);
+            MainTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.Main, Items);
+            MainTimelineSegmentViewModel.ConductWith(this);
+            EndTimelineSegmentViewModel = _layerPropertyVmFactory.TimelineSegmentViewModel(SegmentViewModelType.End, Items);
+            EndTimelineSegmentViewModel.ConductWith(this);
+            TimelineViewModel = _layerPropertyVmFactory.TimelineViewModel(this, Items);
+            TimelineViewModel.ConductWith(this);
             DataBindingsViewModel = dataBindingsViewModel;
-            Items.Add(StartTimelineSegmentViewModel);
-            Items.Add(MainTimelineSegmentViewModel);
-            Items.Add(EndTimelineSegmentViewModel);
-            Items.Add(TimelineViewModel);
-            Items.Add(DataBindingsViewModel);
+            DataBindingsViewModel.ConductWith(this);
         }
-
-        public BindableCollection<LayerPropertyGroupViewModel> LayerPropertyGroups { get; }
-
 
         #region Child VMs
 
@@ -92,8 +87,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public bool Playing
         {
-            get => _playing;
-            set => SetAndNotify(ref _playing, value);
+            get => ProfileEditorService.Playing;
+            set
+            {
+                ProfileEditorService.Playing = value;
+                NotifyOfPropertyChange(nameof(Playing));
+            }
         }
 
         public bool Repeating
@@ -239,8 +238,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public List<LayerPropertyGroupViewModel> GetAllLayerPropertyGroupViewModels()
         {
-            List<LayerPropertyGroupViewModel> groups = LayerPropertyGroups.ToList();
-            List<LayerPropertyGroupViewModel> toAdd = groups.SelectMany(g => g.Children).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
+            List<LayerPropertyGroupViewModel> groups = Items.ToList();
+            List<LayerPropertyGroupViewModel> toAdd = groups.SelectMany(g => g.Items).Where(g => g is LayerPropertyGroupViewModel).Cast<LayerPropertyGroupViewModel>().ToList();
             groups.AddRange(toAdd);
             return groups;
         }
@@ -254,9 +253,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 SelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
             // Clear old properties
-            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in LayerPropertyGroups)
-                layerPropertyGroupViewModel.Dispose();
-            LayerPropertyGroups.Clear();
+            Items.Clear();
             _brushPropertyGroup = null;
 
             if (profileElement == null)
@@ -271,8 +268,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 SelectedLayer.LayerBrushUpdated += SelectedLayerOnLayerBrushUpdated;
 
                 // Add the built-in root groups of the layer
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General));
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform));
+                Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.General));
+                Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.Transform));
             }
 
             ApplyLayerBrush();
@@ -302,14 +299,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             if (_brushPropertyGroup != null)
             {
-                LayerPropertyGroups.Remove(_brushPropertyGroup);
+                Items.Remove(_brushPropertyGroup);
                 _brushPropertyGroup = null;
             }
 
             if (SelectedLayer.LayerBrush != null)
             {
                 _brushPropertyGroup = _layerPropertyVmFactory.LayerPropertyGroupViewModel(SelectedLayer.LayerBrush.BaseProperties);
-                LayerPropertyGroups.Add(_brushPropertyGroup);
+                Items.Add(_brushPropertyGroup);
             }
 
             SortProperties();
@@ -321,19 +318,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 return;
 
             // Remove VMs of effects no longer applied on the layer
-            List<LayerPropertyGroupViewModel> toRemove = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> toRemove = Items
                 .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
                 .ToList();
-            LayerPropertyGroups.RemoveRange(toRemove);
+            Items.RemoveRange(toRemove);
             foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in toRemove)
-                layerPropertyGroupViewModel.Dispose();
+                layerPropertyGroupViewModel.RequestClose();
 
             foreach (BaseLayerEffect layerEffect in SelectedProfileElement.LayerEffects)
             {
-                if (LayerPropertyGroups.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
+                if (Items.Any(l => l.LayerPropertyGroup.LayerEffect == layerEffect) || layerEffect.BaseProperties == null)
                     continue;
 
-                LayerPropertyGroups.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
+                Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerEffect.BaseProperties));
             }
 
             SortProperties();
@@ -342,11 +339,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private void SortProperties()
         {
             // Get all non-effect properties
-            List<LayerPropertyGroupViewModel> nonEffectProperties = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> nonEffectProperties = Items
                 .Where(l => l.TreeGroupViewModel.GroupType != LayerEffectRoot)
                 .ToList();
             // Order the effects
-            List<LayerPropertyGroupViewModel> effectProperties = LayerPropertyGroups
+            List<LayerPropertyGroupViewModel> effectProperties = Items
                 .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot)
                 .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
                 .ToList();
@@ -355,14 +352,14 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             for (int index = 0; index < nonEffectProperties.Count; index++)
             {
                 LayerPropertyGroupViewModel layerPropertyGroupViewModel = nonEffectProperties[index];
-                LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index);
+                ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index);
             }
 
             // Put the effect properties after, sorted by their order
             for (int index = 0; index < effectProperties.Count; index++)
             {
                 LayerPropertyGroupViewModel layerPropertyGroupViewModel = effectProperties[index];
-                LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
+                ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
         }
 
@@ -424,22 +421,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void MoveBefore(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)
         {
-            if (LayerPropertyGroups.IndexOf(target) == LayerPropertyGroups.IndexOf(source) + 1)
+            if (Items.IndexOf(target) == Items.IndexOf(source) + 1)
                 return;
 
-            LayerPropertyGroups.Move(LayerPropertyGroups.IndexOf(source), LayerPropertyGroups.IndexOf(target));
+            ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(source), Items.IndexOf(target));
         }
 
         private void MoveAfter(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)
         {
-            LayerPropertyGroups.Remove(source);
-            LayerPropertyGroups.Insert(LayerPropertyGroups.IndexOf(target) + 1, source);
+            Items.Remove(source);
+            Items.Insert(Items.IndexOf(target) + 1, source);
         }
 
         private void ApplyCurrentEffectsOrder()
         {
             int order = 1;
-            foreach (LayerPropertyGroupViewModel groupViewModel in LayerPropertyGroups.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
+            foreach (LayerPropertyGroupViewModel groupViewModel in Items.Where(p => p.TreeGroupViewModel.GroupType == LayerEffectRoot))
             {
                 groupViewModel.UpdateOrder(order);
                 order++;
@@ -530,7 +527,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private TimeSpan CalculateEndTime()
         {
-            List<ITimelineKeyframeViewModel> keyframeViewModels = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
+            List<ITimelineKeyframeViewModel> keyframeViewModels = Items.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
 
             // If there are no keyframes, don't stop at all
             if (!keyframeViewModels.Any())
@@ -627,7 +624,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 // If holding down shift, snap to the closest segment or keyframe
                 if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
                 {
-                    List<TimeSpan> snapTimes = LayerPropertyGroups.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
+                    List<TimeSpan> snapTimes = Items.SelectMany(g => g.GetAllKeyframeViewModels(true)).Select(k => k.Position).ToList();
                     TimeSpan snappedTime = ProfileEditorService.SnapToTimeline(newTime, TimeSpan.FromMilliseconds(1000f / ProfileEditorService.PixelsPerSecond * 5), true, false, snapTimes);
                     ProfileEditorService.CurrentTime = snappedTime;
                     return;

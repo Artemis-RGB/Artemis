@@ -18,11 +18,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             LayerProperty = layerProperty;
             LayerPropertyViewModel = layerPropertyViewModel;
-
-            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
-            LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeAdded;
-            LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeRemoved;
-            UpdateKeyframes();
         }
 
         public LayerProperty<T> LayerProperty { get; }
@@ -59,15 +54,27 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             List<LayerPropertyKeyframe<T>> toShift = LayerProperty.Keyframes.Where(k => k.Position > start && k.Position < end).ToList();
             foreach (LayerPropertyKeyframe<T> keyframe in toShift)
                 keyframe.Position += amount;
-            
+
             UpdateKeyframes();
         }
-
-        public void Dispose()
+        
+        protected override void OnClose()
         {
             LayerProperty.KeyframesToggled -= LayerPropertyOnKeyframesToggled;
             LayerProperty.KeyframeAdded -= LayerPropertyOnKeyframeAdded;
             LayerProperty.KeyframeRemoved -= LayerPropertyOnKeyframeRemoved;
+            
+            base.OnClose();
+        }
+
+        protected override void OnInitialActivate()
+        {
+            LayerProperty.KeyframesToggled += LayerPropertyOnKeyframesToggled;
+            LayerProperty.KeyframeAdded += LayerPropertyOnKeyframeAdded;
+            LayerProperty.KeyframeRemoved += LayerPropertyOnKeyframeRemoved;
+            UpdateKeyframes();
+            
+            base.OnInitialActivate();
         }
 
         private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
@@ -92,14 +99,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             if (LayerProperty.KeyframesEnabled)
             {
                 List<LayerPropertyKeyframe<T>> keyframes = LayerProperty.Keyframes.ToList();
-                List<TimelineKeyframeViewModel<T>> toRemove = Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList();
-                foreach (TimelineKeyframeViewModel<T> timelineKeyframeViewModel in toRemove)
-                    timelineKeyframeViewModel.Dispose();
 
-                Items.RemoveRange(toRemove);
-                Items.AddRange(keyframes
-                    .Where(k => Items.All(t => t.LayerPropertyKeyframe != k))
-                    .Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
+                Items.RemoveRange(Items.Where(t => !keyframes.Contains(t.LayerPropertyKeyframe)).ToList());
+                Items.AddRange(
+                    keyframes.Where(k => Items.All(t => t.LayerPropertyKeyframe != k)).Select(k => new TimelineKeyframeViewModel<T>(k, _profileEditorService))
                 );
             }
             else
@@ -110,7 +113,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         }
     }
 
-    public interface ITimelinePropertyViewModel : IScreen, IDisposable
+    public interface ITimelinePropertyViewModel : IScreen
     {
         List<ITimelineKeyframeViewModel> GetAllKeyframeViewModels();
         void WipeKeyframes(TimeSpan? start, TimeSpan? end);

@@ -15,7 +15,7 @@
                     <Rectangle.OpacityMask>
                         <VisualBrush Stretch="Uniform">
                             <VisualBrush.Visual>
-                                <svgc:SvgViewbox Source="{Binding}" Name="SvgDisplay"/>
+                                <Image Source="{Binding Converter={svgc:SvgImageConverter}, Mode=OneWay}"/>
                             </VisualBrush.Visual>
                         </VisualBrush>
                     </Rectangle.OpacityMask>

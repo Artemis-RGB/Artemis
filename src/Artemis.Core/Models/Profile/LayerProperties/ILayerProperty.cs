@@ -26,7 +26,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the unique path of the property on the layer
         /// </summary>
-        public string Path { get; }
+        string Path { get; }
+
+        /// <summary>
+        /// Gets the type of the property
+        /// </summary>
+        Type PropertyType { get;  }
 
         /// <summary>
         ///     Initializes the layer property

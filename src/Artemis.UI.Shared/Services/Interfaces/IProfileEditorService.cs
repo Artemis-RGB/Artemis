@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Windows;
 using Artemis.Core;
 using Artemis.Core.Modules;
 
@@ -40,6 +41,11 @@ namespace Artemis.UI.Shared.Services
         ///     Gets a read-only collection of all registered property editors
         /// </summary>
         ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors { get; }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether the editor is currently playing
+        /// </summary>
+        bool Playing { get; set; }
 
         /// <summary>
         ///     Changes the selected profile
@@ -130,6 +136,12 @@ namespace Artemis.UI.Shared.Services
         TimeSpan SnapToTimeline(TimeSpan time, TimeSpan tolerance, bool snapToSegments, bool snapToCurrentTime, List<TimeSpan>? snapTimes = null);
 
         /// <summary>
+        ///     Determines if there is a matching registration for the provided layer property
+        /// </summary>
+        /// <param name="layerProperty">The layer property to try to find a view model for</param>
+        bool CanCreatePropertyInputViewModel(ILayerProperty layerProperty);
+
+        /// <summary>
         ///     If a matching registration is found, creates a new <see cref="PropertyInputViewModel{T}" /> supporting
         ///     <typeparamref name="T" />
         /// </summary>
@@ -160,7 +172,13 @@ namespace Artemis.UI.Shared.Services
         ///     Gets a boolean indicating whether a profile element is on the clipboard
         /// </summary>
         bool GetCanPasteProfileElement();
-        
+
+        /// <summary>
+        ///     Determines all LEDs on the current active surface contained in the specified rectangle
+        /// </summary>
+        /// <returns>A list containing all the LEDs that are in the provided rect</returns>
+        List<ArtemisLed> GetLedsInRectangle(Rect rect);
+
         /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>

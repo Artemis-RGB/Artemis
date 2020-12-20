@@ -1,9 +1,8 @@
-﻿using System;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
-    public abstract class CanvasViewModel : PropertyChangedBase, IDisposable
+    public abstract class CanvasViewModel : Screen
     {
         private double _x;
         private double _y;
@@ -18,19 +17,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             get => _y;
             set => SetAndNotify(ref _y, value);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-            }
         }
     }
 }
