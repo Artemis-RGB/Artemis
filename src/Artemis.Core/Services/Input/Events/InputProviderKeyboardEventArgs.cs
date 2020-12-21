@@ -8,6 +8,7 @@ namespace Artemis.Core.Services
     public class InputProviderKeyboardEventArgs : EventArgs
     {
         /// <summary>
+        ///     Creates a new instance of the <see cref="InputProviderKeyboardEventArgs " /> class
         /// </summary>
         /// <param name="device">The device that triggered the event</param>
         /// <param name="key">The key that triggered the event</param>
