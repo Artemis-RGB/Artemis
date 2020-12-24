@@ -9,9 +9,21 @@ namespace Artemis.Core.Services
     public abstract class InputProvider : IDisposable
     {
         /// <summary>
+        /// Called when the input service requests a <see cref="KeyboardToggleStatusReceived"/> event
+        /// </summary>
+        public virtual void OnKeyboardToggleStatusRequested()
+        {
+        }
+
+        /// <summary>
         ///     Occurs when the input provided has received keyboard data
         /// </summary>
         public event EventHandler<InputProviderKeyboardEventArgs>? KeyboardDataReceived;
+
+        /// <summary>
+        ///     Occurs when the input provider has received new toggle data for keyboards
+        /// </summary>
+        public event EventHandler<InputProviderKeyboardToggleEventArgs>? KeyboardToggleStatusReceived;
 
         /// <summary>
         ///     Occurs when the input provided has received mouse button data
@@ -93,6 +105,17 @@ namespace Artemis.Core.Services
         protected virtual void OnIdentifierReceived(object identifier, InputDeviceType deviceType)
         {
             IdentifierReceived?.Invoke(this, new InputProviderIdentifierEventArgs(identifier, deviceType));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyboardToggleStatusReceived" /> event which the <see cref="IInputService" /> listens to as
+        ///     long as
+        ///     this provider is registered
+        /// </summary>
+        /// <param name="keyboardToggleStatus">The toggle status of the keyboard</param>
+        protected virtual void OnKeyboardToggleStatusReceived(KeyboardToggleStatus keyboardToggleStatus)
+        {
+            KeyboardToggleStatusReceived?.Invoke(this, new InputProviderKeyboardToggleEventArgs(keyboardToggleStatus));
         }
 
         #region IDisposable

@@ -21,7 +21,7 @@ namespace Artemis.Core.Services
         public ArtemisDevice? Device { get; }
 
         /// <summary>
-        /// Gets the LED that corresponds to the pressed key
+        ///     Gets the LED that corresponds to the pressed key
         /// </summary>
         public ArtemisLed? Led { get; }
 

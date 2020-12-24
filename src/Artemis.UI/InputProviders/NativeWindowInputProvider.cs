@@ -14,9 +14,9 @@ namespace Artemis.UI.InputProviders
     public class NativeWindowInputProvider : InputProvider
     {
         private const int WM_INPUT = 0x00FF;
+        private readonly IInputService _inputService;
 
         private readonly ILogger _logger;
-        private readonly IInputService _inputService;
         private DateTime _lastMouseUpdate;
         private SpongeWindow _sponge;
 
@@ -31,6 +31,16 @@ namespace Artemis.UI.InputProviders
             RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _sponge.Handle);
             RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle);
         }
+
+        #region Overrides of InputProvider
+
+        /// <inheritdoc />
+        public override void OnKeyboardToggleStatusRequested()
+        {
+            UpdateToggleStatus();
+        }
+
+        #endregion
 
         #region IDisposable
 
@@ -88,7 +98,6 @@ namespace Artemis.UI.InputProviders
 
             ArtemisDevice device = null;
             if (identifier != null)
-            {
                 try
                 {
                     device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
@@ -97,7 +106,6 @@ namespace Artemis.UI.InputProviders
                 {
                     _logger.Warning(e, "Failed to retrieve input device by its identifier");
                 }
-            }
 
             // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
             if (keyboardData.Keyboard.Flags == RawKeyboardFlags.LeftKey || keyboardData.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
@@ -118,6 +126,16 @@ namespace Artemis.UI.InputProviders
                           keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.RightKey);
 
             OnKeyboardDataReceived(device, key, isDown);
+            UpdateToggleStatus();
+        }
+
+        private void UpdateToggleStatus()
+        {
+            OnKeyboardToggleStatusReceived(new KeyboardToggleStatus(
+                Keyboard.IsKeyToggled(Key.NumLock),
+                Keyboard.IsKeyToggled(Key.CapsLock),
+                Keyboard.IsKeyToggled(Key.Scroll)
+            ));
         }
 
         #endregion
@@ -142,7 +160,6 @@ namespace Artemis.UI.InputProviders
             ArtemisDevice device = null;
             string identifier = data.Device?.DevicePath;
             if (identifier != null)
-            {
                 try
                 {
                     device = _inputService.GetDeviceByIdentifier(this, identifier, InputDeviceType.Keyboard);
@@ -151,7 +168,6 @@ namespace Artemis.UI.InputProviders
                 {
                     _logger.Warning(e, "Failed to retrieve input device by its identifier");
                 }
-            }
 
             // Debug.WriteLine($"Buttons: {data.Mouse.Buttons}, Data: {data.Mouse.ButtonData}, Flags: {data.Mouse.Flags}, XY: {data.Mouse.LastX},{data.Mouse.LastY}");
 
