@@ -127,8 +127,12 @@
                                         <TextBlock Text="Repeat segment"
                                                    Visibility="{Binding RepeatSegment, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}" />
                                     </StackPanel>
-                                    <TextBlock Visibility="{Binding Repeating, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">Don't repeat the timeline</TextBlock>
-                                    <TextBlock>This setting only applies to the editor and <Run Text="does not" FontWeight="Bold" /> affect the repeat mode during profile use</TextBlock>
+                                    <TextBlock Visibility="{Binding Repeating, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                                        Don't repeat the timeline
+                                    </TextBlock>
+                                    <TextBlock TextWrapping="Wrap">
+                                        This setting only applies to the editor and <Run Text="does not" FontWeight="Bold" /> affect the repeat mode during normal profile playback
+                                    </TextBlock>
                                 </StackPanel>
                             </shared:LockableToggleButton.ToolTip>
                             <Grid>
@@ -223,6 +227,18 @@
                             <ContentControl Canvas.Left="{Binding MainTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding MainTimelineSegmentViewModel}" />
                             <ContentControl Canvas.Left="{Binding StartTimelineSegmentViewModel.SegmentStartPosition}" s:View.Model="{Binding StartTimelineSegmentViewModel}" />
 
+                            <!-- Timeline header body -->
+                            <controls:PropertyTimelineHeader Margin="0 18 0 0"
+                                                             Foreground="{DynamicResource MaterialDesignBody}"
+                                                             Background="{DynamicResource MaterialDesignCardBackground}"
+                                                             PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
+                                                             HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
+                                                             VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
+                                                             OffsetFirstValue="True"
+                                                             MouseLeftButtonUp="{s:Action TimelineJump}"
+                                                             Width="{Binding ActualWidth, ElementName=PropertyTimeLine}"
+                                                             Cursor="Hand"/>
+
                             <!-- Timeline caret -->
                             <Polygon Canvas.Left="{Binding TimeCaretPosition}"
                                      Cursor="SizeWE"
@@ -242,16 +258,6 @@
                                   Y2="{Binding ActualHeight, ElementName=ContainerGrid}"
                                   StrokeThickness="2"
                                   Stroke="{StaticResource SecondaryAccentBrush}" />
-
-
-                            <!-- Timeline header body -->
-                            <controls:PropertyTimelineHeader Margin="0 18 0 0"
-                                                             Fill="{DynamicResource MaterialDesignBody}"
-                                                             PixelsPerSecond="{Binding ProfileEditorService.PixelsPerSecond}"
-                                                             HorizontalOffset="{Binding ContentHorizontalOffset, ElementName=TimelineHeaderScrollViewer}"
-                                                             VisibleWidth="{Binding ActualWidth, ElementName=TimelineHeaderScrollViewer}"
-                                                             OffsetFirstValue="True"
-                                                             Width="{Binding ActualWidth, ElementName=PropertyTimeLine}" />
                         </Canvas>
                     </ScrollViewer>
 

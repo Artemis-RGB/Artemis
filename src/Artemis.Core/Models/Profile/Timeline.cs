@@ -12,7 +12,7 @@ namespace Artemis.Core
     public class Timeline : CorePropertyChanged, IStorageModel
     {
         private const int MaxExtraTimelines = 15;
-        private readonly object _lock = new();
+        private readonly object _lock = new ();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="Timeline" /> class
@@ -306,6 +306,8 @@ namespace Artemis.Core
 
         #region Updating
 
+        private TimeSpan _lastOverridePosition;
+
         /// <summary>
         ///     Updates the timeline, applying the provided <paramref name="delta" /> to the <see cref="Position" />
         /// </summary>
@@ -317,9 +319,11 @@ namespace Artemis.Core
             {
                 Delta += delta;
                 Position += delta;
-                IsOverridden = false;
 
-                if (stickToMainSegment && Position >= MainSegmentEndPosition)
+                IsOverridden = false;
+                _lastOverridePosition = Position;
+
+                if (stickToMainSegment && Position > MainSegmentEndPosition)
                 {
                     // If the main segment has no length, simply stick to the start of the segment
                     if (MainSegmentLength == TimeSpan.Zero)
@@ -389,14 +393,23 @@ namespace Artemis.Core
         {
             lock (_lock)
             {
-                Delta += position - Position;
+                Delta += position - _lastOverridePosition;
                 Position = position;
+
                 IsOverridden = true;
+                _lastOverridePosition = position;
 
                 if (stickToMainSegment && Position >= MainSegmentStartPosition)
                 {
+                    bool atSegmentStart = Position == MainSegmentStartPosition;
                     if (MainSegmentLength > TimeSpan.Zero)
+                    {
                         Position = MainSegmentStartPosition + TimeSpan.FromMilliseconds(Position.TotalMilliseconds % MainSegmentLength.TotalMilliseconds);
+                        // If the cursor is at the end of the timeline we don't want to wrap back around yet so only allow going to the start if the cursor
+                        // is actually at the start of the segment
+                        if (Position == MainSegmentStartPosition && !atSegmentStart)
+                            Position = MainSegmentEndPosition;
+                    }
                     else
                         Position = MainSegmentStartPosition;
                 }
