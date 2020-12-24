@@ -10,6 +10,12 @@ namespace Artemis.Core
     public class LayerGeneralProperties : LayerPropertyGroup
     {
         /// <summary>
+        ///     The type of brush to use for this layer
+        /// </summary>
+        [PropertyDescription(Name = "Brush type", Description = "The type of brush to use for this layer")]
+        public LayerBrushReferenceLayerProperty BrushReference { get; set; }
+        
+        /// <summary>
         ///     The type of shape to draw in this layer
         /// </summary>
         [PropertyDescription(Name = "Shape type", Description = "The type of shape to draw in this layer")]
@@ -26,13 +32,7 @@ namespace Artemis.Core
         /// </summary>
         [PropertyDescription(Name = "Transform mode", Description = "How the transformation properties are applied to the layer")]
         public EnumLayerProperty<LayerTransformMode> TransformMode { get; set; }
-
-        /// <summary>
-        ///     The type of brush to use for this layer
-        /// </summary>
-        [PropertyDescription(Name = "Brush type", Description = "The type of brush to use for this layer")]
-        public LayerBrushReferenceLayerProperty BrushReference { get; set; }
-
+        
         /// <inheritdoc />
         protected override void PopulateDefaults()
         {
