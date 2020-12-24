@@ -486,7 +486,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         public void GoToEnd()
         {
-            ProfileEditorService.CurrentTime = CalculateEndTime();
+            ProfileEditorService.CurrentTime = SelectedProfileElement.Timeline.EndSegmentEndPosition;
         }
 
         public void GoToPreviousFrame()
@@ -500,7 +500,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             double frameTime = 1000.0 / SettingsService.GetSetting("Core.TargetFrameRate", 25).Value;
             double newTime = Math.Round((ProfileEditorService.CurrentTime.TotalMilliseconds + frameTime) / frameTime) * frameTime;
-            newTime = Math.Min(newTime, CalculateEndTime().TotalMilliseconds);
+            newTime = Math.Min(newTime, SelectedProfileElement.Timeline.EndSegmentEndPosition.TotalMilliseconds);
             ProfileEditorService.CurrentTime = TimeSpan.FromMilliseconds(newTime);
         }
 
@@ -524,18 +524,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 Repeating = false;
             }
         }
-
-        private TimeSpan CalculateEndTime()
-        {
-            List<ITimelineKeyframeViewModel> keyframeViewModels = Items.SelectMany(g => g.GetAllKeyframeViewModels(false)).ToList();
-
-            // If there are no keyframes, don't stop at all
-            if (!keyframeViewModels.Any())
-                return TimeSpan.MaxValue;
-            // If there are keyframes, stop after the last keyframe + 10 sec
-            return keyframeViewModels.Max(k => k.Position).Add(TimeSpan.FromSeconds(10));
-        }
-
+        
         private TimeSpan GetCurrentSegmentStart()
         {
             TimeSpan current = ProfileEditorService.CurrentTime;
@@ -640,6 +629,24 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
                 ProfileEditorService.CurrentTime = newTime;
             }
+        }
+
+        public void TimelineJump(object sender, MouseButtonEventArgs e)
+        {
+            // Get the parent grid, need that for our position
+            IInputElement parent = (IInputElement)VisualTreeHelper.GetParent((DependencyObject)sender);
+            double x = Math.Max(0, e.GetPosition(parent).X);
+            TimeSpan newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
+
+            // Round the time to something that fits the current zoom level
+            if (ProfileEditorService.PixelsPerSecond < 200)
+                newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 5.0) * 5.0);
+            else if (ProfileEditorService.PixelsPerSecond < 500)
+                newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 2.0) * 2.0);
+            else
+                newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds));
+
+            ProfileEditorService.CurrentTime = newTime;
         }
 
         #endregion

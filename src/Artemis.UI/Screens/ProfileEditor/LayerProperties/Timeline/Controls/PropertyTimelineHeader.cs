@@ -8,7 +8,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
 {
     public class PropertyTimelineHeader : FrameworkElement
     {
-        public static readonly DependencyProperty FillProperty = DependencyProperty.Register(nameof(Fill), typeof(Brush), typeof(PropertyTimelineHeader),
+        public static readonly DependencyProperty ForegroundProperty = DependencyProperty.Register(nameof(Foreground), typeof(Brush), typeof(PropertyTimelineHeader),
+            new FrameworkPropertyMetadata(default(Brush), FrameworkPropertyMetadataOptions.AffectsRender));
+
+        public static readonly DependencyProperty BackgroundProperty = DependencyProperty.Register(nameof(Background), typeof(Brush), typeof(PropertyTimelineHeader),
             new FrameworkPropertyMetadata(default(Brush), FrameworkPropertyMetadataOptions.AffectsRender));
 
         public static readonly DependencyProperty FontFamilyProperty = DependencyProperty.Register(nameof(FontFamily), typeof(FontFamily), typeof(PropertyTimelineHeader),
@@ -30,10 +33,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
         private double _subd2;
         private double _subd3;
 
-        public Brush Fill
+        public Brush Foreground
         {
-            get => (Brush) GetValue(FillProperty);
-            set => SetValue(FillProperty, value);
+            get => (Brush) GetValue(ForegroundProperty);
+            set => SetValue(ForegroundProperty, value);
+        }
+
+        public Brush Background
+        {
+            get => (Brush) GetValue(BackgroundProperty);
+            set => SetValue(BackgroundProperty, value);
         }
 
         public FontFamily FontFamily
@@ -71,7 +80,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
             base.OnRender(drawingContext);
             UpdateTimeScale();
 
-            Pen linePen = new(Fill, 1);
+            if (Background != null)
+                drawingContext.DrawRectangle(Background, null, new Rect(0,0, ActualWidth, 30));
+
+            Pen linePen = new(Foreground, 1);
             double width = HorizontalOffset + VisibleWidth;
             int frameStart = 0;
 
@@ -127,7 +139,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Controls
         private void RenderLabel(DrawingContext drawingContext, string text, double x)
         {
             Typeface typeFace = new(FontFamily, new FontStyle(), new FontWeight(), new FontStretch());
-            FormattedText formattedText = new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Fill, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
+            FormattedText formattedText = new(text, CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeFace, 9, Foreground, null, VisualTreeHelper.GetDpi(this).PixelsPerDip);
             if (x == 0 && OffsetFirstValue)
                 drawingContext.DrawText(formattedText, new Point(2, 5));
             else
