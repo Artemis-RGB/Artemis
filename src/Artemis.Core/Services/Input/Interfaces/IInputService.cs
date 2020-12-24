@@ -8,6 +8,11 @@ namespace Artemis.Core.Services
     public interface IInputService : IArtemisService, IDisposable
     {
         /// <summary>
+        ///     Gets the current keyboard toggle status
+        /// </summary>
+        KeyboardToggleStatus KeyboardToggleStatus { get; }
+
+        /// <summary>
         ///     Adds an input provided
         /// </summary>
         /// <param name="inputProvider">The input provider the add</param>
@@ -46,6 +51,11 @@ namespace Artemis.Core.Services
         ///     Occurs whenever a key on a keyboard was released
         /// </summary>
         event EventHandler<ArtemisKeyboardKeyEventArgs> KeyboardKeyUp;
+
+        /// <summary>
+        ///     Occurs whenever a one or more of the keyboard toggle statuses changed
+        /// </summary>
+        event EventHandler<ArtemisKeyboardToggleStatusArgs> KeyboardToggleStatusChanged;
 
         /// <summary>
         ///     Occurs whenever a button on a mouse was pressed or released

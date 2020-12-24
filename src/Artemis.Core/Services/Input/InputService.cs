@@ -36,15 +36,21 @@ namespace Artemis.Core.Services
 
         private readonly List<InputProvider> _inputProviders = new();
 
+        public KeyboardToggleStatus KeyboardToggleStatus { get; private set; } = new(false, false, false);
+
         public void AddInputProvider(InputProvider inputProvider)
         {
             inputProvider.IdentifierReceived += InputProviderOnIdentifierReceived;
             inputProvider.KeyboardDataReceived += InputProviderOnKeyboardDataReceived;
+            inputProvider.KeyboardToggleStatusReceived += InputProviderOnKeyboardToggleStatusReceived;
             inputProvider.MouseButtonDataReceived += InputProviderOnMouseButtonDataReceived;
             inputProvider.MouseScrollDataReceived += InputProviderOnMouseScrollDataReceived;
             inputProvider.MouseMoveDataReceived += InputProviderOnMouseMoveDataReceived;
             _inputProviders.Add(inputProvider);
+            
+            inputProvider.OnKeyboardToggleStatusRequested();
         }
+
 
         public void RemoveInputProvider(InputProvider inputProvider)
         {
@@ -54,6 +60,7 @@ namespace Artemis.Core.Services
             _inputProviders.Remove(inputProvider);
             inputProvider.IdentifierReceived -= InputProviderOnIdentifierReceived;
             inputProvider.KeyboardDataReceived -= InputProviderOnKeyboardDataReceived;
+            inputProvider.KeyboardToggleStatusReceived -= InputProviderOnKeyboardToggleStatusReceived;
             inputProvider.MouseButtonDataReceived -= InputProviderOnMouseButtonDataReceived;
             inputProvider.MouseScrollDataReceived -= InputProviderOnMouseScrollDataReceived;
             inputProvider.MouseMoveDataReceived -= InputProviderOnMouseMoveDataReceived;
@@ -209,6 +216,18 @@ namespace Artemis.Core.Services
             // _logger.Verbose("Keyboard data: LED ID: {ledId}, key: {key}, is down: {isDown}, modifiers: {modifiers}, device: {device} ", ledId, e.Key, e.IsDown, keyboardModifierKey, e.Device);
         }
 
+        private void InputProviderOnKeyboardToggleStatusReceived(object? sender, InputProviderKeyboardToggleEventArgs e)
+        {
+            KeyboardToggleStatus old = KeyboardToggleStatus;
+            if (KeyboardToggleStatus.CapsLock == e.KeyboardToggleStatus.CapsLock &&
+                KeyboardToggleStatus.NumLock == e.KeyboardToggleStatus.NumLock &&
+                KeyboardToggleStatus.ScrollLock == e.KeyboardToggleStatus.ScrollLock)
+                return;
+
+            KeyboardToggleStatus = e.KeyboardToggleStatus;
+            OnKeyboardToggleStatusChanged(new ArtemisKeyboardToggleStatusArgs(old, KeyboardToggleStatus));
+        }
+
         private bool UpdatePressedKeys(ArtemisDevice? device, KeyboardKey key, bool isDown)
         {
             if (device != null)
@@ -318,6 +337,8 @@ namespace Artemis.Core.Services
         public event EventHandler<ArtemisKeyboardKeyUpDownEventArgs>? KeyboardKeyUpDown;
         public event EventHandler<ArtemisKeyboardKeyEventArgs>? KeyboardKeyDown;
         public event EventHandler<ArtemisKeyboardKeyEventArgs>? KeyboardKeyUp;
+        public event EventHandler<ArtemisKeyboardToggleStatusArgs>? KeyboardToggleStatusChanged;
+
         public event EventHandler<ArtemisMouseButtonUpDownEventArgs>? MouseButtonUpDown;
         public event EventHandler<ArtemisMouseButtonEventArgs>? MouseButtonDown;
         public event EventHandler<ArtemisMouseButtonEventArgs>? MouseButtonUp;
@@ -338,6 +359,11 @@ namespace Artemis.Core.Services
         protected virtual void OnKeyboardKeyUp(ArtemisKeyboardKeyEventArgs e)
         {
             KeyboardKeyUp?.Invoke(this, e);
+        }
+
+        protected virtual void OnKeyboardToggleStatusChanged(ArtemisKeyboardToggleStatusArgs e)
+        {
+            KeyboardToggleStatusChanged?.Invoke(this, e);
         }
 
         protected virtual void OnMouseButtonUpDown(ArtemisMouseButtonUpDownEventArgs e)
