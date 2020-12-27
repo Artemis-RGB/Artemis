@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="Artemis.UI.Installer.Screens.Steps.InstallStepView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:steps="clr-namespace:Artemis.UI.Installer.Screens.Steps"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:mde="https://spiegelp.github.io/MaterialDesignExtensions/winfx/xaml"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance steps:InstallStepViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0 25">
+            <StackPanel>
+                <ProgressBar Value="{Binding DownloadProcess}" IsIndeterminate="{Binding IsIndeterminate}" />
+                <TextBlock Margin="0 10" Visibility="{Binding Installing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}">
+                    Downloading <Run Text="{Binding DownloadCurrent, StringFormat=N2}" />/<Run Text="{Binding DownloadTotal, StringFormat=N2}" /> MB.
+                </TextBlock>
+                <TextBlock Margin="0 10" Visibility="{Binding Installing, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+                    Installing <Run FontWeight="Bold" Text="{Binding Subject.Title}" />.
+                </TextBlock>
+            </StackPanel>
+        </Grid>
+
+        <mde:StepButtonBar Grid.Row="1"
+                           Grid.ColumnSpan="2"
+                           VerticalAlignment="Bottom"
+                           Continue="CONTINUE"
+                           Back="BACK"
+                           IsContinueEnabled="{Binding CanContinue}" />
+    </Grid>
+</UserControl>
