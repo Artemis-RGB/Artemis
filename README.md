@@ -3,7 +3,7 @@
 # Artemis
 [![Build Status](https://dev.azure.com/artemis-rgb/Artemis/_apis/build/status/Artemis%20Development%20build?repoName=Artemis-RGB%2FArtemis&branchName=master)](https://dev.azure.com/artemis-rgb/Artemis/_build/latest?definitionId=1&repoName=Artemis-RGB%2FArtemis&branchName=master)
 [![GitHub release](https://img.shields.io/github/release/spoinkynl/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/releases)
-[![GitHub license](https://img.shields.io/badge/license-GPL3-blue.svg)](https://github.com/SpoinkyNL/Artemis/blob/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-noncommercial-blue.svg)](https://github.com/SpoinkyNL/Artemis/blob/master/LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/SpoinkyNL/Artemis.svg)](https://github.com/SpoinkyNL/Artemis/stargazers)
 [![Discord](https://img.shields.io/discord/392093058352676874?logo=discord&logoColor=white)](https://discord.gg/S3MVaC9) 
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=VQBAEJYUFLU4J) 
