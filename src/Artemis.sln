@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.Core", "Artemis.Cor
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared", "Artemis.UI.Shared\Artemis.UI.Shared.csproj", "{ADB357E6-151D-4D0D-87CB-68FD0BC29812}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artemis.UI.Installer", "Artemis.UI.Installer\Artemis.UI.Installer.csproj", "{2AE00626-50EC-4788-9EA7-CDADB00502A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -35,9 +33,6 @@ Global
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Debug|x64.Build.0 = Debug|x64
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.ActiveCfg = Release|x64
 		{ADB357E6-151D-4D0D-87CB-68FD0BC29812}.Release|x64.Build.0 = Release|x64
-		{2AE00626-50EC-4788-9EA7-CDADB00502A3}.Debug|x64.ActiveCfg = Debug|x64
-		{2AE00626-50EC-4788-9EA7-CDADB00502A3}.Debug|x64.Build.0 = Debug|x64
-		{2AE00626-50EC-4788-9EA7-CDADB00502A3}.Release|x64.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
