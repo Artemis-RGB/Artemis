@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="RGB.NET.Core">
-      <HintPath>..\..\..\RGB.NET\bin\netstandard2.0\RGB.NET.Core.dll</HintPath>
+      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
