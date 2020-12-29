@@ -41,6 +41,6 @@ steps:
 - task: PublishPipelineArtifact@1
   displayName: 'Upload build to Azure Pipelines'
   inputs:
-    targetPath: '$(Build.SourcesDirectory)/bin/netstandard2.0'
+    targetPath: '$(Build.SourcesDirectory)/bin/net5.0'
     artifact: 'RGB.NET development build'
     publishLocation: 'pipeline'
