@@ -24,7 +24,7 @@ steps:
     definition: '3'
     buildVersionToDownload: 'latest'
     artifactName: 'RGB.NET development build'
-    targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/netstandard2.0'
+    targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/net5.0'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore Artemis'
