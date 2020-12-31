@@ -77,7 +77,7 @@ steps:
     password: '$(ftp_password)'
     rootDirectory: '$(Build.ArtifactStagingDirectory)/archive'
     filePatterns: '**'
-    remoteDirectory: '/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildId)'
+    remoteDirectory: '/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildNumber)'
     clean: false
     preservePaths: true
     trustSSL: false
