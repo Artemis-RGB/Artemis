@@ -59,3 +59,25 @@ steps:
     targetPath: '$(Build.ArtifactStagingDirectory)/build'
     artifact: 'Artemis build'
     publishLocation: 'pipeline'
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
+    includeRootFolder: true
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/archive/artemis-build.zip'
+    replaceExistingArchive: true
+
+- task: FtpUpload@2
+  displayName: "Binaries FTP upload"
+  inputs:
+    credentialsOption: 'inputs'
+    serverUrl: 'ftp://artemis-rgb.com'
+    username: 'devops'
+    password: '$(ftp_password)'
+    rootDirectory: '$(Build.ArtifactStagingDirectory)/archive'
+    filePatterns: '**'
+    remoteDirectory: '/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildId)'
+    clean: false
+    preservePaths: true
+    trustSSL: false
