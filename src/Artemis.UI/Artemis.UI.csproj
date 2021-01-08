@@ -320,6 +320,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Update="buildinfo.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Page Update="DefaultTypes\DataModel\Display\SKColorDataModelDisplayView.xaml">
       <SubType>Designer</SubType>
     </Page>
