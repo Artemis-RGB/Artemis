@@ -12,7 +12,11 @@ pool:
 variables:
   artemisSolution: '**/Artemis.sln'
   NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-
+  BuildId: $(Build.BuildId)
+  BuildNumber: $(Build.BuildNumber)
+  SourceBranch: $(Build.SourceBranch)
+  SourceVersion: $(Build.SourceVersion)
+  
 steps:
 - checkout: self
   path: s/Artemis
@@ -52,6 +56,13 @@ steps:
     buildVersionToDownload: 'latest'
     artifactName: 'Artemis build'
     targetPath: '$(Build.ArtifactStagingDirectory)/build'
+
+- task: FileTransform@1
+  displayName: 'Populate buildinfo.json'
+  inputs:
+    folderPath: '$(Build.ArtifactStagingDirectory)/build'
+    fileType: 'json'
+    targetFiles: '**/buildinfo.json'
 
 - task: PublishPipelineArtifact@1
   displayName: 'Upload build to Azure Pipelines'
