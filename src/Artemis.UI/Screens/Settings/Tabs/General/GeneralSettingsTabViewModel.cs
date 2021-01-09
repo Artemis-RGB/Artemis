@@ -8,9 +8,11 @@ using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.StartupWizard;
+using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using MaterialDesignThemes.Wpf;
 using Ninject;
 using Serilog.Events;
 using Stylet;
@@ -24,18 +26,23 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private readonly IWindowManager _windowManager;
         private readonly IDialogService _dialogService;
         private readonly ISettingsService _settingsService;
+        private readonly IUpdateService _updateService;
+        private readonly IMessageService _messageService;
         private List<Tuple<string, double>> _renderScales;
         private List<int> _sampleSizes;
         private List<Tuple<string, int>> _targetFrameRates;
         private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
+        private bool _canOfferUpdatesIfFound = true;
 
         public GeneralSettingsTabViewModel(
-            IKernel kernel, 
-            IWindowManager windowManager, 
-            IDialogService dialogService, 
+            IKernel kernel,
+            IWindowManager windowManager,
+            IDialogService dialogService,
             IDebugService debugService,
-            ISettingsService settingsService, 
-            IPluginManagementService pluginManagementService)
+            ISettingsService settingsService,
+            IUpdateService updateService,
+            IPluginManagementService pluginManagementService,
+            IMessageService messageService)
         {
             DisplayName = "GENERAL";
 
@@ -44,6 +51,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _dialogService = dialogService;
             _debugService = debugService;
             _settingsService = settingsService;
+            _updateService = updateService;
+            _messageService = messageService;
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
@@ -124,6 +133,31 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
 
+        public bool CheckForUpdates
+        {
+            get => _settingsService.GetSetting("UI.CheckForUpdates", true).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.CheckForUpdates", true).Value = value;
+                _settingsService.GetSetting("UI.CheckForUpdates", true).Save();
+                NotifyOfPropertyChange(nameof(CheckForUpdates));
+
+                if (!value)
+                    AutoInstallUpdates = false;
+            }
+        }
+
+        public bool AutoInstallUpdates
+        {
+            get => _settingsService.GetSetting("UI.AutoInstallUpdates", false).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.AutoInstallUpdates", false).Value = value;
+                _settingsService.GetSetting("UI.AutoInstallUpdates", false).Save();
+                NotifyOfPropertyChange(nameof(AutoInstallUpdates));
+            }
+        }
+
         public bool ShowDataModelValues
         {
             get => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false).Value;
@@ -196,6 +230,12 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
 
+        public bool CanOfferUpdatesIfFound
+        {
+            get => _canOfferUpdatesIfFound;
+            set => SetAndNotify(ref _canOfferUpdatesIfFound, value);
+        }
+
         public void ShowDebugger()
         {
             _debugService.ShowDebugger();
@@ -228,6 +268,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             {
                 _dialogService.ShowExceptionDialog("Welp, we couldn\'t open the data folder for you", e);
             }
+        }
+
+        public async void OfferUpdatesIfFound()
+        {
+            if (!CanOfferUpdatesIfFound)
+                return;
+
+            CanOfferUpdatesIfFound = false;
+            bool updateFound = await _updateService.OfferUpdatesIfFound();
+            if (!updateFound)
+                _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
+            else
+                _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
+            CanOfferUpdatesIfFound = true;
         }
 
         protected override void OnInitialActivate()

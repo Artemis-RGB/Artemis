@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Artemis.Core.JsonConverters;
-using Artemis.Storage.Entities.Plugins;
+using Artemis.Core.Services.Core;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -41,6 +41,14 @@ namespace Artemis.Core
         };
 
         /// <summary>
+        ///     The build information related to the currently running Artemis build
+        ///     <para>Information is retrieved from <c>buildinfo.json</c></para>
+        /// </summary>
+        public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
+            ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))
+            : new BuildInfo();
+
+        /// <summary>
         ///     The plugin used by core components of Artemis
         /// </summary>
         public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
@@ -52,10 +60,11 @@ namespace Artemis.Core
         {
             Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
         };
+
         internal static JsonSerializerSettings JsonConvertTypedSettings = new()
         {
             TypeNameHandling = TypeNameHandling.All,
-            Converters = new List<JsonConverter> { new SKColorConverter(), new ForgivingIntConverter() }
+            Converters = new List<JsonConverter> {new SKColorConverter(), new ForgivingIntConverter()}
         };
 
         /// <summary>

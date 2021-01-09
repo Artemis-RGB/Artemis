@@ -14,6 +14,7 @@ using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Shared.Services;
 using Artemis.UI.Utilities;
 using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
@@ -25,6 +26,7 @@ namespace Artemis.UI.Screens
     public sealed class RootViewModel : Conductor<IScreen>, IDisposable
     {
         private readonly IRegistrationService _builtInRegistrationService;
+        private readonly IMessageService _messageService;
         private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IWindowManager _windowManager;
@@ -34,7 +36,6 @@ namespace Artemis.UI.Screens
         private readonly ISettingsService _settingsService;
         private readonly Timer _frameTimeUpdateTimer;
         private readonly SidebarViewModel _sidebarViewModel;
-        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private readonly ThemeWatcher _themeWatcher;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _activeItemReady;
@@ -52,7 +53,7 @@ namespace Artemis.UI.Screens
             IWindowManager windowManager,
             IDebugService debugService,
             IRegistrationService builtInRegistrationService,
-            ISnackbarMessageQueue snackbarMessageQueue,
+            IMessageService messageService,
             SidebarViewModel sidebarViewModel)
         {
             _kernel = kernel;
@@ -62,7 +63,7 @@ namespace Artemis.UI.Screens
             _windowManager = windowManager;
             _debugService = debugService;
             _builtInRegistrationService = builtInRegistrationService;
-            _snackbarMessageQueue = snackbarMessageQueue;
+            _messageService = messageService;
             _sidebarViewModel = sidebarViewModel;
             _frameTimeUpdateTimer = new Timer(500);
 
@@ -79,7 +80,7 @@ namespace Artemis.UI.Screens
             PinSidebar = _settingsService.GetSetting("UI.PinSidebar", false);
 
             AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion}";
+            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumber}";
         }
 
         public PluginSetting<bool> PinSidebar { get; }
@@ -275,7 +276,7 @@ namespace Artemis.UI.Screens
 
         protected override void OnInitialActivate()
         {
-            MainMessageQueue = _snackbarMessageQueue;
+            MainMessageQueue = _messageService.MainMessageQueue;
             UpdateFrameTime();
 
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
@@ -295,7 +296,7 @@ namespace Artemis.UI.Screens
             PluginSetting<bool> setupWizardCompleted = _settingsService.GetSetting("UI.SetupWizardCompleted", false);
             if (!setupWizardCompleted.Value)
                 ShowSetupWizard();
-
+            
             base.OnInitialActivate();
         }
 

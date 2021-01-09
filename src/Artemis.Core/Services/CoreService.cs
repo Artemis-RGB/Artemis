@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Ninject;
+using Artemis.Core.Services.Core;
 using Artemis.Storage;
 using HidSharp;
+using Newtonsoft.Json;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -37,9 +40,17 @@ namespace Artemis.Core.Services
         private DateTime _lastExceptionLog;
         private List<Module> _modules = new();
 
-        // ReSharper disable UnusedParameter.Local - Storage migration and module service are injected early to ensure it runs before anything else
-        public CoreService(IKernel kernel, ILogger logger, StorageMigrationService _, ISettingsService settingsService, IPluginManagementService pluginManagementService,
-            IRgbService rgbService, ISurfaceService surfaceService, IProfileService profileService, IModuleService moduleService)
+        // ReSharper disable UnusedParameter.Local
+        public CoreService(IKernel kernel,
+            ILogger logger,
+            StorageMigrationService _, // injected to ensure migration runs early
+            ISettingsService settingsService,
+            IPluginManagementService pluginManagementService,
+            IRgbService rgbService,
+            ISurfaceService surfaceService,
+            IProfileService profileService,
+            IModuleService moduleService // injected to ensure module priorities get applied
+        )
         {
             Kernel = kernel;
             Constants.CorePlugin.Kernel = kernel;
@@ -82,7 +93,8 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            _logger.Information("Initializing Artemis Core version {version}", versionAttribute?.InformationalVersion);
+            _logger.Information("Initializing Artemis Core version {version}, build {buildNumber} branch {branch}.", versionAttribute?.InformationalVersion, Constants.BuildInfo.BuildNumber,
+                Constants.BuildInfo.SourceBranch);
             // This should prevent a certain someone from removing HidSharp as an unused dependency as well
             _logger.Information("Forcing plugins to use HidSharp {hidSharpVersion}", Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version);
 

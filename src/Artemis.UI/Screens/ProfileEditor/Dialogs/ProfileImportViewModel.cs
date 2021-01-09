@@ -11,15 +11,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
     {
         private readonly ISnackbarMessageQueue _mainMessageQueue;
         private readonly IProfileService _profileService;
+        private readonly IMessageService _messageService;
         private string _profileJson;
 
-        public ProfileImportViewModel(ProfileModule profileModule, IProfileService profileService, ISnackbarMessageQueue mainMessageQueue)
+        public ProfileImportViewModel(ProfileModule profileModule, IProfileService profileService, IMessageService messageService)
         {
             ProfileModule = profileModule;
             Document = new TextDocument();
 
             _profileService = profileService;
-            _mainMessageQueue = mainMessageQueue;
+            _messageService = messageService;
         }
 
         public ProfileModule ProfileModule { get; }
@@ -34,7 +35,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
         public void Accept()
         {
             ProfileDescriptor descriptor = _profileService.ImportProfile(Document.Text, ProfileModule);
-            _mainMessageQueue.Enqueue("Profile imported.");
+            _messageService.ShowMessage("Profile imported.");
             Session.Close(descriptor);
         }
     }

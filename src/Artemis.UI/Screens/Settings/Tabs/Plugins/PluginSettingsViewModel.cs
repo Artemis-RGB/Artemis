@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
-        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
+        private readonly IMessageService _messageService;
         private readonly IWindowManager _windowManager;
         private bool _enabling;
         private Plugin _plugin;
@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             IWindowManager windowManager,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
-            ISnackbarMessageQueue snackbarMessageQueue)
+            IMessageService messageService)
         {
             Plugin = plugin;
 
@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
-            _snackbarMessageQueue = snackbarMessageQueue;
+            _messageService = messageService;
 
             Icon = PluginUtilities.GetPluginIcon(Plugin, Plugin.Info.Icon);
         }
@@ -130,7 +130,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
                 catch (Exception e)
                 {
-                    _snackbarMessageQueue.Enqueue($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _messageService.ShowMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {
