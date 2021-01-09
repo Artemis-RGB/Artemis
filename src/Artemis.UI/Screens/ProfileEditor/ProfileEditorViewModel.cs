@@ -22,10 +22,10 @@ namespace Artemis.UI.Screens.ProfileEditor
     public class ProfileEditorViewModel : Screen
     {
         private readonly IModuleService _moduleService;
+        private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
-        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
         private PluginSetting<GridLength> _bottomPanelsHeight;
         private PluginSetting<GridLength> _dataModelConditionsHeight;
         private DisplayConditionsViewModel _displayConditionsViewModel;
@@ -47,13 +47,13 @@ namespace Artemis.UI.Screens.ProfileEditor
             IDialogService dialogService,
             ISettingsService settingsService,
             IModuleService moduleService,
-            ISnackbarMessageQueue snackbarMessageQueue)
+            IMessageService messageService)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
             _moduleService = moduleService;
-            _snackbarMessageQueue = snackbarMessageQueue;
+            _messageService = messageService;
 
             DisplayName = "PROFILE EDITOR";
             Module = module;
@@ -242,7 +242,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
             if (!_profileEditorService.UndoUpdateProfile())
             {
-                _snackbarMessageQueue.Enqueue("Nothing to undo");
+                _messageService.ShowMessage("Nothing to undo");
                 return;
             }
 
@@ -256,7 +256,7 @@ namespace Artemis.UI.Screens.ProfileEditor
                 focusedElement?.Focus();
             });
 
-            _snackbarMessageQueue.Enqueue("Undid profile update", "REDO", Redo);
+            _messageService.ShowMessage("Undid profile update", "REDO", Redo);
         }
 
         public void Redo()
@@ -269,7 +269,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
             if (!_profileEditorService.RedoUpdateProfile())
             {
-                _snackbarMessageQueue.Enqueue("Nothing to redo");
+                _messageService.ShowMessage("Nothing to redo");
                 return;
             }
 
@@ -283,7 +283,7 @@ namespace Artemis.UI.Screens.ProfileEditor
                 focusedElement?.Focus();
             });
 
-            _snackbarMessageQueue.Enqueue("Redid profile update", "UNDO", Undo);
+            _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
         protected override void OnInitialActivate()

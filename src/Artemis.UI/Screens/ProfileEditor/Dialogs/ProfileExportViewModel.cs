@@ -8,16 +8,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
     public class ProfileExportViewModel : DialogViewModelBase
     {
-        private readonly ISnackbarMessageQueue _mainMessageQueue;
-
         private readonly IProfileService _profileService;
+        private readonly IMessageService _messageService;
 
-        public ProfileExportViewModel(ProfileDescriptor profileDescriptor, IProfileService profileService, ISnackbarMessageQueue mainMessageQueue)
+        public ProfileExportViewModel(ProfileDescriptor profileDescriptor, IProfileService profileService, IMessageService messageService)
         {
             ProfileDescriptor = profileDescriptor;
 
             _profileService = profileService;
-            _mainMessageQueue = mainMessageQueue;
+            _messageService = messageService;
         }
 
         public ProfileDescriptor ProfileDescriptor { get; }
@@ -26,7 +25,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
         {
             string encoded = _profileService.ExportProfile(ProfileDescriptor);
             Clipboard.SetText(encoded);
-            _mainMessageQueue.Enqueue("Profile contents exported to clipboard.");
+            _messageService.ShowMessage("Profile contents exported to clipboard.");
 
             Session.Close();
         }

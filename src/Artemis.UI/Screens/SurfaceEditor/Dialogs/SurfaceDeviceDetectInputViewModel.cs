@@ -13,17 +13,17 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
     public class SurfaceDeviceDetectInputViewModel : DialogViewModelBase
     {
         private readonly IInputService _inputService;
+        private readonly IMessageService _messageService;
         private readonly ListLedGroup _ledGroup;
-        private readonly ISnackbarMessageQueue _mainMessageQueue;
 
-        public SurfaceDeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, ISnackbarMessageQueue mainMessageQueue)
+        public SurfaceDeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, IMessageService messageService)
         {
             Device = device;
             Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input";
             IsMouse = Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
 
             _inputService = inputService;
-            _mainMessageQueue = mainMessageQueue;
+            _messageService = messageService;
             _inputService.IdentifyDevice(Device);
             _inputService.DeviceIdentified += InputServiceOnDeviceIdentified;
 
@@ -49,7 +49,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         private void InputServiceOnDeviceIdentified(object sender, EventArgs e)
         {
             Session?.Close(true);
-            _mainMessageQueue.Enqueue($"{Device.RgbDevice.DeviceInfo.DeviceName} identified 😁");
+            _messageService.ShowMessage($"{Device.RgbDevice.DeviceInfo.DeviceName} identified 😁");
         }
     }
 }

@@ -20,17 +20,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly ISnackbarMessageQueue _snackbarMessageQueue;
+        private IMessageService _messageService;
         private bool _enabling;
-
+        
         public PluginFeatureViewModel(PluginFeature feature,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
-            ISnackbarMessageQueue snackbarMessageQueue)
+            IMessageService messageService)
         {
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
-            _snackbarMessageQueue = snackbarMessageQueue;
+            _messageService = messageService;
 
             Feature = feature;
             Icon = GetIconKind();
@@ -109,7 +109,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
                 catch (Exception e)
                 {
-                    _snackbarMessageQueue.Enqueue($"Failed to enable {Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _messageService.ShowMessage($"Failed to enable {Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {
