@@ -276,7 +276,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 return;
 
             CanOfferUpdatesIfFound = false;
-            bool updateFound = await _updateService.OfferUpdatesIfFound();
+            bool updateFound = await _updateService.OfferUpdateIfFound();
             if (!updateFound)
                 _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
             CanOfferUpdatesIfFound = true;
