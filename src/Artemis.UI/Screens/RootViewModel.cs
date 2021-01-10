@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
@@ -80,7 +81,7 @@ namespace Artemis.UI.Screens
             PinSidebar = _settingsService.GetSetting("UI.PinSidebar", false);
 
             AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumber}";
+            WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
         }
 
         public PluginSetting<bool> PinSidebar { get; }

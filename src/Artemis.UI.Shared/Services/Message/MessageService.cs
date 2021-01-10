@@ -5,13 +5,20 @@ namespace Artemis.UI.Shared.Services
 {
     internal class MessageService : IMessageService
     {
+        private INotificationProvider _notificationProvider;
         public ISnackbarMessageQueue MainMessageQueue { get; }
 
         public MessageService(ISnackbarMessageQueue mainMessageQueue)
         {
             MainMessageQueue = mainMessageQueue;
         }
-        
+
+        /// <inheritdoc />
+        public void ConfigureNotificationProvider(INotificationProvider notificationProvider)
+        {
+            _notificationProvider = notificationProvider;
+        }
+
         public void ShowMessage(object content)
         {
             MainMessageQueue.Enqueue(content);
@@ -62,6 +69,25 @@ namespace Artemis.UI.Shared.Services
             TimeSpan? durationOverride = null)
         {
             MainMessageQueue.Enqueue(content, actionContent, actionHandler, actionArgument, promote, neverConsiderToBeDuplicate, durationOverride);
+        }
+
+        /// <inheritdoc />
+        public void ShowNotification(string title, string message)
+        {
+            _notificationProvider.ShowNotification(title, message, PackIconKind.None);
+        }
+
+        /// <inheritdoc />
+        public void ShowNotification(string title, string message, PackIconKind icon)
+        {
+            _notificationProvider.ShowNotification(title, message, icon);
+        }
+
+        /// <inheritdoc />
+        public void ShowNotification(string title, string message, string icon)
+        {
+            Enum.TryParse(typeof(PackIconKind), icon, true, out object? iconKind);
+            _notificationProvider.ShowNotification(title, message, (PackIconKind) (iconKind ?? PackIconKind.None));
         }
     }
 }

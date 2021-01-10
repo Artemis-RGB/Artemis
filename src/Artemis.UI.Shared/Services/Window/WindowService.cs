@@ -4,7 +4,7 @@ namespace Artemis.UI.Shared.Services
 {
     internal class WindowService : IWindowService
     {
-        private IMainWindowManager? _mainWindowManager;
+        private IMainWindowProvider? _mainWindowManager;
 
         protected virtual void OnMainWindowOpened()
         {
@@ -46,9 +46,9 @@ namespace Artemis.UI.Shared.Services
 
         public bool IsMainWindowOpen { get; private set; }
         
-        public void ConfigureMainWindowManager(IMainWindowManager mainWindowManager)
+        public void ConfigureMainWindowProvider(IMainWindowProvider mainWindowProvider)
         {
-            if (mainWindowManager == null) throw new ArgumentNullException(nameof(mainWindowManager));
+            if (mainWindowProvider == null) throw new ArgumentNullException(nameof(mainWindowProvider));
 
             if (_mainWindowManager != null)
             {
@@ -56,7 +56,7 @@ namespace Artemis.UI.Shared.Services
                 _mainWindowManager.MainWindowClosed -= HandleMainWindowClosed;
             }
 
-            _mainWindowManager = mainWindowManager;
+            _mainWindowManager = mainWindowProvider;
             _mainWindowManager.MainWindowOpened += HandleMainWindowOpened;
             _mainWindowManager.MainWindowClosed += HandleMainWindowClosed;
 

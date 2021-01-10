@@ -16,6 +16,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using Ninject;
 using Serilog;
+using SharpVectors.Dom.Resources;
 using Stylet;
 
 namespace Artemis.UI
@@ -58,7 +59,11 @@ namespace Artemis.UI
             FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Create and bind the root view, this is a tray icon so don't show it with the window manager
-            Execute.OnUIThread(() => viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel));
+            Execute.OnUIThread(() =>
+            {
+                UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
+                ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
+            });
 
             // Initialize the core async so the UI can show the progress
             Task.Run(async () =>

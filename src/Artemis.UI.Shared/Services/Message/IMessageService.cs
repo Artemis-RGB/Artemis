@@ -14,6 +14,12 @@ namespace Artemis.UI.Shared.Services
         ISnackbarMessageQueue MainMessageQueue { get; }
 
         /// <summary>
+        ///     Sets up the notification provider that shows desktop notifications
+        /// </summary>
+        /// <param name="notificationProvider">The notification provider that shows desktop notifications</param>
+        void ConfigureNotificationProvider(INotificationProvider notificationProvider);
+
+        /// <summary>
         ///     Queues a notification message for display in a snackbar.
         /// </summary>
         /// <param name="content">Message.</param>
@@ -111,5 +117,28 @@ namespace Artemis.UI.Shared.Services
             bool promote,
             bool neverConsiderToBeDuplicate,
             TimeSpan? durationOverride = null);
+
+        /// <summary>
+        ///     Shows a desktop notification
+        /// </summary>
+        /// <param name="title">The title of the notification</param>
+        /// <param name="message">The message of the notification</param>
+        void ShowNotification(string title, string message);
+
+        /// <summary>
+        ///     Shows a desktop notification with a Material Design icon
+        /// </summary>
+        /// <param name="title">The title of the notification</param>
+        /// <param name="message">The message of the notification</param>
+        /// <param name="icon">The name of the icon</param>
+        void ShowNotification(string title, string message, PackIconKind icon);
+
+        /// <summary>
+        ///     Shows a desktop notification with a Material Design icon
+        /// </summary>
+        /// <param name="title">The title of the notification</param>
+        /// <param name="message">The message of the notification</param>
+        /// <param name="icon">The name of the icon as a string</param>
+        void ShowNotification(string title, string message, string icon);
     }
 }
