@@ -17,7 +17,8 @@
                     MenuActivation="LeftOrRightClick"
                     PopupActivation="DoubleClick"
                     ToolTipText="Artemis"
-                    DoubleClickCommand="{s:Action TrayBringToForeground}">
+                    DoubleClickCommand="{s:Action TrayBringToForeground}"
+                    TrayBalloonTipClicked="{s:Action OnTrayBalloonTipClicked}">
         <tb:TaskbarIcon.ContextMenu>
             <ContextMenu>
                 <MenuItem Header="Home" Command="{s:Action TrayActivateSidebarItem}" CommandParameter="Home">

@@ -1,12 +1,13 @@
 ﻿using System;
+using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Shared.Services
 {
     /// <summary>
-    ///     Represents a class that manages a main window, used by the <see cref="IWindowService" /> to control the state of
+    ///     Represents a class that provides the main window, so that <see cref="IWindowService" /> can control the state of
     ///     the main window.
     /// </summary>
-    public interface IMainWindowManager
+    public interface IMainWindowProvider
     {
         /// <summary>
         ///     Gets a boolean indicating whether the main window is currently open

@@ -13,10 +13,10 @@ namespace Artemis.UI.Shared.Services
         bool IsMainWindowOpen { get; }
 
         /// <summary>
-        ///     Sets up the main window manager that controls the state of the main window
+        ///     Sets up the main window provider that controls the state of the main window
         /// </summary>
-        /// <param name="mainWindowManager">The main window manager to use to control the state of the main window</param>
-        void ConfigureMainWindowManager(IMainWindowManager mainWindowManager);
+        /// <param name="mainWindowProvider">The main window provider to use to control the state of the main window</param>
+        void ConfigureMainWindowProvider(IMainWindowProvider mainWindowProvider);
 
         /// <summary>
         ///     Opens the main window if it is not already open
