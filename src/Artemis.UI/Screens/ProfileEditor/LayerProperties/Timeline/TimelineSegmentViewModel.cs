@@ -327,28 +327,35 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 newTime = TimeSpan.FromMilliseconds(Math.Round(newTime.TotalMilliseconds / 50.0) * 50.0);
             }
 
-            UpdateLength(newTime);
+            UpdateEndPosition(newTime);
         }
 
-        public void UpdateLength(TimeSpan newTime)
+        public void UpdateEndPosition(TimeSpan end)
         {
-            if (newTime < TimeSpan.FromMilliseconds(100))
-                newTime = TimeSpan.FromMilliseconds(100);
+            if (end < TimeSpan.FromMilliseconds(100))
+                end = TimeSpan.FromMilliseconds(100);
+            
+            if (Segment == SegmentViewModelType.Start)
+                SelectedProfileElement.Timeline.StartSegmentEndPosition = end;
+            else if (Segment == SegmentViewModelType.Main)
+                SelectedProfileElement.Timeline.MainSegmentEndPosition = end;
+            else if (Segment == SegmentViewModelType.End)
+                SelectedProfileElement.Timeline.EndSegmentEndPosition = end;
 
-            TimeSpan difference = newTime - SegmentEnd;
+            Update();
+        }
 
-            if (difference > TimeSpan.Zero)
-                ShiftNextSegment(difference);
+        public void UpdateLength(TimeSpan length)
+        {
+            if (length < TimeSpan.FromMilliseconds(100))
+                length = TimeSpan.FromMilliseconds(100);
 
             if (Segment == SegmentViewModelType.Start)
-                SelectedProfileElement.Timeline.StartSegmentEndPosition = newTime;
+                SelectedProfileElement.Timeline.StartSegmentLength = length;
             else if (Segment == SegmentViewModelType.Main)
-                SelectedProfileElement.Timeline.MainSegmentEndPosition = newTime;
+                SelectedProfileElement.Timeline.MainSegmentLength = length;
             else if (Segment == SegmentViewModelType.End)
-                SelectedProfileElement.Timeline.EndSegmentEndPosition = newTime;
-
-            if (difference < TimeSpan.Zero)
-                ShiftNextSegment(difference);
+                SelectedProfileElement.Timeline.EndSegmentLength = length;
 
             Update();
         }
