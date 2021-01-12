@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Exceptions;
+using Artemis.UI.Screens.Settings.Dialogs;
 using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
@@ -49,7 +53,13 @@ namespace Artemis.UI.Services
         {
             _logger.Information("Checking for updates");
 
-            double buildNumber = await GetLatestBuildNumber();
+            JToken buildInfo = await GetBuildInfo(1);
+            JToken buildNumberToken = buildInfo?.SelectToken("value[0].buildNumber");
+
+            if (buildNumberToken == null)
+                throw new ArtemisUIException("Failed to find build number at \"value[0].buildNumber\"");
+            double buildNumber = buildNumberToken.Value<double>();
+
             string buildNumberDisplay = buildNumber.ToString(CultureInfo.InvariantCulture);
             _logger.Information("Latest build is {buildNumber}, we're running {localBuildNumber}", buildNumberDisplay, Constants.BuildInfo.BuildNumberDisplay);
 
@@ -57,8 +67,7 @@ namespace Artemis.UI.Services
                 return false;
 
             if (_windowService.IsMainWindowOpen)
-            {
-            }
+                await OfferUpdate(buildInfo);
             else if (_autoInstallUpdates.Value)
             {
                 // Lets go
@@ -67,8 +76,7 @@ namespace Artemis.UI.Services
                     $"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.",
                     PackIconKind.Update
                 );
-
-                await ApplyUpdate(buildNumber);
+                await ApplyUpdate();
             }
             else
             {
@@ -83,45 +91,67 @@ namespace Artemis.UI.Services
             return true;
         }
 
-        public async Task<bool> IsUpdateAvailable()
+        private async Task OfferUpdate(JToken buildInfo)
         {
-            double buildNumber = await GetLatestBuildNumber();
-            return buildNumber > Constants.BuildInfo.BuildNumber;
+            await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
         }
 
-        public async Task<double> GetLatestBuildNumber()
+        public async Task<bool> IsUpdateAvailable()
         {
             JToken buildInfo = await GetBuildInfo(1);
             JToken buildNumberToken = buildInfo?.SelectToken("value[0].buildNumber");
 
             if (buildNumberToken != null)
-                return buildNumberToken.Value<double>();
+                return buildNumberToken.Value<double>() > Constants.BuildInfo.BuildNumber;
 
-            _logger.Warning("Failed to find build number at \"value[0].buildNumber\"");
-            return 0;
+            _logger.Warning("IsUpdateAvailable: Failed to find build number at \"value[0].buildNumber\"");
+            return false;
         }
 
-        public async Task ApplyUpdate(double buildNumber)
+        public async Task ApplyUpdate()
         {
-            // Get installer build info
+            _logger.Information("Applying update");
+
+            // Ensure the installer is up-to-date, get installer build info
             JToken buildInfo = await GetBuildInfo(6);
             string installerPath = Path.Combine(Constants.ApplicationFolder, "Installer", "Artemis.Installer.exe");
 
             // Always update installer if it is missing ^^
             if (!File.Exists(installerPath))
-                UpdateInstaller(buildInfo);
+                await UpdateInstaller();
             // Compare the creation date of the installer with the build date and update if needed
+            else if (File.GetLastWriteTime(installerPath) < buildInfo["finishTime"].Value<DateTime>())
+                await UpdateInstaller();
+
+            _logger.Information("Running installer at {installerPath}", installerPath);
+            Process.Start(installerPath, "-autoupdate");
         }
 
-        private void UpdateInstaller(JToken buildInfo)
+        private async Task UpdateInstaller()
         {
-            throw new NotImplementedException();
+            string downloadUrl = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
+            string installerDirectory = Path.Combine(Constants.ApplicationFolder, "Installer");
+            string installerPath = Path.Combine(installerDirectory, "Artemis.Installer.exe");
+
+            _logger.Information("UpdateInstaller: Downloading installer from {downloadUrl}", downloadUrl);
+            using HttpClient client = new();
+            HttpResponseMessage httpResponseMessage = await client.GetAsync(downloadUrl);
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                throw new ArtemisUIException($"Failed to download installer, status code {httpResponseMessage.StatusCode}");
+
+            _logger.Information("UpdateInstaller: Writing installer file to {installerPath}", installerPath);
+            if (File.Exists(installerPath))
+                File.Delete(installerPath);
+            else if (!Directory.Exists(installerDirectory))
+                Directory.CreateDirectory(installerDirectory);
+            await using FileStream fs = new(installerPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await httpResponseMessage.Content.CopyToAsync(fs);
         }
 
         private async Task<JObject> GetBuildInfo(int buildDefinition)
         {
             string latestBuildUrl = ApiUrl + $"build/builds?definitions=6&resultFilter=succeeded&$top={buildDefinition}&api-version=6.1-preview.6";
-            _logger.Debug("Getting build info from {latestBuildUrl}", latestBuildUrl);
+            _logger.Debug("GetBuildInfo: Getting build info from {latestBuildUrl}", latestBuildUrl);
 
             // Make the request
             using HttpClient client = new();
@@ -130,7 +160,7 @@ namespace Artemis.UI.Services
             // Ensure it returned correctly
             if (!httpResponseMessage.IsSuccessStatusCode)
             {
-                _logger.Warning("Getting build info, request returned {statusCode}", httpResponseMessage.StatusCode);
+                _logger.Warning("GetBuildInfo: Getting build info, request returned {statusCode}", httpResponseMessage.StatusCode);
                 return null;
             }
 
@@ -142,7 +172,7 @@ namespace Artemis.UI.Services
             }
             catch (Exception e)
             {
-                _logger.Warning(e, "Failed to retrieve build info JSON");
+                _logger.Warning(e, "GetBuildInfo: Failed to retrieve build info JSON");
                 return null;
             }
         }
@@ -173,6 +203,6 @@ namespace Artemis.UI.Services
 
         Task<bool> OfferUpdateIfFound();
         Task<bool> IsUpdateAvailable();
-        Task ApplyUpdate(double buildNumber);
+        Task ApplyUpdate();
     }
 }
