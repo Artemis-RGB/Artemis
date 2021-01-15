@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -110,21 +111,43 @@ namespace Artemis.UI.Services
 
         public async Task ApplyUpdate()
         {
-            _logger.Information("Applying update");
+            _logger.Information("ApplyUpdate: Applying update");
 
             // Ensure the installer is up-to-date, get installer build info
             JToken buildInfo = await GetBuildInfo(6);
+            JToken finishTimeToken = buildInfo?.SelectToken("value[0].finishTime");
             string installerPath = Path.Combine(Constants.ApplicationFolder, "Installer", "Artemis.Installer.exe");
 
             // Always update installer if it is missing ^^
             if (!File.Exists(installerPath))
                 await UpdateInstaller();
             // Compare the creation date of the installer with the build date and update if needed
-            else if (File.GetLastWriteTime(installerPath) < buildInfo["finishTime"].Value<DateTime>())
-                await UpdateInstaller();
+            else
+            {
+                if (finishTimeToken == null)
+                    _logger.Warning("ApplyUpdate: Failed to find build finish time at \"value[0].finishTime\", not updating the installer.");
+                else if (File.GetLastWriteTime(installerPath) < finishTimeToken.Value<DateTime>())
+                    await UpdateInstaller();
+            }
 
-            _logger.Information("Running installer at {installerPath}", installerPath);
-            Process.Start(installerPath, "-autoupdate");
+            _logger.Information("ApplyUpdate: Running installer at {installerPath}", installerPath);
+
+            try
+            {
+                Process.Start(new ProcessStartInfo(installerPath, "-autoupdate")
+                {
+                    UseShellExecute = true,
+                    Verb = "runas"
+                });
+            }
+            catch (Win32Exception e)
+            {
+                if (e.NativeErrorCode == 0x4c7)
+                    _logger.Warning("ApplyUpdate: Operation was cancelled, user likely clicked No in UAC dialog.");
+                else
+                    throw;
+            }
+            
         }
 
         private async Task UpdateInstaller()
