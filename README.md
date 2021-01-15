@@ -19,7 +19,7 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 
 #### Want to build? Follow these instructions
 1. Create a central folder like ```C:\Repos```
-2. Clone RGB.NET's development branch into ```<central folder>\RGB.NET```
+2. Clone RGB.NET's [development branch](https://github.com/DarthAffe/RGB.NET/tree/Development) into ```<central folder>\RGB.NET```
 3. Clone Artemis into  ```<central folder>\Artemis```
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
 4. Open ```<central folder>\Artemis\src\Artemis.sln```
