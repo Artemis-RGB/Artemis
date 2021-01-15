@@ -25,6 +25,14 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 4. Open ```<central folder>\Artemis\src\Artemis.sln```
 5. Restore Nuget packages
 
+##### Alternatively in PowerShell
+```powershell
+git clone https://github.com/DarthAffe/RGB.NET -b Development RGB.NET
+git clone https://github.com/Artemis-RGB/Artemis Artemis
+dotnet build .\RGB.NET\RGB.NET.sln
+dotnet build .\Artemis\src\Artemis.sln
+``` 
+
 For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page
 
 ## Plugin development
