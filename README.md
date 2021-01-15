@@ -11,7 +11,7 @@
 Artemis 2 adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
 Artemis 1 is no longer supported and Artemis 2 is in active development. This entire readme and all websites/documents refer to Artemis 2. 
 
-### Check out our [Wiki](https://wiki.artemis-rgb.com) and more specifically, the [getting started guide](https://wiki.artemis-rgb.com/en/guides/user/introduction).
+### Check out our [Wiki](https://wiki.artemis-rgb.com) and more specifically, the [getting started guide](https://wiki.artemis-rgb.com/en/guides/user).
 **Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases (pre-release means your profiles may break at any given time!)  
 **Plugin documentation**: https://artemis-rgb.com/docs/
 
