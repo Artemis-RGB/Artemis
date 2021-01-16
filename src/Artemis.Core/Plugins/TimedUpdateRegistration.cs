@@ -35,6 +35,8 @@ namespace Artemis.Core
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction)
         {
+            _logger = CoreService.Kernel.Get<ILogger>();
+            
             Feature = feature;
             Interval = interval;
             AsyncAction = asyncAction;
