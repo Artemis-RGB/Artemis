@@ -47,7 +47,7 @@ namespace Artemis.Core.Services
             inputProvider.MouseScrollDataReceived += InputProviderOnMouseScrollDataReceived;
             inputProvider.MouseMoveDataReceived += InputProviderOnMouseMoveDataReceived;
             _inputProviders.Add(inputProvider);
-            
+
             inputProvider.OnKeyboardToggleStatusRequested();
         }
 
@@ -294,6 +294,17 @@ namespace Artemis.Core.Services
                 _globalModifiers = modifiers;
 
             return modifiers;
+        }
+
+        public void ReleaseAll()
+        {
+            foreach (var (device, keys) in _pressedKeys.ToList())
+            {
+                foreach (KeyboardKey keyboardKey in keys)
+                {
+                    InputProviderOnKeyboardDataReceived(this, new InputProviderKeyboardEventArgs(device, keyboardKey, false));
+                }
+            }
         }
 
         #endregion
