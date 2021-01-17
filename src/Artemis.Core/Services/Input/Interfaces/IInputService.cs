@@ -35,6 +35,11 @@ namespace Artemis.Core.Services
         /// </summary>
         void StopIdentify();
 
+        /// <summary>
+        ///     Flush all currently pressed buttons/keys
+        /// </summary>
+        void ReleaseAll();
+
         #region Events
 
         /// <summary>
