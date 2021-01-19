@@ -2,6 +2,9 @@
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
+using Artemis.Core.Services;
+using Ninject;
+using Serilog;
 
 namespace Artemis.Core
 {
@@ -14,9 +17,12 @@ namespace Artemis.Core
         private Timer? _timer;
         private bool _disposed;
         private readonly object _lock = new();
+        private ILogger _logger;
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action)
         {
+            _logger = CoreService.Kernel.Get<ILogger>();
+
             Feature = feature;
             Interval = interval;
             Action = action;
@@ -29,6 +35,8 @@ namespace Artemis.Core
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction)
         {
+            _logger = CoreService.Kernel.Get<ILogger>();
+            
             Feature = feature;
             Interval = interval;
             AsyncAction = asyncAction;
@@ -119,12 +127,19 @@ namespace Artemis.Core
                 if (Feature is Module module && !module.IsUpdateAllowed)
                     return;
 
-                if (Action != null)
-                    Action(interval.TotalSeconds);
-                else if (AsyncAction != null)
+                try
                 {
-                    Task task = AsyncAction(interval.TotalSeconds);
-                    task.Wait();
+                    if (Action != null)
+                        Action(interval.TotalSeconds);
+                    else if (AsyncAction != null)
+                    {
+                        Task task = AsyncAction(interval.TotalSeconds);
+                        task.Wait();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error(exception, "Timed update uncaught exception in plugin {plugin}", Feature.Plugin);
                 }
             }
         }

@@ -11,7 +11,7 @@
 Artemis 2 adds highly configurable support for several games to a range of RGB keyboards, mice and headsets.  
 Artemis 1 is no longer supported and Artemis 2 is in active development. This entire readme and all websites/documents refer to Artemis 2. 
 
-### Check out our [Wiki](https://wiki.artemis-rgb.com) and more specifically, the [getting started guide](https://wiki.artemis-rgb.com/en/guides/user/introduction).
+### Check out our [Wiki](https://wiki.artemis-rgb.com) and more specifically, the [getting started guide](https://wiki.artemis-rgb.com/en/guides/user).
 **Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases (pre-release means your profiles may break at any given time!)  
 **Plugin documentation**: https://artemis-rgb.com/docs/
 
@@ -19,11 +19,19 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 
 #### Want to build? Follow these instructions
 1. Create a central folder like ```C:\Repos```
-2. Clone RGB.NET's development branch into ```<central folder>\RGB.NET```
+2. Clone RGB.NET's [development branch](https://github.com/DarthAffe/RGB.NET/tree/Development) into ```<central folder>\RGB.NET```
 3. Clone Artemis into  ```<central folder>\Artemis```
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
 4. Open ```<central folder>\Artemis\src\Artemis.sln```
 5. Restore Nuget packages
+
+##### Alternatively in PowerShell
+```powershell
+git clone https://github.com/DarthAffe/RGB.NET -b Development RGB.NET
+git clone https://github.com/Artemis-RGB/Artemis Artemis
+dotnet build .\RGB.NET\RGB.NET.sln
+dotnet build .\Artemis\src\Artemis.sln
+``` 
 
 For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page
 

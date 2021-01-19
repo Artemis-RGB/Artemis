@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Interop;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Utilities;
 using Linearstar.Windows.RawInput;
 using Linearstar.Windows.RawInput.Native;
 using Serilog;
@@ -14,11 +19,12 @@ namespace Artemis.UI.InputProviders
     public class NativeWindowInputProvider : InputProvider
     {
         private const int WM_INPUT = 0x00FF;
+        
         private readonly IInputService _inputService;
-
         private readonly ILogger _logger;
         private DateTime _lastMouseUpdate;
         private SpongeWindow _sponge;
+        private System.Timers.Timer _taskManagerTimer;
 
         public NativeWindowInputProvider(ILogger logger, IInputService inputService)
         {
@@ -28,9 +34,14 @@ namespace Artemis.UI.InputProviders
             _sponge = new SpongeWindow();
             _sponge.WndProcCalled += SpongeOnWndProcCalled;
 
+            _taskManagerTimer = new System.Timers.Timer(500);
+            _taskManagerTimer.Elapsed += TaskManagerTimerOnElapsed;
+            _taskManagerTimer.Start();
+
             RawInputDevice.RegisterDevice(HidUsageAndPage.Keyboard, RawInputDeviceFlags.InputSink, _sponge.Handle);
             RawInputDevice.RegisterDevice(HidUsageAndPage.Mouse, RawInputDeviceFlags.InputSink, _sponge.Handle);
         }
+
 
         #region Overrides of InputProvider
 
@@ -51,6 +62,8 @@ namespace Artemis.UI.InputProviders
             {
                 _sponge?.DestroyHandle();
                 _sponge = null;
+                _taskManagerTimer?.Dispose();
+                _taskManagerTimer = null;
             }
 
             base.Dispose(disposing);
@@ -73,6 +86,15 @@ namespace Artemis.UI.InputProviders
                     HandleKeyboardData(data, keyboard);
                     break;
             }
+        }
+
+        private void TaskManagerTimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            // If task manager has focus then we can't track keys properly, release everything to avoid them getting stuck
+            // Same goes for Idle which is what you get when you press Ctrl+Alt+Del
+            Process active = Process.GetProcessById(WindowUtilities.GetActiveProcessId());
+            if (active?.ProcessName == "Taskmgr" || active?.ProcessName == "Idle")
+                _inputService.ReleaseAll();
         }
 
         #region Keyboard
