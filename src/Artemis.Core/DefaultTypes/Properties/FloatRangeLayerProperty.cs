@@ -22,7 +22,7 @@
             );
         }
 
-        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs<FloatRange> e)
+        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
         {
             // Don't allow the int range to be null
             BaseValue ??= DefaultValue ?? new FloatRange(0, 0);

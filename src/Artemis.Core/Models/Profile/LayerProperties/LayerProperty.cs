@@ -79,6 +79,8 @@ namespace Artemis.Core
 
                 foreach (IDataBinding dataBinding in _dataBindings)
                     dataBinding.Dispose();
+
+                Disposed?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -442,7 +444,7 @@ namespace Artemis.Core
             DataBinding<T, TProperty> dataBinding = new(dataBindingRegistration);
             _dataBindings.Add(dataBinding);
 
-            OnDataBindingEnabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
+            OnDataBindingEnabled(new LayerPropertyEventArgs(dataBinding.LayerProperty));
             return dataBinding;
         }
 
@@ -460,7 +462,7 @@ namespace Artemis.Core
             if (dataBinding.Registration != null)
                 dataBinding.Registration.DataBinding = null;
             dataBinding.Dispose();
-            OnDataBindingDisabled(new LayerPropertyEventArgs<T>(dataBinding.LayerProperty));
+            OnDataBindingDisabled(new LayerPropertyEventArgs(dataBinding.LayerProperty));
         }
 
         private void UpdateDataBindings(Timeline timeline)
@@ -470,6 +472,61 @@ namespace Artemis.Core
                 dataBinding.Update(timeline);
                 dataBinding.Apply();
             }
+        }
+
+        #endregion
+
+        #region Visbility
+
+        /// <summary>
+        ///     Set up a condition to hide the provided layer property when the condition evaluates to <see langword="true" />
+        ///     <para>Note: overrides previous calls to <c>IsHiddenWhen</c> and <c>IsVisibleWhen</c></para>
+        /// </summary>
+        /// <typeparam name="TP">The type of the target layer property</typeparam>
+        /// <param name="layerProperty">The target layer property</param>
+        /// <param name="condition">The condition to evaluate to determine whether to hide the current layer property</param>
+        public void IsHiddenWhen<TP>(TP layerProperty, Func<TP, bool> condition) where TP : ILayerProperty
+        {
+            IsHiddenWhen(layerProperty, condition, false);
+        }
+
+        /// <summary>
+        ///     Set up a condition to show the provided layer property when the condition evaluates to <see langword="true" />
+        ///     <para>Note: overrides previous calls to <c>IsHiddenWhen</c> and <c>IsVisibleWhen</c></para>
+        /// </summary>
+        /// <typeparam name="TP">The type of the target layer property</typeparam>
+        /// <param name="layerProperty">The target layer property</param>
+        /// <param name="condition">The condition to evaluate to determine whether to hide the current layer property</param>
+        public void IsVisibleWhen<TP>(TP layerProperty, Func<TP, bool> condition) where TP : ILayerProperty
+        {
+            IsHiddenWhen(layerProperty, condition, true);
+        }
+
+        private void IsHiddenWhen<TP>(TP layerProperty, Func<TP, bool> condition, bool inverse) where TP : ILayerProperty
+        {
+            layerProperty.VisibilityChanged += LayerPropertyChanged;
+            layerProperty.CurrentValueSet += LayerPropertyChanged;
+            layerProperty.Disposed += LayerPropertyOnDisposed;
+
+            void LayerPropertyChanged(object? sender, LayerPropertyEventArgs e)
+            {
+                if (inverse)
+                    IsHidden = !condition(layerProperty);
+                else
+                    IsHidden = condition(layerProperty);
+            }
+
+            void LayerPropertyOnDisposed(object? sender, EventArgs e)
+            {
+                layerProperty.VisibilityChanged -= LayerPropertyChanged;
+                layerProperty.CurrentValueSet -= LayerPropertyChanged;
+                layerProperty.Disposed -= LayerPropertyOnDisposed;
+            }
+
+            if (inverse)
+                IsHidden = !condition(layerProperty);
+            else
+                IsHidden = condition(layerProperty);
         }
 
         #endregion
@@ -502,6 +559,8 @@ namespace Artemis.Core
 
             if (PropertyDescription.DisableKeyframes)
                 KeyframesSupported = false;
+
+            OnInitialize();
         }
 
         /// <inheritdoc />
@@ -516,7 +575,6 @@ namespace Artemis.Core
             if (!IsLoadedFromStorage)
                 ApplyDefaultValue(null);
             else
-            {
                 try
                 {
                     if (Entity.Value != null)
@@ -526,7 +584,6 @@ namespace Artemis.Core
                 {
                     // ignored for now
                 }
-            }
 
             CurrentValue = BaseValue;
             KeyframesEnabled = Entity.KeyframesEnabled;
@@ -572,56 +629,50 @@ namespace Artemis.Core
                 dataBinding.Save();
         }
 
+        /// <summary>
+        ///     Called when the layer property has been initialized
+        /// </summary>
+        protected virtual void OnInitialize()
+        {
+        }
+
         #endregion
 
         #region Events
 
-        /// <summary>
-        ///     Occurs once every frame when the layer property is updated
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? Updated;
+        /// <inheritdoc />
+        public event EventHandler? Disposed;
 
-        /// <summary>
-        ///     Occurs when the current value of the layer property was updated by some form of input
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? CurrentValueSet;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? Updated;
 
-        /// <summary>
-        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? VisibilityChanged;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
 
-        /// <summary>
-        ///     Occurs when keyframes are enabled/disabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? KeyframesToggled;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
 
-        /// <summary>
-        ///     Occurs when a new keyframe was added to the layer property
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? KeyframeAdded;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
 
-        /// <summary>
-        ///     Occurs when a keyframe was removed from the layer property
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? KeyframeRemoved;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
 
-        /// <summary>
-        ///     Occurs when a data binding has been enabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? DataBindingEnabled;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
 
-        /// <summary>
-        ///     Occurs when a data binding has been disabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs<T>>? DataBindingDisabled;
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
 
         /// <summary>
         ///     Invokes the <see cref="Updated" /> event
         /// </summary>
         protected virtual void OnUpdated()
         {
-            Updated?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
@@ -629,7 +680,7 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnCurrentValueSet()
         {
-            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs(this));
             LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
         }
 
@@ -638,7 +689,7 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnVisibilityChanged()
         {
-            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
@@ -646,7 +697,7 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnKeyframesToggled()
         {
-            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
@@ -654,7 +705,7 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnKeyframeAdded()
         {
-            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
@@ -662,13 +713,13 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnKeyframeRemoved()
         {
-            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs<T>(this));
+            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
         ///     Invokes the <see cref="DataBindingEnabled" /> event
         /// </summary>
-        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs<T> e)
+        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs e)
         {
             DataBindingEnabled?.Invoke(this, e);
         }
@@ -676,7 +727,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Invokes the <see cref="DataBindingDisabled" /> event
         /// </summary>
-        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs<T> e)
+        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs e)
         {
             DataBindingDisabled?.Invoke(this, e);
         }

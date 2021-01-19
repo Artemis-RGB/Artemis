@@ -29,9 +29,9 @@ namespace Artemis.Core
         string Path { get; }
 
         /// <summary>
-        /// Gets the type of the property
+        ///     Gets the type of the property
         /// </summary>
-        Type PropertyType { get;  }
+        Type PropertyType { get; }
 
         /// <summary>
         ///     Initializes the layer property
@@ -59,5 +59,54 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>
         void Update(Timeline timeline);
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when the layer property is disposed
+        /// </summary>
+        public event EventHandler Disposed;
+
+        /// <summary>
+        ///     Occurs once every frame when the layer property is updated
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? Updated;
+
+        /// <summary>
+        ///     Occurs when the current value of the layer property was updated by some form of input
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
+
+        /// <summary>
+        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
+
+        /// <summary>
+        ///     Occurs when keyframes are enabled/disabled
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
+
+        /// <summary>
+        ///     Occurs when a new keyframe was added to the layer property
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+
+        /// <summary>
+        ///     Occurs when a keyframe was removed from the layer property
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
+
+        /// <summary>
+        ///     Occurs when a data binding has been enabled
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
+
+        /// <summary>
+        ///     Occurs when a data binding has been disabled
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
+
+        #endregion
     }
 }

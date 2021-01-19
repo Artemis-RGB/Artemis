@@ -7,7 +7,8 @@
         {
             KeyframesSupported = false;
             DataBindingsSupported = false;
-
+            DefaultValue = new ColorGradient();
+            
             CurrentValueSet += OnCurrentValueSet;
         }
 
@@ -25,11 +26,25 @@
             throw new ArtemisCoreException("Color Gradients do not support keyframes.");
         }
 
-        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs<ColorGradient> e)
+        private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
         {
             // Don't allow color gradients to be null
             if (BaseValue == null)
                 BaseValue = DefaultValue ?? new ColorGradient();
         }
+
+        #region Overrides of LayerProperty<ColorGradient>
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            // Don't allow color gradients to be null
+            if (BaseValue == null)
+                BaseValue = DefaultValue ?? new ColorGradient();
+            
+            base.OnInitialize();
+        }
+
+        #endregion
     }
 }
