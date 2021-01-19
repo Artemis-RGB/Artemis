@@ -119,17 +119,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             LayerPropertyViewModel.IsHighlighted = _profileEditorService.SelectedDataBinding == LayerProperty;
         }
 
-        private void LayerPropertyOnVisibilityChanged(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnVisibilityChanged(object sender, LayerPropertyEventArgs e)
         {
             LayerPropertyViewModel.IsVisible = !LayerProperty.IsHidden;
         }
 
-        private void LayerPropertyOnDataBindingChange(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnDataBindingChange(object sender, LayerPropertyEventArgs e)
         {
             NotifyOfPropertyChange(nameof(HasDataBinding));
         }
 
-        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs e)
         {
             NotifyOfPropertyChange(nameof(KeyframesEnabled));
         }

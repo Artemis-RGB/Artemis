@@ -57,6 +57,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The parent group of this group
         /// </summary>
+        [LayerPropertyIgnore]
         public LayerPropertyGroup? Parent { get; internal set; }
 
         /// <summary>
@@ -127,7 +128,7 @@ namespace Artemis.Core
         protected abstract void PopulateDefaults();
 
         /// <summary>
-        ///     Called when the property group is aactivated
+        ///     Called when the property group is activated
         /// </summary>
         protected abstract void EnableProperties();
 
@@ -156,19 +157,23 @@ namespace Artemis.Core
             ProfileElement = profileElement ?? throw new ArgumentNullException(nameof(profileElement));
             Path = path.TrimEnd('.');
 
-            // Get all properties with a PropertyDescriptionAttribute
+            // Get all properties implementing ILayerProperty or LayerPropertyGroup
             foreach (PropertyInfo propertyInfo in GetType().GetProperties())
             {
-                Attribute? propertyDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
-                if (propertyDescription != null)
+                if (Attribute.IsDefined(propertyInfo, typeof(LayerPropertyIgnoreAttribute)))
+                    continue;
+
+                if (typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
                 {
-                    InitializeProperty(propertyInfo, (PropertyDescriptionAttribute) propertyDescription);
+                    PropertyDescriptionAttribute? propertyDescription =
+                        (PropertyDescriptionAttribute?) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
+                    InitializeProperty(propertyInfo, propertyDescription ?? new PropertyDescriptionAttribute());
                 }
-                else
+                else if (typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
                 {
-                    Attribute? propertyGroupDescription = Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                    if (propertyGroupDescription != null)
-                        InitializeChildGroup(propertyInfo, (PropertyGroupDescriptionAttribute) propertyGroupDescription);
+                    PropertyGroupDescriptionAttribute? propertyGroupDescription =
+                        (PropertyGroupDescriptionAttribute?) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
+                    InitializeChildGroup(propertyInfo, propertyGroupDescription ?? new PropertyGroupDescriptionAttribute());
                 }
             }
 

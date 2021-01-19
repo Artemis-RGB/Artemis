@@ -152,20 +152,22 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             // The group has methods for getting this without reflection but then we lose the order of the properties as they are defined on the group
             foreach (PropertyInfo propertyInfo in LayerPropertyGroup.GetType().GetProperties())
             {
-                PropertyDescriptionAttribute propertyAttribute = (PropertyDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyDescriptionAttribute));
-                PropertyGroupDescriptionAttribute groupAttribute = (PropertyGroupDescriptionAttribute) Attribute.GetCustomAttribute(propertyInfo, typeof(PropertyGroupDescriptionAttribute));
-                object value = propertyInfo.GetValue(LayerPropertyGroup);
+                if (Attribute.IsDefined(propertyInfo, typeof(LayerPropertyIgnoreAttribute)))
+                    continue;
 
-                // Create VMs for properties on the group
-                if (propertyAttribute != null && value is ILayerProperty layerProperty)
+                if (typeof(ILayerProperty).IsAssignableFrom(propertyInfo.PropertyType))
                 {
+                    ILayerProperty value = (ILayerProperty) propertyInfo.GetValue(LayerPropertyGroup);
                     // Ensure a supported input VM was found, otherwise don't add it
-                    if (_profileEditorService.CanCreatePropertyInputViewModel(layerProperty))
-                        Items.Add(_layerPropertyVmFactory.LayerPropertyViewModel(layerProperty));
+                    if (value != null && _profileEditorService.CanCreatePropertyInputViewModel(value))
+                        Items.Add(_layerPropertyVmFactory.LayerPropertyViewModel(value));
                 }
-                // Create VMs for child groups on this group, resulting in a nested structure
-                else if (groupAttribute != null && value is LayerPropertyGroup layerPropertyGroup)
-                    Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(layerPropertyGroup));
+                else if (typeof(LayerPropertyGroup).IsAssignableFrom(propertyInfo.PropertyType))
+                {
+                    LayerPropertyGroup value = (LayerPropertyGroup) propertyInfo.GetValue(LayerPropertyGroup);
+                    if (value != null)
+                        Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(value));
+                }
             }
         }
     }

@@ -77,17 +77,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             base.OnInitialActivate();
         }
 
-        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnKeyframesToggled(object sender, LayerPropertyEventArgs e)
         {
             UpdateKeyframes();
         }
 
-        private void LayerPropertyOnKeyframeRemoved(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnKeyframeRemoved(object sender, LayerPropertyEventArgs e)
         {
             UpdateKeyframes();
         }
 
-        private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnKeyframeAdded(object sender, LayerPropertyEventArgs e)
         {
             UpdateKeyframes();
         }

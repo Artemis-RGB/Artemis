@@ -194,7 +194,7 @@ namespace Artemis.UI.Shared
             UpdateInputValue();
         }
 
-        private void LayerPropertyOnDataBindingChange(object? sender, LayerPropertyEventArgs<T> e)
+        private void LayerPropertyOnDataBindingChange(object? sender, LayerPropertyEventArgs e)
         {
             OnDataBindingsChanged();
         }
