@@ -196,24 +196,23 @@ namespace Artemis.Core.Services
                 }
             }
 
-            lock (_plugins)
+            // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
+            _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
+            
+            bool mustElevate = !isElevated && _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
+            if (mustElevate)
             {
-                _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
-
-                bool mustElevate = !isElevated && _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
-                if (mustElevate)
-                {
-                    _logger.Information("Restarting because one or more plugins requires elevation");
-                    // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
-                    Utilities.Restart(true, TimeSpan.Zero);
-                    return;
-                }
-
-                foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
-                    EnablePlugin(plugin, false, ignorePluginLock);
-
-                _logger.Debug("Enabled {count} plugin(s)", _plugins.Where(p => p.IsEnabled).Sum(p => p.Features.Count(f => f.IsEnabled)));
+                _logger.Information("Restarting because one or more plugins requires elevation");
+                // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+                Utilities.Restart(true, TimeSpan.Zero);
+                return;
             }
+
+            foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
+                EnablePlugin(plugin, false, ignorePluginLock);
+
+            _logger.Debug("Enabled {count} plugin(s)", _plugins.Where(p => p.IsEnabled).Sum(p => p.Features.Count(f => f.IsEnabled)));
+            // ReSharper restore InconsistentlySynchronizedField
 
             LoadingPlugins = false;
         }
