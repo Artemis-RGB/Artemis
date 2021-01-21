@@ -29,6 +29,11 @@ namespace Artemis.Core.Services
         List<string>? StartupArguments { get; set; }
 
         /// <summary>
+        ///     Gets a boolean indicating whether Artemis is running in an elevated environment (admin permissions)
+        /// </summary>
+        bool IsElevated { get; set; }
+
+        /// <summary>
         ///     Initializes the core, only call once
         /// </summary>
         void Initialize();

@@ -78,6 +78,7 @@ namespace Artemis.Core.Services
         public TimeSpan FrameTime { get; private set; }
         public bool ModuleRenderingDisabled { get; set; }
         public List<string>? StartupArguments { get; set; }
+        public bool IsElevated { get; set; }
 
         public void Dispose()
         {
@@ -93,18 +94,27 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot initialize the core as it is already initialized.");
 
             AssemblyInformationalVersionAttribute? versionAttribute = typeof(CoreService).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            _logger.Information("Initializing Artemis Core version {version}, build {buildNumber} branch {branch}.", versionAttribute?.InformationalVersion, Constants.BuildInfo.BuildNumber,
-                Constants.BuildInfo.SourceBranch);
-            // This should prevent a certain someone from removing HidSharp as an unused dependency as well
-            _logger.Information("Forcing plugins to use HidSharp {hidSharpVersion}", Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version);
+            _logger.Information(
+                "Initializing Artemis Core version {version}, build {buildNumber} branch {branch}.",
+                versionAttribute?.InformationalVersion,
+                Constants.BuildInfo.BuildNumber,
+                Constants.BuildInfo.SourceBranch
+            );
+            _logger.Information("Startup arguments: {args}", StartupArguments);
+            _logger.Information("Elevated permissions: {perms}", IsElevated);
 
             ApplyLoggingLevel();
 
+            // Don't remove even if it looks useless
+            // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
+            Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
+            _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
+            
             DeserializationLogger.Initialize(Kernel);
 
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
-            _pluginManagementService.LoadPlugins(StartupArguments != null && StartupArguments.Contains("--ignore-plugin-lock"));
+            _pluginManagementService.LoadPlugins(StartupArguments != null && StartupArguments.Contains("--ignore-plugin-lock"), IsElevated);
 
             ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
             _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);

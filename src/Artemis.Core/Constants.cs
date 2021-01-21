@@ -108,6 +108,6 @@ namespace Artemis.Core
             typeof(float),
             typeof(double),
             typeof(decimal)
-        };
+        };  
     }
 }

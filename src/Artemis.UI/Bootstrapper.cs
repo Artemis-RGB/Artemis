@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
@@ -37,6 +40,7 @@ namespace Artemis.UI
         protected override void Launch()
         {
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+            Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
             Core.Utilities.PrepareFirstLaunch();
 
             ILogger logger = Kernel.Get<ILogger>();
@@ -77,6 +81,7 @@ namespace Artemis.UI
                     }
 
                     _core.StartupArguments = StartupArguments;
+                    _core.IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
                     _core.Initialize();
                 }
                 catch (Exception e)
@@ -124,6 +129,30 @@ namespace Artemis.UI
 
         private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
+            // Use PowerShell to kill the process after 2 sec just in case
+            ProcessStartInfo info = new()
+            {
+                Arguments = "-Command \"& {Start-Sleep -s 2; (Get-Process 'Artemis.UI').kill()}",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "PowerShell.exe"
+            };
+            Process.Start(info);
+
+            Execute.OnUIThread(() => Application.Current.Shutdown());
+        }
+
+        private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)
+        {
+            ProcessStartInfo info = new()
+            {
+                Arguments =
+                    $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '{Constants.ExecutablePath}' {(e.Elevate ? "-Verb RunAs" : "")}}}\"",
+                WindowStyle = ProcessWindowStyle.Hidden,
+                CreateNoWindow = true,
+                FileName = "PowerShell.exe"
+            };
+            Process.Start(info);
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 

@@ -40,6 +40,8 @@
                         </StackPanel>
                     </Button>
                     <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}" />
+                    <Button Content="Elevate permissions" Command="{s:Action Elevate}" />
+                    <Button Content="Restart" Command="{s:Action Restart}" />
                 </StackPanel>
             </materialDesign:PopupBox>
         </mde:AppBar>

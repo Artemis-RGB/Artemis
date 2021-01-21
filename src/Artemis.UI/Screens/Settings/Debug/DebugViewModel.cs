@@ -43,5 +43,15 @@ namespace Artemis.UI.Screens.Settings.Debug
             GC.WaitForPendingFinalizers();
             GC.Collect();
         }
+
+        public void Elevate()
+        {
+            Core.Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+        }
+
+        public void Restart()
+        {
+            Core.Utilities.Restart(false, TimeSpan.FromMilliseconds(500));
+        }
     }
 }
