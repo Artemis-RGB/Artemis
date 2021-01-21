@@ -245,7 +245,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         {
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Logs"));
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.Combine(Constants.DataFolder, "Logs"));
             }
             catch (Exception e)
             {
