@@ -17,6 +17,7 @@ namespace Artemis.Core
         private string _main = null!;
         private string _name = null!;
         private Plugin _plugin = null!;
+        private bool _requiresAdmin;
         private Version _version = null!;
 
         internal PluginInfo()
@@ -86,7 +87,8 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets a boolean indicating whether this plugin should automatically enable all its features when it is first loaded
+        ///     Gets or sets a boolean indicating whether this plugin should automatically enable all its features when it is first
+        ///     loaded
         /// </summary>
         [DefaultValue(true)]
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
@@ -94,6 +96,16 @@ namespace Artemis.Core
         {
             get => _autoEnableFeatures;
             set => SetAndNotify(ref _autoEnableFeatures, value);
+        }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether this plugin requires elevated admin privileges
+        /// </summary>
+        [JsonProperty]
+        public bool RequiresAdmin
+        {
+            get => _requiresAdmin;
+            internal set => SetAndNotify(ref _requiresAdmin, value);
         }
 
         /// <summary>

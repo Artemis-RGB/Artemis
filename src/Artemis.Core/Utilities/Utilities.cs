@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -27,29 +28,20 @@ namespace Artemis.Core
         ///         gracefully shut down
         ///     </para>
         /// </summary>
-        /// <param name="delay">The delay in seconds after which to kill the application (ignored when a debugger is attached)</param>
-        /// <param name="restart">Whether or not to restart the application after shutdown (ignored when a debugger is attached)</param>
-        public static void Shutdown(int delay, bool restart)
+        public static void Shutdown()
         {
-            // Always kill the process after the delay has passed, with all the plugins a graceful shutdown cannot be guaranteed
-            string arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill()}";
-            // If restart is required, start the executable again after the process was killed 
-            if (restart)
-                arguments = "-Command \"& {Start-Sleep -s " + delay + "; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '" + Process.GetCurrentProcess().MainModule!.FileName + "'}\"";
-
-            ProcessStartInfo info = new()
-            {
-                Arguments = arguments,
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                FileName = "PowerShell.exe"
-            };
-
-            if (!Debugger.IsAttached)
-                Process.Start(info);
-
             // Request a graceful shutdown, whatever UI we're running can pick this up
             OnShutdownRequested();
+        }
+
+        /// <summary>
+        /// Restarts the application
+        /// </summary>
+        /// <param name="elevate">Whether the application should be restarted with elevated permissions</param>
+        /// <param name="delay">Delay in seconds before killing process and restarting </param>
+        public static void Restart(bool elevate, TimeSpan delay)
+        {
+            OnRestartRequested(new RestartEventArgs(elevate, delay));
         }
 
         /// <summary>
@@ -105,11 +97,21 @@ namespace Artemis.Core
         /// </summary>
         public static event EventHandler? ShutdownRequested;
 
+        /// <summary>
+        /// Occurs when the core has requested an application restart
+        /// </summary>
+        public static event EventHandler<RestartEventArgs>? RestartRequested;
+        
         private static void OnShutdownRequested()
         {
             ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #endregion
+
+        private static void OnRestartRequested(RestartEventArgs e)
+        {
+            RestartRequested?.Invoke(null, e);
+        }
     }
 }

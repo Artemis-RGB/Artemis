@@ -172,7 +172,7 @@ namespace Artemis.Core.Services
 
         #region Plugins
 
-        public void LoadPlugins(bool ignorePluginLock)
+        public void LoadPlugins(bool ignorePluginLock, bool isElevated)
         {
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
@@ -188,14 +188,31 @@ namespace Artemis.Core.Services
             {
                 try
                 {
-                    Plugin plugin = LoadPlugin(subDirectory);
-                    if (plugin.Entity.IsEnabled)
-                        EnablePlugin(plugin, false, ignorePluginLock);
+                    LoadPlugin(subDirectory);
                 }
                 catch (Exception e)
                 {
                     _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                 }
+            }
+
+            lock (_plugins)
+            {
+                _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
+
+                bool mustElevate = !isElevated && _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
+                if (mustElevate)
+                {
+                    _logger.Information("Restarting because one or more plugins requires elevation");
+                    // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+                    Utilities.Restart(true, TimeSpan.Zero);
+                    return;
+                }
+
+                foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
+                    EnablePlugin(plugin, false, ignorePluginLock);
+
+                _logger.Debug("Enabled {count} plugin(s)", _plugins.Where(p => p.IsEnabled).Sum(p => p.Features.Count(f => f.IsEnabled)));
             }
 
             LoadingPlugins = false;
@@ -217,7 +234,7 @@ namespace Artemis.Core.Services
 
         public Plugin LoadPlugin(DirectoryInfo directory)
         {
-            _logger.Debug("Loading plugin from {directory}", directory.FullName);
+            _logger.Verbose("Loading plugin from {directory}", directory.FullName);
 
             // Load the metadata
             string metadataFile = Path.Combine(directory.FullName, "plugin.json");
@@ -411,8 +428,7 @@ namespace Artemis.Core.Services
 
         public void EnablePluginFeature(PluginFeature pluginFeature, bool saveState, bool isAutoEnable)
         {
-            _logger.Debug("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
-
+            _logger.Verbose("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
 
             OnPluginFeatureEnabling(new PluginFeatureEventArgs(pluginFeature));
             try
@@ -443,7 +459,7 @@ namespace Artemis.Core.Services
 
                 if (pluginFeature.IsEnabled)
                 {
-                    _logger.Debug("Successfully enabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+                    _logger.Verbose("Successfully enabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
                     OnPluginFeatureEnabled(new PluginFeatureEventArgs(pluginFeature));
                 }
                 else
@@ -457,7 +473,7 @@ namespace Artemis.Core.Services
         {
             try
             {
-                _logger.Debug("Disabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+                _logger.Verbose("Disabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
                 pluginFeature.SetEnabled(false);
             }
             finally
@@ -470,7 +486,7 @@ namespace Artemis.Core.Services
 
                 if (!pluginFeature.IsEnabled)
                 {
-                    _logger.Debug("Successfully disabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
+                    _logger.Verbose("Successfully disabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
                     OnPluginFeatureDisabled(new PluginFeatureEventArgs(pluginFeature));
                 }
             }
