@@ -173,7 +173,7 @@ namespace Artemis.UI.Services
 
         private async Task<JObject> GetBuildInfo(int buildDefinition)
         {
-            string latestBuildUrl = ApiUrl + $"build/builds?definitions=6&resultFilter=succeeded&$top={buildDefinition}&api-version=6.1-preview.6";
+            string latestBuildUrl = ApiUrl + $"build/builds?definitions={buildDefinition}&resultFilter=succeeded&$top=1&api-version=6.1-preview.6";
             _logger.Debug("GetBuildInfo: Getting build info from {latestBuildUrl}", latestBuildUrl);
 
             // Make the request
