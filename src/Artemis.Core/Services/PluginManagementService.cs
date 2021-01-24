@@ -198,13 +198,20 @@ namespace Artemis.Core.Services
 
             // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
             _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
-            
-            bool mustElevate = !isElevated && _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
-            if (mustElevate)
+
+            bool adminRequired = _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
+            if (!isElevated && adminRequired)
             {
                 _logger.Information("Restarting because one or more plugins requires elevation");
                 // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
                 Utilities.Restart(true, TimeSpan.Zero);
+                return;
+            }
+
+            if (isElevated && !adminRequired)
+            {
+                // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+                Utilities.Restart(false, TimeSpan.Zero);
                 return;
             }
 

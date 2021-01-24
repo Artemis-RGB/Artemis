@@ -1,7 +1,8 @@
 {
   "profiles": {
     "Artemis.UI": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "--test --test2"
     }
   }
 }

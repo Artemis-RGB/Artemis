@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -35,7 +34,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        /// Restarts the application
+        ///     Restarts the application
         /// </summary>
         /// <param name="elevate">Whether the application should be restarted with elevated permissions</param>
         /// <param name="delay">Delay in seconds before killing process and restarting </param>
@@ -90,6 +89,11 @@ namespace Artemis.Core
             }
         }
 
+        private static void OnRestartRequested(RestartEventArgs e)
+        {
+            RestartRequested?.Invoke(null, e);
+        }
+
         #region Events
 
         /// <summary>
@@ -98,20 +102,15 @@ namespace Artemis.Core
         public static event EventHandler? ShutdownRequested;
 
         /// <summary>
-        /// Occurs when the core has requested an application restart
+        ///     Occurs when the core has requested an application restart
         /// </summary>
         public static event EventHandler<RestartEventArgs>? RestartRequested;
-        
+
         private static void OnShutdownRequested()
         {
             ShutdownRequested?.Invoke(null, EventArgs.Empty);
         }
 
         #endregion
-
-        private static void OnRestartRequested(RestartEventArgs e)
-        {
-            RestartRequested?.Invoke(null, e);
-        }
     }
 }

@@ -17,6 +17,7 @@ using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
+using Artemis.UI.Utilities;
 using Ninject;
 using Serilog;
 using SharpVectors.Dom.Resources;
@@ -70,16 +71,10 @@ namespace Artemis.UI
             });
 
             // Initialize the core async so the UI can show the progress
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 try
                 {
-                    if (StartupArguments.Contains("--autorun"))
-                    {
-                        logger.Information("Sleeping for 15 seconds on auto run to allow vendor applications required for SDKs to start");
-                        await Task.Delay(TimeSpan.FromSeconds(15));
-                    }
-
                     _core.StartupArguments = StartupArguments;
                     _core.IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
                     _core.Initialize();
@@ -144,15 +139,25 @@ namespace Artemis.UI
 
         private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)
         {
-            ProcessStartInfo info = new()
+            string args = Args.Any() ? "-ArgumentList " + string.Join(',', Args.Select(a => "'" + a + "'")) : "";
+
+            if (e.Elevate)
             {
-                Arguments =
-                    $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '{Constants.ExecutablePath}' {(e.Elevate ? "-Verb RunAs" : "")}}}\"",
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                FileName = "PowerShell.exe"
-            };
-            Process.Start(info);
+                ProcessStartInfo info = new()
+                {
+                    Arguments =
+                        $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '{Constants.ExecutablePath}' {args} -Verb RunAs}}\"",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = "PowerShell.exe"
+                };
+                Process.Start(info);
+            }
+            else
+            {
+                ProcessUtilities.RunAsDesktopUser(Constants.ExecutablePath);
+            }
+
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 

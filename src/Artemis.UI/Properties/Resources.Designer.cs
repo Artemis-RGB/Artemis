@@ -191,6 +191,30 @@ namespace Artemis.UI.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-16&quot;?&gt;
+        ///&lt;Task version=&quot;1.2&quot; xmlns=&quot;http://schemas.microsoft.com/windows/2004/02/mit/task&quot;&gt;
+        ///  &lt;RegistrationInfo&gt;
+        ///    &lt;Date&gt;2021-01-24T15:05:33.7954017&lt;/Date&gt;
+        ///    &lt;Author&gt;DESKTOP-8CH3TD6\Robert&lt;/Author&gt;
+        ///    &lt;URI&gt;\Artemis 2 - Autorun&lt;/URI&gt;
+        ///  &lt;/RegistrationInfo&gt;
+        ///  &lt;Triggers&gt;
+        ///    &lt;LogonTrigger&gt;
+        ///      &lt;Enabled&gt;true&lt;/Enabled&gt;
+        ///      &lt;Delay&gt;PT15S&lt;/Delay&gt;
+        ///    &lt;/LogonTrigger&gt;
+        ///  &lt;/Triggers&gt;
+        ///  &lt;Principals&gt;
+        ///    &lt;Principal id=&quot;Author&quot;&gt;
+        ///      &lt;UserId&gt;S-1-5-21-184080501-1733858 [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string artemis_autorun {
+            get {
+                return ResourceManager.GetString("artemis-autorun", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
         internal static byte[] bow {

@@ -8,12 +8,16 @@ namespace Artemis.UI.Screens.Settings.Debug
 {
     public class DebugViewModel : Conductor<Screen>.Collection.OneActive
     {
+        private readonly ICoreService _coreService;
+
         public DebugViewModel(
             ISettingsService settingsService,
+            ICoreService coreService,
             RenderDebugViewModel renderDebugViewModel,
             DataModelDebugViewModel dataModelDebugViewModel,
             LogsDebugViewModel logsDebugViewModel)
         {
+            _coreService = coreService;
             Items.Add(renderDebugViewModel);
             Items.Add(dataModelDebugViewModel);
             Items.Add(logsDebugViewModel);
@@ -51,7 +55,7 @@ namespace Artemis.UI.Screens.Settings.Debug
 
         public void Restart()
         {
-            Core.Utilities.Restart(false, TimeSpan.FromMilliseconds(500));
+            Core.Utilities.Restart(_coreService.IsElevated, TimeSpan.FromMilliseconds(500));
         }
     }
 }
