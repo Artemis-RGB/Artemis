@@ -64,7 +64,7 @@ namespace Artemis.UI.Services
             string buildNumberDisplay = buildNumber.ToString(CultureInfo.InvariantCulture);
             _logger.Information("Latest build is {buildNumber}, we're running {localBuildNumber}", buildNumberDisplay, Constants.BuildInfo.BuildNumberDisplay);
 
-            if (buildNumber < Constants.BuildInfo.BuildNumber)
+            if (buildNumber <= Constants.BuildInfo.BuildNumber)
                 return false;
 
             if (_windowService.IsMainWindowOpen)
