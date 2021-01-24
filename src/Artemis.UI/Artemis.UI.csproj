@@ -40,7 +40,7 @@
     <Delete Files="$(OutputPath)\libSkiaSharp.dylib" />
   </Target>
   <ItemGroup>
-    <FluentValidationExcludedCultures Include="cs;da;de;es;fa;fi;fr;it;ko;mk;nl;pl;pt;ru;ru-ru;sv;tr;zh-CN;uz-Latn-UZ">
+    <FluentValidationExcludedCultures Include="ar-DZ;cs;cs-CZ;da;de;es;fa;fi;fr;fr-FR;it;ko;mk;nl;pl;pt;pt-BR;ru;ru-ru;sv;tr;zh-CN;uz-Latn-UZ">
       <InProject>false</InProject>
     </FluentValidationExcludedCultures>
   </ItemGroup>
@@ -318,10 +318,19 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="buildinfo.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
