@@ -63,6 +63,7 @@ namespace Artemis.Core.Services
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _renderScale = settingsService.GetSetting("Core.RenderScale", 0.5);
             _frameStopWatch = new Stopwatch();
+            StartupArguments = new List<string>();
 
             UpdatePluginCache();
 
@@ -77,7 +78,7 @@ namespace Artemis.Core.Services
 
         public TimeSpan FrameTime { get; private set; }
         public bool ModuleRenderingDisabled { get; set; }
-        public List<string>? StartupArguments { get; set; }
+        public List<string> StartupArguments { get; set; }
         public bool IsElevated { get; set; }
 
         public void Dispose()
@@ -109,12 +110,16 @@ namespace Artemis.Core.Services
             // Just this line should prevent a certain someone from removing HidSharp as an unused dependency as well
             Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
             _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
-            
+
             DeserializationLogger.Initialize(Kernel);
 
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
-            _pluginManagementService.LoadPlugins(StartupArguments != null && StartupArguments.Contains("--ignore-plugin-lock"), IsElevated);
+            _pluginManagementService.LoadPlugins(
+                StartupArguments.Contains("--ignore-plugin-lock"),
+                StartupArguments.Contains("--force-elevation"),
+                IsElevated
+            );
 
             ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
             _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
