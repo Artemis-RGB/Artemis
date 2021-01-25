@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Windows;
@@ -20,7 +22,6 @@ using Artemis.UI.Stylet;
 using Artemis.UI.Utilities;
 using Ninject;
 using Serilog;
-using SharpVectors.Dom.Resources;
 using Stylet;
 
 namespace Artemis.UI
@@ -40,6 +41,7 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
+            // TODO: Move shutdown code out of bootstrapper
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
             Core.Utilities.PrepareFirstLaunch();
@@ -139,25 +141,47 @@ namespace Artemis.UI
 
         private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)
         {
-            string args = Args.Any() ? "-ArgumentList " + string.Join(',', Args.Select(a => "'" + a + "'")) : "";
-
+            List<string> argsList = new();
+            argsList.AddRange(Args);
+            if (e.ExtraArgs != null)
+                argsList.AddRange(e.ExtraArgs.Except(argsList));
+            string args = argsList.Any() ? "-ArgumentList " + string.Join(',', argsList) : "";
+            string command =
+                $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; " +
+                $"(Get-Process 'Artemis.UI').kill(); " +
+                $"Start-Process -FilePath '{Constants.ExecutablePath}' -WorkingDirectory '{Constants.ApplicationFolder}' {args}}}\"";
+            // Elevated always runs with RunAs
             if (e.Elevate)
             {
                 ProcessStartInfo info = new()
                 {
-                    Arguments =
-                        $"-Command \"& {{Start-Sleep -Milliseconds {(int) e.Delay.TotalMilliseconds}; (Get-Process 'Artemis.UI').kill(); Start-Process -FilePath '{Constants.ExecutablePath}' {args} -Verb RunAs}}\"",
+                    Arguments = command.Replace("}\"", " -Verb RunAs}\""),
                     WindowStyle = ProcessWindowStyle.Hidden,
                     CreateNoWindow = true,
                     FileName = "PowerShell.exe"
                 };
                 Process.Start(info);
             }
+            // Non-elevated runs regularly if currently not elevated
+            else if (!_core.IsElevated)
+            {
+                ProcessStartInfo info = new()
+                {
+                    Arguments = command,
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = "PowerShell.exe"
+                };
+                Process.Start(info);
+            }
+            // Non-elevated runs via a utility method is currently elevated (de-elevating is hacky)
             else
             {
-                ProcessUtilities.RunAsDesktopUser(Constants.ExecutablePath);
+                string powerShell = Path.Combine(Environment.SystemDirectory, "WindowsPowerShell", "v1.0", "powershell.exe");
+                ProcessUtilities.RunAsDesktopUser(powerShell, command, true);
             }
 
+            // Lets try a graceful shutdown, PowerShell will kill if needed
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }
 
@@ -176,5 +200,8 @@ namespace Artemis.UI
                 Environment.Exit(1);
             });
         }
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     }
 }

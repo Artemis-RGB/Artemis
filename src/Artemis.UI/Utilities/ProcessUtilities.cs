@@ -29,7 +29,7 @@ namespace Artemis.UI.Utilities
             return tcs.Task;
         }
 
-        public static void RunAsDesktopUser(string fileName)
+        public static Process RunAsDesktopUser(string fileName, string arguments, bool hideWindow)
         {
             if (string.IsNullOrWhiteSpace(fileName))
                 throw new ArgumentException("Value cannot be null or whitespace.", nameof(fileName));
@@ -49,7 +49,7 @@ namespace Artemis.UI.Utilities
             {
                 IntPtr process = GetCurrentProcess();
                 if (!OpenProcessToken(process, 0x0020, ref hProcessToken))
-                    return;
+                    return null;
 
                 TOKEN_PRIVILEGES tkp = new()
                 {
@@ -58,12 +58,12 @@ namespace Artemis.UI.Utilities
                 };
 
                 if (!LookupPrivilegeValue(null, "SeIncreaseQuotaPrivilege", ref tkp.Privileges[0].Luid))
-                    return;
+                    return null;
 
                 tkp.Privileges[0].Attributes = 0x00000002;
 
                 if (!AdjustTokenPrivileges(hProcessToken, false, ref tkp, 0, IntPtr.Zero, IntPtr.Zero))
-                    return;
+                    return null;
             }
             finally
             {
@@ -76,7 +76,7 @@ namespace Artemis.UI.Utilities
             // restarted elevated.
             IntPtr hwnd = GetShellWindow();
             if (hwnd == IntPtr.Zero)
-                return;
+                return null;
 
             IntPtr hShellProcess = IntPtr.Zero;
             IntPtr hShellProcessToken = IntPtr.Zero;
@@ -86,29 +86,41 @@ namespace Artemis.UI.Utilities
                 // Get the PID of the desktop shell process.
                 uint dwPID;
                 if (GetWindowThreadProcessId(hwnd, out dwPID) == 0)
-                    return;
+                    return null;
 
                 // Open the desktop shell process in order to query it (get the token)
                 hShellProcess = OpenProcess(ProcessAccessFlags.QueryInformation, false, dwPID);
                 if (hShellProcess == IntPtr.Zero)
-                    return;
+                    return null;
 
                 // Get the process token of the desktop shell.
                 if (!OpenProcessToken(hShellProcess, 0x0002, ref hShellProcessToken))
-                    return;
+                    return null;
 
                 uint dwTokenRights = 395U;
 
                 // Duplicate the shell's process token to get a primary token.
                 // Based on experimentation, this is the minimal set of rights required for CreateProcessWithTokenW (contrary to current documentation).
                 if (!DuplicateTokenEx(hShellProcessToken, dwTokenRights, IntPtr.Zero, SECURITY_IMPERSONATION_LEVEL.SecurityImpersonation, TOKEN_TYPE.TokenPrimary, out hPrimaryToken))
-                    return;
+                    return null;
 
                 // Start the target process with the new token.
                 STARTUPINFO si = new();
+                if (hideWindow)
+                {
+                    si.dwFlags = 0x00000001;
+                    si.wShowWindow = 0;
+                }
+
                 PROCESS_INFORMATION pi = new();
-                if (!CreateProcessWithTokenW(hPrimaryToken, 0, fileName, "", 0, IntPtr.Zero, Path.GetDirectoryName(fileName), ref si, out pi))
-                    return;
+                if (!CreateProcessWithTokenW(hPrimaryToken, 0, fileName, $"\"{fileName}\" {arguments}", 0, IntPtr.Zero, Path.GetDirectoryName(fileName), ref si, out pi))
+                {
+                    // Get the last error and display it.
+                    int error = Marshal.GetLastWin32Error();
+                    return null;
+                }
+
+                return Process.GetProcessById(pi.dwProcessId);
             }
             finally
             {
@@ -186,24 +198,24 @@ namespace Artemis.UI.Utilities
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct STARTUPINFO
         {
-            public readonly int cb;
-            public readonly string lpReserved;
-            public readonly string lpDesktop;
-            public readonly string lpTitle;
-            public readonly int dwX;
-            public readonly int dwY;
-            public readonly int dwXSize;
-            public readonly int dwYSize;
-            public readonly int dwXCountChars;
-            public readonly int dwYCountChars;
-            public readonly int dwFillAttribute;
-            public readonly int dwFlags;
-            public readonly short wShowWindow;
-            public readonly short cbReserved2;
-            public readonly IntPtr lpReserved2;
-            public readonly IntPtr hStdInput;
-            public readonly IntPtr hStdOutput;
-            public readonly IntPtr hStdError;
+            public int cb;
+            public string lpReserved;
+            public string lpDesktop;
+            public string lpTitle;
+            public int dwX;
+            public int dwY;
+            public int dwXSize;
+            public int dwYSize;
+            public int dwXCountChars;
+            public int dwYCountChars;
+            public int dwFillAttribute;
+            public int dwFlags;
+            public short wShowWindow;
+            public short cbReserved2;
+            public IntPtr lpReserved2;
+            public IntPtr hStdInput;
+            public IntPtr hStdOutput;
+            public IntPtr hStdError;
         }
 
         [DllImport("kernel32.dll", ExactSpelling = true)]

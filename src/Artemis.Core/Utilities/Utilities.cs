@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
@@ -38,9 +40,10 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="elevate">Whether the application should be restarted with elevated permissions</param>
         /// <param name="delay">Delay in seconds before killing process and restarting </param>
-        public static void Restart(bool elevate, TimeSpan delay)
+        /// <param name="extraArgs">A list of extra arguments to pass to Artemis when restarting</param>
+        public static void Restart(bool elevate, TimeSpan delay, params string[] extraArgs)
         {
-            OnRestartRequested(new RestartEventArgs(elevate, delay));
+            OnRestartRequested(new RestartEventArgs(elevate, delay, extraArgs.ToList()));
         }
 
         /// <summary>

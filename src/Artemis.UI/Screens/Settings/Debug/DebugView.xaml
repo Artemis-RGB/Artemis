@@ -39,9 +39,30 @@
                             <TextBlock>Stay on top</TextBlock>
                         </StackPanel>
                     </Button>
-                    <Button Content="Force garbage collection" Command="{s:Action ForceGarbageCollection}" />
-                    <Button Content="Elevate permissions" Command="{s:Action Elevate}" />
-                    <Button Content="Restart" Command="{s:Action Restart}" />
+                    <Button Command="{s:Action ForceGarbageCollection}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="DeleteEmpty"/>
+                            <TextBlock Margin="10 0">Force garbage collection</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{s:Action Elevate}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="ShieldHalfFull" />
+                            <TextBlock Margin="10 0">Elevate permissions</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{s:Action Drop}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="ChevronDoubleDown" />
+                            <TextBlock Margin="10 0">Drop permissions</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{s:Action Restart}">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                            <materialDesign:PackIcon Kind="Restart" />
+                            <TextBlock Margin="10 0">Restart</TextBlock>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
             </materialDesign:PopupBox>
         </mde:AppBar>

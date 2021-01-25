@@ -172,7 +172,7 @@ namespace Artemis.Core.Services
 
         #region Plugins
 
-        public void LoadPlugins(bool ignorePluginLock, bool isElevated)
+        public void LoadPlugins(bool ignorePluginLock, bool stayElevated, bool isElevated)
         {
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
@@ -208,9 +208,10 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            if (isElevated && !adminRequired)
+            if (isElevated && !adminRequired && !stayElevated)
             {
                 // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+                _logger.Information("Restarting because no plugin requires elevation and --force-elevation was not supplied");
                 Utilities.Restart(false, TimeSpan.Zero);
                 return;
             }
