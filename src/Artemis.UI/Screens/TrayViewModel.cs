@@ -46,6 +46,9 @@ namespace Artemis.UI.Screens
             _debugService = debugService;
             CanShowRootViewModel = true;
 
+            Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
+            Core.Utilities.RestartRequested += UtilitiesOnShutdownRequested;
+
             windowService.ConfigureMainWindowProvider(this);
             messageService.ConfigureNotificationProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -56,7 +59,9 @@ namespace Artemis.UI.Screens
                 coreService.Initialized += (_, _) => TrayBringToForeground();
             }
             else
-                updateService.AutoUpdate();
+            {
+                coreService.Initialized += (_, _) => updateService.AutoUpdate();
+            }
         }
 
         public bool CanShowRootViewModel
@@ -111,18 +116,25 @@ namespace Artemis.UI.Screens
         public void OnTrayBalloonTipClicked(object sender, EventArgs e)
         {
             if (CanShowRootViewModel)
+            {
                 TrayBringToForeground();
+            }
             else
             {
                 // Wrestle the main window to the front
-                Window mainWindow = ((Window) _rootViewModel.View);
-                if (mainWindow.WindowState == WindowState.Minimized) 
+                Window mainWindow = (Window) _rootViewModel.View;
+                if (mainWindow.WindowState == WindowState.Minimized)
                     mainWindow.WindowState = WindowState.Normal;
                 mainWindow.Activate();
                 mainWindow.Topmost = true;
                 mainWindow.Topmost = false;
                 mainWindow.Focus();
             }
+        }
+
+        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        {
+            Execute.OnUIThread(() => _taskBarIcon?.Dispose());
         }
 
         private void ShowSplashScreen()
@@ -156,7 +168,7 @@ namespace Artemis.UI.Screens
 
                 PackIcon packIcon = new() {Kind = icon};
                 Geometry geometry = Geometry.Parse(packIcon.Data);
-                
+
                 // Scale the icon up to fit a 256x256 image and draw it
                 geometry = Geometry.Combine(geometry, Geometry.Empty, GeometryCombineMode.Union, new ScaleTransform(256 / geometry.Bounds.Right, 256 / geometry.Bounds.Bottom));
                 drawingContext.DrawGeometry(new SolidColorBrush(Colors.White), null, geometry);

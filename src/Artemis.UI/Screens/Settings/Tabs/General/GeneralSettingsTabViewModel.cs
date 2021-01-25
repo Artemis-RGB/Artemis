@@ -3,10 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Xml.Linq;
+using System.Xml.XPath;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.UI.Properties;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Services.Interfaces;
@@ -290,23 +295,102 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
         private void ApplyAutorun()
         {
+            if (!StartWithWindows)
+                StartMinimized = false;
+
+            // Remove the old auto-run method of placing a shortcut in shell:startup
+            string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
+            if (File.Exists(autoRunFile))
+                File.Delete(autoRunFile);
+
+            // Create or remove the task if necessary
             try
             {
-                string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-                string executableFile = Constants.ExecutablePath;
+                Process schtasks = new()
+                {
+                    StartInfo =
+                    {
+                        WindowStyle = ProcessWindowStyle.Hidden,
+                        UseShellExecute = true,
+                        FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
+                        Arguments = "/TN \"Artemis 2 autorun\""
+                    }
+                };
 
-                if (File.Exists(autoRunFile))
-                    File.Delete(autoRunFile);
-                if (StartWithWindows)
-                    ShortcutUtilities.Create(autoRunFile, executableFile, "--autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
-                else
-                    StartMinimized = false;
+                schtasks.Start();
+                schtasks.WaitForExit();
+                bool taskCreated = schtasks.ExitCode == 0;
+
+                if (StartWithWindows && !taskCreated)
+                    CreateAutoRunTask();
+                else if (!StartWithWindows && taskCreated)
+                    RemoveAutoRunTask();
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e);
+                Execute.PostToUIThread(() => _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e));
                 throw;
             }
+        }
+
+        private void CreateAutoRunTask()
+        {
+            XDocument document = XDocument.Parse(Resources.artemis_autorun);
+            XElement task = document.Descendants().First();
+
+            task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Date")
+                .SetValue(DateTime.Now);
+            task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Author")
+                .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
+            task.Descendants().First(d => d.Name.LocalName == "Principals").Descendants().First(d => d.Name.LocalName == "Principal").Descendants().First(d => d.Name.LocalName == "UserId")
+                .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().User.Value);
+
+            task.Descendants().First(d => d.Name.LocalName == "Actions").Descendants().First(d => d.Name.LocalName == "Exec").Descendants().First(d => d.Name.LocalName == "WorkingDirectory")
+                .SetValue(Constants.ApplicationFolder);
+            task.Descendants().First(d => d.Name.LocalName == "Actions").Descendants().First(d => d.Name.LocalName == "Exec").Descendants().First(d => d.Name.LocalName == "Command")
+                .SetValue("\"" + Constants.ExecutablePath + "\"");
+
+            string xmlPath = Path.GetTempFileName();
+            using (Stream fileStream = new FileStream(xmlPath, FileMode.Create))
+            {
+                document.Save(fileStream);
+            }
+
+            Process schtasks = new()
+            {
+                StartInfo =
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
+                    Arguments = $"/Create /XML \"{xmlPath}\" /tn \"Artemis 2 autorun\""
+                }
+            };
+
+            schtasks.Start();
+            schtasks.WaitForExit();
+
+            File.Delete(xmlPath);
+        }
+
+        private void RemoveAutoRunTask()
+        {
+            Process schtasks = new()
+            {
+                StartInfo =
+                {
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    UseShellExecute = true,
+                    Verb = "runas",
+                    FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
+                    Arguments = "/Delete /TN \"Artemis 2 autorun\" /f"
+                }
+            };
+
+            schtasks.Start();
+            schtasks.WaitForExit();
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Artemis.Core
 {
@@ -7,10 +8,11 @@ namespace Artemis.Core
     /// </summary>
     public class RestartEventArgs : EventArgs
     {
-        internal RestartEventArgs(bool elevate, TimeSpan delay)
+        internal RestartEventArgs(bool elevate, TimeSpan delay, List<string>? extraArgs)
         {
             Elevate = elevate;
             Delay = delay;
+            ExtraArgs = extraArgs;
         }
 
         /// <summary>
@@ -22,5 +24,10 @@ namespace Artemis.Core
         ///     Gets the delay before killing process and restarting
         /// </summary>
         public TimeSpan Delay { get; }
+
+        /// <summary>
+        ///     A list of extra arguments to pass to Artemis when restarting
+        /// </summary>
+        public List<string>? ExtraArgs { get; }
     }
 }
