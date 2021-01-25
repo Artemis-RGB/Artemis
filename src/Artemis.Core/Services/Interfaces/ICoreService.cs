@@ -26,7 +26,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets or sets a list of startup arguments
         /// </summary>
-        List<string>? StartupArguments { get; set; }
+        List<string> StartupArguments { get; set; }
 
         /// <summary>
         ///     Gets a boolean indicating whether Artemis is running in an elevated environment (admin permissions)

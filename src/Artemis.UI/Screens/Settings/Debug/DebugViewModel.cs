@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Settings.Debug.Tabs;
@@ -29,6 +30,8 @@ namespace Artemis.UI.Screens.Settings.Debug
         public PluginSetting<bool> StayOnTopSetting { get; }
 
         public string Title => "Debugger";
+        public bool CanElevate => !_coreService.IsElevated;
+        public bool CanDrop => _coreService.IsElevated;
 
         public void ToggleStayOnTop()
         {
@@ -50,7 +53,12 @@ namespace Artemis.UI.Screens.Settings.Debug
 
         public void Elevate()
         {
-            Core.Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+            Core.Utilities.Restart(true, TimeSpan.FromMilliseconds(500), "--force-elevation");
+        }
+
+        public void Drop()
+        {
+            Core.Utilities.Restart(false, TimeSpan.Zero);
         }
 
         public void Restart()

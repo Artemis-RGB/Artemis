@@ -2,7 +2,7 @@
   "profiles": {
     "Artemis.UI": {
       "commandName": "Project",
-      "commandLineArgs": "--test --test2"
+      "commandLineArgs": "--force-elevation"
     }
   }
 }
