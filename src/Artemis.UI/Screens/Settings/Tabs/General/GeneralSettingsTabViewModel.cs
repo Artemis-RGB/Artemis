@@ -14,7 +14,6 @@ using Artemis.Core.Services;
 using Artemis.UI.Properties;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;

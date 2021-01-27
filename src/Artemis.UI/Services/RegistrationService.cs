@@ -6,7 +6,6 @@ using Artemis.UI.DefaultTypes.DataModel.Input;
 using Artemis.UI.InputProviders;
 using Artemis.UI.Ninject;
 using Artemis.UI.PropertyInput;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using Serilog;
 
