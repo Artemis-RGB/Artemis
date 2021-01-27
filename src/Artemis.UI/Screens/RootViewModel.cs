@@ -14,7 +14,6 @@ using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Utilities;
 using MaterialDesignExtensions.Controls;

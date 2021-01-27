@@ -78,7 +78,7 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
 
         /// <summary>
-        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
+        ///     Occurs when the visibility value of the layer property was updated
         /// </summary>
         public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
 

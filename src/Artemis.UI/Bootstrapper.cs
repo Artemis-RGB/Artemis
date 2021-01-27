@@ -89,6 +89,7 @@ namespace Artemis.UI
             });
 
             Kernel.Get<IRegistrationService>().RegisterInputProvider();
+            Kernel.Get<IRemoteManagementService>();
         }
 
         protected override void ConfigureIoC(IKernel kernel)

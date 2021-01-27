@@ -4,7 +4,7 @@ using Artemis.UI.Ninject.InstanceProviders;
 using Artemis.UI.Screens;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Splash;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using FluentValidation;

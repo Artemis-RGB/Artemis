@@ -66,14 +66,12 @@ namespace Artemis.UI.Shared.Services
 
         public void OpenMainWindow()
         {
-            IsMainWindowOpen = true;
-            OnMainWindowOpened();
+            _mainWindowManager?.OpenMainWindow();
         }
 
         public void CloseMainWindow()
         {
-            IsMainWindowOpen = false;
-            OnMainWindowClosed();
+            _mainWindowManager?.CloseMainWindow();
         }
 
         public event EventHandler? MainWindowOpened;

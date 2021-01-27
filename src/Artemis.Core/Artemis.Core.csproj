@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Ben.Demystifier" Version="0.1.6" />
+    <PackageReference Include="EmbedIO" Version="3.4.3" />
     <PackageReference Include="HidSharp" Version="2.1.0" />
     <PackageReference Include="Humanizer.Core" Version="2.8.26" />
     <PackageReference Include="LiteDB" Version="5.0.9" />

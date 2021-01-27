@@ -3,13 +3,11 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using ICSharpCode.AvalonEdit.Document;
-using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
     public class ProfileImportViewModel : DialogViewModelBase
     {
-        private readonly ISnackbarMessageQueue _mainMessageQueue;
         private readonly IProfileService _profileService;
         private readonly IMessageService _messageService;
         private string _profileJson;

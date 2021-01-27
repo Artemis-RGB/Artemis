@@ -195,6 +195,14 @@
           "System.Xml.XmlDocument": "4.3.0"
         }
       },
+      "EmbedIO": {
+        "type": "Transitive",
+        "resolved": "3.4.3",
+        "contentHash": "YM6hpZNAfvbbixfG9T4lWDGfF0D/TqutbTROL4ogVcHKwPF1hp+xS3ABwd3cxxTxvDFkj/zZl57QgWuFA8Igxw==",
+        "dependencies": {
+          "Unosquare.Swan.Lite": "3.0.0"
+        }
+      },
       "HidSharp": {
         "type": "Transitive",
         "resolved": "2.1.0",
@@ -1357,6 +1365,11 @@
           "System.Xml.ReaderWriter": "4.3.0"
         }
       },
+      "Unosquare.Swan.Lite": {
+        "type": "Transitive",
+        "resolved": "3.0.0",
+        "contentHash": "noPwJJl1Q9uparXy1ogtkmyAPGNfSGb0BLT1292nFH1jdMKje6o2kvvrQUvF9Xklj+IoiAI0UzF6Aqxlvo10lw=="
+      },
       "WriteableBitmapEx": {
         "type": "Transitive",
         "resolved": "1.6.7",
@@ -1367,6 +1380,7 @@
         "dependencies": {
           "Artemis.Storage": "1.0.0",
           "Ben.Demystifier": "0.1.6",
+          "EmbedIO": "3.4.3",
           "HidSharp": "2.1.0",
           "Humanizer.Core": "2.8.26",
           "LiteDB": "5.0.9",

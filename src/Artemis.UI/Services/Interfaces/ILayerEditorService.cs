@@ -3,7 +3,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using SkiaSharp;
 
-namespace Artemis.UI.Services.Interfaces
+namespace Artemis.UI.Services
 {
     public interface ILayerEditorService : IArtemisUIService
     {

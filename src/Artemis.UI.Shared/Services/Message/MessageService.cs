@@ -5,7 +5,7 @@ namespace Artemis.UI.Shared.Services
 {
     internal class MessageService : IMessageService
     {
-        private INotificationProvider _notificationProvider;
+        private INotificationProvider? _notificationProvider;
         public ISnackbarMessageQueue MainMessageQueue { get; }
 
         public MessageService(ISnackbarMessageQueue mainMessageQueue)
@@ -74,20 +74,20 @@ namespace Artemis.UI.Shared.Services
         /// <inheritdoc />
         public void ShowNotification(string title, string message)
         {
-            _notificationProvider.ShowNotification(title, message, PackIconKind.None);
+            _notificationProvider?.ShowNotification(title, message, PackIconKind.None);
         }
 
         /// <inheritdoc />
         public void ShowNotification(string title, string message, PackIconKind icon)
         {
-            _notificationProvider.ShowNotification(title, message, icon);
+            _notificationProvider?.ShowNotification(title, message, icon);
         }
 
         /// <inheritdoc />
         public void ShowNotification(string title, string message, string icon)
         {
             Enum.TryParse(typeof(PackIconKind), icon, true, out object? iconKind);
-            _notificationProvider.ShowNotification(title, message, (PackIconKind) (iconKind ?? PackIconKind.None));
+            _notificationProvider?.ShowNotification(title, message, (PackIconKind) (iconKind ?? PackIconKind.None));
         }
     }
 }
