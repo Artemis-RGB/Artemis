@@ -1,4 +1,5 @@
-﻿using Artemis.UI.Screens.Settings.Tabs.Devices;
+﻿using Artemis.UI.Screens.Settings.Tabs.About;
+using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Settings.Tabs.Modules;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
@@ -12,7 +13,8 @@ namespace Artemis.UI.Screens.Settings
             GeneralSettingsTabViewModel generalSettingsTabViewModel,
             ModuleOrderTabViewModel moduleOrderTabViewModel,
             PluginSettingsTabViewModel pluginSettingsTabViewModel,
-            DeviceSettingsTabViewModel deviceSettingsTabViewModel)
+            DeviceSettingsTabViewModel deviceSettingsTabViewModel,
+            AboutTabViewModel aboutTabViewModel)
         {
             DisplayName = "Settings";
 
@@ -20,6 +22,7 @@ namespace Artemis.UI.Screens.Settings
             Items.Add(moduleOrderTabViewModel);
             Items.Add(pluginSettingsTabViewModel);
             Items.Add(deviceSettingsTabViewModel);
+            Items.Add(aboutTabViewModel);
 
             ActiveItem = generalSettingsTabViewModel;
         }
