@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using EmbedIO;
-using EmbedIO.Actions;
 using EmbedIO.WebApi;
 using Newtonsoft.Json;
 using Ninject;
@@ -14,11 +13,11 @@ namespace Artemis.Core.Services
 {
     internal class WebServerService : IWebServerService, IDisposable
     {
+        private readonly List<WebApiControllerRegistration> _controllers;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly PluginsModule _pluginModule;
         private readonly PluginSetting<int> _webServerPortSetting;
-        private readonly List<WebApiControllerRegistration> _controllers;
 
         public WebServerService(IKernel kernel, ILogger logger, ISettingsService settingsService)
         {
@@ -33,6 +32,27 @@ namespace Artemis.Core.Services
             Server = CreateWebServer();
             Server.Start();
         }
+
+        #region Event handlers
+
+        private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
+        {
+            Server = CreateWebServer();
+            Server.Start();
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Server?.Dispose();
+            _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
+        }
+
+        #endregion
 
         public WebServer? Server { get; private set; }
 
@@ -72,32 +92,54 @@ namespace Artemis.Core.Services
 
         #endregion
 
-        #region Event handlers
-
-        private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            Server = CreateWebServer();
-            Server.Start();
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Server?.Dispose();
-            _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
-        }
-
-        #endregion
-
         #region Plugin endpoint management
 
-        public PluginEndPoint AddPluginEndPoint(PluginFeature feature, string endPointName)
+        public JsonPluginEndPoint<T> AddJsonEndPoint<T>(PluginFeature feature, string endPointName, Action<T> requestHandler)
         {
-            PluginEndPoint endPoint = new(feature, endPointName, _pluginModule);
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
+            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, _pluginModule, requestHandler);
+            _pluginModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public JsonPluginEndPoint<T> AddResponsiveJsonEndPoint<T>(PluginFeature feature, string endPointName, Func<T, object?> requestHandler)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
+            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, _pluginModule, requestHandler);
+            _pluginModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public StringPluginEndPoint AddStringEndPoint(PluginFeature feature, string endPointName, Action<string> requestHandler)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
+            StringPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
+            _pluginModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public StringPluginEndPoint AddResponsiveStringEndPoint(PluginFeature feature, string endPointName, Func<string, string?> requestHandler)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
+            StringPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
+            _pluginModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Action<IHttpContext> requestHandler)
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
+            RawPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
             _pluginModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
