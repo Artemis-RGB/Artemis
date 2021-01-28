@@ -56,26 +56,23 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         protected override async Task OnRequestAsync(IHttpContext context)
         {
-            // Always stick to JSON
-            context.Response.ContentType = MimeType.Json;
-
             if (context.Route.SubPath == null)
                 throw HttpException.NotFound();
-
+            
             // Split the sub path
             string[] pathParts = context.Route.SubPath.Substring(1).Split('/');
             // Expect a plugin ID and an endpoint
             if (pathParts == null || pathParts.Length != 2)
                 throw HttpException.BadRequest("Path must contain a plugin ID and endpoint and nothing else.");
-
+            
             // Find a matching plugin
             if (!_pluginEndPoints.TryGetValue(pathParts[0], out Dictionary<string, PluginEndPoint>? endPoints))
                 throw HttpException.NotFound($"Found no plugin with ID {pathParts[0]}.");
-
+            
             // Find a matching endpoint
             if (!endPoints.TryGetValue(pathParts[1], out PluginEndPoint? endPoint))
                 throw HttpException.NotFound($"Found no endpoint called {pathParts[1]} for plugin with ID {pathParts[0]}.");
-
+            
             // It is up to the registration how the request is eventually handled, it might even set a response here
             endPoint.ProcessRequest(context);
 

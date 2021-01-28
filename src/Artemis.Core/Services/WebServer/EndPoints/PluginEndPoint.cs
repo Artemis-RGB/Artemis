@@ -3,7 +3,7 @@ using EmbedIO;
 
 namespace Artemis.Core.Services
 {
-    public class PluginEndPoint
+    public abstract class PluginEndPoint
     {
         private readonly PluginsModule _pluginsModule;
 
@@ -22,19 +22,16 @@ namespace Artemis.Core.Services
         public PluginFeature PluginFeature { get; }
 
         /// <summary>
-        /// Gets the name of the end point
+        ///     Gets the name of the end point
         /// </summary>
         public string Name { get; }
 
         /// <summary>
-        /// Gets the full URL of the end point
+        ///     Gets the full URL of the end point
         /// </summary>
         public string Url => $"{_pluginsModule.BaseRoute}{PluginFeature.Plugin.Guid}/{Name}";
 
-        internal void ProcessRequest(IHttpContext context)
-        {
-            throw new NotImplementedException();
-        }
+        internal abstract void ProcessRequest(IHttpContext context);
 
         private void OnDisabled(object? sender, EventArgs e)
         {
