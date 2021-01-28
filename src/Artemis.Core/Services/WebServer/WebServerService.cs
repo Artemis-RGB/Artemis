@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
+using System.Threading.Tasks;
 using EmbedIO;
 using EmbedIO.Actions;
 using EmbedIO.WebApi;
+using Newtonsoft.Json;
 using Ninject;
 using Serilog;
 
@@ -46,7 +49,7 @@ namespace Artemis.Core.Services
                 .WithLocalSessionManager()
                 .WithModule(apiModule)
                 .WithModule(_pluginModule)
-                .WithModule(new ActionModule("/", HttpVerbs.Any, ctx => ctx.SendDataAsync(new {Message = "Error"})));
+                .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception));
 
             // Add controllers to the API module
             foreach (WebApiControllerRegistration registration in _controllers)
@@ -60,6 +63,11 @@ namespace Artemis.Core.Services
             OnWebServerCreated();
 
             return server;
+        }
+
+        private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
+        {
+            await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
         }
 
         #endregion
@@ -81,6 +89,22 @@ namespace Artemis.Core.Services
         {
             Server?.Dispose();
             _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
+        }
+
+        #endregion
+
+        #region Plugin endpoint management
+
+        public PluginEndPoint AddPluginEndPoint(PluginFeature feature, string endPointName)
+        {
+            PluginEndPoint endPoint = new(feature, endPointName, _pluginModule);
+            _pluginModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public void RemovePluginEndPoint(PluginEndPoint endPoint)
+        {
+            _pluginModule.RemovePluginEndPoint(endPoint);
         }
 
         #endregion

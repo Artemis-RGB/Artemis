@@ -15,6 +15,20 @@ namespace Artemis.Core.Services
         WebServer? Server { get; }
 
         /// <summary>
+        ///     Adds a new endpoint for the given plugin feature
+        /// </summary>
+        /// <param name="feature">The plugin feature the end point is associated with</param>
+        /// <param name="endPointName">The name of the end point, must be unique</param>
+        /// <returns>The resulting end point</returns>
+        PluginEndPoint AddPluginEndPoint(PluginFeature feature, string endPointName);
+
+        /// <summary>
+        ///     Removes an existing endpoint
+        /// </summary>
+        /// <param name="endPoint">The end point to remove</param>
+        void RemovePluginEndPoint(PluginEndPoint endPoint);
+
+        /// <summary>
         ///     Adds a new Web API controller and restarts the web server
         /// </summary>
         /// <typeparam name="T">The type of Web API controller to remove</typeparam>
