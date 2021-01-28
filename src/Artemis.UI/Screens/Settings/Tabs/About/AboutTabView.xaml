@@ -1,0 +1,50 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Tabs.About.AboutTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Tabs.About"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:AboutTabViewModel}">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="15" MaxWidth="800">
+            <TextBlock Style="{StaticResource MaterialDesignHeadline2TextBlock}">
+                Artemis 2
+            </TextBlock>
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}" Text="{Binding Version}" />
+
+            <materialDesign:Card Margin="0 25 0 0">
+                <StackPanel Margin="15">
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                        Lead developer
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                        Spoinky (Robert Beekman)
+                    </TextBlock>
+
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="0 25 0 0">
+                        Main contributors
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                        DarthAffe
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                        DrMeteor (Diogo Trindade)
+                    </TextBlock>
+
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="0 25 0 0">
+                        Special thanks
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                        All the people on Discord provinding feedback and testing
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
+                        Aureshion - Default device images
+                    </TextBlock>
+                </StackPanel>
+            </materialDesign:Card>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
