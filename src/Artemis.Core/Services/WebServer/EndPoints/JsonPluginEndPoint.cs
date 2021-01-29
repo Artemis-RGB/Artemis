@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using EmbedIO;
 using Newtonsoft.Json;
 
@@ -19,12 +20,15 @@ namespace Artemis.Core.Services
         {
             _requestHandler = requestHandler;
             ThrowOnFail = true;
+            Accepts = MimeType.Json;
         }
 
         internal JsonPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<T, object?> responseRequestHandler) : base(pluginFeature, name, pluginsModule)
         {
             _responseRequestHandler = responseRequestHandler;
             ThrowOnFail = true;
+            Accepts = MimeType.Json;
+            Returns = MimeType.Json;
         }
 
         /// <summary>
@@ -37,7 +41,7 @@ namespace Artemis.Core.Services
         #region Overrides of PluginEndPoint
 
         /// <inheritdoc />
-        internal override void ProcessRequest(IHttpContext context)
+        protected override async Task ProcessRequest(IHttpContext context)
         {
             if (context.Request.HttpVerb != HttpVerbs.Post)
                 throw HttpException.MethodNotAllowed("This end point only accepts POST calls");
@@ -48,7 +52,7 @@ namespace Artemis.Core.Services
             object? response = null;
             try
             {
-                T deserialized = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
+                T deserialized = JsonConvert.DeserializeObject<T>(await reader.ReadToEndAsync());
 
                 if (_requestHandler != null)
                 {
@@ -67,8 +71,8 @@ namespace Artemis.Core.Services
                     throw;
             }
 
-            using TextWriter writer = context.OpenResponseText();
-            writer.Write(JsonConvert.SerializeObject(response));
+            await using TextWriter writer = context.OpenResponseText();
+            await writer.WriteAsync(JsonConvert.SerializeObject(response));
         }
 
         #endregion

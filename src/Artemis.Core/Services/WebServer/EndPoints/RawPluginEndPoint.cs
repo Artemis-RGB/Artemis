@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using EmbedIO;
 
 namespace Artemis.Core.Services
@@ -13,7 +14,7 @@ namespace Artemis.Core.Services
     public class RawPluginEndPoint : PluginEndPoint
     {
         /// <inheritdoc />
-        internal RawPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<IHttpContext> requestHandler) : base(pluginFeature, name, pluginsModule)
+        internal RawPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<IHttpContext, Task> requestHandler) : base(pluginFeature, name, pluginsModule)
         {
             RequestHandler = requestHandler;
         }
@@ -21,14 +22,30 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets or sets the handler used to handle incoming requests to this endpoint
         /// </summary>
-        public Action<IHttpContext> RequestHandler { get; }
+        public Func<IHttpContext, Task> RequestHandler { get; }
+
+        /// <summary>
+        ///     Sets the mime type this plugin end point accepts
+        /// </summary>
+        public void SetAcceptType(string type)
+        {
+            Accepts = type;
+        }
+
+        /// <summary>
+        ///     Sets the mime type this plugin end point returns
+        /// </summary>
+        public void SetReturnType(string type)
+        {
+            Returns = type;
+        }
 
         #region Overrides of PluginEndPoint
 
         /// <inheritdoc />
-        internal override void ProcessRequest(IHttpContext context)
+        protected override async Task ProcessRequest(IHttpContext context)
         {
-            RequestHandler(context);
+            await RequestHandler(context);
         }
 
         #endregion

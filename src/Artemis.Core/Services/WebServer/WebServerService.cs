@@ -16,7 +16,6 @@ namespace Artemis.Core.Services
         private readonly List<WebApiControllerRegistration> _controllers;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
-        private readonly PluginsModule _pluginModule;
         private readonly PluginSetting<int> _webServerPortSetting;
 
         public WebServerService(IKernel kernel, ILogger logger, ISettingsService settingsService)
@@ -28,33 +27,13 @@ namespace Artemis.Core.Services
             _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
             _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
 
-            _pluginModule = new PluginsModule("/plugin");
-            Server = CreateWebServer();
-            Server.Start();
+            PluginsModule = new PluginsModule("/plugins");
+
+            StartWebServer();
         }
-
-        #region Event handlers
-
-        private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            Server = CreateWebServer();
-            Server.Start();
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Server?.Dispose();
-            _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
-        }
-
-        #endregion
 
         public WebServer? Server { get; private set; }
+        public PluginsModule PluginsModule { get; }
 
         #region Web server managament
 
@@ -64,14 +43,18 @@ namespace Artemis.Core.Services
             Server = null;
 
             string url = $"http://localhost:{_webServerPortSetting.Value}/";
-            WebApiModule apiModule = new("/api/");
+            WebApiModule apiModule = new("/api/", JsonNetSerializer);
+            PluginsModule.ServerUrl = url;
             WebServer server = new WebServer(o => o.WithUrlPrefix(url).WithMode(HttpListenerMode.EmbedIO))
                 .WithLocalSessionManager()
                 .WithModule(apiModule)
-                .WithModule(_pluginModule)
-                .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception));
+                .WithModule(PluginsModule)
+                .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception))
+                .HandleUnhandledException(JsonExceptionHandlerCallback);
 
-            // Add controllers to the API module
+            // Add built-in core controllers to the API module
+            apiModule.RegisterController(() => _kernel.Get<PluginsController>());
+            // Add registered controllers to the API module
             foreach (WebApiControllerRegistration registration in _controllers)
                 apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
 
@@ -80,14 +63,15 @@ namespace Artemis.Core.Services
 
             // Store the URL in a webserver.txt file so that remote applications can find it
             File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), url);
-            OnWebServerCreated();
 
             return server;
         }
 
-        private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
+        private void StartWebServer()
         {
-            await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
+            Server = CreateWebServer();
+            OnWebServerStarting();
+            Server.Start();
         }
 
         #endregion
@@ -99,8 +83,8 @@ namespace Artemis.Core.Services
             if (feature == null) throw new ArgumentNullException(nameof(feature));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
             if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, _pluginModule, requestHandler);
-            _pluginModule.AddPluginEndPoint(endPoint);
+            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
+            PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
 
@@ -109,8 +93,8 @@ namespace Artemis.Core.Services
             if (feature == null) throw new ArgumentNullException(nameof(feature));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
             if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, _pluginModule, requestHandler);
-            _pluginModule.AddPluginEndPoint(endPoint);
+            JsonPluginEndPoint<T> endPoint = new(feature, endPointName, PluginsModule, requestHandler);
+            PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
 
@@ -119,8 +103,8 @@ namespace Artemis.Core.Services
             if (feature == null) throw new ArgumentNullException(nameof(feature));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
             if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            StringPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
-            _pluginModule.AddPluginEndPoint(endPoint);
+            StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
+            PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
 
@@ -129,24 +113,24 @@ namespace Artemis.Core.Services
             if (feature == null) throw new ArgumentNullException(nameof(feature));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
             if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            StringPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
-            _pluginModule.AddPluginEndPoint(endPoint);
+            StringPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
+            PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
 
-        public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Action<IHttpContext> requestHandler)
+        public RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IHttpContext, Task> requestHandler)
         {
             if (feature == null) throw new ArgumentNullException(nameof(feature));
             if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
             if (requestHandler == null) throw new ArgumentNullException(nameof(requestHandler));
-            RawPluginEndPoint endPoint = new(feature, endPointName, _pluginModule, requestHandler);
-            _pluginModule.AddPluginEndPoint(endPoint);
+            RawPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
+            PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
         }
 
         public void RemovePluginEndPoint(PluginEndPoint endPoint)
         {
-            _pluginModule.RemovePluginEndPoint(endPoint);
+            PluginsModule.RemovePluginEndPoint(endPoint);
         }
 
         #endregion
@@ -156,26 +140,80 @@ namespace Artemis.Core.Services
         public void AddController<T>() where T : WebApiController
         {
             _controllers.Add(new WebApiControllerRegistration<T>(_kernel));
-            Server = CreateWebServer();
-            Server.Start();
+            StartWebServer();
         }
 
         public void RemoveController<T>() where T : WebApiController
         {
             _controllers.RemoveAll(r => r.ControllerType == typeof(T));
-            Server = CreateWebServer();
-            Server.Start();
+            StartWebServer();
+        }
+
+        #endregion
+
+        #region Handlers
+
+        private async Task JsonExceptionHandlerCallback(IHttpContext context, Exception exception)
+        {
+            context.Response.ContentType = MimeType.Json;
+            await using TextWriter writer = context.OpenResponseText();
+
+            string response = JsonConvert.SerializeObject(new Dictionary<string, object?>()
+            {
+                {"StatusCode", context.Response.StatusCode},
+                {"StackTrace", exception.StackTrace},
+                {"Type", exception.GetType().FullName},
+                {"Message", exception.Message},
+                {"Data", exception.Data},
+                {"InnerException", exception.InnerException},
+                {"HelpLink", exception.HelpLink},
+                {"Source", exception.Source},
+                {"HResult", exception.HResult}
+            });
+            await writer.WriteAsync(response);
+        }
+
+        private async Task JsonNetSerializer(IHttpContext context, object? data)
+        {
+            context.Response.ContentType = MimeType.Json;
+            await using TextWriter writer = context.OpenResponseText();
+            await writer.WriteAsync(JsonConvert.SerializeObject(data));
+        }
+
+        private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)
+        {
+            await context.SendStringAsync(JsonConvert.SerializeObject(httpException, Formatting.Indented), MimeType.Json, Encoding.UTF8);
         }
 
         #endregion
 
         #region Events
 
-        public event EventHandler? WebServerCreated;
+        public event EventHandler? WebServerStarting;
 
-        protected virtual void OnWebServerCreated()
+        protected virtual void OnWebServerStarting()
         {
-            WebServerCreated?.Invoke(this, EventArgs.Empty);
+            WebServerStarting?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Event handlers
+
+        private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
+        {
+            StartWebServer();
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Server?.Dispose();
+            _webServerPortSetting.SettingChanged -= WebServerPortSettingOnSettingChanged;
         }
 
         #endregion

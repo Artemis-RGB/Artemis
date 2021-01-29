@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using EmbedIO;
 
 namespace Artemis.Core.Services
@@ -16,38 +17,41 @@ namespace Artemis.Core.Services
         internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Action<string> requestHandler) : base(pluginFeature, name, pluginsModule)
         {
             _requestHandler = requestHandler;
+            Accepts = MimeType.PlainText;
         }
 
         internal StringPluginEndPoint(PluginFeature pluginFeature, string name, PluginsModule pluginsModule, Func<string, string?> requestHandler) : base(pluginFeature, name, pluginsModule)
         {
             _responseRequestHandler = requestHandler;
+            Accepts = MimeType.PlainText;
+            Returns = MimeType.PlainText;
         }
 
         #region Overrides of PluginEndPoint
 
         /// <inheritdoc />
-        internal override void ProcessRequest(IHttpContext context)
+        protected override async Task ProcessRequest(IHttpContext context)
         {
             if (context.Request.HttpVerb != HttpVerbs.Post)
                 throw HttpException.MethodNotAllowed("This end point only accepts POST calls");
-            
+
             context.Response.ContentType = MimeType.PlainText;
 
             using TextReader reader = context.OpenRequestText();
             string? response;
             if (_requestHandler != null)
             {
-                _requestHandler(reader.ReadToEnd());
+                _requestHandler(await reader.ReadToEndAsync());
                 return;
             }
-                
-            else if (_responseRequestHandler != null)
-                response = _responseRequestHandler(reader.ReadToEnd());
+
+            if (_responseRequestHandler != null)
+                response = _responseRequestHandler(await reader.ReadToEndAsync());
             else
                 throw new ArtemisCoreException("String plugin end point has no request handler");
 
-            using TextWriter writer = context.OpenResponseText();
-            writer.Write(response);
+            await using TextWriter writer = context.OpenResponseText();
+            await writer.WriteAsync(response);
         }
 
         #endregion

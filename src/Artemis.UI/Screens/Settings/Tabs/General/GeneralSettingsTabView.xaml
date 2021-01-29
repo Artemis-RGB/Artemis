@@ -171,7 +171,7 @@
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-                 
+
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -192,6 +192,33 @@
                         </StackPanel>
                     </Grid>
 
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- Web server settings -->
+            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Web server</TextBlock>
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel Margin="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Web server port</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                Artemis runs a local web server that can be used to externally interact with the application. <LineBreak />
+                                This web server can only be accessed by applications running on your own computer, e.g. supported games.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <TextBox Text="{Binding WebServerPortSetting.Value}" Width="80" />
+                        </StackPanel>
+                    </Grid>
                 </StackPanel>
             </materialDesign:Card>
 
