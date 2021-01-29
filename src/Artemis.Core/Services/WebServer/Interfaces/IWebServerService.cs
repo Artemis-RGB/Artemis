@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using EmbedIO;
 using EmbedIO.WebApi;
 
@@ -10,9 +11,14 @@ namespace Artemis.Core.Services
     public interface IWebServerService : IArtemisService
     {
         /// <summary>
-        ///     Gets the currently active instance of the web server
+        ///     Gets the current instance of the web server, replaced when <see cref="WebServerStarting" /> occurs.
         /// </summary>
         WebServer? Server { get; }
+
+        /// <summary>
+        ///     Gets the plugins module containing all plugin end points
+        /// </summary>
+        PluginsModule PluginsModule { get; }
 
         /// <summary>
         ///     Adds a new endpoint for the given plugin feature receiving an object of type <typeparamref name="T" />
@@ -67,7 +73,7 @@ namespace Artemis.Core.Services
         /// <param name="endPointName">The name of the end point, must be unique</param>
         /// <param name="requestHandler"></param>
         /// <returns>The resulting end point</returns>
-        RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Action<IHttpContext> requestHandler);
+        RawPluginEndPoint AddRawEndPoint(PluginFeature feature, string endPointName, Func<IHttpContext, Task> requestHandler);
 
         /// <summary>
         ///     Removes an existing endpoint
@@ -88,8 +94,8 @@ namespace Artemis.Core.Services
         void RemoveController<T>() where T : WebApiController;
 
         /// <summary>
-        ///     Occurs when a new instance of the web server was been created
+        ///     Occurs when the web server has been created and is about to start. This is the ideal place to add your own modules.
         /// </summary>
-        event EventHandler? WebServerCreated;
+        event EventHandler? WebServerStarting;
     }
 }

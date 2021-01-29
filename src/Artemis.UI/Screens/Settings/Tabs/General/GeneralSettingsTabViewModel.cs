@@ -79,6 +79,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
                 BrushType = "ColorBrush"
             });
+
+            WebServerPortSetting = _settingsService.GetSetting("WebServer.Port", 9696);
+            WebServerPortSetting.AutoSave = true;
         }
 
         public BindableCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
@@ -233,6 +236,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 _settingsService.GetSetting("Core.SampleSize", 1).Save();
             }
         }
+
+        public PluginSetting<int> WebServerPortSetting { get; }
 
         public bool CanOfferUpdatesIfFound
         {
