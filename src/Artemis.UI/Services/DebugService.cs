@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using Artemis.UI.Screens.Settings.Debug;
-using Artemis.UI.Services.Interfaces;
 using MaterialDesignExtensions.Controls;
 using Ninject;
 using Stylet;

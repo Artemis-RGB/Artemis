@@ -9,7 +9,6 @@ using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using Hardcodet.Wpf.TaskbarNotification;
 using MaterialDesignThemes.Wpf;
@@ -25,7 +24,6 @@ namespace Artemis.UI.Screens
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
-        private bool _canShowRootViewModel;
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
@@ -44,7 +42,6 @@ namespace Artemis.UI.Screens
             _windowManager = windowManager;
             _eventAggregator = eventAggregator;
             _debugService = debugService;
-            CanShowRootViewModel = true;
 
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnShutdownRequested;
@@ -64,23 +61,19 @@ namespace Artemis.UI.Screens
             }
         }
 
-        public bool CanShowRootViewModel
-        {
-            get => _canShowRootViewModel;
-            set => SetAndNotify(ref _canShowRootViewModel, value);
-        }
-
         public void TrayBringToForeground()
         {
-            if (!CanShowRootViewModel)
+            if (IsMainWindowOpen)
+            {
+                Execute.PostToUIThread(FocusMainWindow);
                 return;
+            }
 
             // Initialize the shared UI when first showing the window
             if (!UI.Shared.Bootstrapper.Initialized)
                 UI.Shared.Bootstrapper.Initialize(_kernel);
 
-            CanShowRootViewModel = false;
-            Execute.OnUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 _splashViewModel?.RequestClose();
                 _splashViewModel = null;
@@ -115,24 +108,25 @@ namespace Artemis.UI.Screens
 
         public void OnTrayBalloonTipClicked(object sender, EventArgs e)
         {
-            if (CanShowRootViewModel)
-            {
+            if (!IsMainWindowOpen)
                 TrayBringToForeground();
-            }
             else
-            {
-                // Wrestle the main window to the front
-                Window mainWindow = (Window) _rootViewModel.View;
-                if (mainWindow.WindowState == WindowState.Minimized)
-                    mainWindow.WindowState = WindowState.Normal;
-                mainWindow.Activate();
-                mainWindow.Topmost = true;
-                mainWindow.Topmost = false;
-                mainWindow.Focus();
-            }
+                FocusMainWindow();
         }
 
-        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        private void FocusMainWindow()
+        {
+            // Wrestle the main window to the front
+            Window mainWindow = (Window) _rootViewModel.View;
+            if (mainWindow.WindowState == WindowState.Minimized)
+                mainWindow.WindowState = WindowState.Normal;
+            mainWindow.Activate();
+            mainWindow.Topmost = true;
+            mainWindow.Topmost = false;
+            mainWindow.Focus();
+        }
+
+        private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
             Execute.OnUIThread(() => _taskBarIcon?.Dispose());
         }
@@ -150,8 +144,6 @@ namespace Artemis.UI.Screens
         {
             _rootViewModel.Closed -= RootViewModelOnClosed;
             _rootViewModel = null;
-
-            CanShowRootViewModel = true;
             OnMainWindowClosed();
         }
 
@@ -198,16 +190,16 @@ namespace Artemis.UI.Screens
 
         public bool OpenMainWindow()
         {
-            if (CanShowRootViewModel)
-                return false;
-
-            TrayBringToForeground();
-            return true;
+            if (IsMainWindowOpen)
+                Execute.OnUIThread(FocusMainWindow);
+            else
+                TrayBringToForeground();
+            return _rootViewModel.ScreenState == ScreenState.Active;
         }
 
         public bool CloseMainWindow()
         {
-            _rootViewModel.RequestClose();
+            Execute.OnUIThread(() => _rootViewModel.RequestClose());
             return _rootViewModel.ScreenState == ScreenState.Closed;
         }
 

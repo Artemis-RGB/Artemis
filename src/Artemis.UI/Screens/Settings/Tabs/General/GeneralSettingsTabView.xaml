@@ -69,6 +69,28 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Startup delay</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                Set the amount of seconds to wait before running Artemis with Windows. <LineBreak/>
+                                If some devices don't work because Artemis starts before the manufacturer's software, try increasing this value.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <TextBox Text="{Binding AutoRunDelay}" IsEnabled="{Binding StartWithWindows}" Width="80" materialDesign:TextFieldAssist.SuffixText="sec"/>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Color scheme</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
                                 Pick between a light and dark color scheme, the automatic option copies your Windows settings.
@@ -89,62 +111,14 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Setup wizard</TextBlock>
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                Opens the startup wizard usually shown when Artemis first starts.
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Log level</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                Sets the logging level, a higher logging level will result in more log files.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowSetupWizard}" Width="150">
-                                SHOW WIZARD
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Debugger</TextBlock>
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                Use the debugger to see the raw image Artemis is rendering on the surface.
-                            </TextBlock>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}" Width="150">
-                                SHOW DEBUGGER
-                            </Button>
-                        </StackPanel>
-                    </Grid>
-                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Application files</TextBlock>
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
-                                Opens the directory where application files like plugins and settings are stored.
-                            </TextBlock>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDataFolder}" Width="150">
-                                SHOW APP FILES
-                            </Button>
+                            <ComboBox Width="80" SelectedValue="{Binding SelectedLogLevel}" ItemsSource="{Binding LogLevels}" SelectedValuePath="Value" DisplayMemberPath="Description" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -170,8 +144,13 @@
                             </Button>
                         </StackPanel>
                     </Grid>
-                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-                 
+                </StackPanel>
+            </materialDesign:Card>
+
+            <!-- Web server settings -->
+            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Web server</TextBlock>
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel Margin="15">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />
@@ -182,16 +161,16 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Log level</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Web server port</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                Sets the logging level, a higher logging level will result in more log files.
+                                Artemis runs a local web server that can be used to externally interact with the application. <LineBreak />
+                                This web server can only be accessed by applications running on your own computer, e.g. supported games.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedValue="{Binding SelectedLogLevel}" ItemsSource="{Binding LogLevels}" SelectedValuePath="Value" DisplayMemberPath="Description" />
+                            <TextBox Text="{Binding WebServerPortSetting.Value}" Width="80" />
                         </StackPanel>
                     </Grid>
-
                 </StackPanel>
             </materialDesign:Card>
 
@@ -391,6 +370,82 @@
                     </Grid>
                 </StackPanel>
             </materialDesign:Card>
+
+
+            <!-- Tools -->
+            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Tools</TextBlock>
+            <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
+                <StackPanel Margin="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Setup wizard</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                Opens the startup wizard usually shown when Artemis first starts.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowSetupWizard}" Width="150">
+                                SHOW WIZARD
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Debugger</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                Use the debugger to see the raw image Artemis is rendering on the surface.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDebugger}" Width="150">
+                                SHOW DEBUGGER
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Application files</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
+                                Opens the directory where application files like plugins and settings are stored.
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowDataFolder}" Width="150">
+                                SHOW APP FILES
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </materialDesign:Card>
+
         </StackPanel>
     </ScrollViewer>
 </UserControl>

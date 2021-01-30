@@ -10,7 +10,6 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
 using Artemis.UI.Screens.Settings.Dialogs;
-using Artemis.UI.Services.Interfaces;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Newtonsoft.Json.Linq;
@@ -209,7 +208,7 @@ namespace Artemis.UI.Services
                 AutoUpdate();
         }
 
-        private void WindowServiceOnMainWindowOpened(object? sender, EventArgs e)
+        private void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
         {
             _logger.Information("Main window opened!");
         }
