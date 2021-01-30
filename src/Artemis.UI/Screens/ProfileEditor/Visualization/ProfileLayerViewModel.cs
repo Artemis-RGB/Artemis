@@ -6,7 +6,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization

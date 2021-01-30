@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Shared;
-using Artemis.UI.Services.Interfaces;
+using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;

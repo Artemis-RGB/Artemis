@@ -2,7 +2,6 @@
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
-using Artemis.UI.Services.Interfaces;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 

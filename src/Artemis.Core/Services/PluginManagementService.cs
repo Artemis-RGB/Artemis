@@ -9,6 +9,7 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
+using Humanizer;
 using McMaster.NETCore.Plugins;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
@@ -342,6 +343,10 @@ namespace Artemis.Core.Services
                     // Include Plugin as a parameter for the PluginSettingsProvider
                     IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
                     PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureType, parameters);
+
+                    // Get the PluginFeature attribute which contains extra info on the feature
+                    PluginFeatureAttribute? pluginFeatureAttribute = (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute));
+                    instance.Info = new PluginFeatureInfo(instance, pluginFeatureAttribute);
                     plugin.AddFeature(instance);
 
                     // Load the enabled state and if not found, default to true

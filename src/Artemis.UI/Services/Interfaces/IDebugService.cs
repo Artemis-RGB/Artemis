@@ -1,4 +1,4 @@
-﻿namespace Artemis.UI.Services.Interfaces
+﻿namespace Artemis.UI.Services
 {
     public interface IDebugService : IArtemisUIService
     {

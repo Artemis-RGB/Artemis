@@ -3,15 +3,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
-using Artemis.Core.DeviceProviders;
-using Artemis.Core.LayerBrushes;
-using Artemis.Core.LayerEffects;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
-using Humanizer;
-using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
@@ -20,9 +13,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
-        private IMessageService _messageService;
         private bool _enabling;
-        
+        private readonly IMessageService _messageService;
+
         public PluginFeatureViewModel(PluginFeature feature,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
@@ -33,14 +26,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _messageService = messageService;
 
             Feature = feature;
-            Icon = GetIconKind();
         }
 
         public PluginFeature Feature { get; }
-        public PackIconKind Icon { get; }
-
-        public string Name => Feature.GetType().Name.Humanize();
-
         public Exception LoadException => Feature.LoadException;
 
         public bool Enabling
@@ -109,7 +97,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
                 catch (Exception e)
                 {
-                    _messageService.ShowMessage($"Failed to enable {Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _messageService.ShowMessage($"Failed to enable {Feature.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {
@@ -121,20 +109,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 _pluginManagementService.DisablePluginFeature(Feature, true);
                 NotifyOfPropertyChange(nameof(IsEnabled));
             }
-        }
-
-        private PackIconKind GetIconKind()
-        {
-            return Feature switch
-            {
-                BaseDataModelExpansion => PackIconKind.TableAdd,
-                DeviceProvider => PackIconKind.Devices,
-                ProfileModule => PackIconKind.VectorRectangle,
-                Module => PackIconKind.GearBox,
-                LayerBrushProvider => PackIconKind.Brush,
-                LayerEffectProvider => PackIconKind.AutoAwesome,
-                _ => PackIconKind.Plugin
-            };
         }
 
         #region Event handlers
