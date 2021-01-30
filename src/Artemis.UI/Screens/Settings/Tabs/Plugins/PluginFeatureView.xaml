@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:PluginFeatureViewModel}">
@@ -21,8 +22,9 @@
         </Grid.ColumnDefinitions>
 
         <!-- Icon column -->
-        <materialDesign:PackIcon Grid.Column="0"
-                                 Kind="{Binding Icon}"
+        <shared:ArtemisIcon Grid.Column="0"
+                                 Icon="{Binding Feature.Info.Icon}"
+                                 Width="20"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Center"
                                  Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
@@ -40,7 +42,7 @@
         </Button>
 
         <!-- Display name column -->
-        <TextBlock Grid.Column="1" Text="{Binding Name}" Style="{StaticResource MaterialDesignTextBlock}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="1" Text="{Binding Feature.Info.Name}" Style="{StaticResource MaterialDesignTextBlock}" VerticalAlignment="Center" ToolTip="{Binding Feature.Info.Description}" />
 
         <!-- Enable toggle column -->
         <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8"

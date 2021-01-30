@@ -125,7 +125,19 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 _settingsService.GetSetting("UI.AutoRun", false).Value = value;
                 _settingsService.GetSetting("UI.AutoRun", false).Save();
                 NotifyOfPropertyChange(nameof(StartWithWindows));
-                Task.Run(ApplyAutorun);
+                Task.Run(() => ApplyAutorun(false));
+            }
+        }
+
+        public int AutoRunDelay
+        {
+            get => _settingsService.GetSetting("UI.AutoRunDelay", 15).Value;
+            set
+            {
+                _settingsService.GetSetting("UI.AutoRunDelay", 15).Value = value;
+                _settingsService.GetSetting("UI.AutoRunDelay", 15).Save();
+                NotifyOfPropertyChange(nameof(AutoRunDelay));
+                Task.Run(() => ApplyAutorun(true));
             }
         }
 
@@ -293,11 +305,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
         protected override void OnInitialActivate()
         {
-            Task.Run(ApplyAutorun);
+            Task.Run(() => ApplyAutorun(false));
             base.OnInitialActivate();
         }
 
-        private void ApplyAutorun()
+        private void ApplyAutorun(bool recreate)
         {
             if (!StartWithWindows)
                 StartMinimized = false;
@@ -307,23 +319,29 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             if (File.Exists(autoRunFile))
                 File.Delete(autoRunFile);
 
+            // TODO: Don't do anything if running a development build, only auto-run release builds
+            
             // Create or remove the task if necessary
             try
             {
-                Process schtasks = new()
+                bool taskCreated = false;
+                if (!recreate)
                 {
-                    StartInfo =
+                    Process schtasks = new()
                     {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        UseShellExecute = true,
-                        FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                        Arguments = "/TN \"Artemis 2 autorun\""
-                    }
-                };
+                        StartInfo =
+                        {
+                            WindowStyle = ProcessWindowStyle.Hidden,
+                            UseShellExecute = true,
+                            FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
+                            Arguments = "/TN \"Artemis 2 autorun\""
+                        }
+                    };
 
-                schtasks.Start();
-                schtasks.WaitForExit();
-                bool taskCreated = schtasks.ExitCode == 0;
+                    schtasks.Start();
+                    schtasks.WaitForExit();
+                    taskCreated = schtasks.ExitCode == 0;
+                }
 
                 if (StartWithWindows && !taskCreated)
                     CreateAutoRunTask();
@@ -347,6 +365,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Author")
                 .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
 
+            task.Descendants().First(d => d.Name.LocalName == "Triggers").Descendants().First(d => d.Name.LocalName == "LogonTrigger").Descendants().First(d => d.Name.LocalName == "Delay")
+                .SetValue(TimeSpan.FromSeconds(AutoRunDelay));
+
             task.Descendants().First(d => d.Name.LocalName == "Principals").Descendants().First(d => d.Name.LocalName == "Principal").Descendants().First(d => d.Name.LocalName == "UserId")
                 .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().User.Value);
 
@@ -369,7 +390,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                     UseShellExecute = true,
                     Verb = "runas",
                     FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                    Arguments = $"/Create /XML \"{xmlPath}\" /tn \"Artemis 2 autorun\""
+                    Arguments = $"/Create /XML \"{xmlPath}\" /tn \"Artemis 2 autorun\" /F"
                 }
             };
 

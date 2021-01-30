@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.Modules;
 using Humanizer;
+using Newtonsoft.Json;
 
 namespace Artemis.Core.DataModelExpansions
 {
@@ -28,12 +29,14 @@ namespace Artemis.Core.DataModelExpansions
         /// <summary>
         ///     Gets the plugin feature this data model belongs to
         /// </summary>
+        [JsonIgnore]
         [DataModelIgnore]
         public DataModelPluginFeature Feature { get; internal set; }
 
         /// <summary>
         ///     Gets the <see cref="DataModelPropertyAttribute" /> describing this data model
         /// </summary>
+        [JsonIgnore]
         [DataModelIgnore]
         public DataModelPropertyAttribute DataModelDescription { get; internal set; }
 
