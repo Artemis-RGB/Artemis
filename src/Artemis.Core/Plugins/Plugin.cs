@@ -44,7 +44,6 @@ namespace Artemis.Core
         /// </summary>
         public DirectoryInfo Directory { get; }
 
-
         /// <summary>
         ///     Gets or sets a configuration dialog for this plugin that is accessible in the UI under Settings > Plugins
         /// </summary>

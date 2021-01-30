@@ -52,8 +52,6 @@ namespace Artemis.Core.Services
                 .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception))
                 .HandleUnhandledException(JsonExceptionHandlerCallback);
 
-            // Add built-in core controllers to the API module
-            apiModule.RegisterController(() => _kernel.Get<PluginsController>());
             // Add registered controllers to the API module
             foreach (WebApiControllerRegistration registration in _controllers)
                 apiModule.RegisterController(registration.ControllerType, (Func<WebApiController>) registration.UntypedFactory);
@@ -177,7 +175,8 @@ namespace Artemis.Core.Services
         {
             context.Response.ContentType = MimeType.Json;
             await using TextWriter writer = context.OpenResponseText();
-            await writer.WriteAsync(JsonConvert.SerializeObject(data));
+            string json = JsonConvert.SerializeObject(data, new JsonSerializerSettings {PreserveReferencesHandling = PreserveReferencesHandling.Objects});
+            await writer.WriteAsync(json);
         }
 
         private async Task HandleHttpExceptionJson(IHttpContext context, IHttpException httpException)

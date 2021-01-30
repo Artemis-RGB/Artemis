@@ -5,7 +5,7 @@ using EmbedIO;
 using EmbedIO.Routing;
 using EmbedIO.WebApi;
 
-namespace Artemis.UI.Services
+namespace Artemis.UI.Controllers
 {
     public class RemoteController : WebApiController
     {

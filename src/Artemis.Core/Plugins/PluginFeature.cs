@@ -14,6 +14,11 @@ namespace Artemis.Core
         private Exception? _loadException;
 
         /// <summary>
+        ///     Gets the plugin feature info related to this feature
+        /// </summary>
+        public PluginFeatureInfo Info { get; internal set; } = null!; // Will be set right after construction
+
+        /// <summary>
         ///     Gets the plugin that provides this feature
         /// </summary>
         public Plugin Plugin { get; internal set; } = null!; // Will be set right after construction
