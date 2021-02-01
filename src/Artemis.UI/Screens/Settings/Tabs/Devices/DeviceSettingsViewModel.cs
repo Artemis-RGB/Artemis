@@ -14,14 +14,13 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Devices
 {
-    public class DeviceSettingsViewModel : PropertyChangedBase
+    public class DeviceSettingsViewModel : Screen
     {
         private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
         private readonly ISurfaceService _surfaceService;
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IWindowManager _windowManager;
-        private bool _isDeviceEnabled;
 
         public DeviceSettingsViewModel(ArtemisDevice device,
             IDeviceService deviceService,
@@ -40,9 +39,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
             Name = Device.RgbDevice.DeviceInfo.Model;
             Manufacturer = Device.RgbDevice.DeviceInfo.Manufacturer;
-
-            // TODO: Implement this bad boy
-            IsDeviceEnabled = true;
         }
 
         public ArtemisDevice Device { get; }
@@ -56,8 +52,27 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 
         public bool IsDeviceEnabled
         {
-            get => _isDeviceEnabled;
-            set => SetAndNotify(ref _isDeviceEnabled, value);
+            get => Device.IsEnabled;
+            set
+            {
+                Task.Run(() => UpdateIsDeviceEnabled(value));
+                
+            }
+        }
+
+        private async Task UpdateIsDeviceEnabled(bool value)
+        {
+            if (!value)
+                value = !await ((DeviceSettingsTabViewModel)Parent).ShowDeviceDisableDialog();
+            
+            Device.IsEnabled = value;
+            NotifyOfPropertyChange(nameof(IsDeviceEnabled));
+            SaveDevice();
+        }
+
+        private void SaveDevice()
+        {
+            _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
         }
 
         public void IdentifyDevice()
@@ -85,10 +100,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         public async Task DetectInput()
         {
             object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(
-                new Dictionary<string, object> { { "device", Device } }
+                new Dictionary<string, object> {{"device", Device}}
             );
 
-            if ((bool)madeChanges)
+            if ((bool) madeChanges)
                 _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
         }
 

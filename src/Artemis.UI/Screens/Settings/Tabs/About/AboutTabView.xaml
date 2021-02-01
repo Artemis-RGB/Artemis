@@ -5,43 +5,51 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Tabs.About"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:AboutTabViewModel}">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="15" MaxWidth="800">
-            <TextBlock Style="{StaticResource MaterialDesignHeadline2TextBlock}">
-                Artemis 2
-            </TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <shared:ArtemisIcon SvgSource="/Resources/Images/Logo/bow.svg" Width="60" Height="80" Margin="0 0 20 0" />
+                <TextBlock Style="{StaticResource MaterialDesignHeadline2TextBlock}">
+                    Artemis 2
+                </TextBlock>
+            </StackPanel>
             <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}" Text="{Binding Version}" />
 
             <materialDesign:Card Margin="0 25 0 0">
                 <StackPanel Margin="15">
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}">
-                        Lead developer
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
-                        Spoinky (Robert Beekman)
-                    </TextBlock>
-
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="0 25 0 0">
-                        Main contributors
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
-                        DarthAffe
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
-                        DrMeteor (Diogo Trindade)
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Account" Width="60" Height="40" />
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                            Lead developer
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" Margin="10 0 0 0">
+                        - Spoinky (Robert Beekman)
                     </TextBlock>
 
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" Margin="0 25 0 0">
-                        Special thanks
+                    <StackPanel Orientation="Horizontal" Margin="0 25 0 0">
+                        <materialDesign:PackIcon Kind="AccountGroup" Width="60" Height="40" />
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                            Main contributors
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" LineHeight="25" Margin="10 0 0 0">
+                        -  DarthAffe <LineBreak />
+                        -  DrMeteor (Diogo Trindade)
                     </TextBlock>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
-                        All the people on Discord provinding feedback and testing
-                    </TextBlock>
-                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}">
-                        Aureshion - Default device images
+                    <StackPanel Orientation="Horizontal" Margin="0 25 0 0">
+                        <materialDesign:PackIcon Kind="AccountHeart" Width="60" Height="40" />
+                        <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}">
+                            Special thanks
+                        </TextBlock>
+                    </StackPanel>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" LineHeight="25" Margin="10 0 0 0">
+                        - All the people on Discord providing feedback and testing<LineBreak />
+                        - Aureshion - Default device images
                     </TextBlock>
                 </StackPanel>
             </materialDesign:Card>

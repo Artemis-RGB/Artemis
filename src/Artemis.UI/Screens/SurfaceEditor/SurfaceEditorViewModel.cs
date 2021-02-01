@@ -176,7 +176,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                     List<SurfaceDeviceViewModel> deviceViewModels = new();
 
                     // Add missing/update existing
-                    foreach (ArtemisDevice surfaceDeviceConfiguration in SelectedSurface.Devices.OrderBy(d => d.ZIndex).ToList())
+                    foreach (ArtemisDevice surfaceDeviceConfiguration in SelectedSurface.Devices.Where(d => d.IsEnabled).OrderBy(d => d.ZIndex).ToList())
                     {
                         // Create VMs for missing devices
                         SurfaceDeviceViewModel viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
