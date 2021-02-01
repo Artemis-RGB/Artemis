@@ -98,7 +98,7 @@ namespace Artemis.Core
         internal void UpdateLedMap()
         {
             LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(
-                _devices.SelectMany(d => d.Leds.Select(al => new KeyValuePair<Led, ArtemisLed>(al.RgbLed, al))).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
+                _devices.Where(d => d.IsEnabled).SelectMany(d => d.Leds.Select(al => new KeyValuePair<Led, ArtemisLed>(al.RgbLed, al))).ToDictionary(kvp => kvp.Key, kvp => kvp.Value)
             );
         }
 

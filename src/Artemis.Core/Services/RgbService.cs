@@ -117,7 +117,7 @@ namespace Artemis.Core.Services
             {
                 // Apply the application wide brush and decorator
                 BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value), _sampleSizeSetting);
-                _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
+                _surfaceLedGroup = new ListLedGroup(artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
                 return;
             }
 
@@ -129,7 +129,7 @@ namespace Artemis.Core.Services
                 // Apply the application wide brush and decorator
                 BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
                 BitmapBrush.Surface = artemisSurface;
-                _surfaceLedGroup = new ListLedGroup(Surface.Leds) {Brush = BitmapBrush};
+                _surfaceLedGroup = new ListLedGroup(artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
             }
         }
 

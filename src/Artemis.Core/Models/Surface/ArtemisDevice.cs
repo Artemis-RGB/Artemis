@@ -30,7 +30,8 @@ namespace Artemis.Core
             RedScale = 1;
             GreenScale = 1;
             BlueScale = 1;
-
+            IsEnabled = true;
+            
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
 
@@ -210,6 +211,19 @@ namespace Artemis.Core
             {
                 DeviceEntity.BlueScale = value;
                 OnPropertyChanged(nameof(BlueScale));
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this devices is enabled or not
+        /// </summary>
+        public bool IsEnabled
+        {
+            get => DeviceEntity.IsEnabled;
+            set
+            {
+                DeviceEntity.IsEnabled = value;
+                OnPropertyChanged(nameof(IsEnabled));
             }
         }
 

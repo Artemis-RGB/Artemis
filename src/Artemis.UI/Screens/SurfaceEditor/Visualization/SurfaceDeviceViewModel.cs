@@ -116,7 +116,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
                 .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height))
                 .ToList();
             List<SKRect> others = Device.Surface.Devices
-                .Where(d => d != Device)
+                .Where(d => d != Device && d.IsEnabled)
                 .SelectMany(d => d.Leds)
                 .Select(l => SKRect.Create(l.Rectangle.Left + (float) l.Device.X, l.Rectangle.Top + (float) l.Device.Y, l.Rectangle.Width, l.Rectangle.Height))
                 .ToList();

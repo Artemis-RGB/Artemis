@@ -18,6 +18,7 @@ namespace Artemis.Storage.Entities.Surface
         public double RedScale { get; set; }
         public double GreenScale { get; set; }
         public double BlueScale { get; set; }
+        public bool IsEnabled { get; set; }
 
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
     }

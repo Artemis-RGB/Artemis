@@ -10,7 +10,14 @@
              d:DataContext="{d:DesignInstance local:DeviceSettingsTabViewModel}">
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Margin="0 12 0 0">
         <DockPanel Margin="15" MaxWidth="1230" HorizontalAlignment="Center">
-            <TextBlock DockPanel.Dock="Top">Below you view and manage the devices that were detected by Artemis</TextBlock>
+            <StackPanel DockPanel.Dock="Top">
+                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}">Device management</TextBlock>
+                <TextBlock  Style="{StaticResource MaterialDesignTextBlock}">
+                    Below you view and manage the devices that were detected by Artemis. <LineBreak/>
+                    Disabling a device will cause it to stop updating. Some SDKs will even go back to using manufacturer lighting (Artemis restart may be required).
+                </TextBlock>
+            </StackPanel>
+            
             <ItemsControl ItemsSource="{Binding Items}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
