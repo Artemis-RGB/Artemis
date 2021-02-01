@@ -270,7 +270,10 @@ namespace Artemis.Core.Services
             string? mainFile = plugin.ResolveRelativePath(plugin.Info.Main);
             if (!File.Exists(mainFile))
                 throw new ArtemisPluginException(plugin, "Couldn't find the plugins main entry at " + mainFile);
-
+            FileInfo[] fileInfos = directory.GetFiles();
+            if (!fileInfos.Any(f => string.Equals(f.Name, plugin.Info.Main, StringComparison.InvariantCulture)))
+                throw new ArtemisPluginException(plugin, "Plugin main entry casing mismatch at " + plugin.Info.Main);
+            
             // Load the plugin, all types implementing Plugin and register them with DI
             plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
             {
