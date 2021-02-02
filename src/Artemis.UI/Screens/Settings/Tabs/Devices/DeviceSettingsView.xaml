@@ -29,7 +29,7 @@
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <Rectangle Grid.Row="0" Height="140" Width="196" Fill="{DynamicResource MaterialDesignPaper}" />
+            <Rectangle Grid.Row="0" Fill="{DynamicResource MaterialDesignPaper}" />
             <shared:DeviceVisualizer Device="{Binding Device}" RenderOptions.BitmapScalingMode="HighQuality" Grid.Row="0" Height="130" Width="190" />
             <Button Grid.Row="0"
                     Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
@@ -56,26 +56,26 @@
                     <StackPanel>
                         <Button Command="{s:Action ShowDeviceDebugger}">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Tools" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="Tools" Margin="0 0 10 0 " VerticalAlignment="Center" />
                                 <TextBlock VerticalAlignment="Center">Show device debugger</TextBlock>
                             </StackPanel>
                         </Button>
                         <Button Command="{s:Action OpenPluginDirectory}">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center" />
                                 <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
                             </StackPanel>
                         </Button>
-                        <Separator/>
+                        <Separator />
                         <Button Command="{s:Action DetectInput}" ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="GestureDoubleTap" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="GestureDoubleTap" Margin="0 0 10 0 " VerticalAlignment="Center" />
                                 <TextBlock VerticalAlignment="Center">Identify input</TextBlock>
                             </StackPanel>
                         </Button>
                         <Button Command="{s:Action ViewProperties}">
                             <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Gear" Margin="0 0 10 0 " VerticalAlignment="Center"/>
+                                <materialDesign:PackIcon Kind="Gear" Margin="0 0 10 0 " VerticalAlignment="Center" />
                                 <TextBlock VerticalAlignment="Center">View surface properties</TextBlock>
                             </StackPanel>
                         </Button>
