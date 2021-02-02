@@ -19,6 +19,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15 0 0">Module priority</TextBlock>
                 <TextBlock TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}">
                     Drag and drop the modules below to change their rendering priority. <LineBreak /><LineBreak />
                     - Like in the profile editor, the modules at the top render over modules at the bottom <LineBreak />
