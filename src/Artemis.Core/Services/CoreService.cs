@@ -168,8 +168,28 @@ namespace Artemis.Core.Services
 
         private void ApplyLoggingLevel()
         {
-            _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
-            LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
+            string? argument = StartupArguments.FirstOrDefault(a => a.StartsWith("--logging"));
+            if (argument != null)
+            {
+                // Parse the provided log level
+                string[] parts = argument.Split('=');
+                if (parts.Length == 2 && Enum.TryParse(typeof(LogEventLevel), parts[1], true, out object? logLevelArgument))
+                {
+                    _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel) logLevelArgument!);
+                    LoggerProvider.LoggingLevelSwitch.MinimumLevel = (LogEventLevel) logLevelArgument;
+                }
+                else
+                {
+                    _logger.Warning("Failed to set log level from startup argument {argument}", argument);
+                    _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
+                    LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
+                }
+            }
+            else
+            {
+                _logger.Information("Setting logging level to {loggingLevel}", _loggingLevel.Value);
+                LoggerProvider.LoggingLevelSwitch.MinimumLevel = _loggingLevel.Value;
+            }
         }
 
         private void SurfaceOnUpdating(UpdatingEventArgs args)

@@ -64,6 +64,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             {
                 if (!SetAndNotify(ref _selectedDataBindingMode, value)) return;
                 ApplyDataBindingMode();
+                Update();
             }
         }
 
@@ -145,6 +146,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             if (Registration.DataBinding == null)
             {
+                IsDataBindingEnabled = false;
                 IsEasingTimeEnabled = false;
                 return;
             }
@@ -199,7 +201,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             Registration.DataBinding.ChangeDataBindingMode(SelectedDataBindingMode);
             CreateDataBindingModeModeViewModel();
-
             _profileEditorService.UpdateSelectedProfileElement();
         }
 

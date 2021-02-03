@@ -142,6 +142,7 @@
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
+    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
     <PackageReference Include="RawInput.Sharp" Version="0.0.3" />
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.2" />
