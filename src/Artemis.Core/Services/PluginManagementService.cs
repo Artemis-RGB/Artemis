@@ -273,7 +273,7 @@ namespace Artemis.Core.Services
             FileInfo[] fileInfos = directory.GetFiles();
             if (!fileInfos.Any(f => string.Equals(f.Name, plugin.Info.Main, StringComparison.InvariantCulture)))
                 throw new ArtemisPluginException(plugin, "Plugin main entry casing mismatch at " + plugin.Info.Main);
-            
+
             // Load the plugin, all types implementing Plugin and register them with DI
             plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
             {
@@ -435,6 +435,55 @@ namespace Artemis.Core.Services
             }
 
             OnPluginDisabled(new PluginEventArgs(plugin));
+        }
+
+        /// <inheritdoc />
+        public Plugin ImportPlugin(string fileName)
+        {
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
+
+            // Find the metadata file in the zip
+            using ZipArchive archive = ZipFile.OpenRead(fileName);
+            ZipArchiveEntry? metaDataFileEntry = archive.Entries.FirstOrDefault(e => e.Name == "plugin.json");
+            if (metaDataFileEntry == null)
+                throw new ArtemisPluginException("Couldn't find a plugin.json in " + fileName);
+
+
+            using StreamReader reader = new(metaDataFileEntry.Open());
+            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+            if (!pluginInfo.Main.EndsWith(".dll"))
+                throw new ArtemisPluginException("Main entry in plugin.json must point to a .dll file" + fileName);
+
+            Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
+            if (existing != null)
+                throw new ArtemisPluginException($"A plugin with the same GUID is already loaded: {existing.Info}");
+
+            string targetDirectory = pluginInfo.Main.Split(".dll")[0].Replace("/", "").Replace("\\", "");
+            string uniqueTargetDirectory = targetDirectory;
+            int attempt = 2;
+
+            // Find a unique folder
+            while (pluginDirectory.EnumerateDirectories().Any(d => d.Name == uniqueTargetDirectory))
+            {
+                uniqueTargetDirectory = targetDirectory + "-" + attempt;
+                attempt++;
+            }
+
+            // Extract everything in the same archive directory to the unique plugin directory
+            DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, uniqueTargetDirectory));
+            Directory.CreateDirectory(directoryInfo.FullName);
+            string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
+            foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
+            {
+                if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory))
+                {
+                    string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
+                    zipArchiveEntry.ExtractToFile(target);
+                }
+            }
+
+            // Load the newly extracted plugin and return the result
+            return LoadPlugin(directoryInfo);
         }
 
         #endregion
