@@ -64,6 +64,13 @@ namespace Artemis.Core.Services
         void DisablePlugin(Plugin plugin, bool saveState);
 
         /// <summary>
+        ///     Imports the plugin contained in the provided ZIP file
+        /// </summary>
+        /// <param name="fileName">The full path to the ZIP file that contains the plugin</param>
+        /// <returns>The resulting plugin</returns>
+        Plugin ImportPlugin(string fileName);
+
+        /// <summary>
         ///     Enables the provided plugin feature
         /// </summary>
         /// <param name="pluginFeature">The feature to enable</param>

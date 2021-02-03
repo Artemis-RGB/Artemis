@@ -14,25 +14,35 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Margin="0 15" MaxWidth="800" >
+        <Grid Margin="0 15" MinWidth="810" Width="{Binding Path=ActualWidth, ElementName=PluginsContainer}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" TextWrapping="Wrap">
-                The list below shows all loaded plugins. If you're missing something, view your logs folder.
+                The list below shows all loaded plugins. <LineBreak />
+                If you're missing something, view your logs folder.
             </TextBlock>
             <materialDesign:PackIcon Grid.Column="1" Kind="Search" VerticalAlignment="Top" Margin="15 5 0 0" />
-            <TextBox Grid.Column="2" 
+            <TextBox Grid.Column="2"
                      materialDesign:TextFieldAssist.HasClearButton="True"
                      materialDesign:HintAssist.Hint="Search plugin"
                      VerticalAlignment="Top"
-                     Margin="5 0" 
-                     Text="{Binding SearchPluginInput, Delay=300, UpdateSourceTrigger=PropertyChanged}"/>
+                     Margin="5 0"
+                     Text="{Binding SearchPluginInput, Delay=300, UpdateSourceTrigger=PropertyChanged}" />
+
+            <Button Grid.Column="3"
+                    HorizontalAlignment="Right"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
+                    Command="{s:Action ImportPlugin}"
+                    Margin="15 0">
+                IMPORT PLUGIN
+            </Button>
         </Grid>
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Items}" Margin="15 0 15 15" HorizontalAlignment="Center"  MaxWidth="1700">
+            <ItemsControl ItemsSource="{Binding Items}" Margin="15 0 15 15" HorizontalAlignment="Center" MaxWidth="1700" x:Name="PluginsContainer">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />
