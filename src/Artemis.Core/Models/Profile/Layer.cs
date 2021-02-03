@@ -183,6 +183,8 @@ namespace Artemis.Core
             General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
             ActivateLayerBrush();
+            
+            Reset();
         }
 
         #region Storage
@@ -272,7 +274,7 @@ namespace Artemis.Core
         public override void Reset()
         {
             DisplayConditionMet = false;
-            Timeline.JumpToStart();
+            Timeline.JumpToEnd();
         }
 
         /// <inheritdoc />

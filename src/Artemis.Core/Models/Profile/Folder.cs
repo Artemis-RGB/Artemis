@@ -96,7 +96,7 @@ namespace Artemis.Core
         public override void Reset()
         {
             DisplayConditionMet = false;
-            Timeline.JumpToStart();
+            Timeline.JumpToEnd();
 
             foreach (ProfileElement child in Children)
                 child.Reset();
