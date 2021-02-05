@@ -253,13 +253,13 @@ namespace Artemis.Core.Services
             PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
 
             if (pluginInfo.Guid == Constants.CorePluginInfo.Guid)
-                throw new ArtemisPluginException($"Plugin cannot use reserved GUID {pluginInfo.Guid}");
+                throw new ArtemisPluginException($"Plugin {pluginInfo} cannot use reserved GUID {pluginInfo.Guid}");
 
             lock (_plugins)
             {
                 // Ensure the plugin is not already loaded
                 if (_plugins.Any(p => p.Guid == pluginInfo.Guid))
-                    throw new ArtemisCoreException("Cannot load a plugin that is already loaded");
+                    throw new ArtemisCoreException($"Cannot load plugin {pluginInfo} because it is using a GUID already used by another plugin");
             }
 
             // Load the entity and fall back on creating a new one
