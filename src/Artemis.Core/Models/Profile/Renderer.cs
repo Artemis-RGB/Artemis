@@ -7,6 +7,8 @@ namespace Artemis.Core
     {
         private bool _valid;
         private bool _disposed;
+        private SKRect _lastBounds;
+        private SKRect _lastParentBounds;
         public SKBitmap? Bitmap { get; private set; }
         public SKCanvas? Canvas { get; private set; }
         public SKPaint? Paint { get; private set; }
@@ -26,6 +28,9 @@ namespace Artemis.Core
             if (IsOpen)
                 throw new ArtemisCoreException("Cannot open render context because it is already open");
 
+            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds))
+                Invalidate();
+
             if (!_valid || Canvas == null)
             {
                 SKRect pathBounds = path.Bounds;
@@ -43,6 +48,8 @@ namespace Artemis.Core
 
                 Canvas.ClipPath(Path);
 
+                _lastParentBounds = parent?.Bounds ?? new SKRect();
+                _lastBounds = path.Bounds;
                 _valid = true;
             }
 
@@ -58,7 +65,7 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException("Renderer");
-            
+
             Canvas?.Restore();
             Paint?.Dispose();
             Paint = null;
