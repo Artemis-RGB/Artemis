@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RGB.NET.Core;
 using RGB.NET.Groups;
+using RGB.NET.Layout;
 using Serilog;
 
 namespace Artemis.Core.Services
@@ -26,7 +27,7 @@ namespace Artemis.Core.Services
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
             _sampleSizeSetting = settingsService.GetSetting("Core.SampleSize", 1);
 
-            Surface = RGBSurface.Instance;
+            Surface = new RGBSurface();
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
@@ -50,7 +51,11 @@ namespace Artemis.Core.Services
         {
             try
             {
-                Surface.LoadDevices(deviceProvider, RGBDeviceType.All, false, true);
+                // Device provider may have been attached before..?
+                Surface.Detach(deviceProvider.Devices);
+
+                deviceProvider.Initialize(RGBDeviceType.All, true);
+                Surface.Attach(deviceProvider.Devices);
             }
             catch (Exception e)
             {
@@ -117,19 +122,19 @@ namespace Artemis.Core.Services
             {
                 // Apply the application wide brush and decorator
                 BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value), _sampleSizeSetting);
-                _surfaceLedGroup = new ListLedGroup(artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
+                _surfaceLedGroup = new ListLedGroup(Surface, artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
                 return;
             }
 
             lock (_surfaceLedGroup)
             {
                 // Clean up the old background
-                _surfaceLedGroup.Detach();
+                _surfaceLedGroup.Detach(Surface);
 
                 // Apply the application wide brush and decorator
                 BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
                 BitmapBrush.Surface = artemisSurface;
-                _surfaceLedGroup = new ListLedGroup(artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
+                _surfaceLedGroup = new ListLedGroup(Surface, artemisSurface.LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
             }
         }
 

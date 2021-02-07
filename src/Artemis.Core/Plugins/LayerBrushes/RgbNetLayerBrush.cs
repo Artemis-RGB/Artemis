@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Services;
+using Ninject;
 using RGB.NET.Core;
 using RGB.NET.Groups;
 using SkiaSharp;
@@ -20,7 +21,6 @@ namespace Artemis.Core.LayerBrushes
         /// </summary>
         protected RgbNetLayerBrush()
         {
-            LedGroup = new ListLedGroup();
             BrushType = LayerBrushType.RgbNet;
             SupportsTransformation = false;
         }
@@ -28,7 +28,10 @@ namespace Artemis.Core.LayerBrushes
         /// <summary>
         ///     The LED group this layer effect is applied to
         /// </summary>
-        public ListLedGroup LedGroup { get; internal set; }
+        public ListLedGroup? LedGroup { get; internal set; }
+
+        [Inject]
+        public IRgbService? RgbService { get; set; }
 
         /// <summary>
         ///     Called when Artemis needs an instance of the RGB.NET effect you are implementing
@@ -38,9 +41,14 @@ namespace Artemis.Core.LayerBrushes
 
         internal void UpdateLedGroup()
         {
-            // TODO: This simply renders it on top of the rest, get a ZIndex based on layer position
-            LedGroup.ZIndex = 1;
+            if (LedGroup == null)
+                return;
 
+            if (Layer.Parent != null)
+                LedGroup.ZIndex = Layer.Parent.Children.Count - Layer.Parent.Children.IndexOf(Layer);
+            else
+                LedGroup.ZIndex = 1;
+            
             List<Led> missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
             List<Led> extraLeds = LedGroup.GetLeds().Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
             LedGroup.AddLeds(missingLeds);
@@ -50,7 +58,10 @@ namespace Artemis.Core.LayerBrushes
 
         internal override void Initialize()
         {
-            LedGroup = new ListLedGroup();
+            if (RgbService == null)
+                throw new ArtemisCoreException("Cannot initialize RGB.NET layer brush because RgbService is not set");
+
+            LedGroup = new ListLedGroup(RgbService.Surface);
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
 
             InitializeProperties();
@@ -64,8 +75,12 @@ namespace Artemis.Core.LayerBrushes
         {
             if (disposing)
             {
+                if (RgbService == null)
+                    throw new ArtemisCoreException("Cannot dispose RGB.NET layer brush because RgbService is not set");
+
                 Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-                LedGroup.Detach();
+                LedGroup?.Detach(RgbService.Surface);
+                LedGroup = null;
             }
 
             base.Dispose(disposing);

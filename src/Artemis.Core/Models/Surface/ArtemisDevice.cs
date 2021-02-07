@@ -31,7 +31,7 @@ namespace Artemis.Core
             GreenScale = 1;
             BlueScale = 1;
             IsEnabled = true;
-            
+
             deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
             LayoutPath = layoutPath;
 
@@ -231,6 +231,11 @@ namespace Artemis.Core
         ///     Gets the path to where the layout of the device was (attempted to be) loaded from
         /// </summary>
         public string? LayoutPath { get; internal set; }
+
+        /// <summary>
+        ///     Gets the layout of the device expanded with Artemis-specific data
+        /// </summary>
+        public ArtemisLayout? Layout { get; internal set; }
 
         internal DeviceEntity DeviceEntity { get; }
 

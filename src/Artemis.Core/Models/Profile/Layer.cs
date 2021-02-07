@@ -287,7 +287,7 @@ namespace Artemis.Core
             if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
             // Ensure the brush is ready
-            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
+            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
             RenderTimeline(Timeline, canvas);
@@ -322,6 +322,9 @@ namespace Artemis.Core
                 return;
 
             ApplyTimeline(timeline);
+            
+            if (LayerBrush?.BrushType != LayerBrushType.Regular)
+                return;
 
             try
             {
