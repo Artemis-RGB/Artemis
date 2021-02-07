@@ -8,6 +8,13 @@ namespace Artemis.Core.Services
 {
     internal class DeviceService : IDeviceService
     {
+        private readonly IRgbService _rgbService;
+
+        public DeviceService(IRgbService rgbService)
+        {
+            _rgbService = rgbService;
+        }
+
         public void IdentifyDevice(ArtemisDevice device)
         {
             BlinkDevice(device, 0);
@@ -16,9 +23,9 @@ namespace Artemis.Core.Services
         private void BlinkDevice(ArtemisDevice device, int blinkCount)
         {
             // Create a LED group way at the top
-            ListLedGroup ledGroup = new(device.Leds.Select(l => l.RgbLed))
+            ListLedGroup ledGroup = new(_rgbService.Surface, device.Leds.Select(l => l.RgbLed))
             {
-                Brush = new SolidColorBrush(new Color(255, 255, 255)), 
+                Brush = new SolidColorBrush(new Color(255, 255, 255)),
                 ZIndex = 999
             };
 
@@ -26,7 +33,7 @@ namespace Artemis.Core.Services
             Task.Run(async () =>
             {
                 await Task.Delay(200);
-                ledGroup.Detach();
+                ledGroup.Detach(_rgbService.Surface);
 
                 if (blinkCount < 5)
                 {

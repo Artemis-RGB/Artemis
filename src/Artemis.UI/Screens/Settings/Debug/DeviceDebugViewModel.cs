@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.Settings.Debug
             }
         }
 
-        public bool CanOpenImageDirectory => Device.RgbDevice.DeviceInfo.Image != null;
+        public bool CanOpenImageDirectory => Device.Layout?.Image != null;
 
         // ReSharper disable UnusedMember.Global
 
@@ -70,7 +70,7 @@ namespace Artemis.UI.Screens.Settings.Debug
 
             try
             {
-                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.GetDirectoryName(Device.RgbDevice.DeviceInfo.Image.AbsolutePath));
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Path.GetDirectoryName(Device.Layout.Image.AbsolutePath));
             }
             catch (Exception e)
             {
