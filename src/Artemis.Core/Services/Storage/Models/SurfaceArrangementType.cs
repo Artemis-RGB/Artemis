@@ -66,7 +66,7 @@ namespace Artemis.Core.Services.Models
             {
                 HorizontalArrangementPosition.Left => devices.Min(d => d.RgbDevice.Location.X) - (AppliedConfiguration?.MarginLeft ?? 0.0),
                 HorizontalArrangementPosition.Right => devices.Max(d => d.RgbDevice.Location.X + d.RgbDevice.Size.Width) + (AppliedConfiguration?.MarginRight ?? 0.0),
-                HorizontalArrangementPosition.Center => devices.First().RgbDevice.DeviceRectangle.Center.X,
+                HorizontalArrangementPosition.Center => devices.First().RgbDevice.Boundary.Center.X,
                 HorizontalArrangementPosition.Equal => devices.First().RgbDevice.Location.X,
                 _ => throw new ArgumentOutOfRangeException(nameof(horizontalPosition), horizontalPosition, null)
             };
@@ -74,7 +74,7 @@ namespace Artemis.Core.Services.Models
             {
                 VerticalArrangementPosition.Top => devices.Min(d => d.RgbDevice.Location.Y) - (AppliedConfiguration?.MarginTop ?? 0.0),
                 VerticalArrangementPosition.Bottom => devices.Max(d => d.RgbDevice.Location.Y + d.RgbDevice.Size.Height) + (AppliedConfiguration?.MarginBottom ?? 0.0),
-                VerticalArrangementPosition.Center => devices.First().RgbDevice.DeviceRectangle.Center.Y,
+                VerticalArrangementPosition.Center => devices.First().RgbDevice.Boundary.Center.Y,
                 VerticalArrangementPosition.Equal => devices.First().RgbDevice.Location.Y,
                 _ => throw new ArgumentOutOfRangeException(nameof(verticalPosition), verticalPosition, null)
             };

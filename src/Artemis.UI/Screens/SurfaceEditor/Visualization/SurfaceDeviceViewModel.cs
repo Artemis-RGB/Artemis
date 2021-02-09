@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 
         public Rect DeviceRectangle => Device.RgbDevice == null
             ? new Rect()
-            : new Rect(Device.X, Device.Y, Device.RgbDevice.DeviceRectangle.Size.Width, Device.RgbDevice.DeviceRectangle.Size.Height);
+            : new Rect(Device.X, Device.Y, Device.RgbDevice.Boundary.Size.Width, Device.RgbDevice.Boundary.Size.Height);
 
         public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
                                       Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;

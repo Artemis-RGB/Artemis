@@ -46,10 +46,12 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _absoluteRectangle, value);
         }
 
+        public ArtemisLedLayout? Layout { get; set; }
+
         internal void CalculateRectangles()
         {
-            Rectangle = RgbLed.LedRectangle.ToSKRect();
-            AbsoluteRectangle = RgbLed.AbsoluteLedRectangle.ToSKRect();
+            Rectangle = RgbLed.Boundary.ToSKRect();
+            AbsoluteRectangle = RgbLed.AbsoluteBoundary.ToSKRect();
         }
 
         /// <inheritdoc />
