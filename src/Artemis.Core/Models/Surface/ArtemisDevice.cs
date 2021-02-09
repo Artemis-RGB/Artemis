@@ -300,7 +300,7 @@ namespace Artemis.Core
 
         internal void CalculateRenderProperties()
         {
-            Rectangle = RgbDevice.DeviceRectangle.ToSKRect();
+            Rectangle = RgbDevice.Boundary.ToSKRect();
             if (!Leds.Any())
                 return;
 
