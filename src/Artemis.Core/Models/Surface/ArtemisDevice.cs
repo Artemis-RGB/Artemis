@@ -5,6 +5,7 @@ using System.Linq;
 using Artemis.Core.DeviceProviders;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using RGB.NET.Layout;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -31,14 +32,13 @@ namespace Artemis.Core
             GreenScale = 1;
             BlueScale = 1;
             IsEnabled = true;
-
-            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
-            LayoutPath = layoutPath;
-
+            
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
 
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            LoadBestLayout();
             ApplyToEntity();
             CalculateRenderProperties();
         }
@@ -49,16 +49,14 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
             Surface = surface;
-
-            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
-            LayoutPath = layoutPath;
-
+            
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
 
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+            LoadBestLayout();
         }
 
         /// <summary>
@@ -228,11 +226,6 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the path to where the layout of the device was (attempted to be) loaded from
-        /// </summary>
-        public string? LayoutPath { get; internal set; }
-
-        /// <summary>
         ///     Gets the layout of the device expanded with Artemis-specific data
         /// </summary>
         public ArtemisLayout? Layout { get; internal set; }
@@ -264,6 +257,15 @@ namespace Artemis.Core
         {
             LedIds.TryGetValue(ledId, out ArtemisLed? artemisLed);
             return artemisLed;
+        }
+
+        public void LoadBestLayout()
+        {
+            ArtemisLayout artemisLayout = DeviceProvider.LoadLayout(RgbDevice);
+            if (artemisLayout.IsValid)
+                artemisLayout.DeviceLayout!.ApplyTo(RgbDevice);
+
+            Layout = artemisLayout;
         }
 
         internal void ApplyToEntity()

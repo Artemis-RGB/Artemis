@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Core.DeviceProviders;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services

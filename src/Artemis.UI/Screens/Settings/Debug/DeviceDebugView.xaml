@@ -121,24 +121,6 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
                                     <StackPanel Grid.Column="0">
-                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Lighting support</TextBlock>
-                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
-                                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
-                                               TextWrapping="Wrap"
-                                               Text="{Binding Device.RgbDevice.DeviceInfo.Lighting}" />
-                                    </StackPanel>
-                                </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device type</TextBlock>
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                                                Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
@@ -160,7 +142,7 @@
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device image</TextBlock>
                                         <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                              TextWrapping="Wrap"
-                                             Text="{Binding Device.RgbDevice.DeviceInfo.Image, Mode=OneWay}"
+                                             Text="{Binding Device.Layout.Image, Mode=OneWay}"
                                              IsReadOnly="True" />
                                     </StackPanel>
                                 </Grid>
@@ -220,25 +202,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <StackPanel Grid.Column="0">
-                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Syncback supported</TextBlock>
-                                        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
-                                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
-                                               TextWrapping="Wrap"
-                                               Text="{Binding Device.RgbDevice.DeviceInfo.SupportsSyncBack}" />
-                                    </StackPanel>
-                                </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
+                                
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -251,7 +215,7 @@
                                         <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Layout file path</TextBlock>
                                         <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                                              TextWrapping="Wrap"
-                                             Text="{Binding Device.LayoutPath, Mode=OneWay}"
+                                             Text="{Binding Device.Layout.FilePath, Mode=OneWay}"
                                              IsReadOnly="True" />
                                     </StackPanel>
                                 </Grid>
