@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -34,7 +34,15 @@ namespace Artemis.Core.DeviceProviders
         [Inject]
         public ILogger? Logger { get; set; }
 
-        internal Dictionary<IRGBDevice, string> DeviceLayoutPaths { get; set; } = new();
+        /// <summary>
+        ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards
+        /// </summary>
+        public bool CanDetectPhysicalLayout { get; protected set; }
+
+        /// <summary>
+        ///     A boolean indicating whether this device provider detects the logical layout of connected keyboards
+        /// </summary>
+        public bool CanDetectLogicalLayout { get; protected set; }
 
         /// <inheritdoc />
         public override void Disable()
@@ -43,31 +51,37 @@ namespace Artemis.Core.DeviceProviders
         }
 
         /// <summary>
+        ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)
+        /// <param name="rgbDevice">The device to load the layout for</param>
+        /// <returns>The resulting Artemis layout</returns>
+        public virtual ArtemisLayout LoadLayout(IRGBDevice rgbDevice)
         {
-            if (sender.GetType() == type || sender.GetType().IsGenericType(type))
-            {
-                // Start from the plugin directory
-                if (e.RelativePart != null && e.FileName != null)
-                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePart, e.FileName);
-                else if (e.RelativePath != null)
-                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePath);
+            // Take out invalid file name chars, may not be perfect but neither are you
+            string model = Path.GetInvalidFileNameChars().Aggregate(rgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
+            string layoutDir = Path.Combine(Plugin.Directory.FullName, "Layouts");
+            string filePath;
+            // if (rgbDevice.DeviceInfo is IPhysicalLayoutDeviceInfo)
+            // {
+            //     filePath = Path.Combine(
+            //         layoutDir,
+            //         rgbDevice.DeviceInfo.Manufacturer,
+            //         rgbDevice.DeviceInfo.DeviceType.ToString(),
+            //         model,
+            //         keyboard.DeviceInfo.
+            //     ) + ".xml";
+            // }
+            // else
+            // {
+            filePath = Path.Combine(
+                layoutDir,
+                rgbDevice.DeviceInfo.Manufacturer,
+                rgbDevice.DeviceInfo.DeviceType.ToString(),
+                model
+            ) + ".xml";
+            // }
 
-                IRGBDevice device = (IRGBDevice) sender;
-                IRGBDeviceInfo deviceInfo = device.DeviceInfo;
-                if (e.FileName != null && !File.Exists(e.FinalPath))
-                {
-                    Logger?.Information("Couldn't find a layout for device {deviceName}, model {deviceModel} at {filePath}",
-                        deviceInfo.DeviceName, deviceInfo.Model, e.FinalPath);
-                }
-
-                if (e.FileName != null)
-                    DeviceLayoutPaths[device] = e.FinalPath;
-            }
+            return new ArtemisLayout(filePath);
         }
     }
 }
