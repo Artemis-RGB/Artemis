@@ -11,6 +11,8 @@ namespace Artemis.UI.Shared
 {
     internal class DeviceVisualizerLed
     {
+        private SolidColorBrush? _renderColorBrush;
+
         public DeviceVisualizerLed(ArtemisLed led)
         {
             Led = led;
@@ -43,9 +45,9 @@ namespace Artemis.UI.Shared
             byte g = originalColor.GetG();
             byte b = originalColor.GetB();
 
-            drawingContext.DrawRectangle(isDimmed
-                ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
-                : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
+            _renderColorBrush ??= new SolidColorBrush();
+            _renderColorBrush.Color = isDimmed ? Color.FromArgb(100, r, g, b) : Color.FromRgb(r, g, b);
+            drawingContext.DrawRectangle(_renderColorBrush, null, LedRect);
         }
 
         public void RenderImage(DrawingContext drawingContext)

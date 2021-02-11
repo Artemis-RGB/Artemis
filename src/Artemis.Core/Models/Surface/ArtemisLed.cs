@@ -1,4 +1,5 @@
-﻿using RGB.NET.Core;
+﻿using System.Linq;
+using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -16,6 +17,9 @@ namespace Artemis.Core
             RgbLed = led;
             Device = device;
             CalculateRectangles();
+
+            Layout = Device.Layout?.Leds.FirstOrDefault(l => l.RgbLayout.Id == led.Id.ToString());
+            
         }
 
         /// <summary>
@@ -46,7 +50,7 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _absoluteRectangle, value);
         }
 
-        public ArtemisLedLayout? Layout { get; set; }
+        public ArtemisLedLayout? Layout { get; }
 
         internal void CalculateRectangles()
         {
