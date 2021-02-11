@@ -235,8 +235,8 @@ namespace Artemis.UI.Shared
             UpdateTransform();
 
             // Load the device main image
-            // if (Device.RgbDevice.DeviceInfo?.Image?.AbsolutePath != null && File.Exists(Device.RgbDevice.DeviceInfo.Image.AbsolutePath))
-                // _deviceImage = new BitmapImage(Device.RgbDevice.DeviceInfo.Image);
+            if (Device.Layout?.Image != null && File.Exists(Device.Layout.Image.LocalPath))
+                _deviceImage = new BitmapImage(Device.Layout.Image);
 
             // Create all the LEDs
             foreach (ArtemisLed artemisLed in Device.Leds)

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -35,12 +34,20 @@ namespace Artemis.Core.DeviceProviders
         public ILogger? Logger { get; set; }
 
         /// <summary>
-        ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards
+        ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
+        ///     <para>
+        ///         Note: <see cref="DetectDeviceLayout" /> is only called when this or <see cref="CanDetectLogicalLayout" />
+        ///         is <see langword="true" />.
+        ///     </para>
         /// </summary>
         public bool CanDetectPhysicalLayout { get; protected set; }
 
         /// <summary>
         ///     A boolean indicating whether this device provider detects the logical layout of connected keyboards
+        ///     <para>
+        ///         Note: <see cref="DetectDeviceLayout" /> is only called when this or <see cref="CanDetectPhysicalLayout" />
+        ///         is <see langword="true" />.
+        ///     </para>
         /// </summary>
         public bool CanDetectLogicalLayout { get; protected set; }
 
@@ -55,33 +62,27 @@ namespace Artemis.Core.DeviceProviders
         /// </summary>
         /// <param name="rgbDevice">The device to load the layout for</param>
         /// <returns>The resulting Artemis layout</returns>
-        public virtual ArtemisLayout LoadLayout(IRGBDevice rgbDevice)
+        public virtual ArtemisLayout LoadLayout(ArtemisDevice rgbDevice)
         {
-            // Take out invalid file name chars, may not be perfect but neither are you
-            string model = Path.GetInvalidFileNameChars().Aggregate(rgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
             string layoutDir = Path.Combine(Plugin.Directory.FullName, "Layouts");
-            string filePath;
-            // if (rgbDevice.DeviceInfo is IPhysicalLayoutDeviceInfo)
-            // {
-            //     filePath = Path.Combine(
-            //         layoutDir,
-            //         rgbDevice.DeviceInfo.Manufacturer,
-            //         rgbDevice.DeviceInfo.DeviceType.ToString(),
-            //         model,
-            //         keyboard.DeviceInfo.
-            //     ) + ".xml";
-            // }
-            // else
-            // {
-            filePath = Path.Combine(
+            string filePath = Path.Combine(
                 layoutDir,
-                rgbDevice.DeviceInfo.Manufacturer,
-                rgbDevice.DeviceInfo.DeviceType.ToString(),
-                model
-            ) + ".xml";
-            // }
-
+                rgbDevice.RgbDevice.DeviceInfo.Manufacturer,
+                rgbDevice.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                rgbDevice.GetLayoutFileName()
+            );
             return new ArtemisLayout(filePath);
+        }
+
+        /// <summary>
+        ///     Called when a specific RGB device's logical and physical layout must be detected
+        ///     <para>
+        ///         Note: Only called when <see cref="CanDetectPhysicalLayout" /> or <see cref="CanDetectLogicalLayout" /> is <see langword="true" />.
+        ///     </para>
+        /// </summary>
+        /// <param name="rgbDevice">The device to detect the layout for, always a keyboard</param>
+        public virtual void DetectDeviceLayout(ArtemisDevice rgbDevice)
+        {
         }
     }
 }
