@@ -34,11 +34,11 @@ namespace Artemis.Core
 
             if (IsValid)
                 Leds.AddRange(RgbLayout.Leds.Select(l => new ArtemisLedLayout(this, l)));
-            
+
             LayoutCustomDeviceData = (LayoutCustomDeviceData?) RgbLayout.CustomData ?? new LayoutCustomDeviceData();
             ApplyCustomDeviceData();
         }
-        
+
         /// <summary>
         ///     Gets the file path the layout was (attempted to be) loaded from
         /// </summary>
@@ -60,10 +60,10 @@ namespace Artemis.Core
         public bool IsValid { get; }
 
         /// <summary>
-        ///     Gets or sets the image of the device
+        ///     Gets the image of the device
         /// </summary>
-        public Uri? Image { get; set; }
-
+        public Uri? Image { get; private set; }
+        
         public List<ArtemisLedLayout> Leds { get; }
 
         internal LayoutCustomDeviceData LayoutCustomDeviceData { get; set; }
@@ -71,7 +71,7 @@ namespace Artemis.Core
         internal void ApplyDevice(ArtemisDevice artemisDevice)
         {
             Device = artemisDevice;
-            foreach (ArtemisLedLayout artemisLedLayout in Leds) 
+            foreach (ArtemisLedLayout artemisLedLayout in Leds)
                 artemisLedLayout.ApplyDevice(Device);
         }
 

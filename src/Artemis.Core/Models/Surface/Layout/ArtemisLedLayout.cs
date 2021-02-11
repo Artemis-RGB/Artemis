@@ -7,17 +7,20 @@ namespace Artemis.Core
 {
     public class ArtemisLedLayout
     {
-        internal ArtemisLedLayout(ArtemisLayout layout, ILedLayout led)
+        internal ArtemisLedLayout(ArtemisLayout deviceLayout, ILedLayout led)
         {
-            Layout = layout;
+            DeviceLayout = deviceLayout;
             RgbLayout = led;
             LayoutCustomLedData = (LayoutCustomLedData?) led.CustomData ?? new LayoutCustomLedData();
         }
 
-        public ArtemisLayout Layout { get; }
+        /// <summary>
+        ///     Gets the device layout of this LED layout
+        /// </summary>
+        public ArtemisLayout DeviceLayout { get; }
 
         /// <summary>
-        ///     Gets the RGB.NET LED Layout of this Artemis LED layout
+        ///     Gets the RGB.NET LED Layout of this LED layout
         /// </summary>
         public ILedLayout RgbLayout { get; }
 
@@ -38,18 +41,29 @@ namespace Artemis.Core
 
         internal LayoutCustomLedData LayoutCustomLedData { get; set; }
 
-        public void ApplyDevice(ArtemisDevice device)
+        internal void ApplyDevice(ArtemisDevice device)
         {
             Led = device.Leds.FirstOrDefault(d => d.RgbLed.Id.ToString() == RgbLayout.Id);
-            ApplyCustomLedData();
+            if (Led != null) 
+                Led.Layout = this;
+
+            ApplyCustomLedData(device);
         }
 
-        private void ApplyCustomLedData()
+        private void ApplyCustomLedData(ArtemisDevice artemisDevice)
         {
-            if (Led == null)
+            if (LayoutCustomLedData.LogicalLayouts == null || !LayoutCustomLedData.LogicalLayouts.Any())
                 return;
-            
-            Uri layoutDirectory = new(Path.GetDirectoryName(Layout.FilePath)! + "\\", UriKind.Absolute);
+
+            Uri layoutDirectory = new(Path.GetDirectoryName(DeviceLayout.FilePath)! + "\\", UriKind.Absolute);
+            // Prefer a matching layout or else a default layout (that has no name)
+            LayoutCustomLedDataLogicalLayout logicalLayout = LayoutCustomLedData.LogicalLayouts
+                .OrderBy(l => l.Name == artemisDevice.LogicalLayout)
+                .ThenBy(l => l.Name == null)
+                .First();
+
+            LogicalName = logicalLayout.Name;
+            Image = new Uri(layoutDirectory, logicalLayout.Image);
         }
     }
 }

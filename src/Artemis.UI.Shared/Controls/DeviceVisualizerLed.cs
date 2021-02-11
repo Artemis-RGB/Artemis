@@ -23,9 +23,9 @@ namespace Artemis.UI.Shared
                 Led.RgbLed.Size.Height
             );
 
-            if (Led.Layout?.Image != null && File.Exists(Led.Layout.Image.AbsolutePath))
+            if (Led.Layout?.Image != null && File.Exists(Led.Layout.Image.LocalPath))
                 LedImage = new BitmapImage(Led.Layout.Image);
-
+          
             CreateLedGeometry();
         }
 
