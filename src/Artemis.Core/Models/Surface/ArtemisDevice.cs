@@ -334,11 +334,11 @@ namespace Artemis.Core
             if (layout.IsValid)
                 layout.RgbLayout!.ApplyTo(RgbDevice);
 
-            Layout = layout;
             Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            Layout = layout;
             Layout.ApplyDevice(this);
-            Leds = Layout.Leds.Select(l => l.Led);
         }
 
         internal void ApplyToEntity()
