@@ -51,8 +51,10 @@ namespace Artemis.Core.Services
         {
             try
             {
-                // Device provider may have been attached before..?
+                List<IRGBDevice> toRemove = deviceProvider.Devices.Where(d => Surface.Devices.Contains(d)).ToList();
                 Surface.Detach(deviceProvider.Devices);
+                foreach (IRGBDevice rgbDevice in toRemove) 
+                    OnDeviceRemoved(new DeviceEventArgs(rgbDevice));
 
                 deviceProvider.Initialize(RGBDeviceType.All, true);
                 Surface.Attach(deviceProvider.Devices);
@@ -111,6 +113,7 @@ namespace Artemis.Core.Services
 
         public event EventHandler<DeviceEventArgs>? DeviceLoaded;
         public event EventHandler<DeviceEventArgs>? DeviceReloaded;
+        public event EventHandler<DeviceEventArgs> DeviceRemoved;
 
         public void UpdateSurfaceLedGroup(ArtemisSurface? artemisSurface)
         {
@@ -147,6 +150,11 @@ namespace Artemis.Core.Services
             DeviceReloaded?.Invoke(this, e);
         }
 
+        protected virtual void OnDeviceRemoved(DeviceEventArgs e)
+        {
+            DeviceRemoved?.Invoke(this, e);
+        }
         #endregion
+
     }
 }

@@ -38,7 +38,7 @@ namespace Artemis.Core
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
 
-            LoadBestLayout();
+            ApplyKeyboardLayout();
             ApplyToEntity();
             CalculateRenderProperties();
         }
@@ -56,7 +56,8 @@ namespace Artemis.Core
 
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
-            LoadBestLayout();
+
+            ApplyKeyboardLayout();
         }
 
         /// <summary>
@@ -229,12 +230,12 @@ namespace Artemis.Core
         ///     Gets or sets the physical layout of the device e.g. ISO or ANSI.
         ///     <para>Only applicable to keyboards</para>
         /// </summary>
-        public string? PhysicalLayout
+        public KeyboardLayoutType PhysicalLayout
         {
-            get => DeviceEntity.PhysicalLayout;
+            get => (KeyboardLayoutType) DeviceEntity.PhysicalLayout;
             set
             {
-                DeviceEntity.PhysicalLayout = value;
+                DeviceEntity.PhysicalLayout = (int) value;
                 OnPropertyChanged(nameof(PhysicalLayout));
             }
         }
@@ -296,8 +297,8 @@ namespace Artemis.Core
         {
             // Take out invalid file name chars, may not be perfect but neither are you
             string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
-            if (PhysicalLayout != null)
-                fileName = $"{fileName}-{PhysicalLayout.ToUpper()}";
+            if (RgbDevice is IKeyboard)
+                fileName = $"{fileName}-{PhysicalLayout.ToString().ToUpper()}";
             if (includeExtension)
                 fileName = $"{fileName}.xml";
 
@@ -309,9 +310,7 @@ namespace Artemis.Core
         /// </summary>
         public void LoadBestLayout()
         {
-            // If supported, detect the device layout so that we can load the correct one
-            if (DeviceProvider.CanDetectLogicalLayout || DeviceProvider.CanDetectPhysicalLayout && RgbDevice is IKeyboard)
-                DeviceProvider.DetectDeviceLayout(this);
+            
 
             // Look for a user layout
             // ... here
@@ -325,11 +324,23 @@ namespace Artemis.Core
             ApplyLayout(deviceProviderLayout);
         }
 
+        private void ApplyKeyboardLayout()
+        {
+            if (!(RgbDevice is IKeyboard keyboard))
+                return;
+
+            // If supported, detect the device layout so that we can load the correct one
+            if (DeviceProvider.CanDetectLogicalLayout )
+                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
+            if (DeviceProvider.CanDetectPhysicalLayout)
+                PhysicalLayout = (KeyboardLayoutType) keyboard.DeviceInfo.Layout;
+        }
+
         /// <summary>
         ///     Applies the provided layout to the device
         /// </summary>
         /// <param name="layout">The layout to apply</param>
-        public void ApplyLayout(ArtemisLayout layout)
+        internal void ApplyLayout(ArtemisLayout layout)
         {
             if (layout.IsValid)
                 layout.RgbLayout!.ApplyTo(RgbDevice);

@@ -36,7 +36,7 @@ namespace Artemis.Core.DeviceProviders
         /// <summary>
         ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
         ///     <para>
-        ///         Note: <see cref="DetectDeviceLayout" /> is only called when this or <see cref="CanDetectLogicalLayout" />
+        ///         Note: <see cref="GetLogicalLayout" /> is only called when this or <see cref="CanDetectLogicalLayout" />
         ///         is <see langword="true" />.
         ///     </para>
         /// </summary>
@@ -45,7 +45,7 @@ namespace Artemis.Core.DeviceProviders
         /// <summary>
         ///     A boolean indicating whether this device provider detects the logical layout of connected keyboards
         ///     <para>
-        ///         Note: <see cref="DetectDeviceLayout" /> is only called when this or <see cref="CanDetectPhysicalLayout" />
+        ///         Note: <see cref="GetLogicalLayout" /> is only called when this or <see cref="CanDetectPhysicalLayout" />
         ///         is <see langword="true" />.
         ///     </para>
         /// </summary>
@@ -77,12 +77,13 @@ namespace Artemis.Core.DeviceProviders
         /// <summary>
         ///     Called when a specific RGB device's logical and physical layout must be detected
         ///     <para>
-        ///         Note: Only called when <see cref="CanDetectPhysicalLayout" /> or <see cref="CanDetectLogicalLayout" /> is <see langword="true" />.
+        ///         Note: Only called when <see cref="CanDetectLogicalLayout" /> is <see langword="true" />.
         ///     </para>
         /// </summary>
-        /// <param name="rgbDevice">The device to detect the layout for, always a keyboard</param>
-        public virtual void DetectDeviceLayout(ArtemisDevice rgbDevice)
+        /// <param name="keyboard">The device to detect the layout for, always a keyboard</param>
+        public virtual string GetLogicalLayout(IKeyboard keyboard)
         {
+            throw new NotImplementedException("Device provider does not support detecting logical layouts (don't call base.GetLogicalLayout())");
         }
     }
 }
