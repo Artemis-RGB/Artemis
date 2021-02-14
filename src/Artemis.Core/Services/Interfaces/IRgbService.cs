@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.DeviceProviders;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services
@@ -55,6 +54,11 @@ namespace Artemis.Core.Services
         ///     Occurs when a single device has reloaded
         /// </summary>
         event EventHandler<DeviceEventArgs> DeviceReloaded;
+
+        /// <summary>
+        ///     Occurs when a single device was removed
+        /// </summary>
+        event EventHandler<DeviceEventArgs> DeviceRemoved;
 
         /// <summary>
         ///     Recalculates the LED group used by the <see cref="BitmapBrush" />

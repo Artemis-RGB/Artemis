@@ -20,7 +20,7 @@ namespace Artemis.Storage.Entities.Surface
         public double BlueScale { get; set; }
         public bool IsEnabled { get; set; }
 
-        public string PhysicalLayout { get; set; }
+        public int PhysicalLayout { get; set; }
         public string LogicalLayout { get; set; }
         
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
