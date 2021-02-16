@@ -14,23 +14,22 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly IRgbService _rgbService;
         private readonly IProfileRepository _profileRepository;
-        private readonly ISurfaceService _surfaceService;
 
         public ProfileService(ILogger logger,
             IPluginManagementService pluginManagementService,
-            ISurfaceService surfaceService,
+            IRgbService rgbService,
             IConditionOperatorService conditionOperatorService,
             IDataBindingService dataBindingService,
             IProfileRepository profileRepository)
         {
             _logger = logger;
             _pluginManagementService = pluginManagementService;
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
             _profileRepository = profileRepository;
 
-            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
-            _surfaceService.SurfaceConfigurationUpdated += OnSurfaceConfigurationUpdated;
+            _rgbService.LedsChanged += RgbServiceOnLedsChanged;
         }
 
         public JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
@@ -62,12 +61,11 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
         /// </summary>
-        /// <param name="surface"></param>
-        private void ActiveProfilesPopulateLeds(ArtemisSurface surface)
+        private void ActiveProfilesPopulateLeds()
         {
             List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
             foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                profileModule.ActiveProfile?.PopulateLeds(surface); // Avoid race condition
+                profileModule.ActiveProfile?.PopulateLeds(_rgbService.EnabledDevices); // Avoid race condition
         }
 
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
@@ -110,7 +108,7 @@ namespace Artemis.Core.Services
             Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
-            profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+            profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
             return profile;
@@ -124,9 +122,9 @@ namespace Artemis.Core.Services
             ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
             Profile profile = new(module, entity);
             InstantiateProfile(profile);
-
-            module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
-            module.ChangeActiveProfile(profile, _surfaceService.ActiveSurface);
+            
+            module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
+            module.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
         }
 
         public async Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor)
@@ -141,9 +139,9 @@ namespace Artemis.Core.Services
             Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
 
-            void ActivatingProfileSurfaceUpdate(object? sender, SurfaceConfigurationEventArgs e)
+            void ActivatingRgbServiceOnLedsChanged(object? sender, EventArgs e)
             {
-                profile.PopulateLeds(e.Surface);
+                profile.PopulateLeds(_rgbService.EnabledDevices);
             }
 
             void ActivatingProfilePluginToggle(object? sender, PluginEventArgs e)
@@ -154,28 +152,29 @@ namespace Artemis.Core.Services
             // This could happen during activation so subscribe to it
             _pluginManagementService.PluginEnabled += ActivatingProfilePluginToggle;
             _pluginManagementService.PluginDisabled += ActivatingProfilePluginToggle;
-            _surfaceService.SurfaceConfigurationUpdated += ActivatingProfileSurfaceUpdate;
+            _rgbService.LedsChanged += ActivatingRgbServiceOnLedsChanged;
 
-            await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _surfaceService.ActiveSurface);
+            await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _rgbService.EnabledDevices);
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
             _pluginManagementService.PluginEnabled -= ActivatingProfilePluginToggle;
             _pluginManagementService.PluginDisabled -= ActivatingProfilePluginToggle;
-            _surfaceService.SurfaceConfigurationUpdated -= ActivatingProfileSurfaceUpdate;
+            _rgbService.LedsChanged -= ActivatingRgbServiceOnLedsChanged;
 
             return profile;
         }
 
 
+
         public void ClearActiveProfile(ProfileModule module)
         {
-            module.ChangeActiveProfile(null, _surfaceService.ActiveSurface);
+            module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
             SaveActiveProfile(module);
         }
 
         public async Task ClearActiveProfileAnimated(ProfileModule module)
         {
-            await module.ChangeActiveProfileAnimated(null, _surfaceService.ActiveSurface);
+            await module.ChangeActiveProfileAnimated(null, _rgbService.EnabledDevices);
         }
 
         public void DeleteProfile(Profile profile)
@@ -255,7 +254,7 @@ namespace Artemis.Core.Services
                 string top = profile.RedoStack.Pop();
                 string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
                 profile.UndoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings) 
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings)
                                         ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
@@ -268,7 +267,7 @@ namespace Artemis.Core.Services
 
         public void InstantiateProfile(Profile profile)
         {
-            profile.PopulateLeds(_surfaceService.ActiveSurface);
+            profile.PopulateLeds(_rgbService.EnabledDevices);
         }
 
         public string ExportProfile(ProfileDescriptor profileDescriptor)
@@ -296,17 +295,11 @@ namespace Artemis.Core.Services
 
         #region Event handlers
 
-        private void OnActiveSurfaceConfigurationSelected(object? sender, SurfaceConfigurationEventArgs e)
+        private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
         {
-            ActiveProfilesPopulateLeds(e.Surface);
+            ActiveProfilesPopulateLeds();
         }
-
-        private void OnSurfaceConfigurationUpdated(object? sender, SurfaceConfigurationEventArgs e)
-        {
-            if (e.Surface.IsActive)
-                ActiveProfilesPopulateLeds(e.Surface);
-        }
-
+        
         #endregion
     }
 }

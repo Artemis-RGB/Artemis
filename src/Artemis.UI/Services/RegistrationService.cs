@@ -18,7 +18,6 @@ namespace Artemis.UI.Services
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly ISurfaceService _surfaceService;
         private readonly IInputService _inputService;
         private readonly IWebServerService _webServerService;
         private bool _registeredBuiltInDataModelDisplays;
@@ -29,7 +28,6 @@ namespace Artemis.UI.Services
             IDataModelUIService dataModelUIService,
             IProfileEditorService profileEditorService,
             IPluginManagementService pluginManagementService,
-            ISurfaceService surfaceService,
             IInputService inputService,
             IWebServerService webServerService)
         {
@@ -37,7 +35,6 @@ namespace Artemis.UI.Services
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
             _pluginManagementService = pluginManagementService;
-            _surfaceService = surfaceService;
             _inputService = inputService;
             _webServerService = webServerService;
 

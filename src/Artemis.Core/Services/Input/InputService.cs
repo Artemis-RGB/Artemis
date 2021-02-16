@@ -9,15 +9,13 @@ namespace Artemis.Core.Services
     internal class InputService : IInputService
     {
         private readonly ILogger _logger;
-        private readonly ISurfaceService _surfaceService;
+        private readonly IRgbService _rgbService;
 
-        public InputService(ILogger logger, ISurfaceService surfaceService)
+        public InputService(ILogger logger, IRgbService rgbService)
         {
             _logger = logger;
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
 
-            _surfaceService.ActiveSurfaceConfigurationSelected += SurfaceConfigurationChanged;
-            _surfaceService.SurfaceConfigurationUpdated += SurfaceConfigurationChanged;
             BustIdentifierCache();
         }
 
@@ -91,7 +89,7 @@ namespace Artemis.Core.Services
             _logger.Debug("Stop identifying device {device}", _identifyingDevice);
 
             _identifyingDevice = null;
-            _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
+            _rgbService.SaveDevices();
 
             BustIdentifierCache();
         }
@@ -123,7 +121,7 @@ namespace Artemis.Core.Services
             {
                 if (_cachedFallbackKeyboard != null)
                     return _cachedFallbackKeyboard;
-                _cachedFallbackKeyboard = _surfaceService.ActiveSurface.Devices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard);
+                _cachedFallbackKeyboard = _rgbService.EnabledDevices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard);
                 return _cachedFallbackKeyboard;
             }
 
@@ -131,7 +129,7 @@ namespace Artemis.Core.Services
             {
                 if (_cachedFallbackMouse != null)
                     return _cachedFallbackMouse;
-                _cachedFallbackMouse = _surfaceService.ActiveSurface.Devices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse);
+                _cachedFallbackMouse = _rgbService.EnabledDevices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse);
                 return _cachedFallbackMouse;
             }
 
@@ -144,7 +142,7 @@ namespace Artemis.Core.Services
             _cachedFallbackKeyboard = null;
             _cachedFallbackMouse = null;
 
-            _devices = _surfaceService.ActiveSurface.Devices.Where(d => d.InputIdentifiers.Any()).ToList();
+            _devices = _rgbService.EnabledDevices.Where(d => d.InputIdentifiers.Any()).ToList();
         }
 
         private void AddDeviceToCache(ArtemisDevice match, InputProvider provider, object identifier)

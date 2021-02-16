@@ -20,6 +20,53 @@ namespace Artemis.Core
             FilePath = filePath;
             Leds = new List<ArtemisLedLayout>();
 
+            LoadLayout();
+        }
+
+        /// <summary>
+        ///     Gets the file path the layout was (attempted to be) loaded from
+        /// </summary>
+        public string FilePath { get; }
+
+        /// <summary>
+        ///     Gets the RGB.NET device layout
+        /// </summary>
+        public DeviceLayout RgbLayout { get; private set; }
+
+        /// <summary>
+        ///     Gets the device this layout is applied to
+        /// </summary>
+        public ArtemisDevice? Device { get; private set; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether a valid layout was loaded
+        /// </summary>
+        public bool IsValid { get; private set; }
+
+        /// <summary>
+        ///     Gets the image of the device
+        /// </summary>
+        public Uri? Image { get; private set; }
+
+        public List<ArtemisLedLayout> Leds { get; }
+
+        internal LayoutCustomDeviceData LayoutCustomDeviceData { get; set; }
+
+        public void ReloadFromDisk()
+        {
+            Leds.Clear();
+            LoadLayout();
+        }
+
+        internal void ApplyDevice(ArtemisDevice artemisDevice)
+        {
+            Device = artemisDevice;
+            foreach (ArtemisLedLayout artemisLedLayout in Leds)
+                artemisLedLayout.ApplyDevice(Device);
+        }
+
+        private void LoadLayout()
+        {
             DeviceLayout? deviceLayout = DeviceLayout.Load(FilePath, typeof(LayoutCustomDeviceData), typeof(LayoutCustomLedData));
             if (deviceLayout != null)
             {
@@ -39,47 +86,13 @@ namespace Artemis.Core
             ApplyCustomDeviceData();
         }
 
-        /// <summary>
-        ///     Gets the file path the layout was (attempted to be) loaded from
-        /// </summary>
-        public string FilePath { get; }
-
-        /// <summary>
-        ///     Gets the RGB.NET device layout
-        /// </summary>
-        public DeviceLayout RgbLayout { get; }
-
-        /// <summary>
-        ///     Gets the device this layout is applied to
-        /// </summary>
-        public ArtemisDevice? Device { get; private set; }
-
-        /// <summary>
-        ///     Gets a boolean indicating whether a valid layout was loaded
-        /// </summary>
-        public bool IsValid { get; }
-
-        /// <summary>
-        ///     Gets the image of the device
-        /// </summary>
-        public Uri? Image { get; private set; }
-        
-        public List<ArtemisLedLayout> Leds { get; }
-
-        internal LayoutCustomDeviceData LayoutCustomDeviceData { get; set; }
-
-        internal void ApplyDevice(ArtemisDevice artemisDevice)
-        {
-            Device = artemisDevice;
-            foreach (ArtemisLedLayout artemisLedLayout in Leds)
-                artemisLedLayout.ApplyDevice(Device);
-        }
-
         private void ApplyCustomDeviceData()
         {
             Uri layoutDirectory = new(Path.GetDirectoryName(FilePath)! + "\\", UriKind.Absolute);
             if (LayoutCustomDeviceData.DeviceImage != null)
                 Image = new Uri(layoutDirectory, new Uri(LayoutCustomDeviceData.DeviceImage, UriKind.Relative));
+            else
+                Image = null;
         }
     }
 }

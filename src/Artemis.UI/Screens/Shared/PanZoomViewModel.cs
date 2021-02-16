@@ -5,6 +5,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.UI.Extensions;
 using RGB.NET.Core;
+using SkiaSharp;
 using Stylet;
 using Point = System.Windows.Point;
 
@@ -144,6 +145,13 @@ namespace Artemis.UI.Screens.Shared
             PanY = 0;
         }
 
+        public void Reset(SKRect rect)
+        {
+            Zoom = Math.Min(CanvasWidth / rect.Width, CanvasHeight / rect.Height);
+            PanX = rect.Left * -1 * Zoom;
+            PanY = rect.Top * -1 * Zoom;
+        }
+
         public Rect TransformContainingRect(Rectangle rect)
         {
             return TransformContainingRect(rect.ToWindowsRect(1));
@@ -168,11 +176,15 @@ namespace Artemis.UI.Screens.Shared
 
         private void SetZoomFromPercentage(double value)
         {
-            double newZoom = value / 100;
-            // Focus towards the center of the zoomed area
-            PanX += newZoom - Zoom;
-            PanY += newZoom - Zoom;
+            Point relative = new((PanX * -1 + CanvasWidth / 2) / Zoom, (PanY * -1 + CanvasHeight / 2) / Zoom);
+            double absoluteX = relative.X * Zoom + PanX;
+            double absoluteY = relative.Y * Zoom + PanY;
+
             Zoom = value / 100;
+
+            // Focus towards the center of the zoomed area
+            PanX = absoluteX - relative.X * Zoom;
+            PanY = absoluteY - relative.Y * Zoom;
         }
     }
 }

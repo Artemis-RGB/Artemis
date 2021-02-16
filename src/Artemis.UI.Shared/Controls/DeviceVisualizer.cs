@@ -182,7 +182,11 @@ namespace Artemis.UI.Shared
             if (_oldDevice != null)
             {
                 if (Device != null)
+                {
                     Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                    Device.DeviceUpdated -= DeviceUpdated;
+                }
+
                 _oldDevice = null;
             }
         }
@@ -228,10 +232,15 @@ namespace Artemis.UI.Shared
                 return;
 
             if (_oldDevice != null)
+            {
                 Device.RgbDevice.PropertyChanged -= DevicePropertyChanged;
+                Device.DeviceUpdated -= DeviceUpdated;
+            }
+
             _oldDevice = Device;
 
             Device.RgbDevice.PropertyChanged += DevicePropertyChanged;
+            Device.DeviceUpdated += DeviceUpdated;
             UpdateTransform();
 
             // Load the device main image
@@ -277,13 +286,16 @@ namespace Artemis.UI.Shared
             InvalidateMeasure();
         }
 
-        private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void DeviceUpdated(object sender, EventArgs e)
         {
-            if (e.PropertyName == nameof(Device.RgbDevice.Scale) || e.PropertyName == nameof(Device.RgbDevice.Rotation))
-                UpdateTransform();
+            SetupForDevice();
         }
 
-
+        private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            SetupForDevice();
+        }
+        
         private void Render()
         {
             DrawingContext drawingContext = _backingStore.Open();

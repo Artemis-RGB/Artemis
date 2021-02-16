@@ -8,8 +8,8 @@ namespace Artemis.Storage.Entities.Surface
         {
             InputIdentifiers = new List<DeviceInputIdentifierEntity>();
         }
-
-        public string DeviceIdentifier { get; set; }
+        
+        public string Id { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
         public double Rotation { get; set; }
