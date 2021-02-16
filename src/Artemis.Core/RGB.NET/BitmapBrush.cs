@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Artemis.Core.Services;
 using RGB.NET.Core;
 using SkiaSharp;
 
@@ -12,13 +13,15 @@ namespace Artemis.Core
     {
         private readonly object _disposeLock;
         private readonly PluginSetting<int> _sampleSizeSetting;
+        private readonly IRgbService _rgbService;
 
         #region Constructors
 
-        internal BitmapBrush(Scale scale, PluginSetting<int> sampleSizeSetting)
+        internal BitmapBrush(Scale scale, PluginSetting<int> sampleSizeSetting, IRgbService rgbService)
         {
             _disposeLock = new object();
             _sampleSizeSetting = sampleSizeSetting;
+            _rgbService = rgbService;
             Scale = scale;
         }
 
@@ -103,7 +106,7 @@ namespace Artemis.Core
                 if (scaledLocation.X < Bitmap.Width && scaledLocation.Y < Bitmap.Height)
                 {
                     Color pixel = Bitmap.GetPixel(scaledLocation.X.RoundToInt(), scaledLocation.Y.RoundToInt()).ToRgbColor();
-                    ArtemisDevice? artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
+                    ArtemisDevice? artemisDevice = _rgbService.GetLed(renderTarget.Led)?.Device;
                     if (artemisDevice != null)
                         pixel = pixel.MultiplyRGB(artemisDevice.RedScale, artemisDevice.GreenScale, artemisDevice.BlueScale);
                     RenderedTargets[renderTarget] = pixel;
@@ -157,7 +160,7 @@ namespace Artemis.Core
 
                 Color pixel = new(a / sampleSize, r / sampleSize, g / sampleSize, b / sampleSize);
 
-                ArtemisDevice? artemisDevice = Surface?.GetArtemisLed(renderTarget.Led)?.Device;
+                ArtemisDevice? artemisDevice = _rgbService.GetLed(renderTarget.Led)?.Device;
                 if (artemisDevice is not null)
                     pixel = pixel.MultiplyRGB(artemisDevice.RedScale, artemisDevice.GreenScale, artemisDevice.BlueScale);
 
@@ -188,7 +191,6 @@ namespace Artemis.Core
         }
 
         internal bool IsDisposed { get; set; }
-        internal ArtemisSurface? Surface { get; set; }
 
         #endregion
     }

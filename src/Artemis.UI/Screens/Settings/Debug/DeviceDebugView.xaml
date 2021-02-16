@@ -42,6 +42,7 @@
                     <StackPanel>
                         <Button Content="Open plugin directory" Command="{s:Action OpenPluginDirectory}" />
                         <Button Content="Open image directory" Command="{s:Action OpenImageDirectory}" />
+                        <Button Content="Reload layout" Command="{s:Action ReloadLayout}" />
                     </StackPanel>
                 </materialDesign:PopupBox>
             </StackPanel>

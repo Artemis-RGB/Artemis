@@ -6,7 +6,6 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
-using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared.Services;
 using Humanizer;
 using RGB.NET.Core;
@@ -17,9 +16,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     public class DeviceSettingsViewModel : Screen
     {
         private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
-        private readonly ISurfaceService _surfaceService;
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
+        private readonly IRgbService _rgbService;
         private readonly IWindowManager _windowManager;
 
         public DeviceSettingsViewModel(ArtemisDevice device,
@@ -27,13 +26,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             IDialogService dialogService,
             IWindowManager windowManager,
             IDeviceDebugVmFactory deviceDebugVmFactory,
-            ISurfaceService surfaceService)
+            IRgbService rgbService)
         {
             _deviceService = deviceService;
             _dialogService = dialogService;
             _windowManager = windowManager;
             _deviceDebugVmFactory = deviceDebugVmFactory;
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
             Device = device;
 
             Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
@@ -53,26 +52,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         public bool IsDeviceEnabled
         {
             get => Device.IsEnabled;
-            set
-            {
-                Task.Run(() => UpdateIsDeviceEnabled(value));
-                
-            }
-        }
-
-        private async Task UpdateIsDeviceEnabled(bool value)
-        {
-            if (!value)
-                value = !await ((DeviceSettingsTabViewModel)Parent).ShowDeviceDisableDialog();
-            
-            Device.IsEnabled = value;
-            NotifyOfPropertyChange(nameof(IsDeviceEnabled));
-            SaveDevice();
-        }
-
-        private void SaveDevice()
-        {
-            _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
+            set { Task.Run(() => UpdateIsDeviceEnabled(value)); }
         }
 
         public void IdentifyDevice()
@@ -104,7 +84,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             );
 
             if ((bool) madeChanges)
-                _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
+                _rgbService.SaveDevice(Device);
         }
 
         public async Task ViewProperties()
@@ -114,7 +94,25 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             );
 
             if ((bool) madeChanges)
-                _surfaceService.UpdateSurfaceConfiguration(_surfaceService.ActiveSurface, true);
+                _rgbService.SaveDevice(Device);
+        }
+
+        private async Task UpdateIsDeviceEnabled(bool value)
+        {
+            if (!value)
+                value = !await ((DeviceSettingsTabViewModel) Parent).ShowDeviceDisableDialog();
+
+            if (value)
+                _rgbService.EnableDevice(Device);
+            else
+                _rgbService.DisableDevice(Device);
+            NotifyOfPropertyChange(nameof(IsDeviceEnabled));
+            SaveDevice();
+        }
+
+        private void SaveDevice()
+        {
+            _rgbService.SaveDevice(Device);
         }
     }
 }

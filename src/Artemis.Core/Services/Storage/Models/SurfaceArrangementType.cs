@@ -21,21 +21,21 @@ namespace Artemis.Core.Services.Models
         public List<SurfaceArrangementConfiguration> Configurations { get; }
         public SurfaceArrangementConfiguration? AppliedConfiguration { get; set; }
 
-        public bool HasDevices(ArtemisSurface surface)
+        public bool HasDevices(List<ArtemisDevice> devices)
         {
-            return surface.Devices.Any(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType);
+            return devices.Any(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType);
         }
 
-        public void Arrange(ArtemisSurface surface)
+        public void Arrange(List<ArtemisDevice> devices)
         {
-            List<ArtemisDevice> devices = surface.Devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType).ToList();
+             devices = devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType).ToList();
             if (!devices.Any())
                 return;
 
             AppliedConfiguration = null;
             foreach (SurfaceArrangementConfiguration configuration in Configurations)
             {
-                bool applied = configuration.Apply(devices, surface);
+                bool applied = configuration.Apply(devices);
                 if (applied)
                 {
                     AppliedConfiguration = configuration;
@@ -52,11 +52,11 @@ namespace Artemis.Core.Services.Models
                 VerticalArrangementPosition.Equal,
                 10
             ) {SurfaceArrangement = SurfaceArrangement};
-            fallback.Apply(devices, surface);
+            fallback.Apply(devices);
             AppliedConfiguration = fallback;
         }
 
-        public Point GetEdge(HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition, ArtemisSurface surface)
+        public Point GetEdge(HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition)
         {
             List<ArtemisDevice> devices = SurfaceArrangement.ArrangedDevices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType || DeviceType == RGBDeviceType.All).ToList();
             if (!devices.Any())

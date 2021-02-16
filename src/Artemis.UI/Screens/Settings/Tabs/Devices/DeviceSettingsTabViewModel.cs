@@ -11,15 +11,15 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
     public class DeviceSettingsTabViewModel : Conductor<DeviceSettingsViewModel>.Collection.AllActive
     {
         private readonly ISettingsVmFactory _settingsVmFactory;
-        private readonly ISurfaceService _surfaceService;
+        private readonly IRgbService _rgbService;
         private readonly IDialogService _dialogService;
         private bool _confirmedDisable;
 
-        public DeviceSettingsTabViewModel(ISurfaceService surfaceService, IDialogService dialogService, ISettingsVmFactory settingsVmFactory)
+        public DeviceSettingsTabViewModel(IRgbService rgbService, IDialogService dialogService, ISettingsVmFactory settingsVmFactory)
         {
             DisplayName = "DEVICES";
 
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
             _dialogService = dialogService;
             _settingsVmFactory = settingsVmFactory;
         }
@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
                 Items.Clear();
                 await Task.Delay(200);
 
-                List<DeviceSettingsViewModel> instances = _surfaceService.ActiveSurface.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
+                List<DeviceSettingsViewModel> instances = _rgbService.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
                 foreach (DeviceSettingsViewModel deviceSettingsViewModel in instances)
                     Items.Add(deviceSettingsViewModel);
             });

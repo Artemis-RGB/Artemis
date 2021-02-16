@@ -8,7 +8,6 @@ using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Shared.Services.Models;
-using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
@@ -20,23 +19,23 @@ namespace Artemis.UI.Shared.Services
     internal class ProfileEditorService : IProfileEditorService
     {
         private readonly ICoreService _coreService;
-        private readonly ISurfaceService _surfaceService;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
+        private readonly IRgbService _rgbService;
         private readonly object _selectedProfileElementLock = new();
         private readonly object _selectedProfileLock = new();
         private TimeSpan _currentTime;
         private int _pixelsPerSecond;
 
-        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, ISurfaceService surfaceService)
+        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService)
         {
             _kernel = kernel;
             _logger = logger;
             _profileService = profileService;
             _coreService = coreService;
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
 
             PixelsPerSecond = 100;
@@ -351,7 +350,7 @@ namespace Artemis.UI.Shared.Services
 
         public List<ArtemisLed> GetLedsInRectangle(Rect rect)
         {
-            return _surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Where(led => led.AbsoluteRectangle.IntersectsWith(rect.ToSKRect())).ToList();
+            return _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(led => led.AbsoluteRectangle.IntersectsWith(rect.ToSKRect())).ToList();
         }
 
         #region Copy/paste
@@ -424,7 +423,7 @@ namespace Artemis.UI.Shared.Services
 
             if (pasted != null)
             {
-                target.Profile.PopulateLeds(_surfaceService.ActiveSurface);
+                target.Profile.PopulateLeds(_rgbService.EnabledDevices);
                 UpdateSelectedProfile();
                 ChangeSelectedProfileElement(pasted);
             }

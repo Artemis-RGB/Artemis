@@ -5,11 +5,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:s="https://github.com/canton7/Stylet"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
-    xmlns:models="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.SurfaceEditor"
     x:Class="Artemis.UI.Screens.SurfaceEditor.SurfaceEditorView"
     mc:Ignorable="d"
-    d:DesignHeight="600" d:DesignWidth="600">
+    d:DesignHeight="600" d:DesignWidth="600"
+    d:DataContext="{d:DesignInstance {x:Type local:SurfaceEditorViewModel}}">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,7 +19,6 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid Margin="16">
@@ -113,14 +113,17 @@
                     </EventTrigger>
                 </Grid.Triggers>
 
-                <Grid x:Name="EditorDisplayGrid">
+                <Grid x:Name="EditorDisplayGrid"
+                      shared:SizeObserver.Observe="True"
+                      shared:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight, Mode=TwoWay}"
+                      shared:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth, Mode=TwoWay}">
                     <Grid.RenderTransform>
                         <TransformGroup>
                             <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
                             <TranslateTransform X="{Binding PanZoomViewModel.PanX}" Y="{Binding PanZoomViewModel.PanY}" />
                         </TransformGroup>
                     </Grid.RenderTransform>
-                    <ItemsControl ItemsSource="{Binding Devices}">
+                    <ItemsControl ItemsSource="{Binding SurfaceDeviceViewModels}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <Canvas />
@@ -137,28 +140,28 @@
                                 <ContentControl s:View.Model="{Binding}">
                                     <ContentControl.ContextMenu>
                                         <ContextMenu>
-                                            <MenuItem Header="Identify" Command="{s:Action IdentifyDevice}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Identify" Command="{s:Action IdentifyDevice}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="AlarmLight" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
                                             <Separator />
-                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringToFront" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeBringForward" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendToBack" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding}">
+                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="ArrangeSendBackward" />
                                                 </MenuItem.Icon>
@@ -167,14 +170,14 @@
                                             <!-- Stylet can't disable it for us here, do it ourselves -->
                                             <MenuItem Header="Identify input"
                                                       Command="{s:Action DetectInput}"
-                                                      CommandParameter="{Binding}"
+                                                      CommandParameter="{Binding Device}"
                                                       IsEnabled="{Binding CanDetectInput}"
                                                       ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="GestureDoubleTap" />
                                                 </MenuItem.Icon>
                                             </MenuItem>
-                                            <MenuItem Header="View properties" Command="{s:Action ViewProperties}" CommandParameter="{Binding}">
+                                            <MenuItem Header="View properties" Command="{s:Action ViewProperties}" CommandParameter="{Binding Device}">
                                                 <MenuItem.Icon>
                                                     <materialDesign:PackIcon Kind="Gear" />
                                                 </MenuItem.Icon>
@@ -236,29 +239,65 @@
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding SurfaceConfigurations}" SelectedItem="{Binding SelectedSurface}">
-                        <ListBox.Resources>
-                            <DataTemplate DataType="{x:Type models:ArtemisSurface}">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}"
-                                               HorizontalAlignment="Left" VerticalAlignment="Center" />
-                                    <Button Grid.Column="1"
-                                            Command="{s:Action DeleteSurfaceConfiguration}"
-                                            CommandParameter="{Binding}"
-                                            IsEnabled="{Binding IsActive, Converter={StaticResource InverseBooleanConverter}}"
-                                            Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                            ToolTip="Delete layout configuration"
-                                            HorizontalAlignment="Right">
-                                        <materialDesign:PackIcon Kind="Trashcan" />
-                                    </Button>
-                                </Grid>
+                    <ListBox Grid.Row="0" HorizontalContentAlignment="Stretch" ItemsSource="{Binding ListDeviceViewModels}" SelectionMode="Multiple">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                            </Style>
 
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False">
+                                    <ContentControl.ContextMenu>
+                                        <ContextMenu>
+                                            <MenuItem Header="Identify" Command="{s:Action IdentifyDevice}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="AlarmLight" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <MenuItem Header="Bring to Front" Command="{s:Action BringToFront}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeBringToFront" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Bring Forward" Command="{s:Action BringForward}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeBringForward" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Send to Back" Command="{s:Action SendToBack}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeSendToBack" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="Send Backward" Command="{s:Action SendBackward}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="ArrangeSendBackward" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <Separator />
+                                            <!-- Stylet can't disable it for us here, do it ourselves -->
+                                            <MenuItem Header="Identify input"
+                                                      Command="{s:Action DetectInput}"
+                                                      CommandParameter="{Binding Device}"
+                                                      IsEnabled="{Binding CanDetectInput}"
+                                                      ToolTip="Teach Artemis which keypresses and/or button presses belong to this device">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="GestureDoubleTap" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                            <MenuItem Header="View properties" Command="{s:Action ViewProperties}" CommandParameter="{Binding Device}">
+                                                <MenuItem.Icon>
+                                                    <materialDesign:PackIcon Kind="Gear" />
+                                                </MenuItem.Icon>
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </ContentControl.ContextMenu>
+                                </ContentControl>
                             </DataTemplate>
-                        </ListBox.Resources>
+                        </ListBox.ItemTemplate>
                     </ListBox>
                     <Button Grid.Row="0"
                             Style="{StaticResource MaterialDesignFloatingActionButton}"

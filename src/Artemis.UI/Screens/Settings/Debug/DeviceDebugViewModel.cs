@@ -12,12 +12,14 @@ namespace Artemis.UI.Screens.Settings.Debug
     public class DeviceDebugViewModel : Screen
     {
         private readonly IDeviceService _deviceService;
+        private readonly IRgbService _rgbService;
         private readonly IDialogService _dialogService;
         private ArtemisLed _selectedLed;
 
-        public DeviceDebugViewModel(ArtemisDevice device, IDeviceService deviceService, IDialogService dialogService)
+        public DeviceDebugViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService)
         {
             _deviceService = deviceService;
+            _rgbService = rgbService;
             _dialogService = dialogService;
             Device = device;
         }
@@ -75,6 +77,17 @@ namespace Artemis.UI.Screens.Settings.Debug
             catch (Exception e)
             {
                 _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's image folder for you", e);
+            }
+        }
+
+        public void ReloadLayout()
+        {
+            if (Device.Layout == null)
+                _rgbService.ApplyBestDeviceLayout(Device);
+            else
+            {
+                Device.Layout.ReloadFromDisk();
+                _rgbService.ApplyDeviceLayout(Device, Device.Layout);
             }
         }
 

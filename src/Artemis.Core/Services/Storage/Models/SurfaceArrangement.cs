@@ -76,10 +76,10 @@ namespace Artemis.Core.Services.Models
             return surfaceArrangementType;
         }
 
-        public void Arrange(ArtemisSurface surface)
+        public void Arrange(List<ArtemisDevice> devices)
         {
             ArrangedDevices.Clear();
-            foreach (ArtemisDevice surfaceDevice in surface.Devices)
+            foreach (ArtemisDevice surfaceDevice in devices)
             {
                 surfaceDevice.X = 0;
                 surfaceDevice.Y = 0;
@@ -87,14 +87,14 @@ namespace Artemis.Core.Services.Models
             }
 
             foreach (SurfaceArrangementType surfaceArrangementType in Types)
-                surfaceArrangementType.Arrange(surface);
+                surfaceArrangementType.Arrange(devices);
 
             // See if we need to move the surface to keep X and Y values positive
-            double x = surface.Devices.Min(d => d.RgbDevice.Location.X);
-            double y = surface.Devices.Min(d => d.RgbDevice.Location.Y);
+            double x = devices.Min(d => d.RgbDevice.Location.X);
+            double y = devices.Min(d => d.RgbDevice.Location.Y);
             if (x < 0)
             {
-                foreach (ArtemisDevice surfaceDevice in surface.Devices)
+                foreach (ArtemisDevice surfaceDevice in devices)
                 {
                     surfaceDevice.X += x * -1;
                     surfaceDevice.ApplyToRgbDevice();
@@ -103,7 +103,7 @@ namespace Artemis.Core.Services.Models
 
             if (y < 0)
             {
-                foreach (ArtemisDevice surfaceDevice in surface.Devices)
+                foreach (ArtemisDevice surfaceDevice in devices)
                 {
                     surfaceDevice.Y += y * -1;
                     surfaceDevice.ApplyToRgbDevice();
