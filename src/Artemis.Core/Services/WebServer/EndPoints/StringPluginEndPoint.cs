@@ -32,8 +32,8 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         protected override async Task ProcessRequest(IHttpContext context)
         {
-            if (context.Request.HttpVerb != HttpVerbs.Post)
-                throw HttpException.MethodNotAllowed("This end point only accepts POST calls");
+            if (context.Request.HttpVerb != HttpVerbs.Post && context.Request.HttpVerb != HttpVerbs.Put)
+                throw HttpException.MethodNotAllowed("This end point only accepts POST and PUT calls");
 
             context.Response.ContentType = MimeType.PlainText;
 
