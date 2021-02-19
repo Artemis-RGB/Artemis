@@ -22,8 +22,10 @@ namespace Artemis.Storage.Entities.Surface
 
         public int PhysicalLayout { get; set; }
         public string LogicalLayout { get; set; }
-        
+        public string CustomLayoutPath { get; set; }
+
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
+        
     }
 
     public class DeviceInputIdentifierEntity

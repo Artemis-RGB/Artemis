@@ -40,9 +40,31 @@
                 </Button>
                 <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
                     <StackPanel>
-                        <Button Content="Open plugin directory" Command="{s:Action OpenPluginDirectory}" />
-                        <Button Content="Open image directory" Command="{s:Action OpenImageDirectory}" />
-                        <Button Content="Reload layout" Command="{s:Action ReloadLayout}" />
+                        <Button Command="{s:Action OpenPluginDirectory}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Plugin" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action OpenImageDirectory}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Image" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Open layout image directory</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Separator />
+                        <Button Command="{s:Action ReloadLayout}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Reload" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Reload layout</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action ExportLayout}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Xml" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Export layout</TextBlock>
+                            </StackPanel>
+                        </Button>
                     </StackPanel>
                 </materialDesign:PopupBox>
             </StackPanel>
@@ -56,12 +78,12 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <TextBlock TextWrapping="Wrap" Margin="0 0 00 10">
+                <TextBlock TextWrapping="Wrap" Margin="0 0 0 10">
                     In this window you can view detailed information of the device.
                     Please note that having this window open can have a performance impact on your system.
                 </TextBlock>
 
-                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Padding="15">
+                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="1" Padding="15" Margin="0 10">
                     <shared:DeviceVisualizer Device="{Binding Device}"
                                              HighlightedLeds="{Binding SelectedLeds}"
                                              HorizontalAlignment="Center"
@@ -69,14 +91,14 @@
                                              ShowColors="True" />
                 </materialDesign:Card>
 
-                <Expander Grid.Row="2" VerticalAlignment="Center" Header="Device properties" Margin="0 15">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="0,0,5,0">
-                            <StackPanel Margin="15" HorizontalAlignment="Stretch">
+                <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" Grid.Row="2" Padding="15" Margin="0 10">
+                    <Expander VerticalAlignment="Center" Header="Device properties">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="15" HorizontalAlignment="Stretch">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -93,7 +115,7 @@
                                                    Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -111,7 +133,7 @@
                                                    Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -129,7 +151,7 @@
                                                    Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -147,7 +169,7 @@
                                                    Text="{Binding Device.PhysicalLayout}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -166,9 +188,7 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
-                        </materialDesign:Card>
-                        <materialDesign:Card Grid.Column="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" Margin="5,0,0,0">
-                            <StackPanel Margin="15" HorizontalAlignment="Stretch">
+                            <StackPanel Grid.Column="1" Margin="15" HorizontalAlignment="Stretch">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -185,7 +205,7 @@
                                                    Text="{Binding Device.RgbDevice.Size}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -202,7 +222,7 @@
                                                    Text="{Binding Device.RgbDevice.Location}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -220,7 +240,7 @@
                                                    Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -238,7 +258,7 @@
                                                    Text="{Binding Device.LogicalLayout}" />
                                     </StackPanel>
                                 </Grid>
-                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+                                <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
                                 <Grid>
                                     <Grid.RowDefinitions>
@@ -257,11 +277,11 @@
                                     </StackPanel>
                                 </Grid>
                             </StackPanel>
-                        </materialDesign:Card>
-                    </Grid>
-                </Expander>
+                        </Grid>
+                    </Expander>
+                </materialDesign:Card>
 
-                <materialDesign:Card Grid.Row="3" materialDesign:ShadowAssist.ShadowDepth="Depth1" Padding="15" MaxHeight="413">
+                <materialDesign:Card Grid.Row="3" materialDesign:ShadowAssist.ShadowDepth="Depth1" Padding="15" MaxHeight="413" Margin="0 10">
                     <DataGrid ItemsSource="{Binding Device.Leds}"
                               d:DataContext="{d:DesignInstance Type=core:ArtemisLed}"
                               CanUserSortColumns="True"

@@ -15,9 +15,11 @@ namespace Artemis.Core
         ///     Creates a new instance of the <see cref="ArtemisLayout" /> class
         /// </summary>
         /// <param name="filePath">The path of the layout XML file</param>
-        public ArtemisLayout(string filePath)
+        /// <param name="source">The source from where this layout is being loaded</param>
+        public ArtemisLayout(string filePath, LayoutSource source)
         {
             FilePath = filePath;
+            Source = source;
             Leds = new List<ArtemisLedLayout>();
 
             LoadLayout();
@@ -29,9 +31,9 @@ namespace Artemis.Core
         public string FilePath { get; }
 
         /// <summary>
-        ///     Gets the RGB.NET device layout
+        ///     Gets the source from where this layout was loaded
         /// </summary>
-        public DeviceLayout RgbLayout { get; private set; }
+        public LayoutSource Source { get; }
 
         /// <summary>
         ///     Gets the device this layout is applied to
@@ -48,9 +50,20 @@ namespace Artemis.Core
         /// </summary>
         public Uri? Image { get; private set; }
 
+        /// <summary>
+        ///     Gets a list of LEDs this layout contains
+        /// </summary>
         public List<ArtemisLedLayout> Leds { get; }
 
-        internal LayoutCustomDeviceData LayoutCustomDeviceData { get; set; }
+        /// <summary>
+        ///     Gets the RGB.NET device layout
+        /// </summary>
+        public DeviceLayout RgbLayout { get; private set; } = null!;
+
+        /// <summary>
+        ///     Gets the custom layout data embedded in the RGB.NET layout
+        /// </summary>
+        public LayoutCustomDeviceData LayoutCustomDeviceData { get; private set; } = null!;
 
         public void ReloadFromDisk()
         {
@@ -88,11 +101,43 @@ namespace Artemis.Core
 
         private void ApplyCustomDeviceData()
         {
-            Uri layoutDirectory = new(Path.GetDirectoryName(FilePath)! + "\\", UriKind.Absolute);
+            if (!IsValid)
+            {
+                Image = null;
+                return;
+            }
+
+            Uri layoutDirectory = new(Path.GetDirectoryName(FilePath)! + "/", UriKind.Absolute);
             if (LayoutCustomDeviceData.DeviceImage != null)
                 Image = new Uri(layoutDirectory, new Uri(LayoutCustomDeviceData.DeviceImage, UriKind.Relative));
             else
                 Image = null;
         }
+    }
+
+    /// <summary>
+    ///     Represents a source from where a layout came
+    /// </summary>
+    public enum LayoutSource
+    {
+        /// <summary>
+        ///     A layout loaded from config
+        /// </summary>
+        Configured,
+
+        /// <summary>
+        ///     A layout loaded from the user layout folder
+        /// </summary>
+        User,
+
+        /// <summary>
+        ///     A layout loaded from the plugin folder
+        /// </summary>
+        Plugin,
+
+        /// <summary>
+        ///     A default layout loaded as a fallback option
+        /// </summary>
+        Default
     }
 }

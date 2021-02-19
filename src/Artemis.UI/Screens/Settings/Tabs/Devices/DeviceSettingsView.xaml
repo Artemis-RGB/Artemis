@@ -76,7 +76,7 @@
                         <Button Command="{s:Action ViewProperties}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Gear" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">View surface properties</TextBlock>
+                                <TextBlock VerticalAlignment="Center">Device properties</TextBlock>
                             </StackPanel>
                         </Button>
                     </StackPanel>

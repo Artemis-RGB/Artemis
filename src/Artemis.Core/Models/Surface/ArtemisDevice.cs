@@ -250,6 +250,20 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Gets or sets the path of the custom layout to load when calling <see cref="IRgbService.ApplyBestDeviceLayout" />
+        ///     for this device
+        /// </summary>
+        public string? CustomLayoutPath
+        {
+            get => DeviceEntity.CustomLayoutPath;
+            set
+            {
+                DeviceEntity.CustomLayoutPath = value;
+                OnPropertyChanged(nameof(CustomLayoutPath));
+            }
+        }
+
+        /// <summary>
         ///     Gets the layout of the device expanded with Artemis-specific data
         /// </summary>
         public ArtemisLayout? Layout { get; internal set; }
@@ -304,10 +318,12 @@ namespace Artemis.Core
         ///     Applies the provided layout to the device
         /// </summary>
         /// <param name="layout">The layout to apply</param>
-        internal void ApplyLayout(ArtemisLayout layout)
+        /// <param name="createMissingLeds">A boolean indicating whether to add missing LEDs defined in the layout but missing on the device</param>
+        /// <param name="removeExcessiveLeds">A boolean indicating whether to remove excess LEDs present in the device but missing in the layout</param>
+        internal void ApplyLayout(ArtemisLayout layout, bool createMissingLeds, bool removeExcessiveLeds)
         {
             if (layout.IsValid)
-                layout.RgbLayout!.ApplyTo(RgbDevice);
+                layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
 
             Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));

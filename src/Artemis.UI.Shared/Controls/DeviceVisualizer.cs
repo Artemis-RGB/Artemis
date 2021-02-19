@@ -286,7 +286,7 @@ namespace Artemis.UI.Shared
             InvalidateMeasure();
         }
 
-        private void DeviceUpdated(object sender, EventArgs e)
+        private void DeviceUpdated(object? sender, EventArgs e)
         {
             SetupForDevice();
         }
