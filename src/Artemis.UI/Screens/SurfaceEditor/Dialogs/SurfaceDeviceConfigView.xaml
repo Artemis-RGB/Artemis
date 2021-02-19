@@ -155,11 +155,38 @@
                     <shared:ColorPicker Grid.Column="1"
                                         Margin="0,0,5,0"
                                         HorizontalAlignment="Right"
-                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}" 
-                                        VerticalAlignment="Center"/>
+                                        Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}"
+                                        VerticalAlignment="Center" />
                 </Grid>
             </Grid>
         </Grid>
+
+        <!-- Layout -->
+        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0 25 0 0">
+            Custom layout
+        </TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                   TextWrapping="Wrap"
+                   TextAlignment="Justify">
+            Select a custom layout below if you want to change the appearance and/or LEDs of this device.
+        </TextBlock>
+
+        <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Text="{Binding Device.CustomLayoutPath}"
+                 VerticalAlignment="Center"
+                 materialDesign:TextFieldAssist.HasClearButton="True"
+                 IsReadOnly="True"
+                 PreviewMouseLeftButtonUp="{s:Action BrowseCustomLayout}">
+            <materialDesign:HintAssist.Hint>
+                <StackPanel Orientation="Horizontal" Margin="-2 0 0 0">
+                    <materialDesign:PackIcon Kind="Xml" Width="20" />
+                    <TextBlock>
+                        Layout path
+                    </TextBlock>
+                </StackPanel>
+            </materialDesign:HintAssist.Hint>
+        </TextBox>
 
         <!-- Buttons -->
         <StackPanel Orientation="Horizontal"

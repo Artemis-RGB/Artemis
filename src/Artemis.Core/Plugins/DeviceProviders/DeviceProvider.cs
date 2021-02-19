@@ -60,18 +60,35 @@ namespace Artemis.Core.DeviceProviders
         /// <summary>
         ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
         /// </summary>
-        /// <param name="rgbDevice">The device to load the layout for</param>
+        /// <param name="device">The device to load the layout for</param>
         /// <returns>The resulting Artemis layout</returns>
-        public virtual ArtemisLayout LoadLayout(ArtemisDevice rgbDevice)
+        public virtual ArtemisLayout LoadLayout(ArtemisDevice device)
         {
             string layoutDir = Path.Combine(Plugin.Directory.FullName, "Layouts");
             string filePath = Path.Combine(
                 layoutDir,
-                rgbDevice.RgbDevice.DeviceInfo.Manufacturer,
-                rgbDevice.RgbDevice.DeviceInfo.DeviceType.ToString(),
-                rgbDevice.GetLayoutFileName()
+                device.RgbDevice.DeviceInfo.Manufacturer,
+                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.GetLayoutFileName()
             );
-            return new ArtemisLayout(filePath);
+            return new ArtemisLayout(filePath, LayoutSource.Plugin);
+        }
+
+        /// <summary>
+        ///     Loads a layout from the user layout folder for the specified device and wraps it in an <see cref="ArtemisLayout" />
+        /// </summary>
+        /// <param name="device">The device to load the layout for</param>
+        /// <returns>The resulting Artemis layout</returns>
+        public virtual ArtemisLayout LoadUserLayout(ArtemisDevice device)
+        {
+            string layoutDir = Path.Combine(Constants.DataFolder, "user layouts");
+            string filePath = Path.Combine(
+                layoutDir,
+                device.RgbDevice.DeviceInfo.Manufacturer,
+                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.GetLayoutFileName()
+            );
+            return new ArtemisLayout(filePath, LayoutSource.User);
         }
 
         /// <summary>

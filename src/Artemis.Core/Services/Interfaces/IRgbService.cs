@@ -74,7 +74,9 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="device"></param>
         /// <param name="layout"></param>
-        void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout);
+        /// <param name="createMissingLeds"></param>
+        /// <param name="removeExessiveLeds"></param>
+        void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds);
 
         /// <summary>
         ///     Attempts to retrieve the <see cref="ArtemisDevice" /> that corresponds the provided RGB.NET

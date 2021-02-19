@@ -39,7 +39,10 @@ namespace Artemis.Core
         /// </summary>
         public Uri? Image { get; private set; }
 
-        internal LayoutCustomLedData LayoutCustomLedData { get; set; }
+        /// <summary>
+        ///     Gets the custom layout data embedded in the RGB.NET layout
+        /// </summary>
+        public LayoutCustomLedData LayoutCustomLedData { get; }
 
         internal void ApplyDevice(ArtemisDevice device)
         {

@@ -14,6 +14,10 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <shared:DeviceVisualizer Device="{Binding Device}" Width="30" Height="30" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" />
-        <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" Grid.Column="1" VerticalAlignment="Center" />
+        <StackPanel Grid.Column="1" VerticalAlignment="Center" >
+            <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
+            <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+        </StackPanel>
+
     </Grid>
 </UserControl>

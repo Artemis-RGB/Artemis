@@ -191,26 +191,53 @@ namespace Artemis.Core.Services
 
         public ArtemisLayout ApplyBestDeviceLayout(ArtemisDevice device)
         {
-            // Look for a user layout
-            // ... here
+            ArtemisLayout layout;
 
-            // Try loading a device provider layout, if that comes back valid we use that
-            ArtemisLayout layout = device.DeviceProvider.LoadLayout(device);
+            // Configured layout path takes precedence over all other options
+            if (device.CustomLayoutPath != null)
+            {
+                layout = new ArtemisLayout(device.CustomLayoutPath, LayoutSource.Configured);
+                if (layout.IsValid)
+                {
+                    ApplyDeviceLayout(device, layout, true, true);
+                    return layout;
+                }
+            }
+
+            // Look for a layout provided by the user
+            layout = device.DeviceProvider.LoadUserLayout(device);
+            if (layout.IsValid)
+            {
+                ApplyDeviceLayout(device, layout, true, true);
+                return layout;
+            }
+
+            // Look for a layout provided by the plugin
+            layout = device.DeviceProvider.LoadLayout(device);
+            if (layout.IsValid)
+            {
+                ApplyDeviceLayout(device, layout, true, true);
+                return layout;
+            }
 
             // Finally fall back to a default layout
-            // .. do it!
-
-            ApplyDeviceLayout(device, layout);
+            layout = LoadDefaultLayout(device);
+            ApplyDeviceLayout(device, layout, true, true);
             return layout;
         }
 
-        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout)
+        private ArtemisLayout LoadDefaultLayout(ArtemisDevice device)
         {
-            device.ApplyLayout(layout);
+            return new ArtemisLayout("NYI", LayoutSource.Default);
+        }
+
+        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds)
+        {
+            device.ApplyLayout(layout, createMissingLeds, removeExessiveLeds);
             // Applying layouts can affect LEDs, update LED group
             UpdateBitmapBrush();
         }
-
+            
         public ArtemisDevice? GetDevice(IRGBDevice rgbDevice)
         {
             return _devices.FirstOrDefault(d => d.RgbDevice == rgbDevice);

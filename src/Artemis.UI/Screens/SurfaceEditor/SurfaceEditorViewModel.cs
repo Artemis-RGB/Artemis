@@ -16,6 +16,7 @@ using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using SkiaSharp;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
 
@@ -27,13 +28,16 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private readonly IInputService _inputService;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
+        private readonly ICoreService _coreService;
         private readonly ISettingsService _settingsService;
         private Cursor _cursor;
         private PanZoomViewModel _panZoomViewModel;
         private RectangleGeometry _selectionRectangle;
         private PluginSetting<GridLength> _surfaceListWidth;
+        private List<ArtemisDevice> _shuffledDevices;
 
         public SurfaceEditorViewModel(IRgbService rgbService,
+            ICoreService coreService,
             IDialogService dialogService,
             ISettingsService settingsService,
             IDeviceService deviceService,
@@ -48,6 +52,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ListDeviceViewModels = new BindableCollection<ListDeviceViewModel>();
 
             _rgbService = rgbService;
+            _coreService = coreService;
             _dialogService = dialogService;
             _settingsService = settingsService;
             _deviceService = deviceService;
@@ -105,6 +110,22 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SurfaceListWidth.Save();
         }
 
+
+        private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
+        {
+            float amount = 360f / _shuffledDevices.Count;
+            for (int i = 0; i < _shuffledDevices.Count; i++)
+            {
+                ArtemisDevice rgbServiceDevice = _shuffledDevices[i];
+                foreach (ArtemisLed artemisLed in rgbServiceDevice.Leds)
+                {
+                    SKColor color = SKColor.FromHsv(amount * i, 100, 100);
+                    e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint(){Color = color});
+                }
+            }
+            
+        }
+
         #region Overrides of Screen
 
         protected override void OnInitialActivate()
@@ -112,6 +133,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
             LoadWorkspaceSettings();
             SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
             ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d)));
+            _shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
+
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
+
             base.OnInitialActivate();
         }
 
@@ -120,6 +145,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SaveWorkspaceSettings();
             SurfaceDeviceViewModels.Clear();
             ListDeviceViewModels.Clear();
+
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+
             base.OnClose();
         }
 

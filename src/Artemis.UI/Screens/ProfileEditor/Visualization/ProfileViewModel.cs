@@ -179,7 +179,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             base.OnClose();
         }
 
-        private void RgbServiceOnDevicesModified(object? sender, DeviceEventArgs e)
+        private void RgbServiceOnDevicesModified(object sender, DeviceEventArgs e)
         {
             ApplyDevices();
         }
