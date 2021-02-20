@@ -8,16 +8,24 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:ListDeviceViewModel}}">
+    <UserControl.Resources>
+        <shared:SKColorToColorConverter x:Key="SKColorToColorConverter" />
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="50" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <shared:DeviceVisualizer Device="{Binding Device}" Width="30" Height="30" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" />
-        <StackPanel Grid.Column="1" VerticalAlignment="Center" >
+        <StackPanel Grid.Column="1" VerticalAlignment="Center">
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" Foreground="{DynamicResource MaterialDesignBodyLight}" />
         </StackPanel>
-
+        <Ellipse Grid.Column="2" Width="20" Height="20" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="1">
+            <Ellipse.Fill>
+                <SolidColorBrush Color="{Binding Color, Converter={StaticResource SKColorToColorConverter}}" />
+            </Ellipse.Fill>
+        </Ellipse>
     </Grid>
 </UserControl>
