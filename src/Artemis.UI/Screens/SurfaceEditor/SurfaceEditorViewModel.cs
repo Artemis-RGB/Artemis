@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,17 +23,16 @@ namespace Artemis.UI.Screens.SurfaceEditor
 {
     public class SurfaceEditorViewModel : Screen, IMainScreenViewModel
     {
-        private readonly IDeviceService _deviceService;
-        private readonly IInputService _inputService;
-        private readonly IDialogService _dialogService;
-        private readonly IRgbService _rgbService;
         private readonly ICoreService _coreService;
+        private readonly IDeviceService _deviceService;
+        private readonly IDialogService _dialogService;
+        private readonly IInputService _inputService;
+        private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
         private Cursor _cursor;
         private PanZoomViewModel _panZoomViewModel;
         private RectangleGeometry _selectionRectangle;
         private PluginSetting<GridLength> _surfaceListWidth;
-        private List<ArtemisDevice> _shuffledDevices;
 
         public SurfaceEditorViewModel(IRgbService rgbService,
             ICoreService coreService,
@@ -113,17 +111,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
-            float amount = 360f / _shuffledDevices.Count;
-            for (int i = 0; i < _shuffledDevices.Count; i++)
-            {
-                ArtemisDevice rgbServiceDevice = _shuffledDevices[i];
-                foreach (ArtemisLed artemisLed in rgbServiceDevice.Leds)
-                {
-                    SKColor color = SKColor.FromHsv(amount * i, 100, 100);
-                    e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint(){Color = color});
-                }
-            }
-            
+            foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
+            foreach (ArtemisLed artemisLed in listDeviceViewModel.Device.Leds)
+                e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
         }
 
         #region Overrides of Screen
@@ -133,7 +123,15 @@ namespace Artemis.UI.Screens.SurfaceEditor
             LoadWorkspaceSettings();
             SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
             ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d)));
-            _shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
+
+            List<ArtemisDevice> shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
+            float amount = 360f / shuffledDevices.Count;
+            for (int i = 0; i < shuffledDevices.Count; i++)
+            {
+                ArtemisDevice rgbServiceDevice = shuffledDevices[i];
+                ListDeviceViewModel vm = ListDeviceViewModels.First(l => l.Device == rgbServiceDevice);
+                vm.Color = SKColor.FromHsv(amount * i, 100, 100);
+            }
 
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
 
@@ -169,6 +167,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
             _rgbService.SaveDevices();
@@ -186,6 +185,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
             _rgbService.SaveDevices();
@@ -200,6 +200,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
             _rgbService.SaveDevices();
@@ -216,6 +217,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
+
             ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
 
             _rgbService.SaveDevices();
@@ -299,10 +301,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 if (device.SelectionStatus != SelectionStatus.Selected)
                 {
                     if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                    {
                         foreach (SurfaceDeviceViewModel others in SurfaceDeviceViewModels)
                             others.SelectionStatus = SelectionStatus.None;
-                    }
 
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
@@ -329,12 +329,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 RectangleGeometry selectedRect = new(new Rect(_mouseDragStartPoint, position));
                 List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect);
                 foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
-                {
                     if (devices.Contains(device))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
-                }
             }
             else
             {
@@ -356,12 +354,10 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
             List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, SelectionRectangle);
             foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
-            {
                 if (devices.Contains(device))
                     device.SelectionStatus = SelectionStatus.Selected;
                 else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                     device.SelectionStatus = SelectionStatus.None;
-            }
 
             ApplySurfaceSelection();
         }
