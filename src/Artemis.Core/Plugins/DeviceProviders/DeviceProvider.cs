@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using Ninject;
 using RGB.NET.Core;
@@ -34,7 +33,23 @@ namespace Artemis.Core.DeviceProviders
         [Inject]
         public ILogger? Logger { get; set; }
 
-        internal Dictionary<IRGBDevice, string> DeviceLayoutPaths { get; set; } = new();
+        /// <summary>
+        ///     A boolean indicating whether this device provider detects the physical layout of connected keyboards.
+        ///     <para>
+        ///         Note: <see cref="GetLogicalLayout" /> is only called when this or <see cref="CanDetectLogicalLayout" />
+        ///         is <see langword="true" />.
+        ///     </para>
+        /// </summary>
+        public bool CanDetectPhysicalLayout { get; protected set; }
+
+        /// <summary>
+        ///     A boolean indicating whether this device provider detects the logical layout of connected keyboards
+        ///     <para>
+        ///         Note: <see cref="GetLogicalLayout" /> is only called when this or <see cref="CanDetectPhysicalLayout" />
+        ///         is <see langword="true" />.
+        ///     </para>
+        /// </summary>
+        public bool CanDetectLogicalLayout { get; protected set; }
 
         /// <inheritdoc />
         public override void Disable()
@@ -43,31 +58,49 @@ namespace Artemis.Core.DeviceProviders
         }
 
         /// <summary>
+        ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        protected void ResolveAbsolutePath(Type type, object sender, ResolvePathEventArgs e)
+        /// <param name="device">The device to load the layout for</param>
+        /// <returns>The resulting Artemis layout</returns>
+        public virtual ArtemisLayout LoadLayout(ArtemisDevice device)
         {
-            if (sender.GetType() == type || sender.GetType().IsGenericType(type))
-            {
-                // Start from the plugin directory
-                if (e.RelativePart != null && e.FileName != null)
-                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePart, e.FileName);
-                else if (e.RelativePath != null)
-                    e.FinalPath = Path.Combine(Plugin.Directory.FullName, e.RelativePath);
+            string layoutDir = Path.Combine(Plugin.Directory.FullName, "Layouts");
+            string filePath = Path.Combine(
+                layoutDir,
+                device.RgbDevice.DeviceInfo.Manufacturer,
+                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.GetLayoutFileName()
+            );
+            return new ArtemisLayout(filePath, LayoutSource.Plugin);
+        }
 
-                IRGBDevice device = (IRGBDevice) sender;
-                IRGBDeviceInfo deviceInfo = device.DeviceInfo;
-                if (e.FileName != null && !File.Exists(e.FinalPath))
-                {
-                    Logger?.Information("Couldn't find a layout for device {deviceName}, model {deviceModel} at {filePath}",
-                        deviceInfo.DeviceName, deviceInfo.Model, e.FinalPath);
-                }
+        /// <summary>
+        ///     Loads a layout from the user layout folder for the specified device and wraps it in an <see cref="ArtemisLayout" />
+        /// </summary>
+        /// <param name="device">The device to load the layout for</param>
+        /// <returns>The resulting Artemis layout</returns>
+        public virtual ArtemisLayout LoadUserLayout(ArtemisDevice device)
+        {
+            string layoutDir = Path.Combine(Constants.DataFolder, "user layouts");
+            string filePath = Path.Combine(
+                layoutDir,
+                device.RgbDevice.DeviceInfo.Manufacturer,
+                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.GetLayoutFileName()
+            );
+            return new ArtemisLayout(filePath, LayoutSource.User);
+        }
 
-                if (e.FileName != null)
-                    DeviceLayoutPaths[device] = e.FinalPath;
-            }
+        /// <summary>
+        ///     Called when a specific RGB device's logical and physical layout must be detected
+        ///     <para>
+        ///         Note: Only called when <see cref="CanDetectLogicalLayout" /> is <see langword="true" />.
+        ///     </para>
+        /// </summary>
+        /// <param name="keyboard">The device to detect the layout for, always a keyboard</param>
+        public virtual string GetLogicalLayout(IKeyboard keyboard)
+        {
+            throw new NotImplementedException("Device provider does not support detecting logical layouts (don't call base.GetLogicalLayout())");
         }
     }
 }

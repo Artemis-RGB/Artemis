@@ -5,23 +5,23 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
 {
     public class LayoutStepViewModel : Screen
     {
-        private readonly ISurfaceService _surfaceService;
+        private readonly IRgbService _rgbService;
 
-        public LayoutStepViewModel(ISurfaceService surfaceService)
+        public LayoutStepViewModel(IRgbService rgbService)
         {
-            _surfaceService = surfaceService;
+            _rgbService = rgbService;
         }
 
         public void ApplyLeftHandedPreset()
         {
-            _surfaceService.AutoArrange();
+            _rgbService.AutoArrangeDevices();
             StartupWizardViewModel startupWizardViewModel = (StartupWizardViewModel) Parent;
             startupWizardViewModel.Continue();
         }
 
         public void ApplyRightHandedPreset()
         {
-            _surfaceService.AutoArrange();
+            _rgbService.AutoArrangeDevices();
             StartupWizardViewModel startupWizardViewModel = (StartupWizardViewModel) Parent;
             startupWizardViewModel.Continue();
         }

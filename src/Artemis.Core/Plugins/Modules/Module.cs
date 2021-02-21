@@ -146,10 +146,9 @@ namespace Artemis.Core.Modules
         ///     Called each frame when the module should render
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
-        /// <param name="surface">The RGB Surface to render to</param>
         /// <param name="canvas"></param>
         /// <param name="canvasInfo"></param>
-        public abstract void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo);
+        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
 
         /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are met or during an override
@@ -191,9 +190,9 @@ namespace Artemis.Core.Modules
                 Update(deltaTime);
         }
 
-        internal virtual void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        internal virtual void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            Render(deltaTime, surface, canvas, canvasInfo);
+            Render(deltaTime, canvas, canvasInfo);
         }
 
         internal virtual void Activate(bool isOverride)

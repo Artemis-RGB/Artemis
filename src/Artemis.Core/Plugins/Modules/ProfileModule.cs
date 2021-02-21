@@ -142,10 +142,9 @@ namespace Artemis.Core.Modules
         ///     Called after the profile has rendered
         /// </summary>
         /// <param name="deltaTime">Time since the last render</param>
-        /// <param name="surface">The RGB Surface to render to</param>
         /// <param name="canvas"></param>
         /// <param name="canvasInfo"></param>
-        public virtual void ProfileRendered(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        public virtual void ProfileRendered(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
         }
 
@@ -168,9 +167,9 @@ namespace Artemis.Core.Modules
             ProfileUpdated(deltaTime);
         }
 
-        internal override void InternalRender(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        internal override void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
-            Render(deltaTime, surface, canvas, canvasInfo);
+            Render(deltaTime, canvas, canvasInfo);
 
             lock (_lock)
             {
@@ -178,10 +177,10 @@ namespace Artemis.Core.Modules
                 ActiveProfile?.Render(canvas);
             }
 
-            ProfileRendered(deltaTime, surface, canvas, canvasInfo);
+            ProfileRendered(deltaTime, canvas, canvasInfo);
         }
 
-        internal async Task ChangeActiveProfileAnimated(Profile? profile, ArtemisSurface? surface)
+        internal async Task ChangeActiveProfileAnimated(Profile? profile, IEnumerable<ArtemisDevice> devices)
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
@@ -196,21 +195,19 @@ namespace Artemis.Core.Modules
             while (OpacityOverride > 0)
                 await Task.Delay(50);
 
-            ChangeActiveProfile(profile, surface);
+            ChangeActiveProfile(profile, devices);
             AnimatingProfileChange = false;
 
             while (OpacityOverride < 1)
                 await Task.Delay(50);
         }
 
-        internal void ChangeActiveProfile(Profile? profile, ArtemisSurface? surface)
+        internal void ChangeActiveProfile(Profile? profile, IEnumerable<ArtemisDevice> devices)
         {
             if (profile != null && profile.Module != this)
                 throw new ArtemisCoreException($"Cannot activate a profile of module {profile.Module} on a module of plugin {this}.");
             if (!IsActivated)
                 throw new ArtemisCoreException("Cannot activate a profile on a deactivated module");
-            if (profile != null && surface == null)
-                throw new ArtemisCoreException("If changing the active profile to a non-null profile, a surface is required");
 
             lock (_lock)
             {
@@ -220,7 +217,7 @@ namespace Artemis.Core.Modules
                 ActiveProfile?.Dispose();
 
                 ActiveProfile = profile;
-                ActiveProfile?.Activate(surface!);
+                ActiveProfile?.Activate(devices);
             }
 
             OnActiveProfileChanged();

@@ -1,361 +1,364 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <AssemblyTitle>Artemis</AssemblyTitle>
-    <Product>Artemis</Product>
-    <NeutralLanguage>en-US</NeutralLanguage>
-    <Description>Provides advanced unified lighting across many different brands RGB peripherals</Description>
-    <Copyright>Copyright © Robert Beekman - 2021</Copyright>
-    <FileVersion>2.0.0.0</FileVersion>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
-    <UseWPF>true</UseWPF>
-    <Platforms>x64</Platforms>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net5.0-windows</TargetFramework>
+		<ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+		<AssemblyTitle>Artemis</AssemblyTitle>
+		<Product>Artemis</Product>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<Description>Provides advanced unified lighting across many different brands RGB peripherals</Description>
+		<Copyright>Copyright © Robert Beekman - 2021</Copyright>
+		<FileVersion>2.0.0.0</FileVersion>
+		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+		<UseWPF>true</UseWPF>
+		<Platforms>x64</Platforms>
+		<SupportedPlatform>windows</SupportedPlatform>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+		<PlatformTarget>x64</PlatformTarget>
+	</PropertyGroup>
 
-  <PropertyGroup>
-    <ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
-  </PropertyGroup>
-  <PropertyGroup>
-    <PostBuildEvent />
-    <AssemblyVersion>2.0.0.0</AssemblyVersion>
-    <Version>2.0.0</Version>
-  </PropertyGroup>
-  <PropertyGroup>
-    <NrtRevisionFormat>2.0-{chash:6}</NrtRevisionFormat>
-    <NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
-    <NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
-    <NrtResolveCopyright>true</NrtResolveCopyright>
-    <NrtTagMatch>v[0-9]*</NrtTagMatch>
-    <NrtRemoveTagV>true</NrtRemoveTagV>
-    <NrtRequiredVcs>git</NrtRequiredVcs>
-    <NrtShowRevision>true</NrtShowRevision>
-  </PropertyGroup>
-  <Target Name="SkiaCleanUpAfterBuild" AfterTargets="AfterBuild">
-    <Delete Files="$(OutputPath)\libSkiaSharp.dylib" />
-  </Target>
-  <ItemGroup>
-    <FluentValidationExcludedCultures Include="ar-DZ;cs;cs-CZ;da;de;es;fa;fi;fr;fr-FR;it;ko;mk;nl;pl;pt;pt-BR;ru;ru-ru;sv;tr;zh-CN;uz-Latn-UZ">
-      <InProject>false</InProject>
-    </FluentValidationExcludedCultures>
-  </ItemGroup>
-  <Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
-    <RemoveDir Directories="@(FluentValidationExcludedCultures->'$(OutputPath)%(Filename)')" />
-  </Target>
-  <ItemGroup>
-    <Compile Remove="publish\**" />
-    <EmbeddedResource Remove="publish\**" />
-    <None Remove="publish\**" />
-    <Page Remove="publish\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <!-- TODO: Remove when moving to Nuget, this is so the plugin templates have the DLL to reference -->
-    <Reference Include="RGB.NET.Brushes">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Brushes.dll</HintPath>
-      <Private>true</Private>
-    </Reference>
-    <Reference Include="RGB.NET.Core">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="RGB.NET.Groups">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Groups.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Management" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
-      <Private>true</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
-    <Resource Include="Resources\Images\Logo\bow.svg" />
-    <Resource Include="Resources\Images\Logo\logo-512.ico" />
-    <Resource Include="Resources\Images\Logo\logo-512.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_rotate_tr.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_rotate_bl.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_rotate_br.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_crosshair.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_crosshair_minus.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_crosshair_plus.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_pen_min.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_pen_plus.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_fill.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_drag.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_drag_ew.cur" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Cursors\aero_rotate.cur" />
-    <Resource Include="Resources\Images\Sidebar\sidebar-header.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="9.3.0" />
-    <PackageReference Include="Flurl.Http" Version="3.0.1" />
-    <PackageReference Include="gong-wpf-dragdrop" Version="2.3.2" />
-    <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.14" />
-    <PackageReference Include="Humanizer.Core" Version="2.8.26" />
-    <PackageReference Include="MaterialDesignExtensions" Version="3.3.0-a01" />
-    <PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
-    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
-    <PackageReference Include="Ninject" Version="3.3.4" />
-    <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
-    <PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
-    <PackageReference Include="RawInput.Sharp" Version="0.0.3" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.2" />
-    <PackageReference Include="Stylet" Version="1.3.5" />
-    <PackageReference Include="System.Buffers" Version="4.5.1" />
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
-    <PackageReference Include="System.Management" Version="5.0.0" />
-    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
-    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
-    <PackageReference Include="Unclassified.NetRevisionTask" Version="0.3.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="obj\x64\Debug\App.g.cs" />
-    <Compile Remove="obj\x64\Debug\App.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.cs" />
-    <Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.i.cs" />
-    <Compile Remove="obj\x64\Release\App.g.cs" />
-    <Compile Remove="obj\x64\Release\GeneratedInternalTypeHelper.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\RootView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\RootView.g.i.cs" />
-    <Compile Remove="obj\x64\Release\Screens\RootView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.i.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Dialogs\ConfirmDialogView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Home\HomeView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ModuleRootView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\News\NewsView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Settings\SettingsView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Splash\SplashView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Workshop\WorkshopView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.i.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Settings\Debug\DebugView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.i.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
-    <Compile Remove="obj\x64\Release\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyRailItemView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePartView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineTimeView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView - Copy.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.i.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.cs" />
-    <Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.i.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
-    <None Remove="Resources\Images\Logo\bow.svg" />
-    <None Remove="Resources\Images\Logo\logo-512.ico" />
-    <None Remove="Resources\Images\Sidebar\sidebar-header.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="buildinfo.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Page Update="DefaultTypes\DataModel\Display\SKColorDataModelDisplayView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="DefaultTypes\DataModel\Input\DoubleDataModelInputView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="DefaultTypes\DataModel\Input\IntDataModelInputView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="DefaultTypes\DataModel\Input\SKColorDataModelInputView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="DefaultTypes\DataModel\Input\StringDataModelInputView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="DefaultTypes\PropertyInput\FloatRangePropertyInputView.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="Screens\ProfileEditor\Dialogs\ProfileEditView.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
-  </ItemGroup>
+	<PropertyGroup>
+		<ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
+	</PropertyGroup>
+	<PropertyGroup>
+		<PostBuildEvent />
+		<AssemblyVersion>2.0.0.0</AssemblyVersion>
+		<Version>2.0.0</Version>
+	</PropertyGroup>
+	<PropertyGroup>
+		<NrtRevisionFormat>2.0-{chash:6}</NrtRevisionFormat>
+		<NrtResolveSimpleAttributes>true</NrtResolveSimpleAttributes>
+		<NrtResolveInformationalAttribute>true</NrtResolveInformationalAttribute>
+		<NrtResolveCopyright>true</NrtResolveCopyright>
+		<NrtTagMatch>v[0-9]*</NrtTagMatch>
+		<NrtRemoveTagV>true</NrtRemoveTagV>
+		<NrtRequiredVcs>git</NrtRequiredVcs>
+		<NrtShowRevision>true</NrtShowRevision>
+	</PropertyGroup>
+	<Target Name="SkiaCleanUpAfterBuild" AfterTargets="AfterBuild">
+		<Delete Files="$(OutputPath)\libSkiaSharp.dylib" />
+	</Target>
+	<ItemGroup>
+		<FluentValidationExcludedCultures Include="ar-DZ;cs;cs-CZ;da;de;es;fa;fi;fr;fr-FR;it;ko;mk;nl;pl;pt;pt-BR;ru;ru-ru;sv;tr;zh-CN;uz-Latn-UZ">
+			<InProject>false</InProject>
+		</FluentValidationExcludedCultures>
+	</ItemGroup>
+	<Target Name="RemoveTranslationsAfterBuild" AfterTargets="AfterBuild">
+		<RemoveDir Directories="@(FluentValidationExcludedCultures->'$(OutputPath)%(Filename)')" />
+	</Target>
+	<ItemGroup>
+		<Compile Remove="publish\**" />
+		<EmbeddedResource Remove="publish\**" />
+		<None Remove="publish\**" />
+		<Page Remove="publish\**" />
+	</ItemGroup>
+	<ItemGroup>
+		<!-- TODO: Remove when moving to Nuget, this is so the plugin templates have the DLL to reference -->
+		<Reference Include="RGB.NET.Brushes">
+			<HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Brushes.dll</HintPath>
+		</Reference>
+		<Reference Include="RGB.NET.Core">
+			<HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
+		</Reference>
+		<Reference Include="RGB.NET.Groups">
+			<HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Groups.dll</HintPath>
+		</Reference>
+		<Reference Include="RGB.NET.Layout">
+		  <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Layout.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Management" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Update="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<SubType>Designer</SubType>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj">
+			<Private>true</Private>
+		</ProjectReference>
+		<ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">
+			<Private>true</Private>
+		</ProjectReference>
+		<ProjectReference Include="..\Artemis.UI.Shared\Artemis.UI.Shared.csproj">
+			<Private>true</Private>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+		<Resource Include="Resources\Images\Logo\bow.svg" />
+		<Resource Include="Resources\Images\Logo\logo-512.ico" />
+		<Resource Include="Resources\Images\Logo\logo-512.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_rotate_tr.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_rotate_bl.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_rotate_br.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_crosshair.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_crosshair_minus.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_crosshair_plus.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_pen_min.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_pen_plus.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_fill.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_drag.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_drag_ew.cur" />
+	</ItemGroup>
+	<ItemGroup>
+		<Resource Include="Resources\Cursors\aero_rotate.cur" />
+		<Resource Include="Resources\Images\Sidebar\sidebar-header.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="FluentValidation" Version="9.3.0" />
+		<PackageReference Include="Flurl.Http" Version="3.0.1" />
+		<PackageReference Include="gong-wpf-dragdrop" Version="2.3.2" />
+		<PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.14" />
+		<PackageReference Include="Humanizer.Core" Version="2.8.26" />
+		<PackageReference Include="MaterialDesignExtensions" Version="3.3.0-a01" />
+		<PackageReference Include="MaterialDesignThemes" Version="3.2.0" />
+		<PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+		<PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
+		<PackageReference Include="Ninject" Version="3.3.4" />
+		<PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
+		<PackageReference Include="Ookii.Dialogs.Wpf" Version="3.1.0" />
+		<PackageReference Include="RawInput.Sharp" Version="0.0.3" />
+		<PackageReference Include="Serilog" Version="2.10.0" />
+		<PackageReference Include="SkiaSharp.Views.WPF" Version="2.80.2" />
+		<PackageReference Include="Stylet" Version="1.3.5" />
+		<PackageReference Include="System.Buffers" Version="4.5.1" />
+		<PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+		<PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+		<PackageReference Include="System.Management" Version="5.0.0" />
+		<PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+		<PackageReference Include="System.ValueTuple" Version="4.5.0" />
+		<PackageReference Include="Unclassified.NetRevisionTask" Version="0.3.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Remove="obj\x64\Debug\App.g.cs" />
+		<Compile Remove="obj\x64\Debug\App.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.cs" />
+		<Compile Remove="obj\x64\Debug\GeneratedInternalTypeHelper.g.i.cs" />
+		<Compile Remove="obj\x64\Release\App.g.cs" />
+		<Compile Remove="obj\x64\Release\GeneratedInternalTypeHelper.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\RootView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\RootView.g.i.cs" />
+		<Compile Remove="obj\x64\Release\Screens\RootView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Dialogs\ConfirmDialogView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\GradientEditor\GradientEditorView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Home\HomeView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ModuleRootView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\News\NewsView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\SettingsView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Sidebar\SidebarView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Splash\SplashView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\SurfaceEditorView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Workshop\WorkshopView.g.i.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Dialogs\ConfirmDialogView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Home\HomeView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ModuleRootView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\News\NewsView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Settings\SettingsView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Splash\SplashView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Workshop\WorkshopView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileEditorView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\Debug\DebugView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.i.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ProfileEditorView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Settings\Debug\DebugView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceCreateView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Dialogs\SurfaceDeviceConfigView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceDeviceView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\SurfaceEditor\Visualization\SurfaceLedView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Dialogs\ProfileElementRenameView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\LayerPropertiesView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\ProfileTreeView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLayerView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\ProfileView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.i.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Dialogs\ProfileCreateView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionsView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\DataModelConditions\DataModelConditionView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertiesView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\ElementProperties\ElementPropertyView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementsView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\LayerElements\LayerElementView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Layers\LayersView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileDeviceView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileLedView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Module\ProfileEditor\Visualization\ProfileView.g.cs" />
+		<Compile Remove="obj\x64\Release\Screens\Settings\Tabs\Devices\DeviceSettingsView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerElements\Dialogs\AddLayerElementView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeChildView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeItemView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyTreeView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\LayerPropertiesTimelineView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyRailItemView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTimelineView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\PropertyTrackView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineKeyframeView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePartView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyRailView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelinePropertyView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\Timeline\TimelineTimeView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\FolderView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\ProfileTree\TreeItem\LayerView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EditToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\EllipseToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\FillToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\PolygonToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\RectangleToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionAddToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionRemoveToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\SelectionToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\Tools\ViewpointMoveToolView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\Visualization\UserControls\LayerShapeControl.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\BrushPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\EnumPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\FloatPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView - Copy.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\IntPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKColorPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKPointPropertyInputView.g.i.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.cs" />
+		<Compile Remove="obj\x64\Debug\Screens\Module\ProfileEditor\LayerProperties\PropertyTree\PropertyInput\SKSizePropertyInputView.g.i.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+		<None Remove="Resources\Images\Logo\bow.svg" />
+		<None Remove="Resources\Images\Logo\logo-512.ico" />
+		<None Remove="Resources\Images\Sidebar\sidebar-header.png" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="..\.editorconfig" Link=".editorconfig" />
+	</ItemGroup>
+	<ItemGroup>
+		<Compile Update="Properties\Resources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Update="Properties\Settings.Designer.cs">
+			<DesignTimeSharedInput>True</DesignTimeSharedInput>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>Settings.settings</DependentUpon>
+		</Compile>
+	</ItemGroup>
+	<ItemGroup>
+		<None Update="buildinfo.json">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+		<None Update="Properties\Settings.settings">
+			<Generator>SettingsSingleFileGenerator</Generator>
+			<LastGenOutput>Settings.Designer.cs</LastGenOutput>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Page Update="DefaultTypes\DataModel\Display\SKColorDataModelDisplayView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="DefaultTypes\DataModel\Input\DoubleDataModelInputView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="DefaultTypes\DataModel\Input\IntDataModelInputView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="DefaultTypes\DataModel\Input\SKColorDataModelInputView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="DefaultTypes\DataModel\Input\StringDataModelInputView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="DefaultTypes\PropertyInput\FloatRangePropertyInputView.xaml">
+			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Screens\ProfileEditor\Dialogs\ProfileEditView.xaml">
+			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
+	</ItemGroup>
 </Project>

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -18,8 +17,9 @@ namespace Artemis.Core
         /// </summary>
         public static void PrepareFirstLaunch()
         {
-            CreateArtemisFolderIfMissing(Constants.DataFolder);
-            CreateArtemisFolderIfMissing(Constants.DataFolder + "plugins");
+            CreateAccessibleDirectory(Constants.DataFolder);
+            CreateAccessibleDirectory(Constants.DataFolder + "plugins");
+            CreateAccessibleDirectory(Constants.DataFolder + "user layouts");
         }
 
         /// <summary>
@@ -62,15 +62,11 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the current application location
+        ///     Creates all directories and subdirectories in the specified path unless they already exist with permissions
+        ///     allowing access by everyone.
         /// </summary>
-        /// <returns></returns>
-        internal static string GetCurrentLocation()
-        {
-            return Process.GetCurrentProcess().MainModule!.FileName!;
-        }
-
-        private static void CreateArtemisFolderIfMissing(string path)
+        /// <param name="path">The directory to create.</param>
+        public static void CreateAccessibleDirectory(string path)
         {
             if (!Directory.Exists(path))
             {
@@ -90,6 +86,15 @@ namespace Artemis.Core
                 );
                 dataDirectory.SetAccessControl(security);
             }
+        }
+
+        /// <summary>
+        ///     Gets the current application location
+        /// </summary>
+        /// <returns></returns>
+        internal static string GetCurrentLocation()
+        {
+            return Process.GetCurrentProcess().MainModule!.FileName!;
         }
 
         private static void OnRestartRequested(RestartEventArgs e)

@@ -32,14 +32,14 @@ namespace Artemis.Core.Services.Models
         public int MarginBottom { get; }
         public SurfaceArrangement SurfaceArrangement { get; set; }
 
-        public bool Apply(List<ArtemisDevice> devices, ArtemisSurface surface)
+        public bool Apply(List<ArtemisDevice> devices)
         {
-            if (Anchor != null && !Anchor.HasDevices(surface))
+            if (Anchor != null && !Anchor.HasDevices(devices))
                 return false;
 
             // Start at the edge of the anchor, if there is no anchor start at any device
-            Point startPoint = Anchor?.GetEdge(HorizontalPosition, VerticalPosition, surface) ??
-                               new SurfaceArrangementType(SurfaceArrangement, RGBDeviceType.All, 1).GetEdge(HorizontalPosition, VerticalPosition, surface);
+            Point startPoint = Anchor?.GetEdge(HorizontalPosition, VerticalPosition) ??
+                               new SurfaceArrangementType(SurfaceArrangement, RGBDeviceType.All, 1).GetEdge(HorizontalPosition, VerticalPosition);
 
             // Stack multiple devices of the same type vertically if they are wider than they are tall
             bool stackVertically = devices.Average(d => d.RgbDevice.Size.Width) >= devices.Average(d => d.RgbDevice.Size.Height);
