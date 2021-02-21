@@ -73,6 +73,9 @@
     <Reference Include="RGB.NET.Groups">
       <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Groups.dll</HintPath>
     </Reference>
+    <Reference Include="RGB.NET.Layout">
+      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Layout.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Update="Resources\intro-profile.json">

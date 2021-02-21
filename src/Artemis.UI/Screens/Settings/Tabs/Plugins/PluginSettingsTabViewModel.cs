@@ -57,6 +57,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(async () =>
             {
+                Items.Clear();
                 await Task.Delay(200);
                 _instances = _pluginManagementService.GetAllPlugins()
                     .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))

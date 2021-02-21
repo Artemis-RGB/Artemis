@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
+using Artemis.Core.Services;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
+using RGB.NET.Layout;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -17,12 +19,11 @@ namespace Artemis.Core
         private SKPath? _path;
         private SKRect _rectangle;
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface)
+        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
         {
             DeviceEntity = new DeviceEntity();
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
-            Surface = surface;
 
             Rotation = 0;
             Scale = 1;
@@ -31,27 +32,22 @@ namespace Artemis.Core
             GreenScale = 1;
             BlueScale = 1;
             IsEnabled = true;
-            
-            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
-            LayoutPath = layoutPath;
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
 
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            ApplyKeyboardLayout();
             ApplyToEntity();
             CalculateRenderProperties();
         }
 
-        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, ArtemisSurface surface, DeviceEntity deviceEntity)
+        internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
         {
             DeviceEntity = deviceEntity;
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
-            Surface = surface;
-
-            deviceProvider.DeviceLayoutPaths.TryGetValue(rgbDevice, out string? layoutPath);
-            LayoutPath = layoutPath;
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
@@ -59,6 +55,8 @@ namespace Artemis.Core
 
             Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
             LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            ApplyKeyboardLayout();
         }
 
         /// <summary>
@@ -90,20 +88,15 @@ namespace Artemis.Core
         public DeviceProvider DeviceProvider { get; }
 
         /// <summary>
-        ///     Gets the surface containing this device
-        /// </summary>
-        public ArtemisSurface Surface { get; }
-
-        /// <summary>
         ///     Gets a read only collection containing the LEDs of this device
         /// </summary>
-        public ReadOnlyCollection<ArtemisLed> Leds { get; }
+        public ReadOnlyCollection<ArtemisLed> Leds { get; private set; }
 
         /// <summary>
         ///     Gets a dictionary containing all the LEDs of this device with their corresponding RGB.NET <see cref="LedId" /> as
         ///     key
         /// </summary>
-        public ReadOnlyDictionary<LedId, ArtemisLed> LedIds { get; }
+        public ReadOnlyDictionary<LedId, ArtemisLed> LedIds { get; private set; }
 
         /// <summary>
         ///     Gets a list of input identifiers associated with this device
@@ -215,12 +208,13 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets a boolean indicating whether this devices is enabled or not
+        ///     Gets a boolean indicating whether this devices is enabled or not
+        ///     <para>Note: To enable/disable a device use the methods provided by <see cref="IRgbService" /></para>
         /// </summary>
         public bool IsEnabled
         {
             get => DeviceEntity.IsEnabled;
-            set
+            internal set
             {
                 DeviceEntity.IsEnabled = value;
                 OnPropertyChanged(nameof(IsEnabled));
@@ -228,9 +222,51 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the path to where the layout of the device was (attempted to be) loaded from
+        ///     Gets or sets the physical layout of the device e.g. ISO or ANSI.
+        ///     <para>Only applicable to keyboards</para>
         /// </summary>
-        public string? LayoutPath { get; internal set; }
+        public KeyboardLayoutType PhysicalLayout
+        {
+            get => (KeyboardLayoutType) DeviceEntity.PhysicalLayout;
+            set
+            {
+                DeviceEntity.PhysicalLayout = (int) value;
+                OnPropertyChanged(nameof(PhysicalLayout));
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the logical layout of the device e.g. DE, UK or US.
+        ///     <para>Only applicable to keyboards</para>
+        /// </summary>
+        public string? LogicalLayout
+        {
+            get => DeviceEntity.LogicalLayout;
+            set
+            {
+                DeviceEntity.LogicalLayout = value;
+                OnPropertyChanged(nameof(LogicalLayout));
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the path of the custom layout to load when calling <see cref="IRgbService.ApplyBestDeviceLayout" />
+        ///     for this device
+        /// </summary>
+        public string? CustomLayoutPath
+        {
+            get => DeviceEntity.CustomLayoutPath;
+            set
+            {
+                DeviceEntity.CustomLayoutPath = value;
+                OnPropertyChanged(nameof(CustomLayoutPath));
+            }
+        }
+
+        /// <summary>
+        ///     Gets the layout of the device expanded with Artemis-specific data
+        /// </summary>
+        public ArtemisLayout? Layout { get; internal set; }
 
         internal DeviceEntity DeviceEntity { get; }
 
@@ -261,10 +297,46 @@ namespace Artemis.Core
             return artemisLed;
         }
 
+        /// <summary>
+        ///     Generates the default layout file name of the device
+        /// </summary>
+        /// <param name="includeExtension">If true, the .xml extension is added to the file name</param>
+        /// <returns>The resulting file name e.g. CORSAIR GLAIVE.xml or K95 RGB-ISO.xml</returns>
+        public string GetLayoutFileName(bool includeExtension = true)
+        {
+            // Take out invalid file name chars, may not be perfect but neither are you
+            string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
+            if (RgbDevice is IKeyboard)
+                fileName = $"{fileName}-{PhysicalLayout.ToString().ToUpper()}";
+            if (includeExtension)
+                fileName = $"{fileName}.xml";
+
+            return fileName;
+        }
+
+        /// <summary>
+        ///     Applies the provided layout to the device
+        /// </summary>
+        /// <param name="layout">The layout to apply</param>
+        /// <param name="createMissingLeds">A boolean indicating whether to add missing LEDs defined in the layout but missing on the device</param>
+        /// <param name="removeExcessiveLeds">A boolean indicating whether to remove excess LEDs present in the device but missing in the layout</param>
+        internal void ApplyLayout(ArtemisLayout layout, bool createMissingLeds, bool removeExcessiveLeds)
+        {
+            if (layout.IsValid)
+                layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
+
+            Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            Layout = layout;
+            Layout.ApplyDevice(this);
+            OnDeviceUpdated();
+        }
+
         internal void ApplyToEntity()
         {
             // Other properties are computed
-            DeviceEntity.DeviceIdentifier = RgbDevice.GetDeviceIdentifier();
+            DeviceEntity.Id = RgbDevice.GetDeviceIdentifier();
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
@@ -295,7 +367,7 @@ namespace Artemis.Core
 
         internal void CalculateRenderProperties()
         {
-            Rectangle = RgbDevice.DeviceRectangle.ToSKRect();
+            Rectangle = RgbDevice.Boundary.ToSKRect();
             if (!Leds.Any())
                 return;
 
@@ -307,6 +379,18 @@ namespace Artemis.Core
                 path.AddRect(artemisLed.AbsoluteRectangle);
 
             Path = path;
+        }
+
+        private void ApplyKeyboardLayout()
+        {
+            if (!(RgbDevice is IKeyboard keyboard))
+                return;
+
+            // If supported, detect the device layout so that we can load the correct one
+            if (DeviceProvider.CanDetectLogicalLayout)
+                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
+            if (DeviceProvider.CanDetectPhysicalLayout)
+                PhysicalLayout = (KeyboardLayoutType) keyboard.DeviceInfo.Layout;
         }
 
         #region Events

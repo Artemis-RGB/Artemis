@@ -6,48 +6,48 @@ using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
-using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
     public class ProfileViewModel : Conductor<CanvasViewModel>.Collection.AllActive, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
     {
-        private readonly IProfileEditorService _profileEditorService;
         private readonly ICoreService _coreService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileLayerVmFactory _profileLayerVmFactory;
+        private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
-        private readonly ISurfaceService _surfaceService;
         private readonly IVisualizationToolVmFactory _visualizationToolVmFactory;
 
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
+        private PluginSetting<bool> _alwaysApplyDataBindings;
         private bool _canApplyToLayer;
         private bool _canSelectEditTool;
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
         private PluginSetting<bool> _highlightSelectedLayer;
-        private PluginSetting<bool> _alwaysApplyDataBindings;
+        private DateTime _lastUpdate;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
-        private DateTime _lastUpdate;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
+            IRgbService rgbService,
             ICoreService coreService,
-            ISurfaceService surfaceService,
             ISettingsService settingsService,
             IEventAggregator eventAggregator,
             IVisualizationToolVmFactory visualizationToolVmFactory,
             IProfileLayerVmFactory profileLayerVmFactory)
         {
             _profileEditorService = profileEditorService;
+            _rgbService = rgbService;
             _coreService = coreService;
-            _surfaceService = surfaceService;
             _settingsService = settingsService;
             _visualizationToolVmFactory = visualizationToolVmFactory;
             _profileLayerVmFactory = profileLayerVmFactory;
@@ -99,25 +99,21 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             {
                 // Remove the tool from the canvas
                 if (_activeToolViewModel != null)
-                {
                     lock (Items)
                     {
                         Items.Remove(_activeToolViewModel);
                         NotifyOfPropertyChange(() => Items);
                     }
-                }
 
                 // Set the new tool
                 SetAndNotify(ref _activeToolViewModel, value);
                 // Add the new tool to the canvas
                 if (_activeToolViewModel != null)
-                {
                     lock (Items)
                     {
                         Items.Add(_activeToolViewModel);
                         NotifyOfPropertyChange(() => Items);
                     }
-                }
             }
         }
 
@@ -144,7 +140,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             Devices = new BindableCollection<ArtemisDevice>();
             HighlightedLeds = new BindableCollection<ArtemisLed>();
 
-            ApplySurfaceConfiguration(_surfaceService.ActiveSurface);
+            ApplyDevices();
             ActivateToolByIndex(0);
 
             ApplyActiveProfile();
@@ -156,7 +152,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             _coreService.FrameRendered += OnFrameRendered;
 
             HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
-            _surfaceService.ActiveSurfaceConfigurationSelected += OnActiveSurfaceConfigurationSelected;
+            _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
+            _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
             _profileEditorService.ProfileSelected += OnProfileSelected;
             _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
@@ -168,7 +165,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             _coreService.FrameRendered -= OnFrameRendered;
             HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
-            _surfaceService.ActiveSurfaceConfigurationSelected -= OnActiveSurfaceConfigurationSelected;
+            _rgbService.DeviceAdded -= RgbServiceOnDevicesModified;
+            _rgbService.DeviceRemoved -= RgbServiceOnDevicesModified;
             _profileEditorService.ProfileSelected -= OnProfileSelected;
             _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
             _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
@@ -181,9 +179,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             base.OnClose();
         }
 
-        private void OnActiveSurfaceConfigurationSelected(object sender, SurfaceConfigurationEventArgs e)
+        private void RgbServiceOnDevicesModified(object sender, DeviceEventArgs e)
         {
-            ApplySurfaceConfiguration(e.Surface);
+            ApplyDevices();
         }
 
         private void ApplyActiveProfile()
@@ -193,10 +191,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             // Add new layers missing a VM
             foreach (Layer layer in layers)
-            {
                 if (layerViewModels.All(vm => vm.Layer != layer))
                     Items.Add(_profileLayerVmFactory.Create(layer, PanZoomViewModel));
-            }
 
             // Remove layers that no longer exist
             IEnumerable<ProfileLayerViewModel> toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
@@ -204,10 +200,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 Items.Remove(profileLayerViewModel);
         }
 
-        private void ApplySurfaceConfiguration(ArtemisSurface surface)
+        private void ApplyDevices()
         {
             Devices.Clear();
-            Devices.AddRange(surface.Devices.Where(d => d.IsEnabled).OrderBy(d => d.ZIndex));
+            Devices.AddRange(_rgbService.EnabledDevices.Where(d => d.IsEnabled).OrderBy(d => d.ZIndex));
         }
 
         private void UpdateLedsDimStatus()
@@ -259,7 +255,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         public void ResetZoomAndPan()
         {
-            PanZoomViewModel.Reset();
+            // Create a rect surrounding all devices
+            SKRect rect = new SKRect(
+                Devices.Min(d => d.Rectangle.Left),
+                Devices.Min(d => d.Rectangle.Top),
+                Devices.Max(d => d.Rectangle.Right),
+                Devices.Max(d => d.Rectangle.Bottom)
+            );
+            
+            PanZoomViewModel.Reset(rect);
         }
 
         #endregion
@@ -339,7 +343,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 _previousSelectedLayer.Transform.LayerPropertyOnCurrentValueSet += TransformValueChanged;
             }
             else
+            {
                 _previousSelectedLayer = null;
+            }
 
             ApplyActiveProfile();
             UpdateLedsDimStatus();

@@ -14,9 +14,10 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
     {
         private readonly IInputService _inputService;
         private readonly IMessageService _messageService;
+        private readonly IRgbService _rgbService;
         private readonly ListLedGroup _ledGroup;
 
-        public SurfaceDeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, IMessageService messageService)
+        public SurfaceDeviceDetectInputViewModel(ArtemisDevice device, IInputService inputService, IMessageService messageService, IRgbService rgbService)
         {
             Device = device;
             Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input";
@@ -24,11 +25,12 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 
             _inputService = inputService;
             _messageService = messageService;
+            _rgbService = rgbService;
             _inputService.IdentifyDevice(Device);
             _inputService.DeviceIdentified += InputServiceOnDeviceIdentified;
 
             // Create a LED group way at the top
-            _ledGroup = new ListLedGroup(Device.Leds.Select(l => l.RgbLed))
+            _ledGroup = new ListLedGroup(_rgbService.Surface, Device.Leds.Select(l => l.RgbLed))
             {
                 Brush = new SolidColorBrush(new Color(255, 255, 0)),
                 ZIndex = 999
@@ -43,7 +45,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         {
             base.OnDialogClosed(sender, e);
             _inputService.DeviceIdentified -= InputServiceOnDeviceIdentified;
-            _ledGroup.Detach();
+            _ledGroup.Detach(_rgbService.Surface);
         }
 
         private void InputServiceOnDeviceIdentified(object sender, EventArgs e)

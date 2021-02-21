@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -10,11 +9,13 @@ using System.Windows.Media;
 using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using SkiaSharp;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
 
@@ -22,54 +23,42 @@ namespace Artemis.UI.Screens.SurfaceEditor
 {
     public class SurfaceEditorViewModel : Screen, IMainScreenViewModel
     {
+        private readonly ICoreService _coreService;
         private readonly IDeviceService _deviceService;
-        private readonly IInputService _inputService;
         private readonly IDialogService _dialogService;
+        private readonly IInputService _inputService;
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
-        private readonly ISurfaceService _surfaceService;
         private Cursor _cursor;
-        private ObservableCollection<SurfaceDeviceViewModel> _devices;
         private PanZoomViewModel _panZoomViewModel;
-        private ArtemisSurface _selectedSurface;
         private RectangleGeometry _selectionRectangle;
-        private ObservableCollection<ArtemisSurface> _surfaceConfigurations;
         private PluginSetting<GridLength> _surfaceListWidth;
 
         public SurfaceEditorViewModel(IRgbService rgbService,
-            ISurfaceService surfaceService,
+            ICoreService coreService,
             IDialogService dialogService,
             ISettingsService settingsService,
             IDeviceService deviceService,
             IInputService inputService)
         {
             DisplayName = "Surface Editor";
-
-            Devices = new ObservableCollection<SurfaceDeviceViewModel>();
-            SurfaceConfigurations = new ObservableCollection<ArtemisSurface>();
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
             Cursor = null;
 
+            SurfaceDeviceViewModels = new BindableCollection<SurfaceDeviceViewModel>();
+            ListDeviceViewModels = new BindableCollection<ListDeviceViewModel>();
+
             _rgbService = rgbService;
-            _surfaceService = surfaceService;
+            _coreService = coreService;
             _dialogService = dialogService;
             _settingsService = settingsService;
             _deviceService = deviceService;
             _inputService = inputService;
         }
 
-        public ObservableCollection<SurfaceDeviceViewModel> Devices
-        {
-            get => _devices;
-            set => SetAndNotify(ref _devices, value);
-        }
-
-        public ObservableCollection<ArtemisSurface> SurfaceConfigurations
-        {
-            get => _surfaceConfigurations;
-            set => SetAndNotify(ref _surfaceConfigurations, value);
-        }
+        public BindableCollection<SurfaceDeviceViewModel> SurfaceDeviceViewModels { get; }
+        public BindableCollection<ListDeviceViewModel> ListDeviceViewModels { get; }
 
         public RectangleGeometry SelectionRectangle
         {
@@ -95,26 +84,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
             set => SetAndNotify(ref _cursor, value);
         }
 
-        public ArtemisSurface SelectedSurface
-        {
-            get => _selectedSurface;
-            set
-            {
-                if (value == null)
-                    return;
-
-                SetAndNotify(ref _selectedSurface, value);
-                ApplySelectedSurfaceConfiguration();
-            }
-        }
-
-        public ArtemisSurface CreateSurfaceConfiguration(string name)
-        {
-            ArtemisSurface config = _surfaceService.CreateSurfaceConfiguration(name);
-            Execute.PostToUIThread(() => SurfaceConfigurations.Add(config));
-            return config;
-        }
-
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
         {
             Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
@@ -126,7 +95,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (!confirmed)
                 return;
 
-            _surfaceService.AutoArrange();
+            _rgbService.AutoArrangeDevices();
         }
 
         private void LoadWorkspaceSettings()
@@ -139,184 +108,139 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SurfaceListWidth.Save();
         }
 
-        private void LoadSurfaceConfigurations()
+
+        private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
-            // Get surface configs
-            List<ArtemisSurface> configs = _surfaceService.SurfaceConfigurations.ToList();
-
-            // Get the active config, if empty, create a default config
-            ArtemisSurface activeConfig = _surfaceService.ActiveSurface;
-            if (activeConfig == null)
-            {
-                activeConfig = CreateSurfaceConfiguration("Default");
-                configs.Add(activeConfig);
-                _surfaceService.SetActiveSurfaceConfiguration(activeConfig);
-            }
-
-            Execute.PostToUIThread(() =>
-            {
-                // Populate the UI collection
-                SurfaceConfigurations.Clear();
-                foreach (ArtemisSurface surfaceConfiguration in configs)
-                    SurfaceConfigurations.Add(surfaceConfiguration);
-
-                // Set the active config
-                SelectedSurface = activeConfig;
-            });
-        }
-
-        private void ApplySelectedSurfaceConfiguration()
-        {
-            // Make sure all devices have an up-to-date VM
-            Execute.PostToUIThread(() =>
-            {
-                lock (Devices)
-                {
-                    List<SurfaceDeviceViewModel> existing = Devices.ToList();
-                    List<SurfaceDeviceViewModel> deviceViewModels = new();
-
-                    // Add missing/update existing
-                    foreach (ArtemisDevice surfaceDeviceConfiguration in SelectedSurface.Devices.Where(d => d.IsEnabled).OrderBy(d => d.ZIndex).ToList())
-                    {
-                        // Create VMs for missing devices
-                        SurfaceDeviceViewModel viewModel = existing.FirstOrDefault(vm => vm.Device.RgbDevice == surfaceDeviceConfiguration.RgbDevice);
-                        if (viewModel == null)
-                            viewModel = new SurfaceDeviceViewModel(surfaceDeviceConfiguration);
-                        // Update existing devices
-                        else
-                            viewModel.Device = surfaceDeviceConfiguration;
-
-                        // Add the viewModel to the list of VMs we want to keep
-                        deviceViewModels.Add(viewModel);
-                    }
-
-                    Devices = new ObservableCollection<SurfaceDeviceViewModel>(deviceViewModels);
-                }
-            });
-
-            _surfaceService.SetActiveSurfaceConfiguration(SelectedSurface);
+            foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
+            foreach (ArtemisLed artemisLed in listDeviceViewModel.Device.Leds)
+                e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
         }
 
         #region Overrides of Screen
 
         protected override void OnInitialActivate()
         {
-            LoadSurfaceConfigurations();
             LoadWorkspaceSettings();
+            SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
+            ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d)));
+
+            List<ArtemisDevice> shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
+            float amount = 360f / shuffledDevices.Count;
+            for (int i = 0; i < shuffledDevices.Count; i++)
+            {
+                ArtemisDevice rgbServiceDevice = shuffledDevices[i];
+                ListDeviceViewModel vm = ListDeviceViewModels.First(l => l.Device == rgbServiceDevice);
+                vm.Color = SKColor.FromHsv(amount * i, 100, 100);
+            }
+
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
+
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             SaveWorkspaceSettings();
+            SurfaceDeviceViewModels.Clear();
+            ListDeviceViewModels.Clear();
+
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+
             base.OnClose();
-        }
-
-        #endregion
-
-        #region Configuration management
-
-        public async Task DeleteSurfaceConfiguration(ArtemisSurface surface)
-        {
-            bool result = await _dialogService.ShowConfirmDialogAt(
-                "SurfaceListDialogHost",
-                "Delete surface configuration",
-                "Are you sure you want to delete\nthis surface configuration?"
-            );
-            if (result)
-            {
-                SurfaceConfigurations.Remove(surface);
-                _surfaceService.DeleteSurfaceConfiguration(surface);
-            }
-        }
-
-        public async Task AddSurfaceConfiguration()
-        {
-            object result = await _dialogService.ShowDialogAt<SurfaceCreateViewModel>("SurfaceListDialogHost");
-            if (result is string name)
-                CreateSurfaceConfiguration(name);
         }
 
         #endregion
 
         #region Context menu actions
 
-        public void IdentifyDevice(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public void IdentifyDevice(ArtemisDevice device)
         {
-            _deviceService.IdentifyDevice(surfaceDeviceViewModel.Device);
+            _deviceService.IdentifyDevice(device);
         }
 
-        public void BringToFront(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public void BringToFront(ArtemisDevice device)
         {
-            Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), Devices.Count - 1);
-            for (int i = 0; i < Devices.Count; i++)
+            SurfaceDeviceViewModel surfaceDeviceViewModel = SurfaceDeviceViewModels.First(d => d.Device == device);
+            SurfaceDeviceViewModels.Move(SurfaceDeviceViewModels.IndexOf(surfaceDeviceViewModel), SurfaceDeviceViewModels.Count - 1);
+            for (int i = 0; i < SurfaceDeviceViewModels.Count; i++)
             {
-                SurfaceDeviceViewModel deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+
+            _rgbService.SaveDevices();
         }
 
-        public void BringForward(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public void BringForward(ArtemisDevice device)
         {
-            int currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
-            int newIndex = Math.Min(currentIndex + 1, Devices.Count - 1);
-            Devices.Move(currentIndex, newIndex);
+            SurfaceDeviceViewModel surfaceDeviceViewModel = SurfaceDeviceViewModels.First(d => d.Device == device);
+            int currentIndex = SurfaceDeviceViewModels.IndexOf(surfaceDeviceViewModel);
+            int newIndex = Math.Min(currentIndex + 1, SurfaceDeviceViewModels.Count - 1);
+            SurfaceDeviceViewModels.Move(currentIndex, newIndex);
 
-            for (int i = 0; i < Devices.Count; i++)
+            for (int i = 0; i < SurfaceDeviceViewModels.Count; i++)
             {
-                SurfaceDeviceViewModel deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+
+            _rgbService.SaveDevices();
         }
 
-        public void SendToBack(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public void SendToBack(ArtemisDevice device)
         {
-            Devices.Move(Devices.IndexOf(surfaceDeviceViewModel), 0);
-            for (int i = 0; i < Devices.Count; i++)
+            SurfaceDeviceViewModel surfaceDeviceViewModel = SurfaceDeviceViewModels.First(d => d.Device == device);
+            SurfaceDeviceViewModels.Move(SurfaceDeviceViewModels.IndexOf(surfaceDeviceViewModel), 0);
+            for (int i = 0; i < SurfaceDeviceViewModels.Count; i++)
             {
-                SurfaceDeviceViewModel deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+
+            _rgbService.SaveDevices();
         }
 
-        public void SendBackward(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public void SendBackward(ArtemisDevice device)
         {
-            int currentIndex = Devices.IndexOf(surfaceDeviceViewModel);
+            SurfaceDeviceViewModel surfaceDeviceViewModel = SurfaceDeviceViewModels.First(d => d.Device == device);
+            int currentIndex = SurfaceDeviceViewModels.IndexOf(surfaceDeviceViewModel);
             int newIndex = Math.Max(currentIndex - 1, 0);
-            Devices.Move(currentIndex, newIndex);
-            for (int i = 0; i < Devices.Count; i++)
+            SurfaceDeviceViewModels.Move(currentIndex, newIndex);
+            for (int i = 0; i < SurfaceDeviceViewModels.Count; i++)
             {
-                SurfaceDeviceViewModel deviceViewModel = Devices[i];
+                SurfaceDeviceViewModel deviceViewModel = SurfaceDeviceViewModels[i];
                 deviceViewModel.Device.ZIndex = i + 1;
             }
 
-            _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            ListDeviceViewModels.Sort(l => l.Device.ZIndex * -1);
+
+            _rgbService.SaveDevices();
         }
 
-        public async Task ViewProperties(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public async Task ViewProperties(ArtemisDevice device)
         {
             object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(
-                new Dictionary<string, object> {{"device", surfaceDeviceViewModel.Device}}
+                new Dictionary<string, object> {{"device", device}}
             );
 
             if ((bool) madeChanges)
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+                _rgbService.SaveDevice(device);
         }
 
-        public async Task DetectInput(SurfaceDeviceViewModel surfaceDeviceViewModel)
+        public async Task DetectInput(ArtemisDevice device)
         {
             object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(
-                new Dictionary<string, object> {{"device", surfaceDeviceViewModel.Device}}
+                new Dictionary<string, object> {{"device", device}}
             );
 
             if ((bool) madeChanges)
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+                _rgbService.SaveDevice(device);
         }
 
         #endregion
@@ -377,13 +301,13 @@ namespace Artemis.UI.Screens.SurfaceEditor
                 if (device.SelectionStatus != SelectionStatus.Selected)
                 {
                     if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
-                        foreach (SurfaceDeviceViewModel others in Devices)
+                        foreach (SurfaceDeviceViewModel others in SurfaceDeviceViewModels)
                             others.SelectionStatus = SelectionStatus.None;
 
                     device.SelectionStatus = SelectionStatus.Selected;
                 }
 
-                foreach (SurfaceDeviceViewModel selectedDevice in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+                foreach (SurfaceDeviceViewModel selectedDevice in SurfaceDeviceViewModels.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                     selectedDevice.StartMouseDrag(relative);
             }
             // Start multi-selection
@@ -395,6 +319,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
             // Any time dragging starts, start with a new rect
             SelectionRectangle.Rect = new Rect();
+            ApplySurfaceSelection();
         }
 
         private void StopMouseDrag(object sender, Point position)
@@ -403,17 +328,20 @@ namespace Artemis.UI.Screens.SurfaceEditor
             {
                 RectangleGeometry selectedRect = new(new Rect(_mouseDragStartPoint, position));
                 List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect);
-                foreach (SurfaceDeviceViewModel device in Devices)
+                foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
                     if (devices.Contains(device))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
             }
             else
-                _surfaceService.UpdateSurfaceConfiguration(SelectedSurface, true);
+            {
+                _rgbService.SaveDevices();
+            }
 
             _mouseDragStatus = MouseDragStatus.None;
             _rgbService.IsRenderPaused = false;
+            ApplySurfaceSelection();
         }
 
         private void UpdateSelection(object sender, Point position)
@@ -425,17 +353,25 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SelectionRectangle.Rect = selectedRect;
 
             List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, SelectionRectangle);
-            foreach (SurfaceDeviceViewModel device in Devices)
+            foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
                 if (devices.Contains(device))
                     device.SelectionStatus = SelectionStatus.Selected;
                 else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                     device.SelectionStatus = SelectionStatus.None;
+
+            ApplySurfaceSelection();
         }
 
         private void MoveSelected(Point position)
         {
-            foreach (SurfaceDeviceViewModel device in Devices.Where(d => d.SelectionStatus == SelectionStatus.Selected))
+            foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels.Where(d => d.SelectionStatus == SelectionStatus.Selected))
                 device.UpdateMouseDrag(position);
+        }
+
+        private void ApplySurfaceSelection()
+        {
+            foreach (ListDeviceViewModel viewModel in ListDeviceViewModels)
+                viewModel.IsSelected = SurfaceDeviceViewModels.Any(s => s.Device == viewModel.Device && s.SelectionStatus == SelectionStatus.Selected);
         }
 
         #endregion

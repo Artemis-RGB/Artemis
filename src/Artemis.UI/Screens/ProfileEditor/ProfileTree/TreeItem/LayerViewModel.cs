@@ -8,12 +8,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
     public class LayerViewModel : TreeItemViewModel
     {
         public LayerViewModel(ProfileElement layer,
+            IRgbService rgbService,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             IProfileTreeVmFactory profileTreeVmFactory,
-            ILayerBrushService layerBrushService,
-            ISurfaceService surfaceService) :
-            base(layer, profileEditorService, dialogService, profileTreeVmFactory, layerBrushService, surfaceService)
+            ILayerBrushService layerBrushService) :
+            base(layer, rgbService, profileEditorService, dialogService, profileTreeVmFactory, layerBrushService)
         {
         }
 

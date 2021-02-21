@@ -124,14 +124,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Populates all the LEDs on the elements in this profile
         /// </summary>
-        /// <param name="surface">The currently active surface that contains the LEDs</param>
-        public void PopulateLeds(ArtemisSurface surface)
+        /// <param name="devices">The devices to use while populating LEDs</param>
+        public void PopulateLeds(IEnumerable<ArtemisDevice> devices)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
             foreach (Layer layer in GetAllLayers())
-                layer.PopulateLeds(surface);
+                layer.PopulateLeds(devices);
         }
 
         /// <inheritdoc />
@@ -197,7 +197,7 @@ namespace Artemis.Core
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
         }
 
-        internal void Activate(ArtemisSurface surface)
+        internal void Activate(IEnumerable<ArtemisDevice> devices)
         {
             lock (_lock)
             {
@@ -206,7 +206,7 @@ namespace Artemis.Core
                 if (IsActivated)
                     return;
 
-                PopulateLeds(surface);
+                PopulateLeds(devices);
                 OnActivated();
                 IsActivated = true;
             }

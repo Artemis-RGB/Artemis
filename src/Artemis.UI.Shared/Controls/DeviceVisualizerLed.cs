@@ -11,6 +11,9 @@ namespace Artemis.UI.Shared
 {
     internal class DeviceVisualizerLed
     {
+        private SolidColorBrush? _renderColorBrush;
+        private Color _renderColor;
+
         public DeviceVisualizerLed(ArtemisLed led)
         {
             Led = led;
@@ -21,9 +24,9 @@ namespace Artemis.UI.Shared
                 Led.RgbLed.Size.Height
             );
 
-            if (Led.RgbLed.Image != null && File.Exists(Led.RgbLed.Image.AbsolutePath))
-                LedImage = new BitmapImage(Led.RgbLed.Image);
-
+            if (Led.Layout?.Image != null && File.Exists(Led.Layout.Image.LocalPath))
+                LedImage = new BitmapImage(Led.Layout.Image);
+          
             CreateLedGeometry();
         }
 
@@ -38,14 +41,19 @@ namespace Artemis.UI.Shared
             if (DisplayGeometry == null)
                 return;
 
+            _renderColorBrush ??= new SolidColorBrush();
+
             RGB.NET.Core.Color originalColor = Led.GetOriginalColor();
             byte r = originalColor.GetR();
             byte g = originalColor.GetG();
             byte b = originalColor.GetB();
 
-            drawingContext.DrawRectangle(isDimmed
-                ? new SolidColorBrush(Color.FromArgb(100, r, g, b))
-                : new SolidColorBrush(Color.FromRgb(r, g, b)), null, LedRect);
+            _renderColor.A = isDimmed ? 100 : 255;
+            _renderColor.R = r;
+            _renderColor.G = g;
+            _renderColor.B = b;
+            _renderColorBrush.Color = _renderColor;
+            drawingContext.DrawRectangle(_renderColorBrush, null, LedRect);
         }
 
         public void RenderImage(DrawingContext drawingContext)

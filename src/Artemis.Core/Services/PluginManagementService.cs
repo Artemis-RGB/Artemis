@@ -9,7 +9,6 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
-using Humanizer;
 using McMaster.NETCore.Plugins;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
@@ -147,7 +146,7 @@ namespace Artemis.Core.Services
         // TODO: move to a more appropriate service
         public DeviceProvider GetDeviceProviderByDevice(IRGBDevice rgbDevice)
         {
-            return GetFeaturesOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices != null && d.RgbDeviceProvider.Devices.Contains(rgbDevice));
+            return GetFeaturesOfType<DeviceProvider>().First(d => d.RgbDeviceProvider.Devices.Contains(rgbDevice));
         }
 
         public Plugin? GetCallingPlugin()
@@ -186,7 +185,6 @@ namespace Artemis.Core.Services
             // Load the plugin assemblies into the plugin context
             DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
-            {
                 try
                 {
                     LoadPlugin(subDirectory);
@@ -195,7 +193,6 @@ namespace Artemis.Core.Services
                 {
                     _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                 }
-            }
 
             // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
             _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
@@ -338,7 +335,6 @@ namespace Artemis.Core.Services
             // Create instances of each feature and add them to the plugin
             // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
             foreach (Type featureType in featureTypes)
-            {
                 try
                 {
                     plugin.Kernel.Bind(featureType).ToSelf().InSingletonScope();
@@ -358,13 +354,11 @@ namespace Artemis.Core.Services
                 }
                 catch (Exception e)
                 {
-                    throw new ArtemisPluginException(plugin, "Failed to instantiate feature", e);
+                    _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
                 }
-            }
 
             // Activate plugins after they are all loaded
             foreach (PluginFeature pluginFeature in plugin.Features.Where(i => i.Entity.IsEnabled))
-            {
                 try
                 {
                     EnablePluginFeature(pluginFeature, false, !ignorePluginLock);
@@ -373,7 +367,6 @@ namespace Artemis.Core.Services
                 {
                     // ignored, logged in EnablePluginFeature
                 }
-            }
 
             if (saveState)
             {
@@ -474,13 +467,11 @@ namespace Artemis.Core.Services
             Directory.CreateDirectory(directoryInfo.FullName);
             string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
             foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
-            {
                 if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory))
                 {
                     string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
                     zipArchiveEntry.ExtractToFile(target);
                 }
-            }
 
             // Load the newly extracted plugin and return the result
             return LoadPlugin(directoryInfo);
@@ -563,10 +554,8 @@ namespace Artemis.Core.Services
         private void SavePlugin(Plugin plugin)
         {
             foreach (PluginFeature pluginFeature in plugin.Features)
-            {
                 if (plugin.Entity.Features.All(i => i.Type != pluginFeature.GetType().FullName))
                     plugin.Entity.Features.Add(pluginFeature.Entity);
-            }
 
             _pluginRepository.SavePlugin(plugin.Entity);
         }

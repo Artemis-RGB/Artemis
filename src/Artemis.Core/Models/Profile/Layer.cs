@@ -287,7 +287,7 @@ namespace Artemis.Core
             if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
             // Ensure the brush is ready
-            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false || LayerBrush?.BrushType != LayerBrushType.Regular)
+            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
             RenderTimeline(Timeline, canvas);
@@ -322,6 +322,9 @@ namespace Artemis.Core
                 return;
 
             ApplyTimeline(timeline);
+            
+            if (LayerBrush?.BrushType != LayerBrushType.Regular)
+                return;
 
             try
             {
@@ -564,7 +567,7 @@ namespace Artemis.Core
             CalculateRenderProperties();
         }
 
-        internal void PopulateLeds(ArtemisSurface surface)
+        internal void PopulateLeds(IEnumerable<ArtemisDevice> devices)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -572,7 +575,7 @@ namespace Artemis.Core
             List<ArtemisLed> leds = new();
 
             // Get the surface LEDs for this layer
-            List<ArtemisLed> availableLeds = surface.Devices.Where(d => d.IsEnabled).SelectMany(d => d.Leds).ToList();
+            List<ArtemisLed> availableLeds = devices.SelectMany(d => d.Leds).ToList();
             foreach (LedEntity ledEntity in LayerEntity.Leds)
             {
                 ArtemisLed? match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&

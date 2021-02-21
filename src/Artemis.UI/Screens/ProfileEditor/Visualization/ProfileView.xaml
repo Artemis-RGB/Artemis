@@ -99,7 +99,10 @@
                 </ItemsControl>
             </Grid>
 
-            <Grid Name="EditorDisplayGrid">
+            <Grid Name="EditorDisplayGrid" 
+                  shared:SizeObserver.Observe="True"
+                  shared:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight}"
+                  shared:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth}">
                 <Grid.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
