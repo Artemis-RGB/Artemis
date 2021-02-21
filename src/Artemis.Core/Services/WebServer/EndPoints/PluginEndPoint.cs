@@ -29,7 +29,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets the full URL of the end point
         /// </summary>
-        public string Url => $"{_pluginsModule.ServerUrl.TrimEnd('/')}{_pluginsModule.BaseRoute}{PluginFeature.Plugin.Guid}/{Name}";
+        public string Url => $"{_pluginsModule.ServerUrl?.TrimEnd('/')}{_pluginsModule.BaseRoute}{PluginFeature.Plugin.Guid}/{Name}";
 
         /// <summary>
         ///     Gets the plugin the end point is associated with
@@ -45,12 +45,12 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets the mime type of the input this end point accepts
         /// </summary>
-        public string Accepts { get; protected set; }
+        public string? Accepts { get; protected set; }
 
         /// <summary>
         ///     Gets the mime type of the output this end point returns
         /// </summary>
-        public string Returns { get; protected set; }
+        public string? Returns { get; protected set; }
 
         /// <summary>
         ///     Called whenever the end point has to process a request

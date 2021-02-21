@@ -16,8 +16,6 @@ namespace Artemis.Core
             builder.Append(rgbDevice.DeviceInfo.Model);
             builder.Append('-');
             builder.Append(rgbDevice.DeviceInfo.DeviceType);
-            builder.Append('-');
-            builder.Append(rgbDevice.DeviceInfo.Lighting);
             return builder.ToString();
         }
     }

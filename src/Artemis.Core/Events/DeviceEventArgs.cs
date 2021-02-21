@@ -1,5 +1,4 @@
 ﻿using System;
-using RGB.NET.Core;
 
 namespace Artemis.Core
 {
@@ -8,7 +7,7 @@ namespace Artemis.Core
     /// </summary>
     public class DeviceEventArgs : EventArgs
     {
-        internal DeviceEventArgs(IRGBDevice device)
+        internal DeviceEventArgs(ArtemisDevice device)
         {
             Device = device;
         }
@@ -16,6 +15,6 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the device this event is related to
         /// </summary>
-        public IRGBDevice Device { get; }
+        public ArtemisDevice Device { get; }
     }
 }

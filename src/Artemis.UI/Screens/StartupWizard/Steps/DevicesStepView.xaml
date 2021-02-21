@@ -16,7 +16,7 @@
         </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap">
-            Devices are supported through the use of device providers. <LineBreak />
+            EnabledDevices are supported through the use of device providers. <LineBreak />
             In the list below you can enable device providers for each brand you own by checking <Run Text="Feature enabled" FontWeight="Bold" />.
         </TextBlock>
 

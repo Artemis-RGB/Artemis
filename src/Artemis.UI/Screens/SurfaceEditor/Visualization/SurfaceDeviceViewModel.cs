@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
+using Artemis.Core.Services;
 using RGB.NET.Core;
 using SkiaSharp;
 using Stylet;
@@ -13,26 +13,19 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
 {
     public class SurfaceDeviceViewModel : PropertyChangedBase
     {
+        private readonly IRgbService _rgbService;
         private Cursor _cursor;
-        private ArtemisDevice _device;
         private double _dragOffsetX;
         private double _dragOffsetY;
         private SelectionStatus _selectionStatus;
 
-        public SurfaceDeviceViewModel(ArtemisDevice device)
+        public SurfaceDeviceViewModel(ArtemisDevice device, IRgbService rgbService)
         {
             Device = device;
+            _rgbService = rgbService;
         }
 
-        public ArtemisDevice Device
-        {
-            get => _device;
-            set
-            {
-                if (SetAndNotify(ref _device, value)) return;
-                NotifyOfPropertyChange(nameof(DeviceRectangle));
-            }
-        }
+        public ArtemisDevice Device { get; }
 
         public SelectionStatus SelectionStatus
         {
@@ -40,19 +33,15 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             set => SetAndNotify(ref _selectionStatus, value);
         }
 
+        public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
+                                      Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
+
         public Cursor Cursor
         {
             get => _cursor;
             set => SetAndNotify(ref _cursor, value);
         }
-
-        public Rect DeviceRectangle => Device.RgbDevice == null
-            ? new Rect()
-            : new Rect(Device.X, Device.Y, Device.RgbDevice.DeviceRectangle.Size.Width, Device.RgbDevice.DeviceRectangle.Size.Height);
-
-        public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
-                                      Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
-
+        
         public void StartMouseDrag(Point mouseStartPosition)
         {
             _dragOffsetX = Device.X - mouseStartPosition.X;
@@ -115,7 +104,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             List<SKRect> own = Device.Leds
                 .Select(l => SKRect.Create(l.Rectangle.Left + x, l.Rectangle.Top + y, l.Rectangle.Width, l.Rectangle.Height))
                 .ToList();
-            List<SKRect> others = Device.Surface.Devices
+            List<SKRect> others = _rgbService.EnabledDevices
                 .Where(d => d != Device && d.IsEnabled)
                 .SelectMany(d => d.Leds)
                 .Select(l => SKRect.Create(l.Rectangle.Left + (float) l.Device.X, l.Rectangle.Top + (float) l.Device.Y, l.Rectangle.Width, l.Rectangle.Height))
@@ -133,7 +122,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         BottomLeft,
         BottomRight
     }
-
+    
     public enum SelectionStatus
     {
         None,
