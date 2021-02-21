@@ -134,19 +134,19 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private Geometry CreateRectangleGeometry(ArtemisLed led)
         {
-            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
             return new RectangleGeometry(rect);
         }
 
         private Geometry CreateCircleGeometry(ArtemisLed led)
         {
-            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
             return new EllipseGeometry(rect);
         }
 
         private Geometry CreateCustomGeometry(ArtemisLed led, double deflateAmount)
         {
-            Rect rect = led.RgbLed.AbsoluteLedRectangle.ToWindowsRect(1);
+            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
             try
             {
                 PathGeometry geometry = Geometry.Combine(

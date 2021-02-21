@@ -18,23 +18,23 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
     {
         private readonly IDialogService _dialogService;
         private readonly ILayerBrushService _layerBrushService;
+        private readonly IRgbService _rgbService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
-        private readonly ISurfaceService _surfaceService;
         private ProfileElement _profileElement;
 
         protected TreeItemViewModel(ProfileElement profileElement,
+            IRgbService rgbService,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             IProfileTreeVmFactory profileTreeVmFactory,
-            ILayerBrushService layerBrushService,
-            ISurfaceService surfaceService)
+            ILayerBrushService layerBrushService)
         {
+            _rgbService = rgbService;
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
             _profileTreeVmFactory = profileTreeVmFactory;
             _layerBrushService = layerBrushService;
-            _surfaceService = surfaceService;
 
             ProfileElement = profileElement;
 
@@ -144,7 +144,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (brush != null)
                 layer.ChangeLayerBrush(brush);
 
-            layer.AddLeds(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds));
+            layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
             _profileEditorService.UpdateSelectedProfile();
             _profileEditorService.ChangeSelectedProfileElement(layer);
         }

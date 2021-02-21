@@ -34,7 +34,6 @@ namespace Artemis.Core.Services
         private readonly IProfileService _profileService;
         private readonly PluginSetting<double> _renderScale;
         private readonly IRgbService _rgbService;
-        private readonly ISurfaceService _surfaceService;
         private readonly List<Exception> _updateExceptions = new();
         private List<BaseDataModelExpansion> _dataModelExpansions = new();
         private DateTime _lastExceptionLog;
@@ -47,7 +46,6 @@ namespace Artemis.Core.Services
             ISettingsService settingsService,
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
-            ISurfaceService surfaceService,
             IProfileService profileService,
             IModuleService moduleService // injected to ensure module priorities get applied
         )
@@ -58,7 +56,6 @@ namespace Artemis.Core.Services
             _logger = logger;
             _pluginManagementService = pluginManagementService;
             _rgbService = rgbService;
-            _surfaceService = surfaceService;
             _profileService = profileService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _renderScale = settingsService.GetSetting("Core.RenderScale", 0.5);
@@ -121,9 +118,6 @@ namespace Artemis.Core.Services
                 IsElevated
             );
 
-            ArtemisSurface surfaceConfig = _surfaceService.ActiveSurface;
-            _logger.Information("Initialized with active surface entity {surfaceConfig}-{guid}", surfaceConfig.Name, surfaceConfig.EntityId);
-
             OnInitialized();
         }
 
@@ -139,7 +133,7 @@ namespace Artemis.Core.Services
 
         public void PlayIntroAnimation()
         {
-            IntroAnimation intro = new(_logger, _profileService, _surfaceService);
+            IntroAnimation intro = new(_logger, _profileService, _rgbService.EnabledDevices);
 
             // Draw a white overlay over the device
             void DrawOverlay(object? sender, FrameRenderingEventArgs args)
@@ -236,7 +230,7 @@ namespace Artemis.Core.Services
                     if (!ModuleRenderingDisabled)
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
                         foreach (Module module in modules.Where(m => m.IsActivated))
-                            module.InternalRender(args.DeltaTime, _surfaceService.ActiveSurface, canvas, _rgbService.BitmapBrush.Bitmap.Info);
+                            module.InternalRender(args.DeltaTime, canvas, _rgbService.BitmapBrush.Bitmap.Info);
 
                     OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
                 }

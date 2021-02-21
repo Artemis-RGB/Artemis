@@ -9,12 +9,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
     {
         // I hate this about DI, oh well
         public FolderViewModel(ProfileElement folder,
+            IRgbService rgbService,
             IProfileEditorService profileEditorService,
             IDialogService dialogService,
             IProfileTreeVmFactory profileTreeVmFactory,
-            ILayerBrushService layerBrushService,
-            ISurfaceService surfaceService) :
-            base(folder, profileEditorService, dialogService, profileTreeVmFactory, layerBrushService, surfaceService)
+            ILayerBrushService layerBrushService) :
+            base(folder, rgbService, profileEditorService, dialogService, profileTreeVmFactory, layerBrushService)
         {
         }
 

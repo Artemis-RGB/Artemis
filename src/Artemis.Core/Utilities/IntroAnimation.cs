@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Artemis.Core.Modules;
@@ -13,13 +14,13 @@ namespace Artemis.Core
     {
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;
-        private readonly ISurfaceService _surfaceService;
+        private readonly IEnumerable<ArtemisDevice> _devices;
 
-        public IntroAnimation(ILogger logger, IProfileService profileService, ISurfaceService surfaceService)
+        public IntroAnimation(ILogger logger, IProfileService profileService, IEnumerable<ArtemisDevice> devices)
         {
             _logger = logger;
             _profileService = profileService;
-            _surfaceService = surfaceService;
+            _devices = devices;
 
             AnimationProfile = CreateIntroProfile();
         }
@@ -41,14 +42,14 @@ namespace Artemis.Core
                 ProfileEntity profileEntity = CoreJson.DeserializeObject<ProfileEntity>(json)!;
                 // Inject every LED on the surface into each layer
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
-                    profileEntityLayer.Leds.AddRange(_surfaceService.ActiveSurface.Devices.SelectMany(d => d.Leds).Select(l => new LedEntity
+                    profileEntityLayer.Leds.AddRange(_devices.SelectMany(d => d.Leds).Select(l => new LedEntity
                     {
                         DeviceIdentifier = l.Device.RgbDevice.GetDeviceIdentifier(),
                         LedName = l.RgbLed.Id.ToString()
                     }));
 
                 Profile profile = new(new DummyModule(), profileEntity);
-                profile.Activate(_surfaceService.ActiveSurface);
+                profile.Activate(_devices);
 
                 _profileService.InstantiateProfile(profile);
                 return profile;
@@ -79,7 +80,7 @@ namespace Artemis.Core
             throw new NotImplementedException();
         }
 
-        public override void Render(double deltaTime, ArtemisSurface surface, SKCanvas canvas, SKImageInfo canvasInfo)
+        public override void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
             throw new NotImplementedException();
         }
