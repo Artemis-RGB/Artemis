@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Artemis.Core;
 using RGB.NET.Core;
 using Color = System.Windows.Media.Color;
+using SolidColorBrush = System.Windows.Media.SolidColorBrush;
 
 namespace Artemis.UI.Shared
 {

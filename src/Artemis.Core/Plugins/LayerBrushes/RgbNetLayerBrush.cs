@@ -4,7 +4,6 @@ using System.Linq;
 using Artemis.Core.Services;
 using Ninject;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes

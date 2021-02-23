@@ -90,8 +90,8 @@ namespace Artemis.Core.Services.Models
                 surfaceArrangementType.Arrange(devices);
 
             // See if we need to move the surface to keep X and Y values positive
-            double x = devices.Min(d => d.RgbDevice.Location.X);
-            double y = devices.Min(d => d.RgbDevice.Location.Y);
+            float x = devices.Min(d => d.RgbDevice.Location.X);
+            float y = devices.Min(d => d.RgbDevice.Location.Y);
             if (x < 0)
             {
                 foreach (ArtemisDevice surfaceDevice in devices)

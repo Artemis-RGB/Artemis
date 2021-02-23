@@ -4,9 +4,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
-using RGB.NET.Brushes;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 {

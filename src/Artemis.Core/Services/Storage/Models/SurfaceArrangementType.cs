@@ -62,18 +62,18 @@ namespace Artemis.Core.Services.Models
             if (!devices.Any())
                 return new Point();
 
-            double x = horizontalPosition switch
+            float x = horizontalPosition switch
             {
-                HorizontalArrangementPosition.Left => devices.Min(d => d.RgbDevice.Location.X) - (AppliedConfiguration?.MarginLeft ?? 0.0),
-                HorizontalArrangementPosition.Right => devices.Max(d => d.RgbDevice.Location.X + d.RgbDevice.Size.Width) + (AppliedConfiguration?.MarginRight ?? 0.0),
+                HorizontalArrangementPosition.Left => devices.Min(d => d.RgbDevice.Location.X) - (AppliedConfiguration?.MarginLeft ?? 0.0f),
+                HorizontalArrangementPosition.Right => devices.Max(d => d.RgbDevice.Location.X + d.RgbDevice.Size.Width) + (AppliedConfiguration?.MarginRight ?? 0.0f),
                 HorizontalArrangementPosition.Center => devices.First().RgbDevice.Boundary.Center.X,
                 HorizontalArrangementPosition.Equal => devices.First().RgbDevice.Location.X,
                 _ => throw new ArgumentOutOfRangeException(nameof(horizontalPosition), horizontalPosition, null)
             };
-            double y = verticalPosition switch
+            float y = verticalPosition switch
             {
-                VerticalArrangementPosition.Top => devices.Min(d => d.RgbDevice.Location.Y) - (AppliedConfiguration?.MarginTop ?? 0.0),
-                VerticalArrangementPosition.Bottom => devices.Max(d => d.RgbDevice.Location.Y + d.RgbDevice.Size.Height) + (AppliedConfiguration?.MarginBottom ?? 0.0),
+                VerticalArrangementPosition.Top => devices.Min(d => d.RgbDevice.Location.Y) - (AppliedConfiguration?.MarginTop ?? 0.0f),
+                VerticalArrangementPosition.Bottom => devices.Max(d => d.RgbDevice.Location.Y + d.RgbDevice.Size.Height) + (AppliedConfiguration?.MarginBottom ?? 0.0f),
                 VerticalArrangementPosition.Center => devices.First().RgbDevice.Boundary.Center.Y,
                 VerticalArrangementPosition.Equal => devices.First().RgbDevice.Location.Y,
                 _ => throw new ArgumentOutOfRangeException(nameof(verticalPosition), verticalPosition, null)
