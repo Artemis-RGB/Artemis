@@ -62,7 +62,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 
         public void ShowDeviceDebugger()
         {
-            _windowManager.ShowWindow(_deviceDebugVmFactory.Create(Device));
+            _windowManager.ShowWindow(_deviceDebugVmFactory.DeviceDebugViewModel(Device));
         }
 
         public void OpenPluginDirectory()

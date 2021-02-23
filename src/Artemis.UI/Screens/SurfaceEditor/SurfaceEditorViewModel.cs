@@ -45,6 +45,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SelectionRectangle = new RectangleGeometry();
             PanZoomViewModel = new PanZoomViewModel();
             Cursor = null;
+            ColorDevices = true;
 
             SurfaceDeviceViewModels = new BindableCollection<SurfaceDeviceViewModel>();
             ListDeviceViewModels = new BindableCollection<ListDeviceViewModel>();
@@ -84,6 +85,12 @@ namespace Artemis.UI.Screens.SurfaceEditor
             set => SetAndNotify(ref _cursor, value);
         }
 
+        public bool ColorDevices
+        {
+            get => _colorDevices;
+            set => SetAndNotify(ref _colorDevices, value);
+        }
+
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
         {
             Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
@@ -111,9 +118,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
+            if (!ColorDevices)
+                return;
+
             foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
-            foreach (ArtemisLed artemisLed in listDeviceViewModel.Device.Leds)
-                e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
+            {
+                foreach (ArtemisLed artemisLed in listDeviceViewModel.Device.Leds)
+                    e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
+            }
         }
 
         #region Overrides of Screen
@@ -122,7 +134,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         {
             LoadWorkspaceSettings();
             SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
-            ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d)));
+            ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d, this)));
 
             List<ArtemisDevice> shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
             float amount = 360f / shuffledDevices.Count;
@@ -249,6 +261,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
+        private bool _colorDevices;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)
