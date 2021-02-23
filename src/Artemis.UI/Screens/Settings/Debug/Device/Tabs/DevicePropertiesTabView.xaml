@@ -1,0 +1,197 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Debug.Device.Tabs.DevicePropertiesTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Device.Tabs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:DevicePropertiesTabViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="15" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device name</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Manufacturer</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device type</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Physical layout</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.PhysicalLayout}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device image</TextBlock>
+                    <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                             TextWrapping="Wrap"
+                             Text="{Binding Device.Layout.Image, Mode=OneWay}"
+                             IsReadOnly="True" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+        <StackPanel Grid.Column="1" Margin="15" HorizontalAlignment="Stretch">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Size (1px = 1mm)</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.Size}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Location (1px = 1mm)</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.Location}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Rotation (degrees)</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Logical layout</TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                               TextWrapping="Wrap"
+                               Text="{Binding Device.LogicalLayout}" />
+                </StackPanel>
+            </Grid>
+            <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Layout file path</TextBlock>
+                    <TextBox Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                             TextWrapping="Wrap"
+                             Text="{Binding Device.Layout.FilePath, Mode=OneWay}"
+                             IsReadOnly="True" />
+                </StackPanel>
+            </Grid>
+        </StackPanel>
+
+    </Grid>
+</UserControl>
