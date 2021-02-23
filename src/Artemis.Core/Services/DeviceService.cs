@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using RGB.NET.Brushes;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {

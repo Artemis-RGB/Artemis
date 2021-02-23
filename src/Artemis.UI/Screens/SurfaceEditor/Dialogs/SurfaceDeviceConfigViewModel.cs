@@ -17,16 +17,16 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         private readonly ICoreService _coreService;
         private readonly IRgbService _rgbService;
         private readonly IMessageService _messageService;
-        private readonly double _initialRedScale;
-        private readonly double _initialGreenScale;
-        private readonly double _initialBlueScale;
+        private readonly float _initialRedScale;
+        private readonly float _initialGreenScale;
+        private readonly float _initialBlueScale;
         private int _rotation;
-        private double _scale;
+        private float _scale;
         private int _x;
         private int _y;
-        private double _redScale;
-        private double _greenScale;
-        private double _blueScale;
+        private float _redScale;
+        private float _greenScale;
+        private float _blueScale;
         private SKColor _currentColor;
         private bool _displayOnDevices;
 
@@ -46,9 +46,9 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             Y = (int) Device.Y;
             Scale = Device.Scale;
             Rotation = (int) Device.Rotation;
-            RedScale = Device.RedScale * 100d;
-            GreenScale = Device.GreenScale * 100d;
-            BlueScale = Device.BlueScale * 100d;
+            RedScale = Device.RedScale * 100f;
+            GreenScale = Device.GreenScale * 100f;
+            BlueScale = Device.BlueScale * 100f;
             //we need to store the initial values to be able to restore them when the user clicks "Cancel"
             _initialRedScale = Device.RedScale;
             _initialGreenScale = Device.GreenScale;
@@ -79,7 +79,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _y, value);
         }
 
-        public double Scale
+        public float Scale
         {
             get => _scale;
             set => SetAndNotify(ref _scale, value);
@@ -91,19 +91,19 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _rotation, value);
         }
 
-        public double RedScale
+        public float RedScale
         {
             get => _redScale;
             set => SetAndNotify(ref _redScale, value);
         }
 
-        public double GreenScale
+        public float GreenScale
         {
             get => _greenScale;
             set => SetAndNotify(ref _greenScale, value);
         }
 
-        public double BlueScale
+        public float BlueScale
         {
             get => _blueScale;
             set => SetAndNotify(ref _blueScale, value);
@@ -134,9 +134,9 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             Device.Y = Y;
             Device.Scale = Scale;
             Device.Rotation = Rotation;
-            Device.RedScale = RedScale / 100d;
-            Device.GreenScale = GreenScale / 100d;
-            Device.BlueScale = BlueScale / 100d;
+            Device.RedScale = RedScale / 100f;
+            Device.GreenScale = GreenScale / 100f;
+            Device.BlueScale = BlueScale / 100f;
 
             _coreService.ModuleRenderingDisabled = false;
             Session.Close(true);
@@ -144,9 +144,9 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 
         public void ApplyScaling()
         {
-            Device.RedScale = RedScale / 100d;
-            Device.GreenScale = GreenScale / 100d;
-            Device.BlueScale = BlueScale / 100d;
+            Device.RedScale = RedScale / 100f;
+            Device.GreenScale = GreenScale / 100f;
+            Device.BlueScale = BlueScale / 100f;
         }
 
         public void BrowseCustomLayout(object sender, MouseEventArgs e)

@@ -64,14 +64,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="RGB.NET.Brushes">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Brushes.dll</HintPath>
-    </Reference>
     <Reference Include="RGB.NET.Core">
       <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="RGB.NET.Groups">
-      <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Groups.dll</HintPath>
     </Reference>
     <Reference Include="RGB.NET.Layout">
       <HintPath>..\..\..\RGB.NET\bin\net5.0\RGB.NET.Layout.dll</HintPath>
