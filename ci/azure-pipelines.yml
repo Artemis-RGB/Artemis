@@ -79,6 +79,12 @@ steps:
     archiveFile: '$(Build.ArtifactStagingDirectory)/archive/artemis-build.zip'
     replaceExistingArchive: true
 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: '(Get-FileHash .\artemis-build.zip).Hash | Out-File -FilePath .\hash.txt'
+    workingDirectory: '$(Build.ArtifactStagingDirectory)/archive'
+
 - task: FtpUpload@2
   displayName: "Binaries FTP upload"
   inputs:
