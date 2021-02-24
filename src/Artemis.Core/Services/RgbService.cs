@@ -25,7 +25,6 @@ namespace Artemis.Core.Services
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IDeviceRepository _deviceRepository;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private readonly PluginSetting<int> _sampleSizeSetting;
         private ListLedGroup? _surfaceLedGroup;
         private bool _modifyingProviders;
 
@@ -35,7 +34,6 @@ namespace Artemis.Core.Services
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            _sampleSizeSetting = settingsService.GetSetting("Core.SampleSize", 1);
 
             Surface = new RGBSurface();
 
