@@ -29,7 +29,7 @@ namespace Artemis.Core
         #region Methods
 
         /// <inheritdoc />
-        protected override Color GetColor(ReadOnlySpan<byte> pixel) => new(pixel[0], pixel[1], pixel[2]);
+        protected override Color GetColor(in ReadOnlySpan<byte> pixel) => new(pixel[0], pixel[1], pixel[2]);
 
         #endregion
     }
