@@ -37,6 +37,7 @@ steps:
   inputs:
     command: 'build'
     projects: '$(rgbSolution)'
+    arguments: '--configuration Release'
 
 - task: PublishPipelineArtifact@1
   displayName: 'Upload build to Azure Pipelines'
