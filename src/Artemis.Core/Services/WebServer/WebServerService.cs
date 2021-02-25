@@ -28,7 +28,6 @@ namespace Artemis.Core.Services
             _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
 
             PluginsModule = new PluginsModule("/plugins");
-
             StartWebServer();
         }
 
