@@ -53,14 +53,36 @@ namespace Artemis.Core.Services
         public string? Returns { get; protected set; }
 
         /// <summary>
+        ///     Occurs whenever a request threw an unhandled exception
+        /// </summary>
+        public event EventHandler<EndpointExceptionEventArgs>? RequestException;
+
+        /// <summary>
         ///     Called whenever the end point has to process a request
         /// </summary>
         /// <param name="context">The HTTP context of the request</param>
         protected abstract Task ProcessRequest(IHttpContext context);
 
+        /// <summary>
+        ///     Invokes the <see cref="RequestException" /> event
+        /// </summary>
+        /// <param name="e">The exception that occurred during the request</param>
+        protected virtual void OnRequestException(Exception e)
+        {
+            RequestException?.Invoke(this, new EndpointExceptionEventArgs(e));
+        }
+
         internal async Task InternalProcessRequest(IHttpContext context)
         {
-            await ProcessRequest(context);
+            try
+            {
+                await ProcessRequest(context);
+            }
+            catch (Exception e)
+            {
+                OnRequestException(e);
+                throw;
+            }
         }
 
         private void OnDisabled(object? sender, EventArgs e)

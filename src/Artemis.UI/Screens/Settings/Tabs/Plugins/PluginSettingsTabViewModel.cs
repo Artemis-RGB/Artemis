@@ -59,12 +59,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             {
                 Items.Clear();
                 await Task.Delay(200);
-                _instances = _pluginManagementService.GetAllPlugins()
-                    .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
-                    .OrderBy(i => i.Plugin.Info.Name)
-                    .ToList();
-
-                UpdatePluginSearch();
+                GetPluginInstances();
             });
 
             base.OnActivate();
@@ -80,14 +75,21 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             {
                 Plugin plugin = _pluginManagementService.ImportPlugin(dialog.FileName);
 
-                _instances = _pluginManagementService.GetAllPlugins()
-                    .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
-                    .OrderBy(i => i.Plugin.Info.Name)
-                    .ToList();
+                GetPluginInstances();
                 SearchPluginInput = plugin.Info.Name;
-                
+
                 _messageService.ShowMessage($"Imported plugin: {plugin.Info.Name}");
             }
+        }
+
+        public void GetPluginInstances()
+        {
+            _instances = _pluginManagementService.GetAllPlugins()
+                .Select(p => _settingsVmFactory.CreatePluginSettingsViewModel(p))
+                .OrderBy(i => i.Plugin.Info.Name)
+                .ToList();
+
+            UpdatePluginSearch();
         }
     }
 }

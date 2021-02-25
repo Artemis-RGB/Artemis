@@ -74,7 +74,7 @@ namespace Artemis.Core.Services
                     _modifyingProviders = true;
 
                     List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
-                    Surface.Detach(deviceProvider.Devices);
+                    Surface.Detach(toRemove.Select(d => d.RgbDevice));
                     foreach (ArtemisDevice device in toRemove)
                         RemoveDevice(device);
 
@@ -118,7 +118,7 @@ namespace Artemis.Core.Services
                     _modifyingProviders = true;
 
                     List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
-                    Surface.Detach(deviceProvider.Devices);
+                    Surface.Detach(toRemove.Select(d => d.RgbDevice));
                     foreach (ArtemisDevice device in toRemove)
                         RemoveDevice(device);
 
