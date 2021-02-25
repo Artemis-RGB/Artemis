@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using EmbedIO;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Services
 {
@@ -66,6 +63,12 @@ namespace Artemis.Core.Services
             // Find a matching endpoint
             if (!endPoints.TryGetValue(pathParts[1], out PluginEndPoint? endPoint))
                 throw HttpException.NotFound($"Found no endpoint called {pathParts[1]} for plugin with ID {pathParts[0]}.");
+
+            // If Accept-Charset contains a wildcard, remove the header so we default to UTF8
+            // This is a workaround for an EmbedIO ehh issue
+            string? acceptCharset = context.Request.Headers["Accept-Charset"];
+            if (acceptCharset != null && acceptCharset.Contains("*"))
+                context.Request.Headers.Remove("Accept-Charset");
 
             // It is up to the registration how the request is eventually handled, it might even set a response here
             await endPoint.InternalProcessRequest(context);
