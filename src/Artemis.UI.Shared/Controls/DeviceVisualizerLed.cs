@@ -27,7 +27,7 @@ namespace Artemis.UI.Shared
 
             if (Led.Layout?.Image != null && File.Exists(Led.Layout.Image.LocalPath))
                 LedImage = new BitmapImage(Led.Layout.Image);
-          
+
             CreateLedGeometry();
         }
 
@@ -44,10 +44,9 @@ namespace Artemis.UI.Shared
 
             _renderColorBrush ??= new SolidColorBrush();
 
-            RGB.NET.Core.Color originalColor = Led.GetOriginalColor();
-            byte r = originalColor.GetR();
-            byte g = originalColor.GetG();
-            byte b = originalColor.GetB();
+            byte r = Led.RgbLed.Color.GetR();
+            byte g = Led.RgbLed.Color.GetG();
+            byte b = Led.RgbLed.Color.GetB();
 
             _renderColor.A = isDimmed ? 100 : 255;
             _renderColor.R = r;

@@ -15,7 +15,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets the bitmap brush used to render this frame
+        ///     Gets the texture used to render this frame
         /// </summary>
         public SKTexture Texture { get; }
 

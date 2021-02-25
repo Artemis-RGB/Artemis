@@ -340,18 +340,20 @@ namespace Artemis.Core
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
+            {
                 DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
                 {
                     InputProvider = identifier.InputProvider,
                     Identifier = identifier.Identifier
                 });
+            }
         }
 
         internal void ApplyToRgbDevice()
         {
             RgbDevice.Rotation = DeviceEntity.Rotation;
             RgbDevice.Scale = DeviceEntity.Scale;
-
+            
             // Workaround for device rotation not applying
             if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
                 RgbDevice.Location = new Point(1, 1);
@@ -360,6 +362,9 @@ namespace Artemis.Core
             InputIdentifiers.Clear();
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
+
+            if (!RgbDevice.ColorCorrections.Any())
+                RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
 
             CalculateRenderProperties();
             OnDeviceUpdated();
