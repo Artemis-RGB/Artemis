@@ -28,7 +28,6 @@ namespace Artemis.Core.Services
             _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
 
             PluginsModule = new PluginsModule("/plugins");
-
             StartWebServer();
         }
 
@@ -42,7 +41,7 @@ namespace Artemis.Core.Services
             Server?.Dispose();
             Server = null;
 
-            string url = $"http://localhost:{_webServerPortSetting.Value}/";
+            string url = $"http://*:{_webServerPortSetting.Value}/";
             WebApiModule apiModule = new("/api/", JsonNetSerializer);
             PluginsModule.ServerUrl = url;
             WebServer server = new WebServer(o => o.WithUrlPrefix(url).WithMode(HttpListenerMode.EmbedIO))

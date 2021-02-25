@@ -138,7 +138,7 @@
 		<PackageReference Include="FluentValidation" Version="9.3.0" />
 		<PackageReference Include="Flurl.Http" Version="3.0.1" />
 		<PackageReference Include="gong-wpf-dragdrop" Version="2.3.2" />
-		<PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.14" />
+		<PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.18" />
 		<PackageReference Include="Humanizer.Core" Version="2.8.26" />
 		<PackageReference Include="MaterialDesignExtensions" Version="3.3.0-a01" />
 		<PackageReference Include="MaterialDesignThemes" Version="3.2.0" />

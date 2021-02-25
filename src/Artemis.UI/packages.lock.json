@@ -27,9 +27,13 @@
       },
       "Hardcodet.NotifyIcon.Wpf.NetCore": {
         "type": "Direct",
-        "requested": "[1.0.14, )",
-        "resolved": "1.0.14",
-        "contentHash": "aNwwax4+C/xhIxTbwKHJnxh0A6hWGnqXZtppZ+/lkE8VOL+a2WuMOBgWpkiUk6Tv+pi1bc+yuHo0lh4Md6KEFw=="
+        "requested": "[1.0.18, )",
+        "resolved": "1.0.18",
+        "contentHash": "oI8YY/gUQooA0XIIZl4TgueexJcu+MbSvCQ2+ZBZRa+rIvFCWiyk8rjgywQ17sVrhLXRn+xF8+FTrWLxetkx0A==",
+        "dependencies": {
+          "H.NotifyIcon": "1.0.18",
+          "System.Drawing.Common": "5.0.0"
+        }
       },
       "Humanizer.Core": {
         "type": "Direct",
@@ -224,6 +228,11 @@
         "type": "Transitive",
         "resolved": "3.0.1",
         "contentHash": "i7CuPSikVroBaWG8sPvO707Ex9C6BP5+r4JufKNU1FGMmiFgLJvNo1ttUg6ZiXIzUNknvIb1VUTIO9iEDucibg=="
+      },
+      "H.NotifyIcon": {
+        "type": "Transitive",
+        "resolved": "1.0.18",
+        "contentHash": "vV0lNWD9xGeCH4pCmT8vKtax2QOmo8WwhCBgBDO3BYQtPG7Rjuf5Ua+3O8++XkZB7t9zromzxcT5nYdGDg1Puw=="
       },
       "HidSharp": {
         "type": "Transitive",
