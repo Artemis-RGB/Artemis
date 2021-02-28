@@ -21,16 +21,20 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 1. Create a central folder like ```C:\Repos```
 2. Clone RGB.NET's [development branch](https://github.com/DarthAffe/RGB.NET/tree/Development) into ```<central folder>\RGB.NET```
 3. Clone Artemis into  ```<central folder>\Artemis```
+4. Clone Artemis.Plugins [master branch](https://github.com/Artemis-RGB/Artemis.Plugins/tree/master) into ```<central folder>\Artemis.Plugins```
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
-4. Open ```<central folder>\Artemis\src\Artemis.sln```
-5. Restore Nuget packages
+6. Open ```<central folder>\Artemis\src\Artemis.sln``` and build as Debug
+7. Open ```<central folder>\Artemis.Plugins\src\Artemis.Plugins.sln``` and build as Debug
+8. Restore Nuget packages
 
 ##### Alternatively in PowerShell
 ```powershell
 git clone https://github.com/DarthAffe/RGB.NET -b Development RGB.NET
 git clone https://github.com/Artemis-RGB/Artemis Artemis
+git clone https://github.com/Artemis-RGB/Artemis.Plugins Artemis.Plugins
 dotnet build .\RGB.NET\RGB.NET.sln
 dotnet build .\Artemis\src\Artemis.sln
+dotnet build .\Artemis.Plugins\src\Artemis.Plugins.sln
 ``` 
 
 For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page
