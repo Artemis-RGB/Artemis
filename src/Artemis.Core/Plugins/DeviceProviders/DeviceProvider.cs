@@ -51,12 +51,6 @@ namespace Artemis.Core.DeviceProviders
         /// </summary>
         public bool CanDetectLogicalLayout { get; protected set; }
 
-        /// <inheritdoc />
-        public override void Disable()
-        {
-            // Does not happen with device providers, they require Artemis to restart
-        }
-
         /// <summary>
         ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
         /// </summary>
