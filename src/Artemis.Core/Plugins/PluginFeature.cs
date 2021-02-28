@@ -129,7 +129,8 @@ namespace Artemis.Core
 
         internal virtual void InternalDisable()
         {
-            Disable();
+            if (IsEnabled)
+                Disable();
         }
 
         #region IDisposable
