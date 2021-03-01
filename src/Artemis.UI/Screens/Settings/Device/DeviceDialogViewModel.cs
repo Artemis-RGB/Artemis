@@ -13,18 +13,16 @@ using Ookii.Dialogs.Wpf;
 using RGB.NET.Layout;
 using Stylet;
 
-// using PropertyChanged;
-
-namespace Artemis.UI.Screens.Settings.Debug
+namespace Artemis.UI.Screens.Settings.Device
 {
-    public class DeviceDebugViewModel : Conductor<Screen>.Collection.OneActive
+    public class DeviceDialogViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private ArtemisLed _selectedLed;
 
-        public DeviceDebugViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService, IDeviceDebugVmFactory factory)
+        public DeviceDialogViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService, IDeviceDebugVmFactory factory)
         {
             _deviceService = deviceService;
             _rgbService = rgbService;
@@ -34,8 +32,10 @@ namespace Artemis.UI.Screens.Settings.Debug
             PanZoomViewModel = new PanZoomViewModel();
 
             Items.Add(factory.DevicePropertiesTabViewModel(device));
+            Items.Add(factory.DeviceInfoTabViewModel(device));
             Items.Add(factory.DeviceLedsTabViewModel(device));
             ActiveItem = Items.First();
+            DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
         }
 
         public ArtemisDevice Device { get; }
