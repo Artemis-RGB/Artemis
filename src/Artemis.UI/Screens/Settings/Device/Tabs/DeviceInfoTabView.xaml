@@ -1,0 +1,121 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Device.Tabs.DeviceInfoTabView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:tabs="clr-namespace:Artemis.UI.Screens.Settings.Device.Tabs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance tabs:DeviceInfoTabViewModel}">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+
+    <!-- First row -->
+    <StackPanel HorizontalAlignment="Stretch" Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Top" Margin="15 15 7.5 0">
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device name</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Manufacturer</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Device type</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <StackPanel Visibility="{Binding IsKeyboard, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Physical layout</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                   Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                   TextWrapping="Wrap"
+                   Text="{Binding Device.PhysicalLayout}" />
+        <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+      </StackPanel>
+    </StackPanel>
+    <StackPanel Grid.Row="0" Grid.Column="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Top" Margin="7.5 15 15 0">
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Size (1px = 1mm)</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.Size}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Location (1px = 1mm)</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.Location}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Rotation (degrees)</TextBlock>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.RgbDevice.Rotation.Degrees}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <StackPanel Visibility="{Binding IsKeyboard, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Logical layout</TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                   Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                   TextWrapping="Wrap"
+                   Text="{Binding Device.LogicalLayout}" />
+        <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+      </StackPanel>
+    </StackPanel>
+
+    <!-- Second row -->
+    <StackPanel Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Margin="15 0">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Layout file path</TextBlock>
+        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Copy path to clipboard" Width="24" Height="24">
+          <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" />
+        </Button>
+      </Grid>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.Layout.FilePath}" />
+      <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
+
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Image file path</TextBlock>
+        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Copy path to clipboard" Width="24" Height="24">
+          <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" />
+        </Button>
+      </Grid>
+      <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                 Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                 TextWrapping="Wrap"
+                 Text="{Binding Device.Layout.Image}" />
+    </StackPanel>
+  </Grid>
+</UserControl>

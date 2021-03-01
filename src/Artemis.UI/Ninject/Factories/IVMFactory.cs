@@ -15,7 +15,8 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
 using Artemis.UI.Screens.Settings.Debug;
-using Artemis.UI.Screens.Settings.Debug.Device.Tabs;
+using Artemis.UI.Screens.Settings.Device;
+using Artemis.UI.Screens.Settings.Device.Tabs;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Screens.Shared;
@@ -44,8 +45,9 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDeviceDebugVmFactory : IVmFactory
     {
-        DeviceDebugViewModel DeviceDebugViewModel(ArtemisDevice device);
+        DeviceDialogViewModel DeviceDialogViewModel(ArtemisDevice device);
         DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
+        DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
         DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device);
     }
 

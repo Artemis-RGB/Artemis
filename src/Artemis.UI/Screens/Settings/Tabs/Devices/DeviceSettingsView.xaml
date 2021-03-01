@@ -54,12 +54,6 @@
                 </CheckBox>
                 <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0">
                     <StackPanel>
-                        <Button Command="{s:Action ShowDeviceDebugger}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Tools" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Show device debugger</TextBlock>
-                            </StackPanel>
-                        </Button>
                         <Button Command="{s:Action OpenPluginDirectory}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center" />
