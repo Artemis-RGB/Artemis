@@ -47,7 +47,7 @@ namespace Artemis.Core
         {
             if (DataBinding?.Registration == null)
                 throw new ArtemisCoreException("Data binding converter is not yet initialized");
-            DataBinding.Registration.Setter(DataBinding.LayerProperty.CurrentValue, value);
+            DataBinding.Registration.Setter(value);
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Artemis.Core
         {
             if (DataBinding?.Registration == null)
                 throw new ArtemisCoreException("Data binding converter is not yet initialized");
-            return DataBinding.Registration.Getter(DataBinding.LayerProperty.CurrentValue);
+            return DataBinding.Registration.Getter();
         }
 
         /// <summary>

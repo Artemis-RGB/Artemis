@@ -379,21 +379,16 @@ namespace Artemis.Core
         public bool HasDataBinding => GetAllDataBindingRegistrations().Any(r => r.GetDataBinding() != null);
 
         /// <summary>
-        ///     Gets a data binding registration by the expression used to register it
+        ///     Gets a data binding registration by the display name used to register it
         ///     <para>Note: The expression must exactly match the one used to register the data binding</para>
         /// </summary>
-        public DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
-        {
-            return GetDataBindingRegistration<TProperty>(propertyExpression.ToString());
-        }
-
-        internal DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(string expression)
+        public DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(string identifier)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             IDataBindingRegistration? match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                                            registration.Getter.ToString() == expression);
+                                                                                            registration.DisplayName == identifier);
             return (DataBindingRegistration<T, TProperty>?) match;
         }
 
@@ -414,13 +409,15 @@ namespace Artemis.Core
         /// <param name="setter">The action to call to set the value of the property</param>
         /// <param name="converter">The converter to use while applying the data binding</param>
         /// <param name="displayName">The display name of the data binding property</param>
-        public DataBindingRegistration<T, TProperty> RegisterDataBindingProperty<TProperty>(Func<T, TProperty> getter, Action<T, TProperty> setter, DataBindingConverter<T, TProperty> converter, 
+        public DataBindingRegistration<T, TProperty> RegisterDataBindingProperty<TProperty>(Func<TProperty> getter, Action<TProperty> setter, DataBindingConverter<T, TProperty> converter,
             string displayName)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
+            if (_dataBindingRegistrations.Any(d => d.DisplayName == displayName))
+                throw new ArtemisCoreException($"A databinding property named '{displayName}' is already registered.");
 
-           DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
+            DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
             _dataBindingRegistrations.Add(registration);
             return registration;
         }

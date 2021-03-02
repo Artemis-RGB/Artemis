@@ -5,7 +5,7 @@
     {
         internal FloatLayerProperty()
         {
-            RegisterDataBindingProperty(value => value, (_, newValue) => CurrentValue = newValue, new FloatDataBindingConverter(), "Value");
+            RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, new FloatDataBindingConverter(), "Value");
         }
 
         /// <summary>
