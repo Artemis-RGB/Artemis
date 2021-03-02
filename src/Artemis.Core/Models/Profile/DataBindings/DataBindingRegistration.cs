@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Core
@@ -9,16 +7,16 @@ namespace Artemis.Core
     /// <inheritdoc />
     public class DataBindingRegistration<TLayerProperty, TProperty> : IDataBindingRegistration
     {
-        internal DataBindingRegistration(LayerProperty<TLayerProperty> layerProperty,
-            DataBindingConverter<TLayerProperty, TProperty> converter,
-            Expression<Func<TLayerProperty, TProperty>> propertyExpression)
+        internal DataBindingRegistration(LayerProperty<TLayerProperty> layerProperty, DataBindingConverter<TLayerProperty, TProperty> converter,
+            Func<TLayerProperty, TProperty> getter,
+            Action<TLayerProperty, TProperty> setter,
+            string displayName)
         {
             LayerProperty = layerProperty ?? throw new ArgumentNullException(nameof(layerProperty));
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
-            PropertyExpression = propertyExpression ?? throw new ArgumentNullException(nameof(propertyExpression));
-
-            if (propertyExpression.Body is MemberExpression memberExpression)
-                Member = memberExpression.Member;
+            Getter = getter ?? throw new ArgumentNullException(nameof(getter));
+            Setter = setter ?? throw new ArgumentNullException(nameof(setter));
+            DisplayName = displayName ?? throw new ArgumentNullException(nameof(displayName));
         }
 
         /// <summary>
@@ -32,15 +30,19 @@ namespace Artemis.Core
         public DataBindingConverter<TLayerProperty, TProperty> Converter { get; }
 
         /// <summary>
-        ///     Gets the expression that that accesses the property
+        ///     Gets the function to call to get the value of the property
         /// </summary>
-        public Expression<Func<TLayerProperty, TProperty>> PropertyExpression { get; }
+        public Func<TLayerProperty, TProperty> Getter { get; }
 
         /// <summary>
-        ///     Gets the member the <see cref="PropertyExpression" /> targets
-        ///     <para><see langword="null"/> if the <see cref="PropertyExpression" /> is not a member expression</para>
+        ///     Gets the action to call to set the value of the property
         /// </summary>
-        public MemberInfo? Member { get; }
+        public Action<TLayerProperty, TProperty> Setter { get; }
+
+        /// <summary>
+        ///     Gets or sets the display name of the data binding registration
+        /// </summary>
+        public string DisplayName { get; set; }
 
         /// <summary>
         ///     Gets the data binding created using this registration
@@ -59,7 +61,7 @@ namespace Artemis.Core
             if (DataBinding != null)
                 return DataBinding;
 
-            DataBindingEntity? dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == PropertyExpression.ToString());
+            DataBindingEntity? dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == Getter.ToString());
             if (dataBinding == null)
                 return null;
 
