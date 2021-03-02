@@ -1,7 +1,7 @@
 ﻿using Artemis.Core;
 using Stylet;
 
-namespace Artemis.UI.Screens.Settings.Debug.Device.Tabs
+namespace Artemis.UI.Screens.Settings.Device.Tabs
 {
     public class DeviceLedsTabViewModel : Screen
     {

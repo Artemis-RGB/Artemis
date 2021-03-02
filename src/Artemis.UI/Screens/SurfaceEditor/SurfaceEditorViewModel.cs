@@ -10,6 +10,7 @@ using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.SurfaceEditor.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor.Visualization;
@@ -25,8 +26,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
     {
         private readonly ICoreService _coreService;
         private readonly IDeviceService _deviceService;
+        private readonly IWindowManager _windowManager;
+        private readonly IDeviceDebugVmFactory _deviceDebugVmFactory;
         private readonly IDialogService _dialogService;
-        private readonly IInputService _inputService;
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
         private Cursor _cursor;
@@ -39,7 +41,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             IDialogService dialogService,
             ISettingsService settingsService,
             IDeviceService deviceService,
-            IInputService inputService)
+            IWindowManager windowManager,
+            IDeviceDebugVmFactory deviceDebugVmFactory)
         {
             DisplayName = "Surface Editor";
             SelectionRectangle = new RectangleGeometry();
@@ -55,7 +58,8 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _dialogService = dialogService;
             _settingsService = settingsService;
             _deviceService = deviceService;
-            _inputService = inputService;
+            _windowManager = windowManager;
+            _deviceDebugVmFactory = deviceDebugVmFactory;
         }
 
         public BindableCollection<SurfaceDeviceViewModel> SurfaceDeviceViewModels { get; }
@@ -235,22 +239,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
             _rgbService.SaveDevices();
         }
 
-        public async Task ViewProperties(ArtemisDevice device)
+        public void ViewProperties(ArtemisDevice device)
         {
-            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(
-                new Dictionary<string, object> {{"device", device}}
-            );
-
-            if ((bool) madeChanges)
-                _rgbService.SaveDevice(device);
+            _windowManager.ShowDialog(_deviceDebugVmFactory.DeviceDialogViewModel(device));
         }
 
         public async Task DetectInput(ArtemisDevice device)
         {
-            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(
-                new Dictionary<string, object> {{"device", device}}
-            );
-
+            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceDetectInputViewModel>(new Dictionary<string, object> {{"device", device}});
             if ((bool) madeChanges)
                 _rgbService.SaveDevice(device);
         }
