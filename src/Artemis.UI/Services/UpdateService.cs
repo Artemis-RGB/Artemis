@@ -53,7 +53,7 @@ namespace Artemis.UI.Services
         private async Task UpdateInstaller()
         {
             string downloadUrl = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
-            string installerDirectory = Path.Combine(Constants.ApplicationFolder, "Installer");
+            string installerDirectory = Path.Combine(Constants.DataFolder, "installer");
             string installerPath = Path.Combine(installerDirectory, "Artemis.Installer.exe");
 
             _logger.Information("UpdateInstaller: Downloading installer from {downloadUrl}", downloadUrl);
@@ -132,7 +132,7 @@ namespace Artemis.UI.Services
 
             // Ensure the installer is up-to-date, get installer build info
             DevOpsBuild buildInfo = await GetBuildInfo(6);
-            string installerPath = Path.Combine(Constants.ApplicationFolder, "Installer", "Artemis.Installer.exe");
+            string installerPath = Path.Combine(Constants.DataFolder, "installer", "Artemis.Installer.exe");
 
             // Always update installer if it is missing ^^
             if (!File.Exists(installerPath))
