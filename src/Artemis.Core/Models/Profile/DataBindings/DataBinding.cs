@@ -272,7 +272,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             // General
-            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
+            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.Identifier);
             if (registration != null)
                 ApplyRegistration(registration);
 
@@ -293,7 +293,7 @@ namespace Artemis.Core
 
             // Don't save an invalid state
             if (Registration != null)
-                Entity.TargetExpression = Registration.Getter.ToString();
+                Entity.Identifier = Registration.DisplayName;
 
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;

@@ -8,9 +8,7 @@ namespace Artemis.Core
     public class DataBindingRegistration<TLayerProperty, TProperty> : IDataBindingRegistration
     {
         internal DataBindingRegistration(LayerProperty<TLayerProperty> layerProperty, DataBindingConverter<TLayerProperty, TProperty> converter,
-            Func<TLayerProperty, TProperty> getter,
-            Action<TLayerProperty, TProperty> setter,
-            string displayName)
+            Func<TProperty> getter, Action<TProperty> setter, string displayName)
         {
             LayerProperty = layerProperty ?? throw new ArgumentNullException(nameof(layerProperty));
             Converter = converter ?? throw new ArgumentNullException(nameof(converter));
@@ -32,17 +30,15 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the function to call to get the value of the property
         /// </summary>
-        public Func<TLayerProperty, TProperty> Getter { get; }
+        public Func<TProperty> Getter { get; }
 
         /// <summary>
         ///     Gets the action to call to set the value of the property
         /// </summary>
-        public Action<TLayerProperty, TProperty> Setter { get; }
+        public Action<TProperty> Setter { get; }
 
-        /// <summary>
-        ///     Gets or sets the display name of the data binding registration
-        /// </summary>
-        public string DisplayName { get; set; }
+        /// <inheritdoc />
+        public string DisplayName { get; }
 
         /// <summary>
         ///     Gets the data binding created using this registration
@@ -61,7 +57,7 @@ namespace Artemis.Core
             if (DataBinding != null)
                 return DataBinding;
 
-            DataBindingEntity? dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.TargetExpression == Getter.ToString());
+            DataBindingEntity? dataBinding = LayerProperty.Entity.DataBindingEntities.FirstOrDefault(e => e.Identifier == DisplayName);
             if (dataBinding == null)
                 return null;
 

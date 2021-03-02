@@ -5,9 +5,9 @@
     {
         internal FloatRangeLayerProperty()
         {
-            RegisterDataBindingProperty(value => value.Start, (value, newValue) => value.Start = newValue, new FloatDataBindingConverter<FloatRange>(), "Start");
-            RegisterDataBindingProperty(value => value.End, (value, newValue) => value.End = newValue, new FloatDataBindingConverter<FloatRange>(), "End");
-            
+            RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, new FloatDataBindingConverter<FloatRange>(), "Start");
+            RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new FloatDataBindingConverter<FloatRange>(), "End");
+
             CurrentValueSet += OnCurrentValueSet;
         }
 

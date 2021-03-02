@@ -23,14 +23,12 @@ namespace Artemis.Core
             for (int index = 0; index < CurrentValue.Stops.Count; index++)
             {
                 int stopIndex = index;
-                DataBindingRegistration<ColorGradient, SKColor> registerDataBindingProperty = RegisterDataBindingProperty(
-                    gradient => gradient.Stops[stopIndex].Color,
-                    (gradient, value) => gradient.Stops[stopIndex].Color = value,
+                RegisterDataBindingProperty(
+                    () => CurrentValue.Stops[stopIndex].Color,
+                    value => CurrentValue.Stops[stopIndex].Color = value,
                     new ColorStopDataBindingConverter(),
                     $"Color #{stopIndex + 1}"
                 );
-
-                registerDataBindingProperty.DisplayName = $"Color #{stopIndex + 1}";
             }
         }
 
