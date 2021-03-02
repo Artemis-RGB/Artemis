@@ -393,7 +393,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("LayerProperty");
 
             IDataBindingRegistration? match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                                            registration.PropertyExpression.ToString() == expression);
+                                                                                            registration.Getter.ToString() == expression);
             return (DataBindingRegistration<T, TProperty>?) match;
         }
 
@@ -410,21 +410,30 @@ namespace Artemis.Core
         ///     Registers a data binding property so that is available to the data binding system
         /// </summary>
         /// <typeparam name="TProperty">The type of the layer property</typeparam>
-        /// <param name="propertyExpression">The expression pointing to the value to register</param>
+        /// <param name="getter">The function to call to get the value of the property</param>
+        /// <param name="setter">The action to call to set the value of the property</param>
         /// <param name="converter">The converter to use while applying the data binding</param>
-        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)
+        /// <param name="displayName">The display name of the data binding property</param>
+        public DataBindingRegistration<T, TProperty> RegisterDataBindingProperty<TProperty>(Func<T, TProperty> getter, Action<T, TProperty> setter, DataBindingConverter<T, TProperty> converter, 
+            string displayName)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            if (propertyExpression.Body.NodeType != ExpressionType.MemberAccess && propertyExpression.Body.NodeType != ExpressionType.Parameter)
-                throw new ArtemisCoreException("Provided expression is invalid, it must be 'value => value' or 'value => value.Property'");
+           DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
+            _dataBindingRegistrations.Add(registration);
+            return registration;
+        }
 
-            if (converter.SupportedType != propertyExpression.ReturnType)
-                throw new ArtemisCoreException($"Cannot register data binding property for property {PropertyDescription.Name} " +
-                                               "because the provided converter does not support the property's type");
+        /// <summary>
+        ///     Removes all data binding properties so they are no longer available to the data binding system
+        /// </summary>
+        public void ClearDataBindingProperties()
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
 
-            _dataBindingRegistrations.Add(new DataBindingRegistration<T, TProperty>(this, converter, propertyExpression));
+            _dataBindingRegistrations.Clear();
         }
 
         /// <summary>

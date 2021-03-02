@@ -97,7 +97,7 @@ namespace Artemis.Core
         /// </summary>
         public Type? GetTargetType()
         {
-            return Registration?.PropertyExpression.ReturnType;
+            return Registration?.Getter.Method.ReturnType;
         }
 
         private void ResetEasing(TProperty value)
@@ -293,7 +293,7 @@ namespace Artemis.Core
 
             // Don't save an invalid state
             if (Registration != null)
-                Entity.TargetExpression = Registration.PropertyExpression.ToString();
+                Entity.TargetExpression = Registration.Getter.ToString();
 
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;

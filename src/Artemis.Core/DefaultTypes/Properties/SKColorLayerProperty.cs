@@ -7,7 +7,7 @@ namespace Artemis.Core
     {
         internal SKColorLayerProperty()
         {
-            RegisterDataBindingProperty(value => value, new SKColorDataBindingConverter());
+            RegisterDataBindingProperty(value => value, (_, newValue) => CurrentValue = newValue, new SKColorDataBindingConverter(), "Value");
         }
 
         /// <summary>

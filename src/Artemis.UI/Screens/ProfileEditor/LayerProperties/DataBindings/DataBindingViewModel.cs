@@ -38,11 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             _profileEditorService = profileEditorService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
 
-            if (Registration.Member != null)
-                DisplayName = Registration.Member.Name.ToUpper();
-            else
-                DisplayName = Registration.LayerProperty.PropertyDescription.Name.ToUpper();
-
+            DisplayName = Registration.DisplayName.ToUpper();
             AlwaysApplyDataBindings = settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
             DataBindingModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(DataBindingModeType)));
             EasingViewModels = new BindableCollection<TimelineEasingViewModel>();
