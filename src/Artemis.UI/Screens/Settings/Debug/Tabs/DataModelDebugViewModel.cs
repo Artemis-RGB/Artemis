@@ -127,7 +127,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
             lock (MainDataModel)
             {
-                MainDataModel.Update(_dataModelUIService, null);
+                MainDataModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(true));
             }
         }
 

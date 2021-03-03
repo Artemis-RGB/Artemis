@@ -38,7 +38,13 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         public RenderProfileElement RenderProfileElement
         {
             get => _renderProfileElement;
-            set => SetAndNotify(ref _renderProfileElement, value);
+            set
+            {
+                if (!SetAndNotify(ref _renderProfileElement, value)) return;
+                NotifyOfPropertyChange(nameof(DisplayContinuously));
+                NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
+                NotifyOfPropertyChange(nameof(EventOverlapMode));
+            }
         }
 
         public bool DisplayContinuously
@@ -61,6 +67,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 TimelineStopMode stopMode = value ? TimelineStopMode.Finish : TimelineStopMode.SkipToEnd;
                 if (RenderProfileElement == null || RenderProfileElement?.Timeline.StopMode == stopMode) return;
                 RenderProfileElement.Timeline.StopMode = stopMode;
+                _profileEditorService.UpdateSelectedProfileElement();
+            }
+        }
+
+        public TimeLineEventOverlapMode EventOverlapMode
+        {
+            get => RenderProfileElement?.Timeline.EventOverlapMode ?? TimeLineEventOverlapMode.Restart;
+            set
+            {
+                if (RenderProfileElement == null || RenderProfileElement?.Timeline.EventOverlapMode == value) return;
+                RenderProfileElement.Timeline.EventOverlapMode = value;
                 _profileEditorService.UpdateSelectedProfileElement();
             }
         }
@@ -118,6 +135,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
             IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
+        }
+
+        public void EventTriggerModeSelected()
+        {
+            _profileEditorService.UpdateSelectedProfileElement();
         }
     }
 }
