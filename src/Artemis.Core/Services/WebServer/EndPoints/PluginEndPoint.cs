@@ -58,6 +58,16 @@ namespace Artemis.Core.Services
         public event EventHandler<EndpointExceptionEventArgs>? RequestException;
 
         /// <summary>
+        ///     Occurs whenever a request is about to be processed
+        /// </summary>
+        public event EventHandler<EndpointRequestEventArgs>? ProcessingRequest;
+
+        /// <summary>
+        ///     Occurs whenever a request was processed
+        /// </summary>
+        public event EventHandler<EndpointRequestEventArgs>? ProcessedRequest;
+
+        /// <summary>
         ///     Called whenever the end point has to process a request
         /// </summary>
         /// <param name="context">The HTTP context of the request</param>
@@ -72,11 +82,29 @@ namespace Artemis.Core.Services
             RequestException?.Invoke(this, new EndpointExceptionEventArgs(e));
         }
 
+        /// <summary>
+        ///     Invokes the <see cref="ProcessingRequest" /> event
+        /// </summary>
+        protected virtual void OnProcessingRequest(IHttpContext context)
+        {
+            ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ProcessedRequest" /> event
+        /// </summary>
+        protected virtual void OnProcessedRequest(IHttpContext context)
+        {
+            ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        }
+
         internal async Task InternalProcessRequest(IHttpContext context)
         {
             try
             {
+                OnProcessingRequest(context);
                 await ProcessRequest(context);
+                OnProcessedRequest(context);
             }
             catch (Exception e)
             {
