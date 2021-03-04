@@ -419,6 +419,8 @@ namespace Artemis.Core
 
             DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
             _dataBindingRegistrations.Add(registration);
+
+            OnDataBindingPropertyRegistered();
             return registration;
         }
 
@@ -431,6 +433,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("LayerProperty");
 
             _dataBindingRegistrations.Clear();
+            OnDataBindingPropertiesCleared();
         }
 
         /// <summary>
@@ -668,6 +671,12 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
 
         /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
+        
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
+
+        /// <inheritdoc />
         public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
 
         /// <inheritdoc />
@@ -720,6 +729,22 @@ namespace Artemis.Core
         protected virtual void OnKeyframeRemoved()
         {
             KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertyRegistered()
+        {
+            DataBindingPropertyRegistered?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertiesCleared()
+        {
+            DataBindingPropertiesCleared?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>

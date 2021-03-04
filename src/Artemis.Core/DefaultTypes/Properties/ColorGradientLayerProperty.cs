@@ -1,10 +1,13 @@
-﻿using SkiaSharp;
+﻿using System.ComponentModel;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
     /// <inheritdoc />
     public class ColorGradientLayerProperty : LayerProperty<ColorGradient>
     {
+        private ColorGradient? _subscribedGradient;
+
         internal ColorGradientLayerProperty()
         {
             KeyframesSupported = false;
@@ -53,7 +56,21 @@ namespace Artemis.Core
             if (BaseValue == null)
                 BaseValue = DefaultValue ?? new ColorGradient();
 
+            if (_subscribedGradient != BaseValue)
+            {
+                if (_subscribedGradient != null) 
+                    _subscribedGradient.PropertyChanged -= SubscribedGradientOnPropertyChanged;
+                _subscribedGradient = BaseValue;
+                _subscribedGradient.PropertyChanged += SubscribedGradientOnPropertyChanged;
+            }
+            
             CreateDataBindingRegistrations();
+        }
+
+        private void SubscribedGradientOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (CurrentValue.Stops.Count != GetAllDataBindingRegistrations().Count)
+                CreateDataBindingRegistrations();
         }
 
         #region Overrides of LayerProperty<ColorGradient>

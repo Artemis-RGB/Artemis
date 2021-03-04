@@ -102,8 +102,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
         protected override void OnInitialActivate()
         {
-            base.OnInitialActivate();
             Initialize();
+            base.OnInitialActivate();
         }
 
         private void Initialize()
