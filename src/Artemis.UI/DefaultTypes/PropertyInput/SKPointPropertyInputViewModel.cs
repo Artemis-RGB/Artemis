@@ -6,7 +6,7 @@ using FluentValidation;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class SKPointPropertyInputViewModel : PropertyInputViewModel<SKPoint>
     {
@@ -16,8 +16,8 @@ namespace Artemis.UI.PropertyInput
         public SKPointPropertyInputViewModel(LayerProperty<SKPoint> layerProperty, IProfileEditorService profileEditorService,
             IModelValidator<SKPointPropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _xRegistration = layerProperty.GetDataBindingRegistration(point => point.X);
-            _yRegistration = layerProperty.GetDataBindingRegistration(point => point.Y);
+            _xRegistration = layerProperty.GetDataBindingRegistration<float>("X");
+            _yRegistration = layerProperty.GetDataBindingRegistration<float>("Y");
         }
 
         public float X

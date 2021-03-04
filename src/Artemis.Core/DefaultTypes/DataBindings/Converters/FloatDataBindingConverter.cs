@@ -36,9 +36,6 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void ApplyValue(float value)
         {
-            if (ValueTypeSetExpression == null)
-                return;
-
             if (DataBinding!.LayerProperty.PropertyDescription.MaxInputValue is float max)
                 value = Math.Min(value, max);
             if (DataBinding!.LayerProperty.PropertyDescription.MinInputValue is float min)

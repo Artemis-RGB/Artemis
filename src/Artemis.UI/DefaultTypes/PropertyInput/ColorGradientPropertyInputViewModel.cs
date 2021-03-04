@@ -3,7 +3,7 @@ using Artemis.Core;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class ColorGradientPropertyInputViewModel : PropertyInputViewModel<ColorGradient>
     {

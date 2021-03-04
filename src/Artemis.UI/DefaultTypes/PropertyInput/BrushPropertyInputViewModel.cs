@@ -7,7 +7,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {

@@ -302,7 +302,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             TimeSpan delta = DateTime.Now - _lastUpdate;
             _lastUpdate = DateTime.Now;
 
-            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null || _profileEditorService.Playing)
+            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null)
                 return;
 
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
