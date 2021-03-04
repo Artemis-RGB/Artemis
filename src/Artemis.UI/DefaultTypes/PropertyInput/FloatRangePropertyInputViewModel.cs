@@ -5,7 +5,7 @@ using Artemis.UI.Shared.Services;
 using FluentValidation;
 using Stylet;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRange>
     {
@@ -16,8 +16,8 @@ namespace Artemis.UI.PropertyInput
             IProfileEditorService profileEditorService,
             IModelValidator<FloatRangePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _startRegistration = layerProperty.GetDataBindingRegistration(range => range.Start);
-            _endRegistration = layerProperty.GetDataBindingRegistration(range => range.End);
+            _startRegistration = layerProperty.GetDataBindingRegistration<float>("Start");
+            _endRegistration = layerProperty.GetDataBindingRegistration<float>("End");
         }
 
         public float Start

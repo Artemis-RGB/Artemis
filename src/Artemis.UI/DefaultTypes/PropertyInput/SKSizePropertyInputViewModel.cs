@@ -8,7 +8,7 @@ using Stylet;
 
 // using PropertyChanged;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class SKSizePropertyInputViewModel : PropertyInputViewModel<SKSize>
     {
@@ -18,8 +18,8 @@ namespace Artemis.UI.PropertyInput
         public SKSizePropertyInputViewModel(LayerProperty<SKSize> layerProperty, IProfileEditorService profileEditorService,
             IModelValidator<SKSizePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _widthRegistration = layerProperty.GetDataBindingRegistration(size => size.Width);
-            _heightRegistration = layerProperty.GetDataBindingRegistration(size => size.Height);
+            _widthRegistration = layerProperty.GetDataBindingRegistration<float>("Width");
+            _heightRegistration = layerProperty.GetDataBindingRegistration<float>("Height");
         }
 
         // Since SKSize is immutable we need to create properties that replace the SKSize entirely

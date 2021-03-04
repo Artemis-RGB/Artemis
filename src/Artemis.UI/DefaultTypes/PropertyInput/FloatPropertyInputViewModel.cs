@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Services;
 using FluentValidation;
 using Stylet;
 
-namespace Artemis.UI.PropertyInput
+namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class FloatPropertyInputViewModel : PropertyInputViewModel<float>
     {
@@ -13,7 +13,7 @@ namespace Artemis.UI.PropertyInput
         public FloatPropertyInputViewModel(LayerProperty<float> layerProperty, IProfileEditorService profileEditorService, IModelValidator<FloatPropertyInputViewModel> validator)
             : base(layerProperty, profileEditorService, validator)
         {
-            _registration = layerProperty.GetDataBindingRegistration(value => value);
+            _registration = layerProperty.GetDataBindingRegistration<float>("Value");
         }
 
         public bool IsEnabled => _registration.DataBinding == null;
