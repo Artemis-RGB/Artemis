@@ -26,12 +26,14 @@ namespace Artemis.Core
             for (int index = 0; index < CurrentValue.Stops.Count; index++)
             {
                 int stopIndex = index;
-                RegisterDataBindingProperty(
-                    () => CurrentValue.Stops[stopIndex].Color,
-                    value => CurrentValue.Stops[stopIndex].Color = value,
-                    new ColorStopDataBindingConverter(),
-                    $"Color #{stopIndex + 1}"
-                );
+
+                void Setter(SKColor value)
+                {
+                    CurrentValue.Stops[stopIndex].Color = value;
+                    CurrentValue.OnColorValuesUpdated();
+                }
+
+                RegisterDataBindingProperty(() => CurrentValue.Stops[stopIndex].Color, Setter, new ColorStopDataBindingConverter(), $"Color #{stopIndex + 1}");
             }
         }
 
@@ -58,12 +60,12 @@ namespace Artemis.Core
 
             if (_subscribedGradient != BaseValue)
             {
-                if (_subscribedGradient != null) 
+                if (_subscribedGradient != null)
                     _subscribedGradient.PropertyChanged -= SubscribedGradientOnPropertyChanged;
                 _subscribedGradient = BaseValue;
                 _subscribedGradient.PropertyChanged += SubscribedGradientOnPropertyChanged;
             }
-            
+
             CreateDataBindingRegistrations();
         }
 
