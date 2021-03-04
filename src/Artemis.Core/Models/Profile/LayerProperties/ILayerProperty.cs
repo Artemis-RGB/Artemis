@@ -98,6 +98,16 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
 
         /// <summary>
+        ///     Occurs when a data binding property has been added
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
+
+        /// <summary>
+        ///     Occurs when all data binding properties have been removed
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
+
+        /// <summary>
         ///     Occurs when a data binding has been enabled
         /// </summary>
         public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
