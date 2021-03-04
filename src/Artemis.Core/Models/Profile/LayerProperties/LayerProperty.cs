@@ -379,21 +379,16 @@ namespace Artemis.Core
         public bool HasDataBinding => GetAllDataBindingRegistrations().Any(r => r.GetDataBinding() != null);
 
         /// <summary>
-        ///     Gets a data binding registration by the expression used to register it
+        ///     Gets a data binding registration by the display name used to register it
         ///     <para>Note: The expression must exactly match the one used to register the data binding</para>
         /// </summary>
-        public DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(Expression<Func<T, TProperty>> propertyExpression)
-        {
-            return GetDataBindingRegistration<TProperty>(propertyExpression.ToString());
-        }
-
-        internal DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(string expression)
+        public DataBindingRegistration<T, TProperty>? GetDataBindingRegistration<TProperty>(string identifier)
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             IDataBindingRegistration? match = _dataBindingRegistrations.FirstOrDefault(r => r is DataBindingRegistration<T, TProperty> registration &&
-                                                                                            registration.PropertyExpression.ToString() == expression);
+                                                                                            registration.DisplayName == identifier);
             return (DataBindingRegistration<T, TProperty>?) match;
         }
 
@@ -410,21 +405,35 @@ namespace Artemis.Core
         ///     Registers a data binding property so that is available to the data binding system
         /// </summary>
         /// <typeparam name="TProperty">The type of the layer property</typeparam>
-        /// <param name="propertyExpression">The expression pointing to the value to register</param>
+        /// <param name="getter">The function to call to get the value of the property</param>
+        /// <param name="setter">The action to call to set the value of the property</param>
         /// <param name="converter">The converter to use while applying the data binding</param>
-        public void RegisterDataBindingProperty<TProperty>(Expression<Func<T, TProperty>> propertyExpression, DataBindingConverter<T, TProperty> converter)
+        /// <param name="displayName">The display name of the data binding property</param>
+        public DataBindingRegistration<T, TProperty> RegisterDataBindingProperty<TProperty>(Func<TProperty> getter, Action<TProperty> setter, DataBindingConverter<T, TProperty> converter,
+            string displayName)
+        {
+            if (_disposed)
+                throw new ObjectDisposedException("LayerProperty");
+            if (_dataBindingRegistrations.Any(d => d.DisplayName == displayName))
+                throw new ArtemisCoreException($"A databinding property named '{displayName}' is already registered.");
+
+            DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
+            _dataBindingRegistrations.Add(registration);
+
+            OnDataBindingPropertyRegistered();
+            return registration;
+        }
+
+        /// <summary>
+        ///     Removes all data binding properties so they are no longer available to the data binding system
+        /// </summary>
+        public void ClearDataBindingProperties()
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            if (propertyExpression.Body.NodeType != ExpressionType.MemberAccess && propertyExpression.Body.NodeType != ExpressionType.Parameter)
-                throw new ArtemisCoreException("Provided expression is invalid, it must be 'value => value' or 'value => value.Property'");
-
-            if (converter.SupportedType != propertyExpression.ReturnType)
-                throw new ArtemisCoreException($"Cannot register data binding property for property {PropertyDescription.Name} " +
-                                               "because the provided converter does not support the property's type");
-
-            _dataBindingRegistrations.Add(new DataBindingRegistration<T, TProperty>(this, converter, propertyExpression));
+            _dataBindingRegistrations.Clear();
+            OnDataBindingPropertiesCleared();
         }
 
         /// <summary>
@@ -662,6 +671,12 @@ namespace Artemis.Core
         public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
 
         /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
+        
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
+
+        /// <inheritdoc />
         public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
 
         /// <inheritdoc />
@@ -714,6 +729,22 @@ namespace Artemis.Core
         protected virtual void OnKeyframeRemoved()
         {
             KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertyRegistered()
+        {
+            DataBindingPropertyRegistered?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertiesCleared()
+        {
+            DataBindingPropertiesCleared?.Invoke(this, new LayerPropertyEventArgs(this));
         }
 
         /// <summary>
