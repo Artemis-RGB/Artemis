@@ -79,6 +79,11 @@ namespace Artemis.Core.Services.Models
         public void Arrange(List<ArtemisDevice> devices)
         {
             ArrangedDevices.Clear();
+            
+            // Not much to do here
+            if (!devices.Any())
+                return;
+
             foreach (ArtemisDevice surfaceDevice in devices)
             {
                 surfaceDevice.X = 0;

@@ -20,12 +20,13 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private DataModelPropertiesViewModel _mainDataModel;
         private string _propertySearch;
         private Module _selectedModule;
+        private bool _slowUpdates;
 
         public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
         {
             _dataModelUIService = dataModelUIService;
             _pluginManagementService = pluginManagementService;
-            _updateTimer = new Timer(500);
+            _updateTimer = new Timer(25);
 
             DisplayName = "Data model";
             Modules = new BindableCollection<Module>();
@@ -41,6 +42,16 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             get => _propertySearch;
             set => SetAndNotify(ref _propertySearch, value);
+        }
+
+        public bool SlowUpdates
+        {
+            get => _slowUpdates;
+            set
+            {
+                SetAndNotify(ref _slowUpdates, value);
+                _updateTimer.Interval = _slowUpdates ? 500 : 25;
+            }
         }
 
         public BindableCollection<Module> Modules { get; }
@@ -116,7 +127,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
             lock (MainDataModel)
             {
-                MainDataModel.Update(_dataModelUIService, null);
+                MainDataModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(true));
             }
         }
 

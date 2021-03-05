@@ -200,7 +200,7 @@
                     </Grid.ColumnDefinitions>
                     <RadioButton Grid.Column="0"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding Path=RenderProfileElement.Timeline.EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Restart}}">
+                                 IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Restart}}">
                         <TextBlock VerticalAlignment="Center" FontSize="12">
                             <materialDesign:PackIcon Kind="Repeat" VerticalAlignment="Center" Margin="-3 0 0 -3" />
                             RESTART
@@ -215,7 +215,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding Path=RenderProfileElement.Timeline.EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Ignore}}">
+                                 IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Ignore}}">
                         <TextBlock VerticalAlignment="Center" FontSize="12">
                             <materialDesign:PackIcon Kind="EarHearingOff" VerticalAlignment="Center" Margin="-3 0 0 -3" />
                             IGNORE
@@ -230,7 +230,7 @@
                     </RadioButton>
                     <RadioButton Grid.Column="2"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
-                                 IsChecked="{Binding Path=RenderProfileElement.Timeline.EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Copy}}">
+                                 IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Copy}}">
                         <TextBlock VerticalAlignment="Center" FontSize="12">
                             <materialDesign:PackIcon Kind="ContentCopy" VerticalAlignment="Center" Margin="-3 0 0 -3" />
                             COPY

@@ -5,67 +5,45 @@ using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
 using SkiaSharp;
 using Stylet;
 
-namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
+namespace Artemis.UI.Screens.Settings.Device.Tabs
 {
-    public class SurfaceDeviceConfigViewModel : DialogViewModelBase
+    public class DevicePropertiesTabViewModel : Screen
     {
         private readonly ICoreService _coreService;
-        private readonly IRgbService _rgbService;
         private readonly IMessageService _messageService;
-        private readonly float _initialRedScale;
-        private readonly float _initialGreenScale;
-        private readonly float _initialBlueScale;
-        private int _rotation;
-        private float _scale;
-        private int _x;
-        private int _y;
-        private float _redScale;
-        private float _greenScale;
-        private float _blueScale;
+        private readonly IRgbService _rgbService;
+        private double _blueScale;
         private SKColor _currentColor;
         private bool _displayOnDevices;
+        private double _greenScale;
+        private double _initialBlueScale;
+        private double _initialGreenScale;
+        private double _initialRedScale;
+        private double _redScale;
+        private int _rotation;
+        private double _scale;
+        private int _x;
+        private int _y;
 
-        public SurfaceDeviceConfigViewModel(ArtemisDevice device,
+        public DevicePropertiesTabViewModel(ArtemisDevice device,
             ICoreService coreService,
             IRgbService rgbService,
             IMessageService messageService,
-            IModelValidator<SurfaceDeviceConfigViewModel> validator) : base(validator)
+            IModelValidator<DevicePropertiesTabViewModel> validator) : base(validator)
         {
             _coreService = coreService;
             _rgbService = rgbService;
             _messageService = messageService;
 
             Device = device;
-
-            X = (int) Device.X;
-            Y = (int) Device.Y;
-            Scale = Device.Scale;
-            Rotation = (int) Device.Rotation;
-            RedScale = Device.RedScale * 100f;
-            GreenScale = Device.GreenScale * 100f;
-            BlueScale = Device.BlueScale * 100f;
-            //we need to store the initial values to be able to restore them when the user clicks "Cancel"
-            _initialRedScale = Device.RedScale;
-            _initialGreenScale = Device.GreenScale;
-            _initialBlueScale = Device.BlueScale;
-            CurrentColor = SKColors.White;
-            _coreService.FrameRendering += OnFrameRendering;
-            Device.PropertyChanged += DeviceOnPropertyChanged;
+            DisplayName = "PROPERTIES";
         }
 
         public ArtemisDevice Device { get; }
-
-        public override void OnDialogClosed(object sender, DialogClosingEventArgs e)
-        {
-            _coreService.FrameRendering -= OnFrameRendering;
-            Device.PropertyChanged -= DeviceOnPropertyChanged;
-            base.OnDialogClosed(sender, e);
-        }
 
         public int X
         {
@@ -79,7 +57,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _y, value);
         }
 
-        public float Scale
+        public double Scale
         {
             get => _scale;
             set => SetAndNotify(ref _scale, value);
@@ -91,19 +69,19 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _rotation, value);
         }
 
-        public float RedScale
+        public double RedScale
         {
             get => _redScale;
             set => SetAndNotify(ref _redScale, value);
         }
 
-        public float GreenScale
+        public double GreenScale
         {
             get => _greenScale;
             set => SetAndNotify(ref _greenScale, value);
         }
 
-        public float BlueScale
+        public double BlueScale
         {
             get => _blueScale;
             set => SetAndNotify(ref _blueScale, value);
@@ -121,32 +99,11 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             set => SetAndNotify(ref _displayOnDevices, value);
         }
 
-        public async Task Accept()
-        {
-            await ValidateAsync();
-            if (HasErrors)
-                return;
-
-            _coreService.ModuleRenderingDisabled = true;
-            await Task.Delay(100);
-
-            Device.X = X;
-            Device.Y = Y;
-            Device.Scale = Scale;
-            Device.Rotation = Rotation;
-            Device.RedScale = RedScale / 100f;
-            Device.GreenScale = GreenScale / 100f;
-            Device.BlueScale = BlueScale / 100f;
-
-            _coreService.ModuleRenderingDisabled = false;
-            Session.Close(true);
-        }
-
         public void ApplyScaling()
         {
-            Device.RedScale = RedScale / 100f;
-            Device.GreenScale = GreenScale / 100f;
-            Device.BlueScale = BlueScale / 100f;
+            Device.RedScale = RedScale / 100d;
+            Device.GreenScale = GreenScale / 100d;
+            Device.BlueScale = BlueScale / 100d;
         }
 
         public void BrowseCustomLayout(object sender, MouseEventArgs e)
@@ -169,21 +126,58 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             }
         }
 
-        public override void Cancel()
+        public async Task Apply()
+        {
+            await ValidateAsync();
+            if (HasErrors)
+                return;
+
+            _coreService.ModuleRenderingDisabled = true;
+            await Task.Delay(100);
+
+            Device.X = X;
+            Device.Y = Y;
+            Device.Scale = Scale;
+            Device.Rotation = Rotation;
+            Device.RedScale = RedScale / 100d;
+            Device.GreenScale = GreenScale / 100d;
+            Device.BlueScale = BlueScale / 100d;
+
+            _coreService.ModuleRenderingDisabled = false;
+        }
+
+        public void Reset()
         {
             Device.RedScale = _initialRedScale;
             Device.GreenScale = _initialGreenScale;
             Device.BlueScale = _initialBlueScale;
-
-            base.Cancel();
         }
+
+        protected override void OnActivate()
+        {
+            X = (int) Device.X;
+            Y = (int) Device.Y;
+            Scale = Device.Scale;
+            Rotation = (int) Device.Rotation;
+            RedScale = Device.RedScale * 100d;
+            GreenScale = Device.GreenScale * 100d;
+            BlueScale = Device.BlueScale * 100d;
+            //we need to store the initial values to be able to restore them when the user clicks "Cancel"
+            _initialRedScale = Device.RedScale;
+            _initialGreenScale = Device.GreenScale;
+            _initialBlueScale = Device.BlueScale;
+            CurrentColor = SKColors.White;
+            _coreService.FrameRendering += OnFrameRendering;
+            Device.PropertyChanged += DeviceOnPropertyChanged;
+
+            base.OnActivate();
+        }
+
+        #region Event handlers
 
         private void DeviceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Device.CustomLayoutPath))
-            {
-                _rgbService.ApplyBestDeviceLayout(Device);
-            }
+            if (e.PropertyName == nameof(Device.CustomLayoutPath)) _rgbService.ApplyBestDeviceLayout(Device);
         }
 
         private void OnFrameRendering(object sender, FrameRenderingEventArgs e)
@@ -197,5 +191,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
             };
             e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
         }
+
+        #endregion
     }
 }

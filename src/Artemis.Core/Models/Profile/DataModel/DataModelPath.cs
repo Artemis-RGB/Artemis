@@ -213,9 +213,25 @@ namespace Artemis.Core
             Expression? expression = Expression.Convert(parameter, Target.GetType());
             Expression? nullCondition = null;
 
+            MethodInfo equals = typeof(object).GetMethod("Equals", BindingFlags.Static | BindingFlags.Public)!;
             foreach (DataModelPathSegment segment in _segments)
             {
-                BinaryExpression notNull = Expression.NotEqual(expression, Expression.Default(expression.Type));
+                BinaryExpression notNull;
+                try
+                {
+                    notNull = Expression.NotEqual(expression, Expression.Default(expression.Type));
+                }
+                catch (InvalidOperationException)
+                {
+                    notNull = Expression.NotEqual(
+                        Expression.Call(
+                            null,
+                            equals,
+                            Expression.Convert(expression, typeof(object)),
+                            Expression.Convert(Expression.Default(expression.Type), typeof(object))),
+                        Expression.Constant(true));
+                }
+
                 nullCondition = nullCondition != null ? Expression.AndAlso(nullCondition, notNull) : notNull;
                 expression = segment.Initialize(parameter, expression, nullCondition);
                 if (expression == null)

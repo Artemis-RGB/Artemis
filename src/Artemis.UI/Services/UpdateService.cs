@@ -16,7 +16,6 @@ using Artemis.UI.Shared.Services;
 using Flurl;
 using Flurl.Http;
 using MaterialDesignThemes.Wpf;
-using Newtonsoft.Json.Linq;
 using Serilog;
 using File = System.IO.File;
 
@@ -27,8 +26,8 @@ namespace Artemis.UI.Services
         private const string ApiUrl = "https://dev.azure.com/artemis-rgb/Artemis/_apis/";
         private readonly PluginSetting<bool> _autoInstallUpdates;
         private readonly PluginSetting<bool> _checkForUpdates;
-        private readonly ILogger _logger;
         private readonly IDialogService _dialogService;
+        private readonly ILogger _logger;
         private readonly IMessageService _messageService;
         private readonly IWindowService _windowService;
 
@@ -44,6 +43,32 @@ namespace Artemis.UI.Services
             _autoInstallUpdates = settingsService.GetSetting("UI.AutoInstallUpdates", false);
 
             _checkForUpdates.SettingChanged += CheckForUpdatesOnSettingChanged;
+        }
+
+        private async Task OfferUpdate(DevOpsBuild buildInfo)
+        {
+            await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
+        }
+
+        private async Task UpdateInstaller()
+        {
+            string downloadUrl = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
+            string installerDirectory = Path.Combine(Constants.DataFolder, "installer");
+            string installerPath = Path.Combine(installerDirectory, "Artemis.Installer.exe");
+
+            _logger.Information("UpdateInstaller: Downloading installer from {downloadUrl}", downloadUrl);
+            using HttpClient client = new();
+            HttpResponseMessage httpResponseMessage = await client.GetAsync(downloadUrl);
+            if (!httpResponseMessage.IsSuccessStatusCode)
+                throw new ArtemisUIException($"Failed to download installer, status code {httpResponseMessage.StatusCode}");
+
+            _logger.Information("UpdateInstaller: Writing installer file to {installerPath}", installerPath);
+            if (File.Exists(installerPath))
+                File.Delete(installerPath);
+
+            Core.Utilities.CreateAccessibleDirectory(installerDirectory);
+            await using FileStream fs = new(installerPath, FileMode.Create, FileAccess.Write, FileShare.None);
+            await httpResponseMessage.Content.CopyToAsync(fs);
         }
 
         public async Task<bool> AutoUpdate()
@@ -68,7 +93,9 @@ namespace Artemis.UI.Services
                 return false;
 
             if (_windowService.IsMainWindowOpen)
+            {
                 await OfferUpdate(buildInfo);
+            }
             else if (_autoInstallUpdates.Value)
             {
                 // Lets go
@@ -92,11 +119,6 @@ namespace Artemis.UI.Services
             return true;
         }
 
-        private async Task OfferUpdate(DevOpsBuild buildInfo)
-        {
-            await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
-        }
-
         public async Task<bool> IsUpdateAvailable()
         {
             DevOpsBuild buildInfo = await GetBuildInfo(1);
@@ -110,11 +132,13 @@ namespace Artemis.UI.Services
 
             // Ensure the installer is up-to-date, get installer build info
             DevOpsBuild buildInfo = await GetBuildInfo(6);
-            string installerPath = Path.Combine(Constants.ApplicationFolder, "Installer", "Artemis.Installer.exe");
+            string installerPath = Path.Combine(Constants.DataFolder, "installer", "Artemis.Installer.exe");
 
             // Always update installer if it is missing ^^
             if (!File.Exists(installerPath))
+            {
                 await UpdateInstaller();
+            }
             // Compare the creation date of the installer with the build date and update if needed
             else
             {
@@ -180,27 +204,6 @@ namespace Artemis.UI.Services
                 .WithHeader("User-Agent", "Artemis 2")
                 .WithHeader("Accept", "application/vnd.github.v3+json")
                 .GetJsonAsync<GitHubDifference>();
-        }
-
-        private async Task UpdateInstaller()
-        {
-            string downloadUrl = "https://builds.artemis-rgb.com/binaries/Artemis.Installer.exe";
-            string installerDirectory = Path.Combine(Constants.ApplicationFolder, "Installer");
-            string installerPath = Path.Combine(installerDirectory, "Artemis.Installer.exe");
-
-            _logger.Information("UpdateInstaller: Downloading installer from {downloadUrl}", downloadUrl);
-            using HttpClient client = new();
-            HttpResponseMessage httpResponseMessage = await client.GetAsync(downloadUrl);
-            if (!httpResponseMessage.IsSuccessStatusCode)
-                throw new ArtemisUIException($"Failed to download installer, status code {httpResponseMessage.StatusCode}");
-
-            _logger.Information("UpdateInstaller: Writing installer file to {installerPath}", installerPath);
-            if (File.Exists(installerPath))
-                File.Delete(installerPath);
-            else if (!Directory.Exists(installerDirectory))
-                Directory.CreateDirectory(installerDirectory);
-            await using FileStream fs = new(installerPath, FileMode.Create, FileAccess.Write, FileShare.None);
-            await httpResponseMessage.Content.CopyToAsync(fs);
         }
 
         #region Event handlers

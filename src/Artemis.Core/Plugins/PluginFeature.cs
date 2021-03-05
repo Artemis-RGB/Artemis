@@ -73,10 +73,10 @@ namespace Artemis.Core
 
                 if (!enable)
                 {
-                    IsEnabled = false;
-
                     // Even if disable failed, still leave it in a disabled state to avoid more issues
                     InternalDisable();
+                    IsEnabled = false;
+
                     OnDisabled();
                     return;
                 }
@@ -129,7 +129,8 @@ namespace Artemis.Core
 
         internal virtual void InternalDisable()
         {
-            Disable();
+            if (IsEnabled)
+                Disable();
         }
 
         #region IDisposable
@@ -145,7 +146,7 @@ namespace Artemis.Core
         {
             if (disposing)
             {
-                Disable();
+                InternalDisable();
             }
         }
 

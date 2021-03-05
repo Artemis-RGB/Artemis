@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.SurfaceEditor.Visualization"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type local:ListDeviceViewModel}}">
@@ -22,7 +23,12 @@
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" Foreground="{DynamicResource MaterialDesignBodyLight}" />
         </StackPanel>
-        <Ellipse Grid.Column="2" Width="20" Height="20" Stroke="{DynamicResource MaterialDesignBody}" StrokeThickness="1">
+        <Ellipse Grid.Column="2" 
+                 Width="20" 
+                 Height="20" 
+                 Stroke="{DynamicResource MaterialDesignBody}" 
+                 StrokeThickness="1"
+                 Visibility="{Binding Parent.ColorDevices, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
             <Ellipse.Fill>
                 <SolidColorBrush Color="{Binding Color, Converter={StaticResource SKColorToColorConverter}}" />
             </Ellipse.Fill>

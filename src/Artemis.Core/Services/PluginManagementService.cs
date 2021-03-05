@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
@@ -275,6 +276,7 @@ namespace Artemis.Core.Services
             plugin.PluginLoader = PluginLoader.CreateFromAssemblyFile(mainFile!, configure =>
             {
                 configure.IsUnloadable = true;
+                configure.LoadInMemory = true;
                 configure.PreferSharedTypes = true;
             });
 
@@ -430,7 +432,6 @@ namespace Artemis.Core.Services
             OnPluginDisabled(new PluginEventArgs(plugin));
         }
 
-        /// <inheritdoc />
         public Plugin ImportPlugin(string fileName)
         {
             DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
@@ -449,7 +450,16 @@ namespace Artemis.Core.Services
 
             Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
             if (existing != null)
-                throw new ArtemisPluginException($"A plugin with the same GUID is already loaded: {existing.Info}");
+            {
+                try
+                {
+                    RemovePlugin(existing);
+                }
+                catch (Exception e)
+                {
+                    throw new ArtemisPluginException("A plugin with the same GUID is already loaded, failed to remove old version", e);
+                }
+            }
 
             string targetDirectory = pluginInfo.Main.Split(".dll")[0].Replace("/", "").Replace("\\", "");
             string uniqueTargetDirectory = targetDirectory;
@@ -464,17 +474,36 @@ namespace Artemis.Core.Services
 
             // Extract everything in the same archive directory to the unique plugin directory
             DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, uniqueTargetDirectory));
-            Directory.CreateDirectory(directoryInfo.FullName);
+            Utilities.CreateAccessibleDirectory(directoryInfo.FullName);
             string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
             foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
+            {
                 if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory))
                 {
                     string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
-                    zipArchiveEntry.ExtractToFile(target);
+                    // Create folders
+                    if (zipArchiveEntry.FullName.EndsWith("/"))
+                        Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                    // Extract files
+                    else
+                        zipArchiveEntry.ExtractToFile(target);
                 }
+            }
 
             // Load the newly extracted plugin and return the result
             return LoadPlugin(directoryInfo);
+        }
+
+        public void RemovePlugin(Plugin plugin)
+        {
+            DirectoryInfo directory = plugin.Directory;
+            lock (_plugins)
+            {
+                if (_plugins.Contains(plugin))
+                    UnloadPlugin(plugin);
+            }
+
+            directory.Delete(true);
         }
 
         #endregion

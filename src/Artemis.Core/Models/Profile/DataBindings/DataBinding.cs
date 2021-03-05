@@ -97,7 +97,7 @@ namespace Artemis.Core
         /// </summary>
         public Type? GetTargetType()
         {
-            return Registration?.PropertyExpression.ReturnType;
+            return Registration?.Getter.Method.ReturnType;
         }
 
         private void ResetEasing(TProperty value)
@@ -272,7 +272,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             // General
-            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.TargetExpression);
+            DataBindingRegistration<TLayerProperty, TProperty>? registration = LayerProperty.GetDataBindingRegistration<TProperty>(Entity.Identifier);
             if (registration != null)
                 ApplyRegistration(registration);
 
@@ -293,7 +293,7 @@ namespace Artemis.Core
 
             // Don't save an invalid state
             if (Registration != null)
-                Entity.TargetExpression = Registration.PropertyExpression.ToString();
+                Entity.Identifier = Registration.DisplayName;
 
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;

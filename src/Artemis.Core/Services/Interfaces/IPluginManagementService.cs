@@ -71,6 +71,12 @@ namespace Artemis.Core.Services
         Plugin ImportPlugin(string fileName);
 
         /// <summary>
+        /// Unloads and permanently removes the provided plugin
+        /// </summary>
+        /// <param name="plugin">The plugin to remove</param>
+        void RemovePlugin(Plugin plugin);
+
+        /// <summary>
         ///     Enables the provided plugin feature
         /// </summary>
         /// <param name="pluginFeature">The feature to enable</param>

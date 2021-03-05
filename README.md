@@ -15,22 +15,27 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 **Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases (pre-release means your profiles may break at any given time!)  
 **Plugin documentation**: https://artemis-rgb.com/docs/
 
-**Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested. If you run into any issues please let us know on Discord.**
+**Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested. If you run into any issues please let us know on Discord.**  
+A full list of supported devices can be found on the wiki [here](https://wiki.artemis-rgb.com/en/guides/user/devices).
 
 #### Want to build? Follow these instructions
 1. Create a central folder like ```C:\Repos```
 2. Clone RGB.NET's [development branch](https://github.com/DarthAffe/RGB.NET/tree/Development) into ```<central folder>\RGB.NET```
 3. Clone Artemis into  ```<central folder>\Artemis```
+4. Clone Artemis.Plugins [master branch](https://github.com/Artemis-RGB/Artemis.Plugins/tree/master) into ```<central folder>\Artemis.Plugins```
 5. Open ```<central folder>\RGB.NET\RGB.NET.sln``` and build with the default config
-4. Open ```<central folder>\Artemis\src\Artemis.sln```
-5. Restore Nuget packages
+6. Open ```<central folder>\Artemis\src\Artemis.sln``` and build as Debug
+7. Open ```<central folder>\Artemis.Plugins\src\Artemis.Plugins.sln``` and build as Debug
+8. Restore Nuget packages
 
 ##### Alternatively in PowerShell
 ```powershell
 git clone https://github.com/DarthAffe/RGB.NET -b Development RGB.NET
 git clone https://github.com/Artemis-RGB/Artemis Artemis
+git clone https://github.com/Artemis-RGB/Artemis.Plugins Artemis.Plugins
 dotnet build .\RGB.NET\RGB.NET.sln
 dotnet build .\Artemis\src\Artemis.sln
+dotnet build .\Artemis.Plugins\src\Artemis.Plugins.sln
 ``` 
 
 For an up-to-date overview of what's currently being worked on, see the [Projects](https://github.com/SpoinkyNL/Artemis/projects) page

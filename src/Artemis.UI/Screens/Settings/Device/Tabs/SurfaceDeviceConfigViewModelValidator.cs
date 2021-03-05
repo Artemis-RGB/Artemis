@@ -1,10 +1,10 @@
 ﻿using FluentValidation;
 
-namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
+namespace Artemis.UI.Screens.Settings.Device.Tabs
 {
-    public class SurfaceDeviceConfigViewModelValidator : AbstractValidator<SurfaceDeviceConfigViewModel>
+    public class DevicePropertiesTabViewModelValidator : AbstractValidator<DevicePropertiesTabViewModel>
     {
-        public SurfaceDeviceConfigViewModelValidator()
+        public DevicePropertiesTabViewModelValidator()
         {
             RuleFor(m => m.X).GreaterThanOrEqualTo(0).WithMessage("X-coordinate must be 0 or greater");
 

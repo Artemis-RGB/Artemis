@@ -178,12 +178,15 @@ namespace Artemis.Core
             {
                 foreach (PluginFeature feature in Features)
                     feature.Dispose();
+                SetEnabled(false);
 
                 Kernel?.Dispose();
                 PluginLoader?.Dispose();
 
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
                 _features.Clear();
-                SetEnabled(false);
             }
         }
         

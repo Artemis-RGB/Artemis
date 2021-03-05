@@ -53,15 +53,28 @@
             </Grid>
 
 
-            <Button Grid.Row="1"
-                    Grid.Column="0"
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0"
+                        VerticalAlignment="Bottom" 
+                        Orientation="Horizontal">
+                <Button 
                     VerticalAlignment="Bottom"
                     Style="{StaticResource MaterialDesignOutlinedButton}"
                     ToolTip="Open the plugins settings window"
                     Margin="4"
                     Command="{s:Action OpenSettings}">
-                SETTINGS
-            </Button>
+                    SETTINGS
+                </Button>
+                <Button 
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    ToolTip="Remove plugin"
+                    Margin="4"
+                    Command="{s:Action Remove}">
+                    <materialDesign:PackIcon Kind="DeleteForever" />
+                </Button>
+            </StackPanel>
+           
 
             <CheckBox Grid.Row="1"
                       Grid.Column="1"
@@ -70,7 +83,13 @@
                       Margin="8"
                       Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
                       Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
-                Plugin enabled
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Plugin enabled</TextBlock>
+                    <materialDesign:PackIcon Kind="ShieldHalfFull" 
+                                             Margin="5 0 0 0" 
+                                             ToolTip="Plugin requires admin rights"
+                                             Visibility="{Binding Plugin.Info.RequiresAdmin, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
+                </StackPanel>
             </CheckBox>
 
             <ProgressBar Grid.Row="1"
