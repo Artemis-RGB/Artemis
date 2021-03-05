@@ -8,7 +8,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents a SkiaSharp-based RGB.NET PixelTexture
     /// </summary>
-    public sealed class SKTexture : PixelTexture<byte>
+    public sealed class SKTexture : PixelTexture<byte>, IDisposable
     {
         #region Constructors
 
@@ -41,6 +41,12 @@ namespace Artemis.Core
         ///     Gets the color data in RGB format
         /// </summary>
         protected override ReadOnlySpan<byte> Data => Bitmap.GetPixelSpan();
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Bitmap.Dispose();
+        }
 
         #endregion
     }

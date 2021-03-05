@@ -31,7 +31,7 @@ namespace Artemis.Core.Services
             Task.Run(async () =>
             {
                 await Task.Delay(200);
-                ledGroup.Detach(_rgbService.Surface);
+                ledGroup.Detach();
 
                 if (blinkCount < 5)
                 {

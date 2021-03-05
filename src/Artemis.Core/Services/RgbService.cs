@@ -136,8 +136,11 @@ namespace Artemis.Core.Services
 
         public void UpdateTexture(SKBitmap bitmap)
         {
+            SKTexture? oldTexture = Texture;
             Texture = new SKTexture(bitmap);
             TextureBrush.Texture = Texture;
+
+            oldTexture?.Dispose();
         }
 
         private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args) => UpdateLedGroup();
@@ -161,7 +164,7 @@ namespace Artemis.Core.Services
                 lock (_surfaceLedGroup)
                 {
                     // Clean up the old background
-                    _surfaceLedGroup.Detach(Surface);
+                    _surfaceLedGroup.Detach();
 
                     // Apply the application wide brush and decorator
                     _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = TextureBrush };

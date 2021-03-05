@@ -43,7 +43,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         {
             base.OnDialogClosed(sender, e);
             _inputService.DeviceIdentified -= InputServiceOnDeviceIdentified;
-            _ledGroup.Detach(_rgbService.Surface);
+            _ledGroup.Detach();
         }
 
         private void InputServiceOnDeviceIdentified(object sender, EventArgs e)

@@ -258,10 +258,8 @@ namespace Artemis.Core.Services
 
         private void InvalidateBitmap()
         {
-
             lock (_bitmapLock)
             {
-                _bitmap?.Dispose();
                 _bitmap = null;
             }
         }
