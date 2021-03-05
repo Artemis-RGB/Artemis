@@ -347,27 +347,6 @@
                             <ComboBox Width="80" SelectedItem="{Binding SelectedTargetFrameRate}" ItemsSource="{Binding TargetFrameRates}" DisplayMemberPath="Item1" />
                         </StackPanel>
                     </Grid>
-                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">LED sample size</TextBlock>
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                Sets the amount of samples that is taken to determine each LEDs color. This means a LED can be semi off if it is not completely covered by a color.
-                            </TextBlock>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedItem="{Binding SampleSize}" ItemsSource="{Binding SampleSizes}" />
-                        </StackPanel>
-                    </Grid>
                 </StackPanel>
             </materialDesign:Card>
 

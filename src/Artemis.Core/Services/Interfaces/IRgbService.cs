@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using RGB.NET.Core;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -31,9 +32,14 @@ namespace Artemis.Core.Services
         RGBSurface Surface { get; set; }
 
         /// <summary>
-        ///     Gets the bitmap brush used to convert the rendered frame to LED-colors
+        ///     Gets the texture brush used to convert the rendered frame to LED-colors
         /// </summary>
-        BitmapBrush? BitmapBrush { get; }
+        TextureBrush TextureBrush { get; }
+
+        /// <summary>
+        ///     Gets the texture used to convert the rendered frame to LED-colors
+        /// </summary>
+        SKTexture? Texture { get; }
 
         /// <summary>
         ///     Gets the update trigger that drives the render loop
@@ -44,6 +50,12 @@ namespace Artemis.Core.Services
         ///     Gets or sets whether rendering should be paused
         /// </summary>
         bool IsRenderPaused { get; set; }
+
+        /// <summary>
+        ///     Recreates the Texture to use the given <see cref="SKBitmap"/>
+        /// </summary>
+        /// <param name="bitmap"></param>
+        void UpdateTexture(SKBitmap bitmap);
 
         /// <summary>
         ///     Adds the given device provider to the <see cref="Surface" />

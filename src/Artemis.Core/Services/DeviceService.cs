@@ -1,8 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using RGB.NET.Brushes;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 
 namespace Artemis.Core.Services
 {
@@ -33,7 +31,7 @@ namespace Artemis.Core.Services
             Task.Run(async () =>
             {
                 await Task.Delay(200);
-                ledGroup.Detach(_rgbService.Surface);
+                ledGroup.Detach();
 
                 if (blinkCount < 5)
                 {
