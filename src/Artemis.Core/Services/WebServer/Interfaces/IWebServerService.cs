@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;
 
@@ -42,6 +44,24 @@ namespace Artemis.Core.Services
         /// <param name="requestHandler"></param>
         /// <returns>The resulting end point</returns>
         JsonPluginEndPoint<T> AddResponsiveJsonEndPoint<T>(PluginFeature feature, string endPointName, Func<T, object?> requestHandler);
+
+        /// <summary>
+        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="module" />.
+        /// </summary>
+        /// <typeparam name="T">The data model type of the module</typeparam>
+        /// <param name="module">The module whose datamodel to apply the received JSON to</param>
+        /// <param name="endPointName">The name of the end point, must be unique</param>
+        /// <returns>The resulting end point</returns>
+        DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel;
+
+        /// <summary>
+        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="dataModelExpansion" />.
+        /// </summary>
+        /// <typeparam name="T">The data model type of the module</typeparam>
+        /// <param name="dataModelExpansion">The data model expansion whose datamodel to apply the received JSON to</param>
+        /// <param name="endPointName">The name of the end point, must be unique</param>
+        /// <returns>The resulting end point</returns>
+        DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(DataModelExpansion<T> dataModelExpansion, string endPointName) where T : DataModel;
 
         /// <summary>
         ///     Adds a new endpoint for the given plugin feature receiving an a <see cref="string" />.

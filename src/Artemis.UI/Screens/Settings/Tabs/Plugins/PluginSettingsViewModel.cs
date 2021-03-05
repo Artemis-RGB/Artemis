@@ -19,6 +19,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
+        private readonly ICoreService _coreService;
         private readonly IMessageService _messageService;
         private readonly IWindowManager _windowManager;
         private bool _enabling;
@@ -26,6 +27,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public PluginSettingsViewModel(Plugin plugin,
             ISettingsVmFactory settingsVmFactory,
+            ICoreService coreService,
             IWindowManager windowManager,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
@@ -34,6 +36,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             Plugin = plugin;
 
             _settingsVmFactory = settingsVmFactory;
+            _coreService = coreService;
             _windowManager = windowManager;
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
@@ -82,6 +85,24 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
+        public async Task Remove()
+        {
+            bool confirmed = await _dialogService.ShowConfirmDialog("Delete plugin", "Are you sure you want to delete this plugin?");
+            if (!confirmed)
+                return;
+
+            try
+            {
+                _pluginManagementService.RemovePlugin(Plugin);
+                ((PluginSettingsTabViewModel) Parent).GetPluginInstances();
+            }
+            catch (Exception e)
+            {
+                _dialogService.ShowExceptionDialog("Failed to remove plugin", e);
+                throw;
+            }
+        }
+
         public void ShowLogsFolder()
         {
             try
@@ -123,6 +144,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             if (enable)
             {
                 Enabling = true;
+
+                if (Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
+                {
+                    bool confirmed = await _dialogService.ShowConfirmDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it?");
+                    if (!confirmed)
+                    {
+                        Enabling = false;
+                        NotifyOfPropertyChange(nameof(IsEnabled));
+                        NotifyOfPropertyChange(nameof(CanOpenSettings));
+                        return;
+                    }
+                }
 
                 try
                 {

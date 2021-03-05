@@ -11,9 +11,8 @@ namespace Artemis.Core
     public class DataModelConditionEvent : DataModelConditionPart
     {
         private bool _disposed;
-        private IDataModelEvent? _event;
-        private bool _eventTriggered;
         private bool _reinitializing;
+        private DateTime _lastTrigger;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionEvent" /> class
@@ -53,22 +52,21 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionEvent");
 
-            // Ensure the event has not been replaced
-            if (EventPath?.GetValue() is IDataModelEvent dataModelEvent && _event != dataModelEvent)
-                SubscribeToDataModelEvent(dataModelEvent);
-
-            // Only evaluate to true once every time the event has been triggered
-            if (!_eventTriggered)
+            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent) 
+                return false;
+            // Only evaluate to true once every time the event has been triggered since the last evaluation
+            if (dataModelEvent.LastTrigger <= _lastTrigger)
                 return false;
 
-            _eventTriggered = false;
+            _lastTrigger = DateTime.Now;
 
             // If there is a child (root group), it must evaluate to true whenever the event triggered
             if (Children.Any())
-                return Children[0].EvaluateObject(_event?.LastEventArgumentsUntyped);
+                return Children[0].EvaluateObject(dataModelEvent.LastEventArgumentsUntyped);
 
             // If there are no children, we always evaluate to true whenever the event triggered
             return true;
+
         }
 
         /// <summary>
@@ -132,7 +130,7 @@ namespace Artemis.Core
             // Target list
             EventPath?.Save();
             Entity.EventPath = EventPath?.Entity;
-
+            
             // Children
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));
@@ -172,16 +170,9 @@ namespace Artemis.Core
                 Entity.Children.Clear();
                 AddChild(new DataModelConditionGroup(this));
             }
-        }
 
-        private void SubscribeToDataModelEvent(IDataModelEvent dataModelEvent)
-        {
-            if (_event != null)
-                _event.EventTriggered -= OnEventTriggered;
-
-            _event = dataModelEvent;
-            if (_event != null)
-                _event.EventTriggered += OnEventTriggered;
+            if (EventPath?.GetValue() is IDataModelEvent dataModelEvent) 
+                _lastTrigger = dataModelEvent.LastTrigger;
         }
 
         private Type? GetEventArgumentType()
@@ -211,11 +202,6 @@ namespace Artemis.Core
         }
 
         #region Event handlers
-
-        private void OnEventTriggered(object? sender, EventArgs e)
-        {
-            _eventTriggered = true;
-        }
 
         private void EventPathOnPathValidated(object? sender, EventArgs e)
         {

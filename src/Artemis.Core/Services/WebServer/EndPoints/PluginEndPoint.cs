@@ -53,14 +53,64 @@ namespace Artemis.Core.Services
         public string? Returns { get; protected set; }
 
         /// <summary>
+        ///     Occurs whenever a request threw an unhandled exception
+        /// </summary>
+        public event EventHandler<EndpointExceptionEventArgs>? RequestException;
+
+        /// <summary>
+        ///     Occurs whenever a request is about to be processed
+        /// </summary>
+        public event EventHandler<EndpointRequestEventArgs>? ProcessingRequest;
+
+        /// <summary>
+        ///     Occurs whenever a request was processed
+        /// </summary>
+        public event EventHandler<EndpointRequestEventArgs>? ProcessedRequest;
+
+        /// <summary>
         ///     Called whenever the end point has to process a request
         /// </summary>
         /// <param name="context">The HTTP context of the request</param>
         protected abstract Task ProcessRequest(IHttpContext context);
 
+        /// <summary>
+        ///     Invokes the <see cref="RequestException" /> event
+        /// </summary>
+        /// <param name="e">The exception that occurred during the request</param>
+        protected virtual void OnRequestException(Exception e)
+        {
+            RequestException?.Invoke(this, new EndpointExceptionEventArgs(e));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ProcessingRequest" /> event
+        /// </summary>
+        protected virtual void OnProcessingRequest(IHttpContext context)
+        {
+            ProcessingRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ProcessedRequest" /> event
+        /// </summary>
+        protected virtual void OnProcessedRequest(IHttpContext context)
+        {
+            ProcessedRequest?.Invoke(this, new EndpointRequestEventArgs(context));
+        }
+
         internal async Task InternalProcessRequest(IHttpContext context)
         {
-            await ProcessRequest(context);
+            try
+            {
+                OnProcessingRequest(context);
+                await ProcessRequest(context);
+                OnProcessedRequest(context);
+            }
+            catch (Exception e)
+            {
+                OnRequestException(e);
+                throw;
+            }
         }
 
         private void OnDisabled(object? sender, EventArgs e)

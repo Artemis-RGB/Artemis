@@ -5,8 +5,8 @@
     {
         internal IntRangeLayerProperty()
         {
-            RegisterDataBindingProperty(range => range.Start, new IntDataBindingConverter<IntRange>());
-            RegisterDataBindingProperty(range => range.End, new IntDataBindingConverter<IntRange>());
+            RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, new IntDataBindingConverter<IntRange>(), "Start");
+            RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new IntDataBindingConverter<IntRange>(), "End");
 
             CurrentValueSet += OnCurrentValueSet;
         }

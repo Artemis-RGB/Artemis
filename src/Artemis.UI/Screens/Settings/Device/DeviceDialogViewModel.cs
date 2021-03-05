@@ -2,36 +2,45 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Xml.Serialization;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
 using Ookii.Dialogs.Wpf;
 using RGB.NET.Layout;
 using Stylet;
 
-// using PropertyChanged;
-
-namespace Artemis.UI.Screens.Settings.Debug
+namespace Artemis.UI.Screens.Settings.Device
 {
-    public class DeviceDebugViewModel : Screen
+    public class DeviceDialogViewModel : Conductor<Screen>.Collection.OneActive
     {
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private ArtemisLed _selectedLed;
 
-        public DeviceDebugViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService)
+        public DeviceDialogViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService, IDeviceDebugVmFactory factory)
         {
             _deviceService = deviceService;
             _rgbService = rgbService;
             _dialogService = dialogService;
+
             Device = device;
+            PanZoomViewModel = new PanZoomViewModel();
+
+            Items.Add(factory.DevicePropertiesTabViewModel(device));
+            Items.Add(factory.DeviceInfoTabViewModel(device));
+            Items.Add(factory.DeviceLedsTabViewModel(device));
+            ActiveItem = Items.First();
+            DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
         }
 
-        public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> {SelectedLed} : null;
         public ArtemisDevice Device { get; }
-
+        public PanZoomViewModel PanZoomViewModel { get; }
+        
         public ArtemisLed SelectedLed
         {
             get => _selectedLed;
@@ -41,6 +50,7 @@ namespace Artemis.UI.Screens.Settings.Debug
                 NotifyOfPropertyChange(nameof(SelectedLeds));
             }
         }
+        public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> { SelectedLed } : null;
 
         public bool CanOpenImageDirectory => Device.Layout?.Image != null;
 
@@ -135,7 +145,7 @@ namespace Artemis.UI.Screens.Settings.Debug
 
             foreach (ArtemisLedLayout ledLayout in Device.Layout.Leds)
             {
-                if (ledLayout.LayoutCustomLedData.LogicalLayouts == null) 
+                if (ledLayout.LayoutCustomLedData.LogicalLayouts == null)
                     continue;
 
                 // Only the image of the current logical layout is available as an URI, iterate each layout and find the images manually

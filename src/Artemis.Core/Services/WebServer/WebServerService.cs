@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;
 using Newtonsoft.Json;
@@ -28,7 +30,6 @@ namespace Artemis.Core.Services
             _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
 
             PluginsModule = new PluginsModule("/plugins");
-
             StartWebServer();
         }
 
@@ -42,7 +43,7 @@ namespace Artemis.Core.Services
             Server?.Dispose();
             Server = null;
 
-            string url = $"http://localhost:{_webServerPortSetting.Value}/";
+            string url = $"http://*:{_webServerPortSetting.Value}/";
             WebApiModule apiModule = new("/api/", JsonNetSerializer);
             PluginsModule.ServerUrl = url;
             WebServer server = new WebServer(o => o.WithUrlPrefix(url).WithMode(HttpListenerMode.EmbedIO))
@@ -124,6 +125,29 @@ namespace Artemis.Core.Services
             RawPluginEndPoint endPoint = new(feature, endPointName, PluginsModule, requestHandler);
             PluginsModule.AddPluginEndPoint(endPoint);
             return endPoint;
+        }
+
+        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel
+        {
+            if (module == null) throw new ArgumentNullException(nameof(module));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            DataModelJsonPluginEndPoint<T> endPoint = new(module, endPointName, PluginsModule);
+            PluginsModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(DataModelExpansion<T> dataModelExpansion, string endPointName) where T : DataModel
+        {
+            if (dataModelExpansion == null) throw new ArgumentNullException(nameof(dataModelExpansion));
+            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
+            DataModelJsonPluginEndPoint<T> endPoint = new(dataModelExpansion, endPointName, PluginsModule);
+            PluginsModule.AddPluginEndPoint(endPoint);
+            return endPoint;
+        }
+
+        private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel
+        {
+
         }
 
         public void RemovePluginEndPoint(PluginEndPoint endPoint)

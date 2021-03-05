@@ -60,11 +60,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             _deviceService.IdentifyDevice(Device);
         }
 
-        public void ShowDeviceDebugger()
-        {
-            _windowManager.ShowWindow(_deviceDebugVmFactory.Create(Device));
-        }
-
         public void OpenPluginDirectory()
         {
             try
@@ -87,16 +82,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
                 _rgbService.SaveDevice(Device);
         }
 
-        public async Task ViewProperties()
+        public void ViewProperties()
         {
-            object madeChanges = await _dialogService.ShowDialog<SurfaceDeviceConfigViewModel>(
-                new Dictionary<string, object> {{"device", Device}}
-            );
-
-            if ((bool) madeChanges)
-                _rgbService.SaveDevice(Device);
+            _windowManager.ShowDialog(_deviceDebugVmFactory.DeviceDialogViewModel(Device));
         }
-
         private async Task UpdateIsDeviceEnabled(bool value)
         {
             if (!value)

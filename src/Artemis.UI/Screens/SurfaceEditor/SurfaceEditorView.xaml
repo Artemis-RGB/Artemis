@@ -201,6 +201,18 @@
                     </Path.Fill>
                 </Path>
 
+                <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Cursor="Arrow">
+                    <materialDesign:Card Padding="8">
+                        <StackPanel Orientation="Horizontal">
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                                      IsChecked="{Binding ColorDevices}"
+                                      ToolTip="If selected, each device is completely lid up with a random color">
+                                Show random device colors
+                            </CheckBox>
+                        </StackPanel>
+                    </materialDesign:Card>
+                </StackPanel>
+
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 15, 15">
                     <Button Command="{s:Action AutoArrange}"
                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
