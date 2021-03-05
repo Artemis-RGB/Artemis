@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
+using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Windows;
 using System.Xml.Linq;
-using System.Xml.XPath;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
@@ -16,7 +14,6 @@ using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 using Ninject;
 using Serilog.Events;
 using Stylet;
@@ -26,17 +23,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
     public class GeneralSettingsTabViewModel : Screen
     {
         private readonly IDebugService _debugService;
-        private readonly IKernel _kernel;
-        private readonly IWindowManager _windowManager;
+        private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
         private readonly IDialogService _dialogService;
+        private readonly IKernel _kernel;
+        private readonly IMessageService _messageService;
         private readonly ISettingsService _settingsService;
         private readonly IUpdateService _updateService;
-        private readonly IMessageService _messageService;
-        private List<Tuple<string, double>> _renderScales;
-        private List<int> _sampleSizes;
-        private List<Tuple<string, int>> _targetFrameRates;
-        private readonly PluginSetting<LayerBrushReference> _defaultLayerBrushDescriptor;
+        private readonly IWindowManager _windowManager;
         private bool _canOfferUpdatesIfFound = true;
+        private List<Tuple<string, double>> _renderScales;
+        private List<Tuple<string, int>> _targetFrameRates;
 
         public GeneralSettingsTabViewModel(
             IKernel kernel,
@@ -67,9 +63,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             TargetFrameRates = new List<Tuple<string, int>>();
             for (int i = 10; i <= 30; i += 5)
                 TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
-
-            // Anything else is kinda broken right now
-            SampleSizes = new List<int> {1, 9};
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
 
@@ -109,12 +102,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         {
             get => _renderScales;
             set => SetAndNotify(ref _renderScales, value);
-        }
-
-        public List<int> SampleSizes
-        {
-            get => _sampleSizes;
-            set => SetAndNotify(ref _sampleSizes, value);
         }
 
         public bool StartWithWindows
@@ -239,16 +226,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
 
-        public int SampleSize
-        {
-            get => _settingsService.GetSetting("Core.SampleSize", 1).Value;
-            set
-            {
-                _settingsService.GetSetting("Core.SampleSize", 1).Value = value;
-                _settingsService.GetSetting("Core.SampleSize", 1).Save();
-            }
-        }
-
         public PluginSetting<int> WebServerPortSetting { get; }
 
         public bool CanOfferUpdatesIfFound
@@ -320,7 +297,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 File.Delete(autoRunFile);
 
             // TODO: Don't do anything if running a development build, only auto-run release builds
-            
+
             // Create or remove the task if necessary
             try
             {
@@ -363,13 +340,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Date")
                 .SetValue(DateTime.Now);
             task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Author")
-                .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+                .SetValue(WindowsIdentity.GetCurrent().Name);
 
             task.Descendants().First(d => d.Name.LocalName == "Triggers").Descendants().First(d => d.Name.LocalName == "LogonTrigger").Descendants().First(d => d.Name.LocalName == "Delay")
                 .SetValue(TimeSpan.FromSeconds(AutoRunDelay));
 
             task.Descendants().First(d => d.Name.LocalName == "Principals").Descendants().First(d => d.Name.LocalName == "Principal").Descendants().First(d => d.Name.LocalName == "UserId")
-                .SetValue(System.Security.Principal.WindowsIdentity.GetCurrent().User.Value);
+                .SetValue(WindowsIdentity.GetCurrent().User.Value);
 
             task.Descendants().First(d => d.Name.LocalName == "Actions").Descendants().First(d => d.Name.LocalName == "Exec").Descendants().First(d => d.Name.LocalName == "WorkingDirectory")
                 .SetValue(Constants.ApplicationFolder);

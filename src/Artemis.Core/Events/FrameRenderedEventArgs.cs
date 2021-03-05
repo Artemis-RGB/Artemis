@@ -8,16 +8,16 @@ namespace Artemis.Core
     /// </summary>
     public class FrameRenderedEventArgs : EventArgs
     {
-        internal FrameRenderedEventArgs(BitmapBrush bitmapBrush, RGBSurface rgbSurface)
+        internal FrameRenderedEventArgs(SKTexture texture, RGBSurface rgbSurface)
         {
-            BitmapBrush = bitmapBrush;
+            Texture = texture;
             RgbSurface = rgbSurface;
         }
 
         /// <summary>
-        ///     Gets the bitmap brush used to render this frame
+        ///     Gets the texture used to render this frame
         /// </summary>
-        public BitmapBrush BitmapBrush { get; }
+        public SKTexture Texture { get; }
 
         /// <summary>
         ///     Gets the RGB surface used to render this frame

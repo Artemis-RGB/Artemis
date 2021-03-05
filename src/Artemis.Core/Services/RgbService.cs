@@ -7,8 +7,8 @@ using Artemis.Core.Services.Models;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using Serilog;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -24,9 +24,7 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IDeviceRepository _deviceRepository;
-        private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private readonly PluginSetting<int> _sampleSizeSetting;
         private ListLedGroup? _surfaceLedGroup;
         private bool _modifyingProviders;
 
@@ -35,21 +33,19 @@ namespace Artemis.Core.Services
             _logger = logger;
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
-            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            _sampleSizeSetting = settingsService.GetSetting("Core.SampleSize", 1);
 
             Surface = new RGBSurface();
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
-            _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
+            Surface.SurfaceLayoutChanged += SurfaceOnLayoutChanged;
             _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
             _enabledDevices = new List<ArtemisDevice>();
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
 
-            UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
+            UpdateTrigger = new TimerUpdateTrigger { UpdateFrequency = 1.0 / _targetFrameRateSetting.Value };
             Surface.RegisterUpdateTrigger(UpdateTrigger);
         }
 
@@ -61,7 +57,8 @@ namespace Artemis.Core.Services
         public RGBSurface Surface { get; set; }
 
         public TimerUpdateTrigger UpdateTrigger { get; }
-        public BitmapBrush? BitmapBrush { get; private set; }
+        public TextureBrush TextureBrush { get; private set; } = new(ITexture.Empty) { CalculationMode = RenderMode.Absolute };
+        public SKTexture? Texture { get; private set; }
 
         public bool IsRenderPaused { get; set; }
 
@@ -104,7 +101,7 @@ namespace Artemis.Core.Services
                 finally
                 {
                     _modifyingProviders = false;
-                    UpdateBitmapBrush();
+                    UpdateLedGroup();
                 }
             }
         }
@@ -132,12 +129,23 @@ namespace Artemis.Core.Services
                 finally
                 {
                     _modifyingProviders = false;
-                    UpdateBitmapBrush();
+                    UpdateLedGroup();
                 }
             }
         }
 
-        private void UpdateBitmapBrush()
+        public void UpdateTexture(SKBitmap bitmap)
+        {
+            SKTexture? oldTexture = Texture;
+            Texture = new SKTexture(bitmap);
+            TextureBrush.Texture = Texture;
+
+            oldTexture?.Dispose();
+        }
+
+        private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args) => UpdateLedGroup();
+
+        private void UpdateLedGroup()
         {
             lock (_devices)
             {
@@ -146,11 +154,9 @@ namespace Artemis.Core.Services
 
                 _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
 
-                if (_surfaceLedGroup == null || BitmapBrush == null)
+                if (_surfaceLedGroup == null)
                 {
-                    // Apply the application wide brush and decorator
-                    BitmapBrush = new BitmapBrush(new Scale(_renderScaleSetting.Value), _sampleSizeSetting, this);
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = TextureBrush };
                     OnLedsChanged();
                     return;
                 }
@@ -158,11 +164,10 @@ namespace Artemis.Core.Services
                 lock (_surfaceLedGroup)
                 {
                     // Clean up the old background
-                    _surfaceLedGroup.Detach(Surface);
+                    _surfaceLedGroup.Detach();
 
                     // Apply the application wide brush and decorator
-                    BitmapBrush.Scale = new Scale(_renderScaleSetting.Value);
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = BitmapBrush};
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = TextureBrush };
                     OnLedsChanged();
                 }
             }
@@ -234,10 +239,8 @@ namespace Artemis.Core.Services
         public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds)
         {
             device.ApplyLayout(layout, createMissingLeds, removeExessiveLeds);
-            // Applying layouts can affect LEDs, update LED group
-            UpdateBitmapBrush();
         }
-            
+
         public ArtemisDevice? GetDevice(IRGBDevice rgbDevice)
         {
             return _devices.FirstOrDefault(d => d.RgbDevice == rgbDevice);
@@ -259,7 +262,6 @@ namespace Artemis.Core.Services
             device.ApplyToEntity();
             _deviceRepository.Save(device.DeviceEntity);
 
-            UpdateBitmapBrush();
             OnDeviceAdded(new DeviceEventArgs(device));
         }
 
@@ -273,7 +275,6 @@ namespace Artemis.Core.Services
             device.ApplyToEntity();
             _deviceRepository.Save(device.DeviceEntity);
 
-            UpdateBitmapBrush();
             OnDeviceRemoved(new DeviceEventArgs(device));
         }
 
@@ -298,7 +299,6 @@ namespace Artemis.Core.Services
             if (device.IsEnabled)
                 _enabledDevices.Remove(device);
 
-            UpdateBitmapBrush();
             OnDeviceRemoved(new DeviceEventArgs(device));
         }
 
@@ -348,12 +348,6 @@ namespace Artemis.Core.Services
         #endregion
 
         #region Event handlers
-
-        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            // The surface hasn't changed so we can safely reuse it
-            UpdateBitmapBrush();
-        }
 
         private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
         {

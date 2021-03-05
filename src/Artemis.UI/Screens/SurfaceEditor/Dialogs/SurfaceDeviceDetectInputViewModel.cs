@@ -4,9 +4,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
-using RGB.NET.Brushes;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 
 namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
 {
@@ -45,7 +43,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         {
             base.OnDialogClosed(sender, e);
             _inputService.DeviceIdentified -= InputServiceOnDeviceIdentified;
-            _ledGroup.Detach(_rgbService.Surface);
+            _ledGroup.Detach();
         }
 
         private void InputServiceOnDeviceIdentified(object sender, EventArgs e)

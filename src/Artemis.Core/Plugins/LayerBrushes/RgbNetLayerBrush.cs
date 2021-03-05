@@ -4,7 +4,6 @@ using System.Linq;
 using Artemis.Core.Services;
 using Ninject;
 using RGB.NET.Core;
-using RGB.NET.Groups;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
@@ -50,7 +49,7 @@ namespace Artemis.Core.LayerBrushes
                 LedGroup.ZIndex = 1;
             
             List<Led> missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
-            List<Led> extraLeds = LedGroup.GetLeds().Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
+            List<Led> extraLeds = LedGroup.Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
             LedGroup.AddLeds(missingLeds);
             LedGroup.RemoveLeds(extraLeds);
             LedGroup.Brush = GetBrush();
@@ -79,7 +78,7 @@ namespace Artemis.Core.LayerBrushes
                     throw new ArtemisCoreException("Cannot dispose RGB.NET layer brush because RgbService is not set");
 
                 Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-                LedGroup?.Detach(RgbService.Surface);
+                LedGroup?.Detach();
                 LedGroup = null;
             }
 

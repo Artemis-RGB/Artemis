@@ -106,7 +106,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the X-position of the device
         /// </summary>
-        public double X
+        public float X
         {
             get => DeviceEntity.X;
             set
@@ -119,7 +119,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the Y-position of the device
         /// </summary>
-        public double Y
+        public float Y
         {
             get => DeviceEntity.Y;
             set
@@ -132,7 +132,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the rotation of the device
         /// </summary>
-        public double Rotation
+        public float Rotation
         {
             get => DeviceEntity.Rotation;
             set
@@ -145,7 +145,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the scale of the device
         /// </summary>
-        public double Scale
+        public float Scale
         {
             get => DeviceEntity.Scale;
             set
@@ -171,7 +171,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the scale of the red color component used for calibration
         /// </summary>
-        public double RedScale
+        public float RedScale
         {
             get => DeviceEntity.RedScale;
             set
@@ -184,7 +184,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the scale of the green color component used for calibration
         /// </summary>
-        public double GreenScale
+        public float GreenScale
         {
             get => DeviceEntity.GreenScale;
             set
@@ -197,7 +197,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the scale of the blue color component used for calibration
         /// </summary>
-        public double BlueScale
+        public float BlueScale
         {
             get => DeviceEntity.BlueScale;
             set
@@ -340,18 +340,20 @@ namespace Artemis.Core
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
+            {
                 DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
                 {
                     InputProvider = identifier.InputProvider,
                     Identifier = identifier.Identifier
                 });
+            }
         }
 
         internal void ApplyToRgbDevice()
         {
             RgbDevice.Rotation = DeviceEntity.Rotation;
             RgbDevice.Scale = DeviceEntity.Scale;
-
+            
             // Workaround for device rotation not applying
             if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
                 RgbDevice.Location = new Point(1, 1);
@@ -360,6 +362,9 @@ namespace Artemis.Core
             InputIdentifiers.Clear();
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
+
+            if (!RgbDevice.ColorCorrections.Any())
+                RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
 
             CalculateRenderProperties();
             OnDeviceUpdated();
