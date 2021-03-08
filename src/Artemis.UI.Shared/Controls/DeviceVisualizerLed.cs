@@ -48,7 +48,7 @@ namespace Artemis.UI.Shared
             byte g = Led.RgbLed.Color.GetG();
             byte b = Led.RgbLed.Color.GetB();
 
-            _renderColor.A = isDimmed ? 100 : 255;
+            _renderColor.A = (byte)(isDimmed ? 100 : 255);
             _renderColor.R = r;
             _renderColor.G = g;
             _renderColor.B = b;
