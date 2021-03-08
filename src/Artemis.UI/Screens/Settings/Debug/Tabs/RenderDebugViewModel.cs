@@ -52,22 +52,22 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             Execute.PostToUIThread(() =>
             {
-                if (e.BitmapBrush?.Bitmap == null || e.BitmapBrush.Bitmap.Pixels.Length == 0)
+                if (e.Texture.Bitmap.Pixels.Length == 0)
                     return;
 
-                SKImageInfo bitmapInfo = e.BitmapBrush.Bitmap.Info;
+                SKImageInfo bitmapInfo = e.Texture.Bitmap.Info;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap) || 
                     writeableBitmap.Width != bitmapInfo.Width || 
                     writeableBitmap.Height != bitmapInfo.Height)
                 {
-                    CurrentFrame = e.BitmapBrush.Bitmap.ToWriteableBitmap();
+                    CurrentFrame = e.Texture.Bitmap.ToWriteableBitmap();
                     return;
                 }
 
                 try
                 {
-                    using (SKImage skiaImage = SKImage.FromPixels(e.BitmapBrush.Bitmap.PeekPixels()))
+                    using (SKImage skiaImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels()))
                     {
                         SKImageInfo info = new(skiaImage.Width, skiaImage.Height);
                         writeableBitmap.Lock();
