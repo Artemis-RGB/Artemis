@@ -1,0 +1,187 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Settings.Device.DeviceLayoutDialogView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Device"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:mde="https://spiegelp.github.io/MaterialDesignExtensions/winfx/xaml"
+             mc:Ignorable="d"
+             d:DesignHeight="1200" d:DesignWidth="1200"
+             d:DataContext="{d:DesignInstance local:DeviceLayoutDialogViewModel}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Margin="16" Width="1200" Height="800" Visibility="{Binding SelectPhysicalLayout, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" Margin="0 0 0 20">
+                    Select a physical layout
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextWrapping="Wrap">
+                    Artemis couldn't automatically determine the physical layout of your <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName, Mode=OneWay}" />.  <LineBreak />
+                    In order for Artemis to know which keys are on your keyboard and where they're located, select the matching layout below.
+                    <LineBreak />
+                    <LineBreak />
+                    P.S. Don't worry about missing special keys like num keys/function keys or macro keys, they aren't important here.
+                </TextBlock>
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" Margin="0 25">
+                <WrapPanel HorizontalAlignment="Center">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{s:Action ApplyPhysicalLayout}"
+                            CommandParameter="ISO"
+                            HorizontalAlignment="Right"
+                            Margin="0 0 10 0"
+                            Width="550"
+                            Height="280">
+                        <StackPanel>
+                            <Image Source="/Resources/Images/PhysicalLayouts/iso.png" />
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 10 0 0">
+                                ISO
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap">
+                                Most commonly used in the EU (tall enter)
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{s:Action ApplyPhysicalLayout}"
+                            CommandParameter="ANSI"
+                            HorizontalAlignment="Right"
+                            Margin="0 0 10 0"
+                            Width="550"
+                            Height="280">
+                        <StackPanel>
+                            <Image Source="/Resources/Images/PhysicalLayouts/ansi.png" />
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 10 0 0">
+                                ANSI
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap">
+                                Most commonly used in the US (short enter)
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{s:Action ApplyPhysicalLayout}"
+                            CommandParameter="ABNT"
+                            HorizontalAlignment="Right"
+                            Margin="0 0 10 0"
+                            Width="550"
+                            Height="280">
+                        <StackPanel>
+                            <Image Source="/Resources/Images/PhysicalLayouts/abnt.png" />
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 10 0 0">
+                                ABNT
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap">
+                                Most commonly used in Brazil/Portugal (based on ISO)
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{s:Action ApplyPhysicalLayout}"
+                            CommandParameter="KS"
+                            HorizontalAlignment="Right"
+                            Margin="0 0 10 0"
+                            Width="550"
+                            Height="280">
+                        <StackPanel>
+                            <Image Source="/Resources/Images/PhysicalLayouts/ks.png" />
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 10 0 0">
+                                KS
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap">
+                                Most commonly used in South Korea
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Foreground="{DynamicResource MaterialDesignBody}"
+                            Command="{s:Action ApplyPhysicalLayout}"
+                            CommandParameter="JIS"
+                            HorizontalAlignment="Right"
+                            Margin="0 0 10 0"
+                            Width="550"
+                            Height="280">
+                        <StackPanel>
+                            <Image Source="/Resources/Images/PhysicalLayouts/jis.png" />
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 10 0 0">
+                                JIS
+                            </TextBlock>
+                            <TextBlock TextAlignment="Center" Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap">
+                                Most commonly used in Japan (based on ISO)
+                            </TextBlock>
+                        </StackPanel>
+                    </Button>
+
+                </WrapPanel>
+            </ScrollViewer>
+        </Grid>
+
+        <StackPanel Grid.Row="0" Margin="16" Width="800" Visibility="{Binding SelectPhysicalLayout, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}}">
+            <StackPanel>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" Margin="0 0 0 20">
+                    Select a logical layout
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                           TextWrapping="Wrap">
+                    Artemis couldn't automatically determine the logical layout of your <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceName, Mode=OneWay}" />.  <LineBreak /><LineBreak />
+                    While not as important as the physical layout, setting the correct logical layout will allow Artemis to show the right keycaps (if a matching layout file is present)
+                </TextBlock>
+            </StackPanel>
+
+            <mde:Autocomplete Style="{StaticResource MaterialDesignAutocomplete}"
+                              AutocompleteSource="{Binding Path=AutocompleteSource}"
+                              SearchOnInitialFocus="True"
+                              SelectedItem="{Binding SelectedRegion, Mode=TwoWay}"
+                              Hint="Select a logical layout"
+                              Margin="0,16,0,0"
+                              FontSize="15"
+                              Foreground="{DynamicResource MaterialDesignBody}"
+                              Background="{DynamicResource MaterialDesignPaper}">
+                <mde:Autocomplete.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock FontSize="14" VerticalAlignment="Center">
+                            <Run Text="{Binding EnglishName, Mode=OneWay}" />
+                            (<Run FontWeight="SemiBold" Text="{Binding TwoLetterISORegionName, Mode=OneWay}" />)
+                        </TextBlock>
+                    </DataTemplate>
+                </mde:Autocomplete.ItemTemplate>
+            </mde:Autocomplete>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="16">
+            <Button Style="{StaticResource MaterialDesignFlatButton}"
+                    Focusable="False"
+                    IsCancel="True"
+                    Command="{s:Action Cancel}"
+                    Content="CANCEL" />
+            <Button x:Name="ConfirmButton"
+                    Style="{StaticResource MaterialDesignFlatButton}"
+                    IsDefault="True"
+                    Focusable="True"
+                    Command="{s:Action Confirm}"
+                    Content="CONFIRM" />
+        </StackPanel>
+    </Grid>
+
+</UserControl>

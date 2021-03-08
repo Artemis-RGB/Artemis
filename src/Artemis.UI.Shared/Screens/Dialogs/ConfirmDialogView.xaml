@@ -17,7 +17,7 @@
                    Text="{Binding Text}" 
                    TextWrapping="Wrap" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="16">
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Focusable="False"
                     IsCancel="True"
