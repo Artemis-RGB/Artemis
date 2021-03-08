@@ -84,7 +84,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
 
         public void ViewProperties()
         {
-            _windowManager.ShowDialog(_deviceDebugVmFactory.DeviceDialogViewModel(Device));
+            _windowManager.ShowWindow(_deviceDebugVmFactory.DeviceDialogViewModel(Device));
         }
         private async Task UpdateIsDeviceEnabled(bool value)
         {

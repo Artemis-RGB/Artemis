@@ -306,7 +306,7 @@ namespace Artemis.Core
         {
             // Take out invalid file name chars, may not be perfect but neither are you
             string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
-            if (RgbDevice is IKeyboard)
+            if (RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
                 fileName = $"{fileName}-{PhysicalLayout.ToString().ToUpper()}";
             if (includeExtension)
                 fileName = $"{fileName}.xml";
@@ -388,9 +388,10 @@ namespace Artemis.Core
 
         private void ApplyKeyboardLayout()
         {
-            if (!(RgbDevice is IKeyboard keyboard))
+            if (RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard)
                 return;
 
+            IKeyboard keyboard = (IKeyboard) RgbDevice;
             // If supported, detect the device layout so that we can load the correct one
             if (DeviceProvider.CanDetectLogicalLayout)
                 LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);

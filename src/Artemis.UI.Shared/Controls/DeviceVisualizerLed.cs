@@ -12,9 +12,12 @@ namespace Artemis.UI.Shared
 {
     internal class DeviceVisualizerLed
     {
+        private const byte Dimmed = 100;
+        private const byte NonDimmed = 255;
+
         private SolidColorBrush? _renderColorBrush;
         private Color _renderColor;
-
+        
         public DeviceVisualizerLed(ArtemisLed led)
         {
             Led = led;
@@ -49,6 +52,7 @@ namespace Artemis.UI.Shared
             byte b = Led.RgbLed.Color.GetB();
 
             _renderColor.A = (byte)(isDimmed ? 100 : 255);
+            _renderColor.A = isDimmed ? Dimmed : NonDimmed;
             _renderColor.R = r;
             _renderColor.G = g;
             _renderColor.B = b;
