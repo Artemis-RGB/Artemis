@@ -52,11 +52,11 @@ namespace Artemis.Core.Services.Models
                     if (stackVertically)
                     {
                         artemisDevice.X = previous.X;
-                        artemisDevice.Y = previous.RgbDevice.Location.Y + previous.RgbDevice.Size.Height + MarginTop / 2.0;
+                        artemisDevice.Y = previous.RgbDevice.Location.Y + previous.RgbDevice.Size.Height + MarginTop / 2f;
                     }
                     else
                     {
-                        artemisDevice.X = previous.RgbDevice.Location.X + previous.RgbDevice.Size.Width + MarginLeft / 2.0;
+                        artemisDevice.X = previous.RgbDevice.Location.X + previous.RgbDevice.Size.Width + MarginLeft / 2f;
                         artemisDevice.Y = previous.Y;
                     }
                 }
@@ -66,7 +66,7 @@ namespace Artemis.Core.Services.Models
                     {
                         HorizontalArrangementPosition.Left => startPoint.X - artemisDevice.RgbDevice.Size.Width - MarginRight,
                         HorizontalArrangementPosition.Right => startPoint.X + MarginLeft,
-                        HorizontalArrangementPosition.Center => startPoint.X - artemisDevice.RgbDevice.Size.Width / 2,
+                        HorizontalArrangementPosition.Center => startPoint.X - artemisDevice.RgbDevice.Size.Width / 2f,
                         HorizontalArrangementPosition.Equal => startPoint.X,
                         _ => artemisDevice.X
                     };
@@ -74,7 +74,7 @@ namespace Artemis.Core.Services.Models
                     {
                         VerticalArrangementPosition.Top => startPoint.Y - artemisDevice.RgbDevice.Size.Height - MarginBottom,
                         VerticalArrangementPosition.Bottom => startPoint.Y + MarginTop,
-                        VerticalArrangementPosition.Center => startPoint.Y - artemisDevice.RgbDevice.Size.Height / 2,
+                        VerticalArrangementPosition.Center => startPoint.Y - artemisDevice.RgbDevice.Size.Height / 2f,
                         VerticalArrangementPosition.Equal => startPoint.Y,
                         _ => artemisDevice.X
                     };

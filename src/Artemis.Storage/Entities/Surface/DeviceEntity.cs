@@ -10,14 +10,14 @@ namespace Artemis.Storage.Entities.Surface
         }
         
         public string Id { get; set; }
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Rotation { get; set; }
-        public double Scale { get; set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Rotation { get; set; }
+        public float Scale { get; set; }
         public int ZIndex { get; set; }
-        public double RedScale { get; set; }
-        public double GreenScale { get; set; }
-        public double BlueScale { get; set; }
+        public float RedScale { get; set; }
+        public float GreenScale { get; set; }
+        public float BlueScale { get; set; }
         public bool IsEnabled { get; set; }
 
         public int PhysicalLayout { get; set; }

@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Ninject;
-using Artemis.Core.Services.Core;
 using Artemis.Storage;
 using HidSharp;
-using Newtonsoft.Json;
 using Ninject;
 using RGB.NET.Core;
 using Serilog;
@@ -38,6 +35,8 @@ namespace Artemis.Core.Services
         private List<BaseDataModelExpansion> _dataModelExpansions = new();
         private DateTime _lastExceptionLog;
         private List<Module> _modules = new();
+        private SKBitmap? _bitmap;
+        private readonly object _bitmapLock = new();
 
         // ReSharper disable UnusedParameter.Local
         public CoreService(IKernel kernel,
@@ -66,11 +65,14 @@ namespace Artemis.Core.Services
 
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _rgbService.Surface.Updated += SurfaceOnUpdated;
+            _rgbService.Surface.SurfaceLayoutChanged += SurfaceOnSurfaceLayoutChanged;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
+            _renderScale.SettingChanged += RenderScaleSettingChanged;
 
             _pluginManagementService.PluginFeatureEnabled += (sender, args) => UpdatePluginCache();
             _pluginManagementService.PluginFeatureDisabled += (sender, args) => UpdatePluginCache();
         }
+
         // ReSharper restore UnusedParameter.Local
 
         public TimeSpan FrameTime { get; private set; }
@@ -169,8 +171,8 @@ namespace Artemis.Core.Services
                 string[] parts = argument.Split('=');
                 if (parts.Length == 2 && Enum.TryParse(typeof(LogEventLevel), parts[1], true, out object? logLevelArgument))
                 {
-                    _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel) logLevelArgument!);
-                    LoggerProvider.LoggingLevelSwitch.MinimumLevel = (LogEventLevel) logLevelArgument;
+                    _logger.Information("Setting logging level to {loggingLevel} from startup argument", (LogEventLevel)logLevelArgument!);
+                    LoggerProvider.LoggingLevelSwitch.MinimumLevel = (LogEventLevel)logLevelArgument;
                 }
                 else
                 {
@@ -214,23 +216,22 @@ namespace Artemis.Core.Services
                 foreach (Module module in modules)
                     module.InternalUpdate(args.DeltaTime);
 
-                // If there is no ready bitmap brush, skip the frame
-                if (_rgbService.BitmapBrush == null)
-                    return;
-
-                lock (_rgbService.BitmapBrush)
+                lock (_bitmapLock)
                 {
-                    if (_rgbService.BitmapBrush.Bitmap == null)
-                        return;
+                    if (_bitmap == null)
+                    {
+                        _bitmap = CreateBitmap();
+                        _rgbService.UpdateTexture(_bitmap);
+                    }
 
                     // Render all active modules
-                    using SKCanvas canvas = new(_rgbService.BitmapBrush.Bitmap);
-                    canvas.Scale((float) _renderScale.Value);
+                    using SKCanvas canvas = new(_bitmap);
+                    canvas.Scale((float)_renderScale.Value);
                     canvas.Clear(new SKColor(0, 0, 0));
                     if (!ModuleRenderingDisabled)
                         // While non-activated modules may be updated above if they expand the main data model, they may never render
                         foreach (Module module in modules.Where(m => m.IsActivated))
-                            module.InternalRender(args.DeltaTime, canvas, _rgbService.BitmapBrush.Bitmap.Info);
+                            module.InternalRender(args.DeltaTime, canvas, _bitmap.Info);
 
                     OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
                 }
@@ -247,6 +248,24 @@ namespace Artemis.Core.Services
                 LogUpdateExceptions();
             }
         }
+
+        private SKBitmap CreateBitmap()
+        {
+            float width = MathF.Min(_rgbService.Surface.Boundary.Size.Width * (float)_renderScale.Value, 4096);
+            float height = MathF.Min(_rgbService.Surface.Boundary.Size.Height * (float)_renderScale.Value, 4096);
+            return new SKBitmap(new SKImageInfo(width.RoundToInt(), height.RoundToInt(), SKColorType.Rgb888x));
+        }
+
+        private void InvalidateBitmap()
+        {
+            lock (_bitmapLock)
+            {
+                _bitmap = null;
+            }
+        }
+
+        private void SurfaceOnSurfaceLayoutChanged(SurfaceLayoutChangedEventArgs args) => InvalidateBitmap();
+        private void RenderScaleSettingChanged(object? sender, EventArgs e) => InvalidateBitmap();
 
         private void LogUpdateExceptions()
         {
@@ -271,7 +290,7 @@ namespace Artemis.Core.Services
             if (_rgbService.IsRenderPaused)
                 return;
 
-            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.BitmapBrush!, _rgbService.Surface));
+            OnFrameRendered(new FrameRenderedEventArgs(_rgbService.Texture!, _rgbService.Surface));
         }
 
         #region Events
