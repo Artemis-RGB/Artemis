@@ -30,6 +30,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0"
@@ -115,9 +116,9 @@
                             <materialDesign:PackIcon Kind="Equal" />
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Add event condition" 
+                    <MenuItem Header="Add event condition"
                               ToolTip="An event condition that responds to data model events"
-                              Command="{s:Action AddEventCondition}" 
+                              Command="{s:Action AddEventCondition}"
                               Visibility="{Binding Data.CanAddEventCondition, Source={StaticResource DataContextProxy}, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="LightningBolt" />
@@ -133,7 +134,27 @@
             <materialDesign:PackIcon Kind="Add" Width="18" Height="18" />
         </Button>
 
-        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" ItemsSource="{Binding Items, IsAsync=True}" Margin="0 3 0 0">
+        <ToggleButton Grid.Row="0"
+                      Grid.Column="3"
+                      Style="{StaticResource MaterialDesignActionToggleButton}"
+                      Focusable="False"
+                      IsHitTestVisible="False"
+                      IsChecked="{Binding IsConditionMet}"
+                      Visibility="{Binding DisplayEvaluationResult, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                      Width="22"
+                      Height="22"
+                      HorizontalAlignment="Left">
+            <ToggleButton.Content>
+                <Border Background="#E74C4C" Width="22" Height="22">
+                    <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16"/>
+                </Border>
+            </ToggleButton.Content>
+            <materialDesign:ToggleButtonAssist.OnContent>
+                <materialDesign:PackIcon Kind="Check" Width="16" Height="16"/>
+            </materialDesign:ToggleButtonAssist.OnContent>
+        </ToggleButton>
+
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Items, IsAsync=True}" Margin="0 3 0 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />

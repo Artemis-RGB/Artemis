@@ -42,5 +42,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             return LeftSideSelectionViewModel.DataModelPath?.GetPropertyType();
         }
+
+        public override void Evaluate()
+        {
+            IsConditionMet = DataModelConditionPredicate.Evaluate();
+        }
     }
 }

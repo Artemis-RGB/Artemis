@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
@@ -12,15 +13,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
+        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
         private bool _isEventCondition;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory, ICoreService coreService)
         {
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
+            _coreService = coreService;
         }
 
         public bool DisplayStartHint
@@ -87,12 +90,14 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         protected override void OnInitialActivate()
         {
             _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
             base.OnClose();
         }
 
@@ -129,6 +134,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
             RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
+        }
+
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            ActiveItem?.Evaluate();
         }
 
         private void DisplayConditionOnChildrenModified(object sender, EventArgs e)

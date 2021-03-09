@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
@@ -55,6 +56,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             Update();
             _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public override void Evaluate()
+        {
+            IsConditionMet = DataModelConditionList.Evaluate();
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+                dataModelConditionViewModel.Evaluate();
         }
 
         public override void Delete()

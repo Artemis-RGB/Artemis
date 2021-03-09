@@ -65,12 +65,6 @@ namespace Artemis.Core
         /// </summary>
         public LayoutCustomDeviceData LayoutCustomDeviceData { get; private set; } = null!;
 
-        public void ReloadFromDisk()
-        {
-            Leds.Clear();
-            LoadLayout();
-        }
-
         internal void ApplyDevice(ArtemisDevice artemisDevice)
         {
             Device = artemisDevice;
