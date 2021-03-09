@@ -24,9 +24,19 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0 0 0 -4">
-            Display conditions
-        </TextBlock>
+        <DockPanel Grid.Row="0" Margin="0 -2">
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" VerticalAlignment="Center">
+                Display conditions
+            </TextBlock>
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle2TextBlock}"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Right"
+                       FontSize="13">
+                Not applied during editing
+            </TextBlock>
+        </DockPanel>
+
         <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
         <Grid Grid.Row="2" Grid.Column="0">
