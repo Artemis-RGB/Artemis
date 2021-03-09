@@ -24,12 +24,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             _settingsVmFactory = settingsVmFactory;
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(async () =>
             {
-                Items.Clear();
                 await Task.Delay(200);
 
                 List<DeviceSettingsViewModel> instances = _rgbService.Devices.Select(d => _settingsVmFactory.CreateDeviceSettingsViewModel(d)).ToList();
@@ -37,7 +36,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
                     Items.Add(deviceSettingsViewModel);
             });
 
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
         public async Task<bool> ShowDeviceDisableDialog()

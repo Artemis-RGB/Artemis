@@ -287,7 +287,7 @@ namespace Artemis.Core
             if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
             // Ensure the brush is ready
-            if (LayerBrush?.BaseProperties?.PropertiesInitialized == false)
+            if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
             RenderTimeline(Timeline, canvas);

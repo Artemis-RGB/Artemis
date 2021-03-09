@@ -353,7 +353,7 @@ namespace Artemis.Core
         {
             RgbDevice.Rotation = DeviceEntity.Rotation;
             RgbDevice.Scale = DeviceEntity.Scale;
-            
+
             // Workaround for device rotation not applying
             if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
                 RgbDevice.Location = new Point(1, 1);
@@ -391,12 +391,16 @@ namespace Artemis.Core
             if (RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard)
                 return;
 
-            IKeyboard keyboard = (IKeyboard) RgbDevice;
+            IKeyboard? keyboard = RgbDevice as IKeyboard;
             // If supported, detect the device layout so that we can load the correct one
-            if (DeviceProvider.CanDetectLogicalLayout)
-                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
-            if (DeviceProvider.CanDetectPhysicalLayout)
+            if (DeviceProvider.CanDetectPhysicalLayout && keyboard != null)
                 PhysicalLayout = (KeyboardLayoutType) keyboard.DeviceInfo.Layout;
+            else
+                PhysicalLayout = (KeyboardLayoutType) DeviceEntity.PhysicalLayout;
+            if (DeviceProvider.CanDetectLogicalLayout && keyboard != null)
+                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
+            else
+                LogicalLayout = DeviceEntity.LogicalLayout;
         }
 
         #region Events
