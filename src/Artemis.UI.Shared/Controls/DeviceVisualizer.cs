@@ -288,12 +288,12 @@ namespace Artemis.UI.Shared
 
         private void DeviceUpdated(object? sender, EventArgs e)
         {
-            SetupForDevice();
+            Execute.PostToUIThread(SetupForDevice);
         }
 
         private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            SetupForDevice();
+            Execute.PostToUIThread(SetupForDevice);
         }
         
         private void Render()
