@@ -9,13 +9,10 @@ namespace Artemis.Core.Services
 {
     public interface IProcessMonitorService : IArtemisService
     {
-        void AddProcessWatcher(ProcessWatcher provider);
-        void RemoveProcessWatcher(ProcessWatcher provider);
-
-        IEnumerable<string> GetRunningProcesses();
-
         event EventHandler<ProcessEventArgs> ProcessStarted;
 
         event EventHandler<ProcessEventArgs> ProcessStopped;
+
+        IEnumerable<string> GetRunningProcesses();
     }
 }

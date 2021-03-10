@@ -1,46 +1,52 @@
-﻿using System;
+﻿using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Timers;
 
 namespace Artemis.Core.Services
 {
     public class ProcessMonitorService : IProcessMonitorService
     {
-        private readonly List<ProcessWatcher> _watchers = new List<ProcessWatcher>();
+        private readonly ILogger _logger;
+        private readonly Timer _processScanTimer;
+        private IEnumerable<string> _lastScannedProcesses;
+
+        public ProcessMonitorService(ILogger logger)
+        {
+            _logger = logger;
+            _lastScannedProcesses = Process.GetProcesses().Select(p => p.ProcessName).Distinct().ToArray();
+            _processScanTimer = new Timer(1000);
+            _processScanTimer.Elapsed += OnTimerElapsed;
+            _processScanTimer.Start();
+        }
+
         public event EventHandler<ProcessEventArgs> ProcessStarted;
+
         public event EventHandler<ProcessEventArgs> ProcessStopped;
-
-        public void AddProcessWatcher(ProcessWatcher watcher)
-        {
-            watcher.ProcessStarted += ProviderOnProcessStarted;
-            watcher.ProcessStopped += ProviderOnProcessStopped;
-            _watchers.Add(watcher);
-        }
-
-        public void RemoveProcessWatcher(ProcessWatcher watcher)
-        {
-            if (!_watchers.Contains(watcher))
-                return;
-
-            _watchers.Remove(watcher);
-            watcher.ProcessStarted -= ProviderOnProcessStarted;
-            watcher.ProcessStopped -= ProviderOnProcessStopped;
-        }
 
         public IEnumerable<string> GetRunningProcesses()
         {
-            return _watchers.SelectMany(w => w.GetRunningProcesses());
+            return _lastScannedProcesses;
         }
 
-        private void ProviderOnProcessStopped(object? sender, ProcessEventArgs e)
+        private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            ProcessStopped?.Invoke(this, e);
-        }
+            var newProcesses = Process.GetProcesses().Select(p => p.ProcessName).Distinct();
+            foreach (var startedProcess in newProcesses.Except(_lastScannedProcesses))
+            {
+                ProcessStarted?.Invoke(this, new ProcessEventArgs(startedProcess));
+                _logger.Verbose("Started Process: {startedProcess}", startedProcess);
+            }
 
-        private void ProviderOnProcessStarted(object? sender, ProcessEventArgs e)
-        {
-            ProcessStarted?.Invoke(this, e);
+            foreach (var stoppedProcess in _lastScannedProcesses.Except(newProcesses))
+            {
+                ProcessStopped?.Invoke(this, new ProcessEventArgs(stoppedProcess));
+                _logger.Verbose("Stopped Process: {stoppedProcess}", stoppedProcess);
+            }
+
+            _lastScannedProcesses = newProcesses.ToArray();
         }
     }
 }
