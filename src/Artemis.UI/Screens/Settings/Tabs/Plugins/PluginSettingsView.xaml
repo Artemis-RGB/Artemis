@@ -116,21 +116,11 @@
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <TextBlock Margin="10 10 0 5" Style="{StaticResource MaterialDesignBody2TextBlock}">Plugin features</TextBlock>
-                    <TextBlock Grid.Row="1"
-                               HorizontalAlignment="Center"
-                               Margin="0 30 0 0"
-                               Style="{StaticResource MaterialDesignTextBlock}"
-                               Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
-                               Visibility="{Binding IsEnabled, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-                        Enable the plugin to view its features
-                    </TextBlock>
-
                     <ListBox Grid.Row="1"
                              MaxHeight="135"
                              ItemsSource="{Binding Items}"
                              HorizontalContentAlignment="Stretch"
-                             VirtualizingPanel.ScrollUnit="Pixel"
-                             Visibility="{Binding IsEnabled, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                             VirtualizingPanel.ScrollUnit="Pixel">
                         <b:Interaction.Behaviors>
                             <shared:ScrollParentWhenAtMax />
                         </b:Interaction.Behaviors>

@@ -16,7 +16,7 @@ namespace Artemis.Core
     /// </summary>
     public class Plugin : CorePropertyChanged, IDisposable
     {
-        private readonly List<PluginFeature> _features;
+        private readonly List<PluginFeatureInfo> _features;
 
         private bool _isEnabled;
 
@@ -26,7 +26,7 @@ namespace Artemis.Core
             Directory = directory;
             Entity = pluginEntity ?? new PluginEntity {Id = Guid, IsEnabled = true};
 
-            _features = new List<PluginFeature>();
+            _features = new List<PluginFeatureInfo>();
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read-only collection of all features this plugin provides
         /// </summary>
-        public ReadOnlyCollection<PluginFeature> Features => _features.AsReadOnly();
+        public ReadOnlyCollection<PluginFeatureInfo> Features => _features.AsReadOnly();
 
         /// <summary>
         ///     The assembly the plugin code lives in
@@ -107,7 +107,7 @@ namespace Artemis.Core
         /// <returns>If found, the instance of the feature</returns>
         public T? GetFeature<T>() where T : PluginFeature
         {
-            return _features.FirstOrDefault(i => i is T) as T;
+            return _features.FirstOrDefault(i => i.Instance is T) as T;
         }
 
         /// <inheritdoc />
@@ -122,31 +122,32 @@ namespace Artemis.Core
             Entity.IsEnabled = IsEnabled;
         }
 
-        internal void AddFeature(PluginFeature feature)
+        internal void AddFeature(PluginFeatureInfo featureInfo)
         {
-            feature.Plugin = this;
-            _features.Add(feature);
+            if (featureInfo.Plugin != this)
+                throw new ArtemisCoreException("Feature is not associated with this plugin");
+            _features.Add(featureInfo);
 
-            OnFeatureAdded(new PluginFeatureEventArgs(feature));
+            OnFeatureAdded(new PluginFeatureInfoEventArgs(featureInfo));
         }
 
-        internal void RemoveFeature(PluginFeature feature)
+        internal void RemoveFeature(PluginFeatureInfo featureInfo)
         {
-            if (feature.IsEnabled)
+            if (featureInfo.Instance != null && featureInfo.Instance.IsEnabled)
                 throw new ArtemisCoreException("Cannot remove an enabled feature from a plugin");
-            
-            _features.Remove(feature);
-            feature.Dispose();
 
-            OnFeatureRemoved(new PluginFeatureEventArgs(feature));
+            _features.Remove(featureInfo);
+            featureInfo.Instance?.Dispose();
+
+            OnFeatureRemoved(new PluginFeatureInfoEventArgs(featureInfo));
         }
-        
+
         internal void SetEnabled(bool enable)
         {
             if (IsEnabled == enable)
                 return;
 
-            if (!enable && Features.Any(e => e.IsEnabled))
+            if (!enable && Features.Any(e => e.Instance != null && e.Instance.IsEnabled))
                 throw new ArtemisCoreException("Cannot disable this plugin because it still has enabled features");
 
             IsEnabled = enable;
@@ -176,8 +177,8 @@ namespace Artemis.Core
         {
             if (disposing)
             {
-                foreach (PluginFeature feature in Features)
-                    feature.Dispose();
+                foreach (PluginFeatureInfo feature in Features)
+                    feature.Instance?.Dispose();
                 SetEnabled(false);
 
                 Kernel?.Dispose();
@@ -189,7 +190,7 @@ namespace Artemis.Core
                 _features.Clear();
             }
         }
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -198,7 +199,7 @@ namespace Artemis.Core
         }
 
         #endregion
-        
+
         #region Events
 
         /// <summary>
@@ -214,12 +215,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Occurs when an feature is loaded and added to the plugin
         /// </summary>
-        public event EventHandler<PluginFeatureEventArgs>? FeatureAdded;
+        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureAdded;
 
         /// <summary>
         ///     Occurs when an feature is disabled and removed from the plugin
         /// </summary>
-        public event EventHandler<PluginFeatureEventArgs>? FeatureRemoved;
+        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureRemoved;
 
         /// <summary>
         ///     Invokes the Enabled event
@@ -240,7 +241,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Invokes the FeatureAdded event
         /// </summary>
-        protected virtual void OnFeatureAdded(PluginFeatureEventArgs e)
+        protected virtual void OnFeatureAdded(PluginFeatureInfoEventArgs e)
         {
             FeatureAdded?.Invoke(this, e);
         }
@@ -248,7 +249,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Invokes the FeatureRemoved event
         /// </summary>
-        protected virtual void OnFeatureRemoved(PluginFeatureEventArgs e)
+        protected virtual void OnFeatureRemoved(PluginFeatureInfoEventArgs e)
         {
             FeatureRemoved?.Invoke(this, e);
         }

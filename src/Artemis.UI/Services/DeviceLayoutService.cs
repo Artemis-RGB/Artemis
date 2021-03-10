@@ -59,7 +59,7 @@ namespace Artemis.UI.Services
 
         #region Event handlers
 
-        private async void WindowServiceOnMainWindowOpened(object? sender, EventArgs e)
+        private async void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
         {
             List<ArtemisDevice> devices = _rgbService.Devices.Where(device => DeviceNeedsLayout(device) && !_ignoredDevices.Contains(device)).ToList();
             foreach (ArtemisDevice artemisDevice in devices)

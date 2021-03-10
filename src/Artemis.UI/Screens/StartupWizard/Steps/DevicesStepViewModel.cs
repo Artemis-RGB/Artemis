@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
@@ -27,9 +28,8 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             Items.Clear();
 
             // _pluginManagementService.GetFeaturesOfType<>() will only give us enabled features so lets get all of them this way
-            IEnumerable<DeviceProvider> features = _pluginManagementService.GetAllPlugins()
-                .SelectMany(p => p.Features.Where(f => f is DeviceProvider))
-                .Cast<DeviceProvider>()
+            IEnumerable<PluginFeatureInfo> features = _pluginManagementService.GetAllPlugins()
+                .SelectMany(p => p.Features.Where(f => typeof(DeviceProvider).IsAssignableFrom(f.FeatureType)))
                 .OrderBy(d => d.GetType().Name);
             Items.AddRange(features.Select(d => _settingsVmFactory.CreatePluginFeatureViewModel(d)));
 

@@ -5,7 +5,6 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.Loader;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.Plugins;
@@ -130,7 +129,11 @@ namespace Artemis.Core.Services
         {
             lock (_plugins)
             {
-                return _plugins.Where(p => p.IsEnabled).SelectMany(p => p.Features.Where(i => i.IsEnabled && i is T)).Cast<T>().ToList();
+                return _plugins.Where(p => p.IsEnabled)
+                    .SelectMany(p => p.Features.Where(f => f.Instance != null && f.Instance.IsEnabled && f.Instance is T))
+                    .Select(f => f.Instance)
+                    .Cast<T>()
+                    .ToList();
             }
         }
 
@@ -186,6 +189,7 @@ namespace Artemis.Core.Services
             // Load the plugin assemblies into the plugin context
             DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins"));
             foreach (DirectoryInfo subDirectory in pluginDirectory.EnumerateDirectories())
+            {
                 try
                 {
                     LoadPlugin(subDirectory);
@@ -194,6 +198,7 @@ namespace Artemis.Core.Services
                 {
                     _logger.Warning(new ArtemisPluginException("Failed to load plugin", e), "Plugin exception");
                 }
+            }
 
             // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
             _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
@@ -218,7 +223,7 @@ namespace Artemis.Core.Services
             foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
                 EnablePlugin(plugin, false, ignorePluginLock);
 
-            _logger.Debug("Enabled {count} plugin(s)", _plugins.Where(p => p.IsEnabled).Sum(p => p.Features.Count(f => f.IsEnabled)));
+            _logger.Debug("Enabled {count} plugin(s)", _plugins.Count(p => p.IsEnabled));
             // ReSharper restore InconsistentlySynchronizedField
 
             LoadingPlugins = false;
@@ -289,6 +294,28 @@ namespace Artemis.Core.Services
                 throw new ArtemisPluginException(plugin, "Failed to load the plugins assembly", e);
             }
 
+            // Get the Plugin feature from the main assembly and if there is only one, instantiate it
+            List<Type> featureTypes;
+            try
+            {
+                featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t)).ToList();
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                throw new ArtemisPluginException(
+                    plugin,
+                    "Failed to initialize the plugin assembly",
+                    // ReSharper disable once RedundantEnumerableCastCall - Casting from nullable to non-nullable here
+                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
+                );
+            }
+
+            foreach (Type featureType in featureTypes)
+                plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
+
+            if (!featureTypes.Any())
+                _logger.Warning("Plugin {plugin} contains no features", plugin);
+
             List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(IPluginBootstrapper).IsAssignableFrom(t)).ToList();
             if (bootstrappers.Count > 1)
                 _logger.Warning($"{plugin} has more than one bootstrapper, only initializing {bootstrappers.First().FullName}");
@@ -315,60 +342,45 @@ namespace Artemis.Core.Services
 
             plugin.SetEnabled(true);
 
-            // Get the Plugin feature from the main assembly and if there is only one, instantiate it
-            List<Type> featureTypes;
-            try
-            {
-                featureTypes = plugin.Assembly.GetTypes().Where(t => typeof(PluginFeature).IsAssignableFrom(t)).ToList();
-            }
-            catch (ReflectionTypeLoadException e)
-            {
-                throw new ArtemisPluginException(
-                    plugin,
-                    "Failed to initialize the plugin assembly",
-                    // ReSharper disable once RedundantEnumerableCastCall - Casting from nullable to non-nullable here
-                    new AggregateException(e.LoaderExceptions.Where(le => le != null).Cast<Exception>().ToArray())
-                );
-            }
-
-            if (!featureTypes.Any())
-                _logger.Warning("Plugin {plugin} contains no features", plugin);
-
-            // Create instances of each feature and add them to the plugin
+            // Create instances of each feature
             // Construction should be simple and not contain any logic so failure at this point means the entire plugin fails
-            foreach (Type featureType in featureTypes)
+            foreach (PluginFeatureInfo featureInfo in plugin.Features)
+            {
                 try
                 {
-                    plugin.Kernel.Bind(featureType).ToSelf().InSingletonScope();
+                    plugin.Kernel.Bind(featureInfo.FeatureType).ToSelf().InSingletonScope();
 
                     // Include Plugin as a parameter for the PluginSettingsProvider
                     IParameter[] parameters = {new Parameter("Plugin", plugin, false)};
-                    PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureType, parameters);
+                    PluginFeature instance = (PluginFeature) plugin.Kernel.Get(featureInfo.FeatureType, parameters);
 
                     // Get the PluginFeature attribute which contains extra info on the feature
-                    PluginFeatureAttribute? pluginFeatureAttribute = (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute));
-                    instance.Info = new PluginFeatureInfo(instance, pluginFeatureAttribute);
-                    plugin.AddFeature(instance);
+                    featureInfo.Instance = instance;
+                    instance.Info = featureInfo;
+                    instance.Plugin = plugin;
 
                     // Load the enabled state and if not found, default to true
-                    instance.Entity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
-                                      new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName!};
+                    instance.Entity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureInfo.FeatureType.FullName) ??
+                                      new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureInfo.FeatureType.FullName!};
                 }
                 catch (Exception e)
                 {
                     _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
                 }
+            }
 
-            // Activate plugins after they are all loaded
-            foreach (PluginFeature pluginFeature in plugin.Features.Where(i => i.Entity.IsEnabled))
+            // Activate features after they are all loaded
+            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && f.Instance.Entity.IsEnabled))
+            {
                 try
                 {
-                    EnablePluginFeature(pluginFeature, false, !ignorePluginLock);
+                    EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
                 }
                 catch (Exception)
                 {
                     // ignored, logged in EnablePluginFeature
                 }
+            }
 
             if (saveState)
             {
@@ -406,12 +418,10 @@ namespace Artemis.Core.Services
             if (!plugin.IsEnabled)
                 return;
 
-            while (plugin.Features.Any())
+            foreach (PluginFeatureInfo pluginFeatureInfo in plugin.Features)
             {
-                PluginFeature feature = plugin.Features[0];
-                if (feature.IsEnabled)
-                    DisablePluginFeature(feature, false);
-                plugin.RemoveFeature(feature);
+                if (pluginFeatureInfo.Instance != null && pluginFeatureInfo.Instance.IsEnabled)
+                    DisablePluginFeature(pluginFeatureInfo.Instance, false);
             }
 
             plugin.SetEnabled(false);
@@ -450,7 +460,6 @@ namespace Artemis.Core.Services
 
             Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
             if (existing != null)
-            {
                 try
                 {
                     RemovePlugin(existing);
@@ -459,7 +468,6 @@ namespace Artemis.Core.Services
                 {
                     throw new ArtemisPluginException("A plugin with the same GUID is already loaded, failed to remove old version", e);
                 }
-            }
 
             string targetDirectory = pluginInfo.Main.Split(".dll")[0].Replace("/", "").Replace("\\", "");
             string uniqueTargetDirectory = targetDirectory;
@@ -582,9 +590,11 @@ namespace Artemis.Core.Services
 
         private void SavePlugin(Plugin plugin)
         {
-            foreach (PluginFeature pluginFeature in plugin.Features)
-                if (plugin.Entity.Features.All(i => i.Type != pluginFeature.GetType().FullName))
-                    plugin.Entity.Features.Add(pluginFeature.Entity);
+            foreach (PluginFeatureInfo featureInfo in plugin.Features.Where(i => i.Instance != null))
+            {
+                if (plugin.Entity.Features.All(i => i.Type != featureInfo.FeatureType.FullName))
+                    plugin.Entity.Features.Add(featureInfo.Instance!.Entity);
+            }
 
             _pluginRepository.SavePlugin(plugin.Entity);
         }

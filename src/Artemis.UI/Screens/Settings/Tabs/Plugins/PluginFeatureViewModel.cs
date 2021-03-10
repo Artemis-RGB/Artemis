@@ -16,7 +16,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private bool _enabling;
         private readonly IMessageService _messageService;
 
-        public PluginFeatureViewModel(PluginFeature feature,
+        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
             IMessageService messageService)
@@ -25,11 +25,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _pluginManagementService = pluginManagementService;
             _messageService = messageService;
 
-            Feature = feature;
+            FeatureInfo = pluginFeatureInfo;
         }
 
-        public PluginFeature Feature { get; }
-        public Exception LoadException => Feature.LoadException;
+        public PluginFeatureInfo FeatureInfo { get; }
+        public Exception LoadException => FeatureInfo.Instance?.LoadException;
 
         public bool Enabling
         {
@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public bool IsEnabled
         {
-            get => Feature.IsEnabled;
+            get => FeatureInfo.Instance != null && FeatureInfo.Instance.IsEnabled;
             set => Task.Run(() => UpdateEnabled(value));
         }
 
@@ -60,7 +60,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             if (LoadException == null)
                 return;
 
-            _dialogService.ShowExceptionDialog("Feature failed to enable", Feature.LoadException);
+            _dialogService.ShowExceptionDialog("Feature failed to enable", LoadException);
         }
 
         protected override void OnInitialActivate()
@@ -83,7 +83,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private async Task UpdateEnabled(bool enable)
         {
-            if (IsEnabled == enable)
+            if (IsEnabled == enable || FeatureInfo.Instance == null)
             {
                 NotifyOfPropertyChange(nameof(IsEnabled));
                 return;
@@ -95,11 +95,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 try
                 {
-                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(Feature, true));
+                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance, true));
                 }
                 catch (Exception e)
                 {
-                    _messageService.ShowMessage($"Failed to enable {Feature.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _messageService.ShowMessage($"Failed to enable {FeatureInfo.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {
@@ -108,7 +108,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
             else
             {
-                _pluginManagementService.DisablePluginFeature(Feature, true);
+                _pluginManagementService.DisablePluginFeature(FeatureInfo.Instance, true);
                 NotifyOfPropertyChange(nameof(IsEnabled));
             }
         }
@@ -117,13 +117,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private void OnFeatureEnabling(object sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature != Feature) return;
+            if (e.PluginFeature != FeatureInfo.Instance) return;
             Enabling = true;
         }
 
         private void OnFeatureEnableStopped(object sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature != Feature) return;
+            if (e.PluginFeature != FeatureInfo.Instance) return;
             Enabling = false;
 
             NotifyOfPropertyChange(nameof(IsEnabled));
