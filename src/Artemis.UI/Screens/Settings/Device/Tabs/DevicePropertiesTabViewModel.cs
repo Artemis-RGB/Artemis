@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +16,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
     {
         private readonly ICoreService _coreService;
         private readonly IMessageService _messageService;
+        private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private float _blueScale;
         private SKColor _currentColor;
@@ -33,11 +35,13 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             ICoreService coreService,
             IRgbService rgbService,
             IMessageService messageService,
+            IDialogService dialogService,
             IModelValidator<DevicePropertiesTabViewModel> validator) : base(validator)
         {
             _coreService = coreService;
             _rgbService = rgbService;
             _messageService = messageService;
+            _dialogService = dialogService;
 
             Device = device;
             DisplayName = "PROPERTIES";
@@ -126,6 +130,11 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             }
         }
 
+        public async Task SelectPhysicalLayout()
+        {
+            await _dialogService.ShowDialog<DeviceLayoutDialogViewModel>(new Dictionary<string, object> {{"device", Device}});
+        }
+
         public async Task Apply()
         {
             await ValidateAsync();
@@ -167,10 +176,19 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             _initialGreenScale = Device.GreenScale;
             _initialBlueScale = Device.BlueScale;
             CurrentColor = SKColors.White;
+
             _coreService.FrameRendering += OnFrameRendering;
             Device.PropertyChanged += DeviceOnPropertyChanged;
 
             base.OnActivate();
+        }
+
+        protected override void OnDeactivate()
+        {
+            _coreService.FrameRendering -= OnFrameRendering;
+            Device.PropertyChanged -= DeviceOnPropertyChanged;
+
+            base.OnDeactivate();
         }
 
         #region Event handlers

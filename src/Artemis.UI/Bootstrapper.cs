@@ -90,6 +90,9 @@ namespace Artemis.UI
             IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
             registrationService.RegisterInputProvider();
             registrationService.RegisterControllers();
+            
+            // Initialize background services
+            Kernel.Get<IDeviceLayoutService>();
         }
 
         protected override void ConfigureIoC(IKernel kernel)

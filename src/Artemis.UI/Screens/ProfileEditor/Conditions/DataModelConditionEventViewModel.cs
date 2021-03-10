@@ -15,6 +15,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
+        private DateTime _lastTrigger;
 
         public DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent,
             IProfileEditorService profileEditorService,
@@ -24,9 +25,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
+
+            _lastTrigger = DataModelConditionEvent.LastTrigger;
         }
 
         public DataModelConditionEvent DataModelConditionEvent => (DataModelConditionEvent) Model;
+
+        public DateTime LastTrigger
+        {
+            get => _lastTrigger;
+            set => SetAndNotify(ref _lastTrigger, value);
+        }
 
         public void Initialize()
         {
@@ -36,7 +45,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
             List<Type> supportedInputTypes = new() {typeof(DataModelEvent), typeof(DataModelEvent<>)};
-            
+
             LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
             LeftSideSelectionViewModel.Placeholder = "Select an event";
@@ -74,6 +83,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 childViewModel.Update();
         }
 
+        public override void Evaluate()
+        {
+            LastTrigger = DataModelConditionEvent.LastTrigger;
+            IsConditionMet = DataModelConditionEvent.Evaluate();
+        }
+
         public void ApplyEvent()
         {
             DataModelConditionEvent.UpdateEvent(LeftSideSelectionViewModel.DataModelPath);
@@ -104,7 +119,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             LeftSideSelectionViewModel.Dispose();
             LeftSideSelectionViewModel.PropertySelected -= LeftSideSelectionViewModelOnPropertySelected;
         }
-        
+
         #endregion
     }
 }

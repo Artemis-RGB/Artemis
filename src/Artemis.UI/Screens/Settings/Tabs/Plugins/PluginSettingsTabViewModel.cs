@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using Ookii.Dialogs.Wpf;
@@ -43,26 +44,36 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             if (_instances == null)
                 return;
 
-            Items.Clear();
+            List<PluginSettingsViewModel> instances = _instances;
+            string search = SearchPluginInput?.ToLower();
+            if (!string.IsNullOrWhiteSpace(search))
+                instances = instances.Where(i => i.Plugin.Info.Name.ToLower().Contains(search) ||
+                                                 i.Plugin.Info.Description != null && i.Plugin.Info.Description.ToLower().Contains(search)).ToList();
 
-            if (string.IsNullOrWhiteSpace(SearchPluginInput))
-                Items.AddRange(_instances);
-            else
-                Items.AddRange(_instances.Where(i => i.Plugin.Info.Name.Contains(SearchPluginInput, StringComparison.OrdinalIgnoreCase) ||
-                                                     i.Plugin.Info.Description.Contains(SearchPluginInput, StringComparison.OrdinalIgnoreCase)));
+            foreach (PluginSettingsViewModel pluginSettingsViewModel in instances)
+            {
+                if (!Items.Contains(pluginSettingsViewModel))
+                    Items.Add(pluginSettingsViewModel);
+            }
+            foreach (PluginSettingsViewModel pluginSettingsViewModel in Items.ToList())
+            {
+                if (!instances.Contains(pluginSettingsViewModel))
+                    Items.Remove(pluginSettingsViewModel);
+            }
+
+            ((BindableCollection<PluginSettingsViewModel>) Items).Sort(i => i.Plugin.Info.Name);
         }
 
-        protected override void OnActivate()
+        protected override void OnInitialActivate()
         {
             // Take it off the UI thread to avoid freezing on tab change
             Task.Run(async () =>
             {
-                Items.Clear();
                 await Task.Delay(200);
                 GetPluginInstances();
             });
 
-            base.OnActivate();
+            base.OnInitialActivate();
         }
 
         public void ImportPlugin()

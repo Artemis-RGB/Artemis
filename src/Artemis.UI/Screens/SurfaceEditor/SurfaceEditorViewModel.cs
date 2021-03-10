@@ -241,7 +241,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
 
         public void ViewProperties(ArtemisDevice device)
         {
-            _windowManager.ShowDialog(_deviceDebugVmFactory.DeviceDialogViewModel(device));
+            _windowManager.ShowWindow(_deviceDebugVmFactory.DeviceDialogViewModel(device));
         }
 
         public async Task DetectInput(ArtemisDevice device)

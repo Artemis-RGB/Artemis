@@ -126,6 +126,11 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate.cur" />
+		<Resource Include="Resources\Images\PhysicalLayouts\abnt.png" />
+		<Resource Include="Resources\Images\PhysicalLayouts\ansi.png" />
+		<Resource Include="Resources\Images\PhysicalLayouts\iso.png" />
+		<Resource Include="Resources\Images\PhysicalLayouts\jis.png" />
+		<Resource Include="Resources\Images\PhysicalLayouts\ks.png" />
 		<Resource Include="Resources\Images\Sidebar\sidebar-header.png" />
 	</ItemGroup>
 	<ItemGroup>
@@ -306,6 +311,11 @@
 		<None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
 		<None Remove="Resources\Images\Logo\bow.svg" />
 		<None Remove="Resources\Images\Logo\logo-512.ico" />
+		<None Remove="Resources\Images\PhysicalLayouts\abnt.png" />
+		<None Remove="Resources\Images\PhysicalLayouts\ansi.png" />
+		<None Remove="Resources\Images\PhysicalLayouts\iso.png" />
+		<None Remove="Resources\Images\PhysicalLayouts\jis.png" />
+		<None Remove="Resources\Images\PhysicalLayouts\ks.png" />
 		<None Remove="Resources\Images\Sidebar\sidebar-header.png" />
 	</ItemGroup>
 	<ItemGroup>

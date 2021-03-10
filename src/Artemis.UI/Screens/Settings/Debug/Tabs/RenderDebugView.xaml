@@ -27,10 +27,12 @@
             <TextBlock Grid.Column="0">
                 This image shows what is being rendered and dispatched to RGB.NET
             </TextBlock>
-            <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0" FontWeight="Bold">
-                FPS:
+            <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0">
+                <Run Text="FPS: "></Run>
+                <Run FontWeight="Bold" Text="{Binding CurrentFps}"></Run>
+                <Run Text=" at "></Run>
+                <Run Text="{Binding RenderWidth}"/><Run Text="x"></Run><Run Text="{Binding RenderHeight}"/>
             </TextBlock>
-            <TextBlock Grid.Column="2" HorizontalAlignment="Right" Text="{Binding CurrentFps}" />
         </Grid>
 
         <materialDesign:Card Grid.Row="2" Margin="0,5,0,0" Background="{StaticResource Checkerboard}">

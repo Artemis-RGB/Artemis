@@ -14,7 +14,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid Margin="0 15" MinWidth="810" Width="{Binding Path=ActualWidth, ElementName=PluginsContainer}">
+        <Grid Margin="0 15" Width="810">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -41,21 +41,36 @@
                 IMPORT PLUGIN
             </Button>
         </Grid>
-        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Items}" Margin="15 0 15 15" HorizontalAlignment="Center" MaxWidth="1700" x:Name="PluginsContainer">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapPanel />
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl s:View.Model="{Binding IsAsync=True}" Margin="5" HorizontalAlignment="Left" VerticalAlignment="Top" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
 
-        </ScrollViewer>
+        <ListBox Grid.Row="1"
+                 ItemsSource="{Binding Items}"
+                 materialDesign:RippleAssist.IsDisabled="True"
+                 VirtualizingPanel.ScrollUnit="Pixel"
+                 HorizontalAlignment="Stretch"
+                 HorizontalContentAlignment="Center"
+                 Margin="15 0 15 15">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding IsAsync=True}" Margin="5" HorizontalAlignment="Center"  IsTabStop="False"  />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+        </ListBox>
     </Grid>
-
 </UserControl>

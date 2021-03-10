@@ -81,5 +81,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             return wrapper.CreateViewModel(_dataModelUIService, new DataModelUpdateConfiguration(true));
         }
+
+        public override void Evaluate()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
