@@ -17,7 +17,7 @@ namespace Artemis.UI.Shared
 
         private SolidColorBrush? _renderColorBrush;
         private Color _renderColor;
-        
+
         public DeviceVisualizerLed(ArtemisLed led)
         {
             Led = led;
@@ -51,7 +51,7 @@ namespace Artemis.UI.Shared
             byte g = Led.RgbLed.Color.GetG();
             byte b = Led.RgbLed.Color.GetB();
 
-            _renderColor.A = (byte)(isDimmed ? 100 : 255);
+            _renderColor.A = (byte) (isDimmed ? 100 : 255);
             _renderColor.A = isDimmed ? Dimmed : NonDimmed;
             _renderColor.R = r;
             _renderColor.G = g;
@@ -135,6 +135,8 @@ namespace Artemis.UI.Shared
         {
             try
             {
+                double width = Led.RgbLed.Size.Width - deflateAmount;
+                double height = Led.RgbLed.Size.Height - deflateAmount;
                 // DisplayGeometry = Geometry.Parse(Led.RgbLed.ShapeData);
                 DisplayGeometry = Geometry.Combine(
                     Geometry.Empty,
@@ -144,11 +146,27 @@ namespace Artemis.UI.Shared
                     {
                         Children = new TransformCollection
                         {
-                            new ScaleTransform(Led.RgbLed.Size.Width - deflateAmount, Led.RgbLed.Size.Height - deflateAmount),
+                            new ScaleTransform(width, height),
                             new TranslateTransform(deflateAmount / 2, deflateAmount / 2)
                         }
                     }
                 );
+
+                if (DisplayGeometry.Bounds.Width > width)
+                {
+                    DisplayGeometry = Geometry.Combine(Geometry.Empty, DisplayGeometry, GeometryCombineMode.Union, new TransformGroup
+                    {
+                        Children = new TransformCollection {new ScaleTransform(width / DisplayGeometry.Bounds.Width, 1)}
+                    });
+                }
+
+                if (DisplayGeometry.Bounds.Height > height)
+                {
+                    DisplayGeometry = Geometry.Combine(Geometry.Empty, DisplayGeometry, GeometryCombineMode.Union, new TransformGroup
+                    {
+                        Children = new TransformCollection {new ScaleTransform(1, height / DisplayGeometry.Bounds.Height)}
+                    });
+                }
             }
             catch (Exception)
             {

@@ -15,7 +15,6 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
     public class DevicePropertiesTabViewModel : Screen
     {
         private readonly ICoreService _coreService;
-        private readonly IMessageService _messageService;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private float _blueScale;
@@ -34,13 +33,11 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
         public DevicePropertiesTabViewModel(ArtemisDevice device,
             ICoreService coreService,
             IRgbService rgbService,
-            IMessageService messageService,
             IDialogService dialogService,
             IModelValidator<DevicePropertiesTabViewModel> validator) : base(validator)
         {
             _coreService = coreService;
             _rgbService = rgbService;
-            _messageService = messageService;
             _dialogService = dialogService;
 
             Device = device;
@@ -115,7 +112,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             if (e.OriginalSource is Button)
             {
                 Device.CustomLayoutPath = null;
-                _messageService.ShowMessage("Cleared imported layout");
+                ((DeviceDialogViewModel) Parent).DeviceMessageQueue.Enqueue("Cleared imported layout.");
                 return;
             }
 
@@ -126,13 +123,13 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             if (result == true)
             {
                 Device.CustomLayoutPath = dialog.FileName;
-                _messageService.ShowMessage($"Imported layout from {dialog.FileName}");
+                ((DeviceDialogViewModel) Parent).DeviceMessageQueue.Enqueue($"Imported layout from {dialog.FileName}.");
             }
         }
 
         public async Task SelectPhysicalLayout()
         {
-            await _dialogService.ShowDialog<DeviceLayoutDialogViewModel>(new Dictionary<string, object> {{"device", Device}});
+            await _dialogService.ShowDialogAt<DeviceLayoutDialogViewModel>("DeviceDialog", new Dictionary<string, object> {{"device", Device}});
         }
 
         public async Task Apply()
@@ -151,7 +148,8 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.RedScale = RedScale / 100f;
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
-
+            _rgbService.SaveDevice(Device);
+            
             _coreService.ModuleRenderingDisabled = false;
         }
 
@@ -195,7 +193,8 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
         private void DeviceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Device.CustomLayoutPath)) _rgbService.ApplyBestDeviceLayout(Device);
+            if (e.PropertyName == nameof(Device.CustomLayoutPath))
+                _rgbService.ApplyBestDeviceLayout(Device);
         }
 
         private void OnFrameRendering(object sender, FrameRenderingEventArgs e)

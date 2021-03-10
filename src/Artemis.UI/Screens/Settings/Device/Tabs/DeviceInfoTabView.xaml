@@ -91,15 +91,21 @@
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Layout file path</TextBlock>
-        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Copy path to clipboard" Width="24" Height="24">
+        <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Default layout file path</TextBlock>
+        <Button Grid.Column="1" 
+                Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                ToolTip="Copy path to clipboard" 
+                Width="24"
+                Height="24"
+                Command="{s:Action CopyToClipboard}" 
+                CommandParameter="{Binding DefaultLayoutPath}">
           <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" />
         </Button>
       </Grid>
       <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                  Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                  TextWrapping="Wrap"
-                 Text="{Binding Device.Layout.FilePath}" />
+                 Text="{Binding DefaultLayoutPath}" />
       <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
       <Grid>
@@ -108,14 +114,19 @@
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Image file path</TextBlock>
-        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconForegroundButton}" ToolTip="Copy path to clipboard" Width="24" Height="24">
+        <Button Grid.Column="1" Style="{StaticResource MaterialDesignIconForegroundButton}" 
+                ToolTip="Copy path to clipboard"
+                Width="24"
+                Height="24" 
+                Command="{s:Action CopyToClipboard}" 
+                CommandParameter="{Binding Device.Layout.Image.LocalPath}">
           <materialDesign:PackIcon Kind="ContentCopy" Width="18" Height="18" />
         </Button>
       </Grid>
       <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                  Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                  TextWrapping="Wrap"
-                 Text="{Binding Device.Layout.Image}" />
+                 Text="{Binding Device.Layout.Image.LocalPath}" />
     </StackPanel>
   </Grid>
 </UserControl>
