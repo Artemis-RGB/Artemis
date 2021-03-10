@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Shared.Services;
 using Humanizer;
 using Stylet;
@@ -17,9 +15,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private bool _isEventGroup;
         private bool _isInitialized;
         private bool _isRootGroup;
-        private bool _isEventGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             ConditionGroupType groupType,
@@ -31,7 +29,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
-            Items.CollectionChanged += (sender, args) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
+            Items.CollectionChanged += (_, _) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
 
             Execute.PostToUIThread(async () =>
             {
@@ -58,7 +56,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public bool IsEventGroup
         {
             get => _isEventGroup;
-            set => SetAndNotify(ref _isEventGroup, value);
+            set
+            {
+                SetAndNotify(ref _isEventGroup, value);
+                NotifyOfPropertyChange(nameof(DisplayEvaluationResult));
+            }
         }
 
         public bool IsInitialized
@@ -68,6 +70,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         }
 
         public bool DisplayBooleanOperator => Items.Count > 1;
+        public bool DisplayEvaluationResult => GroupType == ConditionGroupType.General && !IsEventGroup;
         public string SelectedBooleanOperator => DataModelConditionGroup.BooleanOperator.Humanize();
 
         public void SelectBooleanOperator(string type)
@@ -166,12 +169,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             IsEventGroup = Items.Any(i => i is DataModelConditionEventViewModel);
             if (IsEventGroup)
-            {
                 if (DataModelConditionGroup.BooleanOperator != BooleanOperator.And)
                     SelectBooleanOperator("And");
-            }
 
             OnUpdated();
+        }
+
+        public override void Evaluate()
+        {
+            IsConditionMet = DataModelConditionGroup.Evaluate();
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items)
+                dataModelConditionViewModel.Evaluate();
         }
 
         public void ConvertToConditionList(DataModelConditionViewModel predicateViewModel)

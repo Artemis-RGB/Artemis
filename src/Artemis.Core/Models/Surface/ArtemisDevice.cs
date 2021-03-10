@@ -306,7 +306,7 @@ namespace Artemis.Core
         {
             // Take out invalid file name chars, may not be perfect but neither are you
             string fileName = System.IO.Path.GetInvalidFileNameChars().Aggregate(RgbDevice.DeviceInfo.Model, (current, c) => current.Replace(c, '-'));
-            if (RgbDevice is IKeyboard)
+            if (RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
                 fileName = $"{fileName}-{PhysicalLayout.ToString().ToUpper()}";
             if (includeExtension)
                 fileName = $"{fileName}.xml";
@@ -353,7 +353,7 @@ namespace Artemis.Core
         {
             RgbDevice.Rotation = DeviceEntity.Rotation;
             RgbDevice.Scale = DeviceEntity.Scale;
-            
+
             // Workaround for device rotation not applying
             if (DeviceEntity.X == 0 && DeviceEntity.Y == 0)
                 RgbDevice.Location = new Point(1, 1);
@@ -388,14 +388,19 @@ namespace Artemis.Core
 
         private void ApplyKeyboardLayout()
         {
-            if (!(RgbDevice is IKeyboard keyboard))
+            if (RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard)
                 return;
 
+            IKeyboard? keyboard = RgbDevice as IKeyboard;
             // If supported, detect the device layout so that we can load the correct one
-            if (DeviceProvider.CanDetectLogicalLayout)
-                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
-            if (DeviceProvider.CanDetectPhysicalLayout)
+            if (DeviceProvider.CanDetectPhysicalLayout && keyboard != null)
                 PhysicalLayout = (KeyboardLayoutType) keyboard.DeviceInfo.Layout;
+            else
+                PhysicalLayout = (KeyboardLayoutType) DeviceEntity.PhysicalLayout;
+            if (DeviceProvider.CanDetectLogicalLayout && keyboard != null)
+                LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
+            else
+                LogicalLayout = DeviceEntity.LogicalLayout;
         }
 
         #region Events

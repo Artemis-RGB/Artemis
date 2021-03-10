@@ -27,6 +27,7 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Button Grid.Row="0"
                 Grid.Column="0"
@@ -90,5 +91,24 @@
                         VerticalContentAlignment="Stretch" 
                         HorizontalContentAlignment="Stretch"
                         IsTabStop="False" />
+
+        <ToggleButton Grid.Row="0"
+                      Grid.Column="4"
+                      Style="{StaticResource MaterialDesignActionToggleButton}"
+                      Focusable="False"
+                      IsHitTestVisible="False"
+                      IsChecked="{Binding IsConditionMet}"
+                      Width="22"
+                      Height="22"
+                      HorizontalAlignment="Left">
+            <ToggleButton.Content>
+                <Border Background="#E74C4C" Width="22" Height="22">
+                    <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" HorizontalAlignment="Center" Width="16" Height="16"/>
+                </Border>
+            </ToggleButton.Content>
+            <materialDesign:ToggleButtonAssist.OnContent>
+                <materialDesign:PackIcon Kind="Check" Width="16" Height="16"/>
+            </materialDesign:ToggleButtonAssist.OnContent>
+        </ToggleButton>
     </Grid>
 </UserControl>

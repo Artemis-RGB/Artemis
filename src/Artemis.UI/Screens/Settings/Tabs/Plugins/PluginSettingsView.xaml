@@ -8,6 +8,7 @@
              xmlns:devices="clr-namespace:Artemis.UI.Screens.Settings.Tabs.Plugins"
              xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
              d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -34,20 +35,27 @@
                 </Grid.RowDefinitions>
 
                 <shared:ArtemisIcon Icon="{Binding Icon}"
-                                      Width="48"
-                                      Height="48"
-                                      Margin="0 5 0 0"
-                                      Grid.Row="0"
-                                      Grid.RowSpan="2"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Top" />
+                                    Width="48"
+                                    Height="48"
+                                    Margin="0 5 0 0"
+                                    Grid.Row="0"
+                                    Grid.RowSpan="2"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Top" />
 
-                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignBody2TextBlock}" Text="{Binding Plugin.Info.Name}" />
+                <TextBlock Grid.Column="1" Grid.Row="0" Style="{StaticResource MaterialDesignBody2TextBlock}"
+                           behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Parent.SearchPluginInput}"
+                           behaviors:HighlightTermBehavior.Text="{Binding Plugin.Info.Name}"
+                           behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
+                           behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}"/>
 
                 <TextBlock Grid.Column="1"
                            Grid.Row="1"
                            TextWrapping="Wrap"
-                           Text="{Binding Plugin.Info.Description}"
+                           behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Parent.SearchPluginInput}"
+                           behaviors:HighlightTermBehavior.Text="{Binding Plugin.Info.Description}"
+                           behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
+                           behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}"
                            Style="{StaticResource MaterialDesignTextBlock}"
                            Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
             </Grid>
@@ -55,9 +63,9 @@
 
             <StackPanel Grid.Row="1"
                         Grid.Column="0"
-                        VerticalAlignment="Bottom" 
+                        VerticalAlignment="Bottom"
                         Orientation="Horizontal">
-                <Button 
+                <Button
                     VerticalAlignment="Bottom"
                     Style="{StaticResource MaterialDesignOutlinedButton}"
                     ToolTip="Open the plugins settings window"
@@ -65,7 +73,7 @@
                     Command="{s:Action OpenSettings}">
                     SETTINGS
                 </Button>
-                <Button 
+                <Button
                     VerticalAlignment="Bottom"
                     Style="{StaticResource MaterialDesignOutlinedButton}"
                     ToolTip="Remove plugin"
@@ -74,7 +82,7 @@
                     <materialDesign:PackIcon Kind="DeleteForever" />
                 </Button>
             </StackPanel>
-           
+
 
             <CheckBox Grid.Row="1"
                       Grid.Column="1"
@@ -85,10 +93,10 @@
                       Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Plugin enabled</TextBlock>
-                    <materialDesign:PackIcon Kind="ShieldHalfFull" 
-                                             Margin="5 0 0 0" 
+                    <materialDesign:PackIcon Kind="ShieldHalfFull"
+                                             Margin="5 0 0 0"
                                              ToolTip="Plugin requires admin rights"
-                                             Visibility="{Binding Plugin.Info.RequiresAdmin, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
+                                             Visibility="{Binding Plugin.Info.RequiresAdmin, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
                 </StackPanel>
             </CheckBox>
 
@@ -128,7 +136,7 @@
                         </b:Interaction.Behaviors>
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                                <ContentControl s:View.Model="{Binding IsAsync=True}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>

@@ -8,6 +8,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
     public abstract class DataModelConditionViewModel : Conductor<DataModelConditionViewModel>.Collection.AllActive
     {
         private DataModelDynamicViewModel _leftSideSelectionViewModel;
+        private bool _isConditionMet;
 
         protected DataModelConditionViewModel(DataModelConditionPart model)
         {
@@ -22,7 +23,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
             set => SetAndNotify(ref _leftSideSelectionViewModel, value);
         }
 
+        public bool IsConditionMet
+        {
+            get => _isConditionMet;
+            set => SetAndNotify(ref _isConditionMet, value);
+        }
+
+
         public abstract void Update();
+
+        public abstract void Evaluate();
 
         public virtual void Delete()
         {

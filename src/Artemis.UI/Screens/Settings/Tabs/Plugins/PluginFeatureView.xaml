@@ -27,13 +27,13 @@
                                  Width="20"
                                  VerticalAlignment="Center"
                                  HorizontalAlignment="Center"
-                                 Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}" />
+                                 Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted, FallbackValue=Collapsed}" />
 
         <Button Grid.Column="0"
                 Margin="-8"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
-                Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}}"
+                Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}, FallbackValue=Collapsed}"
                 Style="{StaticResource MaterialDesignIconButton}"
                 Foreground="#E74C4C"
                 ToolTip="An exception occurred while enabling this feature, click to view"
@@ -46,13 +46,13 @@
 
         <!-- Enable toggle column -->
         <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8"
-                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay, FallbackValue=Collapsed}">
             <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
                 Feature enabled
             </CheckBox>
         </StackPanel>
         <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="7"
-                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay, FallbackValue=Collapsed}">
             <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" />
         </StackPanel>
 

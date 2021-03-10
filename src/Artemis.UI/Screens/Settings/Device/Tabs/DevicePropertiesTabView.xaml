@@ -174,6 +174,10 @@
                     </StackPanel>
                 </materialDesign:HintAssist.Hint>
             </TextBox>
+
+            <Button Style="{StaticResource MaterialDesignRaisedButton}" Margin="0 8 8 0" Command="{s:Action SelectPhysicalLayout}">
+                SELECT PHYSICAL LAYOUT (PLACEHOLDER)
+            </Button>
         </StackPanel>
 
         <!-- Buttons -->

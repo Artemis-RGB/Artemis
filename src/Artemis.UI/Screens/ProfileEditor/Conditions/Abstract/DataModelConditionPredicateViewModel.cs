@@ -67,6 +67,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         protected SolidColorBrush LeftSideColor { get; set; }
 
+        public override void Evaluate()
+        {
+            IsConditionMet = DataModelConditionPredicate.Evaluate();
+        }
+
         public override void Delete()
         {
             base.Delete();

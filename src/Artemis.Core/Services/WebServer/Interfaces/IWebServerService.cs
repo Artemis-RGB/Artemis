@@ -55,6 +55,15 @@ namespace Artemis.Core.Services
         DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel;
 
         /// <summary>
+        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="profileModule" />.
+        /// </summary>
+        /// <typeparam name="T">The data model type of the module</typeparam>
+        /// <param name="profileModule">The module whose datamodel to apply the received JSON to</param>
+        /// <param name="endPointName">The name of the end point, must be unique</param>
+        /// <returns>The resulting end point</returns>
+        DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(ProfileModule<T> profileModule, string endPointName) where T : DataModel;
+
+        /// <summary>
         ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="dataModelExpansion" />.
         /// </summary>
         /// <typeparam name="T">The data model type of the module</typeparam>

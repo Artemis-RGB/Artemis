@@ -12,7 +12,6 @@ namespace Artemis.Core
     {
         private bool _disposed;
         private bool _reinitializing;
-        private DateTime _lastTrigger;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionEvent" /> class
@@ -39,6 +38,8 @@ namespace Artemis.Core
         /// </summary>
         public DataModelPath? EventPath { get; private set; }
 
+        public DateTime LastTrigger { get; private set; }
+
         /// <summary>
         ///     Gets or sets the type of argument the event provides
         /// </summary>
@@ -55,10 +56,10 @@ namespace Artemis.Core
             if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent) 
                 return false;
             // Only evaluate to true once every time the event has been triggered since the last evaluation
-            if (dataModelEvent.LastTrigger <= _lastTrigger)
+            if (dataModelEvent.LastTrigger <= LastTrigger)
                 return false;
 
-            _lastTrigger = DateTime.Now;
+            LastTrigger = DateTime.Now;
 
             // If there is a child (root group), it must evaluate to true whenever the event triggered
             if (Children.Any())
@@ -171,8 +172,8 @@ namespace Artemis.Core
                 AddChild(new DataModelConditionGroup(this));
             }
 
-            if (EventPath?.GetValue() is IDataModelEvent dataModelEvent) 
-                _lastTrigger = dataModelEvent.LastTrigger;
+            if (EventPath?.GetValue() is IDataModelEvent dataModelEvent)
+                LastTrigger = dataModelEvent.LastTrigger;
         }
 
         private Type? GetEventArgumentType()

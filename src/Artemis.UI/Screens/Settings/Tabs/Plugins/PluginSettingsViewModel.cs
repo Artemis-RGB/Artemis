@@ -76,7 +76,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             try
             {
                 PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) Plugin.Kernel.Get(configurationViewModel.Type);
-                _windowManager.ShowDialog(new PluginSettingsWindowViewModel(viewModel, Icon));
+                _windowManager.ShowWindow(new PluginSettingsWindowViewModel(viewModel, Icon));
             }
             catch (Exception e)
             {

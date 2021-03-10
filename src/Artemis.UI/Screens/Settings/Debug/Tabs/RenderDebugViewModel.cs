@@ -15,6 +15,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private readonly ICoreService _coreService;
         private double _currentFps;
         private ImageSource _currentFrame;
+        private int _renderWidth;
+        private int _renderHeight;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -32,6 +34,18 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             get => _currentFps;
             set => SetAndNotify(ref _currentFps, value);
+        }
+
+        public int RenderWidth
+        {
+            get => _renderWidth;
+            set => SetAndNotify(ref _renderWidth, value);
+        }
+
+        public int RenderHeight
+        {
+            get => _renderHeight;
+            set => SetAndNotify(ref _renderHeight, value);
         }
 
         protected override void OnActivate()
@@ -56,6 +70,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                     return;
 
                 SKImageInfo bitmapInfo = e.Texture.Bitmap.Info;
+                RenderHeight = bitmapInfo.Height;
+                RenderWidth = bitmapInfo.Width;
 
                 if (!(CurrentFrame is WriteableBitmap writeableBitmap) || 
                     writeableBitmap.Width != bitmapInfo.Width || 

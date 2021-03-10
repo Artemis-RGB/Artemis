@@ -65,18 +65,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         protected override void OnInitialActivate()
         {
-            base.OnInitialActivate();
             _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
             _pluginManagementService.PluginFeatureEnabled += OnFeatureEnableStopped;
             _pluginManagementService.PluginFeatureEnableFailed += OnFeatureEnableStopped;
+
+            base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
-            base.OnClose();
             _pluginManagementService.PluginFeatureEnabling -= OnFeatureEnabling;
             _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnableStopped;
             _pluginManagementService.PluginFeatureEnableFailed -= OnFeatureEnableStopped;
+
+            base.OnClose();
         }
 
         private async Task UpdateEnabled(bool enable)
