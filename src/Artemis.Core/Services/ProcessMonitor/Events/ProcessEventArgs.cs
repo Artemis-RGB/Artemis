@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace Artemis.Core.Services
 {
     public class ProcessEventArgs : EventArgs
     {
-        public string ProcessName { get; }
+        public Process Process { get; }
 
-        public ProcessEventArgs(string name)
+        public ProcessEventArgs(Process process)
         {
-            ProcessName = name;
+            Process = process;
         }
     }
 }

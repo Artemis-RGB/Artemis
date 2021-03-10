@@ -13,6 +13,6 @@ namespace Artemis.Core.Services
 
         event EventHandler<ProcessEventArgs> ProcessStopped;
 
-        IEnumerable<string> GetRunningProcesses();
+        IEnumerable<Process> GetRunningProcesses();
     }
 }
