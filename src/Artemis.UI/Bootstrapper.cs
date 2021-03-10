@@ -89,6 +89,7 @@ namespace Artemis.UI
 
             IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
             registrationService.RegisterInputProvider();
+            registrationService.RegisterProcessWatchers();
             registrationService.RegisterControllers();
             
             // Initialize background services
