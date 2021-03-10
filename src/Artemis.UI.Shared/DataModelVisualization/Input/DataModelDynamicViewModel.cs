@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Timers;
@@ -139,7 +140,11 @@ namespace Artemis.UI.Shared.Input
             set
             {
                 if (!SetAndNotify(ref _isDataModelViewModelOpen, value)) return;
-                if (value) UpdateDataModelVisualization();
+                if (value)
+                {
+                    UpdateDataModelVisualization();
+                    OpenSelectedValue(DataModelViewModel);
+                }
             }
         }
 
@@ -301,6 +306,21 @@ namespace Artemis.UI.Shared.Input
             DataModelViewModel?.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
             foreach (DataModelPropertiesViewModel extraDataModelViewModel in ExtraDataModelViewModels)
                 extraDataModelViewModel.Update(_dataModelUIService, new DataModelUpdateConfiguration(LoadEventChildren));
+        }
+
+        private void OpenSelectedValue(DataModelVisualizationViewModel dataModelPropertiesViewModel)
+        {
+            if (DataModelPath == null)
+                return;
+
+            if (dataModelPropertiesViewModel.Children.Any(c => c.DataModelPath != null && DataModelPath.Path.StartsWith(c.DataModelPath.Path)))
+            {
+                dataModelPropertiesViewModel.IsVisualizationExpanded = true;
+                foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in dataModelPropertiesViewModel.Children)
+                {
+                    OpenSelectedValue(dataModelVisualizationViewModel);
+                }
+            }
         }
 
         #endregion
