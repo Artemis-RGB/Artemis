@@ -136,7 +136,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
         }
 
-        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
             ActiveItem?.Evaluate();
         }

@@ -67,7 +67,7 @@ namespace Artemis.Core.Services
                 // If this is a profile module, animate profile disable
                 // module.Deactivate would do the same but without animation
                 if (module.IsActivated && module is ProfileModule profileModule)
-                    await profileModule.ChangeActiveProfileAnimated(null, null);
+                    await profileModule.ChangeActiveProfileAnimated(null, Enumerable.Empty<ArtemisDevice>());
 
                 module.Deactivate(false);
             }
@@ -210,6 +210,7 @@ namespace Artemis.Core.Services
                 List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
                 List<Task> tasks = new();
                 foreach (Module module in modules)
+                {
                     lock (module)
                     {
                         bool shouldBeActivated = module.EvaluateActivationRequirements() && module.IsEnabled;
@@ -218,6 +219,7 @@ namespace Artemis.Core.Services
                         else if (!shouldBeActivated && module.IsActivated)
                             tasks.Add(DeactivateModule(module));
                     }
+                }
 
                 await Task.WhenAll(tasks);
 

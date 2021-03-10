@@ -46,6 +46,9 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _absoluteRectangle, value);
         }
 
+        /// <summary>
+        ///     Gets the layout applied to this LED
+        /// </summary>
         public ArtemisLedLayout? Layout { get; internal set; }
 
         /// <inheritdoc />
@@ -53,7 +56,7 @@ namespace Artemis.Core
         {
             return RgbLed.ToString();
         }
-        
+
         internal void CalculateRectangles()
         {
             Rectangle = RgbLed.Boundary.ToSKRect();

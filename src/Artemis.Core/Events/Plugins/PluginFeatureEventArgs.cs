@@ -17,4 +17,20 @@ namespace Artemis.Core
         /// </summary>
         public PluginFeature PluginFeature { get; }
     }
+
+    /// <summary>
+    /// Provides data about plugin feature info related events
+    /// </summary>
+    public class PluginFeatureInfoEventArgs : EventArgs
+    {
+        internal PluginFeatureInfoEventArgs(PluginFeatureInfo pluginFeatureInfo)
+        {
+            PluginFeatureInfo = pluginFeatureInfo;
+        }
+
+        /// <summary>
+        ///     Gets the plugin feature this event is related to
+        /// </summary>
+        public PluginFeatureInfo PluginFeatureInfo { get; }
+    }
 }

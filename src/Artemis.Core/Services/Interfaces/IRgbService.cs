@@ -52,7 +52,7 @@ namespace Artemis.Core.Services
         bool IsRenderPaused { get; set; }
 
         /// <summary>
-        ///     Recreates the Texture to use the given <see cref="SKBitmap"/>
+        ///     Recreates the Texture to use the given <see cref="SKBitmap" />
         /// </summary>
         /// <param name="bitmap"></param>
         void UpdateTexture(SKBitmap bitmap);
@@ -119,7 +119,16 @@ namespace Artemis.Core.Services
         /// </summary>
         void SaveDevices();
 
+        /// <summary>
+        ///     Enables the provided device
+        /// </summary>
+        /// <param name="device">The device to enable</param>
         void EnableDevice(ArtemisDevice device);
+
+        /// <summary>
+        ///     Disables the provided device
+        /// </summary>
+        /// <param name="device">The device to disable</param>
         void DisableDevice(ArtemisDevice device);
 
         /// <summary>
@@ -133,7 +142,7 @@ namespace Artemis.Core.Services
         event EventHandler<DeviceEventArgs> DeviceRemoved;
 
         /// <summary>
-        /// Occurs when the surface has had modifications to its LED collection
+        ///     Occurs when the surface has had modifications to its LED collection
         /// </summary>
         event EventHandler LedsChanged;
     }

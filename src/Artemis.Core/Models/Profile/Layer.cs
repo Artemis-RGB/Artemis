@@ -225,7 +225,7 @@ namespace Artemis.Core
             {
                 LedEntity ledEntity = new()
                 {
-                    DeviceIdentifier = artemisLed.Device.RgbDevice.GetDeviceIdentifier(),
+                    DeviceIdentifier = artemisLed.Device.Identifier,
                     LedName = artemisLed.RgbLed.Id.ToString()
                 };
                 LayerEntity.Leds.Add(ledEntity);
@@ -578,7 +578,7 @@ namespace Artemis.Core
             List<ArtemisLed> availableLeds = devices.SelectMany(d => d.Leds).ToList();
             foreach (LedEntity ledEntity in LayerEntity.Leds)
             {
-                ArtemisLed? match = availableLeds.FirstOrDefault(a => a.Device.RgbDevice.GetDeviceIdentifier() == ledEntity.DeviceIdentifier &&
+                ArtemisLed? match = availableLeds.FirstOrDefault(a => a.Device.Identifier == ledEntity.DeviceIdentifier &&
                                                                       a.RgbLed.Id.ToString() == ledEntity.LedName);
                 if (match != null)
                     leds.Add(match);
