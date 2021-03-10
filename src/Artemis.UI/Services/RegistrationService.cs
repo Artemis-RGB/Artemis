@@ -7,6 +7,7 @@ using Artemis.UI.DefaultTypes.DataModel.Input;
 using Artemis.UI.DefaultTypes.PropertyInput;
 using Artemis.UI.InputProviders;
 using Artemis.UI.Ninject;
+using Artemis.UI.ProcessWatchers;
 using Artemis.UI.Shared.Services;
 using Serilog;
 
@@ -20,6 +21,7 @@ namespace Artemis.UI.Services
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IInputService _inputService;
         private readonly IWebServerService _webServerService;
+        private readonly IProcessMonitorService _processMonitorService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
@@ -29,7 +31,8 @@ namespace Artemis.UI.Services
             IProfileEditorService profileEditorService,
             IPluginManagementService pluginManagementService,
             IInputService inputService,
-            IWebServerService webServerService)
+            IWebServerService webServerService,
+            IProcessMonitorService processMonitorService)
         {
             _logger = logger;
             _dataModelUIService = dataModelUIService;
@@ -37,6 +40,7 @@ namespace Artemis.UI.Services
             _pluginManagementService = pluginManagementService;
             _inputService = inputService;
             _webServerService = webServerService;
+            _processMonitorService = processMonitorService;
 
             LoadPluginModules();
             pluginManagementService.PluginEnabling += PluginServiceOnPluginEnabling;
@@ -92,6 +96,11 @@ namespace Artemis.UI.Services
             _inputService.AddInputProvider(new NativeWindowInputProvider(_logger, _inputService));
         }
 
+        public void RegisterProcessWatchers()
+        {
+            _processMonitorService.AddProcessWatcher(new PollingProcessWatcher(_logger));
+        }
+
         public void RegisterControllers()
         {
             _webServerService.AddController<RemoteController>();
@@ -115,6 +124,7 @@ namespace Artemis.UI.Services
         void RegisterBuiltInDataModelInputs();
         void RegisterBuiltInPropertyEditors();
         void RegisterInputProvider();
+        void RegisterProcessWatchers();
         void RegisterControllers();
     }
 }
