@@ -14,8 +14,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
     public class ProfileLayerViewModel : CanvasViewModel
     {
         private readonly ILayerEditorService _layerEditorService;
-        private readonly IProfileEditorService _profileEditorService;
         private readonly PanZoomViewModel _panZoomViewModel;
+        private readonly IProfileEditorService _profileEditorService;
         private bool _isSelected;
         private Geometry _shapeGeometry;
         private Rect _viewportRectangle;

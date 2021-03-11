@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
@@ -23,7 +24,9 @@ namespace Artemis.UI.Services
 {
     public class UpdateService : IUpdateService
     {
+        private const double UpdateCheckInterval = 3600000; // once per hour
         private const string ApiUrl = "https://dev.azure.com/artemis-rgb/Artemis/_apis/";
+
         private readonly PluginSetting<bool> _autoInstallUpdates;
         private readonly PluginSetting<bool> _checkForUpdates;
         private readonly IDialogService _dialogService;
@@ -41,13 +44,20 @@ namespace Artemis.UI.Services
 
             _checkForUpdates = settingsService.GetSetting("UI.CheckForUpdates", true);
             _autoInstallUpdates = settingsService.GetSetting("UI.AutoInstallUpdates", false);
-
             _checkForUpdates.SettingChanged += CheckForUpdatesOnSettingChanged;
+
+            Timer timer = new(UpdateCheckInterval);
+            timer.Elapsed += async (_, _) => await AutoUpdate();
+            timer.Start();
         }
+
+        public bool SuspendAutoUpdate { get; set; }
 
         private async Task OfferUpdate(DevOpsBuild buildInfo)
         {
-            await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
+            object result = await _dialogService.ShowDialog<UpdateDialogViewModel>(new Dictionary<string, object> {{"buildInfo", buildInfo}});
+            if (result is bool resultBool && resultBool == false)
+                SuspendAutoUpdate = true;
         }
 
         private async Task UpdateInstaller()
@@ -73,10 +83,20 @@ namespace Artemis.UI.Services
 
         public async Task<bool> AutoUpdate()
         {
-            if (!_checkForUpdates.Value)
+            if (Constants.BuildInfo.IsLocalBuild)
+                return false;
+            if (!_checkForUpdates.Value || SuspendAutoUpdate)
                 return false;
 
-            return await OfferUpdateIfFound();
+            try
+            {
+                return await OfferUpdateIfFound();
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Auto update failed");
+                return false;
+            }
         }
 
         public async Task<bool> OfferUpdateIfFound()
@@ -186,13 +206,13 @@ namespace Artemis.UI.Services
                 catch (Exception e)
                 {
                     _logger.Warning(e, "GetBuildInfo: Failed to retrieve build info JSON");
-                    return null;
+                    throw;
                 }
             }
             catch (FlurlHttpException e)
             {
                 _logger.Warning("GetBuildInfo: Getting build info, request returned {statusCode}", e.StatusCode);
-                return null;
+                throw;
             }
         }
 
@@ -208,16 +228,16 @@ namespace Artemis.UI.Services
 
         #region Event handlers
 
-        private void CheckForUpdatesOnSettingChanged(object sender, EventArgs e)
+        private async void CheckForUpdatesOnSettingChanged(object sender, EventArgs e)
         {
             // Run an auto-update as soon as the setting gets changed to enabled
             if (_checkForUpdates.Value)
-                AutoUpdate();
+                await AutoUpdate();
         }
 
-        private void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
+        private async void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
         {
-            _logger.Information("Main window opened!");
+            await AutoUpdate();
         }
 
         #endregion
@@ -225,6 +245,8 @@ namespace Artemis.UI.Services
 
     public interface IUpdateService : IArtemisUIService
     {
+        bool SuspendAutoUpdate { get; set; }
+
         /// <summary>
         ///     If auto-update is enabled this will offer updates if found
         /// </summary>

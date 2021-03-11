@@ -174,20 +174,31 @@
                     </StackPanel>
                 </materialDesign:HintAssist.Hint>
             </TextBox>
-
-            <Button Style="{StaticResource MaterialDesignRaisedButton}" Margin="0 8 8 0" Command="{s:Action SelectPhysicalLayout}">
-                SELECT PHYSICAL LAYOUT (PLACEHOLDER)
-            </Button>
         </StackPanel>
 
         <!-- Buttons -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignOutlinedButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Reset}">
-                RESET
+        <Grid Grid.Row="1" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" 
+                    Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 8 8 0" 
+                    Command="{s:Action SelectPhysicalLayout}" 
+                    ToolTip="Restart device setup, allowing you to select a new physical and logical layout">
+                RESTART SETUP
             </Button>
-            <Button Style="{StaticResource MaterialDesignRaisedButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Apply}">
-                APPLY
-            </Button>
-        </StackPanel>
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Reset}">
+                    RESET
+                </Button>
+                <Button Style="{StaticResource MaterialDesignRaisedButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Apply}">
+                    APPLY
+                </Button>
+            </StackPanel>
+        </Grid>
+       
     </Grid>
 </UserControl>

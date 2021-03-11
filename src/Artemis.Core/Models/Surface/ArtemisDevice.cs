@@ -21,6 +21,7 @@ namespace Artemis.Core
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider)
         {
+            Identifier = rgbDevice.GetDeviceIdentifier();
             DeviceEntity = new DeviceEntity();
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
@@ -45,6 +46,7 @@ namespace Artemis.Core
 
         internal ArtemisDevice(IRGBDevice rgbDevice, DeviceProvider deviceProvider, DeviceEntity deviceEntity)
         {
+            Identifier = rgbDevice.GetDeviceIdentifier();
             DeviceEntity = deviceEntity;
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
@@ -58,6 +60,11 @@ namespace Artemis.Core
 
             ApplyKeyboardLayout();
         }
+
+        /// <summary>
+        ///     Gets the (hopefully unique and persistent) ID of this device
+        /// </summary>
+        public string Identifier { get; }
 
         /// <summary>
         ///     Gets the rectangle covering the device
@@ -336,7 +343,7 @@ namespace Artemis.Core
         internal void ApplyToEntity()
         {
             // Other properties are computed
-            DeviceEntity.Id = RgbDevice.GetDeviceIdentifier();
+            DeviceEntity.Id = Identifier;
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)

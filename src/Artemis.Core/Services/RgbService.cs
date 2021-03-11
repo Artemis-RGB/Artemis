@@ -197,7 +197,7 @@ namespace Artemis.Core.Services
         public ArtemisLayout ApplyBestDeviceLayout(ArtemisDevice device)
         {
             ArtemisLayout layout;
-
+            
             // Configured layout path takes precedence over all other options
             if (device.CustomLayoutPath != null)
             {
@@ -239,6 +239,7 @@ namespace Artemis.Core.Services
         public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds)
         {
             device.ApplyLayout(layout, createMissingLeds, removeExessiveLeds);
+            UpdateLedGroup();
         }
 
         public ArtemisDevice? GetDevice(IRGBDevice rgbDevice)

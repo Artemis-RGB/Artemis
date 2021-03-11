@@ -9,6 +9,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Shared.Services;
+using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
 using RGB.NET.Layout;
 using Stylet;
@@ -21,6 +22,7 @@ namespace Artemis.UI.Screens.Settings.Device
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
         private ArtemisLed _selectedLed;
+        private SnackbarMessageQueue _deviceMessageQueue;
 
         public DeviceDialogViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService, IDeviceDebugVmFactory factory)
         {
@@ -38,9 +40,28 @@ namespace Artemis.UI.Screens.Settings.Device
             DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
         }
 
+        protected override void OnInitialActivate()
+        {
+            DeviceMessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
+            Device.DeviceUpdated += DeviceOnDeviceUpdated;
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            Device.DeviceUpdated -= DeviceOnDeviceUpdated;
+            base.OnClose();
+        }
+
         public ArtemisDevice Device { get; }
         public PanZoomViewModel PanZoomViewModel { get; }
-        
+
+        public SnackbarMessageQueue DeviceMessageQueue
+        {
+            get => _deviceMessageQueue;
+            set => SetAndNotify(ref _deviceMessageQueue, value);
+        }
+
         public ArtemisLed SelectedLed
         {
             get => _selectedLed;
@@ -50,7 +71,10 @@ namespace Artemis.UI.Screens.Settings.Device
                 NotifyOfPropertyChange(nameof(SelectedLeds));
             }
         }
-        public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> { SelectedLed } : null;
+
+        public bool CanExportLayout => Device.Layout?.IsValid ?? false;
+
+        public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> {SelectedLed} : null;
 
         public bool CanOpenImageDirectory => Device.Layout?.Image != null;
 
@@ -165,5 +189,14 @@ namespace Artemis.UI.Screens.Settings.Device
         #endregion
 
         // ReSharper restore UnusedMember.Global
+
+        #region Event handlers
+
+        private void DeviceOnDeviceUpdated(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanExportLayout));
+        }
+
+        #endregion
     }
 }

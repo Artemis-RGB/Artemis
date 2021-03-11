@@ -46,7 +46,14 @@ namespace Artemis.Core
         /// </summary>
         public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
             ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))
-            : new BuildInfo();
+            : new BuildInfo
+            {
+                IsLocalBuild = true,
+                BuildId = 1337,
+                BuildNumber = 1337,
+                SourceBranch = "local",
+                SourceVersion = "local"
+            };
 
         /// <summary>
         ///     The plugin used by core components of Artemis
@@ -108,6 +115,6 @@ namespace Artemis.Core
             typeof(float),
             typeof(double),
             typeof(decimal)
-        };  
+        };
     }
 }

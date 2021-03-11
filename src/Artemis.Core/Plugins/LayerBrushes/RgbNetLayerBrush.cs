@@ -29,6 +29,9 @@ namespace Artemis.Core.LayerBrushes
         /// </summary>
         public ListLedGroup? LedGroup { get; internal set; }
 
+        /// <summary>
+        ///     For internal use only, is public for dependency injection but ignore pl0x
+        /// </summary>
         [Inject]
         public IRgbService? RgbService { get; set; }
 
@@ -37,35 +40,6 @@ namespace Artemis.Core.LayerBrushes
         /// </summary>
         /// <returns>Your RGB.NET effect</returns>
         public abstract IBrush GetBrush();
-
-        internal void UpdateLedGroup()
-        {
-            if (LedGroup == null)
-                return;
-
-            if (Layer.Parent != null)
-                LedGroup.ZIndex = Layer.Parent.Children.Count - Layer.Parent.Children.IndexOf(Layer);
-            else
-                LedGroup.ZIndex = 1;
-            
-            List<Led> missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
-            List<Led> extraLeds = LedGroup.Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
-            LedGroup.AddLeds(missingLeds);
-            LedGroup.RemoveLeds(extraLeds);
-            LedGroup.Brush = GetBrush();
-        }
-
-        internal override void Initialize()
-        {
-            if (RgbService == null)
-                throw new ArtemisCoreException("Cannot initialize RGB.NET layer brush because RgbService is not set");
-
-            LedGroup = new ListLedGroup(RgbService.Surface);
-            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
-
-            InitializeProperties();
-            UpdateLedGroup();
-        }
 
         #region IDisposable
 
@@ -86,6 +60,35 @@ namespace Artemis.Core.LayerBrushes
         }
 
         #endregion
+
+        internal void UpdateLedGroup()
+        {
+            if (LedGroup == null)
+                return;
+
+            if (Layer.Parent != null)
+                LedGroup.ZIndex = Layer.Parent.Children.Count - Layer.Parent.Children.IndexOf(Layer);
+            else
+                LedGroup.ZIndex = 1;
+
+            List<Led> missingLeds = Layer.Leds.Where(l => !LedGroup.ContainsLed(l.RgbLed)).Select(l => l.RgbLed).ToList();
+            List<Led> extraLeds = LedGroup.Where(l => Layer.Leds.All(layerLed => layerLed.RgbLed != l)).ToList();
+            LedGroup.AddLeds(missingLeds);
+            LedGroup.RemoveLeds(extraLeds);
+            LedGroup.Brush = GetBrush();
+        }
+
+        internal override void Initialize()
+        {
+            if (RgbService == null)
+                throw new ArtemisCoreException("Cannot initialize RGB.NET layer brush because RgbService is not set");
+
+            LedGroup = new ListLedGroup(RgbService.Surface);
+            Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
+
+            InitializeProperties();
+            UpdateLedGroup();
+        }
 
         // Not used in this effect type
         internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)

@@ -3,17 +3,20 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.Core.Services.Core;
 using Artemis.UI.Properties;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Utilities;
 using Ninject;
 using Serilog.Events;
 using Stylet;
@@ -70,7 +73,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _defaultLayerBrushDescriptor = _settingsService.GetSetting("ProfileEditor.DefaultLayerBrushDescriptor", new LayerBrushReference
             {
                 LayerBrushProviderId = "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
-                BrushType = "ColorBrush"
+                BrushType = "SolidBrush"
             });
 
             WebServerPortSetting = _settingsService.GetSetting("WebServer.Port", 9696);
@@ -274,10 +277,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 return;
 
             CanOfferUpdatesIfFound = false;
-            bool updateFound = await _updateService.OfferUpdateIfFound();
-            if (!updateFound)
-                _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
-            CanOfferUpdatesIfFound = true;
+            try
+            {
+                bool updateFound = await _updateService.OfferUpdateIfFound();
+                if (!updateFound)
+                    _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
+            }
+            catch (Exception exception)
+            {
+                _messageService.ShowMessage($"Failed to check for updates: {exception.Message}");
+            }
+            finally
+            {
+                CanOfferUpdatesIfFound = true;
+            }
         }
 
         protected override void OnInitialActivate()
@@ -296,7 +309,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             if (File.Exists(autoRunFile))
                 File.Delete(autoRunFile);
 
-            // TODO: Don't do anything if running a development build, only auto-run release builds
+            if (Constants.BuildInfo.IsLocalBuild)
+                return;
 
             // Create or remove the task if necessary
             try
@@ -304,26 +318,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 bool taskCreated = false;
                 if (!recreate)
                 {
-                    Process schtasks = new()
-                    {
-                        StartInfo =
-                        {
-                            WindowStyle = ProcessWindowStyle.Hidden,
-                            UseShellExecute = true,
-                            FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                            Arguments = "/TN \"Artemis 2 autorun\""
-                        }
-                    };
-
-                    schtasks.Start();
-                    schtasks.WaitForExit();
-                    taskCreated = schtasks.ExitCode == 0;
+                    taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
                 }
 
                 if (StartWithWindows && !taskCreated)
-                    CreateAutoRunTask();
+                    SettingsUtilities.CreateAutoRunTask(TimeSpan.FromSeconds(AutoRunDelay));
                 else if (!StartWithWindows && taskCreated)
-                    RemoveAutoRunTask();
+                    SettingsUtilities.RemoveAutoRunTask();
             }
             catch (Exception e)
             {
@@ -331,70 +332,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 throw;
             }
         }
-
-        private void CreateAutoRunTask()
-        {
-            XDocument document = XDocument.Parse(Resources.artemis_autorun);
-            XElement task = document.Descendants().First();
-
-            task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Date")
-                .SetValue(DateTime.Now);
-            task.Descendants().First(d => d.Name.LocalName == "RegistrationInfo").Descendants().First(d => d.Name.LocalName == "Author")
-                .SetValue(WindowsIdentity.GetCurrent().Name);
-
-            task.Descendants().First(d => d.Name.LocalName == "Triggers").Descendants().First(d => d.Name.LocalName == "LogonTrigger").Descendants().First(d => d.Name.LocalName == "Delay")
-                .SetValue(TimeSpan.FromSeconds(AutoRunDelay));
-
-            task.Descendants().First(d => d.Name.LocalName == "Principals").Descendants().First(d => d.Name.LocalName == "Principal").Descendants().First(d => d.Name.LocalName == "UserId")
-                .SetValue(WindowsIdentity.GetCurrent().User.Value);
-
-            task.Descendants().First(d => d.Name.LocalName == "Actions").Descendants().First(d => d.Name.LocalName == "Exec").Descendants().First(d => d.Name.LocalName == "WorkingDirectory")
-                .SetValue(Constants.ApplicationFolder);
-            task.Descendants().First(d => d.Name.LocalName == "Actions").Descendants().First(d => d.Name.LocalName == "Exec").Descendants().First(d => d.Name.LocalName == "Command")
-                .SetValue("\"" + Constants.ExecutablePath + "\"");
-
-            string xmlPath = Path.GetTempFileName();
-            using (Stream fileStream = new FileStream(xmlPath, FileMode.Create))
-            {
-                document.Save(fileStream);
-            }
-
-            Process schtasks = new()
-            {
-                StartInfo =
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                    Arguments = $"/Create /XML \"{xmlPath}\" /tn \"Artemis 2 autorun\" /F"
-                }
-            };
-
-            schtasks.Start();
-            schtasks.WaitForExit();
-
-            File.Delete(xmlPath);
-        }
-
-        private void RemoveAutoRunTask()
-        {
-            Process schtasks = new()
-            {
-                StartInfo =
-                {
-                    WindowStyle = ProcessWindowStyle.Hidden,
-                    UseShellExecute = true,
-                    Verb = "runas",
-                    FileName = Path.Combine(Environment.SystemDirectory, "schtasks.exe"),
-                    Arguments = "/Delete /TN \"Artemis 2 autorun\" /f"
-                }
-            };
-
-            schtasks.Start();
-            schtasks.WaitForExit();
-        }
     }
+
+
 
     public enum ApplicationColorScheme
     {

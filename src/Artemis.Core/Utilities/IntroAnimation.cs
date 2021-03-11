@@ -44,7 +44,7 @@ namespace Artemis.Core
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
                     profileEntityLayer.Leds.AddRange(_devices.SelectMany(d => d.Leds).Select(l => new LedEntity
                     {
-                        DeviceIdentifier = l.Device.RgbDevice.GetDeviceIdentifier(),
+                        DeviceIdentifier = l.Device.Identifier,
                         LedName = l.RgbLed.Id.ToString()
                     }));
 

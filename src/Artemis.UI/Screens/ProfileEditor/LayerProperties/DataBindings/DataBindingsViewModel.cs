@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
@@ -14,7 +13,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private ILayerProperty? _selectedDataBinding;
+        private ILayerProperty _selectedDataBinding;
         private int _selectedItemIndex;
         private bool _updating;
 
@@ -95,7 +94,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             SubscribeToSelectedDataBinding();
             base.OnInitialActivate();
         }
-        
+
         protected override void OnActivate()
         {
             SelectedItemIndex = 0;

@@ -15,7 +15,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
-    public class ProfileViewModel : Conductor<CanvasViewModel>.Collection.AllActive, IProfileEditorPanelViewModel, IHandle<MainWindowFocusChangedEvent>, IHandle<MainWindowKeyEvent>
+    public class ProfileViewModel : Conductor<CanvasViewModel>.Collection.AllActive, IProfileEditorPanelViewModel, IHandle<MainWindowKeyEvent>
     {
         private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private bool _canSelectEditTool;
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
-        private PluginSetting<bool> _highlightSelectedLayer;
+        private PluginSetting<bool> _focusSelectedLayer;
         private DateTime _lastUpdate;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
@@ -54,7 +54,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             eventAggregator.Subscribe(this);
         }
-
 
         public bool CanSelectEditTool
         {
@@ -86,10 +85,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _alwaysApplyDataBindings, value);
         }
 
-        public PluginSetting<bool> HighlightSelectedLayer
+        public PluginSetting<bool> FocusSelectedLayer
         {
-            get => _highlightSelectedLayer;
-            set => SetAndNotify(ref _highlightSelectedLayer, value);
+            get => _focusSelectedLayer;
+            set => SetAndNotify(ref _focusSelectedLayer, value);
         }
 
         public VisualizationToolViewModel ActiveToolViewModel
@@ -146,12 +145,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             ApplyActiveProfile();
 
             AlwaysApplyDataBindings = _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
-            HighlightSelectedLayer = _settingsService.GetSetting("ProfileEditor.HighlightSelectedLayer", true);
+            FocusSelectedLayer = _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", true);
 
             _lastUpdate = DateTime.Now;
             _coreService.FrameRendered += OnFrameRendered;
 
-            HighlightSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
+            FocusSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
             _profileEditorService.ProfileSelected += OnProfileSelected;
@@ -164,7 +163,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         protected override void OnClose()
         {
             _coreService.FrameRendered -= OnFrameRendered;
-            HighlightSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
+            FocusSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded -= RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved -= RgbServiceOnDevicesModified;
             _profileEditorService.ProfileSelected -= OnProfileSelected;
@@ -174,7 +173,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
             AlwaysApplyDataBindings.Save();
-            HighlightSelectedLayer.Save();
+            FocusSelectedLayer.Save();
 
             base.OnClose();
         }
@@ -191,8 +190,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             // Add new layers missing a VM
             foreach (Layer layer in layers)
+            {
                 if (layerViewModels.All(vm => vm.Layer != layer))
                     Items.Add(_profileLayerVmFactory.Create(layer, PanZoomViewModel));
+            }
 
             // Remove layers that no longer exist
             IEnumerable<ProfileLayerViewModel> toRemove = layerViewModels.Where(vm => !layers.Contains(vm.Layer));
@@ -209,7 +210,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private void UpdateLedsDimStatus()
         {
             HighlightedLeds.Clear();
-            if (HighlightSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
+            if (FocusSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
                 HighlightedLeds.AddRange(layer.Leds);
         }
 
@@ -234,6 +235,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void ActivateToolByIndex(int value)
         {
+            if (value == 1 && !CanSelectEditTool)
+                return;
+            
             switch (value)
             {
                 case 0:
@@ -262,7 +266,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 Devices.Max(d => d.Rectangle.Right),
                 Devices.Max(d => d.Rectangle.Bottom)
             );
-            
+
             PanZoomViewModel.Reset(rect);
         }
 
@@ -274,12 +278,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             ((IInputElement) sender).CaptureMouse();
             ActiveToolViewModel?.MouseDown(sender, e);
+            e.Handled = false;
         }
 
         public void CanvasMouseUp(object sender, MouseButtonEventArgs e)
         {
             ((IInputElement) sender).ReleaseMouseCapture();
             ActiveToolViewModel?.MouseUp(sender, e);
+            e.Handled = false;
         }
 
         public void CanvasMouseMove(object sender, MouseEventArgs e)
@@ -382,24 +388,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 ActivateToolByIndex(2);
         }
 
-        public void Handle(MainWindowFocusChangedEvent message)
-        {
-            // if (PauseRenderingOnFocusLoss == null || ScreenState != ScreenState.Active)
-            //     return;
-            //
-            // try
-            // {
-            //     if (PauseRenderingOnFocusLoss.Value && !message.IsFocused)
-            //         _updateTrigger.Stop();
-            //     else if (PauseRenderingOnFocusLoss.Value && message.IsFocused)
-            //         _updateTrigger.Start();
-            // }
-            // catch (NullReferenceException)
-            // {
-            //     // TODO: Remove when fixed in RGB.NET, or avoid double stopping
-            // }
-        }
-
         public void Handle(MainWindowKeyEvent message)
         {
             if (message.KeyDown)
@@ -412,6 +400,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 }
 
                 ActiveToolViewModel?.KeyDown(message.EventArgs);
+
+                // If T is pressed while Ctrl is down, that makes it Ctrl+T > swap to transformation tool on Ctrl release
+                if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.LeftCtrl))
+                {
+                    if (message.EventArgs.Key == Key.T)
+                        _previousTool = 1;
+                    else if (message.EventArgs.Key == Key.Q)
+                        _previousTool = 2;
+                    else if (message.EventArgs.Key == Key.W)
+                        _previousTool = 3;
+                }
             }
             else
             {

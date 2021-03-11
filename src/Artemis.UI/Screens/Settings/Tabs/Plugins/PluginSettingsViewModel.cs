@@ -117,20 +117,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         protected override void OnInitialActivate()
         {
-            Plugin.FeatureAdded += PluginOnFeatureAdded;
-            Plugin.FeatureRemoved += PluginOnFeatureRemoved;
-            foreach (PluginFeature pluginFeature in Plugin.Features)
-                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeature));
+            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
+                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
 
             base.OnInitialActivate();
-        }
-
-        protected override void OnClose()
-        {
-            Plugin.FeatureAdded -= PluginOnFeatureAdded;
-            Plugin.FeatureRemoved -= PluginOnFeatureRemoved;
-
-            base.OnClose();
         }
 
         private async Task UpdateEnabled(bool enable)
@@ -177,18 +167,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));
-        }
-
-        private void PluginOnFeatureRemoved(object sender, PluginFeatureEventArgs e)
-        {
-            PluginFeatureViewModel viewModel = Items.FirstOrDefault(i => i.Feature == e.PluginFeature);
-            if (viewModel != null)
-                Items.Remove(viewModel);
-        }
-
-        private void PluginOnFeatureAdded(object sender, PluginFeatureEventArgs e)
-        {
-            Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(e.PluginFeature));
         }
     }
 }
