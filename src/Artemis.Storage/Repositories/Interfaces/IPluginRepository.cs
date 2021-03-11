@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Storage.Entities.Plugins;
 
 namespace Artemis.Storage.Repositories.Interfaces
@@ -8,9 +9,15 @@ namespace Artemis.Storage.Repositories.Interfaces
         void AddPlugin(PluginEntity pluginEntity);
         PluginEntity GetPluginByGuid(Guid pluginGuid);
         void SavePlugin(PluginEntity pluginEntity);
+        
         void AddSetting(PluginSettingEntity pluginSettingEntity);
         PluginSettingEntity GetSettingByGuid(Guid pluginGuid);
         PluginSettingEntity GetSettingByNameAndGuid(string name, Guid pluginGuid);
         void SaveSetting(PluginSettingEntity pluginSettingEntity);
+
+        void AddQueuedAction(PluginQueuedActionEntity pluginQueuedActionEntity);
+        List<PluginQueuedActionEntity> GetQueuedActions();
+        List<PluginQueuedActionEntity> GetQueuedActions(Guid pluginGuid);
+        void RemoveQueuedAction(PluginQueuedActionEntity pluginQueuedActionEntity);
     }
 }

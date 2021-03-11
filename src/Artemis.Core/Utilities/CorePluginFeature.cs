@@ -9,7 +9,7 @@ namespace Artemis.Core
     {
         public CorePluginFeature()
         {
-            Constants.CorePlugin.AddFeature(this);
+            Constants.CorePlugin.AddFeature(new PluginFeatureInfo(Constants.CorePlugin, null, this));
             IsEnabled = true;
         }
 

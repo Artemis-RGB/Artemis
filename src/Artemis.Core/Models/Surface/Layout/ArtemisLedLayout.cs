@@ -5,6 +5,9 @@ using RGB.NET.Layout;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a LED layout decorated with extra Artemis-specific data
+    /// </summary>
     public class ArtemisLedLayout
     {
         internal ArtemisLedLayout(ArtemisLayout deviceLayout, ILedLayout led)

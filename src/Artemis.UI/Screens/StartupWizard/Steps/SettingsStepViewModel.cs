@@ -7,6 +7,7 @@ using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Utilities;
 using Stylet;
 
 namespace Artemis.UI.Screens.StartupWizard.Steps
@@ -34,7 +35,7 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
                 _settingsService.GetSetting("UI.AutoRun", false).Value = value;
                 _settingsService.GetSetting("UI.AutoRun", false).Save();
                 NotifyOfPropertyChange(nameof(StartWithWindows));
-                Task.Run(ApplyAutorun);
+                Task.Run(() => ApplyAutorun(false));
             }
         }
 
@@ -59,23 +60,35 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             }
         }
 
-        private void ApplyAutorun()
+        private void ApplyAutorun(bool recreate)
         {
+            if (!StartWithWindows)
+                StartMinimized = false;
+
+            // Remove the old auto-run method of placing a shortcut in shell:startup
+            string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
+            if (File.Exists(autoRunFile))
+                File.Delete(autoRunFile);
+
+            // Local builds shouldn't auto-run, this is just annoying
+            // if (Constants.BuildInfo.IsLocalBuild)
+            //     return;
+
+            // Create or remove the task if necessary
             try
             {
-                string autoRunFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "Artemis.lnk");
-                string executableFile = Constants.ExecutablePath;
+                bool taskCreated = false;
+                if (!recreate)
+                    taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
 
-                if (File.Exists(autoRunFile))
-                    File.Delete(autoRunFile);
-                if (StartWithWindows)
-                    ShortcutUtilities.Create(autoRunFile, executableFile, "--autorun", new FileInfo(executableFile).DirectoryName, "Artemis", "", "");
-                else
-                    StartMinimized = false;
+                if (StartWithWindows && !taskCreated)
+                    SettingsUtilities.CreateAutoRunTask(TimeSpan.FromSeconds(15));
+                else if (!StartWithWindows && taskCreated)
+                    SettingsUtilities.RemoveAutoRunTask();
             }
             catch (Exception e)
             {
-                _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e);
+                Execute.PostToUIThread(() => _dialogService.ShowExceptionDialog("An exception occured while trying to apply the auto run setting", e));
                 throw;
             }
         }

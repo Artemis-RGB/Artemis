@@ -61,7 +61,7 @@ namespace Artemis.Core.Services
             server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
 
             // Store the URL in a webserver.txt file so that remote applications can find it
-            File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), url);
+            File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), $"http://localhost:{_webServerPortSetting.Value}/");
 
             return server;
         }

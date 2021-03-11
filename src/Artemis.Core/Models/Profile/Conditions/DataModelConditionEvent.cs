@@ -38,6 +38,9 @@ namespace Artemis.Core
         /// </summary>
         public DataModelPath? EventPath { get; private set; }
 
+        /// <summary>
+        ///     Gets the last time the event this condition is applied to was triggered
+        /// </summary>
         public DateTime LastTrigger { get; private set; }
 
         /// <summary>
@@ -53,7 +56,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionEvent");
 
-            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent) 
+            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent)
                 return false;
             // Only evaluate to true once every time the event has been triggered since the last evaluation
             if (dataModelEvent.LastTrigger <= LastTrigger)
@@ -67,7 +70,6 @@ namespace Artemis.Core
 
             // If there are no children, we always evaluate to true whenever the event triggered
             return true;
-
         }
 
         /// <summary>
@@ -131,7 +133,7 @@ namespace Artemis.Core
             // Target list
             EventPath?.Save();
             Entity.EventPath = EventPath?.Entity;
-            
+
             // Children
             Entity.Children.Clear();
             Entity.Children.AddRange(Children.Select(c => c.GetEntity()));

@@ -146,7 +146,8 @@ namespace Artemis.Core.Services
 
             void ActivatingProfilePluginToggle(object? sender, PluginEventArgs e)
             {
-                InstantiateProfile(profile);
+                if (!profile.Disposed)
+                    InstantiateProfile(profile);
             }
 
             // This could happen during activation so subscribe to it
