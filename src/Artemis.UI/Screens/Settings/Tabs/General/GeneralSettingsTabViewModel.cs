@@ -274,10 +274,20 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 return;
 
             CanOfferUpdatesIfFound = false;
-            bool updateFound = await _updateService.OfferUpdateIfFound();
-            if (!updateFound)
-                _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
-            CanOfferUpdatesIfFound = true;
+            try
+            {
+                bool updateFound = await _updateService.OfferUpdateIfFound();
+                if (!updateFound)
+                    _messageService.ShowMessage("You are already running the latest Artemis build. (☞ﾟヮﾟ)☞");
+            }
+            catch (Exception exception)
+            {
+                _messageService.ShowMessage($"Failed to check for updates: {exception.Message}");
+            }
+            finally
+            {
+                CanOfferUpdatesIfFound = true;
+            }
         }
 
         protected override void OnInitialActivate()
