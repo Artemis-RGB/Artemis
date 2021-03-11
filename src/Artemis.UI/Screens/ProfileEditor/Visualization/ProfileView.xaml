@@ -11,6 +11,7 @@
              d:DesignHeight="510.9" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type visualization:ProfileViewModel}}">
     <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
@@ -23,16 +24,16 @@
                             <StackPanel Orientation="Vertical" />
                         </ItemsPanelTemplate>
                     </ListBox.ItemsPanel>
-                    <ListBoxItem ToolTip="Pan over different parts of the surface">
+                    <ListBoxItem ToolTip="Pan over different parts of the surface - Ctrl">
                         <materialDesign:PackIcon Kind="HandLeft" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Transform layer shape (hold SHIFT for incremental changes and X/Y snapping)" IsEnabled="{Binding CanSelectEditTool}">
+                    <ListBoxItem ToolTip="Transform layer shape (hold SHIFT for incremental changes and X/Y snapping) - Ctrl+T" IsEnabled="{Binding CanSelectEditTool}">
                         <materialDesign:PackIcon Kind="TransitConnectionVariant" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection)">
+                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection) - Ctrl+Q">
                         <materialDesign:PackIcon Kind="SelectionDrag" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Remove from layer selection">
+                    <ListBoxItem ToolTip="Remove from layer selection - Ctrl+W">
                         <materialDesign:PackIcon Kind="SelectOff" />
                     </ListBoxItem>
                 </ListBox>
@@ -133,9 +134,9 @@
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">
                         <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
-                                  IsChecked="{Binding HighlightSelectedLayer.Value}"
+                                  IsChecked="{Binding FocusSelectedLayer.Value}"
                                   ToolTip="If selected, dims all LEDs that are not part of the selected layer">
-                            Highlight LEDs of selected layer
+                            Focus selected layer
                         </CheckBox>
                         <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
                                   Margin="10 0 0 0" 
