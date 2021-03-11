@@ -32,13 +32,20 @@
             <ProgressBar IsIndeterminate="True" />
         </StackPanel>
 
-        <ItemsControl ItemsSource="{Binding Changes}" Visibility="{Binding RetrievingChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-            <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}"></TextBlock>
-                </DataTemplate>
-            </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <Grid Visibility="{Binding RetrievingChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+            <ItemsControl ItemsSource="{Binding Changes}" Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}"></TextBlock>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock  Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                        Foreground="{DynamicResource MaterialDesignBodyLight}">
+                Couldn't retrieve changes, sorry :(
+            </TextBlock>
+        </Grid>
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
             <Button Style="{StaticResource MaterialDesignFlatButton}"

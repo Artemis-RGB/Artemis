@@ -38,5 +38,10 @@ namespace Artemis.Core.Services.Core
         /// </summary>
         [JsonProperty]
         public string SourceVersion { get; internal set; } = null!;
+
+        /// <summary>
+        /// Gets a boolean indicating whether the current build is a local build
+        /// </summary>
+        public bool IsLocalBuild { get; internal set; }
     }
 }
