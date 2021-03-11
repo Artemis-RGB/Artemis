@@ -11,25 +11,32 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginFeatureViewModel : Screen
     {
+        private readonly ICoreService _coreService;
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
         private readonly IMessageService _messageService;
 
-        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo,
+        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
+            bool showShield,
+            ICoreService coreService,
             IDialogService dialogService,
             IPluginManagementService pluginManagementService,
             IMessageService messageService)
         {
+            _coreService = coreService;
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
             _messageService = messageService;
 
             FeatureInfo = pluginFeatureInfo;
+            ShowShield = FeatureInfo.Plugin.Info.RequiresAdmin && showShield;
         }
 
         public PluginFeatureInfo FeatureInfo { get; }
         public Exception LoadException => FeatureInfo.Instance?.LoadException;
+
+        public bool ShowShield { get; }
 
         public bool Enabling
         {
@@ -95,6 +102,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 try
                 {
+                    if (FeatureInfo.Plugin.Info.RequiresAdmin && !_coreService.IsElevated)
+                    {
+                        bool confirmed = await _dialogService.ShowConfirmDialog("Enable feature", "The plugin of this feature requires admin rights, are you sure you want to enable it?");
+                        if (!confirmed)
+                        {
+                            NotifyOfPropertyChange(nameof(IsEnabled));
+                            return;
+                        }
+                    }
+
                     await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance, true));
                 }
                 catch (Exception e)

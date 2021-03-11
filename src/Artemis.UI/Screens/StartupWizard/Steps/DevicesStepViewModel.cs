@@ -31,7 +31,7 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             IEnumerable<PluginFeatureInfo> features = _pluginManagementService.GetAllPlugins()
                 .SelectMany(p => p.Features.Where(f => typeof(DeviceProvider).IsAssignableFrom(f.FeatureType)))
                 .OrderBy(d => d.GetType().Name);
-            Items.AddRange(features.Select(d => _settingsVmFactory.CreatePluginFeatureViewModel(d)));
+            Items.AddRange(features.Select(d => _settingsVmFactory.CreatePluginFeatureViewModel(d, true)));
 
             base.OnActivate();
         }

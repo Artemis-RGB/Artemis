@@ -45,8 +45,17 @@
         <TextBlock Grid.Column="1" Text="{Binding FeatureInfo.Name}" Style="{StaticResource MaterialDesignTextBlock}" VerticalAlignment="Center" ToolTip="{Binding FeatureInfo.Description}" />
 
         <!-- Enable toggle column -->
-        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="8"
-                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay, FallbackValue=Collapsed}">
+        <StackPanel Grid.Column="2"
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Center" 
+                    Margin="8"
+                    Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay, FallbackValue=Collapsed}"
+                    Orientation="Horizontal">
+            <materialDesign:PackIcon Kind="ShieldHalfFull"
+                                     ToolTip="Plugin requires admin rights"
+                                     VerticalAlignment="Center"
+                                     Margin="0 0 5 0"
+                                     Visibility="{Binding ShowShield, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
             <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}" IsEnabled="{Binding FeatureInfo.Plugin.IsEnabled}">
                 Feature enabled
             </CheckBox>

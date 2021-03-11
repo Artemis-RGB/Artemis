@@ -118,7 +118,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         protected override void OnInitialActivate()
         {
             foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
-                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo));
+                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
 
             base.OnInitialActivate();
         }

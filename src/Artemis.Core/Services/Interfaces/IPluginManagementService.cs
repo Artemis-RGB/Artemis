@@ -71,7 +71,7 @@ namespace Artemis.Core.Services
         Plugin ImportPlugin(string fileName);
 
         /// <summary>
-        /// Unloads and permanently removes the provided plugin
+        ///     Unloads and permanently removes the provided plugin
         /// </summary>
         /// <param name="plugin">The plugin to remove</param>
         void RemovePlugin(Plugin plugin);
@@ -126,6 +126,13 @@ namespace Artemis.Core.Services
         /// <param name="device"></param>
         /// <returns></returns>
         DeviceProvider GetDeviceProviderByDevice(IRGBDevice device);
+
+        /// <summary>
+        ///     Queues an action for the provided plugin for the next time Artemis starts, before plugins are loaded
+        /// </summary>
+        /// <param name="plugin">The plugin to queue the action for</param>
+        /// <param name="pluginAction">The action to take</param>
+        void QueuePluginAction(Plugin plugin, PluginManagementAction pluginAction);
 
         #region Events
 
