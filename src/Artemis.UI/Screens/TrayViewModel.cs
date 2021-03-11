@@ -50,14 +50,13 @@ namespace Artemis.UI.Screens
             messageService.ConfigureNotificationProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
             bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
-            if (!autoRunning || showOnAutoRun)
+
+            if (autoRunning && !showOnAutoRun)
+                coreService.Initialized += (_, _) => updateService.AutoUpdate();
+            else
             {
                 ShowSplashScreen();
                 coreService.Initialized += (_, _) => TrayBringToForeground();
-            }
-            else
-            {
-                coreService.Initialized += (_, _) => updateService.AutoUpdate();
             }
         }
 
