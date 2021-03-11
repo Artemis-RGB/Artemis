@@ -27,6 +27,7 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginRepository _pluginRepository;
         private readonly List<Plugin> _plugins;
+        private bool _isElevated;
 
         public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
         {
@@ -34,6 +35,8 @@ namespace Artemis.Core.Services
             _logger = logger;
             _pluginRepository = pluginRepository;
             _plugins = new List<Plugin>();
+
+            ProcessQueuedActions();
         }
 
         private void CopyBuiltInPlugin(FileInfo zipFileInfo, ZipArchive zipArchive)
@@ -181,6 +184,7 @@ namespace Artemis.Core.Services
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 
+            _isElevated = isElevated;
             LoadingPlugins = true;
 
             // Unload all currently loaded plugins first
@@ -203,7 +207,7 @@ namespace Artemis.Core.Services
             // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
             _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
 
-            bool adminRequired = _plugins.Any(p => p.Entity.IsEnabled && p.Info.RequiresAdmin);
+            bool adminRequired = _plugins.Any(p => p.Info.RequiresAdmin && p.Entity.IsEnabled && p.Entity.Features.Any(f => f.IsEnabled));
             if (!isElevated && adminRequired)
             {
                 _logger.Information("Restarting because one or more plugins requires elevation");
@@ -335,6 +339,19 @@ namespace Artemis.Core.Services
         {
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
+
+            if (plugin.Info.RequiresAdmin && plugin.Entity.Features.Any(f => f.IsEnabled) && !_isElevated)
+            {
+                if (!saveState)
+                    throw new ArtemisCoreException("Cannot enable a plugin that requires elevation without saving it's state.");
+
+                plugin.Entity.IsEnabled = true;
+                SavePlugin(plugin);
+
+                _logger.Information("Restarting because a newly enabled plugin requires elevation");
+                Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+                return;
+            }
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
@@ -523,6 +540,21 @@ namespace Artemis.Core.Services
             _logger.Verbose("Enabling plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
 
             OnPluginFeatureEnabling(new PluginFeatureEventArgs(pluginFeature));
+
+            if (pluginFeature.Plugin.Info.RequiresAdmin && !_isElevated)
+            {
+                if (!saveState)
+                    throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
+
+                pluginFeature.Entity.IsEnabled = true;
+                pluginFeature.Plugin.Entity.IsEnabled = true;
+                SavePlugin(pluginFeature.Plugin);
+
+                _logger.Information("Restarting because a newly enabled feature requires elevation");
+                Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
+                return;
+            }
+
             try
             {
                 pluginFeature.SetEnabled(true, isAutoEnable);
@@ -581,6 +613,34 @@ namespace Artemis.Core.Services
                     _logger.Verbose("Successfully disabled plugin feature {feature} - {plugin}", pluginFeature, pluginFeature.Plugin);
                     OnPluginFeatureDisabled(new PluginFeatureEventArgs(pluginFeature));
                 }
+            }
+        }
+
+        #endregion
+
+        #region Queued actions
+
+        public void QueuePluginAction(Plugin plugin, PluginManagementAction pluginAction)
+        {
+            List<PluginQueuedActionEntity> existing = _pluginRepository.GetQueuedActions(plugin.Guid);
+            if (existing.Any(e => pluginAction == PluginManagementAction.Delete && e is PluginQueuedDeleteEntity))
+                return;
+
+            if (pluginAction == PluginManagementAction.Delete)
+                _pluginRepository.AddQueuedAction(new PluginQueuedDeleteEntity {PluginGuid = plugin.Guid, Directory = plugin.Directory.FullName});
+        }
+
+        private void ProcessQueuedActions()
+        {
+            foreach (PluginQueuedActionEntity pluginQueuedActionEntity in _pluginRepository.GetQueuedActions())
+            {
+                if (pluginQueuedActionEntity is PluginQueuedDeleteEntity deleteAction)
+                {
+                    if (Directory.Exists(deleteAction.Directory))
+                        Directory.Delete(deleteAction.Directory, true);
+                }
+
+                _pluginRepository.RemoveQueuedAction(pluginQueuedActionEntity);
             }
         }
 
@@ -672,5 +732,21 @@ namespace Artemis.Core.Services
         }
 
         #endregion
+    }
+
+    /// <summary>
+    ///     Represents a type of plugin management action
+    /// </summary>
+    public enum PluginManagementAction
+    {
+        /// <summary>
+        ///     A plugin management action that removes a plugin
+        /// </summary>
+        Delete,
+
+        // /// <summary>
+        // ///     A plugin management action that updates a plugin
+        // /// </summary>
+        // Update
     }
 }
