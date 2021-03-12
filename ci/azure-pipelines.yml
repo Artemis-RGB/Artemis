@@ -83,7 +83,7 @@ steps:
           $a.Version = $buidNumber;
           $a | ConvertTo-Json | Set-Content $_.FullName
       }
-    workingDirectory: 's/Artemis.Plugins'
+    workingDirectory: 'Artemis.Plugins'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish Artemis.Plugins'
