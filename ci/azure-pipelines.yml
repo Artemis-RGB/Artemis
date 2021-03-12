@@ -25,6 +25,7 @@ pool:
 variables:
   artemisSolution: '**/Artemis.sln'
   rgbSolution: '**/RGB.NET.sln'
+  pluginProjects: '**/Artemis.Plugins.*.csproj'
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
   SourceBranch: $(Build.SourceBranch)
