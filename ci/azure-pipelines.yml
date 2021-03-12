@@ -6,37 +6,44 @@
 trigger:
 - master
 
+resources:
+  repositories:
+  - repository: RGBNET
+    type: github
+    endpoint: github.com_SpoinkyNL
+    name: DarthAffe/RGB.NET
+    ref: Development
+  - repository: Plugins
+    type: github
+    endpoint: github.com_SpoinkyNL
+    name: Artemis-RGB/Artemis.Plugins
+    ref: master    
+
 pool:
   vmImage: 'windows-latest'
 
 variables:
   artemisSolution: '**/Artemis.sln'
-  NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+  rgbSolution: '**/RGB.NET.sln'
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
   SourceBranch: $(Build.SourceBranch)
   SourceVersion: $(Build.SourceVersion)
   
 steps:
+- checkout: RGBNET
+  path: s/RGB.NET
 - checkout: self
   path: s/Artemis
-
-- task: DownloadPipelineArtifact@2
-  inputs:
-    buildType: 'specific'
-    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
-    definition: '3'
-    buildVersionToDownload: 'latest'
-    artifactName: 'RGB.NET development build'
-    targetPath: '$(Pipeline.Workspace)/s/RGB.NET/bin/net5.0'
+- checkout: Plugins
+  path: s/Artemis.Plugins
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet restore Artemis'
+  displayName: 'Build RGB.NET'
   inputs:
-    command: 'restore'
-    projects: '$(artemisSolution)'
-    feedsToUse: 'config'
-    nugetConfigPath: '$(Pipeline.Workspace)/s/Artemis/src/NuGet.Config'
+    command: 'build'
+    projects: '$(rgbSolution)'
+    arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
   displayName: 'Publish Artemis'
@@ -48,14 +55,14 @@ steps:
     zipAfterPublish: false
     modifyOutputPath: false
 
-- task: DownloadPipelineArtifact@2
+- task: PowerShell@2
+  displayName: 'Create buildinfo.json'
   inputs:
-    buildType: 'specific'
-    project: '882fdc71-c09c-4923-8ab0-2cd9fcf0656d'
-    definition: '2'
-    buildVersionToDownload: 'latest'
-    artifactName: 'Artemis build'
-    targetPath: '$(Build.ArtifactStagingDirectory)/build'
+    targetType: 'inline'
+    script: |
+      $OFS = "`r`n"
+       SET-Content -Path 'buildinfo.json' -Value ('{' + $OFS + '    "BuildId": 0,' + $OFS + '    "BuildNumber": 0.0,' + $OFS + '    "SourceBranch": "",' + $OFS + '    "SourceVersion": ""' + $OFS + '}')
+    workingDirectory: '$(Build.ArtifactStagingDirectory)/build'
 
 - task: FileTransform@1
   displayName: 'Populate buildinfo.json'
@@ -63,6 +70,29 @@ steps:
     folderPath: '$(Build.ArtifactStagingDirectory)/build'
     fileType: 'json'
     targetFiles: '**/buildinfo.json'
+
+- task: PowerShell@2
+  displayName: 'Insert build number into plugin.json'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Get-ChildItem -Recurse -Filter plugin.json  | 
+      Foreach-Object {
+          $buidNumber = "1.0.1." + $Env:BUILD_BUILDID;
+          $a = Get-Content $_.FullName | ConvertFrom-Json
+          $a.Version = $buidNumber;
+          $a | ConvertTo-Json | Set-Content $_.FullName
+      }
+    workingDirectory: 's/Artemis.Plugins'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Publish Artemis.Plugins'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build/Plugins'
+    projects: '$(pluginProjects)'
+    zipAfterPublish: true
 
 - task: PublishPipelineArtifact@1
   displayName: 'Upload build to Azure Pipelines'
