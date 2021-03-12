@@ -40,14 +40,14 @@ steps:
   path: s/Artemis.Plugins
 
 - task: DotNetCoreCLI@2
-  displayName: 'Build RGB.NET'
+  displayName: 'RGB.NET - Build'
   inputs:
     command: 'build'
     projects: '$(rgbSolution)'
     arguments: '--configuration Release'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish Artemis'
+  displayName: 'Artemis - Publish'
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -57,7 +57,7 @@ steps:
     modifyOutputPath: false
 
 - task: PowerShell@2
-  displayName: 'Create buildinfo.json'
+  displayName: 'Artemis - Create buildinfo.json'
   inputs:
     targetType: 'inline'
     script: |
@@ -66,14 +66,21 @@ steps:
     workingDirectory: '$(Build.ArtifactStagingDirectory)/build'
 
 - task: FileTransform@1
-  displayName: 'Populate buildinfo.json'
+  displayName: 'Artemis - Populate buildinfo.json'
   inputs:
     folderPath: '$(Build.ArtifactStagingDirectory)/build'
     fileType: 'json'
     targetFiles: '**/buildinfo.json'
 
+- task: CopyFiles@2
+  displayName: 'Plugins - Prepare Artemis binaries'
+  inputs:
+    SourceFolder: '$(Build.ArtifactStagingDirectory)/build'
+    Contents: '**'
+    TargetFolder: 'Artemis/src/Artemis.UI/bin/x64/Debug/net5.0-windows'
+
 - task: PowerShell@2
-  displayName: 'Insert build number into plugin.json'
+  displayName: 'Plugins - Insert build number into plugin.json'
   inputs:
     targetType: 'inline'
     script: |
@@ -87,7 +94,7 @@ steps:
     workingDirectory: 'Artemis.Plugins'
 
 - task: DotNetCoreCLI@2
-  displayName: 'Publish Artemis.Plugins'
+  displayName: 'Plugins - Publish'
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -103,6 +110,7 @@ steps:
     publishLocation: 'pipeline'
 
 - task: ArchiveFiles@2
+  displayName: 'ZIP binaries'
   inputs:
     rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
     includeRootFolder: false
@@ -111,13 +119,14 @@ steps:
     replaceExistingArchive: true
 
 - task: PowerShell@2
+  displayName: 'Calculate ZIP hash'
   inputs:
     targetType: 'inline'
     script: '(Get-FileHash .\artemis-build.zip).Hash | Out-File -FilePath .\hash.txt'
     workingDirectory: '$(Build.ArtifactStagingDirectory)/archive'
 
 - task: FtpUpload@2
-  displayName: "Binaries FTP upload"
+  displayName: 'Upload binaries to FTP'
   inputs:
     credentialsOption: 'inputs'
     serverUrl: 'ftp://artemis-rgb.com'
