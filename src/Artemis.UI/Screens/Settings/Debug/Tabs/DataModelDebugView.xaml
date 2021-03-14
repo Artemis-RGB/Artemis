@@ -66,11 +66,16 @@
             </StackPanel>
 
         </Grid>
-        <TreeView Grid.Row="1" ItemsSource="{Binding MainDataModel.Children}" HorizontalContentAlignment="Stretch">
+        <TreeView Grid.Row="1" 
+                  ItemsSource="{Binding MainDataModel.Children}"
+                  HorizontalContentAlignment="Stretch"
+                  VirtualizingStackPanel.IsVirtualizing="True"
+                  VirtualizingStackPanel.VirtualizationMode="Recycling">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
                 </Style>
+
                 <HierarchicalDataTemplate DataType="{x:Type dataModel:DataModelPropertiesViewModel}" ItemsSource="{Binding Children}">
                     <Grid>
                         <Grid.ColumnDefinitions>
