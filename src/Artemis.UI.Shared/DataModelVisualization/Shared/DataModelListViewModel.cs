@@ -116,7 +116,7 @@ namespace Artemis.UI.Shared
                 index++;
             }
 
-            ListCount = index + 1;
+            ListCount = index;
 
             while (ListChildren.Count > ListCount)
                 ListChildren.RemoveAt(ListChildren.Count - 1);
