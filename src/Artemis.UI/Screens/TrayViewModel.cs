@@ -49,15 +49,15 @@ namespace Artemis.UI.Screens
             windowService.ConfigureMainWindowProvider(this);
             messageService.ConfigureNotificationProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
+            bool minimized = Bootstrapper.StartupArguments.Contains("--minimized");
             bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
-            if (!autoRunning || showOnAutoRun)
+
+            if (autoRunning && !showOnAutoRun || minimized)
+                coreService.Initialized += (_, _) => updateService.AutoUpdate();
+            else
             {
                 ShowSplashScreen();
                 coreService.Initialized += (_, _) => TrayBringToForeground();
-            }
-            else
-            {
-                coreService.Initialized += (_, _) => updateService.AutoUpdate();
             }
         }
 

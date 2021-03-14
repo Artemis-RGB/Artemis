@@ -39,6 +39,9 @@
             </VisualBrush.Visual>
         </VisualBrush>
     </UserControl.Resources>
+    <UserControl.InputBindings>
+        <KeyBinding Key="Delete" Command="{s:Action RemoveColorStop}" CommandParameter="{Binding SelectedColorStopViewModel}"/>
+    </UserControl.InputBindings>
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />

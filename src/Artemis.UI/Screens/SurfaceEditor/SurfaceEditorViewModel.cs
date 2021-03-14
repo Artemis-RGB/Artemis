@@ -281,7 +281,6 @@ namespace Artemis.UI.Screens.SurfaceEditor
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseMove(object sender, MouseEventArgs e)
         {
-            ((Grid) sender).Focus();
             // If holding down Ctrl, pan instead of move/select
             if (IsPanKeyDown())
             {
