@@ -209,6 +209,13 @@
                                       ToolTip="If selected, each device is completely lid up with a random color">
                                 Show random device colors
                             </CheckBox>
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                                      IsChecked="{Binding ColorFirstLedOnly}"
+                                      IsEnabled="{Binding ColorDevices}"
+                                      ToolTip="If selected, only the first LED of each device is lid up, aiding with rotation settings"
+                                      Margin="5 0 0 0">
+                                Light up first LED only
+                            </CheckBox>
                         </StackPanel>
                     </materialDesign:Card>
                 </StackPanel>
