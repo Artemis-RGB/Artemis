@@ -66,6 +66,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             Execute.PostToUIThread(() =>
             {
+                // TODO: Remove, frames shouldn't even be rendered if this is the case
                 if (e.Texture.Bitmap.Pixels.Length == 0)
                     return;
 
