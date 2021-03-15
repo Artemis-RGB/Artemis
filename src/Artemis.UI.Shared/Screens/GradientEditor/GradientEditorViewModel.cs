@@ -65,6 +65,9 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public void RemoveColorStop(ColorStopViewModel colorStopViewModel)
         {
+            if (colorStopViewModel == null)
+                return;
+
             ColorStopViewModels.Remove(colorStopViewModel);
             ColorGradient.Stops.Remove(colorStopViewModel.ColorStop);
             ColorGradient.OnColorValuesUpdated();
