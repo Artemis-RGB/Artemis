@@ -136,16 +136,15 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (!ColorDevices)
                 return;
 
+            e.Canvas.Clear(new SKColor(0, 0, 0));
             foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
             {
                 // Order by position to accurately get the first LED
-                List<ArtemisLed> leds = listDeviceViewModel.Device.Leds.OrderBy(l => l.Rectangle.Left).ThenBy(l => l.Rectangle.Top).ToList();
+                List<ArtemisLed> leds = listDeviceViewModel.Device.Leds.OrderBy(l => l.RgbLed.Location.Y).ThenBy(l => l.RgbLed.Location.X).ToList();
                 for (int index = 0; index < leds.Count; index++)
                 {
                     ArtemisLed artemisLed = leds[index];
-                    if (ColorFirstLedOnly && index > 0)
-                        e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = new SKColor(0, 0, 0)});
-                    else
+                    if (ColorFirstLedOnly && index == 0 || !ColorFirstLedOnly)
                         e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
                 }
             }
