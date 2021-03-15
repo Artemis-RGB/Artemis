@@ -64,5 +64,15 @@ namespace Artemis.Core
             DataBinding = new DataBinding<TLayerProperty, TProperty>(LayerProperty, dataBinding);
             return DataBinding;
         }
+
+        /// <inheritdoc />
+        public void ClearDataBinding()
+        {
+            if (DataBinding == null)
+                return;
+
+            // The related entity is left behind, just in case the data binding is added back later
+            LayerProperty.DisableDataBinding(DataBinding);
+        }
     }
 }
