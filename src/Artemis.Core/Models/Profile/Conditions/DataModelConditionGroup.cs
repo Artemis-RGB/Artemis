@@ -94,19 +94,14 @@ namespace Artemis.Core
 
         private bool EvaluateWithOperator(IEnumerable<DataModelConditionPart> targets)
         {
-            switch (BooleanOperator)
+            return BooleanOperator switch
             {
-                case BooleanOperator.And:
-                    return targets.All(c => c.Evaluate());
-                case BooleanOperator.Or:
-                    return targets.Any(c => c.Evaluate());
-                case BooleanOperator.AndNot:
-                    return targets.All(c => !c.Evaluate());
-                case BooleanOperator.OrNot:
-                    return targets.Any(c => !c.Evaluate());
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                BooleanOperator.And => targets.All(c => c.Evaluate()),
+                BooleanOperator.Or => targets.Any(c => c.Evaluate()),
+                BooleanOperator.AndNot => targets.All(c => !c.Evaluate()),
+                BooleanOperator.OrNot => targets.Any(c => !c.Evaluate()),
+                _ => throw new ArgumentOutOfRangeException()
+            };
         }
 
         #region IDisposable

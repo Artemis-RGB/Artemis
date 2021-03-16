@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             base.OnClose();
         }
 
-        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
             foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> dataBindingConditionViewModel in Items)
                 dataBindingConditionViewModel.Evaluate();

@@ -10,12 +10,15 @@ namespace Artemis.Core
     /// </summary>
     public sealed class SKTexture : PixelTexture<byte>, IDisposable
     {
+        private bool _disposed;
+
         #region Constructors
 
-        internal SKTexture(SKBitmap bitmap)
-            : base(bitmap.Width, bitmap.Height, 4, new AverageByteSampler())
+        internal SKTexture(int width, int height, float renderScale)
+            : base(width, height, 4, new AverageByteSampler())
         {
-            Bitmap = bitmap;
+            Bitmap = new SKBitmap(new SKImageInfo(width, height, SKColorType.Rgb888x));
+            RenderScale = renderScale;
         }
 
         #endregion
@@ -40,11 +43,31 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the color data in RGB format
         /// </summary>
-        protected override ReadOnlySpan<byte> Data => Bitmap.GetPixelSpan();
+        protected override ReadOnlySpan<byte> Data => _disposed ? new ReadOnlySpan<byte>() : Bitmap.GetPixelSpan();
 
+        /// <summary>
+        ///     Gets the render scale of the texture
+        /// </summary>
+        public float RenderScale { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether <see cref="Invalidate" /> has been called on this texture, indicating it should
+        ///     be replaced
+        /// </summary>
+        public bool IsInvalid { get; private set; }
+
+        /// <summary>
+        ///     Invalidates the texture
+        /// </summary>
+        public void Invalidate()
+        {
+            IsInvalid = true;
+        }
+        
         /// <inheritdoc />
         public void Dispose()
         {
+            _disposed = true;
             Bitmap.Dispose();
         }
 

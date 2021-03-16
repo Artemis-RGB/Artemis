@@ -64,43 +64,29 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
-            Execute.PostToUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
-                // TODO: Remove, frames shouldn't even be rendered if this is the case
-                if (e.Texture.Bitmap.Pixels.Length == 0)
-                    return;
-
                 SKImageInfo bitmapInfo = e.Texture.Bitmap.Info;
                 RenderHeight = bitmapInfo.Height;
                 RenderWidth = bitmapInfo.Width;
 
-                if (!(CurrentFrame is WriteableBitmap writeableBitmap) || 
-                    writeableBitmap.Width != bitmapInfo.Width || 
-                    writeableBitmap.Height != bitmapInfo.Height)
+                // ReSharper disable twice CompareOfFloatsByEqualityOperator
+                if (CurrentFrame is not WriteableBitmap writable || writable.Width != bitmapInfo.Width || writable.Height != bitmapInfo.Height)
                 {
                     CurrentFrame = e.Texture.Bitmap.ToWriteableBitmap();
                     return;
                 }
-
-                try
+                
+                using SKImage skImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels());
+                SKImageInfo info = new(skImage.Width, skImage.Height);
+                writable.Lock();
+                using (SKPixmap pixmap = new(info, writable.BackBuffer, writable.BackBufferStride))
                 {
-                    using (SKImage skiaImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels()))
-                    {
-                        SKImageInfo info = new(skiaImage.Width, skiaImage.Height);
-                        writeableBitmap.Lock();
-                        using (SKPixmap pixmap = new(info, writeableBitmap.BackBuffer, writeableBitmap.BackBufferStride))
-                        {
-                            skiaImage.ReadPixels(pixmap, 0, 0);
-                        }
+                    skImage.ReadPixels(pixmap, 0, 0);
+                }
 
-                        writeableBitmap.AddDirtyRect(new Int32Rect(0, 0, writeableBitmap.PixelWidth, writeableBitmap.PixelHeight));
-                        writeableBitmap.Unlock();
-                    }
-                }
-                catch (AccessViolationException)
-                {
-                    // oops
-                }
+                writable.AddDirtyRect(new Int32Rect(0, 0, writable.PixelWidth, writable.PixelHeight));
+                writable.Unlock();
             });
         }
 

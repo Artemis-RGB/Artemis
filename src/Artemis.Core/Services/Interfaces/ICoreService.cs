@@ -54,7 +54,7 @@ namespace Artemis.Core.Services
         event EventHandler<FrameRenderingEventArgs> FrameRendering;
 
         /// <summary>
-        ///     Occurs whenever a frame is finished rendering and processed by RGB.NET
+        ///     Occurs whenever a frame is finished rendering and the render pipeline is closed
         /// </summary>
         event EventHandler<FrameRenderedEventArgs> FrameRendered;
     }
