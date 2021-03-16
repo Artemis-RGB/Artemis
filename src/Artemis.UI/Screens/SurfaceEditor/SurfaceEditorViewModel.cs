@@ -92,7 +92,18 @@ namespace Artemis.UI.Screens.SurfaceEditor
         public bool ColorDevices
         {
             get => _colorDevices;
-            set => SetAndNotify(ref _colorDevices, value);
+            set
+            {
+                SetAndNotify(ref _colorDevices, value);
+                if (!value)
+                    ColorFirstLedOnly = false;
+            }
+        }
+
+        public bool ColorFirstLedOnly
+        {
+            get => _colorFirstLedOnly;
+            set => SetAndNotify(ref _colorFirstLedOnly, value);
         }
 
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
@@ -125,10 +136,17 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (!ColorDevices)
                 return;
 
+            e.Canvas.Clear(new SKColor(0, 0, 0));
             foreach (ListDeviceViewModel listDeviceViewModel in ListDeviceViewModels)
             {
-                foreach (ArtemisLed artemisLed in listDeviceViewModel.Device.Leds)
-                    e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
+                // Order by position to accurately get the first LED
+                List<ArtemisLed> leds = listDeviceViewModel.Device.Leds.OrderBy(l => l.RgbLed.Location.Y).ThenBy(l => l.RgbLed.Location.X).ToList();
+                for (int index = 0; index < leds.Count; index++)
+                {
+                    ArtemisLed artemisLed = leds[index];
+                    if (ColorFirstLedOnly && index == 0 || !ColorFirstLedOnly)
+                        e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, new SKPaint {Color = listDeviceViewModel.Color});
+                }
             }
         }
 
@@ -258,6 +276,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         private MouseDragStatus _mouseDragStatus;
         private Point _mouseDragStartPoint;
         private bool _colorDevices;
+        private bool _colorFirstLedOnly;
 
         // ReSharper disable once UnusedMember.Global - Called from view
         public void EditorGridMouseClick(object sender, MouseButtonEventArgs e)

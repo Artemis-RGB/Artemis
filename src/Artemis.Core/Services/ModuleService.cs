@@ -47,15 +47,20 @@ namespace Artemis.Core.Services
             {
                 module.Activate(false);
 
-                // If this is a profile module, activate the last active profile after module activation
-                if (module is ProfileModule profileModule)
-                    await _profileService.ActivateLastProfileAnimated(profileModule);
+                try
+                {
+                    // If this is a profile module, activate the last active profile after module activation
+                    if (module is ProfileModule profileModule)
+                        await _profileService.ActivateLastProfileAnimated(profileModule);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warning(e, $"Failed to activate last profile on module {module}");
+                }
             }
             catch (Exception e)
             {
-                _logger.Error(new ArtemisPluginFeatureException(
-                        module, "Failed to activate module and last profile.", e), "Failed to activate module and last profile"
-                );
+                _logger.Error(new ArtemisPluginFeatureException(module, "Failed to activate module.", e), "Failed to activate module");
                 throw;
             }
         }

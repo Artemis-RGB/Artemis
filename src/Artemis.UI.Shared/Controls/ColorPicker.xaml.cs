@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared
@@ -146,6 +148,12 @@ namespace Artemis.UI.Shared
 
             colorPicker._inCallback = true;
             colorPicker.OnPropertyChanged(nameof(PopupOpen));
+
+            if ((bool) e.NewValue)
+                colorPicker.PopupOpened();
+            else
+                colorPicker.PopupClosed();
+
             colorPicker._inCallback = false;
         }
 
@@ -228,6 +236,23 @@ namespace Artemis.UI.Shared
         {
             if (_colorPickerService == null) return;
             PreviewCheckBox.IsChecked = _colorPickerService.PreviewSetting.Value;
+        }
+
+        private void PopupClosed()
+        {
+            _colorPickerService?.QueueRecentColor(Color);
+        }
+
+        private void PopupOpened()
+        {
+            if (_colorPickerService != null) 
+                RecentColorsContainer.ItemsSource = new ObservableCollection<Color>(_colorPickerService.RecentColors);
+        }
+
+        private void SelectRecentColor(object sender, MouseButtonEventArgs e)
+        {
+            Color = (Color) ((Rectangle) sender).DataContext;
+            PopupOpen = false;
         }
 
         /// <inheritdoc />

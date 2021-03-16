@@ -20,14 +20,14 @@ namespace Artemis.Core.JsonConverters
         {
             JValue? jsonValue = serializer.Deserialize<JValue>(reader);
             if (jsonValue == null)
-                throw new FormatException();
+                throw new JsonReaderException("Failed to deserialize forgiving int value");
 
             if (jsonValue.Type == JTokenType.Float)
                 return (int) Math.Round(jsonValue.Value<double>());
             if (jsonValue.Type == JTokenType.Integer) 
                 return jsonValue.Value<int>();
 
-            throw new FormatException();
+            throw new JsonReaderException("Failed to deserialize forgiving int value");
         }
     }
 }

@@ -17,16 +17,18 @@ namespace Artemis.Core.Services
     /// </summary>
     internal class RgbService : IRgbService
     {
+        private readonly IDeviceRepository _deviceRepository;
         private readonly List<ArtemisDevice> _devices;
         private readonly List<ArtemisDevice> _enabledDevices;
-        private Dictionary<Led, ArtemisLed> _ledMap;
-
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly IDeviceRepository _deviceRepository;
+        private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private ListLedGroup? _surfaceLedGroup;
+        private readonly TextureBrush _textureBrush = new(ITexture.Empty) {CalculationMode = RenderMode.Absolute};
+        private Dictionary<Led, ArtemisLed> _ledMap;
         private bool _modifyingProviders;
+        private ListLedGroup? _surfaceLedGroup;
+        private SKTexture? _texture;
 
         public RgbService(ILogger logger, ISettingsService settingsService, IPluginManagementService pluginManagementService, IDeviceRepository deviceRepository)
         {
@@ -34,6 +36,7 @@ namespace Artemis.Core.Services
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
+            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
 
             Surface = new RGBSurface();
 
@@ -45,8 +48,70 @@ namespace Artemis.Core.Services
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
 
-            UpdateTrigger = new TimerUpdateTrigger { UpdateFrequency = 1.0 / _targetFrameRateSetting.Value };
+            UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(UpdateTrigger);
+        }
+
+        public TimerUpdateTrigger UpdateTrigger { get; }
+
+        protected virtual void OnDeviceRemoved(DeviceEventArgs e)
+        {
+            DeviceRemoved?.Invoke(this, e);
+        }
+
+        protected virtual void OnLedsChanged()
+        {
+            LedsChanged?.Invoke(this, EventArgs.Empty);
+            _texture?.Invalidate();
+        }
+
+        private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args)
+        {
+            UpdateLedGroup();
+        }
+
+        private void UpdateLedGroup()
+        {
+            lock (_devices)
+            {
+                if (_modifyingProviders)
+                    return;
+
+                _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
+
+                if (_surfaceLedGroup == null)
+                {
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
+                    OnLedsChanged();
+                    return;
+                }
+
+                lock (_surfaceLedGroup)
+                {
+                    // Clean up the old background
+                    _surfaceLedGroup.Detach();
+
+                    // Apply the application wide brush and decorator
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
+                    OnLedsChanged();
+                }
+            }
+        }
+
+        private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
+        {
+            UpdateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
+        }
+
+        private void SurfaceOnException(ExceptionEventArgs args)
+        {
+            _logger.Warning("Surface threw e");
+            throw args.Exception;
+        }
+
+        private void OnDeviceAdded(DeviceEventArgs e)
+        {
+            DeviceAdded?.Invoke(this, e);
         }
 
         public IReadOnlyCollection<ArtemisDevice> EnabledDevices => _enabledDevices.AsReadOnly();
@@ -56,11 +121,8 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public RGBSurface Surface { get; set; }
 
-        public TimerUpdateTrigger UpdateTrigger { get; }
-        public TextureBrush TextureBrush { get; private set; } = new(ITexture.Empty) { CalculationMode = RenderMode.Absolute };
-        public SKTexture? Texture { get; private set; }
-
         public bool IsRenderPaused { get; set; }
+        public bool RenderOpen { get; private set; }
 
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
@@ -88,7 +150,7 @@ namespace Artemis.Core.Services
                     {
                         ArtemisDevice artemisDevice = GetArtemisDevice(rgbDevice);
                         AddDevice(artemisDevice);
-                        _logger.Debug("Device provider {deviceProvider} added {deviceName}", deviceProvider.GetType().Name, rgbDevice.DeviceInfo?.DeviceName);
+                        _logger.Debug("Device provider {deviceProvider} added {deviceName}", deviceProvider.GetType().Name, rgbDevice.DeviceInfo.DeviceName);
                     }
 
                     _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
@@ -134,46 +196,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void UpdateTexture(SKBitmap bitmap)
-        {
-            SKTexture? oldTexture = Texture;
-            Texture = new SKTexture(bitmap);
-            TextureBrush.Texture = Texture;
-
-            oldTexture?.Dispose();
-        }
-
-        private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args) => UpdateLedGroup();
-
-        private void UpdateLedGroup()
-        {
-            lock (_devices)
-            {
-                if (_modifyingProviders)
-                    return;
-
-                _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
-
-                if (_surfaceLedGroup == null)
-                {
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = TextureBrush };
-                    OnLedsChanged();
-                    return;
-                }
-
-                lock (_surfaceLedGroup)
-                {
-                    // Clean up the old background
-                    _surfaceLedGroup.Detach();
-
-                    // Apply the application wide brush and decorator
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = TextureBrush };
-                    OnLedsChanged();
-                }
-            }
-        }
-
-        #region IDisposable
 
         public void Dispose()
         {
@@ -181,6 +203,48 @@ namespace Artemis.Core.Services
 
             UpdateTrigger.Dispose();
             Surface.Dispose();
+        }
+
+        public event EventHandler<DeviceEventArgs>? DeviceAdded;
+        public event EventHandler<DeviceEventArgs>? DeviceRemoved;
+        public event EventHandler? LedsChanged;
+
+        #region Rendering
+
+        public SKTexture OpenRender()
+        {
+            if (RenderOpen)
+                throw new ArtemisCoreException("Render pipeline is already open");
+
+            if (_texture == null || _texture.IsInvalid)
+                CreateTexture();
+
+            RenderOpen = true;
+            return _texture!;
+        }
+
+        public void CloseRender()
+        {
+            if (!RenderOpen)
+                throw new ArtemisCoreException("Render pipeline is already closed");
+
+            RenderOpen = false;
+        }
+
+        public void CreateTexture()
+        {
+            if (RenderOpen)
+                throw new ArtemisCoreException("Cannot update the texture while rendering");
+
+            SKTexture? oldTexture = _texture;
+
+            float renderScale = (float) _renderScaleSetting.Value;
+            int width = Math.Max(1, MathF.Min(Surface.Boundary.Size.Width * renderScale, 4096).RoundToInt());
+            int height = Math.Max(1, MathF.Min(Surface.Boundary.Size.Height * renderScale, 4096).RoundToInt());
+            _texture = new SKTexture(width, height, renderScale);
+            _textureBrush.Texture = _texture;
+
+            oldTexture?.Dispose();
         }
 
         #endregion
@@ -197,7 +261,7 @@ namespace Artemis.Core.Services
         public ArtemisLayout ApplyBestDeviceLayout(ArtemisDevice device)
         {
             ArtemisLayout layout;
-            
+
             // Configured layout path takes precedence over all other options
             if (device.CustomLayoutPath != null)
             {
@@ -233,7 +297,7 @@ namespace Artemis.Core.Services
 
         private ArtemisLayout LoadDefaultLayout(ArtemisDevice device)
         {
-            return new ArtemisLayout("NYI", LayoutSource.Default);
+            return new("NYI", LayoutSource.Default);
         }
 
         public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds)
@@ -344,44 +408,6 @@ namespace Artemis.Core.Services
 
             _deviceRepository.Save(_devices.Select(d => d.DeviceEntity));
             OnLedsChanged();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            UpdateTrigger.UpdateFrequency = 1.0 / _targetFrameRateSetting.Value;
-        }
-
-        private void SurfaceOnException(ExceptionEventArgs args)
-        {
-            _logger.Warning("Surface threw e");
-            throw args.Exception;
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler<DeviceEventArgs>? DeviceAdded;
-        public event EventHandler<DeviceEventArgs>? DeviceRemoved;
-        public event EventHandler? LedsChanged;
-
-        private void OnDeviceAdded(DeviceEventArgs e)
-        {
-            DeviceAdded?.Invoke(this, e);
-        }
-
-        protected virtual void OnDeviceRemoved(DeviceEventArgs e)
-        {
-            DeviceRemoved?.Invoke(this, e);
-        }
-
-        protected virtual void OnLedsChanged()
-        {
-            LedsChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

@@ -20,5 +20,10 @@
         /// </summary>
         /// <returns></returns>
         IDataBinding? CreateDataBinding();
+
+        /// <summary>
+        ///     If present, removes the current data binding
+        /// </summary>
+        void ClearDataBinding();
     }
 }

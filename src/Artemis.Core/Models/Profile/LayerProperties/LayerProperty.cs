@@ -420,6 +420,14 @@ namespace Artemis.Core
             DataBindingRegistration<T, TProperty> registration = new(this, converter, getter, setter, displayName);
             _dataBindingRegistrations.Add(registration);
 
+            // If not yet initialized, load the data binding related to the registration if available 
+            if (_isInitialized)
+            {
+                IDataBinding? dataBinding = registration.CreateDataBinding();
+                if (dataBinding != null)
+                    _dataBindings.Add(dataBinding);
+            }
+
             OnDataBindingPropertyRegistered();
             return registration;
         }
@@ -432,7 +440,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
+            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations) 
+                dataBindingRegistration.ClearDataBinding();
             _dataBindingRegistrations.Clear();
+            
             OnDataBindingPropertiesCleared();
         }
 
