@@ -295,7 +295,7 @@ namespace Artemis.UI.Shared
         {
             Execute.PostToUIThread(SetupForDevice);
         }
-        
+
         private void Render()
         {
             DrawingContext drawingContext = _backingStore.Open();

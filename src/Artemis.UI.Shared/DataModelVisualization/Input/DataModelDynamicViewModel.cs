@@ -26,7 +26,7 @@ namespace Artemis.UI.Shared.Input
         private DataModelPath? _dataModelPath;
         private DataModelPropertiesViewModel? _dataModelViewModel;
         private bool _displaySwitchButton;
-        private Type[] _filterTypes = new Type[0];
+        private Type[] _filterTypes = Array.Empty<Type>();
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
@@ -143,7 +143,8 @@ namespace Artemis.UI.Shared.Input
                 if (value)
                 {
                     UpdateDataModelVisualization();
-                    OpenSelectedValue(DataModelViewModel);
+                    if (DataModelViewModel != null)
+                        OpenSelectedValue(DataModelViewModel);
                 }
             }
         }
@@ -242,7 +243,7 @@ namespace Artemis.UI.Shared.Input
 
         private void ExecuteSelectPropertyCommand(object? context)
         {
-            if (!(context is DataModelVisualizationViewModel selected))
+            if (context is not DataModelVisualizationViewModel selected)
                 return;
 
             ChangeDataModelPath(selected.DataModelPath);
