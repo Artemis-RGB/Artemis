@@ -94,19 +94,20 @@
                StaysOpen="{Binding StaysOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                PopupAnimation="Fade"
                IsOpen="{Binding PopupOpen, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}">
-            <materialDesign:Card Width="200" Height="230" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
+            <materialDesign:Card Width="200" Height="260" Margin="30" materialDesign:ShadowAssist.ShadowDepth="Depth4">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="160" />
-                        <RowDefinition />
-                        <RowDefinition />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <materialDesign:ColorPicker Grid.Row="0"
                                                 Color="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                 MouseUp="ColorGradient_OnMouseUp"
                                                 PreviewMouseDown="Slider_OnMouseDown"
                                                 PreviewMouseUp="Slider_OnMouseUp" />
-                    <Slider Grid.Row="1" Margin="8"
+                    <Slider Grid.Row="1" Margin="8 2 8 8"
                             IsMoveToPointEnabled="True"
                             Orientation="Horizontal"
                             Style="{DynamicResource MaterialDesignColorSlider}"
@@ -115,17 +116,34 @@
                             PreviewMouseDown="Slider_OnMouseDown"
                             PreviewMouseUp="Slider_OnMouseUp"
                             Maximum="255" />
+                   
+                    <ItemsControl Grid.Row="2" x:Name="RecentColorsContainer" Margin="10 0" HorizontalAlignment="Left">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border CornerRadius="4" Background="{StaticResource Checkerboard}" Width="16" Height="16" Margin="2">
+                                    <Rectangle RadiusX="4" RadiusY="4" Cursor="Hand" MouseLeftButtonDown="SelectRecentColor" ToolTip="{Binding}">
+                                        <Rectangle.Fill>
+                                            <SolidColorBrush Color="{Binding}" />
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <ItemsControl.ItemsPanel>
+                          <ItemsPanelTemplate>
+                              <WrapPanel Orientation="Horizontal"></WrapPanel>
+                          </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
 
-                    <!-- Checkboxes don't work inside popups inside tree views, which is where the color picker is regularly used -->
-                    <CheckBox Grid.Row="2"
+                    <CheckBox Grid.Row="3"
                               x:Name="PreviewCheckBox"
-                              Margin="10 0"
+                              Margin="10 5 0 10"
                               VerticalAlignment="Center"
                               Style="{StaticResource MaterialDesignCheckBox}"
                               Click="PreviewCheckBoxClick">
                         Preview on devices
                     </CheckBox>
-
                 </Grid>
             </materialDesign:Card>
         </Popup>
