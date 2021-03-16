@@ -192,7 +192,7 @@ namespace Artemis.UI.Screens.Settings.Device
 
         #region Event handlers
 
-        private void DeviceOnDeviceUpdated(object? sender, EventArgs e)
+        private void DeviceOnDeviceUpdated(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(CanExportLayout));
         }

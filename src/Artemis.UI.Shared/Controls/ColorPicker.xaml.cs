@@ -245,7 +245,8 @@ namespace Artemis.UI.Shared
 
         private void PopupOpened()
         {
-            RecentColorsContainer.ItemsSource = new ObservableCollection<Color>(_colorPickerService.RecentColors);
+            if (_colorPickerService != null) 
+                RecentColorsContainer.ItemsSource = new ObservableCollection<Color>(_colorPickerService.RecentColors);
         }
 
         private void SelectRecentColor(object sender, MouseButtonEventArgs e)
