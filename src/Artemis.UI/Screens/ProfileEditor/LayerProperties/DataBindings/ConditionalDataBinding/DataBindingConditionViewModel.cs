@@ -56,6 +56,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
+        public void Evaluate()
+        {
+            ActiveItem?.Evaluate();
+        }
+
         #region IDisposable
 
         /// <inheritdoc />
