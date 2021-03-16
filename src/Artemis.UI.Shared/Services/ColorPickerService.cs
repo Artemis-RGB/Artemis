@@ -24,10 +24,35 @@ namespace Artemis.UI.Shared.Services
 
             PreviewSetting = settingsService.GetSetting("UI.PreviewColorPickerOnDevices", false);
             PreviewSetting.AutoSave = true;
+            RecentColorsSetting = settingsService.GetSetting("UI.ColorPickerRecentColors", new LinkedList<Color>());
+        }
+
+        private void RenderColorPickerOverlay(object? sender, FrameRenderingEventArgs e)
+        {
+            if (_mustRenderOverlay)
+                _overlayOpacity += 0.2f;
+            else
+                _overlayOpacity -= 0.2f;
+
+            if (_overlayOpacity <= 0f)
+            {
+                _coreService.FrameRendering -= RenderColorPickerOverlay;
+                return;
+            }
+
+            if (_overlayOpacity > 1f)
+                _overlayOpacity = 1f;
+
+            using SKPaint overlayPaint = new() {Color = new SKColor(0, 0, 0, (byte) (255 * _overlayOpacity))};
+            overlayPaint.Color = _overlayColor.WithAlpha((byte) (_overlayColor.Alpha * _overlayOpacity));
+            e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
         }
 
         public PluginSetting<bool> PreviewSetting { get; }
-        
+        public PluginSetting<LinkedList<Color>> RecentColorsSetting { get; }
+
+        public LinkedList<Color> RecentColors => RecentColorsSetting.Value;
+
         public Task<object> ShowGradientPicker(ColorGradient colorGradient, string dialogHost)
         {
             if (!string.IsNullOrWhiteSpace(dialogHost))
@@ -56,25 +81,16 @@ namespace Artemis.UI.Shared.Services
             _overlayColor = new SKColor(color.R, color.G, color.B, color.A);
         }
 
-        private void RenderColorPickerOverlay(object? sender, FrameRenderingEventArgs e)
+        public void QueueRecentColor(Color color)
         {
-            if (_mustRenderOverlay)
-                _overlayOpacity += 0.2f;
-            else
-                _overlayOpacity -= 0.2f;
+            if (RecentColors.Contains(color)) 
+                RecentColors.Remove(color);
 
-            if (_overlayOpacity <= 0f)
-            {
-                _coreService.FrameRendering -= RenderColorPickerOverlay;
-                return;
-            }
+            RecentColors.AddFirst(color);
+            while (RecentColors.Count > 18)
+                RecentColors.RemoveLast();
 
-            if (_overlayOpacity > 1f)
-                _overlayOpacity = 1f;
-
-            using SKPaint overlayPaint = new() {Color = new SKColor(0, 0, 0, (byte) (255 * _overlayOpacity))};
-            overlayPaint.Color = _overlayColor.WithAlpha((byte) (_overlayColor.Alpha * _overlayOpacity));
-            e.Canvas.DrawRect(0, 0, e.Canvas.LocalClipBounds.Width, e.Canvas.LocalClipBounds.Height, overlayPaint);
+            RecentColorsSetting.Save();
         }
     }
 }
