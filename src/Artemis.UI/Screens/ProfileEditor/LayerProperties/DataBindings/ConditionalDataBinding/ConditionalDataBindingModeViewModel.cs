@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
@@ -10,16 +11,20 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding
 {
-    public sealed class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Conductor<DataBindingConditionViewModel<TLayerProperty, TProperty>>.Collection.AllActive, IDataBindingModeViewModel
+    public sealed class ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> : Conductor<DataBindingConditionViewModel<TLayerProperty, TProperty>>.Collection.AllActive,
+        IDataBindingModeViewModel
     {
         private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
+        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private bool _updating;
 
         public ConditionalDataBindingModeViewModel(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding,
+            ICoreService coreService,
             IProfileEditorService profileEditorService,
             IDataBindingsVmFactory dataBindingsVmFactory)
         {
+            _coreService = coreService;
             _profileEditorService = profileEditorService;
             _dataBindingsVmFactory = dataBindingsVmFactory;
 
@@ -41,8 +46,21 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
         protected override void OnInitialActivate()
         {
-            base.OnInitialActivate();
             Initialize();
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            base.OnClose();
+        }
+
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            foreach (DataBindingConditionViewModel<TLayerProperty, TProperty> dataBindingConditionViewModel in Items)
+                dataBindingConditionViewModel.Evaluate();
         }
 
         private void UpdateItems()
@@ -109,7 +127,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         }
 
         #region IDisposable
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
