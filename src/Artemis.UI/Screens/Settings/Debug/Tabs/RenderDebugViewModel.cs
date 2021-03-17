@@ -1,9 +1,11 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Ookii.Dialogs.Wpf;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
@@ -17,6 +19,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private ImageSource _currentFrame;
         private int _renderWidth;
         private int _renderHeight;
+        private string _frameTargetPath;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -48,6 +51,20 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             set => SetAndNotify(ref _renderHeight, value);
         }
 
+        public void SaveFrame()
+        {
+            VistaSaveFileDialog dialog = new VistaSaveFileDialog {Filter = "Portable network graphic (*.png)|*.png", Title = "Save render frame"};
+            dialog.FileName = $"Artemis frame {DateTime.Now:yyyy-dd-M--HH-mm-ss}.png";
+            bool? result = dialog.ShowDialog();
+            if (result == true)
+            {
+                if (dialog.FileName.EndsWith(".png"))
+                    _frameTargetPath = dialog.FileName;
+                else
+                    _frameTargetPath = dialog.FileName + ".png";
+            }
+        }
+
         protected override void OnActivate()
         {
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
@@ -76,8 +93,22 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                     CurrentFrame = e.Texture.Bitmap.ToWriteableBitmap();
                     return;
                 }
-                
+
                 using SKImage skImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels());
+
+                if (_frameTargetPath != null)
+                {
+                    using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                    {
+                        using (FileStream stream = File.OpenWrite(_frameTargetPath))
+                        {
+                            data.SaveTo(stream);
+                        }
+                    }
+
+                    _frameTargetPath = null;
+                }
+
                 SKImageInfo info = new(skImage.Width, skImage.Height);
                 writable.Lock();
                 using (SKPixmap pixmap = new(info, writable.BackBuffer, writable.BackBufferStride))

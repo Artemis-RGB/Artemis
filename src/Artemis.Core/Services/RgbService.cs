@@ -44,6 +44,7 @@ namespace Artemis.Core.Services
             Surface.Exception += SurfaceOnException;
             Surface.SurfaceLayoutChanged += SurfaceOnLayoutChanged;
             _targetFrameRateSetting.SettingChanged += TargetFrameRateSettingOnSettingChanged;
+            _renderScaleSetting.SettingChanged += RenderScaleSettingOnSettingChanged;
             _enabledDevices = new List<ArtemisDevice>();
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
@@ -196,6 +197,10 @@ namespace Artemis.Core.Services
             }
         }
 
+        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
+        {
+            _texture?.Invalidate();
+        }
 
         public void Dispose()
         {
