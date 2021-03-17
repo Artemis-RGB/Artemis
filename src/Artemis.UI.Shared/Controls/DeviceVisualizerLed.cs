@@ -78,7 +78,7 @@ namespace Artemis.UI.Shared
             penBrush.Freeze();
 
             // Create transparent pixels covering the entire LedRect so the image size matched the LedRect size
-            drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), null, LedRect);
+            drawingContext.DrawRectangle(new SolidColorBrush(Colors.Transparent), new Pen(new SolidColorBrush(Colors.Transparent), 1), LedRect);
             // Translate to the top-left of the LedRect
             drawingContext.PushTransform(new TranslateTransform(LedRect.X, LedRect.Y));
             // Render the LED geometry
