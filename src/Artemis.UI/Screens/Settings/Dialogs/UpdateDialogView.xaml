@@ -13,8 +13,8 @@
         <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                    Foreground="{DynamicResource MaterialDesignBodyLight}"
                    TextWrapping="Wrap">
-            A new Artemis update is available! 🥳<LineBreak/>
-            You are currently running build <Run Text="{Binding CurrentBuild, Mode=OneWay}" /> while the latest build is <Run Text="{Binding LatestBuild, Mode=OneWay}" />. <LineBreak/> <LineBreak/>
+            A new Artemis update is available! 🥳<LineBreak />
+            You are currently running build <Run Text="{Binding CurrentBuild, Mode=OneWay}" /> while the latest build is <Run Text="{Binding LatestBuild, Mode=OneWay}" />. <LineBreak /> <LineBreak />
             Updating Artemis will give you the latest bug(fixes), features and improvements.
         </TextBlock>
 
@@ -33,16 +33,18 @@
         </StackPanel>
 
         <Grid Visibility="{Binding RetrievingChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
-            <ItemsControl ItemsSource="{Binding Changes}" Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}"></TextBlock>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
-            <TextBlock  Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
-                        Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                        Foreground="{DynamicResource MaterialDesignBodyLight}">
+            <ScrollViewer MaxHeight="400" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto">
+                <ItemsControl ItemsSource="{Binding Changes}" Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding}" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+            <TextBlock Visibility="{Binding HasChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                       Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}">
                 Couldn't retrieve changes, sorry :(
             </TextBlock>
         </Grid>
