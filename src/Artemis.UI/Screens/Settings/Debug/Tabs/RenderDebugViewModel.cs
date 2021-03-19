@@ -23,8 +23,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         public RenderDebugViewModel(ICoreService coreService)
         {
+            DisplayName = "RENDERING";
             _coreService = coreService;
-            DisplayName = "Rendering";
         }
 
         public ImageSource CurrentFrame

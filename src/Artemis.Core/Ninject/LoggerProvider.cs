@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Ninject.Activation;
 using Serilog;
 using Serilog.Core;
@@ -17,6 +18,7 @@ namespace Artemis.Core.Ninject
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
             .WriteTo.Debug()
+            .WriteTo.Sink<ArtemisSink>()
             .MinimumLevel.ControlledBy(LoggingLevelSwitch)
             .CreateLogger();
 
@@ -26,6 +28,15 @@ namespace Artemis.Core.Ninject
             if (requestingType != null)
                 return Logger.ForContext(requestingType);
             return Logger;
+        }
+    }
+
+    internal class ArtemisSink : ILogEventSink
+    {
+        /// <inheritdoc />
+        public void Emit(LogEvent logEvent)
+        {
+            LogStore.Emit(logEvent);
         }
     }
 }
