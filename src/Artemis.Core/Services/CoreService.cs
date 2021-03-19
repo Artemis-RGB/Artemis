@@ -46,8 +46,7 @@ namespace Artemis.Core.Services
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IProfileService profileService,
-            IModuleService moduleService, // injected to ensure module priorities get applied
-            IProcessMonitorService processMonitorService //injected to keep track of processes
+            IModuleService moduleService // injected to ensure module priorities get applied
         )
         {
             Kernel = kernel;
