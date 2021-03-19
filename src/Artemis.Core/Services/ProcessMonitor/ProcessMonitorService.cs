@@ -7,24 +7,26 @@ using System.Timers;
 
 namespace Artemis.Core.Services
 {
-    public class ProcessMonitorService : IProcessMonitorService
+    internal class ProcessMonitorService : IProcessMonitorService
     {
         private readonly ILogger _logger;
         private readonly Timer _processScanTimer;
+        private readonly ProcessComparer _comparer;
         private Process[] _lastScannedProcesses;
 
         public ProcessMonitorService(ILogger logger)
         {
             _logger = logger;
-            _lastScannedProcesses = Process.GetProcesses().DistinctBy(p => p.ProcessName).ToArray();
+            _lastScannedProcesses = Process.GetProcesses();
             _processScanTimer = new Timer(1000);
             _processScanTimer.Elapsed += OnTimerElapsed;
             _processScanTimer.Start();
+            _comparer = new ProcessComparer();
         }
 
-        public event EventHandler<ProcessEventArgs> ProcessStarted;
+        public event EventHandler<ProcessEventArgs>? ProcessStarted;
 
-        public event EventHandler<ProcessEventArgs> ProcessStopped;
+        public event EventHandler<ProcessEventArgs>? ProcessStopped;
 
         public IEnumerable<Process> GetRunningProcesses()
         {
@@ -33,14 +35,14 @@ namespace Artemis.Core.Services
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            var newProcesses = Process.GetProcesses().DistinctBy(p => p.ProcessName).ToArray();
-            foreach (var startedProcess in newProcesses.Except(_lastScannedProcesses, new ProcessComparer()))
+            Process[] newProcesses = Process.GetProcesses();
+            foreach (Process startedProcess in newProcesses.Except(_lastScannedProcesses, _comparer))
             {
                 ProcessStarted?.Invoke(this, new ProcessEventArgs(startedProcess));
                 _logger.Debug("Started Process: {startedProcess}", startedProcess.ProcessName);
             }
 
-            foreach (var stoppedProcess in _lastScannedProcesses.Except(newProcesses, new ProcessComparer()))
+            foreach (Process stoppedProcess in _lastScannedProcesses.Except(newProcesses, _comparer))
             {
                 ProcessStopped?.Invoke(this, new ProcessEventArgs(stoppedProcess));
                 _logger.Debug("Stopped Process: {stoppedProcess}", stoppedProcess.ProcessName);
