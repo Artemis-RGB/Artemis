@@ -165,9 +165,9 @@ namespace Artemis.Core.Services
             }
             finally
             {
+                _rgbService.CloseRender();
                 _frameStopWatch.Stop();
                 FrameTime = _frameStopWatch.Elapsed;
-                _rgbService.CloseRender();
 
                 LogUpdateExceptions();
             }
