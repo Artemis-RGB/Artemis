@@ -85,6 +85,9 @@ namespace Artemis.Core
         public Type ArgumentsType => typeof(T);
 
         /// <inheritdoc />
+        public string TriggerPastParticiple => "triggered";
+
+        /// <inheritdoc />
         [DataModelIgnore]
         public bool TrackHistory
         {
@@ -112,6 +115,11 @@ namespace Artemis.Core
         {
             TriggerCount = 0;
             EventArgumentsHistory.Clear();
+        }
+
+        /// <inheritdoc />
+        public void Update()
+        {
         }
     }
 
@@ -193,6 +201,9 @@ namespace Artemis.Core
         public Type ArgumentsType => typeof(DataModelEventArgs);
 
         /// <inheritdoc />
+        public string TriggerPastParticiple => "triggered";
+
+        /// <inheritdoc />
         [DataModelIgnore]
         public bool TrackHistory
         {
@@ -220,6 +231,11 @@ namespace Artemis.Core
         {
             TriggerCount = 0;
             EventArgumentsHistory.Clear();
+        }
+
+        /// <inheritdoc />
+        public void Update()
+        {
         }
     }
 }
