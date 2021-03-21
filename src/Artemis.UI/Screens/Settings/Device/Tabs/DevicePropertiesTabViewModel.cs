@@ -149,7 +149,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
             _rgbService.SaveDevice(Device);
-            
+
             _coreService.ModuleRenderingDisabled = false;
         }
 

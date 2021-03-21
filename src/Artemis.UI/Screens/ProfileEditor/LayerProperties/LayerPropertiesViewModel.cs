@@ -322,8 +322,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 .Where(l => l.LayerPropertyGroup.LayerEffect != null && !SelectedProfileElement.LayerEffects.Contains(l.LayerPropertyGroup.LayerEffect))
                 .ToList();
             Items.RemoveRange(toRemove);
-            foreach (LayerPropertyGroupViewModel layerPropertyGroupViewModel in toRemove)
-                layerPropertyGroupViewModel.RequestClose();
 
             foreach (BaseLayerEffect layerEffect in SelectedProfileElement.LayerEffects)
             {
