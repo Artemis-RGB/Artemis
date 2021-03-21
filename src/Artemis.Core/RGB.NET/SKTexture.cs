@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Runtime.InteropServices;
 using RGB.NET.Core;
 using RGB.NET.Presets.Textures.Sampler;
 using SkiaSharp;
@@ -10,14 +12,19 @@ namespace Artemis.Core
     /// </summary>
     public sealed class SKTexture : PixelTexture<byte>, IDisposable
     {
-        private bool _disposed;
+        private SKPixmap? _pixelData;
+        private SKImage? _rasterImage;
 
         #region Constructors
 
         internal SKTexture(int width, int height, float renderScale)
             : base(width, height, 4, new AverageByteSampler())
         {
-            Bitmap = new SKBitmap(new SKImageInfo(width, height, SKColorType.Rgb888x));
+            ImageInfo = new SKImageInfo(width, height);
+            if (Constants.SkiaGraphicsContext == null)
+                Surface = SKSurface.Create(ImageInfo);
+            else
+                Surface = SKSurface.Create(Constants.SkiaGraphicsContext, true, ImageInfo);
             RenderScale = renderScale;
         }
 
@@ -25,10 +32,20 @@ namespace Artemis.Core
 
         #region Methods
 
+        internal void CopyPixelData()
+        {
+            using SKImage skImage = Surface.Snapshot();
+
+            _rasterImage?.Dispose();
+            _pixelData?.Dispose();
+            _rasterImage = skImage.ToRasterImage();
+            _pixelData = _rasterImage.PeekPixels();
+        }
+
         /// <inheritdoc />
         protected override Color GetColor(in ReadOnlySpan<byte> pixel)
         {
-            return new(pixel[0], pixel[1], pixel[2]);
+            return new(pixel[2], pixel[1], pixel[0]);
         }
 
         #endregion
@@ -38,12 +55,17 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the SKBitmap backing this texture
         /// </summary>
-        public SKBitmap Bitmap { get; }
+        public SKSurface Surface { get; }
+
+        /// <summary>
+        ///     Gets the image info used to create the <see cref="Surface" />
+        /// </summary>
+        public SKImageInfo ImageInfo { get; }
 
         /// <summary>
         ///     Gets the color data in RGB format
         /// </summary>
-        protected override ReadOnlySpan<byte> Data => _disposed ? new ReadOnlySpan<byte>() : Bitmap.GetPixelSpan();
+        protected override ReadOnlySpan<byte> Data => _pixelData != null ? _pixelData.GetPixelSpan() : ReadOnlySpan<byte>.Empty;
 
         /// <summary>
         ///     Gets the render scale of the texture
@@ -63,12 +85,12 @@ namespace Artemis.Core
         {
             IsInvalid = true;
         }
-        
+
         /// <inheritdoc />
         public void Dispose()
         {
-            _disposed = true;
-            Bitmap.Dispose();
+            Surface.Dispose();
+            _pixelData?.Dispose();
         }
 
         #endregion

@@ -139,21 +139,23 @@ namespace Artemis.Core.Services
                     module.InternalUpdate(args.DeltaTime);
 
                 // Render all active modules
-                SKTexture texture =_rgbService.OpenRender();
+                SKTexture texture = _rgbService.OpenRender();
 
-                using (SKCanvas canvas = new(texture.Bitmap))
+                SKCanvas canvas = texture.Surface.Canvas;
+                canvas.Save();
+                canvas.Scale(texture.RenderScale);
+                canvas.Clear(new SKColor(0, 0, 0));
+                
+                // While non-activated modules may be updated above if they expand the main data model, they may never render
+                if (!ModuleRenderingDisabled)
                 {
-                    canvas.Scale(texture.RenderScale);
-                    canvas.Clear(new SKColor(0, 0, 0));
-                    // While non-activated modules may be updated above if they expand the main data model, they may never render
-                    if (!ModuleRenderingDisabled)
-                    {
-                        foreach (Module module in modules.Where(m => m.IsActivated))
-                            module.InternalRender(args.DeltaTime, canvas, texture.Bitmap.Info);
-                    }
-
-                    OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
+                    foreach (Module module in modules.Where(m => m.IsActivated))
+                        module.InternalRender(args.DeltaTime, canvas, texture.ImageInfo);
                 }
+                
+                OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
+                canvas.RestoreToCount(-1);
+                canvas.Flush();
 
                 OnFrameRendered(new FrameRenderedEventArgs(texture, _rgbService.Surface));
             }

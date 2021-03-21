@@ -4,6 +4,7 @@ using System.IO;
 using Artemis.Core.JsonConverters;
 using Artemis.Core.Services.Core;
 using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -116,5 +117,21 @@ namespace Artemis.Core
             typeof(double),
             typeof(decimal)
         };
+
+        private static GRContext? _skiaGraphicsContext;
+
+        /// <summary>
+        ///     Gets or sets the graphics context to be used for rendering by SkiaSharp
+        /// </summary>
+        public static GRContext? SkiaGraphicsContext
+        {
+            get => _skiaGraphicsContext;
+            set
+            {
+                if (_skiaGraphicsContext != null)
+                    throw new ArtemisCoreException($"{nameof(SkiaGraphicsContext)} can only be set once.");
+                _skiaGraphicsContext = value;
+            }
+        }
     }
 }

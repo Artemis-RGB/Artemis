@@ -330,8 +330,7 @@ namespace Artemis.Core
             {
                 canvas.Save();
                 Renderer.Open(Path, Parent as Folder);
-
-                if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
+                if (Renderer.Surface == null || Renderer.Path == null || Renderer.Paint == null)
                     throw new ArtemisCoreException("Failed to open layer render context");
 
                 // Apply blend mode and color
@@ -357,11 +356,11 @@ namespace Artemis.Core
                     if (LayerBrush.SupportsTransformation)
                     {
                         SKMatrix rotationMatrix = GetTransformMatrix(true, false, false, true);
-                        Renderer.Canvas.SetMatrix(Renderer.Canvas.TotalMatrix.PreConcat(rotationMatrix));
+                        Renderer.Surface.Canvas.SetMatrix(Renderer.Surface.Canvas.TotalMatrix.PreConcat(rotationMatrix));
                     }
 
                     // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
-                    Renderer.Canvas.ClipPath(renderPath);
+                    Renderer.Surface.Canvas.ClipPath(renderPath);
                     DelegateRendering(renderPath.Bounds);
                 }
                 else if (General.TransformMode.CurrentValue == LayerTransformMode.Clip)
@@ -370,11 +369,11 @@ namespace Artemis.Core
                     renderPath.Transform(renderPathMatrix);
 
                     // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
-                    Renderer.Canvas.ClipPath(renderPath);
+                    Renderer.Surface.Canvas.ClipPath(renderPath);
                     DelegateRendering(Renderer.Path.Bounds);
                 }
 
-                canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
+                canvas.DrawSurface(Renderer.Surface, Renderer.TargetLocation, Renderer.Paint);
             }
             finally
             {
@@ -395,16 +394,16 @@ namespace Artemis.Core
         {
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
-            if (Renderer.Canvas == null || Renderer.Paint == null)
+            if (Renderer.Surface == null || Renderer.Paint == null)
                 throw new ArtemisCoreException("Failed to open layer render context");
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(Renderer.Canvas, bounds, Renderer.Paint);
+                baseLayerEffect.PreProcess(Renderer.Surface.Canvas, bounds, Renderer.Paint);
 
-            LayerBrush.InternalRender(Renderer.Canvas, bounds, Renderer.Paint);
+            LayerBrush.InternalRender(Renderer.Surface.Canvas, bounds, Renderer.Paint);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(Renderer.Canvas, bounds, Renderer.Paint);
+                baseLayerEffect.PostProcess(Renderer.Surface.Canvas, bounds, Renderer.Paint);
         }
 
         internal void CalculateRenderProperties()

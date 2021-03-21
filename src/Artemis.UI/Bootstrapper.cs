@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
@@ -13,9 +14,11 @@ using Artemis.UI.Screens;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.SkiaSharp;
 using Artemis.UI.Stylet;
 using Ninject;
 using Serilog;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI
@@ -69,6 +72,8 @@ namespace Artemis.UI
             {
                 UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
                 ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
+
+                CreateGraphicsContext();
             });
 
             // Initialize the core async so the UI can show the progress
@@ -90,7 +95,7 @@ namespace Artemis.UI
             IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
             registrationService.RegisterInputProvider();
             registrationService.RegisterControllers();
-            
+
             // Initialize background services
             Kernel.Get<IDeviceLayoutService>();
         }
@@ -126,6 +131,22 @@ namespace Artemis.UI
 
             // Don't shut down, is that a good idea? Depends on the exception of course..
             e.Handled = true;
+        }
+
+        private void CreateGraphicsContext()
+        {
+            Win32VkContext vulkanContext = new();
+            GRVkBackendContext vulkanBackendContext = new()
+            {
+                VkInstance = (IntPtr) vulkanContext.Instance.RawHandle.ToUInt64(),
+                VkPhysicalDevice = (IntPtr) vulkanContext.PhysicalDevice.RawHandle.ToUInt64(),
+                VkDevice = (IntPtr) vulkanContext.Device.RawHandle.ToUInt64(),
+                VkQueue = (IntPtr) vulkanContext.GraphicsQueue.RawHandle.ToUInt64(),
+                GraphicsQueueIndex = vulkanContext.GraphicsFamily,
+                GetProcedureAddress = vulkanContext.GetProc
+            };
+
+            Constants.SkiaGraphicsContext = GRContext.CreateVulkan(vulkanBackendContext);
         }
 
         private void HandleFatalException(Exception e, ILogger logger)

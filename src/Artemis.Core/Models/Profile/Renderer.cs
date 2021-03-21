@@ -9,8 +9,7 @@ namespace Artemis.Core
         private bool _disposed;
         private SKRect _lastBounds;
         private SKRect _lastParentBounds;
-        public SKBitmap? Bitmap { get; private set; }
-        public SKCanvas? Canvas { get; private set; }
+        public SKSurface? Surface { get; private set; }
         public SKPaint? Paint { get; private set; }
         public SKPath? Path { get; private set; }
         public SKPoint TargetLocation { get; private set; }
@@ -31,22 +30,26 @@ namespace Artemis.Core
             if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds))
                 Invalidate();
 
-            if (!_valid || Canvas == null)
+            if (!_valid || Surface == null)
             {
                 SKRect pathBounds = path.Bounds;
                 int width = (int) pathBounds.Width;
                 int height = (int) pathBounds.Height;
 
-                Bitmap = new SKBitmap(width, height);
+                SKImageInfo imageInfo = new SKImageInfo(width, height);
+                if (Constants.SkiaGraphicsContext == null)
+                    Surface = SKSurface.Create(imageInfo);
+                else
+                    Surface = SKSurface.Create(Constants.SkiaGraphicsContext, true, imageInfo);
+                
                 Path = new SKPath(path);
-                Canvas = new SKCanvas(Bitmap);
                 Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
                 TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
                 if (parent != null)
                     TargetLocation -= parent.Bounds.Location;
 
-                Canvas.ClipPath(Path);
+                Surface.Canvas.ClipPath(Path);
 
                 _lastParentBounds = parent?.Bounds ?? new SKRect();
                 _lastBounds = path.Bounds;
@@ -55,8 +58,8 @@ namespace Artemis.Core
 
             Paint = new SKPaint();
 
-            Canvas.Clear();
-            Canvas.Save();
+            Surface.Canvas.Clear();
+            Surface.Canvas.Save();
 
             IsOpen = true;
         }
@@ -66,7 +69,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Renderer");
 
-            Canvas?.Restore();
+            Surface?.Canvas.Restore();
             Paint?.Dispose();
             Paint = null;
 
@@ -86,15 +89,13 @@ namespace Artemis.Core
             if (IsOpen)
                 Close();
 
-            Canvas?.Dispose();
+            Surface?.Dispose();
             Paint?.Dispose();
             Path?.Dispose();
-            Bitmap?.Dispose();
 
-            Canvas = null;
+            Surface = null;
             Paint = null;
             Path = null;
-            Bitmap = null;
 
             _disposed = true;
         }

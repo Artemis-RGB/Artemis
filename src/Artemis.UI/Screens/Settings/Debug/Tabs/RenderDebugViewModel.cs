@@ -83,18 +83,20 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             Execute.OnUIThreadSync(() =>
             {
-                SKImageInfo bitmapInfo = e.Texture.Bitmap.Info;
+                SKImageInfo bitmapInfo = e.Texture.ImageInfo;
                 RenderHeight = bitmapInfo.Height;
                 RenderWidth = bitmapInfo.Width;
 
                 // ReSharper disable twice CompareOfFloatsByEqualityOperator
+                
+
                 if (CurrentFrame is not WriteableBitmap writable || writable.Width != bitmapInfo.Width || writable.Height != bitmapInfo.Height)
                 {
-                    CurrentFrame = e.Texture.Bitmap.ToWriteableBitmap();
+                    CurrentFrame = e.Texture.Surface.Snapshot().ToWriteableBitmap();
                     return;
                 }
 
-                using SKImage skImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels());
+                using SKImage skImage = e.Texture.Surface.Snapshot();
 
                 if (_frameTargetPath != null)
                 {

@@ -8,7 +8,6 @@ using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
 using Serilog;
-using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -52,7 +51,7 @@ namespace Artemis.Core.Services
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(UpdateTrigger);
         }
-
+        
         public TimerUpdateTrigger UpdateTrigger { get; }
 
         protected virtual void OnDeviceRemoved(DeviceEventArgs e)
@@ -232,8 +231,9 @@ namespace Artemis.Core.Services
         {
             if (!RenderOpen)
                 throw new ArtemisCoreException("Render pipeline is already closed");
-
+            
             RenderOpen = false;
+            _texture?.CopyPixelData();
         }
 
         public void CreateTexture()

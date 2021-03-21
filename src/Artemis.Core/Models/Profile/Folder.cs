@@ -193,12 +193,12 @@ namespace Artemis.Core
                 {
                     canvas.Save();
                     Renderer.Open(Path, Parent as Folder);
-                    if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
+                    if (Renderer.Surface == null || Renderer.Path == null || Renderer.Paint == null)
                         throw new ArtemisCoreException("Failed to open folder render context");
 
                     SKRect rendererBounds = Renderer.Path.Bounds;
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PreProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
+                        baseLayerEffect.PreProcess(Renderer.Surface.Canvas, rendererBounds, Renderer.Paint);
 
                     // If required, apply the opacity override of the module to the root folder
                     if (IsRootFolder && Profile.Module.OpacityOverride < 1)
@@ -213,12 +213,12 @@ namespace Artemis.Core
 
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
                     for (int index = Children.Count - 1; index > -1; index--)
-                        Children[index].Render(Renderer.Canvas);
+                        Children[index].Render(Renderer.Surface.Canvas);
 
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PostProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
+                        baseLayerEffect.PostProcess(Renderer.Surface.Canvas, rendererBounds, Renderer.Paint);
 
-                    canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
+                    canvas.DrawSurface(Renderer.Surface, Renderer.TargetLocation, Renderer.Paint);
                 }
                 finally
                 {
