@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
 using RGB.NET.Presets.Textures.Sampler;
@@ -11,34 +12,39 @@ namespace Artemis.Core
     /// </summary>
     public sealed class SKTexture : PixelTexture<byte>, IDisposable
     {
-        private SKPixmap? _pixelData;
-        private SKImage? _rasterImage;
+        private readonly SKPixmap _pixelData;
+        private readonly IntPtr _pixelDataPtr;
 
         #region Constructors
 
-        internal SKTexture(IManagedGraphicsContext? managedGraphicsContext, int width, int height, float renderScale)
-            : base(width, height, 4, new AverageByteSampler())
+        internal SKTexture(IManagedGraphicsContext? graphicsContext, int width, int height, float scale) : base(width, height, 4, new AverageByteSampler())
         {
             ImageInfo = new SKImageInfo(width, height);
-            if (managedGraphicsContext == null)
-                Surface = SKSurface.Create(ImageInfo);
-            else
-                Surface = SKSurface.Create(managedGraphicsContext.GraphicsContext, true, ImageInfo);
-            RenderScale = renderScale;
+            Surface = graphicsContext == null 
+                ? SKSurface.Create(ImageInfo) 
+                : SKSurface.Create(graphicsContext.GraphicsContext, true, ImageInfo);
+            RenderScale = scale;
+
+            _pixelDataPtr = Marshal.AllocHGlobal(ImageInfo.BytesSize);
+            _pixelData = new SKPixmap(ImageInfo, _pixelDataPtr, ImageInfo.RowBytes);
         }
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        ///     Invalidates the texture
+        /// </summary>
+        public void Invalidate()
+        {
+            IsInvalid = true;
+        }
+
         internal void CopyPixelData()
         {
             using SKImage skImage = Surface.Snapshot();
-
-            _rasterImage?.Dispose();
-            _pixelData?.Dispose();
-            _rasterImage = skImage.ToRasterImage();
-            _pixelData = _rasterImage.PeekPixels();
+            skImage.ReadPixels(_pixelData);
         }
 
         /// <inheritdoc />
@@ -64,7 +70,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the color data in RGB format
         /// </summary>
-        protected override ReadOnlySpan<byte> Data => _pixelData != null ? _pixelData.GetPixelSpan() : ReadOnlySpan<byte>.Empty;
+        protected override ReadOnlySpan<byte> Data => _pixelData.GetPixelSpan();
 
         /// <summary>
         ///     Gets the render scale of the texture
@@ -77,19 +83,29 @@ namespace Artemis.Core
         /// </summary>
         public bool IsInvalid { get; private set; }
 
-        /// <summary>
-        ///     Invalidates the texture
-        /// </summary>
-        public void Invalidate()
+        #endregion
+
+        #region IDisposable
+
+        private void ReleaseUnmanagedResources()
         {
-            IsInvalid = true;
+            Marshal.FreeHGlobal(_pixelDataPtr);
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
             Surface.Dispose();
-            _pixelData?.Dispose();
+            _pixelData.Dispose();
+            
+            ReleaseUnmanagedResources();
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc />
+        ~SKTexture()
+        {
+            ReleaseUnmanagedResources();
         }
 
         #endregion

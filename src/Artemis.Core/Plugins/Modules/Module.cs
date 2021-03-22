@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Storage.Entities.Module;
@@ -186,13 +187,17 @@ namespace Artemis.Core.Modules
 
         internal virtual void InternalUpdate(double deltaTime)
         {
+            StartUpdateMeasure();
             if (IsUpdateAllowed)
                 Update(deltaTime);
+            StopUpdateMeasure();
         }
 
         internal virtual void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            StartRenderMeasure();
             Render(deltaTime, canvas, canvasInfo);
+            StopRenderMeasure();
         }
 
         internal virtual void Activate(bool isOverride)
