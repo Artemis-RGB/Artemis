@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using Artemis.Core.JsonConverters;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Core;
+using Artemis.Core.SkiaSharp;
 using Newtonsoft.Json;
-using SkiaSharp;
 
 namespace Artemis.Core
 {
@@ -118,20 +119,10 @@ namespace Artemis.Core
             typeof(decimal)
         };
 
-        private static GRContext? _skiaGraphicsContext;
-
         /// <summary>
-        ///     Gets or sets the graphics context to be used for rendering by SkiaSharp
+        ///     Gets the graphics context to be used for rendering by SkiaSharp. Can be set via
+        ///     <see cref="IRgbService.UpdateGraphicsContext" />.
         /// </summary>
-        public static GRContext? SkiaGraphicsContext
-        {
-            get => _skiaGraphicsContext;
-            set
-            {
-                if (_skiaGraphicsContext != null)
-                    throw new ArtemisCoreException($"{nameof(SkiaGraphicsContext)} can only be set once.");
-                _skiaGraphicsContext = value;
-            }
-        }
+        public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
     }
 }
