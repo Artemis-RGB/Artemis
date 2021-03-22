@@ -154,7 +154,6 @@ namespace Artemis.Core
             _layerBrush?.Dispose();
             _general.Dispose();
             _transform.Dispose();
-            Renderer.Dispose();
 
             base.Dispose(disposing);
         }
@@ -183,7 +182,7 @@ namespace Artemis.Core
             General.ShapeType.CurrentValueSet += ShapeTypeOnCurrentValueSet;
             ApplyShapeType();
             ActivateLayerBrush();
-            
+
             Reset();
         }
 
@@ -278,7 +277,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas)
+        public override void Render(SKCanvas canvas, SKPoint basePosition)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -290,9 +289,9 @@ namespace Artemis.Core
             if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
                 return;
 
-            RenderTimeline(Timeline, canvas);
+            RenderTimeline(Timeline, canvas, basePosition);
             foreach (Timeline extraTimeline in Timeline.ExtraTimelines.ToList())
-                RenderTimeline(extraTimeline, canvas);
+                RenderTimeline(extraTimeline, canvas, basePosition);
             Timeline.ClearDelta();
         }
 
@@ -313,7 +312,7 @@ namespace Artemis.Core
             }
         }
 
-        private void RenderTimeline(Timeline timeline, SKCanvas canvas)
+        private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPoint basePosition)
         {
             if (Path == null || LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
@@ -322,26 +321,31 @@ namespace Artemis.Core
                 return;
 
             ApplyTimeline(timeline);
-            
+
             if (LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
+            SKPaint layerPaint = new();
             try
             {
                 canvas.Save();
-                Renderer.Open(Path, Parent as Folder);
-                if (Renderer.Surface == null || Renderer.Path == null || Renderer.Paint == null)
-                    throw new ArtemisCoreException("Failed to open layer render context");
+                canvas.Translate(Path.Bounds.Left - basePosition.X, Path.Bounds.Top - basePosition.Y);
+                using SKPath clipPath = new(Path);
+                clipPath.Transform(SKMatrix.CreateTranslation(Path.Bounds.Left * -1, Path.Bounds.Top * -1));
+                canvas.ClipPath(clipPath);
+
+                SKRect layerBounds = SKRect.Create(0, 0, Path.Bounds.Width, Path.Bounds.Height);
 
                 // Apply blend mode and color
-                Renderer.Paint.BlendMode = General.BlendMode.CurrentValue;
-                Renderer.Paint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
+                layerPaint.BlendMode = General.BlendMode.CurrentValue;
+                layerPaint.Color = new SKColor(0, 0, 0, (byte) (Transform.Opacity.CurrentValue * 2.55f));
 
                 using SKPath renderPath = new();
+
                 if (General.ShapeType.CurrentValue == LayerShapeType.Rectangle)
-                    renderPath.AddRect(Renderer.Path.Bounds);
+                    renderPath.AddRect(layerBounds);
                 else
-                    renderPath.AddOval(Renderer.Path.Bounds);
+                    renderPath.AddOval(layerBounds);
 
                 if (General.TransformMode.CurrentValue == LayerTransformMode.Normal)
                 {
@@ -356,54 +360,50 @@ namespace Artemis.Core
                     if (LayerBrush.SupportsTransformation)
                     {
                         SKMatrix rotationMatrix = GetTransformMatrix(true, false, false, true);
-                        Renderer.Surface.Canvas.SetMatrix(Renderer.Surface.Canvas.TotalMatrix.PreConcat(rotationMatrix));
+                        canvas.SetMatrix(canvas.TotalMatrix.PreConcat(rotationMatrix));
                     }
 
-                    // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
-                    Renderer.Surface.Canvas.ClipPath(renderPath);
-                    DelegateRendering(renderPath.Bounds);
+                    DelegateRendering(canvas, renderPath, renderPath.Bounds, layerPaint);
                 }
                 else if (General.TransformMode.CurrentValue == LayerTransformMode.Clip)
                 {
                     SKMatrix renderPathMatrix = GetTransformMatrix(true, true, true, true);
                     renderPath.Transform(renderPathMatrix);
 
-                    // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
-                    Renderer.Surface.Canvas.ClipPath(renderPath);
-                    DelegateRendering(Renderer.Path.Bounds);
+                    DelegateRendering(canvas, renderPath, layerBounds, layerPaint);
                 }
-
-                canvas.DrawSurface(Renderer.Surface, Renderer.TargetLocation, Renderer.Paint);
             }
             finally
             {
-                try
-                {
-                    canvas.Restore();
-                }
-                catch
-                {
-                    // ignored
-                }
-
-                Renderer.Close();
+                canvas.Restore();
+                layerPaint.DisposeSelfAndProperties();
             }
         }
 
-        private void DelegateRendering(SKRect bounds)
+        private void DelegateRendering(SKCanvas canvas, SKPath renderPath, SKRect bounds, SKPaint layerPaint)
         {
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
-            if (Renderer.Surface == null || Renderer.Paint == null)
-                throw new ArtemisCoreException("Failed to open layer render context");
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PreProcess(Renderer.Surface.Canvas, bounds, Renderer.Paint);
+                baseLayerEffect.PreProcess(canvas, bounds, layerPaint);
 
-            LayerBrush.InternalRender(Renderer.Surface.Canvas, bounds, Renderer.Paint);
+            try
+            {
+                canvas.SaveLayer(layerPaint);
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                baseLayerEffect.PostProcess(Renderer.Surface.Canvas, bounds, Renderer.Paint);
+                // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
+                canvas.ClipPath(renderPath);
+                LayerBrush.InternalRender(canvas, bounds, layerPaint);
+
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                    baseLayerEffect.PostProcess(canvas, bounds, layerPaint);
+            }
+
+            finally
+            {
+                canvas.Restore();
+            }
         }
 
         internal void CalculateRenderProperties()

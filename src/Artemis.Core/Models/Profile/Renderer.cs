@@ -108,5 +108,11 @@ namespace Artemis.Core
 
             _disposed = true;
         }
+
+        ~Renderer()
+        {
+            if (IsOpen)
+                Close();
+        }
     }
 }
