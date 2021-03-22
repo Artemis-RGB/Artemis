@@ -24,11 +24,11 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         public DataModelDebugViewModel(IDataModelUIService dataModelUIService, IPluginManagementService pluginManagementService)
         {
+            DisplayName = "DATA MODEL";
             _dataModelUIService = dataModelUIService;
             _pluginManagementService = pluginManagementService;
             _updateTimer = new Timer(25);
 
-            DisplayName = "Data model";
             Modules = new BindableCollection<Module>();
         }
 
