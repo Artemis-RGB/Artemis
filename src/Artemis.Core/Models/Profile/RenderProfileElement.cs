@@ -19,7 +19,6 @@ namespace Artemis.Core
         internal RenderProfileElement(Profile profile) : base(profile)
         {
             Timeline = new Timeline();
-            Renderer = new Renderer();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
 
@@ -127,7 +126,6 @@ namespace Artemis.Core
             {
                 base.Parent = value;
                 OnPropertyChanged(nameof(Parent));
-                Renderer.Invalidate();
             }
         }
 
@@ -144,7 +142,6 @@ namespace Artemis.Core
                 // I can't really be sure about the performance impact of calling Bounds often but
                 // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
                 Bounds = value?.Bounds ?? SKRect.Empty;
-                Renderer.Invalidate();
             }
         }
 
@@ -157,7 +154,6 @@ namespace Artemis.Core
             private set => SetAndNotify(ref _bounds, value);
         }
 
-        internal Renderer Renderer { get; }
 
         #region Property group expansion
 

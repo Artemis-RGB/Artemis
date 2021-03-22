@@ -90,9 +90,24 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
+            using SKImage skImage = e.Texture.Surface.Snapshot();
+            SKImageInfo bitmapInfo = e.Texture.ImageInfo;
+
+            if (_frameTargetPath != null)
+            {
+                using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                {
+                    using (FileStream stream = File.OpenWrite(_frameTargetPath))
+                    {
+                        data.SaveTo(stream);
+                    }
+                }
+
+                _frameTargetPath = null;
+            }
+
             Execute.OnUIThreadSync(() =>
             {
-                SKImageInfo bitmapInfo = e.Texture.ImageInfo;
                 RenderHeight = bitmapInfo.Height;
                 RenderWidth = bitmapInfo.Width;
 
@@ -103,25 +118,10 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                     return;
                 }
 
-                using SKImage skImage = e.Texture.Surface.Snapshot();
-
-                if (_frameTargetPath != null)
-                {
-                    using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
-                    {
-                        using (FileStream stream = File.OpenWrite(_frameTargetPath))
-                        {
-                            data.SaveTo(stream);
-                        }
-                    }
-
-                    _frameTargetPath = null;
-                }
-
-                SKImageInfo info = new(skImage.Width, skImage.Height);
                 writable.Lock();
-                using (SKPixmap pixmap = new(info, writable.BackBuffer, writable.BackBufferStride))
+                using (SKPixmap pixmap = new(bitmapInfo, writable.BackBuffer, writable.BackBufferStride))
                 {
+                    // ReSharper disable once AccessToDisposedClosure - Looks fine
                     skImage.ReadPixels(pixmap, 0, 0);
                 }
 
@@ -140,6 +140,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                 _frames = 0;
                 _frameCountStart = DateTime.Now;
             }
+
             _frames++;
         }
     }
