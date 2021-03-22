@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices;
+using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
 using RGB.NET.Presets.Textures.Sampler;
 using SkiaSharp;
@@ -17,14 +16,14 @@ namespace Artemis.Core
 
         #region Constructors
 
-        internal SKTexture(int width, int height, float renderScale)
+        internal SKTexture(IManagedGraphicsContext? managedGraphicsContext, int width, int height, float renderScale)
             : base(width, height, 4, new AverageByteSampler())
         {
             ImageInfo = new SKImageInfo(width, height);
-            if (Constants.SkiaGraphicsContext == null)
+            if (managedGraphicsContext == null)
                 Surface = SKSurface.Create(ImageInfo);
             else
-                Surface = SKSurface.Create(Constants.SkiaGraphicsContext, true, ImageInfo);
+                Surface = SKSurface.Create(managedGraphicsContext.GraphicsContext, true, ImageInfo);
             RenderScale = renderScale;
         }
 

@@ -59,6 +59,7 @@ namespace Artemis.Core.Services
 
             UpdatePluginCache();
 
+            _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
 
@@ -242,6 +243,7 @@ namespace Artemis.Core.Services
                 IsElevated
             );
 
+            _rgbService.IsRenderPaused = false;
             OnInitialized();
         }
 

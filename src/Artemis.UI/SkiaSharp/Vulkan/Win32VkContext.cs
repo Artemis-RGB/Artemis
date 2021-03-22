@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using SharpVk;
 using SharpVk.Khronos;
 
-namespace Artemis.UI.SkiaSharp
+namespace Artemis.UI.SkiaSharp.Vulkan
 {
     internal sealed class Win32VkContext : VkContext
     {

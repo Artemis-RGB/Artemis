@@ -36,11 +36,11 @@ namespace Artemis.Core
                 int width = (int) pathBounds.Width;
                 int height = (int) pathBounds.Height;
 
-                SKImageInfo imageInfo = new SKImageInfo(width, height);
-                if (Constants.SkiaGraphicsContext == null)
+                SKImageInfo imageInfo = new(width, height);
+                if (Constants.ManagedGraphicsContext?.GraphicsContext == null)
                     Surface = SKSurface.Create(imageInfo);
                 else
-                    Surface = SKSurface.Create(Constants.SkiaGraphicsContext, true, imageInfo);
+                    Surface = SKSurface.Create(Constants.ManagedGraphicsContext.GraphicsContext, true, imageInfo);
                 
                 Path = new SKPath(path);
                 Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace Artemis.UI.SkiaSharp
+namespace Artemis.UI.SkiaSharp.Vulkan
 {
     internal class Kernel32
     {

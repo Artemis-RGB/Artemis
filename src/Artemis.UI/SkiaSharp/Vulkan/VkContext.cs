@@ -6,7 +6,7 @@ using Instance = SharpVk.Instance;
 using PhysicalDevice = SharpVk.PhysicalDevice;
 using Queue = SharpVk.Queue;
 
-namespace Artemis.UI.SkiaSharp
+namespace Artemis.UI.SkiaSharp.Vulkan
 {
     internal class VkContext : IDisposable
     {

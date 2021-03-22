@@ -68,12 +68,10 @@ namespace Artemis.UI
             FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Create and bind the root view, this is a tray icon so don't show it with the window manager
-            Execute.OnUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
                 ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
-
-                CreateGraphicsContext();
             });
 
             // Initialize the core async so the UI can show the progress
@@ -95,6 +93,11 @@ namespace Artemis.UI
             IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
             registrationService.RegisterInputProvider();
             registrationService.RegisterControllers();
+
+            Execute.OnUIThreadSync(() =>
+            {
+                registrationService.ApplyPreferredGraphicsContext();
+            });
 
             // Initialize background services
             Kernel.Get<IDeviceLayoutService>();
@@ -131,22 +134,6 @@ namespace Artemis.UI
 
             // Don't shut down, is that a good idea? Depends on the exception of course..
             e.Handled = true;
-        }
-
-        private void CreateGraphicsContext()
-        {
-            Win32VkContext vulkanContext = new();
-            GRVkBackendContext vulkanBackendContext = new()
-            {
-                VkInstance = (IntPtr) vulkanContext.Instance.RawHandle.ToUInt64(),
-                VkPhysicalDevice = (IntPtr) vulkanContext.PhysicalDevice.RawHandle.ToUInt64(),
-                VkDevice = (IntPtr) vulkanContext.Device.RawHandle.ToUInt64(),
-                VkQueue = (IntPtr) vulkanContext.GraphicsQueue.RawHandle.ToUInt64(),
-                GraphicsQueueIndex = vulkanContext.GraphicsFamily,
-                GetProcedureAddress = vulkanContext.GetProc
-            };
-
-            Constants.SkiaGraphicsContext = GRContext.CreateVulkan(vulkanBackendContext);
         }
 
         private void HandleFatalException(Exception e, ILogger logger)

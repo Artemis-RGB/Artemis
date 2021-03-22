@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Core.SkiaSharp;
 using RGB.NET.Core;
 
 namespace Artemis.Core.Services
@@ -49,6 +50,16 @@ namespace Artemis.Core.Services
         ///     Closes the render pipeline
         /// </summary>
         void CloseRender();
+
+        /// <summary>
+        ///     Updates the graphics context to the provided <paramref name="managedGraphicsContext"></paramref>.
+        ///     <para>Note: The old graphics context will be used until the next frame starts rendering and is disposed afterwards.</para>
+        /// </summary>
+        /// <param name="managedGraphicsContext">
+        ///     The new managed graphics context. If <see langword="null" />, software rendering
+        ///     is used.
+        /// </param>
+        void UpdateGraphicsContext(IManagedGraphicsContext? managedGraphicsContext);
 
         /// <summary>
         ///     Adds the given device provider to the <see cref="Surface" />

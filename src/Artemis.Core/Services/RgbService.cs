@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services.Models;
+using Artemis.Core.SkiaSharp;
 using Artemis.Storage.Entities.Surface;
 using Artemis.Storage.Repositories.Interfaces;
 using RGB.NET.Core;
@@ -51,7 +52,7 @@ namespace Artemis.Core.Services
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(UpdateTrigger);
         }
-        
+
         public TimerUpdateTrigger UpdateTrigger { get; }
 
         protected virtual void OnDeviceRemoved(DeviceEventArgs e)
@@ -118,9 +119,7 @@ namespace Artemis.Core.Services
         public IReadOnlyCollection<ArtemisDevice> Devices => _devices.AsReadOnly();
         public IReadOnlyDictionary<Led, ArtemisLed> LedMap => new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
 
-        /// <inheritdoc />
         public RGBSurface Surface { get; set; }
-
         public bool IsRenderPaused { get; set; }
         public bool RenderOpen { get; private set; }
 
@@ -215,6 +214,8 @@ namespace Artemis.Core.Services
 
         #region Rendering
 
+        private IManagedGraphicsContext? _newGraphicsContext;
+
         public SKTexture OpenRender()
         {
             if (RenderOpen)
@@ -231,7 +232,7 @@ namespace Artemis.Core.Services
         {
             if (!RenderOpen)
                 throw new ArtemisCoreException("Render pipeline is already closed");
-            
+
             RenderOpen = false;
             _texture?.CopyPixelData();
         }
@@ -241,15 +242,38 @@ namespace Artemis.Core.Services
             if (RenderOpen)
                 throw new ArtemisCoreException("Cannot update the texture while rendering");
 
-            SKTexture? oldTexture = _texture;
+            IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
+            if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
+                graphicsContext = _newGraphicsContext;
+            
+            if (graphicsContext != null)
+                _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
+            else
+                _logger.Debug("Creating SKTexture with software-based graphics context");
 
             float renderScale = (float) _renderScaleSetting.Value;
             int width = Math.Max(1, MathF.Min(Surface.Boundary.Size.Width * renderScale, 4096).RoundToInt());
             int height = Math.Max(1, MathF.Min(Surface.Boundary.Size.Height * renderScale, 4096).RoundToInt());
-            _texture = new SKTexture(width, height, renderScale);
+            _texture?.Dispose();
+            _texture = new SKTexture(graphicsContext, width, height, renderScale);
             _textureBrush.Texture = _texture;
 
-            oldTexture?.Dispose();
+
+            if (!ReferenceEquals(_newGraphicsContext, Constants.ManagedGraphicsContext = _newGraphicsContext))
+            {
+                Constants.ManagedGraphicsContext?.Dispose();
+                Constants.ManagedGraphicsContext = _newGraphicsContext;
+                _newGraphicsContext = null;
+            }
+        }
+
+        public void UpdateGraphicsContext(IManagedGraphicsContext? managedGraphicsContext)
+        {
+            if (ReferenceEquals(managedGraphicsContext, Constants.ManagedGraphicsContext))
+                return;
+
+            _newGraphicsContext = managedGraphicsContext;
+            _texture?.Invalidate();
         }
 
         #endregion
