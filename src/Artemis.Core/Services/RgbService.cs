@@ -51,6 +51,8 @@ namespace Artemis.Core.Services
 
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(UpdateTrigger);
+
+            Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
 
         public TimerUpdateTrigger UpdateTrigger { get; }
@@ -64,6 +66,11 @@ namespace Artemis.Core.Services
         {
             LedsChanged?.Invoke(this, EventArgs.Empty);
             _texture?.Invalidate();
+        }
+
+        private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
+        {
+            IsRenderPaused = true;
         }
 
         private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args)
@@ -113,6 +120,11 @@ namespace Artemis.Core.Services
         private void OnDeviceAdded(DeviceEventArgs e)
         {
             DeviceAdded?.Invoke(this, e);
+        }
+
+        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
+        {
+            _texture?.Invalidate();
         }
 
         public IReadOnlyCollection<ArtemisDevice> EnabledDevices => _enabledDevices.AsReadOnly();
@@ -195,11 +207,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
-        {
-            _texture?.Invalidate();
-        }
-
         public void Dispose()
         {
             Surface.UnregisterUpdateTrigger(UpdateTrigger);
@@ -245,7 +252,7 @@ namespace Artemis.Core.Services
             IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
             if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
                 graphicsContext = _newGraphicsContext;
-            
+
             if (graphicsContext != null)
                 _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
             else
