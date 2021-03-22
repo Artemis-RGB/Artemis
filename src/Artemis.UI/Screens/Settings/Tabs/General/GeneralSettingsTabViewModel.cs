@@ -42,7 +42,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             IUpdateService updateService,
             IPluginManagementService pluginManagementService,
             IMessageService messageService,
-            IRegistrationService registrationService)
+            IRegistrationService registrationService,
+            ICoreService coreService
+        )
         {
             DisplayName = "GENERAL";
 
@@ -64,6 +66,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             TargetFrameRates = new List<Tuple<string, int>>();
             for (int i = 10; i <= 30; i += 5)
                 TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
+            if (coreService.StartupArguments.Contains("--pcmr"))
+            {
+                TargetFrameRates.Add(new Tuple<string, int>("60 FPS (lol)", 60));
+                TargetFrameRates.Add(new Tuple<string, int>("144 FPS (omegalol)", 144));
+            }
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
 

@@ -35,6 +35,9 @@
                 <Run Text=" at " />
                 <Run Text="{Binding RenderWidth}" /><Run Text="x" />
                 <Run Text="{Binding RenderHeight}" />
+
+                <Run Text=" - Renderer: "></Run>
+                <Run Text="{Binding Renderer}"></Run>
             </TextBlock>
         </Grid>
 

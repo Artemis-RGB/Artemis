@@ -318,7 +318,7 @@ namespace Artemis.Core
             if (Path == null || LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
-            if (timeline.IsFinished)
+            if (!Leds.Any() || timeline.IsFinished)
                 return;
 
             ApplyTimeline(timeline);

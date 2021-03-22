@@ -20,6 +20,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private int _renderWidth;
         private int _renderHeight;
         private string _frameTargetPath;
+        private string _renderer;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -51,6 +52,12 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
             set => SetAndNotify(ref _renderHeight, value);
         }
 
+        public string Renderer
+        {
+            get => _renderer;
+            set => SetAndNotify(ref _renderer, value);
+        }
+
         public void SaveFrame()
         {
             VistaSaveFileDialog dialog = new VistaSaveFileDialog {Filter = "Portable network graphic (*.png)|*.png", Title = "Save render frame"};
@@ -69,6 +76,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
+
+            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
             base.OnActivate();
         }
 
@@ -88,8 +97,6 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
                 RenderWidth = bitmapInfo.Width;
 
                 // ReSharper disable twice CompareOfFloatsByEqualityOperator
-                
-
                 if (CurrentFrame is not WriteableBitmap writable || writable.Width != bitmapInfo.Width || writable.Height != bitmapInfo.Height)
                 {
                     CurrentFrame = e.Texture.Surface.Snapshot().ToWriteableBitmap();
