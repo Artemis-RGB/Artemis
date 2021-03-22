@@ -10,10 +10,10 @@
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:RenderDebugViewModel}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <TextBlock Grid.Row="0" TextWrapping="Wrap">
             In this window you can view the inner workings of Artemis.
@@ -30,19 +30,20 @@
                 This image shows what is being rendered and dispatched to RGB.NET
             </TextBlock>
             <TextBlock Grid.Column="1" HorizontalAlignment="Right" Margin="0,0,5,0">
-                <Run Text="FPS: "></Run>
-                <Run FontWeight="Bold" Text="{Binding CurrentFps}"></Run>
-                <Run Text=" at "></Run>
-                <Run Text="{Binding RenderWidth}"/><Run Text="x"></Run><Run Text="{Binding RenderHeight}"/>
+                <Run Text="FPS: " />
+                <Run FontWeight="Bold" Text="{Binding CurrentFps}" />
+                <Run Text=" at " />
+                <Run Text="{Binding RenderWidth}" /><Run Text="x" />
+                <Run Text="{Binding RenderHeight}" />
             </TextBlock>
         </Grid>
 
-        <materialDesign:Card Grid.Row="2" Margin="0,5,0,0" Background="{StaticResource Checkerboard}">
-            <Image Source="{Binding CurrentFrame}"  />
+        <materialDesign:Card Grid.Row="2" Margin="0 5" Background="{StaticResource Checkerboard}">
+            <Image Source="{Binding CurrentFrame}" />
         </materialDesign:Card>
 
-        <StackPanel Grid.Row="3" Margin="0 5 0 0">
-            <Button HorizontalAlignment="Left" Command="{s:Action SaveFrame}">SAVE FRAME</Button>
+        <StackPanel Grid.Row="3" HorizontalAlignment="Right" Margin="0 5">
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action SaveFrame}">SAVE FRAME</Button>
         </StackPanel>
     </Grid>
 </UserControl>

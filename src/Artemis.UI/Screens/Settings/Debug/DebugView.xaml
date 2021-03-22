@@ -15,70 +15,74 @@
                     FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                     UseLayoutRounding="True"
                     FadeContentIfInactive="False"
-                    Width="800"
+                    Width="1200"
                     Height="800"
                     d:DesignHeight="800" d:DesignWidth="800" d:DataContext="{d:DesignInstance debug:DebugViewModel}"
                     Icon="/Resources/Images/Logo/logo-512.png"
                     Topmost="{Binding StayOnTopSetting.Value}">
-    <DockPanel>
-        <mde:AppBar Type="Dense"
-                    Title="Debugger"
-                    DockPanel.Dock="Top"
-                    Margin="-18 0 0 0">
-            <mde:AppBar.AppIcon>
-                <materialDesign:PackIcon Kind="Matrix" Width="20" Height="28" />
-            </mde:AppBar.AppIcon>
+    <materialDesign:DialogHost IsTabStop="False"
+                               Focusable="False"
+                               Identifier="DebuggerDialog"
+                               DialogTheme="Inherit">
+        <DockPanel>
+            <mde:AppBar Type="Dense"
+                        Title="Debugger"
+                        DockPanel.Dock="Top"
+                        Margin="-18 0 0 0">
+                <mde:AppBar.AppIcon>
+                    <materialDesign:PackIcon Kind="Matrix" Width="20" Height="28" />
+                </mde:AppBar.AppIcon>
 
-            <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
-                <StackPanel>
-                    <Button Command="{s:Action ToggleStayOnTop}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}"
-                                          Margin="0 0 10 0" 
-                                          IsChecked="{Binding StayOnTopSetting.Value}"/>
-                            <TextBlock>Stay on top</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{s:Action ForceGarbageCollection}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <materialDesign:PackIcon Kind="DeleteEmpty"/>
-                            <TextBlock Margin="10 0">Force garbage collection</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{s:Action Elevate}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <materialDesign:PackIcon Kind="ShieldHalfFull" />
-                            <TextBlock Margin="10 0">Elevate permissions</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{s:Action Drop}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <materialDesign:PackIcon Kind="ChevronDoubleDown" />
-                            <TextBlock Margin="10 0">Drop permissions</TextBlock>
-                        </StackPanel>
-                    </Button>
-                    <Button Command="{s:Action Restart}">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
-                            <materialDesign:PackIcon Kind="Restart" />
-                            <TextBlock Margin="10 0">Restart</TextBlock>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
-            </materialDesign:PopupBox>
-        </mde:AppBar>
+                <materialDesign:PopupBox DockPanel.Dock="Right" PlacementMode="BottomAndAlignRightEdges" StaysOpen="False">
+                    <StackPanel>
+                        <Button Command="{s:Action ToggleStayOnTop}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}"
+                                              Margin="0 0 10 0"
+                                              IsChecked="{Binding StayOnTopSetting.Value}" />
+                                <TextBlock>Stay on top</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action ForceGarbageCollection}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="DeleteEmpty" />
+                                <TextBlock Margin="10 0">Force garbage collection</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action Elevate}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="ShieldHalfFull" />
+                                <TextBlock Margin="10 0">Elevate permissions</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action Drop}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="ChevronDoubleDown" />
+                                <TextBlock Margin="10 0">Drop permissions</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action Restart}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                                <materialDesign:PackIcon Kind="Restart" />
+                                <TextBlock Margin="10 0">Restart</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:PopupBox>
+            </mde:AppBar>
 
-        <TabControl ItemsSource="{Binding Items}"
-                    SelectedItem="{Binding ActiveItem}"
-                    DisplayMemberPath="DisplayName"
-                    Style="{StaticResource MaterialDesignTabControl}">
-            <TabControl.ContentTemplate>
-                <DataTemplate>
-                    <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
-                        <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Margin="10" />
-                    </materialDesign:TransitioningContent>
-                </DataTemplate>
-            </TabControl.ContentTemplate>
-        </TabControl>
-    </DockPanel>
-
+            <TabControl ItemsSource="{Binding Items}"
+                        SelectedItem="{Binding ActiveItem}"
+                        DisplayMemberPath="DisplayName"
+                        Style="{StaticResource MaterialDesignTabControl}">
+                <TabControl.ContentTemplate>
+                    <DataTemplate>
+                        <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect FadeIn}">
+                            <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" Margin="10" />
+                        </materialDesign:TransitioningContent>
+                    </DataTemplate>
+                </TabControl.ContentTemplate>
+            </TabControl>
+        </DockPanel>
+    </materialDesign:DialogHost>
 </mde:MaterialWindow>
