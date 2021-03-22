@@ -50,14 +50,13 @@ namespace Artemis.UI.SkiaSharp
             {
                 throw new ArtemisGraphicsContextException("Failed to create Vulkan graphics context", e);
             }
+
+            GraphicsContext.Flush();
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            _vulkanBackendContext?.Dispose();
-            _vulkanContext?.Dispose();
-            GraphicsContext?.Dispose();
         }
 
         public GRContext GraphicsContext { get; }

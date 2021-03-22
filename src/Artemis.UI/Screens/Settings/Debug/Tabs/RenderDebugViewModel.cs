@@ -21,6 +21,8 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private int _renderHeight;
         private string _frameTargetPath;
         private string _renderer;
+        private int _frames;
+        private DateTime _frameCountStart;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -76,8 +78,6 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             _coreService.FrameRendered += CoreServiceOnFrameRendered;
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
-
-            Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
             base.OnActivate();
         }
 
@@ -132,7 +132,15 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
-            CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
+            if (DateTime.Now - _frameCountStart >= TimeSpan.FromSeconds(1))
+            {
+                CurrentFps = _frames;
+                Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
+
+                _frames = 0;
+                _frameCountStart = DateTime.Now;
+            }
+            _frames++;
         }
     }
 }

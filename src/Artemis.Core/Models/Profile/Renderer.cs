@@ -9,6 +9,7 @@ namespace Artemis.Core
         private bool _disposed;
         private SKRect _lastBounds;
         private SKRect _lastParentBounds;
+        private GRContext? _lastGraphicsContext;
         public SKSurface? Surface { get; private set; }
         public SKPaint? Paint { get; private set; }
         public SKPath? Path { get; private set; }
@@ -27,7 +28,7 @@ namespace Artemis.Core
             if (IsOpen)
                 throw new ArtemisCoreException("Cannot open render context because it is already open");
 
-            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds))
+            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds) || _lastGraphicsContext != Constants.ManagedGraphicsContext?.GraphicsContext)
                 Invalidate();
 
             if (!_valid || Surface == null)
@@ -41,7 +42,7 @@ namespace Artemis.Core
                     Surface = SKSurface.Create(imageInfo);
                 else
                     Surface = SKSurface.Create(Constants.ManagedGraphicsContext.GraphicsContext, true, imageInfo);
-                
+
                 Path = new SKPath(path);
                 Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
@@ -53,6 +54,7 @@ namespace Artemis.Core
 
                 _lastParentBounds = parent?.Bounds ?? new SKRect();
                 _lastBounds = path.Bounds;
+                _lastGraphicsContext = Constants.ManagedGraphicsContext?.GraphicsContext;
                 _valid = true;
             }
 
@@ -70,7 +72,14 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Renderer");
 
             Surface?.Canvas.Restore();
+
+            // Looks like every part of the paint needs to be disposed :(
+            Paint?.ColorFilter?.Dispose();
+            Paint?.ImageFilter?.Dispose();
+            Paint?.MaskFilter?.Dispose();
+            Paint?.PathEffect?.Dispose();
             Paint?.Dispose();
+
             Paint = null;
 
             IsOpen = false;

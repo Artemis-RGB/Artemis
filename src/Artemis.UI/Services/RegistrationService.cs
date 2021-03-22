@@ -28,6 +28,7 @@ namespace Artemis.UI.Services
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
+        private VulkanContext _vulkanContext;
 
         public RegistrationService(ILogger logger,
             ICoreService coreService,
@@ -128,7 +129,8 @@ namespace Artemis.UI.Services
                         _rgbService.UpdateGraphicsContext(null);
                         break;
                     case "Vulkan":
-                        _rgbService.UpdateGraphicsContext(new VulkanContext());
+                        _vulkanContext ??= new VulkanContext();
+                        _rgbService.UpdateGraphicsContext(_vulkanContext);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();
