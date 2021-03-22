@@ -4,7 +4,44 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Settings.Debug.Tabs"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800" d:DataContext="{d:DesignInstance local:LogsDebugViewModel}">
-    <Grid />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <materialDesign:Card Grid.Row="0" Grid.ColumnSpan="2" Margin="0 0 0 5" Background="#FF424242">
+            <FlowDocumentScrollViewer Document="{Binding LogsDocument}" FontFamily="Consolas" HorizontalScrollBarVisibility="Auto">
+                <FlowDocumentScrollViewer.Resources>
+                    <Style TargetType="FlowDocument">
+                        <Setter Property="TextElement.FontFamily" Value="Consolas" />
+                        <Setter Property="TextElement.FontSize" Value="12" />
+                        <Setter Property="PageWidth" Value="2024" />
+                    </Style>
+                    <Style TargetType="Paragraph">
+                        <Setter Property="Margin" Value="0 1" />
+                    </Style>
+                </FlowDocumentScrollViewer.Resources>
+            </FlowDocumentScrollViewer>
+        </materialDesign:Card>
+        <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Margin="0 0 5 0" VerticalAlignment="Center">
+            <materialDesign:PackIcon Kind="Text" Margin="0 0 0 -3"></materialDesign:PackIcon>
+            When reporting errors please don't take a screenshot of the logs, instead upload the full log or select &amp; copy a part of it, thanks!
+        </TextBlock>
+        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 5">
+            <Button Style="{StaticResource MaterialDesignRaisedButton}" Command="{s:Action UploadLogs}" Width="150" Margin="0 0 5 0">
+                UPLOAD LOGS
+            </Button>
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action ShowLogsFolder}" Width="150" Margin="5 0 0 0">
+                SHOW LOGS
+            </Button>
+        </StackPanel>
+    </Grid>
 </UserControl>

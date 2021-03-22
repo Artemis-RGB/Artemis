@@ -3,9 +3,10 @@
 # Add steps that publish symbols, save build artifacts, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/windows/dot-net
 
-trigger:
+trigger: none
+pr:
 - master
-pr: none
+- Development
 
 resources:
   repositories:
@@ -109,33 +110,3 @@ steps:
     targetPath: '$(Build.ArtifactStagingDirectory)/build'
     artifact: 'Artemis build'
     publishLocation: 'pipeline'
-
-- task: ArchiveFiles@2
-  displayName: 'ZIP binaries'
-  inputs:
-    rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/build'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/archive/artemis-build.zip'
-    replaceExistingArchive: true
-
-- task: PowerShell@2
-  displayName: 'Calculate ZIP hash'
-  inputs:
-    targetType: 'inline'
-    script: '(Get-FileHash .\artemis-build.zip).Hash | Out-File -FilePath .\hash.txt'
-    workingDirectory: '$(Build.ArtifactStagingDirectory)/archive'
-
-- task: FtpUpload@2
-  displayName: 'Upload binaries to FTP'
-  inputs:
-    credentialsOption: 'inputs'
-    serverUrl: 'ftp://artemis-rgb.com'
-    username: 'devops'
-    password: '$(ftp_password)'
-    rootDirectory: '$(Build.ArtifactStagingDirectory)/archive'
-    filePatterns: '**'
-    remoteDirectory: '/builds.artemis-rgb.com/binaries/$(Build.SourceBranchName)/$(Build.BuildNumber)'
-    clean: false
-    preservePaths: true
-    trustSSL: false
