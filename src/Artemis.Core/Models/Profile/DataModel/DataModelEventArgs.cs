@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.DataModelExpansions;
 
 namespace Artemis.Core
 {
@@ -10,6 +11,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the time at which the event with these arguments was triggered
         /// </summary>
+        [DataModelIgnore]
         public DateTime TriggerTime { get; internal set; }
     }
 }

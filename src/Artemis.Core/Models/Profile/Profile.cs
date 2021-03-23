@@ -81,7 +81,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas)
+        public override void Render(SKCanvas canvas, SKPoint basePosition)
         {
             lock (_lock)
             {
@@ -91,7 +91,7 @@ namespace Artemis.Core
                     throw new ArtemisCoreException($"Cannot render inactive profile: {this}");
 
                 foreach (ProfileElement profileElement in Children)
-                    profileElement.Render(canvas);
+                    profileElement.Render(canvas, basePosition);
             }
         }
 

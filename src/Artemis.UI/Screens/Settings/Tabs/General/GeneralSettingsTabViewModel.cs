@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Security.Principal;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
-using Artemis.Core.Services.Core;
-using Artemis.UI.Properties;
 using Artemis.UI.Screens.StartupWizard;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
@@ -30,6 +25,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
         private readonly IDialogService _dialogService;
         private readonly IKernel _kernel;
         private readonly IMessageService _messageService;
+        private readonly IRegistrationService _registrationService;
         private readonly ISettingsService _settingsService;
         private readonly IUpdateService _updateService;
         private readonly IWindowManager _windowManager;
@@ -45,7 +41,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             ISettingsService settingsService,
             IUpdateService updateService,
             IPluginManagementService pluginManagementService,
-            IMessageService messageService)
+            IMessageService messageService,
+            IRegistrationService registrationService,
+            ICoreService coreService
+        )
         {
             DisplayName = "GENERAL";
 
@@ -56,6 +55,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             _settingsService = settingsService;
             _updateService = updateService;
             _messageService = messageService;
+            _registrationService = registrationService;
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
@@ -66,6 +66,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             TargetFrameRates = new List<Tuple<string, int>>();
             for (int i = 10; i <= 30; i += 5)
                 TargetFrameRates.Add(new Tuple<string, int>(i + " FPS", i));
+            if (coreService.StartupArguments.Contains("--pcmr"))
+            {
+                TargetFrameRates.Add(new Tuple<string, int>("60 FPS (lol)", 60));
+                TargetFrameRates.Add(new Tuple<string, int>("144 FPS (omegalol)", 144));
+            }
 
             List<LayerBrushProvider> layerBrushProviders = pluginManagementService.GetFeaturesOfType<LayerBrushProvider>();
 
@@ -209,6 +214,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
 
+        public string PreferredGraphicsContext
+        {
+            get => _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Value;
+            set
+            {
+                _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Value = value;
+                _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan").Save();
+                _registrationService.ApplyPreferredGraphicsContext();
+            }
+        }
+
         public double RenderScale
         {
             get => _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
@@ -316,10 +332,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             try
             {
                 bool taskCreated = false;
-                if (!recreate)
-                {
-                    taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
-                }
+                if (!recreate) taskCreated = SettingsUtilities.IsAutoRunTaskCreated();
 
                 if (StartWithWindows && !taskCreated)
                     SettingsUtilities.CreateAutoRunTask(TimeSpan.FromSeconds(AutoRunDelay));
@@ -333,7 +346,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
             }
         }
     }
-
 
 
     public enum ApplicationColorScheme
