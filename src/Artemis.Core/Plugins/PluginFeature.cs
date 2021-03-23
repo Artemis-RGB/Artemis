@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities.Plugins;
@@ -10,9 +11,11 @@ namespace Artemis.Core
     /// </summary>
     public abstract class PluginFeature : CorePropertyChanged, IDisposable
     {
+        private readonly Stopwatch _renderStopwatch = new();
+        private readonly Stopwatch _updateStopwatch = new();
         private bool _isEnabled;
         private Exception? _loadException;
-
+        
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>
@@ -46,6 +49,16 @@ namespace Artemis.Core
         /// </summary>
         public string Id => $"{GetType().FullName}-{Plugin.Guid.ToString().Substring(0, 8)}"; // Not as unique as a GUID but good enough and stays readable
 
+        /// <summary>
+        ///     Gets the last measured update time of the feature
+        /// </summary>
+        public TimeSpan UpdateTime { get; private set; }
+
+        /// <summary>
+        ///     Gets the last measured render time of the feature
+        /// </summary>
+        public TimeSpan RenderTime { get; private set; }
+
         internal PluginFeatureEntity Entity { get; set; } = null!; // Will be set right after construction
 
         /// <summary>
@@ -57,6 +70,66 @@ namespace Artemis.Core
         ///     Called when the feature is deactivated or when Artemis shuts down
         /// </summary>
         public abstract void Disable();
+
+        /// <summary>
+        ///     Occurs when the feature is enabled
+        /// </summary>
+        public event EventHandler? Enabled;
+
+        /// <summary>
+        ///     Occurs when the feature is disabled
+        /// </summary>
+        public event EventHandler? Disabled;
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the plugin feature and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing) InternalDisable();
+        }
+
+        /// <summary>
+        ///     Triggers the Enabled event
+        /// </summary>
+        protected virtual void OnEnabled()
+        {
+            Enabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Triggers the Disabled event
+        /// </summary>
+        protected virtual void OnDisabled()
+        {
+            Disabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void StartUpdateMeasure()
+        {
+            _updateStopwatch.Start();
+        }
+
+        internal void StopUpdateMeasure()
+        {
+            UpdateTime = _updateStopwatch.Elapsed;
+            _updateStopwatch.Reset();
+        }
+
+        internal void StartRenderMeasure()
+        {
+            _renderStopwatch.Start();
+        }
+
+        internal void StopRenderMeasure()
+        {
+            RenderTime = _renderStopwatch.Elapsed;
+            _renderStopwatch.Reset();
+        }
 
         internal void SetEnabled(bool enable, bool isAutoEnable = false)
         {
@@ -133,25 +206,6 @@ namespace Artemis.Core
                 Disable();
         }
 
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the plugin feature and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                InternalDisable();
-            }
-        }
-
-        #endregion
-
         /// <inheritdoc />
         public void Dispose()
         {
@@ -184,36 +238,6 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("Cannot lock a plugin feature that is not associated with a plugin");
 
             return File.Exists(Plugin.ResolveRelativePath($"{GetType().FullName}.lock"));
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the feature is enabled
-        /// </summary>
-        public event EventHandler? Enabled;
-
-        /// <summary>
-        ///     Occurs when the feature is disabled
-        /// </summary>
-        public event EventHandler? Disabled;
-
-        /// <summary>
-        ///     Triggers the Enabled event
-        /// </summary>
-        protected virtual void OnEnabled()
-        {
-            Enabled?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Triggers the Disabled event
-        /// </summary>
-        protected virtual void OnDisabled()
-        {
-            Disabled?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

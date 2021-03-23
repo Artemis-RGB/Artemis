@@ -20,6 +20,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private int _renderWidth;
         private int _renderHeight;
         private string _frameTargetPath;
+        private string _renderer;
+        private int _frames;
+        private DateTime _frameCountStart;
 
         public RenderDebugViewModel(ICoreService coreService)
         {
@@ -49,6 +52,12 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             get => _renderHeight;
             set => SetAndNotify(ref _renderHeight, value);
+        }
+
+        public string Renderer
+        {
+            get => _renderer;
+            set => SetAndNotify(ref _renderer, value);
         }
 
         public void SaveFrame()
@@ -81,38 +90,38 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
+            using SKImage skImage = e.Texture.Surface.Snapshot();
+            SKImageInfo bitmapInfo = e.Texture.ImageInfo;
+
+            if (_frameTargetPath != null)
+            {
+                using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
+                {
+                    using (FileStream stream = File.OpenWrite(_frameTargetPath))
+                    {
+                        data.SaveTo(stream);
+                    }
+                }
+
+                _frameTargetPath = null;
+            }
+
             Execute.OnUIThreadSync(() =>
             {
-                SKImageInfo bitmapInfo = e.Texture.Bitmap.Info;
                 RenderHeight = bitmapInfo.Height;
                 RenderWidth = bitmapInfo.Width;
 
                 // ReSharper disable twice CompareOfFloatsByEqualityOperator
                 if (CurrentFrame is not WriteableBitmap writable || writable.Width != bitmapInfo.Width || writable.Height != bitmapInfo.Height)
                 {
-                    CurrentFrame = e.Texture.Bitmap.ToWriteableBitmap();
+                    CurrentFrame = e.Texture.Surface.Snapshot().ToWriteableBitmap();
                     return;
                 }
 
-                using SKImage skImage = SKImage.FromPixels(e.Texture.Bitmap.PeekPixels());
-
-                if (_frameTargetPath != null)
-                {
-                    using (SKData data = skImage.Encode(SKEncodedImageFormat.Png, 100))
-                    {
-                        using (FileStream stream = File.OpenWrite(_frameTargetPath))
-                        {
-                            data.SaveTo(stream);
-                        }
-                    }
-
-                    _frameTargetPath = null;
-                }
-
-                SKImageInfo info = new(skImage.Width, skImage.Height);
                 writable.Lock();
-                using (SKPixmap pixmap = new(info, writable.BackBuffer, writable.BackBufferStride))
+                using (SKPixmap pixmap = new(bitmapInfo, writable.BackBuffer, writable.BackBufferStride))
                 {
+                    // ReSharper disable once AccessToDisposedClosure - Looks fine
                     skImage.ReadPixels(pixmap, 0, 0);
                 }
 
@@ -123,7 +132,16 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
-            CurrentFps = Math.Round(1.0 / e.DeltaTime, 2);
+            if (DateTime.Now - _frameCountStart >= TimeSpan.FromSeconds(1))
+            {
+                CurrentFps = _frames;
+                Renderer = Constants.ManagedGraphicsContext != null ? Constants.ManagedGraphicsContext.GetType().Name : "Software";
+
+                _frames = 0;
+                _frameCountStart = DateTime.Now;
+            }
+
+            _frames++;
         }
     }
 }
