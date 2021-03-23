@@ -56,8 +56,8 @@
         <TextBlock Grid.Row="0"
                    Grid.Column="2"
                    VerticalAlignment="Center"
-                   Margin="5 0 0 0">
-            triggered
+                   Margin="5 0 0 0" Text="{Binding TriggerPastParticiple}">
+            
         </TextBlock>
 
         <Border Grid.Row="0"

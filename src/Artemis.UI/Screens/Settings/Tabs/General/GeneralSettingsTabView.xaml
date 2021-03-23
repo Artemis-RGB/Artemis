@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
+             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:GeneralSettingsTabViewModel}">
@@ -307,6 +308,30 @@
             <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Rendering</TextBlock>
             <materialDesign:Card materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch" Margin="0,0,5,0">
                 <StackPanel Margin="15">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Preferred render method</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
+                                Software-based rendering is done purely on the CPU while Vulkan uses GPU-acceleration
+                            </TextBlock>
+                        </StackPanel>
+                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
+                            <ComboBox Width="80" SelectedItem="{Binding PreferredGraphicsContext}" >
+                                <system:String>Software</system:String>
+                                <system:String>Vulkan</system:String>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
+
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition />

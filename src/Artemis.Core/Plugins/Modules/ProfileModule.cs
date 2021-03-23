@@ -150,6 +150,7 @@ namespace Artemis.Core.Modules
 
         internal override void InternalUpdate(double deltaTime)
         {
+            StartUpdateMeasure();
             if (IsUpdateAllowed)
                 Update(deltaTime);
 
@@ -165,19 +166,22 @@ namespace Artemis.Core.Modules
             }
 
             ProfileUpdated(deltaTime);
+            StopUpdateMeasure();
         }
 
         internal override void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+            StartRenderMeasure();
             Render(deltaTime, canvas, canvasInfo);
 
             lock (_lock)
             {
                 // Render the profile
-                ActiveProfile?.Render(canvas);
+                ActiveProfile?.Render(canvas, SKPoint.Empty);
             }
 
             ProfileRendered(deltaTime, canvas, canvasInfo);
+            StopRenderMeasure();
         }
 
         internal async Task ChangeActiveProfileAnimated(Profile? profile, IEnumerable<ArtemisDevice> devices)

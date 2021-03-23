@@ -12,6 +12,7 @@ namespace Artemis.Core
     {
         private bool _disposed;
         private bool _reinitializing;
+        private IDataModelEvent? _valueChangedEvent;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelConditionEvent" /> class
@@ -56,8 +57,11 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataModelConditionEvent");
 
-            if (EventPath?.GetValue() is not IDataModelEvent dataModelEvent)
+            IDataModelEvent? dataModelEvent = GetDataModelEvent();
+            if (dataModelEvent == null)
                 return false;
+            dataModelEvent.Update();
+
             // Only evaluate to true once every time the event has been triggered since the last evaluation
             if (dataModelEvent.LastTrigger <= LastTrigger)
                 return false;
@@ -86,6 +90,7 @@ namespace Artemis.Core
             EventPath?.Dispose();
             EventPath = path != null ? new DataModelPath(path) : null;
             SubscribeToEventPath();
+            CreateValueChangedEventIfNeeded();
 
             // Remove the old root group that was tied to the old data model
             ClearChildren();
@@ -100,6 +105,19 @@ namespace Artemis.Core
             {
                 EventArgumentType = null;
             }
+
+            LastTrigger = GetDataModelEvent()?.LastTrigger ?? DateTime.Now;
+        }
+
+        /// <summary>
+        ///     Returns the <see cref="IDataModelEvent" /> this <see cref="DataModelConditionEvent" /> is triggered by
+        /// </summary>
+        /// <returns>The <see cref="IDataModelEvent" /> this <see cref="DataModelConditionEvent" /> is triggered by</returns>
+        public IDataModelEvent? GetDataModelEvent()
+        {
+            if (_valueChangedEvent != null)
+                return _valueChangedEvent;
+            return EventPath?.GetValue() as IDataModelEvent;
         }
 
         #region IDisposable
@@ -153,14 +171,10 @@ namespace Artemis.Core
             if (Entity.EventPath == null)
                 return;
 
-            // Ensure the list path is valid and points to a list
             DataModelPath eventPath = new(null, Entity.EventPath);
-            // Can't check this on an invalid list, if it becomes valid later lets hope for the best
-            if (eventPath.IsValid && !PointsToEvent(eventPath))
-                return;
-
             EventPath = eventPath;
             SubscribeToEventPath();
+            CreateValueChangedEventIfNeeded();
 
             EventArgumentType = GetEventArgumentType();
             // There should only be one child and it should be a group
@@ -174,8 +188,7 @@ namespace Artemis.Core
                 AddChild(new DataModelConditionGroup(this));
             }
 
-            if (EventPath?.GetValue() is IDataModelEvent dataModelEvent)
-                LastTrigger = dataModelEvent.LastTrigger;
+            LastTrigger = GetDataModelEvent()?.LastTrigger ?? DateTime.Now;
         }
 
         private Type? GetEventArgumentType()
@@ -183,18 +196,12 @@ namespace Artemis.Core
             if (EventPath == null || !EventPath.IsValid)
                 return null;
 
+            if (_valueChangedEvent != null)
+                return _valueChangedEvent.ArgumentsType;
+
             // Cannot rely on EventPath.GetValue() because part of the path might be null
             Type eventType = EventPath.GetPropertyType()!;
             return eventType.IsGenericType ? eventType.GetGenericArguments()[0] : typeof(DataModelEventArgs);
-        }
-
-        private bool PointsToEvent(DataModelPath dataModelPath)
-        {
-            Type? type = dataModelPath.GetPropertyType();
-            if (type == null)
-                return false;
-
-            return typeof(IDataModelEvent).IsAssignableFrom(type);
         }
 
         private void SubscribeToEventPath()
@@ -202,6 +209,23 @@ namespace Artemis.Core
             if (EventPath == null) return;
             EventPath.PathValidated += EventPathOnPathValidated;
             EventPath.PathInvalidated += EventPathOnPathInvalidated;
+        }
+
+        private void CreateValueChangedEventIfNeeded()
+        {
+            Type? propertyType = EventPath?.GetPropertyType();
+            if (propertyType == null)
+                return;
+
+            if (!typeof(IDataModelEvent).IsAssignableFrom(propertyType))
+            {
+                IDataModelEvent? instance = (IDataModelEvent?) Activator.CreateInstance(typeof(DataModelValueChangedEvent<>).MakeGenericType(propertyType), EventPath);
+                _valueChangedEvent = instance ?? throw new ArtemisCoreException("Failed to create a DataModelValueChangedEvent for a property changed data model event");
+            }
+            else
+            {
+                _valueChangedEvent = null;
+            }
         }
 
         #region Event handlers

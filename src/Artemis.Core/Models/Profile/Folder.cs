@@ -168,7 +168,7 @@ namespace Artemis.Core
         #region Rendering
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas)
+        public override void Render(SKCanvas canvas, SKPoint basePosition)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
@@ -189,41 +189,38 @@ namespace Artemis.Core
                     baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
                 }
 
+                SKPaint layerPaint = new();
                 try
                 {
-                    canvas.Save();
-                    Renderer.Open(Path, Parent as Folder);
-                    if (Renderer.Canvas == null || Renderer.Path == null || Renderer.Paint == null)
-                        throw new ArtemisCoreException("Failed to open folder render context");
-
-                    SKRect rendererBounds = Renderer.Path.Bounds;
+                    SKRect rendererBounds = SKRect.Create(0, 0, Path.Bounds.Width, Path.Bounds.Height);
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PreProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
+                        baseLayerEffect.PreProcess(canvas, rendererBounds, layerPaint);
+
+                    canvas.SaveLayer(layerPaint);
+                    canvas.Translate(Path.Bounds.Left - basePosition.X, Path.Bounds.Top - basePosition.Y);
 
                     // If required, apply the opacity override of the module to the root folder
                     if (IsRootFolder && Profile.Module.OpacityOverride < 1)
                     {
                         double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
-                        Renderer.Paint.Color = Renderer.Paint.Color.WithAlpha((byte) (Renderer.Paint.Color.Alpha * multiplier));
+                        layerPaint.Color = layerPaint.Color.WithAlpha((byte) (layerPaint.Color.Alpha * multiplier));
                     }
 
                     // No point rendering if the alpha was set to zero by one of the effects
-                    if (Renderer.Paint.Color.Alpha == 0)
+                    if (layerPaint.Color.Alpha == 0)
                         return;
 
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
                     for (int index = Children.Count - 1; index > -1; index--)
-                        Children[index].Render(Renderer.Canvas);
+                        Children[index].Render(canvas, new SKPoint(Path.Bounds.Left, Path.Bounds.Top));
 
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
-                        baseLayerEffect.PostProcess(Renderer.Canvas, rendererBounds, Renderer.Paint);
-
-                    canvas.DrawBitmap(Renderer.Bitmap, Renderer.TargetLocation, Renderer.Paint);
+                        baseLayerEffect.PostProcess(canvas, rendererBounds, layerPaint);
                 }
                 finally
                 {
                     canvas.Restore();
-                    Renderer.Close();
+                    layerPaint.DisposeSelfAndProperties();
                 }
 
                 Timeline.ClearDelta();
@@ -239,7 +236,6 @@ namespace Artemis.Core
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
-            Renderer.Dispose();
 
             base.Dispose(disposing);
         }

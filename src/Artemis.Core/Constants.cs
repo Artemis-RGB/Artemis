@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using Artemis.Core.JsonConverters;
+using Artemis.Core.Services;
 using Artemis.Core.Services.Core;
+using Artemis.Core.SkiaSharp;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -116,5 +118,11 @@ namespace Artemis.Core
             typeof(double),
             typeof(decimal)
         };
+
+        /// <summary>
+        ///     Gets the graphics context to be used for rendering by SkiaSharp. Can be set via
+        ///     <see cref="IRgbService.UpdateGraphicsContext" />.
+        /// </summary>
+        public static IManagedGraphicsContext? ManagedGraphicsContext { get; internal set; }
     }
 }

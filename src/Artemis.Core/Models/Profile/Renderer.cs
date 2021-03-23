@@ -9,8 +9,8 @@ namespace Artemis.Core
         private bool _disposed;
         private SKRect _lastBounds;
         private SKRect _lastParentBounds;
-        public SKBitmap? Bitmap { get; private set; }
-        public SKCanvas? Canvas { get; private set; }
+        private GRContext? _lastGraphicsContext;
+        public SKSurface? Surface { get; private set; }
         public SKPaint? Paint { get; private set; }
         public SKPath? Path { get; private set; }
         public SKPoint TargetLocation { get; private set; }
@@ -28,35 +28,40 @@ namespace Artemis.Core
             if (IsOpen)
                 throw new ArtemisCoreException("Cannot open render context because it is already open");
 
-            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds))
+            if (path.Bounds != _lastBounds || (parent != null && parent.Bounds != _lastParentBounds) || _lastGraphicsContext != Constants.ManagedGraphicsContext?.GraphicsContext)
                 Invalidate();
 
-            if (!_valid || Canvas == null)
+            if (!_valid || Surface == null)
             {
                 SKRect pathBounds = path.Bounds;
                 int width = (int) pathBounds.Width;
                 int height = (int) pathBounds.Height;
 
-                Bitmap = new SKBitmap(width, height);
+                SKImageInfo imageInfo = new(width, height);
+                if (Constants.ManagedGraphicsContext?.GraphicsContext == null)
+                    Surface = SKSurface.Create(imageInfo);
+                else
+                    Surface = SKSurface.Create(Constants.ManagedGraphicsContext.GraphicsContext, true, imageInfo);
+
                 Path = new SKPath(path);
-                Canvas = new SKCanvas(Bitmap);
                 Path.Transform(SKMatrix.CreateTranslation(pathBounds.Left * -1, pathBounds.Top * -1));
 
                 TargetLocation = new SKPoint(pathBounds.Location.X, pathBounds.Location.Y);
                 if (parent != null)
                     TargetLocation -= parent.Bounds.Location;
 
-                Canvas.ClipPath(Path);
+                Surface.Canvas.ClipPath(Path);
 
                 _lastParentBounds = parent?.Bounds ?? new SKRect();
                 _lastBounds = path.Bounds;
+                _lastGraphicsContext = Constants.ManagedGraphicsContext?.GraphicsContext;
                 _valid = true;
             }
 
             Paint = new SKPaint();
 
-            Canvas.Clear();
-            Canvas.Save();
+            Surface.Canvas.Clear();
+            Surface.Canvas.Save();
 
             IsOpen = true;
         }
@@ -66,8 +71,15 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("Renderer");
 
-            Canvas?.Restore();
+            Surface?.Canvas.Restore();
+
+            // Looks like every part of the paint needs to be disposed :(
+            Paint?.ColorFilter?.Dispose();
+            Paint?.ImageFilter?.Dispose();
+            Paint?.MaskFilter?.Dispose();
+            Paint?.PathEffect?.Dispose();
             Paint?.Dispose();
+
             Paint = null;
 
             IsOpen = false;
@@ -86,17 +98,21 @@ namespace Artemis.Core
             if (IsOpen)
                 Close();
 
-            Canvas?.Dispose();
+            Surface?.Dispose();
             Paint?.Dispose();
             Path?.Dispose();
-            Bitmap?.Dispose();
 
-            Canvas = null;
+            Surface = null;
             Paint = null;
             Path = null;
-            Bitmap = null;
 
             _disposed = true;
+        }
+
+        ~Renderer()
+        {
+            if (IsOpen)
+                Close();
         }
     }
 }

@@ -16,6 +16,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private DateTime _lastTrigger;
+        private string _triggerPastParticiple;
 
         public DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent,
             IProfileEditorService profileEditorService,
@@ -37,6 +38,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             set => SetAndNotify(ref _lastTrigger, value);
         }
 
+        public string TriggerPastParticiple
+        {
+            get => _triggerPastParticiple;
+            set => SetAndNotify(ref _triggerPastParticiple, value);
+        }
+
         public void Initialize()
         {
             LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
@@ -44,7 +51,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             LeftSideSelectionViewModel.LoadEventChildren = false;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
-            List<Type> supportedInputTypes = new() {typeof(DataModelEvent), typeof(DataModelEvent<>)};
+            List<Type> supportedInputTypes = editors.Select(e => e.SupportedType).ToList();
+            supportedInputTypes.AddRange(editors.Where(e => e.CompatibleConversionTypes != null).SelectMany(e => e.CompatibleConversionTypes));
+            supportedInputTypes.Add(typeof(DataModelEvent));
+            supportedInputTypes.Add(typeof(DataModelEvent<>));
 
             LeftSideSelectionViewModel.FilterTypes = supportedInputTypes.ToArray();
             LeftSideSelectionViewModel.ButtonBrush = new SolidColorBrush(Color.FromRgb(185, 164, 10));
@@ -63,6 +73,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             if (DataModelConditionEvent.EventPath == null || !DataModelConditionEvent.EventPath.IsValid)
                 return;
 
+            TriggerPastParticiple = DataModelConditionEvent.GetDataModelEvent()?.TriggerPastParticiple;
             List<DataModelConditionViewModel> viewModels = new();
             foreach (DataModelConditionPart childModel in Model.Children)
             {

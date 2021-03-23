@@ -126,6 +126,16 @@
           "SkiaSharp.Views.Desktop.Common": "2.80.2"
         }
       },
+      "SkiaSharp.Vulkan.SharpVk": {
+        "type": "Direct",
+        "requested": "[2.80.2, )",
+        "resolved": "2.80.2",
+        "contentHash": "qiqlbgMsSdxTsaPErtE1lXoMXolVVF9E6irmSTzlW++6BbW8tzA89n7GNsgMYJgyo2ljHZhX5ydhFn0Rkj7VHw==",
+        "dependencies": {
+          "SharpVk": "0.4.2",
+          "SkiaSharp": "2.80.2"
+        }
+      },
       "Stylet": {
         "type": "Direct",
         "requested": "[1.3.5, )",
@@ -512,6 +522,15 @@
         "type": "Transitive",
         "resolved": "1.7.1",
         "contentHash": "ljl9iVpmGOjgmxXxyulMBfl7jCLEMmTOSIrQwJJQLIm5PFhtaxRRgdQPY5ElXz+vfPKqX7Aj3RGnAN+SUN7V3w=="
+      },
+      "SharpVk": {
+        "type": "Transitive",
+        "resolved": "0.4.2",
+        "contentHash": "0CzZJWKw6CTmxKOXzCCyTKCD7tZB6g2+tm2VSSCXWTHlIMHxlRzbH5BaqkYCGo9Y23wp0hPuz2U3NifMH1VI6w==",
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "4.4.0",
+          "System.ValueTuple": "4.4.0"
+        }
       },
       "SkiaSharp": {
         "type": "Transitive",
