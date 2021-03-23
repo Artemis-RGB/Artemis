@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
@@ -13,9 +14,11 @@ using Artemis.UI.Screens;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.SkiaSharp;
 using Artemis.UI.Stylet;
 using Ninject;
 using Serilog;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI
@@ -65,7 +68,7 @@ namespace Artemis.UI
             FrameworkElement.LanguageProperty.OverrideMetadata(typeof(FrameworkElement), new FrameworkPropertyMetadata(XmlLanguage.GetLanguage(CultureInfo.CurrentCulture.IetfLanguageTag)));
 
             // Create and bind the root view, this is a tray icon so don't show it with the window manager
-            Execute.OnUIThread(() =>
+            Execute.OnUIThreadSync(() =>
             {
                 UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
                 ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
@@ -90,7 +93,12 @@ namespace Artemis.UI
             IRegistrationService registrationService = Kernel.Get<IRegistrationService>();
             registrationService.RegisterInputProvider();
             registrationService.RegisterControllers();
-            
+
+            Execute.OnUIThreadSync(() =>
+            {
+                registrationService.ApplyPreferredGraphicsContext();
+            });
+
             // Initialize background services
             Kernel.Get<IDeviceLayoutService>();
         }

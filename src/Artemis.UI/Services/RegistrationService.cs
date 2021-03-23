@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Controllers;
@@ -8,6 +9,7 @@ using Artemis.UI.DefaultTypes.PropertyInput;
 using Artemis.UI.InputProviders;
 using Artemis.UI.Ninject;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.SkiaSharp;
 using Serilog;
 
 namespace Artemis.UI.Services
@@ -15,28 +17,38 @@ namespace Artemis.UI.Services
     public class RegistrationService : IRegistrationService
     {
         private readonly ILogger _logger;
+        private readonly ICoreService _coreService;
         private readonly IDataModelUIService _dataModelUIService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IInputService _inputService;
         private readonly IWebServerService _webServerService;
+        private readonly IRgbService _rgbService;
+        private readonly ISettingsService _settingsService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
         private bool _registeredBuiltInPropertyEditors;
+        private VulkanContext _vulkanContext;
 
         public RegistrationService(ILogger logger,
+            ICoreService coreService,
             IDataModelUIService dataModelUIService,
             IProfileEditorService profileEditorService,
             IPluginManagementService pluginManagementService,
             IInputService inputService,
-            IWebServerService webServerService)
+            IWebServerService webServerService,
+            IRgbService rgbService,
+            ISettingsService settingsService)
         {
             _logger = logger;
+            _coreService = coreService;
             _dataModelUIService = dataModelUIService;
             _profileEditorService = profileEditorService;
             _pluginManagementService = pluginManagementService;
             _inputService = inputService;
             _webServerService = webServerService;
+            _rgbService = rgbService;
+            _settingsService = settingsService;
 
             LoadPluginModules();
             pluginManagementService.PluginEnabling += PluginServiceOnPluginEnabling;
@@ -97,6 +109,40 @@ namespace Artemis.UI.Services
             _webServerService.AddController<RemoteController>();
         }
 
+        /// <inheritdoc />
+        public void ApplyPreferredGraphicsContext()
+        {
+            if (_coreService.StartupArguments.Contains("--force-software-render"))
+            {
+                _logger.Warning("Startup argument '--force-software-render' is applied, forcing software rendering.");
+                _rgbService.UpdateGraphicsContext(null);
+                return;
+            }
+
+            PluginSetting<string> preferredGraphicsContext = _settingsService.GetSetting("Core.PreferredGraphicsContext", "Vulkan");
+
+            try
+            {
+                switch (preferredGraphicsContext.Value)
+                {
+                    case "Software":
+                        _rgbService.UpdateGraphicsContext(null);
+                        break;
+                    case "Vulkan":
+                        _vulkanContext ??= new VulkanContext();
+                        _rgbService.UpdateGraphicsContext(_vulkanContext);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to apply preferred graphics context {preferred}", preferredGraphicsContext.Value);
+                _rgbService.UpdateGraphicsContext(null);
+            }
+        }
+
         private void PluginServiceOnPluginEnabling(object sender, PluginEventArgs e)
         {
             e.Plugin.Kernel.Load(new[] {new PluginUIModule(e.Plugin)});
@@ -116,5 +162,6 @@ namespace Artemis.UI.Services
         void RegisterBuiltInPropertyEditors();
         void RegisterInputProvider();
         void RegisterControllers();
+        void ApplyPreferredGraphicsContext();
     }
 }
