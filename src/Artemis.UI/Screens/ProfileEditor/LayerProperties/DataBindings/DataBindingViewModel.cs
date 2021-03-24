@@ -3,6 +3,8 @@ using System.Linq;
 using System.Timers;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile.DataBindings;
+using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Shared;
@@ -186,16 +188,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 return;
 
             if (Registration.DataBinding != null && SelectedDataBindingMode == DataBindingModeType.None)
-            {
                 RemoveDataBinding();
-                CreateDataBindingModeModeViewModel();
-                return;
+            else
+            {
+                if (Registration.DataBinding == null && SelectedDataBindingMode != DataBindingModeType.None)
+                    EnableDataBinding();
+
+                Registration.DataBinding!.ChangeDataBindingMode(SelectedDataBindingMode);
             }
 
-            if (Registration.DataBinding == null && SelectedDataBindingMode != DataBindingModeType.None)
-                EnableDataBinding();
-
-            Registration.DataBinding.ChangeDataBindingMode(SelectedDataBindingMode);
             CreateDataBindingModeModeViewModel();
             _profileEditorService.UpdateSelectedProfileElement();
         }
@@ -252,6 +253,33 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 
             Registration.LayerProperty.DisableDataBinding(Registration.DataBinding);
             Update();
+
+            _profileEditorService.UpdateSelectedProfileElement();
+        }
+
+        public void CopyDataBinding()
+        {
+            if (Registration.DataBinding != null)
+                JsonClipboard.SetObject(Registration.DataBinding.Entity);
+        }
+
+        public void PasteDataBinding()
+        {
+            if (Registration.DataBinding == null)
+                Registration.LayerProperty.EnableDataBinding(Registration);
+            if (Registration.DataBinding == null)
+                throw new ArtemisUIException("Failed to create a data binding in order to paste");
+
+            DataBindingEntity dataBindingEntity = JsonClipboard.GetData<DataBindingEntity>();
+            if (dataBindingEntity == null)
+                return;
+
+            Registration.DataBinding.EasingTime = dataBindingEntity.EasingTime;
+            Registration.DataBinding.EasingFunction = (Easings.Functions) dataBindingEntity.EasingFunction;
+            Registration.DataBinding.ApplyDataBindingEntity(dataBindingEntity.DataBindingMode);
+            CreateDataBindingModeModeViewModel();
+            Update();
+            
 
             _profileEditorService.UpdateSelectedProfileElement();
         }

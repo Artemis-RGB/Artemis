@@ -134,12 +134,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         public int RightSideIndex
         {
             get => _rightSideIndex;
-            set => SetAndNotify(ref _rightSideIndex, value);
+            set
+            {
+                if (!SetAndNotify(ref _rightSideIndex, value)) return;
+                NotifyOfPropertyChange(nameof(TimelineVisible));
+            }
         }
 
         public bool CanToggleEffectsViewModel => SelectedProfileElement != null && DateTime.Now - _lastEffectsViewModelToggle > TimeSpan.FromMilliseconds(250);
 
         public bool PropertyTreeVisible => PropertyTreeIndex == 0;
+        public bool TimelineVisible => RightSideIndex == 0;
 
         public RenderProfileElement SelectedProfileElement
         {

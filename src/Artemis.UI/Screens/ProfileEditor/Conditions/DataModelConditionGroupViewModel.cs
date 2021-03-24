@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
@@ -16,7 +16,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isEventGroup;
-        private bool _isInitialized;
         private bool _isRootGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
@@ -30,12 +29,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
             Items.CollectionChanged += (_, _) => NotifyOfPropertyChange(nameof(DisplayBooleanOperator));
-
-            Execute.PostToUIThread(async () =>
-            {
-                await Task.Delay(50);
-                IsInitialized = true;
-            });
         }
 
         public ConditionGroupType GroupType { get; }
@@ -61,12 +54,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 SetAndNotify(ref _isEventGroup, value);
                 NotifyOfPropertyChange(nameof(DisplayEvaluationResult));
             }
-        }
-
-        public bool IsInitialized
-        {
-            get => _isInitialized;
-            set => SetAndNotify(ref _isInitialized, value);
         }
 
         public bool DisplayBooleanOperator => Items.Count > 1;
@@ -132,7 +119,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         {
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
             // Remove VMs of effects no longer applied on the layer
-            Items.RemoveRange(Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList());
+            List<DataModelConditionViewModel> toRemove = Items.Where(c => !DataModelConditionGroup.Children.Contains(c.Model)).ToList();
+            if (toRemove.Any())
+                Items.RemoveRange(toRemove);
 
             foreach (DataModelConditionPart childModel in Model.Children)
             {
@@ -169,8 +158,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
             IsEventGroup = Items.Any(i => i is DataModelConditionEventViewModel);
             if (IsEventGroup)
+            {
                 if (DataModelConditionGroup.BooleanOperator != BooleanOperator.And)
                     SelectBooleanOperator("And");
+            }
 
             OnUpdated();
         }
