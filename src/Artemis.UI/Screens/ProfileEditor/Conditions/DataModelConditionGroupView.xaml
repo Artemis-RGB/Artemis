@@ -154,7 +154,7 @@
             </materialDesign:ToggleButtonAssist.OnContent>
         </ToggleButton>
 
-        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Items, IsAsync=True}" Margin="0 3 0 0">
+        <ItemsControl Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" ItemsSource="{Binding Items}" Margin="0 3 0 0">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
