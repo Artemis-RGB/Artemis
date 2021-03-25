@@ -31,5 +31,10 @@ namespace Artemis.Core
                 rectangle.Size.Height
             );
         }
+
+        public static SKRectI ToSKRectI(this Rectangle rectangle)
+        {
+            return SKRectI.Round(ToSKRect(rectangle));
+        }
     }
 }

@@ -144,16 +144,17 @@ namespace Artemis.Core.Services
 
                 SKCanvas canvas = texture.Surface.Canvas;
                 canvas.Save();
-                canvas.Scale(texture.RenderScale);
+                if (Math.Abs(texture.RenderScale - 1) > 0.001)
+                    canvas.Scale(texture.RenderScale);
                 canvas.Clear(new SKColor(0, 0, 0));
-                
+
                 // While non-activated modules may be updated above if they expand the main data model, they may never render
                 if (!ModuleRenderingDisabled)
                 {
                     foreach (Module module in modules.Where(m => m.IsActivated))
                         module.InternalRender(args.DeltaTime, canvas, texture.ImageInfo);
                 }
-                
+
                 OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
                 canvas.RestoreToCount(-1);
                 canvas.Flush();

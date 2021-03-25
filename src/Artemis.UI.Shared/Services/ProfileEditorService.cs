@@ -11,6 +11,7 @@ using Artemis.UI.Shared.Services.Models;
 using Ninject;
 using Ninject.Parameters;
 using Serilog;
+using SkiaSharp;
 using SkiaSharp.Views.WPF;
 using Stylet;
 
@@ -350,7 +351,10 @@ namespace Artemis.UI.Shared.Services
 
         public List<ArtemisLed> GetLedsInRectangle(Rect rect)
         {
-            return _rgbService.EnabledDevices.SelectMany(d => d.Leds).Where(led => led.AbsoluteRectangle.IntersectsWith(rect.ToSKRect())).ToList();
+            return _rgbService.EnabledDevices
+                .SelectMany(d => d.Leds)
+                .Where(led => led.AbsoluteRectangle.IntersectsWith(SKRectI.Round(rect.ToSKRect())))
+                .ToList();
         }
 
         #region Copy/paste
