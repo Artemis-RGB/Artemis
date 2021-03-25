@@ -16,7 +16,7 @@ namespace Artemis.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int RoundToInt(this float number)
         {
-            return (int) Math.Round(number, MidpointRounding.AwayFromZero);
+            return (int) MathF.Round(number, MidpointRounding.AwayFromZero);
         }
     }
 }
