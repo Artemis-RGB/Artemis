@@ -104,7 +104,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Renders the element
         /// </summary>
-        public abstract void Render(SKCanvas canvas, SKPoint basePosition);
+        public abstract void Render(SKCanvas canvas, SKPointI basePosition);
 
         /// <summary>
         ///     Resets the internal state of the element

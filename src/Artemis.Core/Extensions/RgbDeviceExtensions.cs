@@ -25,11 +25,16 @@ namespace Artemis.Core
         public static SKRect ToSKRect(this Rectangle rectangle)
         {
             return SKRect.Create(
-                (float) rectangle.Location.X,
-                (float) rectangle.Location.Y,
-                (float) rectangle.Size.Width,
-                (float) rectangle.Size.Height
+                rectangle.Location.X,
+                rectangle.Location.Y,
+                rectangle.Size.Width,
+                rectangle.Size.Height
             );
+        }
+
+        public static SKRectI ToSKRectI(this Rectangle rectangle)
+        {
+            return SKRectI.Round(ToSKRect(rectangle));
         }
     }
 }
