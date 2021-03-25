@@ -30,7 +30,7 @@ namespace Artemis.Core
         public void Render(double deltaTime, SKCanvas canvas)
         {
             AnimationProfile.Update(deltaTime);
-            AnimationProfile.Render(canvas, SKPoint.Empty);
+            AnimationProfile.Render(canvas, SKPointI.Empty);
         }
 
         private Profile CreateIntroProfile()

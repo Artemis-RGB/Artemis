@@ -258,9 +258,17 @@ namespace Artemis.Core.Services
             else
                 _logger.Debug("Creating SKTexture with software-based graphics context");
 
+            float evenWidth = Surface.Boundary.Size.Width;
+            if (evenWidth % 2 != 0)
+                evenWidth++;
+            float evenHeight = Surface.Boundary.Size.Height;
+            if (evenHeight % 2 != 0)
+                evenHeight++;
+
             float renderScale = (float) _renderScaleSetting.Value;
-            int width = Math.Max(1, MathF.Min(Surface.Boundary.Size.Width * renderScale, 4096).RoundToInt());
-            int height = Math.Max(1, MathF.Min(Surface.Boundary.Size.Height * renderScale, 4096).RoundToInt());
+            int width = Math.Max(1, MathF.Min(evenWidth * renderScale, 4096).RoundToInt());
+            int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
+
             _texture?.Dispose();
             _texture = new SKTexture(graphicsContext, width, height, renderScale);
             _textureBrush.Texture = _texture;
