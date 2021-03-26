@@ -23,5 +23,10 @@ namespace Artemis.Core
         ///     available icons
         /// </summary>
         public string? Icon { get; set; }
+
+        /// <summary>
+        ///     Marks the feature to always be enabled as long as the plugin is enabled
+        /// </summary>
+        public bool AlwaysEnabled { get; set; }
     }
 }

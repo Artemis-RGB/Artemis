@@ -107,7 +107,7 @@ namespace Artemis.Core
         /// <returns>If found, the instance of the feature</returns>
         public T? GetFeature<T>() where T : PluginFeature
         {
-            return _features.FirstOrDefault(i => i.Instance is T) as T;
+            return _features.FirstOrDefault(i => i.Instance is T)?.Instance as T;
         }
 
         /// <inheritdoc />
@@ -162,6 +162,11 @@ namespace Artemis.Core
                 Bootstrapper?.Disable(this);
                 OnDisabled();
             }
+        }
+
+        internal bool HasEnabledFeatures()
+        {
+            return Entity.Features.Any(f => f.IsEnabled) || Features.Any(f => f.AlwaysEnabled);
         }
 
         #region IDisposable
