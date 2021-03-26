@@ -110,7 +110,7 @@
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"
                                              ShowColors="True"
-                                             Margin="0 0 100 0" />
+                                             LedClicked="{s:Action OnLedClicked}"/>
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Width="15" Margin="-15 0 0 0" Background="Transparent" HorizontalAlignment="Stretch" Panel.ZIndex="3" />

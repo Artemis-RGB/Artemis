@@ -6,9 +6,11 @@ using System.Linq;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Shared
@@ -54,6 +56,7 @@ namespace Artemis.UI.Shared
             _timer = new Timer(40);
             _timer.Elapsed += TimerOnTick;
 
+            MouseLeftButtonUp += OnMouseLeftButtonUp;
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
         }
@@ -83,18 +86,6 @@ namespace Artemis.UI.Shared
         {
             get => (IEnumerable<ArtemisLed>) GetValue(HighlightedLedsProperty);
             set => SetValue(HighlightedLedsProperty, value);
-        }
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing) _timer.Stop();
         }
 
         /// <inheritdoc />
@@ -149,6 +140,7 @@ namespace Artemis.UI.Shared
             return ResizeKeepAspect(deviceSize, availableSize.Width, availableSize.Height);
         }
 
+
         private static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
         {
             double scale;
@@ -189,6 +181,21 @@ namespace Artemis.UI.Shared
 
                 _oldDevice = null;
             }
+        }
+
+        private void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Device == null)
+                return;
+
+            Point position = e.GetPosition(this);
+            double x = (position.X / RenderSize.Width);
+            double y = (position.Y / RenderSize.Height);
+
+            Point scaledPosition = new(x * Device.Rectangle.Width, y * Device.Rectangle.Height);
+            DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.DisplayGeometry != null && l.LedRect.Contains(scaledPosition));
+            if (deviceVisualizerLed != null)
+                OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led));
         }
 
         private void OnLoaded(object? sender, RoutedEventArgs e)
@@ -310,11 +317,43 @@ namespace Artemis.UI.Shared
             drawingContext.Close();
         }
 
+        #region Events
+
+        public event EventHandler<LedClickedEventArgs>? LedClicked;
+
+        /// <summary>
+        ///     Invokes the <see cref="LedClicked" /> event
+        /// </summary>
+        /// <param name="e"></param>
+        protected virtual void OnLedClicked(LedClickedEventArgs e)
+        {
+            LedClicked?.Invoke(this, e);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing) _timer.Stop();
+        }
+
+
         /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        #endregion
     }
 }
