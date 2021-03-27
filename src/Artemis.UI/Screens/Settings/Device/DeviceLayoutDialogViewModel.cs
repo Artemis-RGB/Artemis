@@ -24,12 +24,7 @@ namespace Artemis.UI.Screens.Settings.Device
             Device = device;
             SelectPhysicalLayout = !device.DeviceProvider.CanDetectPhysicalLayout;
 
-            Task.Run(() =>
-            {
-                AutocompleteSource = new RegionInfoAutocompleteSource();
-                SelectedRegion = AutocompleteSource.Regions.FirstOrDefault(r => r.TwoLetterISORegionName == Device.LogicalLayout ||
-                                                                                r.TwoLetterISORegionName == "US" && Device.LogicalLayout == "NA");
-            });
+            Task.Run(() => AutocompleteSource = new RegionInfoAutocompleteSource());
         }
 
         public ArtemisDevice Device { get; }
