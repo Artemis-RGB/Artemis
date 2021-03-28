@@ -142,8 +142,12 @@ namespace Artemis.UI.Screens
 
         private void RootViewModelOnClosed(object sender, CloseEventArgs e)
         {
-            _rootViewModel.Closed -= RootViewModelOnClosed;
-            _rootViewModel = null;
+            if (_rootViewModel != null)
+            {
+                _rootViewModel.Closed -= RootViewModelOnClosed;
+                _rootViewModel = null;
+            }
+
             OnMainWindowClosed();
         }
 

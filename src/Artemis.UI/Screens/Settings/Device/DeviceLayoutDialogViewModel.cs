@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
@@ -15,25 +14,28 @@ namespace Artemis.UI.Screens.Settings.Device
     {
         private readonly IRgbService _rgbService;
         private bool _selectPhysicalLayout;
-        private RegionInfoAutocompleteSource _autocompleteSource;
         private RegionInfo _selectedRegion;
 
-        public DeviceLayoutDialogViewModel(ArtemisDevice device, IRgbService rgbService)
+        public DeviceLayoutDialogViewModel(ArtemisDevice device, IRgbService rgbService, IDialogService dialogService)
         {
             _rgbService = rgbService;
             Device = device;
             SelectPhysicalLayout = !device.DeviceProvider.CanDetectPhysicalLayout;
 
-            Task.Run(() => AutocompleteSource = new RegionInfoAutocompleteSource());
+            try
+            {
+                AutocompleteSource = new RegionInfoAutocompleteSource();
+            }
+            catch (Exception e)
+            {
+                dialogService.ShowExceptionDialog("Failed to get region information for keyboard layout selection", e);
+                Session?.Close(false);
+            }
         }
 
         public ArtemisDevice Device { get; }
 
-        public RegionInfoAutocompleteSource AutocompleteSource
-        {
-            get => _autocompleteSource;
-            set => SetAndNotify(ref _autocompleteSource, value);
-        }
+        public RegionInfoAutocompleteSource AutocompleteSource { get; }
 
         public RegionInfo SelectedRegion
         {
@@ -87,7 +89,7 @@ namespace Artemis.UI.Screens.Settings.Device
 
         public RegionInfoAutocompleteSource()
         {
-            Regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures).ToList()
+            Regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
                 .Select(c => new RegionInfo(c.LCID))
                 .GroupBy(r => r.EnglishName)
                 .Select(g => g.First())
