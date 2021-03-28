@@ -63,7 +63,10 @@ namespace Artemis.Core
         /// </summary>
         public Easings.Functions EasingFunction { get; set; }
 
-        internal DataBindingEntity Entity { get; }
+        /// <summary>
+        ///     Gets the data binding entity this data binding uses for persistent storage
+        /// </summary>
+        public DataBindingEntity Entity { get; }
 
         /// <summary>
         ///     Gets the current value of the data binding
@@ -98,6 +101,25 @@ namespace Artemis.Core
         public Type? GetTargetType()
         {
             return Registration?.Getter.Method.ReturnType;
+        }
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                if (Registration != null)
+                    Registration.DataBinding = null;
+                DataBindingMode?.Dispose();
+            }
         }
 
         private void ResetEasing(TProperty value)
@@ -192,35 +214,12 @@ namespace Artemis.Core
             _reapplyValue = true;
         }
 
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _disposed = true;
-
-                if (Registration != null)
-                    Registration.DataBinding = null;
-                DataBindingMode?.Dispose();
-            }
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
 
         #region Mode management
 
@@ -242,6 +241,16 @@ namespace Artemis.Core
                     break;
             }
 
+            ApplyDataBindingMode();
+        }
+
+        /// <summary>
+        ///     Replaces the current data binding mode with one based on the provided data binding mode entity
+        /// </summary>
+        /// <param name="dataBindingModeEntity">The data binding mode entity to base the new data binding mode upon</param>
+        public void ApplyDataBindingEntity(IDataBindingModeEntity dataBindingModeEntity)
+        {
+            Entity.DataBindingMode = dataBindingModeEntity;
             ApplyDataBindingMode();
         }
 

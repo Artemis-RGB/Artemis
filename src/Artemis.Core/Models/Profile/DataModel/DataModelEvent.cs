@@ -29,8 +29,12 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        [DataModelProperty(Name = "Last event trigger", Description = "The time at which the event last triggered")]
+        [DataModelProperty(Name = "Last trigger", Description = "The time at which the event last triggered")]
         public DateTime LastTrigger { get; private set; }
+
+        /// <inheritdoc />
+        [DataModelProperty(Name = "Time since trigger", Description = "The time that has passed since the last trigger")]
+        public TimeSpan TimeSinceLastTrigger => DateTime.Now - LastTrigger;
 
         /// <summary>
         ///     Gets the event arguments of the last time the event was triggered
@@ -85,6 +89,7 @@ namespace Artemis.Core
         public Type ArgumentsType => typeof(T);
 
         /// <inheritdoc />
+        [DataModelIgnore]
         public string TriggerPastParticiple => "triggered";
 
         /// <inheritdoc />
@@ -147,14 +152,18 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        [DataModelProperty(Name = "Last event trigger", Description = "The time at which the event last triggered")]
+        [DataModelProperty(Name = "Last trigger", Description = "The time at which the event last triggered")]
         public DateTime LastTrigger { get; private set; }
+
+        /// <inheritdoc />
+        [DataModelProperty(Name = "Time since trigger", Description = "The time that has passed since the last trigger")]
+        public TimeSpan TimeSinceLastTrigger => DateTime.Now - LastTrigger;
 
         /// <summary>
         ///     Gets the event arguments of the last time the event was triggered
         /// </summary>
         [DataModelProperty(Description = "The arguments of the last time this event triggered")]
-        public DataModelEventArgs? LastEventArguments { get; private set; }
+        public DataModelEventArgs? LastTriggerArguments { get; private set; }
 
         /// <inheritdoc />
         [DataModelProperty(Description = "The total amount of times this event has triggered since the module was activated")]
@@ -174,7 +183,7 @@ namespace Artemis.Core
         {
             DataModelEventArgs eventArgs = new() {TriggerTime = DateTime.Now};
 
-            LastEventArguments = eventArgs;
+            LastTriggerArguments = eventArgs;
             LastTrigger = DateTime.Now;
             TriggerCount++;
 
@@ -201,6 +210,7 @@ namespace Artemis.Core
         public Type ArgumentsType => typeof(DataModelEventArgs);
 
         /// <inheritdoc />
+        [DataModelIgnore]
         public string TriggerPastParticiple => "triggered";
 
         /// <inheritdoc />
@@ -217,7 +227,7 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         [DataModelIgnore]
-        public DataModelEventArgs? LastEventArgumentsUntyped => LastEventArguments;
+        public DataModelEventArgs? LastEventArgumentsUntyped => LastTriggerArguments;
 
         /// <inheritdoc />
         [DataModelIgnore]

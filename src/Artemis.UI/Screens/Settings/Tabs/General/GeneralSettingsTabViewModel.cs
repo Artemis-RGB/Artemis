@@ -59,9 +59,12 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
             LogLevels = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(LogEventLevel)));
             ColorSchemes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ApplicationColorScheme)));
-            RenderScales = new List<Tuple<string, double>> {new("10%", 0.1)};
-            for (int i = 25; i <= 100; i += 25)
-                RenderScales.Add(new Tuple<string, double>(i + "%", i / 100.0));
+            RenderScales = new List<Tuple<string, double>>
+            {
+                new("25%", 0.25),
+                new("50%", 0.5),
+                new("100%", 1),
+            };
 
             TargetFrameRates = new List<Tuple<string, int>>();
             for (int i = 10; i <= 30; i += 5)

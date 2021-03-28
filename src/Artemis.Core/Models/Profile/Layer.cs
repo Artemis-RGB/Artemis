@@ -277,7 +277,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPoint basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -312,7 +312,7 @@ namespace Artemis.Core
             }
         }
 
-        private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPoint basePosition)
+        private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPointI basePosition)
         {
             if (Path == null || LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
@@ -329,12 +329,11 @@ namespace Artemis.Core
             try
             {
                 canvas.Save();
-                canvas.Translate(Path.Bounds.Left - basePosition.X, Path.Bounds.Top - basePosition.Y);
+                canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
                 using SKPath clipPath = new(Path);
-                clipPath.Transform(SKMatrix.CreateTranslation(Path.Bounds.Left * -1, Path.Bounds.Top * -1));
-                canvas.ClipPath(clipPath);
-
-                SKRect layerBounds = SKRect.Create(0, 0, Path.Bounds.Width, Path.Bounds.Height);
+                clipPath.Transform(SKMatrix.CreateTranslation(Bounds.Left * -1, Bounds.Top * -1));
+                canvas.ClipPath(clipPath, SKClipOperation.Intersect, true);
+                SKRectI layerBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
 
                 // Apply blend mode and color
                 layerPaint.BlendMode = General.BlendMode.CurrentValue;
@@ -435,7 +434,7 @@ namespace Artemis.Core
             OnRenderPropertiesUpdated();
         }
 
-        internal SKPoint GetLayerAnchorPosition(SKPath layerPath, bool applyTranslation, bool zeroBased)
+        internal SKPoint GetLayerAnchorPosition(bool applyTranslation, bool zeroBased)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
@@ -444,14 +443,14 @@ namespace Artemis.Core
 
             // Start at the center of the shape
             SKPoint position = zeroBased
-                ? new SKPoint(layerPath.Bounds.MidX - layerPath.Bounds.Left, layerPath.Bounds.MidY - layerPath.Bounds.Top)
-                : new SKPoint(layerPath.Bounds.MidX, layerPath.Bounds.MidY);
+                ? new SKPointI(Bounds.MidX - Bounds.Left, Bounds.MidY - Bounds.Top)
+                : new SKPointI(Bounds.MidX, Bounds.MidY);
 
             // Apply translation
             if (applyTranslation)
             {
-                position.X += positionProperty.X * layerPath.Bounds.Width;
-                position.Y += positionProperty.Y * layerPath.Bounds.Height;
+                position.X += positionProperty.X * Bounds.Width;
+                position.Y += positionProperty.Y * Bounds.Height;
             }
 
             return position;
@@ -479,7 +478,7 @@ namespace Artemis.Core
             SKSize sizeProperty = Transform.Scale.CurrentValue;
             float rotationProperty = Transform.Rotation.CurrentValue;
 
-            SKPoint anchorPosition = GetLayerAnchorPosition(Path, true, zeroBased);
+            SKPoint anchorPosition = GetLayerAnchorPosition(true, zeroBased);
             SKPoint anchorProperty = Transform.AnchorPoint.CurrentValue;
 
             // Translation originates from the unscaled center of the shape and is tied to the anchor

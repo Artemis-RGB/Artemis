@@ -16,6 +16,9 @@ namespace Artemis.Core
     /// </summary>
     public abstract class RenderProfileElement : ProfileElement
     {
+        private SKPath? _path;
+        private SKRectI _bounds;
+        
         internal RenderProfileElement(Profile profile) : base(profile)
         {
             Timeline = new Timeline();
@@ -113,7 +116,6 @@ namespace Artemis.Core
 
         #region Properties
 
-        private SKPath? _path;
         internal abstract RenderElementEntity RenderElementEntity { get; }
 
         /// <summary>
@@ -141,14 +143,14 @@ namespace Artemis.Core
                 SetAndNotify(ref _path, value);
                 // I can't really be sure about the performance impact of calling Bounds often but
                 // SkiaSharp calls SkiaApi.sk_path_get_bounds (Handle, &rect); which sounds expensive
-                Bounds = value?.Bounds ?? SKRect.Empty;
+                Bounds = SKRectI.Round(value?.Bounds ?? SKRect.Empty);
             }
         }
 
         /// <summary>
         ///     The bounds of this entity
         /// </summary>
-        public SKRect Bounds
+        public SKRectI Bounds
         {
             get => _bounds;
             private set => SetAndNotify(ref _bounds, value);
@@ -158,8 +160,7 @@ namespace Artemis.Core
         #region Property group expansion
 
         internal List<string> ExpandedPropertyGroups;
-        private SKRect _bounds;
-
+        
         /// <summary>
         ///     Determines whether the provided property group is expanded
         /// </summary>

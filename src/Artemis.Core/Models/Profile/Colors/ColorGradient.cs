@@ -10,6 +10,19 @@ namespace Artemis.Core
     /// </summary>
     public class ColorGradient : CorePropertyChanged
     {
+        private static readonly SKColor[] FastLedRainbow =
+        {
+            new(0xFFFF0000), // Red
+            new(0xFFFF9900), // Orange
+            new(0xFFFFFF00), // Yellow
+            new(0xFF00FF00), // Green
+            new(0xFF00FF7E), // Aqua
+            new(0xFF0078FF), // Blue
+            new(0xFF9E22FF), // Purple
+            new(0xFFFF34AE), // Pink
+            new(0xFFFF0000) // and back to Red
+        };
+
         /// <summary>
         ///     Creates a new instance of the <see cref="ColorGradient" /> class
         /// </summary>
@@ -31,9 +44,9 @@ namespace Artemis.Core
         public SKColor[] GetColorsArray(int timesToRepeat = 0)
         {
             if (timesToRepeat == 0)
-                return Stops.OrderBy(c => c.Position).Select(c => c.Color).ToArray();
+                return Stops.Select(c => c.Color).ToArray();
 
-            List<SKColor> colors = Stops.OrderBy(c => c.Position).Select(c => c.Color).ToList();
+            List<SKColor> colors = Stops.Select(c => c.Color).ToList();
             List<SKColor> result = new();
 
             for (int i = 0; i <= timesToRepeat; i++)
@@ -53,10 +66,10 @@ namespace Artemis.Core
         public float[] GetPositionsArray(int timesToRepeat = 0)
         {
             if (timesToRepeat == 0)
-                return Stops.OrderBy(c => c.Position).Select(c => c.Position).ToArray();
+                return Stops.Select(c => c.Position).ToArray();
 
             // Create stops and a list of divided stops
-            List<float> stops = Stops.OrderBy(c => c.Position).Select(c => c.Position / (timesToRepeat + 1)).ToList();
+            List<float> stops = Stops.Select(c => c.Position / (timesToRepeat + 1)).ToList();
             List<float> result = new();
 
             // For each repeat cycle, add the base stops to the end result
@@ -74,6 +87,7 @@ namespace Artemis.Core
         /// </summary>
         public void OnColorValuesUpdated()
         {
+            Stops.Sort((a, b) => a.Position.CompareTo(b.Position));
             OnPropertyChanged(nameof(Stops));
         }
 
@@ -86,7 +100,7 @@ namespace Artemis.Core
             if (!Stops.Any())
                 return SKColor.Empty;
 
-            ColorGradientStop[] stops = Stops.OrderBy(x => x.Position).ToArray();
+            ColorGradientStop[] stops = Stops.ToArray();
             if (position <= 0) return stops[0].Color;
             if (position >= 1) return stops[^1].Color;
             ColorGradientStop left = stops[0];
@@ -119,15 +133,14 @@ namespace Artemis.Core
         /// <returns></returns>
         public static ColorGradient GetUnicornBarf()
         {
-            const int amount = 8;
             ColorGradient gradient = new();
-
-            for (int i = 0; i <= amount; i++)
+            for (int index = 0; index < FastLedRainbow.Length; index++)
             {
-                float percent = i / (float)amount;
-                gradient.Stops.Add(new ColorGradientStop(SKColor.FromHsv(360f * percent, 100, 100), percent));
+                SKColor skColor = FastLedRainbow[index];
+                float position = 1f / (FastLedRainbow.Length - 1f) * index;
+                gradient.Stops.Add(new ColorGradientStop(skColor, position));
             }
-
+            
             return gradient;
         }
     }

@@ -61,6 +61,17 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             ActiveItem?.Evaluate();
         }
 
+        public void AddCondition()
+        {
+            ((ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>) Parent).AddCondition();
+        }
+
+        public void RemoveCondition()
+        {
+            ((ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>)Parent).RemoveCondition(DataBindingCondition);
+
+        }
+
         #region IDisposable
 
         /// <inheritdoc />

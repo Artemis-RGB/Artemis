@@ -207,7 +207,7 @@ namespace Artemis.Core.Services
             // ReSharper disable InconsistentlySynchronizedField - It's read-only, idc
             _logger.Debug("Loaded {count} plugin(s)", _plugins.Count);
 
-            bool adminRequired = _plugins.Any(p => p.Info.RequiresAdmin && p.Entity.IsEnabled && p.Entity.Features.Any(f => f.IsEnabled));
+            bool adminRequired = _plugins.Any(p => p.Info.RequiresAdmin && p.Entity.IsEnabled && p.HasEnabledFeatures());
             if (!isElevated && adminRequired)
             {
                 _logger.Information("Restarting because one or more plugins requires elevation");
@@ -340,7 +340,7 @@ namespace Artemis.Core.Services
             if (plugin.Assembly == null)
                 throw new ArtemisPluginException(plugin, "Cannot enable a plugin that hasn't successfully been loaded");
 
-            if (plugin.Info.RequiresAdmin && plugin.Entity.Features.Any(f => f.IsEnabled) && !_isElevated)
+            if (plugin.Info.RequiresAdmin && plugin.HasEnabledFeatures() && !_isElevated)
             {
                 if (!saveState)
                     throw new ArtemisCoreException("Cannot enable a plugin that requires elevation without saving it's state.");
@@ -387,7 +387,7 @@ namespace Artemis.Core.Services
             }
 
             // Activate features after they are all loaded
-            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && f.Instance.Entity.IsEnabled))
+            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.Instance.Entity.IsEnabled || f.AlwaysEnabled)))
             {
                 try
                 {

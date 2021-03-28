@@ -385,7 +385,8 @@
                     Width="110"
                     ToolTip="Add a new segment to the timeline"
                     VerticalAlignment="Center"
-                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}">
+                    IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}"
+                    Visibility="{Binding TimelineVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
                         <Style.Triggers>

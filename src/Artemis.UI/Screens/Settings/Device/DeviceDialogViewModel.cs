@@ -8,6 +8,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Shared;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
@@ -195,6 +196,11 @@ namespace Artemis.UI.Screens.Settings.Device
         private void DeviceOnDeviceUpdated(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(CanExportLayout));
+        }
+
+        public void OnLedClicked(object sender, LedClickedEventArgs e)
+        {
+            SelectedLed = e.Led;
         }
 
         #endregion
