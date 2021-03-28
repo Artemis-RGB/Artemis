@@ -14,6 +14,7 @@ namespace Artemis.Core
         public T? LastValue { get; private set; }
         public T? CurrentValue { get; private set; }
         public DateTime LastTrigger { get; private set; }
+        public TimeSpan TimeSinceLastTrigger => DateTime.Now - LastTrigger;
         public int TriggerCount { get; private set; }
         public Type ArgumentsType { get; } = typeof(DataModelValueChangedEventArgs<T>);
         public string TriggerPastParticiple => "changed";

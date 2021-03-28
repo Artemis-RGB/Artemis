@@ -4,9 +4,45 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Border BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" Margin="0 0 0 -4" Padding="0 4">
+    <Border BorderThickness="0 0 0 1"
+            BorderBrush="{DynamicResource MaterialDesignDivider}" 
+            Margin="0 0 0 -4"
+            Padding="0 4" 
+            Background="Transparent">
+        <Border.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Add new condition" Command="{s:Action AddCondition}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="CodeNotEqual" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Duplicate" Command="{s:Action DuplicateCondition}" InputGestureText="Ctrl+D" IsEnabled="False">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentDuplicate" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Copy" Command="{s:Action CopyCondition}" InputGestureText="Ctrl+C" IsEnabled="False">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentCopy" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Paste" Command="{s:Action PasteCondition}" InputGestureText="Ctrl+V" IsEnabled="False">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="ContentPaste" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="Delete" Command="{s:Action RemoveCondition}" InputGestureText="Del">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="TrashCan" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </ContextMenu>
+        </Border.ContextMenu>
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
