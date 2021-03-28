@@ -251,6 +251,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             if (Registration.DataBinding == null)
                 return;
 
+            ActiveItem = null;
             Registration.LayerProperty.DisableDataBinding(Registration.DataBinding);
             Update();
 

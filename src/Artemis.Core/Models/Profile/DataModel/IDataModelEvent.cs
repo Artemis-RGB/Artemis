@@ -14,6 +14,11 @@ namespace Artemis.Core
         DateTime LastTrigger { get; }
 
         /// <summary>
+        ///     Gets the time that has passed since the last trigger
+        /// </summary>
+        TimeSpan TimeSinceLastTrigger { get; }
+    
+        /// <summary>
         ///     Gets the amount of times the event was triggered
         /// </summary>
         int TriggerCount { get; }

@@ -44,6 +44,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _profileEditorService.UpdateSelectedProfileElement();
         }
 
+        public void RemoveCondition(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition)
+        {
+            ConditionalDataBinding.RemoveCondition(dataBindingCondition);
+        }
+
         protected override void OnInitialActivate()
         {
             Initialize();
