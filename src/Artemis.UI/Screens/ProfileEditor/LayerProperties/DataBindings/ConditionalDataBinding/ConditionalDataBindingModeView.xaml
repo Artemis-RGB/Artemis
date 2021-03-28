@@ -42,12 +42,12 @@
                  Margin="-10 0 -10 -5">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False"/>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
+                    <VirtualizingStackPanel/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
         </ListBox>

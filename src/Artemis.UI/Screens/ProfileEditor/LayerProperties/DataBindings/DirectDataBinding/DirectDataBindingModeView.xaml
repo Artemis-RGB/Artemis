@@ -8,7 +8,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Margin="5 10 0 0">
+    <Grid Margin="0 5 0 0">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
             <ColumnDefinition />
@@ -32,11 +32,7 @@
                 Padding="6 4"
                 Height="22"
                 Command="{s:Action AddModifier}">
-            <StackPanel Orientation="Horizontal">
-                <TextBlock>
-                    ADD MODIFIER
-                </TextBlock>
-            </StackPanel>
+           ADD MODIFIER
         </Button>
 
         <ListBox Grid.Row="1"

@@ -151,8 +151,8 @@
 
             <mde:Autocomplete Style="{StaticResource MaterialDesignAutocomplete}"
                               AutocompleteSource="{Binding Path=AutocompleteSource}"
-                              SearchOnInitialFocus="True"
                               SelectedItem="{Binding SelectedRegion, Mode=TwoWay}"
+                              SearchOnInitialFocus="True"
                               Hint="Select a logical layout"
                               Margin="0,16,0,0"
                               FontSize="15"

@@ -337,6 +337,7 @@ namespace Artemis.Core
 
             Layout = layout;
             Layout.ApplyDevice(this);
+            CalculateRenderProperties();
             OnDeviceUpdated();
         }
 

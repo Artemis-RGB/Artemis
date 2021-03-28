@@ -4,7 +4,6 @@ using System.Linq;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -153,8 +152,10 @@ namespace Artemis.Core
 
             SKPath path = new() {FillType = SKPathFillType.Winding};
             foreach (ProfileElement child in Children)
+            {
                 if (child is RenderProfileElement effectChild && effectChild.Path != null)
                     path.AddPath(effectChild.Path);
+            }
 
             Path = path;
 
@@ -168,7 +169,7 @@ namespace Artemis.Core
         #region Rendering
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPoint basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition)
         {
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
@@ -192,12 +193,12 @@ namespace Artemis.Core
                 SKPaint layerPaint = new();
                 try
                 {
-                    SKRect rendererBounds = SKRect.Create(0, 0, Path.Bounds.Width, Path.Bounds.Height);
+                    SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                         baseLayerEffect.PreProcess(canvas, rendererBounds, layerPaint);
 
                     canvas.SaveLayer(layerPaint);
-                    canvas.Translate(Path.Bounds.Left - basePosition.X, Path.Bounds.Top - basePosition.Y);
+                    canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
 
                     // If required, apply the opacity override of the module to the root folder
                     if (IsRootFolder && Profile.Module.OpacityOverride < 1)
@@ -212,7 +213,7 @@ namespace Artemis.Core
 
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
                     for (int index = Children.Count - 1; index > -1; index--)
-                        Children[index].Render(canvas, new SKPoint(Path.Bounds.Left, Path.Bounds.Top));
+                        Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
 
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
                         baseLayerEffect.PostProcess(canvas, rendererBounds, layerPaint);

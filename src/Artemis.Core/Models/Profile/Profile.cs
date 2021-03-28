@@ -81,7 +81,7 @@ namespace Artemis.Core
         }
 
         /// <inheritdoc />
-        public override void Render(SKCanvas canvas, SKPoint basePosition)
+        public override void Render(SKCanvas canvas, SKPointI basePosition)
         {
             lock (_lock)
             {

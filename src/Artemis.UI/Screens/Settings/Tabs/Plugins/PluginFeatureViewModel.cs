@@ -16,6 +16,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
         private readonly IMessageService _messageService;
+        private bool _canToggleEnabled;
 
         public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
             bool showShield,
@@ -50,6 +51,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             set => Task.Run(() => UpdateEnabled(value));
         }
 
+        public bool CanToggleEnabled => FeatureInfo.Plugin.IsEnabled && !FeatureInfo.AlwaysEnabled;
+
         public void ShowLogsFolder()
         {
             try
@@ -76,6 +79,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _pluginManagementService.PluginFeatureEnabled += OnFeatureEnableStopped;
             _pluginManagementService.PluginFeatureEnableFailed += OnFeatureEnableStopped;
 
+            FeatureInfo.Plugin.Enabled += PluginOnToggled;
+            FeatureInfo.Plugin.Disabled += PluginOnToggled;
+            
             base.OnInitialActivate();
         }
 
@@ -84,6 +90,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _pluginManagementService.PluginFeatureEnabling -= OnFeatureEnabling;
             _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnableStopped;
             _pluginManagementService.PluginFeatureEnableFailed -= OnFeatureEnableStopped;
+
+            FeatureInfo.Plugin.Enabled -= PluginOnToggled;
+            FeatureInfo.Plugin.Disabled -= PluginOnToggled;
 
             base.OnClose();
         }
@@ -145,6 +154,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(LoadException));
+        }
+
+        private void PluginOnToggled(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanToggleEnabled));
         }
 
         #endregion

@@ -28,7 +28,8 @@ namespace Artemis.Core
             Name = attribute?.Name ?? featureType.Name.Humanize(LetterCasing.Title);
             Description = attribute?.Description;
             Icon = attribute?.Icon;
-
+            AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
+            
             if (Icon != null) return;
             if (typeof(BaseDataModelExpansion).IsAssignableFrom(featureType))
                 Icon = "TableAdd";
@@ -55,6 +56,7 @@ namespace Artemis.Core
             Name = attribute?.Name ?? instance.GetType().Name.Humanize(LetterCasing.Title);
             Description = attribute?.Description;
             Icon = attribute?.Icon;
+            AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
             Instance = instance;
 
             if (Icon != null) return;
@@ -110,6 +112,12 @@ namespace Artemis.Core
             get => _icon;
             set => SetAndNotify(ref _icon, value);
         }
+
+        /// <summary>
+        ///     Marks the feature to always be enabled as long as the plugin is enabled and cannot be disabled
+        /// </summary>
+        [JsonProperty]
+        public bool AlwaysEnabled { get; }
 
         /// <summary>
         ///     Gets the feature this info is associated with

@@ -177,7 +177,7 @@ namespace Artemis.Core.Modules
             lock (_lock)
             {
                 // Render the profile
-                ActiveProfile?.Render(canvas, SKPoint.Empty);
+                ActiveProfile?.Render(canvas, SKPointI.Empty);
             }
 
             ProfileRendered(deltaTime, canvas, canvasInfo);
