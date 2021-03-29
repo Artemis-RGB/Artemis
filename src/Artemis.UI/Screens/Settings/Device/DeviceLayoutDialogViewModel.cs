@@ -85,11 +85,17 @@ namespace Artemis.UI.Screens.Settings.Device
 
     public class RegionInfoAutocompleteSource : IAutocompleteSource<RegionInfo>
     {
+        private const int LOCALE_NEUTRAL = 0x0000;
+        private const int LOCALE_CUSTOM_DEFAULT = 0x0c00;
+        private const int LOCALE_INVARIANT = 0x007F;
+
         public List<RegionInfo> Regions { get; set; }
 
         public RegionInfoAutocompleteSource()
         {
+            // RegionInfo does not support some LCIDs and they show up with certain locale settings
             Regions = CultureInfo.GetCultures(CultureTypes.SpecificCultures)
+                .Where(c => c.LCID != LOCALE_INVARIANT && c.LCID != LOCALE_NEUTRAL && c.LCID != LOCALE_CUSTOM_DEFAULT)
                 .Select(c => new RegionInfo(c.LCID))
                 .GroupBy(r => r.EnglishName)
                 .Select(g => g.First())
