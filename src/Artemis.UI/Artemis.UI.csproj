@@ -10,7 +10,7 @@
 		<Description>Provides advanced unified lighting across many different brands RGB peripherals</Description>
 		<Copyright>Copyright © Robert Beekman - 2021</Copyright>
 		<FileVersion>2.0.0.0</FileVersion>
-		<OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+		<OutputPath>bin\</OutputPath>
 		<UseWPF>true</UseWPF>
 		<Platforms>x64</Platforms>
 		<SupportedPlatform>windows</SupportedPlatform>

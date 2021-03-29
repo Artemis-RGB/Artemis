@@ -8,13 +8,13 @@
     <Company>Artemis.UI.Shared</Company>
     <Product>Artemis.UI.Shared</Product>
     <Copyright>Copyright © Robert Beekman - 2020</Copyright>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <UseWPF>true</UseWPF>
     <Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <DocumentationFile>bin\x64\Debug\Artemis.UI.Shared.xml</DocumentationFile>
+    <DocumentationFile>bin\Artemis.UI.Shared.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -30,7 +30,7 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DocumentationFile>bin\x64\Release\Artemis.UI.Shared.xml</DocumentationFile>
+    <DocumentationFile>bin\Artemis.UI.Shared.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
