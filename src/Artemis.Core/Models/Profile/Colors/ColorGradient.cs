@@ -40,17 +40,24 @@ namespace Artemis.Core
         ///     Gets all the colors in the color gradient
         /// </summary>
         /// <param name="timesToRepeat">The amount of times to repeat the colors</param>
-        /// <returns></returns>
-        public SKColor[] GetColorsArray(int timesToRepeat = 0)
+        /// <param name="seamless">
+        ///     A boolean indicating whether to make the gradient seamless by adding the first color behind the
+        ///     last color
+        /// </param>
+        /// <returns>An array containing each color in the gradient</returns>
+        public SKColor[] GetColorsArray(int timesToRepeat = 0, bool seamless = false)
         {
-            if (timesToRepeat == 0)
-                return Stops.Select(c => c.Color).ToArray();
-
-            List<SKColor> colors = Stops.Select(c => c.Color).ToList();
             List<SKColor> result = new();
-
-            for (int i = 0; i <= timesToRepeat; i++)
-                result.AddRange(colors);
+            if (timesToRepeat == 0)
+                result = Stops.Select(c => c.Color).ToList();
+            else
+            {
+                List<SKColor> colors = Stops.Select(c => c.Color).ToList();
+                for (int i = 0; i <= timesToRepeat; i++)
+                    result.AddRange(colors);
+            }
+            if (seamless && !IsSeamless())
+                result.Add(result[0]);
 
             return result.ToArray();
         }
@@ -59,24 +66,39 @@ namespace Artemis.Core
         ///     Gets all the positions in the color gradient
         /// </summary>
         /// <param name="timesToRepeat">
-        ///     The amount of times to repeat the positions, positions will get squished together and
-        ///     always stay between 0.0 and 1.0
+        ///     The amount of times to repeat the positions
         /// </param>
-        /// <returns></returns>
-        public float[] GetPositionsArray(int timesToRepeat = 0)
+        /// <param name="seamless">
+        ///     A boolean indicating whether to make the gradient seamless by adding the first color behind the
+        ///     last color
+        /// </param>
+        /// <returns>An array containing a position for each color between 0.0 and 1.0</returns>
+        public float[] GetPositionsArray(int timesToRepeat = 0, bool seamless = false)
         {
-            if (timesToRepeat == 0)
-                return Stops.Select(c => c.Position).ToArray();
-
-            // Create stops and a list of divided stops
-            List<float> stops = Stops.Select(c => c.Position / (timesToRepeat + 1)).ToList();
             List<float> result = new();
-
-            // For each repeat cycle, add the base stops to the end result
-            for (int i = 0; i <= timesToRepeat; i++)
+            if (timesToRepeat == 0)
+                result = Stops.Select(c => c.Position).ToList();
+            else
             {
-                List<float> localStops = stops.Select(s => s + result.LastOrDefault()).ToList();
-                result.AddRange(localStops);
+                // Create stops and a list of divided stops
+                List<float> stops = Stops.Select(c => c.Position / (timesToRepeat + 1)).ToList();
+
+                // For each repeat cycle, add the base stops to the end result
+                for (int i = 0; i <= timesToRepeat; i++)
+                {
+                    float lastStop = result.LastOrDefault();
+                    result.AddRange(stops.Select(s => s + lastStop));
+                }
+            }
+
+            if (seamless && !IsSeamless())
+            {
+                // Compress current points evenly
+                float compression = 1f - 1f / result.Count;
+                for (int index = 0; index < result.Count; index++)
+                    result[index] = result[index] * compression;
+                // Add one extra point at the end
+                result.Add(1f);
             }
 
             return result.ToArray();
@@ -140,8 +162,17 @@ namespace Artemis.Core
                 float position = 1f / (FastLedRainbow.Length - 1f) * index;
                 gradient.Stops.Add(new ColorGradientStop(skColor, position));
             }
-            
+
             return gradient;
+        }
+
+        /// <summary>
+        ///     Determines whether the gradient is seamless
+        /// </summary>
+        /// <returns><see langword="true" /> if the gradient is seamless; <see langword="false" /> otherwise</returns>
+        public bool IsSeamless()
+        {
+            return Stops.Count == 0 || Stops.First().Color.Equals(Stops.Last().Color);
         }
     }
 }
