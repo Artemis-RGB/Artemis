@@ -6,12 +6,12 @@
     <AssemblyTitle>Artemis.Core</AssemblyTitle>
     <Product>Artemis Core</Product>
     <Copyright>Copyright © Robert Beekman - 2020</Copyright>
-    <OutputPath>bin\$(Platform)\$(Configuration)\</OutputPath>
+    <OutputPath>bin\</OutputPath>
     <Platforms>x64</Platforms>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <PlatformTarget>x64</PlatformTarget>
-    <DocumentationFile>bin\x64\Debug\Artemis.Core.xml</DocumentationFile>
+    <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
     <NoWarn></NoWarn>
     <WarningLevel>5</WarningLevel>
   </PropertyGroup>
@@ -30,7 +30,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DocumentationFile>bin\x64\Release\Artemis.Core.xml</DocumentationFile>
+    <DocumentationFile>bin\Artemis.Core.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Artemis.Storage\Artemis.Storage.csproj">

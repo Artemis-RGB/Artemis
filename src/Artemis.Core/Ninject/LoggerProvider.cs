@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Ninject.Activation;
 using Serilog;
 using Serilog.Core;

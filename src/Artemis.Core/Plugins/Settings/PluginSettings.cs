@@ -17,6 +17,8 @@ namespace Artemis.Core
         internal PluginSettings(Plugin plugin, IPluginRepository pluginRepository)
         {
             Plugin = plugin;
+            Plugin.Settings = this;
+            
             _pluginRepository = pluginRepository;
             _settingEntities = new Dictionary<string, object>();
         }
@@ -64,6 +66,11 @@ namespace Artemis.Core
                 _settingEntities.Add(name, pluginSetting);
                 return pluginSetting;
             }
+        }
+
+        internal void ClearSettings()
+        {
+            _settingEntities.Clear();
         }
     }
 }

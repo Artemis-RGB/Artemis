@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
 using Artemis.Core.Services;
 using Artemis.Storage;
 using Artemis.Storage.Migrations.Interfaces;

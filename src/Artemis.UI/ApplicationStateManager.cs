@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Core;
 using Artemis.UI.Utilities;
+using Ninject;
 using Stylet;
 
 namespace Artemis.UI
@@ -19,13 +20,16 @@ namespace Artemis.UI
         // ReSharper disable once NotAccessedField.Local - Kept in scope to ensure it does not get released
         private Mutex _artemisMutex;
 
-        public ApplicationStateManager(string[] startupArguments)
+        public ApplicationStateManager(IKernel kernel, string[] startupArguments)
         {
             StartupArguments = startupArguments;
             IsElevated = new WindowsPrincipal(WindowsIdentity.GetCurrent()).IsInRole(WindowsBuiltInRole.Administrator);
 
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnRestartRequested;
+
+            // On Windows shutdown dispose the kernel just so device providers get a chance to clean up
+            Application.Current.SessionEnding += (_, _) => kernel.Dispose();
         }
 
         public string[] StartupArguments { get; }

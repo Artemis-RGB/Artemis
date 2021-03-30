@@ -20,8 +20,8 @@
                   IsReadOnly="True"
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
-                  materialDesign:DataGridAssist.CellPadding="13 8 8 8"
-                  materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                  materialDesign:DataGridAssist.CellPadding="5"
+                  materialDesign:DataGridAssist.ColumnHeaderPadding="5"
                   SelectedItem="{Binding Parent.SelectedLed}"
                   CanUserResizeRows="False"
                   Margin="10">
@@ -31,6 +31,7 @@
                 <materialDesign:DataGridTextColumn Binding="{Binding Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" />
                 <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Shape}" Header="Shape" />
                 <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Size}" Header="Size" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.CustomData}" Header="LED data" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

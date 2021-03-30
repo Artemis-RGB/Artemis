@@ -85,6 +85,25 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
+        public async Task RemoveSettings()
+        {
+            bool confirmed = await _dialogService.ShowConfirmDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
+            if (!confirmed)
+                return;
+
+            bool wasEnabled = IsEnabled;
+
+            if (IsEnabled)
+                await UpdateEnabled(false);
+
+            _pluginManagementService.RemovePluginSettings(Plugin);
+
+            if (wasEnabled)
+                await UpdateEnabled(true);
+
+            _messageService.ShowMessage("Cleared plugin settings.");
+        }
+
         public async Task Remove()
         {
             bool confirmed = await _dialogService.ShowConfirmDialog("Delete plugin", "Are you sure you want to delete this plugin?");
@@ -93,7 +112,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             try
             {
-                _pluginManagementService.RemovePlugin(Plugin);
+                _pluginManagementService.RemovePlugin(Plugin, false);
                 ((PluginSettingsTabViewModel) Parent).GetPluginInstances();
             }
             catch (Exception e)
@@ -101,6 +120,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 _dialogService.ShowExceptionDialog("Failed to remove plugin", e);
                 throw;
             }
+
+            _messageService.ShowMessage("Removed plugin.");
         }
 
         public void ShowLogsFolder()

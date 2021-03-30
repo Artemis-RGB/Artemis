@@ -12,7 +12,7 @@
              d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
-    <materialDesign:Card Width="800">
+    <materialDesign:Card Width="900">
         <Grid Margin="8">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
@@ -47,7 +47,7 @@
                            behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Parent.SearchPluginInput}"
                            behaviors:HighlightTermBehavior.Text="{Binding Plugin.Info.Name}"
                            behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
-                           behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}"/>
+                           behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}" />
 
                 <TextBlock Grid.Column="1"
                            Grid.Row="1"
@@ -67,11 +67,19 @@
                         Orientation="Horizontal">
                 <Button
                     VerticalAlignment="Bottom"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Style="{StaticResource MaterialDesignRaisedButton}"
                     ToolTip="Open the plugins settings window"
                     Margin="4"
                     Command="{s:Action OpenSettings}">
                     SETTINGS
+                </Button>
+                <Button
+                    VerticalAlignment="Bottom"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    ToolTip="Clear plugin settings"
+                    Margin="4"
+                    Command="{s:Action RemoveSettings}">
+                    <materialDesign:PackIcon Kind="DatabaseRemove" />
                 </Button>
                 <Button
                     VerticalAlignment="Bottom"
