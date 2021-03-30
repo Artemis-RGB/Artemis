@@ -479,7 +479,7 @@ namespace Artemis.Core.Services
             if (existing != null)
                 try
                 {
-                    RemovePlugin(existing);
+                    RemovePlugin(existing, false);
                 }
                 catch (Exception e)
                 {
@@ -519,7 +519,7 @@ namespace Artemis.Core.Services
             return LoadPlugin(directoryInfo);
         }
 
-        public void RemovePlugin(Plugin plugin)
+        public void RemovePlugin(Plugin plugin, bool removeSettings)
         {
             DirectoryInfo directory = plugin.Directory;
             lock (_plugins)
@@ -529,6 +529,16 @@ namespace Artemis.Core.Services
             }
 
             directory.Delete(true);
+            if (removeSettings)
+                RemovePluginSettings(plugin);
+        }
+
+        public void RemovePluginSettings(Plugin plugin)
+        {
+            if (plugin.IsEnabled)
+                throw new ArtemisCoreException("Cannot remove the settings of an enabled plugin");
+            _pluginRepository.RemoveSettings(plugin.Guid);
+            plugin.Settings?.ClearSettings();
         }
 
         #endregion

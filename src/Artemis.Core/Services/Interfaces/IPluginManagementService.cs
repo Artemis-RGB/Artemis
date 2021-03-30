@@ -74,7 +74,14 @@ namespace Artemis.Core.Services
         ///     Unloads and permanently removes the provided plugin
         /// </summary>
         /// <param name="plugin">The plugin to remove</param>
-        void RemovePlugin(Plugin plugin);
+        /// <param name="removeSettings"></param>
+        void RemovePlugin(Plugin plugin, bool removeSettings);
+
+        /// <summary>
+        ///     Removes the settings of a disabled plugin
+        /// </summary>
+        /// <param name="plugin">The plugin whose settings to remove</param>
+        void RemovePluginSettings(Plugin plugin);
 
         /// <summary>
         ///     Enables the provided plugin feature
@@ -134,8 +141,6 @@ namespace Artemis.Core.Services
         /// <param name="pluginAction">The action to take</param>
         void QueuePluginAction(Plugin plugin, PluginManagementAction pluginAction);
 
-        #region Events
-
         /// <summary>
         ///     Occurs when built-in plugins are being loaded
         /// </summary>
@@ -190,7 +195,5 @@ namespace Artemis.Core.Services
         ///     Occurs when a plugin feature has been disabled
         /// </summary>
         public event EventHandler<PluginFeatureEventArgs> PluginFeatureDisabled;
-
-        #endregion
     }
 }

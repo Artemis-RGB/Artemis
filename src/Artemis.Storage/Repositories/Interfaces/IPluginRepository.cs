@@ -14,7 +14,8 @@ namespace Artemis.Storage.Repositories.Interfaces
         PluginSettingEntity GetSettingByGuid(Guid pluginGuid);
         PluginSettingEntity GetSettingByNameAndGuid(string name, Guid pluginGuid);
         void SaveSetting(PluginSettingEntity pluginSettingEntity);
-
+        void RemoveSettings(Guid pluginGuid);
+        
         void AddQueuedAction(PluginQueuedActionEntity pluginQueuedActionEntity);
         List<PluginQueuedActionEntity> GetQueuedActions();
         List<PluginQueuedActionEntity> GetQueuedActions(Guid pluginGuid);

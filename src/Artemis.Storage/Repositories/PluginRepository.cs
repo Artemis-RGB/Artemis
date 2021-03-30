@@ -54,6 +54,12 @@ namespace Artemis.Storage.Repositories
             _repository.Upsert(pluginSettingEntity);
         }
 
+        /// <inheritdoc />
+        public void RemoveSettings(Guid pluginGuid)
+        {
+            _repository.DeleteMany<PluginSettingEntity>(s => s.PluginGuid == pluginGuid);
+        }
+
         public List<PluginQueuedActionEntity> GetQueuedActions()
         {
             return _repository.Query<PluginQueuedActionEntity>().ToList();
