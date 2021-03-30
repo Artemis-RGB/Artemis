@@ -36,6 +36,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             base.OnInitialActivate();
             ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, ConditionGroupType.General);
             ActiveItem.IsRootGroup = true;
+            
             ActiveItem.Update();
             ActiveItem.Updated += ActiveItemOnUpdated;
 

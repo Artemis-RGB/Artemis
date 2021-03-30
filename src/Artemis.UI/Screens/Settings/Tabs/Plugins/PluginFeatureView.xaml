@@ -17,8 +17,8 @@
     <Grid Margin="-3 -8">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="30" />
-            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- Icon column -->
@@ -42,15 +42,20 @@
         </Button>
 
         <!-- Display name column -->
-        <TextBlock Grid.Column="1" Text="{Binding FeatureInfo.Name}" Style="{StaticResource MaterialDesignTextBlock}" VerticalAlignment="Center" ToolTip="{Binding FeatureInfo.Description}" />
+        <TextBlock Grid.Column="1" 
+                   Text="{Binding FeatureInfo.Name}" 
+                   Style="{StaticResource MaterialDesignTextBlock}" 
+                   VerticalAlignment="Center" 
+                   TextWrapping="Wrap"
+                   ToolTip="{Binding FeatureInfo.Description}" />
 
         <!-- Enable toggle column -->
         <StackPanel Grid.Column="2"
                     HorizontalAlignment="Right" 
-                    VerticalAlignment="Center" 
                     Margin="8"
                     Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay, FallbackValue=Collapsed}"
                     Orientation="Horizontal"
+                    VerticalAlignment="Top"
                     ToolTip="This feature cannot be disabled without disabling the whole plugin"
                     ToolTipService.IsEnabled="{Binding FeatureInfo.AlwaysEnabled}">
             <materialDesign:PackIcon Kind="ShieldHalfFull"
