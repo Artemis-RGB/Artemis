@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
-using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject;
@@ -14,11 +13,9 @@ using Artemis.UI.Screens;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.UI.SkiaSharp;
 using Artemis.UI.Stylet;
 using Ninject;
 using Serilog;
-using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI
@@ -39,7 +36,7 @@ namespace Artemis.UI
 
         protected override void Launch()
         {
-            _applicationStateManager = new ApplicationStateManager(Args);
+            _applicationStateManager = new ApplicationStateManager(Kernel, Args);
             Core.Utilities.PrepareFirstLaunch();
 
             ILogger logger = Kernel.Get<ILogger>();
@@ -94,10 +91,7 @@ namespace Artemis.UI
             registrationService.RegisterInputProvider();
             registrationService.RegisterControllers();
 
-            Execute.OnUIThreadSync(() =>
-            {
-                registrationService.ApplyPreferredGraphicsContext();
-            });
+            Execute.OnUIThreadSync(() => { registrationService.ApplyPreferredGraphicsContext(); });
 
             // Initialize background services
             Kernel.Get<IDeviceLayoutService>();

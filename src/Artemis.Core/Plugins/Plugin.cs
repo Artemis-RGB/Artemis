@@ -89,6 +89,11 @@ namespace Artemis.Core
         internal PluginEntity Entity { get; set; }
 
         /// <summary>
+        ///     Populated when plugin settings are first loaded
+        /// </summary>
+        internal PluginSettings? Settings { get; set; }
+
+        /// <summary>
         ///     Resolves the relative path provided in the <paramref name="path" /> parameter to an absolute path
         /// </summary>
         /// <param name="path">The path to resolve</param>
@@ -101,7 +106,6 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Looks up the instance of the feature of type <typeparamref name="T" />
-        ///     <para>Note: This method only returns instances of enabled features</para>
         /// </summary>
         /// <typeparam name="T">The type of feature to find</typeparam>
         /// <returns>If found, the instance of the feature</returns>
@@ -114,6 +118,83 @@ namespace Artemis.Core
         public override string ToString()
         {
             return Info.ToString();
+        }
+
+        /// <summary>
+        ///     Occurs when the plugin is enabled
+        /// </summary>
+        public event EventHandler? Enabled;
+
+        /// <summary>
+        ///     Occurs when the plugin is disabled
+        /// </summary>
+        public event EventHandler? Disabled;
+
+        /// <summary>
+        ///     Occurs when an feature is loaded and added to the plugin
+        /// </summary>
+        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureAdded;
+
+        /// <summary>
+        ///     Occurs when an feature is disabled and removed from the plugin
+        /// </summary>
+        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureRemoved;
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                foreach (PluginFeatureInfo feature in Features)
+                    feature.Instance?.Dispose();
+                SetEnabled(false);
+
+                Kernel?.Dispose();
+                PluginLoader?.Dispose();
+
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+
+                _features.Clear();
+            }
+        }
+
+        /// <summary>
+        ///     Invokes the Enabled event
+        /// </summary>
+        protected virtual void OnEnabled()
+        {
+            Enabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the Disabled event
+        /// </summary>
+        protected virtual void OnDisabled()
+        {
+            Disabled?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureAdded event
+        /// </summary>
+        protected virtual void OnFeatureAdded(PluginFeatureInfoEventArgs e)
+        {
+            FeatureAdded?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the FeatureRemoved event
+        /// </summary>
+        protected virtual void OnFeatureRemoved(PluginFeatureInfoEventArgs e)
+        {
+            FeatureRemoved?.Invoke(this, e);
         }
 
         internal void ApplyToEntity()
@@ -169,96 +250,11 @@ namespace Artemis.Core
             return Entity.Features.Any(f => f.IsEnabled) || Features.Any(f => f.AlwaysEnabled);
         }
 
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                foreach (PluginFeatureInfo feature in Features)
-                    feature.Instance?.Dispose();
-                SetEnabled(false);
-
-                Kernel?.Dispose();
-                PluginLoader?.Dispose();
-
-                GC.Collect();
-                GC.WaitForPendingFinalizers();
-
-                _features.Clear();
-            }
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the plugin is enabled
-        /// </summary>
-        public event EventHandler? Enabled;
-
-        /// <summary>
-        ///     Occurs when the plugin is disabled
-        /// </summary>
-        public event EventHandler? Disabled;
-
-        /// <summary>
-        ///     Occurs when an feature is loaded and added to the plugin
-        /// </summary>
-        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureAdded;
-
-        /// <summary>
-        ///     Occurs when an feature is disabled and removed from the plugin
-        /// </summary>
-        public event EventHandler<PluginFeatureInfoEventArgs>? FeatureRemoved;
-
-        /// <summary>
-        ///     Invokes the Enabled event
-        /// </summary>
-        protected virtual void OnEnabled()
-        {
-            Enabled?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the Disabled event
-        /// </summary>
-        protected virtual void OnDisabled()
-        {
-            Disabled?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the FeatureAdded event
-        /// </summary>
-        protected virtual void OnFeatureAdded(PluginFeatureInfoEventArgs e)
-        {
-            FeatureAdded?.Invoke(this, e);
-        }
-
-        /// <summary>
-        ///     Invokes the FeatureRemoved event
-        /// </summary>
-        protected virtual void OnFeatureRemoved(PluginFeatureInfoEventArgs e)
-        {
-            FeatureRemoved?.Invoke(this, e);
-        }
-
-        #endregion
     }
 }
