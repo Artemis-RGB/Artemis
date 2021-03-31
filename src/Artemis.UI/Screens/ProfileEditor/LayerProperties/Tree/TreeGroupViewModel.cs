@@ -32,6 +32,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         private readonly IDialogService _dialogService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowManager _windowManager;
+        private LayerBrushSettingsWindowViewModel? _layerBrushSettingsWindowVm;
+        private LayerEffectSettingsWindowViewModel _layerEffectSettingsWindowVm;
 
         public TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel, IProfileEditorService profileEditorService, IDialogService dialogService, IWindowManager windowManager)
         {
@@ -73,7 +75,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 ConstructorArgument argument = new(brushParameter.Name, layerBrush);
                 BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
 
-                _windowManager.ShowDialog(new LayerBrushSettingsWindowViewModel(viewModel));
+                _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel);
+                _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
             }
             catch (Exception e)
             {
@@ -98,7 +101,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 ParameterInfo effectParameter = constructors.First().GetParameters().First(p => typeof(BaseLayerEffect).IsAssignableFrom(p.ParameterType));
                 ConstructorArgument argument = new(effectParameter.Name, layerEffect);
                 EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
-                _windowManager.ShowDialog(new LayerEffectSettingsWindowViewModel(viewModel));
+                
+                _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel);
+                _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
             }
             catch (Exception e)
             {
@@ -185,6 +190,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         protected override void OnClose()
         {
             LayerPropertyGroupViewModel.PropertyChanged -= LayerPropertyGroupViewModelOnPropertyChanged;
+            
+            // Clean up windows that may be open, sorry but your brush/effect is closed!
+            _layerBrushSettingsWindowVm?.RequestClose();
+            _layerEffectSettingsWindowVm?.RequestClose();
+            
             base.OnClose();
         }
 

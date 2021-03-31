@@ -179,8 +179,11 @@ namespace Artemis.Core.Services
 
         #region Plugins
 
-        public void LoadPlugins(bool ignorePluginLock, bool stayElevated, bool isElevated)
+        public void LoadPlugins(List<string> startupArguments, bool isElevated)
         {
+            bool ignorePluginLock = startupArguments.Contains("--ignore-plugin-lock");
+            bool stayElevated = startupArguments.Contains("--force-elevation");
+            bool droppedAdmin = startupArguments.Contains("--dropped-admin");
             if (LoadingPlugins)
                 throw new ArtemisCoreException("Cannot load plugins while a previous load hasn't been completed yet.");
 
@@ -218,10 +221,15 @@ namespace Artemis.Core.Services
 
             if (isElevated && !adminRequired && !stayElevated)
             {
-                // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
-                _logger.Information("Restarting because no plugin requires elevation and --force-elevation was not supplied");
-                Utilities.Restart(false, TimeSpan.Zero);
-                return;
+                if (droppedAdmin)
+                    _logger.Information("No plugin requires elevation but dropping admin failed before, ignoring");
+                else
+                {
+                    // No need for a delay this early on, nothing that needs graceful shutdown is happening yet
+                    _logger.Information("Restarting because no plugin requires elevation and --force-elevation was not supplied");
+                    Utilities.Restart(false, TimeSpan.Zero, "--dropped-admin");
+                    return;
+                }
             }
 
             foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))

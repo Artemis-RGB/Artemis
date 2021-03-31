@@ -26,7 +26,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Loads all installed plugins. If plugins already loaded this will reload them all
         /// </summary>
-        void LoadPlugins(bool ignorePluginLock, bool stayElevated, bool isElevated);
+        void LoadPlugins(List<string> startupArguments, bool isElevated);
 
         /// <summary>
         ///     Unloads all installed plugins.
