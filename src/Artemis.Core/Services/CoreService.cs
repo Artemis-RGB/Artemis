@@ -238,11 +238,7 @@ namespace Artemis.Core.Services
 
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
-            _pluginManagementService.LoadPlugins(
-                StartupArguments.Contains("--ignore-plugin-lock"),
-                StartupArguments.Contains("--force-elevation"),
-                IsElevated
-            );
+            _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
 
             _rgbService.IsRenderPaused = false;
             OnInitialized();

@@ -43,10 +43,9 @@ namespace Artemis.Core.Services
             Server?.Dispose();
             Server = null;
 
-            string url = $"http://*:{_webServerPortSetting.Value}/";
             WebApiModule apiModule = new("/api/", JsonNetSerializer);
-            PluginsModule.ServerUrl = url;
-            WebServer server = new WebServer(o => o.WithUrlPrefix(url).WithMode(HttpListenerMode.EmbedIO))
+            PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
+            WebServer server = new WebServer(o => o.WithUrlPrefix($"http://*:{_webServerPortSetting.Value}/").WithMode(HttpListenerMode.EmbedIO))
                 .WithLocalSessionManager()
                 .WithModule(apiModule)
                 .WithModule(PluginsModule)
@@ -61,7 +60,7 @@ namespace Artemis.Core.Services
             server.StateChanged += (s, e) => _logger.Verbose("WebServer new state - {state}", e.NewState);
 
             // Store the URL in a webserver.txt file so that remote applications can find it
-            File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), $"http://localhost:{_webServerPortSetting.Value}/");
+            File.WriteAllText(Path.Combine(Constants.DataFolder, "webserver.txt"), PluginsModule.ServerUrl);
 
             return server;
         }
@@ -156,7 +155,6 @@ namespace Artemis.Core.Services
 
         private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel
         {
-
         }
 
         public void RemovePluginEndPoint(PluginEndPoint endPoint)
