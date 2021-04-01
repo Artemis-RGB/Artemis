@@ -32,7 +32,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         private readonly IDialogService _dialogService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IWindowManager _windowManager;
-        private LayerBrushSettingsWindowViewModel? _layerBrushSettingsWindowVm;
+        private LayerBrushSettingsWindowViewModel _layerBrushSettingsWindowVm;
         private LayerEffectSettingsWindowViewModel _layerEffectSettingsWindowVm;
 
         public TreeGroupViewModel(LayerPropertyGroupViewModel layerPropertyGroupViewModel, IProfileEditorService profileEditorService, IDialogService dialogService, IWindowManager windowManager)
