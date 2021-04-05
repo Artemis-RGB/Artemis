@@ -34,6 +34,11 @@ namespace Artemis.Core
         Type PropertyType { get; }
 
         /// <summary>
+        ///     Indicates whether the BaseValue was loaded from storage, useful to check whether a default value must be applied
+        /// </summary>
+        bool IsLoadedFromStorage { get; }
+
+        /// <summary>
         ///     Initializes the layer property
         ///     <para>
         ///         Note: This isn't done in the constructor to keep it parameterless which is easier for implementations of
