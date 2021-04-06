@@ -106,7 +106,7 @@ namespace Artemis.UI.Services
 
         public void RegisterControllers()
         {
-            _webServerService.AddController<RemoteController>();
+            _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!);
         }
 
         /// <inheritdoc />
