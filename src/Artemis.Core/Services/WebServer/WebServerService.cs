@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
@@ -8,7 +9,6 @@ using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;
 using Newtonsoft.Json;
-using Ninject;
 using Serilog;
 
 namespace Artemis.Core.Services
@@ -16,18 +16,19 @@ namespace Artemis.Core.Services
     internal class WebServerService : IWebServerService, IDisposable
     {
         private readonly List<WebApiControllerRegistration> _controllers;
-        private readonly IKernel _kernel;
+        private readonly List<WebModuleRegistration> _modules;
         private readonly ILogger _logger;
         private readonly PluginSetting<int> _webServerPortSetting;
 
-        public WebServerService(IKernel kernel, ILogger logger, ISettingsService settingsService)
+        public WebServerService(ILogger logger, ISettingsService settingsService, IPluginManagementService pluginManagementService)
         {
-            _kernel = kernel;
             _logger = logger;
             _controllers = new List<WebApiControllerRegistration>();
+            _modules = new List<WebModuleRegistration>();
 
             _webServerPortSetting = settingsService.GetSetting("WebServer.Port", 9696);
             _webServerPortSetting.SettingChanged += WebServerPortSettingOnSettingChanged;
+            pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
 
             PluginsModule = new PluginsModule("/plugins");
             StartWebServer();
@@ -43,12 +44,18 @@ namespace Artemis.Core.Services
             Server?.Dispose();
             Server = null;
 
-            WebApiModule apiModule = new("/api/", JsonNetSerializer);
+            WebApiModule apiModule = new("/", JsonNetSerializer);
             PluginsModule.ServerUrl = $"http://localhost:{_webServerPortSetting.Value}/";
             WebServer server = new WebServer(o => o.WithUrlPrefix($"http://*:{_webServerPortSetting.Value}/").WithMode(HttpListenerMode.EmbedIO))
                 .WithLocalSessionManager()
+                .WithModule(PluginsModule);
+
+            // Add registered modules
+            foreach (var webModule in _modules)
+                server = server.WithModule(webModule.CreateInstance());
+
+            server = server
                 .WithModule(apiModule)
-                .WithModule(PluginsModule)
                 .HandleHttpException((context, exception) => HandleHttpExceptionJson(context, exception))
                 .HandleUnhandledException(JsonExceptionHandlerCallback);
 
@@ -166,15 +173,35 @@ namespace Artemis.Core.Services
 
         #region Controller management
 
-        public void AddController<T>() where T : WebApiController
+        public void AddController<T>(PluginFeature feature) where T : WebApiController
         {
-            _controllers.Add(new WebApiControllerRegistration<T>(_kernel));
+            _controllers.Add(new WebApiControllerRegistration<T>(feature));
             StartWebServer();
         }
 
         public void RemoveController<T>() where T : WebApiController
         {
             _controllers.RemoveAll(r => r.ControllerType == typeof(T));
+            StartWebServer();
+        }
+
+        #endregion
+
+        #region Module management
+
+        public void AddModule<T>(PluginFeature feature) where T : IWebModule
+        {
+            if (feature == null) throw new ArgumentNullException(nameof(feature));
+            if (_modules.Any(r => r.WebModuleType == typeof(T)))
+                return;
+
+            _modules.Add(new WebModuleRegistration(feature, typeof(T)));
+            StartWebServer();
+        }
+
+        public void RemoveModule<T>() where T : IWebModule
+        {
+            _modules.RemoveAll(r => r.WebModuleType == typeof(T));
             StartWebServer();
         }
 
@@ -233,6 +260,25 @@ namespace Artemis.Core.Services
         private void WebServerPortSettingOnSettingChanged(object? sender, EventArgs e)
         {
             StartWebServer();
+        }
+
+        private void PluginManagementServiceOnPluginFeatureDisabled(object? sender, PluginFeatureEventArgs e)
+        {
+            bool mustRestart = false;
+            if (_controllers.Any(c => c.Feature == e.PluginFeature))
+            {
+                mustRestart = true;
+                _controllers.RemoveAll(c => c.Feature == e.PluginFeature);
+            }
+
+            if (_modules.Any(m => m.Feature == e.PluginFeature))
+            {
+                mustRestart = true;
+                _modules.RemoveAll(m => m.Feature == e.PluginFeature);
+            }
+
+            if (mustRestart)
+                StartWebServer();
         }
 
         #endregion

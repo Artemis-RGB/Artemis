@@ -55,7 +55,8 @@ namespace Artemis.Core.Services
         DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(Module<T> module, string endPointName) where T : DataModel;
 
         /// <summary>
-        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="profileModule" />.
+        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided
+        ///     <paramref name="profileModule" />.
         /// </summary>
         /// <typeparam name="T">The data model type of the module</typeparam>
         /// <param name="profileModule">The module whose datamodel to apply the received JSON to</param>
@@ -64,7 +65,8 @@ namespace Artemis.Core.Services
         DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(ProfileModule<T> profileModule, string endPointName) where T : DataModel;
 
         /// <summary>
-        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided <paramref name="dataModelExpansion" />.
+        ///     Adds a new endpoint that directly maps received JSON to the data model of the provided
+        ///     <paramref name="dataModelExpansion" />.
         /// </summary>
         /// <typeparam name="T">The data model type of the module</typeparam>
         /// <param name="dataModelExpansion">The data model expansion whose datamodel to apply the received JSON to</param>
@@ -114,13 +116,25 @@ namespace Artemis.Core.Services
         ///     Adds a new Web API controller and restarts the web server
         /// </summary>
         /// <typeparam name="T">The type of Web API controller to remove</typeparam>
-        void AddController<T>() where T : WebApiController;
+        void AddController<T>(PluginFeature feature) where T : WebApiController;
 
         /// <summary>
         ///     Removes an existing Web API controller and restarts the web server
         /// </summary>
         /// <typeparam name="T">The type of Web API controller to remove</typeparam>
         void RemoveController<T>() where T : WebApiController;
+
+        /// <summary>
+        ///     Adds a new EmbedIO module and restarts the web server
+        /// </summary>
+        /// <typeparam name="T">The type of module to add</typeparam>
+        void AddModule<T>(PluginFeature feature) where T : IWebModule;
+
+        /// <summary>
+        ///     Removes a EmbedIO module and restarts the web server
+        /// </summary>
+        /// <typeparam name="T">The type of module to remove</typeparam>
+        void RemoveModule<T>() where T : IWebModule;
 
         /// <summary>
         ///     Occurs when the web server has been created and is about to start. This is the ideal place to add your own modules.
