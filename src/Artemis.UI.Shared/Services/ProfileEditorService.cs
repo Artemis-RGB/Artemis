@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
@@ -20,7 +19,6 @@ namespace Artemis.UI.Shared.Services
 {
     internal class ProfileEditorService : IProfileEditorService
     {
-        private readonly ICoreService _coreService;
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IProfileService _profileService;
@@ -29,6 +27,7 @@ namespace Artemis.UI.Shared.Services
         private readonly object _selectedProfileElementLock = new();
         private readonly object _selectedProfileLock = new();
         private TimeSpan _currentTime;
+        private bool _doTick;
         private int _pixelsPerSecond;
 
         public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService)
@@ -36,16 +35,63 @@ namespace Artemis.UI.Shared.Services
             _kernel = kernel;
             _logger = logger;
             _profileService = profileService;
-            _coreService = coreService;
             _rgbService = rgbService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
-
+            coreService.FrameRendered += CoreServiceOnFrameRendered;
             PixelsPerSecond = 100;
+        }
+
+        public event EventHandler? CurrentTimelineChanged;
+
+        protected virtual void OnSelectedProfileChanged(ProfileEventArgs e)
+        {
+            ProfileSelected?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileUpdated(ProfileEventArgs e)
+        {
+            SelectedProfileUpdated?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
+        {
+            ProfileElementSelected?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
+        {
+            SelectedProfileElementUpdated?.Invoke(this, e);
+        }
+
+        protected virtual void OnCurrentTimeChanged()
+        {
+            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnCurrentTimelineChanged()
+        {
+            CurrentTimelineChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPixelsPerSecondChanged()
+        {
+            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnProfilePreviewUpdated()
+        {
+            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnSelectedDataBindingChanged()
+        {
+            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
         {
-            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            if (!_doTick) return;
+            _doTick = false;
             Execute.PostToUIThread(OnProfilePreviewUpdated);
         }
 
@@ -71,6 +117,26 @@ namespace Artemis.UI.Shared.Services
             }
 
             UpdateProfilePreview();
+        }
+
+        private void Tick()
+        {
+            if (SelectedProfile == null || _doTick)
+                return;
+
+            // Stick to the main segment for any element that is not currently selected
+            foreach (Folder folder in SelectedProfile.GetAllFolders())
+                folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
+            foreach (Layer layer in SelectedProfile.GetAllLayers())
+                layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
+
+            _doTick = true;
+        }
+
+        private void SelectedProfileOnDeactivated(object? sender, EventArgs e)
+        {
+            // Execute.PostToUIThread(() => ChangeSelectedProfile(null));
+            ChangeSelectedProfile(null);
         }
 
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
@@ -351,19 +417,14 @@ namespace Artemis.UI.Shared.Services
                 .ToList();
         }
 
-        private void Tick()
-        {
-            if (SelectedProfile == null)
-                return;
-
-            // Stick to the main segment for any element that is not currently selected
-            foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
-            foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
-
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
-        }
+        public event EventHandler<ProfileEventArgs>? ProfileSelected;
+        public event EventHandler<ProfileEventArgs>? SelectedProfileUpdated;
+        public event EventHandler<RenderProfileElementEventArgs>? ProfileElementSelected;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementUpdated;
+        public event EventHandler? SelectedDataBindingChanged;
+        public event EventHandler? CurrentTimeChanged;
+        public event EventHandler? PixelsPerSecondChanged;
+        public event EventHandler? ProfilePreviewUpdated;
 
         #region Copy/paste
 
@@ -441,71 +502,6 @@ namespace Artemis.UI.Shared.Services
             }
 
             return pasted;
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler<ProfileEventArgs>? ProfileSelected;
-        public event EventHandler<ProfileEventArgs>? SelectedProfileUpdated;
-        public event EventHandler<RenderProfileElementEventArgs>? ProfileElementSelected;
-        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementUpdated;
-        public event EventHandler? SelectedDataBindingChanged;
-        public event EventHandler? CurrentTimeChanged;
-        public event EventHandler? PixelsPerSecondChanged;
-        public event EventHandler? ProfilePreviewUpdated;
-        public event EventHandler? CurrentTimelineChanged;
-
-        protected virtual void OnSelectedProfileChanged(ProfileEventArgs e)
-        {
-            ProfileSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileUpdated(ProfileEventArgs e)
-        {
-            SelectedProfileUpdated?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
-        {
-            ProfileElementSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
-        {
-            SelectedProfileElementUpdated?.Invoke(this, e);
-        }
-
-        protected virtual void OnCurrentTimeChanged()
-        {
-            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnCurrentTimelineChanged()
-        {
-            CurrentTimelineChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnPixelsPerSecondChanged()
-        {
-            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnProfilePreviewUpdated()
-        {
-            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnSelectedDataBindingChanged()
-        {
-            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void SelectedProfileOnDeactivated(object? sender, EventArgs e)
-        {
-            // Execute.PostToUIThread(() => ChangeSelectedProfile(null));
-            ChangeSelectedProfile(null);
         }
 
         #endregion

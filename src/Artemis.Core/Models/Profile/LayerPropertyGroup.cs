@@ -122,6 +122,31 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Applies the default value to all layer properties
+        /// </summary>
+        public void ResetAllLayerProperties()
+        {
+            foreach (ILayerProperty layerProperty in GetAllLayerProperties())
+                layerProperty.ApplyDefaultValue();
+        }
+
+        /// <summary>
+        ///     Occurs when the property group has initialized all its children
+        /// </summary>
+        public event EventHandler? PropertyGroupInitialized;
+
+        /// <summary>
+        ///     Occurs when one of the current value of one of the layer properties in this group changes by some form of input
+        ///     <para>Note: Will not trigger on properties in child groups</para>
+        /// </summary>
+        public event EventHandler<LayerPropertyEventArgs>? LayerPropertyOnCurrentValueSet;
+
+        /// <summary>
+        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
+        /// </summary>
+        public event EventHandler? VisibilityChanged;
+
+        /// <summary>
         ///     Called before property group is activated to allow you to populate <see cref="LayerProperty{T}.DefaultValue" /> on
         ///     the properties you want
         /// </summary>
@@ -143,6 +168,27 @@ namespace Artemis.Core
         protected virtual void OnPropertyGroupInitialized()
         {
             PropertyGroupInitialized?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+                DisableProperties();
+
+                foreach (ILayerProperty layerProperty in _layerProperties)
+                    layerProperty.Dispose();
+                foreach (LayerPropertyGroup layerPropertyGroup in _layerPropertyGroups)
+                    layerPropertyGroup.Dispose();
+            }
         }
 
         internal void Initialize(RenderProfileElement profileElement, string path, PluginFeature feature)
@@ -209,6 +255,17 @@ namespace Artemis.Core
                 layerPropertyGroup.Update(timeline);
         }
 
+        internal virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal virtual void OnLayerPropertyOnCurrentValueSet(LayerPropertyEventArgs e)
+        {
+            Parent?.OnLayerPropertyOnCurrentValueSet(e);
+            LayerPropertyOnCurrentValueSet?.Invoke(this, e);
+        }
+
         private void InitializeProperty(PropertyInfo propertyInfo, PropertyDescriptionAttribute propertyDescription)
         {
             string path = $"{Path}.{propertyInfo.Name}";
@@ -266,67 +323,11 @@ namespace Artemis.Core
             return entity;
         }
 
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _disposed = true;
-                DisableProperties();
-
-                foreach (ILayerProperty layerProperty in _layerProperties)
-                    layerProperty.Dispose();
-                foreach (LayerPropertyGroup layerPropertyGroup in _layerPropertyGroups)
-                    layerPropertyGroup.Dispose();
-            }
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the property group has initialized all its children
-        /// </summary>
-        public event EventHandler? PropertyGroupInitialized;
-
-        /// <summary>
-        ///     Occurs when one of the current value of one of the layer properties in this group changes by some form of input
-        ///     <para>Note: Will not trigger on properties in child groups</para>
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? LayerPropertyOnCurrentValueSet;
-
-        /// <summary>
-        ///     Occurs when the <see cref="IsHidden" /> value of the layer property was updated
-        /// </summary>
-        public event EventHandler? VisibilityChanged;
-
-        internal virtual void OnVisibilityChanged()
-        {
-            VisibilityChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal virtual void OnLayerPropertyOnCurrentValueSet(LayerPropertyEventArgs e)
-        {
-            Parent?.OnLayerPropertyOnCurrentValueSet(e);
-            LayerPropertyOnCurrentValueSet?.Invoke(this, e);
-        }
-
-        #endregion
     }
 }

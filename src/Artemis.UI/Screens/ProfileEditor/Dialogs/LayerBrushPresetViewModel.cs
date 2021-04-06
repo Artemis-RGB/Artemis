@@ -7,10 +7,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
     public class LayerBrushPresetViewModel : DialogViewModelBase
     {
+        private readonly BaseLayerBrush _layerBrush;
         private ILayerBrushPreset _selectedPreset;
 
         public LayerBrushPresetViewModel(BaseLayerBrush layerBrush)
         {
+            _layerBrush = layerBrush;
             Presets = new BindableCollection<ILayerBrushPreset>();
             Presets.AddRange(layerBrush.Presets);
         }
@@ -29,6 +31,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void SelectPreset(ILayerBrushPreset preset)
         {
+            _layerBrush.BaseProperties?.ResetAllLayerProperties();
             preset.Apply();
             Execute.OnUIThreadAsync(async () =>
             {

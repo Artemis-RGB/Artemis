@@ -3,7 +3,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M9DeviceCalibration : IStorageMigration
+    public class M0009DeviceCalibration : IStorageMigration
     {
         public int UserVersion => 9;
 

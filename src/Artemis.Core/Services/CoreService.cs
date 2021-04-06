@@ -251,20 +251,16 @@ namespace Artemis.Core.Services
             // Draw a white overlay over the device
             void DrawOverlay(object? sender, FrameRenderingEventArgs args)
             {
+                if (intro.AnimationProfile.GetAllLayers().All(l => l.Timeline.IsFinished))
+                {
+                    FrameRendering -= DrawOverlay;
+                    intro.AnimationProfile.Dispose();
+                }
+
                 intro.Render(args.DeltaTime, args.Canvas);
             }
 
             FrameRendering += DrawOverlay;
-
-            // Stop rendering after the profile finishes (take 1 second extra in case of slow updates)
-            TimeSpan introLength = intro.AnimationProfile.GetAllLayers().Max(l => l.Timeline.Length)!;
-            Task.Run(async () =>
-            {
-                await Task.Delay(introLength.Add(TimeSpan.FromSeconds(1)));
-                FrameRendering -= DrawOverlay;
-
-                intro.AnimationProfile.Dispose();
-            });
         }
 
         public event EventHandler? Initialized;
