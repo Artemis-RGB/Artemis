@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Linq.Expressions;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -39,6 +38,107 @@ namespace Artemis.Core
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
 
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _disposed = true;
+
+                foreach (IDataBinding dataBinding in _dataBindings)
+                    dataBinding.Dispose();
+
+                Disposed?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="Updated" /> event
+        /// </summary>
+        protected virtual void OnUpdated()
+        {
+            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="CurrentValueSet" /> event
+        /// </summary>
+        protected virtual void OnCurrentValueSet()
+        {
+            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs(this));
+            LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="VisibilityChanged" /> event
+        /// </summary>
+        protected virtual void OnVisibilityChanged()
+        {
+            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframesToggled" /> event
+        /// </summary>
+        protected virtual void OnKeyframesToggled()
+        {
+            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframeAdded" /> event
+        /// </summary>
+        protected virtual void OnKeyframeAdded()
+        {
+            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="KeyframeRemoved" /> event
+        /// </summary>
+        protected virtual void OnKeyframeRemoved()
+        {
+            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertyRegistered()
+        {
+            DataBindingPropertyRegistered?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingPropertiesCleared()
+        {
+            DataBindingPropertiesCleared?.Invoke(this, new LayerPropertyEventArgs(this));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingEnabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs e)
+        {
+            DataBindingEnabled?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DataBindingDisabled" /> event
+        /// </summary>
+        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs e)
+        {
+            DataBindingDisabled?.Invoke(this, e);
+        }
+
         /// <inheritdoc />
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
@@ -62,28 +162,6 @@ namespace Artemis.Core
             OnUpdated();
         }
 
-        #region IDisposable
-
-        /// <summary>
-        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">
-        ///     <see langword="true" /> to release both managed and unmanaged resources;
-        ///     <see langword="false" /> to release only unmanaged resources.
-        /// </param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _disposed = true;
-
-                foreach (IDataBinding dataBinding in _dataBindings)
-                    dataBinding.Dispose();
-
-                Disposed?.Invoke(this, EventArgs.Empty);
-            }
-        }
-
         /// <inheritdoc />
         public void Dispose()
         {
@@ -91,7 +169,38 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        /// <inheritdoc />
+        public event EventHandler? Disposed;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? Updated;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
+
+        /// <inheritdoc />
+        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
 
         #region Hierarchy
 
@@ -195,22 +304,25 @@ namespace Artemis.Core
             ReapplyUpdate();
         }
 
-        /// <summary>
-        ///     Overrides the property value with the default value
-        /// </summary>
-        public void ApplyDefaultValue(TimeSpan? time)
+        /// <inheritdoc />
+        public void ApplyDefaultValue()
         {
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
             string json = CoreJson.SerializeObject(DefaultValue, true);
-            SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, time);
+            KeyframesEnabled = false;
+            SetCurrentValue(CoreJson.DeserializeObject<T>(json)!, null);
         }
 
         private void ReapplyUpdate()
         {
-            ProfileElement.Timeline.ClearDelta();
-            Update(ProfileElement.Timeline);
+            // Create a timeline with the same position but a delta of zero
+            Timeline temporaryTimeline = new();
+            temporaryTimeline.Override(ProfileElement.Timeline.Position, false);
+            temporaryTimeline.ClearDelta();
+
+            Update(temporaryTimeline);
             OnCurrentValueSet();
         }
 
@@ -440,10 +552,10 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations) 
+            foreach (IDataBindingRegistration dataBindingRegistration in _dataBindingRegistrations)
                 dataBindingRegistration.ClearDataBinding();
             _dataBindingRegistrations.Clear();
-            
+
             OnDataBindingPropertiesCleared();
         }
 
@@ -593,7 +705,7 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("Layer property is not yet initialized");
 
             if (!IsLoadedFromStorage)
-                ApplyDefaultValue(null);
+                ApplyDefaultValue();
             else
                 try
                 {
@@ -654,124 +766,6 @@ namespace Artemis.Core
         /// </summary>
         protected virtual void OnInitialize()
         {
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <inheritdoc />
-        public event EventHandler? Disposed;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? Updated;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? CurrentValueSet;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? VisibilityChanged;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframesToggled;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeAdded;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
-        
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
-
-        /// <inheritdoc />
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
-
-        /// <summary>
-        ///     Invokes the <see cref="Updated" /> event
-        /// </summary>
-        protected virtual void OnUpdated()
-        {
-            Updated?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="CurrentValueSet" /> event
-        /// </summary>
-        protected virtual void OnCurrentValueSet()
-        {
-            CurrentValueSet?.Invoke(this, new LayerPropertyEventArgs(this));
-            LayerPropertyGroup.OnLayerPropertyOnCurrentValueSet(new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="VisibilityChanged" /> event
-        /// </summary>
-        protected virtual void OnVisibilityChanged()
-        {
-            VisibilityChanged?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframesToggled" /> event
-        /// </summary>
-        protected virtual void OnKeyframesToggled()
-        {
-            KeyframesToggled?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframeAdded" /> event
-        /// </summary>
-        protected virtual void OnKeyframeAdded()
-        {
-            KeyframeAdded?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="KeyframeRemoved" /> event
-        /// </summary>
-        protected virtual void OnKeyframeRemoved()
-        {
-            KeyframeRemoved?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingPropertyRegistered" /> event
-        /// </summary>
-        protected virtual void OnDataBindingPropertyRegistered()
-        {
-            DataBindingPropertyRegistered?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingDisabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingPropertiesCleared()
-        {
-            DataBindingPropertiesCleared?.Invoke(this, new LayerPropertyEventArgs(this));
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingEnabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingEnabled(LayerPropertyEventArgs e)
-        {
-            DataBindingEnabled?.Invoke(this, e);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DataBindingDisabled" /> event
-        /// </summary>
-        protected virtual void OnDataBindingDisabled(LayerPropertyEventArgs e)
-        {
-            DataBindingDisabled?.Invoke(this, e);
         }
 
         #endregion

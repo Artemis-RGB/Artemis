@@ -60,6 +60,11 @@ namespace Artemis.Core
         ILayerPropertyKeyframe? AddKeyframeEntity(KeyframeEntity keyframeEntity);
 
         /// <summary>
+        ///     Overrides the property value with the default value
+        /// </summary>
+        void ApplyDefaultValue();
+
+        /// <summary>
         ///     Updates the layer properties internal state
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>

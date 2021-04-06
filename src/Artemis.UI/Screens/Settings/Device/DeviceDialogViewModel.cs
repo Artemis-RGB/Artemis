@@ -94,7 +94,7 @@ namespace Artemis.UI.Screens.Settings.Device
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
-            if (SelectedLeds == null)
+            if (SelectedLeds == null || !SelectedLeds.Any())
                 return;
 
             using SKPaint highlightPaint = new() {Color = SKColors.White};

@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M4ProfileSegmentsMigration : IStorageMigration
+    public class M0004ProfileSegmentsMigration : IStorageMigration
     {
         public int UserVersion => 4;
 
