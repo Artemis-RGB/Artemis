@@ -12,10 +12,14 @@ namespace Artemis.Storage.Migrations
 
             foreach (BsonValue propertyEntity in propertyEntities.AsArray)
             {
-                string valueString = propertyEntity["Value"].AsString;
-                if (!valueString.StartsWith("{\"Stops\":[{") || !valueString.EndsWith("}]}")) 
+                if (propertyEntity["Value"] == null)
                     continue;
-                
+                string valueString = propertyEntity["Value"].AsString;
+                if (valueString == null)
+                    continue;
+                if (!valueString.StartsWith("{\"Stops\":[{") || !valueString.EndsWith("}]}"))
+                    continue;
+
                 valueString = valueString.Replace("{\"Stops\":[{", "[{");
                 valueString = valueString.Replace("}]}", "}]");
                 propertyEntity["Value"] = valueString;
