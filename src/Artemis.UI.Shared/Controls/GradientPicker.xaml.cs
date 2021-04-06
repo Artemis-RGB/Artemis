@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Artemis.Core;
 using Artemis.UI.Shared.Properties;
 using Artemis.UI.Shared.Services;
@@ -17,12 +19,14 @@ namespace Artemis.UI.Shared
     {
         private static IColorPickerService? _colorPickerService;
         private bool _inCallback;
+        private ColorGradientToGradientStopsConverter _gradientConverter;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="GradientPicker" /> class
         /// </summary>
         public GradientPicker()
         {
+            _gradientConverter = new ColorGradientToGradientStopsConverter();
             InitializeComponent();
         }
 
@@ -99,8 +103,25 @@ namespace Artemis.UI.Shared
                 return;
 
             gradientPicker._inCallback = true;
+
+            if (e.OldValue is ColorGradient oldGradient)
+                oldGradient.CollectionChanged -= gradientPicker.GradientChanged;
+            if (e.NewValue is ColorGradient newGradient)
+                newGradient.CollectionChanged += gradientPicker.GradientChanged;
+            gradientPicker.UpdateGradientStops();
             gradientPicker.OnPropertyChanged(nameof(ColorGradient));
+
             gradientPicker._inCallback = false;
+        }
+
+        private void GradientChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            Dispatcher.Invoke(UpdateGradientStops);
+        }
+
+        private void UpdateGradientStops()
+        {
+            GradientPreview.GradientStops = (GradientStopCollection)_gradientConverter.Convert(ColorGradient, null!, null!, null!);
         }
 
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
