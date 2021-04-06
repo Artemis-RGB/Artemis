@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerBrushes
@@ -69,6 +71,16 @@ namespace Artemis.Core.LayerBrushes
         ///     Gets a reference to the layer property group without knowing it's type
         /// </summary>
         public virtual LayerPropertyGroup? BaseProperties => null;
+
+        /// <summary>
+        ///     Gets a list of presets available to this layer brush
+        /// </summary>
+        public virtual List<ILayerBrushPreset>? Presets => null;
+
+        /// <summary>
+        ///     Gets the default preset used for new instances of this layer brush
+        /// </summary>
+        public virtual ILayerBrushPreset? DefaultPreset => Presets?.FirstOrDefault();
 
         /// <summary>
         ///     Gets or sets whether the brush supports transformations
