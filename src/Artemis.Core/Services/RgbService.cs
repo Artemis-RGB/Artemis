@@ -312,7 +312,7 @@ namespace Artemis.Core.Services
                 layout = new ArtemisLayout(device.CustomLayoutPath, LayoutSource.Configured);
                 if (layout.IsValid)
                 {
-                    ApplyDeviceLayout(device, layout, true, true);
+                    ApplyDeviceLayout(device, layout);
                     return layout;
                 }
             }
@@ -321,7 +321,7 @@ namespace Artemis.Core.Services
             layout = device.DeviceProvider.LoadUserLayout(device);
             if (layout.IsValid)
             {
-                ApplyDeviceLayout(device, layout, true, true);
+                ApplyDeviceLayout(device, layout);
                 return layout;
             }
 
@@ -329,13 +329,13 @@ namespace Artemis.Core.Services
             layout = device.DeviceProvider.LoadLayout(device);
             if (layout.IsValid)
             {
-                ApplyDeviceLayout(device, layout, true, true);
+                ApplyDeviceLayout(device, layout);
                 return layout;
             }
 
             // Finally fall back to a default layout
             layout = LoadDefaultLayout(device);
-            ApplyDeviceLayout(device, layout, true, true);
+            ApplyDeviceLayout(device, layout);
             return layout;
         }
 
@@ -344,9 +344,9 @@ namespace Artemis.Core.Services
             return new("NYI", LayoutSource.Default);
         }
 
-        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout, bool createMissingLeds, bool removeExessiveLeds)
+        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout)
         {
-            device.ApplyLayout(layout, createMissingLeds, removeExessiveLeds);
+            device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
             UpdateLedGroup();
         }
 

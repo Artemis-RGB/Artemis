@@ -321,7 +321,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
 
             // TODO: Only update when there are data bindings
-            _profileEditorService.UpdateProfilePreview();
+            if (!_profileEditorService.Playing)
+                _profileEditorService.UpdateProfilePreview();
         }
 
         private void HighlightSelectedLayerOnSettingChanged(object sender, EventArgs e)

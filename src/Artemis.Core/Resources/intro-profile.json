@@ -292,7 +292,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": null,
               "Path": "LayerBrush.GradientColor",
-              "Value": "{\"Stops\":[{\"Color\":\"#ff0b4a40\",\"Position\":0.0},{\"Color\":\"#ff00897c\",\"Position\":0.242},{\"Color\":\"#ffffffff\",\"Position\":1.0},{\"Color\":\"#ff00ffe6\",\"Position\":0.67391306}]}",
+              "Value": "[{\"Color\":\"#ff0b4a40\",\"Position\":0.0},{\"Color\":\"#ff00897c\",\"Position\":0.242},{\"Color\":\"#ffffffff\",\"Position\":1.0},{\"Color\":\"#ff00ffe6\",\"Position\":0.67391306}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
@@ -592,7 +592,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": "Artemis.Plugins.LayerBrushes.Noise.NoiseBrushProvider-61cbbf01",
               "Path": "LayerBrush.GradientColor",
-              "Value": "{\"Stops\":[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffffbf00\",\"Position\":0.125},{\"Color\":\"#ff7fff00\",\"Position\":0.25},{\"Color\":\"#ff00ff3f\",\"Position\":0.375},{\"Color\":\"#ff00ffff\",\"Position\":0.5},{\"Color\":\"#ff003fff\",\"Position\":0.625},{\"Color\":\"#ff7f00ff\",\"Position\":0.75},{\"Color\":\"#ffff00bf\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]}",
+              "Value": "[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffffbf00\",\"Position\":0.125},{\"Color\":\"#ff7fff00\",\"Position\":0.25},{\"Color\":\"#ff00ff3f\",\"Position\":0.375},{\"Color\":\"#ff00ffff\",\"Position\":0.5},{\"Color\":\"#ff003fff\",\"Position\":0.625},{\"Color\":\"#ff7f00ff\",\"Position\":0.75},{\"Color\":\"#ffff00bf\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
@@ -909,7 +909,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": null,
               "Path": "LayerBrush.Colors",
-              "Value": "{\"Stops\":[{\"Color\":\"#00ff0000\",\"Position\":0.0},{\"Color\":\"#ffffdf00\",\"Position\":0.916},{\"Color\":\"#00ffcd00\",\"Position\":1.0},{\"Color\":\"#fff31900\",\"Position\":0.636},{\"Color\":\"#dbf41500\",\"Position\":0.5461956},{\"Color\":\"#00f60f00\",\"Position\":0.462},{\"Color\":\"#93f60d00\",\"Position\":0.3668478}]}",
+              "Value": "[{\"Color\":\"#00ff0000\",\"Position\":0.0},{\"Color\":\"#ffffdf00\",\"Position\":0.916},{\"Color\":\"#00ffcd00\",\"Position\":1.0},{\"Color\":\"#fff31900\",\"Position\":0.636},{\"Color\":\"#dbf41500\",\"Position\":0.5461956},{\"Color\":\"#00f60f00\",\"Position\":0.462},{\"Color\":\"#93f60d00\",\"Position\":0.3668478}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
@@ -1164,7 +1164,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
               "Path": "LayerBrush.Colors",
-              "Value": "{\"Stops\":[{\"Color\":\"#ffcaff00\",\"Position\":0.709},{\"Color\":\"#ffff0000\",\"Position\":0.902},{\"Color\":\"#ffffffff\",\"Position\":0.5842391},{\"Color\":\"#ffff4100\",\"Position\":0.95108694},{\"Color\":\"#00ff4100\",\"Position\":0.98641306}]}",
+              "Value": "[{\"Color\":\"#ffcaff00\",\"Position\":0.709},{\"Color\":\"#ffff0000\",\"Position\":0.902},{\"Color\":\"#ffffffff\",\"Position\":0.5842391},{\"Color\":\"#ffff4100\",\"Position\":0.95108694},{\"Color\":\"#00ff4100\",\"Position\":0.98641306}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
@@ -1496,7 +1496,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": null,
               "Path": "LayerBrush.Colors",
-              "Value": "{\"Stops\":[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffff8800\",\"Position\":0.125},{\"Color\":\"#ffedff00\",\"Position\":0.25},{\"Color\":\"#ff65ff00\",\"Position\":0.375},{\"Color\":\"#ff00ff22\",\"Position\":0.5},{\"Color\":\"#ff00ffaa\",\"Position\":0.625},{\"Color\":\"#ff00cbff\",\"Position\":0.75},{\"Color\":\"#ff0043ff\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]}",
+              "Value": "[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffff8800\",\"Position\":0.125},{\"Color\":\"#ffedff00\",\"Position\":0.25},{\"Color\":\"#ff65ff00\",\"Position\":0.375},{\"Color\":\"#ff00ff22\",\"Position\":0.5},{\"Color\":\"#ff00ffaa\",\"Position\":0.625},{\"Color\":\"#ff00cbff\",\"Position\":0.75},{\"Color\":\"#ff0043ff\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",
@@ -1751,7 +1751,7 @@
               "$type": "Artemis.Storage.Entities.Profile.PropertyEntity, Artemis.Storage",
               "FeatureId": "Artemis.Plugins.LayerBrushes.Color.ColorBrushProvider-92a9d6ba",
               "Path": "LayerBrush.Colors",
-              "Value": "{\"Stops\":[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffffbf00\",\"Position\":0.125},{\"Color\":\"#ff7fff00\",\"Position\":0.25},{\"Color\":\"#ff00ff3f\",\"Position\":0.375},{\"Color\":\"#ff00ffff\",\"Position\":0.5},{\"Color\":\"#ff003fff\",\"Position\":0.625},{\"Color\":\"#ff7f00ff\",\"Position\":0.75},{\"Color\":\"#ffff00bf\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]}",
+              "Value": "[{\"Color\":\"#ffff0000\",\"Position\":0.0},{\"Color\":\"#ffffbf00\",\"Position\":0.125},{\"Color\":\"#ff7fff00\",\"Position\":0.25},{\"Color\":\"#ff00ff3f\",\"Position\":0.375},{\"Color\":\"#ff00ffff\",\"Position\":0.5},{\"Color\":\"#ff003fff\",\"Position\":0.625},{\"Color\":\"#ff7f00ff\",\"Position\":0.75},{\"Color\":\"#ffff00bf\",\"Position\":0.875},{\"Color\":\"#ffff0000\",\"Position\":1.0}]",
               "KeyframesEnabled": false,
               "KeyframeEntities": {
                 "$type": "System.Collections.Generic.List`1[[Artemis.Storage.Entities.Profile.KeyframeEntity, Artemis.Storage]], System.Private.CoreLib",

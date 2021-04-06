@@ -64,7 +64,7 @@ namespace Artemis.UI
 
             string url = await File.ReadAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"));
             using HttpClient client = new();
-            await client.PostAsync(url + "api/remote/bring-to-foreground", null!);
+            await client.PostAsync(url + "remote/bring-to-foreground", null!);
         }
 
         private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)

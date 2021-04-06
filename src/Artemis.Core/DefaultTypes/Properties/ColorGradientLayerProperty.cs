@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.Specialized;
+using System.ComponentModel;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -23,17 +24,16 @@ namespace Artemis.Core
             if (CurrentValue == null)
                 return;
 
-            for (int index = 0; index < CurrentValue.Stops.Count; index++)
+            for (int index = 0; index < CurrentValue.Count; index++)
             {
                 int stopIndex = index;
 
                 void Setter(SKColor value)
                 {
-                    CurrentValue.Stops[stopIndex].Color = value;
-                    CurrentValue.OnColorValuesUpdated();
+                    CurrentValue[stopIndex].Color = value;
                 }
 
-                RegisterDataBindingProperty(() => CurrentValue.Stops[stopIndex].Color, Setter, new ColorStopDataBindingConverter(), $"Color #{stopIndex + 1}");
+                RegisterDataBindingProperty(() => CurrentValue[stopIndex].Color, Setter, new ColorStopDataBindingConverter(), $"Color #{stopIndex + 1}");
             }
         }
 
@@ -61,17 +61,17 @@ namespace Artemis.Core
             if (_subscribedGradient != BaseValue)
             {
                 if (_subscribedGradient != null)
-                    _subscribedGradient.PropertyChanged -= SubscribedGradientOnPropertyChanged;
+                    _subscribedGradient.CollectionChanged -= SubscribedGradientOnPropertyChanged;
                 _subscribedGradient = BaseValue;
-                _subscribedGradient.PropertyChanged += SubscribedGradientOnPropertyChanged;
+                _subscribedGradient.CollectionChanged += SubscribedGradientOnPropertyChanged;
             }
 
             CreateDataBindingRegistrations();
         }
 
-        private void SubscribedGradientOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void SubscribedGradientOnPropertyChanged(object? sender, NotifyCollectionChangedEventArgs args)
         {
-            if (CurrentValue.Stops.Count != GetAllDataBindingRegistrations().Count)
+            if (CurrentValue.Count != GetAllDataBindingRegistrations().Count)
                 CreateDataBindingRegistrations();
         }
 

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using SkiaSharp;
 
@@ -8,7 +11,7 @@ namespace Artemis.Core
     /// <summary>
     ///     A gradient containing a list of <see cref="ColorGradientStop" />s
     /// </summary>
-    public class ColorGradient : CorePropertyChanged
+    public class ColorGradient : IList<ColorGradientStop>, INotifyCollectionChanged
     {
         private static readonly SKColor[] FastLedRainbow =
         {
@@ -23,18 +26,15 @@ namespace Artemis.Core
             new(0xFFFF0000) // and back to Red
         };
 
+        private readonly List<ColorGradientStop> _stops;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="ColorGradient" /> class
         /// </summary>
         public ColorGradient()
         {
-            Stops = new List<ColorGradientStop>();
+            _stops = new List<ColorGradientStop>();
         }
-
-        /// <summary>
-        ///     Gets a list of all the <see cref="ColorGradientStop" />s in the gradient
-        /// </summary>
-        public List<ColorGradientStop> Stops { get; }
 
         /// <summary>
         ///     Gets all the colors in the color gradient
@@ -49,13 +49,16 @@ namespace Artemis.Core
         {
             List<SKColor> result = new();
             if (timesToRepeat == 0)
-                result = Stops.Select(c => c.Color).ToList();
+            {
+                result = this.Select(c => c.Color).ToList();
+            }
             else
             {
-                List<SKColor> colors = Stops.Select(c => c.Color).ToList();
+                List<SKColor> colors = this.Select(c => c.Color).ToList();
                 for (int i = 0; i <= timesToRepeat; i++)
                     result.AddRange(colors);
             }
+
             if (seamless && !IsSeamless())
                 result.Add(result[0]);
 
@@ -77,11 +80,13 @@ namespace Artemis.Core
         {
             List<float> result = new();
             if (timesToRepeat == 0)
-                result = Stops.Select(c => c.Position).ToList();
+            {
+                result = this.Select(c => c.Position).ToList();
+            }
             else
             {
                 // Create stops and a list of divided stops
-                List<float> stops = Stops.Select(c => c.Position / (timesToRepeat + 1)).ToList();
+                List<float> stops = this.Select(c => c.Position / (timesToRepeat + 1)).ToList();
 
                 // For each repeat cycle, add the base stops to the end result
                 for (int i = 0; i <= timesToRepeat; i++)
@@ -105,24 +110,15 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Triggers a property changed event of the <see cref="Stops" /> collection
-        /// </summary>
-        public void OnColorValuesUpdated()
-        {
-            Stops.Sort((a, b) => a.Position.CompareTo(b.Position));
-            OnPropertyChanged(nameof(Stops));
-        }
-
-        /// <summary>
         ///     Gets a color at any position between 0.0 and 1.0 using interpolation
         /// </summary>
         /// <param name="position">A position between 0.0 and 1.0</param>
         public SKColor GetColor(float position)
         {
-            if (!Stops.Any())
+            if (!this.Any())
                 return SKColor.Empty;
 
-            ColorGradientStop[] stops = Stops.ToArray();
+            ColorGradientStop[] stops = this.ToArray();
             if (position <= 0) return stops[0].Color;
             if (position >= 1) return stops[^1].Color;
             ColorGradientStop left = stops[0];
@@ -160,7 +156,7 @@ namespace Artemis.Core
             {
                 SKColor skColor = FastLedRainbow[index];
                 float position = 1f / (FastLedRainbow.Length - 1f) * index;
-                gradient.Stops.Add(new ColorGradientStop(skColor, position));
+                gradient.Add(new ColorGradientStop(skColor, position));
             }
 
             return gradient;
@@ -172,7 +168,141 @@ namespace Artemis.Core
         /// <returns><see langword="true" /> if the gradient is seamless; <see langword="false" /> otherwise</returns>
         public bool IsSeamless()
         {
-            return Stops.Count == 0 || Stops.First().Color.Equals(Stops.Last().Color);
+            return Count == 0 || this.First().Color.Equals(this.Last().Color);
         }
+
+        internal void Sort()
+        {
+            _stops.Sort((a, b) => a.Position.CompareTo(b.Position));
+        }
+
+        private void ItemOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            Sort();
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        #region Implementation of IEnumerable
+
+        /// <inheritdoc />
+        public IEnumerator<ColorGradientStop> GetEnumerator()
+        {
+            return _stops.GetEnumerator();
+        }
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        #endregion
+
+        #region Implementation of ICollection<ColorGradientStop>
+
+        /// <inheritdoc />
+        public void Add(ColorGradientStop item)
+        {
+            _stops.Add(item);
+            item.PropertyChanged += ItemOnPropertyChanged;
+            Sort();
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, _stops.IndexOf(item)));
+        }
+
+
+        /// <inheritdoc />
+        public void Clear()
+        {
+            foreach (ColorGradientStop item in _stops)
+                item.PropertyChanged -= ItemOnPropertyChanged;
+            _stops.Clear();
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+        }
+
+        /// <inheritdoc />
+        public bool Contains(ColorGradientStop item)
+        {
+            return _stops.Contains(item);
+        }
+
+        /// <inheritdoc />
+        public void CopyTo(ColorGradientStop[] array, int arrayIndex)
+        {
+            _stops.CopyTo(array, arrayIndex);
+        }
+
+        /// <inheritdoc />
+        public bool Remove(ColorGradientStop item)
+        {
+            item.PropertyChanged -= ItemOnPropertyChanged;
+            int index = _stops.IndexOf(item);
+            bool removed = _stops.Remove(item);
+            if (removed)
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index));
+
+            return removed;
+        }
+
+        /// <inheritdoc />
+        public int Count => _stops.Count;
+
+        /// <inheritdoc />
+        public bool IsReadOnly => false;
+
+        #endregion
+
+        #region Implementation of IList<ColorGradientStop>
+
+        /// <inheritdoc />
+        public int IndexOf(ColorGradientStop item)
+        {
+            return _stops.IndexOf(item);
+        }
+
+        /// <inheritdoc />
+        public void Insert(int index, ColorGradientStop item)
+        {
+            _stops.Insert(index, item);
+            item.PropertyChanged += ItemOnPropertyChanged;
+            Sort();
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, _stops.IndexOf(item)));
+        }
+
+        /// <inheritdoc />
+        public void RemoveAt(int index)
+        {
+            _stops[index].PropertyChanged -= ItemOnPropertyChanged;
+            _stops.RemoveAt(index);
+            OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, index));
+        }
+
+        /// <inheritdoc />
+        public ColorGradientStop this[int index]
+        {
+            get => _stops[index];
+            set
+            {
+                ColorGradientStop? oldValue = _stops[index];
+                oldValue.PropertyChanged -= ItemOnPropertyChanged;
+                _stops[index] = value;
+                _stops[index].PropertyChanged += ItemOnPropertyChanged;
+                Sort();
+                OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldValue));
+            }
+        }
+
+        #endregion
+
+        #region Implementation of INotifyCollectionChanged
+
+        /// <inheritdoc />
+        public event NotifyCollectionChangedEventHandler? CollectionChanged;
+
+        private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+        {
+            CollectionChanged?.Invoke(this, e);
+        }
+
+        #endregion
     }
 }

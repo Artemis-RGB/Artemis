@@ -3,7 +3,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M3PluginEntitiesIndexChangesMigration : IStorageMigration
+    public class M0003PluginEntitiesIndexChangesMigration : IStorageMigration
     {
         public int UserVersion => 3;
         

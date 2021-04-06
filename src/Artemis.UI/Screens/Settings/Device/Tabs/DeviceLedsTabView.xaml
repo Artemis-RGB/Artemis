@@ -4,34 +4,39 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:tabs="clr-namespace:Artemis.UI.Screens.Settings.Device.Tabs"
-             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.Settings.Device.Tabs.DeviceLedsTabView"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             x:Class="Artemis.UI.Screens.Settings.Device.Tabs.DeviceLedsTabView"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type tabs:DeviceLedsTabViewModel}}">
     <UserControl.Resources>
-        <Converters:UriToFileNameConverter x:Key="UriToFileNameConverter"/>
+        <converters:UriToFileNameConverter x:Key="UriToFileNameConverter"/>
     </UserControl.Resources>
     <Grid>
-        <DataGrid ItemsSource="{Binding Device.Leds}"
-                  d:DataContext="{d:DesignInstance Type={x:Type core:ArtemisLed}}"
+        <DataGrid ItemsSource="{Binding LedViewModels}"
+                  d:DataContext="{d:DesignInstance Type={x:Type tabs:DeviceLedsTabLedViewModel}}"
                   CanUserSortColumns="True"
                   IsReadOnly="True"
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
                   materialDesign:DataGridAssist.CellPadding="5"
                   materialDesign:DataGridAssist.ColumnHeaderPadding="5"
-                  SelectedItem="{Binding Parent.SelectedLed}"
                   CanUserResizeRows="False"
+                  VirtualizingStackPanel.VirtualizationMode="Standard"
                   Margin="10">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridRow" BasedOn="{StaticResource MaterialDesignDataGridRow}">
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
-                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Id}" Header="LED ID" Width="Auto" />
-                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Color}" Header="Color (ARGB)" Width="Auto" />
-                <materialDesign:DataGridTextColumn Binding="{Binding Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" />
-                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Shape}" Header="Shape" />
-                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.Size}" Header="Size" Width="Auto" />
-                <materialDesign:DataGridTextColumn Binding="{Binding RgbLed.CustomData}" Header="LED data" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Id}" Header="LED ID" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Color}" Header="Color (ARGB)" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Shape}" Header="Shape" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Size}" Header="Size" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.CustomData}" Header="LED data" Width="Auto" />
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

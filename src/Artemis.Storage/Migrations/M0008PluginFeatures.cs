@@ -5,7 +5,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M8PluginFeatures : IStorageMigration
+    public class M0008PluginFeatures : IStorageMigration
     {
         private void Migrate(BsonValue bsonValue, Dictionary<string, string> pluginMap)
         {

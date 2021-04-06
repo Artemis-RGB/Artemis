@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Windows.Input;
 using System.Xml.Serialization;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -13,20 +13,28 @@ using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
 using RGB.NET.Layout;
+using SkiaSharp;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Device
 {
     public class DeviceDialogViewModel : Conductor<Screen>.Collection.OneActive
     {
+        private readonly ICoreService _coreService;
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
         private readonly IRgbService _rgbService;
-        private ArtemisLed _selectedLed;
         private SnackbarMessageQueue _deviceMessageQueue;
+        private BindableCollection<ArtemisLed> _selectedLeds;
 
-        public DeviceDialogViewModel(ArtemisDevice device, IDeviceService deviceService, IRgbService rgbService, IDialogService dialogService, IDeviceDebugVmFactory factory)
+        public DeviceDialogViewModel(ArtemisDevice device,
+            ICoreService coreService,
+            IDeviceService deviceService,
+            IRgbService rgbService,
+            IDialogService dialogService,
+            IDeviceDebugVmFactory factory)
         {
+            _coreService = coreService;
             _deviceService = deviceService;
             _rgbService = rgbService;
             _dialogService = dialogService;
@@ -39,19 +47,8 @@ namespace Artemis.UI.Screens.Settings.Device
             Items.Add(factory.DeviceLedsTabViewModel(device));
             ActiveItem = Items.First();
             DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
-        }
 
-        protected override void OnInitialActivate()
-        {
-            DeviceMessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
-            Device.DeviceUpdated += DeviceOnDeviceUpdated;
-            base.OnInitialActivate();
-        }
-
-        protected override void OnClose()
-        {
-            Device.DeviceUpdated -= DeviceOnDeviceUpdated;
-            base.OnClose();
+            SelectedLeds = new BindableCollection<ArtemisLed>();
         }
 
         public ArtemisDevice Device { get; }
@@ -63,21 +60,53 @@ namespace Artemis.UI.Screens.Settings.Device
             set => SetAndNotify(ref _deviceMessageQueue, value);
         }
 
-        public ArtemisLed SelectedLed
-        {
-            get => _selectedLed;
-            set
-            {
-                if (!SetAndNotify(ref _selectedLed, value)) return;
-                NotifyOfPropertyChange(nameof(SelectedLeds));
-            }
-        }
-
         public bool CanExportLayout => Device.Layout?.IsValid ?? false;
 
-        public List<ArtemisLed> SelectedLeds => SelectedLed != null ? new List<ArtemisLed> {SelectedLed} : null;
+        public BindableCollection<ArtemisLed> SelectedLeds
+        {
+            get => _selectedLeds;
+            set => SetAndNotify(ref _selectedLeds, value);
+        }
 
         public bool CanOpenImageDirectory => Device.Layout?.Image != null;
+
+        public void OnLedClicked(object sender, LedClickedEventArgs e)
+        {
+            if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
+                SelectedLeds.Clear();
+            SelectedLeds.Add(e.Led);
+        }
+
+        protected override void OnInitialActivate()
+        {
+            _coreService.FrameRendering += CoreServiceOnFrameRendering;
+            DeviceMessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
+            Device.DeviceUpdated += DeviceOnDeviceUpdated;
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+            Device.DeviceUpdated -= DeviceOnDeviceUpdated;
+            base.OnClose();
+        }
+
+        private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
+        {
+            if (SelectedLeds == null || !SelectedLeds.Any())
+                return;
+
+            using SKPaint highlightPaint = new() {Color = SKColors.White};
+            using SKPaint dimPaint = new() {Color = new SKColor(0, 0, 0, 192)};
+            foreach (ArtemisLed artemisLed in Device.Leds)
+                e.Canvas.DrawRect(artemisLed.AbsoluteRectangle, SelectedLeds.Contains(artemisLed) ? highlightPaint : dimPaint);
+        }
+
+        private void DeviceOnDeviceUpdated(object sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanExportLayout));
+        }
 
         // ReSharper disable UnusedMember.Global
 
@@ -85,7 +114,7 @@ namespace Artemis.UI.Screens.Settings.Device
 
         public void ClearSelection()
         {
-            SelectedLed = null;
+            SelectedLeds.Clear();
         }
 
         public void IdentifyDevice()
@@ -190,19 +219,5 @@ namespace Artemis.UI.Screens.Settings.Device
         #endregion
 
         // ReSharper restore UnusedMember.Global
-
-        #region Event handlers
-
-        private void DeviceOnDeviceUpdated(object sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(CanExportLayout));
-        }
-
-        public void OnLedClicked(object sender, LedClickedEventArgs e)
-        {
-            SelectedLed = e.Led;
-        }
-
-        #endregion
     }
 }

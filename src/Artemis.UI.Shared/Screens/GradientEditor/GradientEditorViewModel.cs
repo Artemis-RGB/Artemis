@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -6,6 +7,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.UI.Shared.Services;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.GradientEditor
@@ -21,12 +23,24 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             ColorGradient = colorGradient;
             ColorStopViewModels = new BindableCollection<ColorStopViewModel>();
 
-            _originalStops = ColorGradient.Stops.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
+            _originalStops = ColorGradient.Select(s => new ColorGradientStop(s.Color, s.Position)).ToList();
 
             PropertyChanged += UpdateColorStopViewModels;
+            ColorGradient.CollectionChanged += ColorGradientOnCollectionChanged;
         }
 
-        public BindableCollection<ColorStopViewModel> ColorStopViewModels { get; set; }
+        #region Overrides of DialogViewModelBase
+
+        /// <inheritdoc />
+        public override void OnDialogClosed(object sender, DialogClosingEventArgs e)
+        {
+            ColorGradient.CollectionChanged -= ColorGradientOnCollectionChanged;
+            base.OnDialogClosed(sender, e);
+        }
+
+        #endregion
+
+        public BindableCollection<ColorStopViewModel> ColorStopViewModels { get; }
 
         public ColorStopViewModel? SelectedColorStopViewModel
         {
@@ -48,15 +62,19 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             set => SetAndNotify(ref _previewWidth, value);
         }
 
+        public ColorGradient Stops
+        {
+            get => ColorGradient;
+        }
+
         public void AddColorStop(object sender, MouseEventArgs e)
         {
             Canvas? child = VisualTreeUtilities.FindChild<Canvas>((DependencyObject) sender, null);
             float position = (float) (e.GetPosition(child).X / PreviewWidth);
             ColorGradientStop stop = new(ColorGradient.GetColor(position), position);
-            ColorGradient.Stops.Add(stop);
-            ColorGradient.OnColorValuesUpdated();
+            ColorGradient.Add(stop);
 
-            int index = ColorGradient.Stops.OrderBy(s => s.Position).ToList().IndexOf(stop);
+            int index = ColorGradient.IndexOf(stop);
             ColorStopViewModel viewModel = new(this, stop);
             ColorStopViewModels.Insert(index, viewModel);
 
@@ -69,8 +87,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
                 return;
 
             ColorStopViewModels.Remove(colorStopViewModel);
-            ColorGradient.Stops.Remove(colorStopViewModel.ColorStop);
-            ColorGradient.OnColorValuesUpdated();
+            ColorGradient.Remove(colorStopViewModel.ColorStop);
 
             SelectColorStop(null);
         }
@@ -97,9 +114,9 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         public override void Cancel()
         {
             // Restore the saved state
-            ColorGradient.Stops.Clear();
-            ColorGradient.Stops.AddRange(_originalStops);
-            ColorGradient.OnColorValuesUpdated();
+            ColorGradient.Clear();
+            foreach (ColorGradientStop colorGradientStop in _originalStops)
+                ColorGradient.Add(colorGradientStop);
 
             base.Cancel();
         }
@@ -107,8 +124,13 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         private void UpdateColorStopViewModels(object? sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName != nameof(PreviewWidth)) return;
-            foreach (ColorGradientStop colorStop in ColorGradient.Stops.OrderBy(s => s.Position))
+            foreach (ColorGradientStop colorStop in ColorGradient)
                 ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
+        }
+        
+        private void ColorGradientOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(ColorGradient));
         }
     }
 }

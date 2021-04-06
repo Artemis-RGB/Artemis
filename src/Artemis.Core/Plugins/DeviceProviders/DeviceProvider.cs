@@ -52,6 +52,18 @@ namespace Artemis.Core.DeviceProviders
         public bool CanDetectLogicalLayout { get; protected set; }
 
         /// <summary>
+        ///     Gets or sets a boolean indicating whether adding missing LEDs defined in a layout but missing on the device is supported
+        ///     <para>Note: Defaults to <see langword="true" />.</para>
+        /// </summary>
+        public bool CreateMissingLedsSupported { get; protected set; } = true;
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether removing excess LEDs present in the device but missing in the layout is supported
+        ///     <para>Note: Defaults to <see langword="true" />.</para>
+        /// </summary>
+        public bool RemoveExcessiveLedsSupported { get; protected set; } = true;
+
+        /// <summary>
         ///     Loads a layout for the specified device and wraps it in an <see cref="ArtemisLayout" />
         /// </summary>
         /// <param name="device">The device to load the layout for</param>
