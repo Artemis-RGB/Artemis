@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
@@ -86,7 +87,7 @@ namespace Artemis.UI.Shared.Services
             {
                 if (_currentTime.Equals(value)) return;
                 _currentTime = value;
-                UpdateProfilePreview();
+                Tick();
                 OnCurrentTimeChanged();
             }
         }
@@ -180,16 +181,9 @@ namespace Artemis.UI.Shared.Services
 
         public void UpdateProfilePreview()
         {
-            if (SelectedProfile == null)
+            if (Playing)
                 return;
-
-            // Stick to the main segment for any element that is not currently selected
-            foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
-            foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
-
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+            Tick();
         }
 
         public bool UndoUpdateProfile()
@@ -355,6 +349,20 @@ namespace Artemis.UI.Shared.Services
                 .SelectMany(d => d.Leds)
                 .Where(led => led.AbsoluteRectangle.IntersectsWith(SKRectI.Round(rect.ToSKRect())))
                 .ToList();
+        }
+
+        private void Tick()
+        {
+            if (SelectedProfile == null)
+                return;
+
+            // Stick to the main segment for any element that is not currently selected
+            foreach (Folder folder in SelectedProfile.GetAllFolders())
+                folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
+            foreach (Layer layer in SelectedProfile.GetAllLayers())
+                layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
+
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
         }
 
         #region Copy/paste

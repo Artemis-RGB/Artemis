@@ -20,7 +20,6 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         {
             _gradientEditorViewModel = gradientEditorViewModel;
             ColorStop = colorStop;
-            ColorStop.PropertyChanged += ColorStopOnPropertyChanged;
         }
 
         public ColorGradientStop ColorStop { get; }
@@ -58,12 +57,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             get => _willRemoveColorStop;
             set => SetAndNotify(ref _willRemoveColorStop, value);
         }
-
-        private void ColorStopOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
-        }
-
+        
         #region Movement
 
         public void StopMouseDown(object sender, MouseButtonEventArgs e)
@@ -102,7 +96,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
             double minValue = 0.0;
             double maxValue = _gradientEditorViewModel.PreviewWidth;
-            List<ColorGradientStop> stops = _gradientEditorViewModel.ColorGradient.Stops.OrderBy(s => s.Position).ToList();
+            List<ColorGradientStop> stops = _gradientEditorViewModel.ColorGradient.ToList();
             ColorGradientStop? previous = stops.IndexOf(ColorStop) >= 1 ? stops[stops.IndexOf(ColorStop) - 1] : null;
             ColorGradientStop? next = stops.IndexOf(ColorStop) + 1 < stops.Count ? stops[stops.IndexOf(ColorStop) + 1] : null;
             if (previous != null)
@@ -111,7 +105,6 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
                 maxValue = next.Position * _gradientEditorViewModel.PreviewWidth;
 
             Offset = Math.Max(minValue, Math.Min(maxValue, position.X));
-            _gradientEditorViewModel.ColorGradient.OnColorValuesUpdated();
         }
 
         #endregion

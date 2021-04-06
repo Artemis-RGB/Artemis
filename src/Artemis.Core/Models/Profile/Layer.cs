@@ -297,6 +297,9 @@ namespace Artemis.Core
 
         private void ApplyTimeline(Timeline timeline)
         {
+            if (timeline.Delta == TimeSpan.Zero)
+                return;
+
             General.Update(timeline);
             Transform.Update(timeline);
             if (LayerBrush != null)
