@@ -25,5 +25,23 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
             StartupWizardViewModel startupWizardViewModel = (StartupWizardViewModel) Parent;
             startupWizardViewModel.Continue();
         }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnActivate()
+        {
+            _rgbService.IsRenderPaused = true;
+            base.OnActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnDeactivate()
+        {
+            _rgbService.IsRenderPaused = false;
+            base.OnDeactivate();
+        }
+
+        #endregion
     }
 }

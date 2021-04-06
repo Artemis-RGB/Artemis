@@ -105,8 +105,8 @@
                         </VisualBrush>
                     </Grid.Background>
 
+                    <!-- No need to provide LEDs to highlight as LEDs are already physically highlighted -->
                     <shared:DeviceVisualizer Device="{Binding Device}"
-                                             HighlightedLeds="{Binding SelectedLeds}"
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"
                                              ShowColors="True"

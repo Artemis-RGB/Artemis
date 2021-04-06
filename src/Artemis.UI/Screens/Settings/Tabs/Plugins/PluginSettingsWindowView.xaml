@@ -7,6 +7,7 @@
                          xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                          xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                         xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                          mc:Ignorable="d"
                          Title="Plugin configuration"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -25,7 +26,7 @@
         <DockPanel>
             <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.Plugin.Info.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
                 <controls:AppBar.AppIcon>
-                    <materialDesign:PackIcon Kind="{Binding Icon}" Width="20" Height="28" />
+                    <shared:ArtemisIcon Icon="{Binding Icon}"></shared:ArtemisIcon>
                 </controls:AppBar.AppIcon>
             </controls:AppBar>
 

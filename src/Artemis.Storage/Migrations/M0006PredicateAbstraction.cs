@@ -4,7 +4,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M6PredicateAbstraction : IStorageMigration
+    public class M0006PredicateAbstraction : IStorageMigration
     {
         public int UserVersion => 6;
 

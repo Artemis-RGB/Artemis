@@ -329,6 +329,13 @@ namespace Artemis.Core
         /// <param name="removeExcessiveLeds">A boolean indicating whether to remove excess LEDs present in the device but missing in the layout</param>
         internal void ApplyLayout(ArtemisLayout layout, bool createMissingLeds, bool removeExcessiveLeds)
         {
+            if (createMissingLeds && !DeviceProvider.CreateMissingLedsSupported)
+                throw new ArtemisCoreException($"Cannot apply layout with {nameof(createMissingLeds)} " +
+                                               "set to true because the device provider does not support it");
+            if (removeExcessiveLeds && !DeviceProvider.RemoveExcessiveLedsSupported)
+                throw new ArtemisCoreException($"Cannot apply layout with {nameof(removeExcessiveLeds)} " +
+                                               "set to true because the device provider does not support it");
+
             if (layout.IsValid)
                 layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
 

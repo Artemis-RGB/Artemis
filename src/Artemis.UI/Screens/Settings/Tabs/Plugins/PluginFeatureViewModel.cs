@@ -16,7 +16,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
         private readonly IMessageService _messageService;
-        private bool _canToggleEnabled;
 
         public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
             bool showShield,

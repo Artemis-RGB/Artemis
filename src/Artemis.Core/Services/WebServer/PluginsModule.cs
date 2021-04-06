@@ -48,13 +48,13 @@ namespace Artemis.Core.Services
         protected override async Task OnRequestAsync(IHttpContext context)
         {
             if (context.Route.SubPath == null)
-                throw HttpException.NotFound();
+                return;
 
             // Split the sub path
             string[] pathParts = context.Route.SubPath.Substring(1).Split('/');
             // Expect a plugin ID and an endpoint
-            if (pathParts == null || pathParts.Length != 2)
-                throw HttpException.BadRequest("Path must contain a plugin ID and endpoint and nothing else.");
+            if (pathParts.Length != 2)
+                return;
 
             // Find a matching plugin
             if (!_pluginEndPoints.TryGetValue(pathParts[0], out Dictionary<string, PluginEndPoint>? endPoints))
@@ -78,7 +78,7 @@ namespace Artemis.Core.Services
         }
 
         /// <inheritdoc />
-        public override bool IsFinalHandler => true;
+        public override bool IsFinalHandler => false;
 
         internal string? ServerUrl { get; set; }
 

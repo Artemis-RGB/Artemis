@@ -3,7 +3,7 @@ using LiteDB;
 
 namespace Artemis.Storage.Migrations
 {
-    public class M10BetterDataBindings : IStorageMigration
+    public class M0010BetterDataBindings : IStorageMigration
     {
         private void Migrate(BsonValue bsonValue)
         {

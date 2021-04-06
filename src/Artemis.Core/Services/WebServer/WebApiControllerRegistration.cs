@@ -6,9 +6,9 @@ namespace Artemis.Core.Services
 {
     internal class WebApiControllerRegistration<T> : WebApiControllerRegistration where T : WebApiController
     {
-        public WebApiControllerRegistration(IKernel kernel) : base(typeof(T))
+        public WebApiControllerRegistration(PluginFeature feature) : base(feature, typeof(T))
         {
-            Factory = () => kernel.Get<T>();
+            Factory = () => feature.Plugin.Kernel!.Get<T>();
         }
 
         public Func<T> Factory { get; set; }
@@ -17,12 +17,14 @@ namespace Artemis.Core.Services
 
     internal abstract class WebApiControllerRegistration
     {
-        protected WebApiControllerRegistration(Type controllerType)
+        protected WebApiControllerRegistration(PluginFeature feature, Type controllerType)
         {
+            Feature = feature;
             ControllerType = controllerType;
         }
 
         public abstract object UntypedFactory { get; }
         public Type ControllerType { get; set; }
+        public PluginFeature Feature { get; }
     }
 }

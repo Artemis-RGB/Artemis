@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -12,12 +14,15 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
     public class BrushPropertyInputViewModel : PropertyInputViewModel<LayerBrushReference>
     {
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly IDialogService _dialogService;
         private BindableCollection<LayerBrushDescriptor> _descriptors;
 
-        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService)
+        public BrushPropertyInputViewModel(LayerProperty<LayerBrushReference> layerProperty, IProfileEditorService profileEditorService, IPluginManagementService pluginManagementService,
+            IDialogService dialogService)
             : base(layerProperty, profileEditorService)
         {
             _pluginManagementService = pluginManagementService;
+            _dialogService = dialogService;
             UpdateEnumValues();
         }
 
@@ -43,7 +48,17 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
         protected override void OnInputValueApplied()
         {
             if (LayerProperty.ProfileElement is Layer layer)
+            {
                 layer.ChangeLayerBrush(SelectedDescriptor);
+                if (layer.LayerBrush?.Presets != null && layer.LayerBrush.Presets.Any())
+                {
+                    Execute.PostToUIThread(async () =>
+                    {
+                        await Task.Delay(400);
+                        _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
+                    });
+                }
+            }
         }
 
         private void SetBrushByDescriptor(LayerBrushDescriptor value)

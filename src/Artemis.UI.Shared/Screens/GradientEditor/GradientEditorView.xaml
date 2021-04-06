@@ -66,7 +66,7 @@
                 <Rectangle x:Name="Preview" Height="40" shared:SizeObserver.Observe="True" shared:SizeObserver.ObservedWidth="{Binding PreviewWidth, Mode=OneWayToSource}">
                     <Rectangle.Fill>
                         <LinearGradientBrush
-                            GradientStops="{Binding ColorGradient.Stops, Converter={StaticResource ColorGradientToGradientStopsConverter}}"
+                            GradientStops="{Binding ColorGradient, Converter={StaticResource ColorGradientToGradientStopsConverter}}"
                             EndPoint="1,0"
                             StartPoint="0,0" />
                     </Rectangle.Fill>
