@@ -132,16 +132,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
                     CreateRightSideInputViewModel();
-
+                
                 Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
-                // Ensure the right static value is never null when the preferred type is a value type
-                if (preferredType.IsValueType && DataModelConditionPredicate.RightStaticValue == null)
-                    RightSideInputViewModel.Value = preferredType.GetDefault();
-                else
-                    RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
-
-                if (RightSideInputViewModel.TargetType != preferredType)
+                if (preferredType != null && RightSideInputViewModel.TargetType != preferredType)
                     RightSideInputViewModel.UpdateTargetType(preferredType);
+
+                RightSideInputViewModel.Value = DataModelConditionPredicate.RightStaticValue;
             }
         }
 
@@ -294,6 +290,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         private void RightSideSelectionViewModelOnSwitchToStaticRequested(object sender, EventArgs e)
         {
             DataModelConditionPredicate.PredicateType = ProfileRightSideType.Static;
+
+            // Ensure the right static value is never null when the preferred type is a value type
+            Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
+            if (DataModelConditionPredicate.RightStaticValue == null && preferredType != null && preferredType.IsValueType)
+                DataModelConditionPredicate.UpdateRightSideStatic(preferredType.GetDefault());
+
             Update();
         }
 
