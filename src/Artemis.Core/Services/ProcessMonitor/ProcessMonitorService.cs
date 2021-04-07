@@ -39,13 +39,13 @@ namespace Artemis.Core.Services
             foreach (Process startedProcess in newProcesses.Except(_lastScannedProcesses, _comparer))
             {
                 ProcessStarted?.Invoke(this, new ProcessEventArgs(startedProcess));
-                _logger.Debug("Started Process: {startedProcess}", startedProcess.ProcessName);
+                _logger.Verbose("Started Process: {startedProcess}", startedProcess.ProcessName);
             }
 
             foreach (Process stoppedProcess in _lastScannedProcesses.Except(newProcesses, _comparer))
             {
                 ProcessStopped?.Invoke(this, new ProcessEventArgs(stoppedProcess));
-                _logger.Debug("Stopped Process: {stoppedProcess}", stoppedProcess.ProcessName);
+                _logger.Verbose("Stopped Process: {stoppedProcess}", stoppedProcess.ProcessName);
             }
 
             _lastScannedProcesses = newProcesses;
