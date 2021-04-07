@@ -12,6 +12,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a new instance of the <see cref="FloatRange" /> class
         /// </summary>
+        public FloatRange()
+        {
+            _rand = new Random();
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="FloatRange" /> class
+        /// </summary>
         /// <param name="start">The start value of the range</param>
         /// <param name="end">The end value of the range</param>
         public FloatRange(float start, float end)

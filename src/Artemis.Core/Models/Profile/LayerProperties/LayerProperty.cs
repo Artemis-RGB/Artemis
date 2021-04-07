@@ -34,7 +34,7 @@ namespace Artemis.Core
             CurrentValue = default!;
             DefaultValue = default!;
 
-            _baseValue = default!;
+            _baseValue = typeof(T).IsValueType ? default! : Activator.CreateInstance<T>();
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
 

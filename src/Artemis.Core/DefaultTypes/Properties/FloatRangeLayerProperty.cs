@@ -9,6 +9,7 @@
             RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new FloatDataBindingConverter<FloatRange>(), "End");
 
             CurrentValueSet += OnCurrentValueSet;
+            DefaultValue = new FloatRange();
         }
 
         /// <inheritdoc />
@@ -25,7 +26,7 @@
         private void OnCurrentValueSet(object? sender, LayerPropertyEventArgs e)
         {
             // Don't allow the int range to be null
-            BaseValue ??= DefaultValue ?? new FloatRange(0, 0);
+            BaseValue ??= DefaultValue ?? new FloatRange();
         }
     }
 }
