@@ -247,7 +247,7 @@
                                          MouseUp="{s:Action TimelineMouseUp}"
                                          MouseMove="{s:Action TimelineMouseMove}"
                                          Points="-8,0 -8,8 0,20, 8,8 8,0"
-                                         Fill="{StaticResource SecondaryAccentBrush}" />
+                                         Fill="{StaticResource SecondaryHueMidBrush}" />
                                 <Line Canvas.Left="{Binding TimeCaretPosition}"
                                       Cursor="SizeWE"
                                       MouseDown="{s:Action TimelineMouseDown}"
@@ -258,7 +258,7 @@
                                       Y1="0"
                                       Y2="{Binding ActualHeight, ElementName=TimelineHeaderScrollViewer}"
                                       StrokeThickness="2"
-                                      Stroke="{StaticResource SecondaryAccentBrush}" />
+                                      Stroke="{StaticResource SecondaryHueMidBrush}" />
                             </Canvas>
                         </ScrollViewer>
 
@@ -281,7 +281,7 @@
                                           Y1="0"
                                           Y2="{Binding ActualHeight, ElementName=RailsGrid}"
                                           StrokeThickness="2"
-                                          Stroke="{StaticResource SecondaryAccentBrush}" />
+                                          Stroke="{StaticResource SecondaryHueMidBrush}" />
                                 </Canvas>
 
                                 <ContentControl Grid.Column="0" s:View.Model="{Binding TimelineViewModel}" x:Name="PropertyTimeLine" />

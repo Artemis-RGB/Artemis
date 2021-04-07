@@ -15,7 +15,7 @@
             <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="0 15">Activation requirements</TextBlock>
             <TextBlock Margin="0 0 0 15" TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}">
                 This module has built-in activation requirements and won't activate until
-                <Run Text="{Binding ActivationType}" FontWeight="Medium" Foreground="{StaticResource SecondaryAccentBrush}" />. <LineBreak />
+                <Run Text="{Binding ActivationType}" FontWeight="Medium" Foreground="{StaticResource SecondaryHueMidBrush}" />. <LineBreak />
                 These requirements allow the module creator to decide when the module is activated and you cannot override them.
             </TextBlock>
 

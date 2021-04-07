@@ -15,25 +15,16 @@
 
         <TextBox materialDesign:HintAssist.Hint="Element name"
                  Margin="0 8 0 16"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Width="300"
+                 Style="{StaticResource MaterialDesignFilledTextBox}"
                  Text="{Binding ElementName, UpdateSourceTrigger=PropertyChanged}"
                  Loaded="FrameworkElement_OnLoaded" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
-                <Button.CommandParameter>
-                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                        False
-                    </system:Boolean>
-                </Button.CommandParameter>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 0 8 0" Command="{s:Action Cancel}">
                 CANCEL
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Accept}">
-                <Button.CommandParameter>
-                    <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
-                        True
-                    </system:Boolean>
-                </Button.CommandParameter>
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 0 0 0" Command="{s:Action Accept}">
                 ACCEPT
             </Button>
         </StackPanel>

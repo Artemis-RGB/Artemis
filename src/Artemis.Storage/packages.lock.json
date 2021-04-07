@@ -4,9 +4,9 @@
     ".NETCoreApp,Version=v5.0": {
       "LiteDB": {
         "type": "Direct",
-        "requested": "[5.0.9, )",
-        "resolved": "5.0.9",
-        "contentHash": "cWnNWXL+qaP/qrkUCYZHBUJcv+IsfJfofa+Ed4EyT0zs/gkXqfKvjTbS3uSMBfcd9I7Yf+q9YPmCpmVFrVGQtw=="
+        "requested": "[5.0.10, )",
+        "resolved": "5.0.10",
+        "contentHash": "x70WuqMDuP75dajqSLvO+AnI/BbwS6da+ukTO7rueV7VoXoQ5CRA9FV4r7cOS4OUr2NS1Up7LDIutjCxQycRvg=="
       },
       "Serilog": {
         "type": "Direct",

@@ -77,7 +77,11 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <TextBox Text="{Binding AutoRunDelay}" IsEnabled="{Binding StartWithWindows}" Width="80" materialDesign:TextFieldAssist.SuffixText="sec"/>
+                            <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+                                     Text="{Binding AutoRunDelay}" 
+                                     IsEnabled="{Binding StartWithWindows}"
+                                     Width="100" 
+                                     materialDesign:TextFieldAssist.SuffixText="sec"/>
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -98,7 +102,12 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedValue="{Binding SelectedColorScheme}" ItemsSource="{Binding ColorSchemes}" SelectedValuePath="Value" DisplayMemberPath="Description" />
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}" 
+                                      Width="100"
+                                      SelectedValue="{Binding SelectedColorScheme}" 
+                                      ItemsSource="{Binding ColorSchemes}" 
+                                      SelectedValuePath="Value" 
+                                      DisplayMemberPath="Description" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -119,7 +128,12 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedValue="{Binding SelectedLogLevel}" ItemsSource="{Binding LogLevels}" SelectedValuePath="Value" DisplayMemberPath="Description" />
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}" 
+                                      Width="100"
+                                      SelectedValue="{Binding SelectedLogLevel}"
+                                      ItemsSource="{Binding LogLevels}"
+                                      SelectedValuePath="Value" 
+                                      DisplayMemberPath="Description" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -169,7 +183,7 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <TextBox Text="{Binding WebServerPortSetting.Value}" Width="80" />
+                            <TextBox Style="{StaticResource MaterialDesignFilledTextBox}" Text="{Binding WebServerPortSetting.Value}" Width="100" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -287,10 +301,8 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="132"
-                                      Margin="0 2"
-                                      Padding="0 -1"
-                                      Height="15"
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
+                                      Width="150"
                                       materialDesign:ComboBoxAssist.ClassicMode="True"
                                       materialDesign:ValidationAssist.UsePopup="True"
                                       HorizontalAlignment="Left"
@@ -324,7 +336,9 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedItem="{Binding PreferredGraphicsContext}" >
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
+                                      Width="100"
+                                      SelectedItem="{Binding PreferredGraphicsContext}" >
                                 <system:String>Software</system:String>
                                 <system:String>Vulkan</system:String>
                             </ComboBox>
@@ -348,7 +362,11 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedItem="{Binding SelectedRenderScale}" ItemsSource="{Binding RenderScales}" DisplayMemberPath="Item1" />
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
+                                      Width="100"
+                                      SelectedItem="{Binding SelectedRenderScale}" 
+                                      ItemsSource="{Binding RenderScales}" 
+                                      DisplayMemberPath="Item1" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -369,7 +387,11 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Width="80" SelectedItem="{Binding SelectedTargetFrameRate}" ItemsSource="{Binding TargetFrameRates}" DisplayMemberPath="Item1" />
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
+                                      Width="100"
+                                      SelectedItem="{Binding SelectedTargetFrameRate}"
+                                      ItemsSource="{Binding TargetFrameRates}"
+                                      DisplayMemberPath="Item1" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>

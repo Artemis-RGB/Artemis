@@ -42,8 +42,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="actionArgument">Argument to pass to <paramref name="actionHandler" />.</param>
         void ShowMessage<TArgument>(
             object content,
-            object actionContent,
-            Action<TArgument> actionHandler,
+            object? actionContent,
+            Action<object?>? actionHandler,
             TArgument actionArgument);
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Artemis.UI.Shared.Services
         /// <param name="actionContent">Content for the action button.</param>
         /// <param name="actionHandler">Call back to be executed if user clicks the action button.</param>
         /// <param name="promote">The message will promoted to the front of the queue.</param>
-        void ShowMessage(object content, object actionContent, Action actionHandler, bool promote);
+        void ShowMessage(object content, object? actionContent, Action? actionHandler, bool promote);
 
         /// <summary>
         ///     Queues a notification message for display in a snackbar.
@@ -75,8 +75,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="promote">The message will be promoted to the front of the queue and never considered to be a duplicate.</param>
         void ShowMessage<TArgument>(
             object content,
-            object actionContent,
-            Action<TArgument> actionHandler,
+            object? actionContent,
+            Action<TArgument?>? actionHandler,
             TArgument actionArgument,
             bool promote);
 
@@ -92,8 +92,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="durationOverride">Message show duration override.</param>
         void ShowMessage<TArgument>(
             object content,
-            object actionContent,
-            Action<TArgument> actionHandler,
+            object? actionContent,
+            Action<TArgument?>? actionHandler,
             TArgument actionArgument,
             bool promote,
             bool neverConsiderToBeDuplicate,
@@ -111,8 +111,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="durationOverride">Message show duration override.</param>
         void ShowMessage(
             object content,
-            object actionContent,
-            Action<object> actionHandler,
+            object? actionContent,
+            Action<object?>? actionHandler,
             object actionArgument,
             bool promote,
             bool neverConsiderToBeDuplicate,

@@ -18,6 +18,7 @@ using Flurl;
 using Flurl.Http;
 using MaterialDesignThemes.Wpf;
 using Serilog;
+using Constants = Artemis.Core.Constants;
 using File = System.IO.File;
 
 namespace Artemis.UI.Services
