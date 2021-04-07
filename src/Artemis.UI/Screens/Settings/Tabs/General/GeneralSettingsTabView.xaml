@@ -81,7 +81,8 @@
                                      Text="{Binding AutoRunDelay}" 
                                      IsEnabled="{Binding StartWithWindows}"
                                      Width="100" 
-                                     materialDesign:TextFieldAssist.SuffixText="sec"/>
+                                     materialDesign:TextFieldAssist.SuffixText="sec"
+                                     materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -107,7 +108,8 @@
                                       SelectedValue="{Binding SelectedColorScheme}" 
                                       ItemsSource="{Binding ColorSchemes}" 
                                       SelectedValuePath="Value" 
-                                      DisplayMemberPath="Description" />
+                                      DisplayMemberPath="Description" 
+                                      materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -133,7 +135,8 @@
                                       SelectedValue="{Binding SelectedLogLevel}"
                                       ItemsSource="{Binding LogLevels}"
                                       SelectedValuePath="Value" 
-                                      DisplayMemberPath="Description" />
+                                      DisplayMemberPath="Description"
+                                      materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -183,7 +186,8 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <TextBox Style="{StaticResource MaterialDesignFilledTextBox}" Text="{Binding WebServerPortSetting.Value}" Width="100" />
+                            <TextBox Style="{StaticResource MaterialDesignFilledTextBox}" Text="{Binding WebServerPortSetting.Value}" Width="100"
+                                     materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -305,6 +309,7 @@
                                       Width="150"
                                       materialDesign:ComboBoxAssist.ClassicMode="True"
                                       materialDesign:ValidationAssist.UsePopup="True"
+                                      materialDesign:HintAssist.IsFloating="false"
                                       HorizontalAlignment="Left"
                                       ItemsSource="{Binding Path=LayerBrushDescriptors}"
                                       SelectedValue="{Binding Path=SelectedLayerBrushDescriptor}"
@@ -338,7 +343,8 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
                                       Width="100"
-                                      SelectedItem="{Binding PreferredGraphicsContext}" >
+                                      SelectedItem="{Binding PreferredGraphicsContext}" 
+                                      materialDesign:HintAssist.IsFloating="false">
                                 <system:String>Software</system:String>
                                 <system:String>Vulkan</system:String>
                             </ComboBox>
@@ -366,7 +372,8 @@
                                       Width="100"
                                       SelectedItem="{Binding SelectedRenderScale}" 
                                       ItemsSource="{Binding RenderScales}" 
-                                      DisplayMemberPath="Item1" />
+                                      DisplayMemberPath="Item1"
+                                      materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -391,7 +398,8 @@
                                       Width="100"
                                       SelectedItem="{Binding SelectedTargetFrameRate}"
                                       ItemsSource="{Binding TargetFrameRates}"
-                                      DisplayMemberPath="Item1" />
+                                      DisplayMemberPath="Item1"
+                                      materialDesign:HintAssist.IsFloating="false"/>
                         </StackPanel>
                     </Grid>
                 </StackPanel>
