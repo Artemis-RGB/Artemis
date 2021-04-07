@@ -14,6 +14,7 @@ using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
+using Artemis.UI.Utilities;
 using Ninject;
 using Serilog;
 using Stylet;
@@ -47,6 +48,8 @@ namespace Artemis.UI
                 return;
             }
 
+            try { DPIAwareness.Initalize(); } catch (Exception ex) { logger.Error($"Failed to set DPI-Awareness: {ex.Message}"); }
+
             IViewManager viewManager = Kernel.Get<IViewManager>();
             StartupArguments = Args.ToList();
 
@@ -68,7 +71,7 @@ namespace Artemis.UI
             Execute.OnUIThreadSync(() =>
             {
                 UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
-                ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
+                ((TrayViewModel)RootViewModel).SetTaskbarIcon(view);
             });
 
             // Initialize the core async so the UI can show the progress
