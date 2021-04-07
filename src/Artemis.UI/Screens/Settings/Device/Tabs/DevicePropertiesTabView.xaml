@@ -24,7 +24,7 @@
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
-                    <ColumnDefinition Width="40"/>
+                    <ColumnDefinition Width="40" />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <StackPanel Grid.Column="0">
@@ -35,22 +35,22 @@
                     <TextBox materialDesign:HintAssist.Hint="X-coordinate"
                              materialDesign:TextFieldAssist.SuffixText="mm"
                              Text="{Binding X, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Style="{StaticResource MaterialDesignFilledTextBox}"
                              Margin="0 5" />
                     <TextBox materialDesign:HintAssist.Hint="Y-coordinate"
                              materialDesign:TextFieldAssist.SuffixText="mm"
                              Text="{Binding Y, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Style="{StaticResource MaterialDesignFilledTextBox}"
                              Margin="0 5" />
                     <TextBox materialDesign:HintAssist.Hint="Scale"
                              materialDesign:TextFieldAssist.SuffixText="times"
                              Text="{Binding Scale, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Style="{StaticResource MaterialDesignFilledTextBox}"
                              Margin="0 5" />
                     <TextBox materialDesign:HintAssist.Hint="Rotation"
                              materialDesign:TextFieldAssist.SuffixText="deg"
                              Text="{Binding Rotation, UpdateSourceTrigger=PropertyChanged}"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                             Style="{StaticResource MaterialDesignFilledTextBox}"
                              Margin="0 5 0 12" />
                 </StackPanel>
 
@@ -68,7 +68,7 @@
                         Use the sliders below to adjust the colors of your device so that it matches your other devices.
                     </TextBlock>
 
-                    <Grid>
+                    <Grid Margin="0 3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -84,12 +84,14 @@
                                 VerticalAlignment="Center" />
                         <TextBox Grid.Column="2"
                                  VerticalAlignment="Center"
+                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Width="70"
                                  Text="{Binding RedScale, StringFormat={}{0:0.0}, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:TextFieldAssist.SuffixText="%"
-                                 Width="50" />
+                                 materialDesign:HintAssist.IsFloating="False" />
                     </Grid>
 
-                    <Grid>
+                    <Grid Margin="0 3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -105,12 +107,14 @@
                                 VerticalAlignment="Center" />
                         <TextBox Grid.Column="2"
                                  VerticalAlignment="Center"
+                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Width="70"
                                  Text="{Binding GreenScale, StringFormat={}{0:0.0}, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:TextFieldAssist.SuffixText="%"
-                                 Width="50" />
+                                 materialDesign:HintAssist.IsFloating="False" />
                     </Grid>
 
-                    <Grid>
+                    <Grid Margin="0 2">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
@@ -127,12 +131,14 @@
                                 VerticalAlignment="Center" />
                         <TextBox Grid.Column="2"
                                  VerticalAlignment="Center"
+                                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                                 Width="70"
                                  Text="{Binding BlueScale, StringFormat={}{0:0.0}, UpdateSourceTrigger=PropertyChanged}"
                                  materialDesign:TextFieldAssist.SuffixText="%"
-                                 Width="50" />
+                                 materialDesign:HintAssist.IsFloating="False" />
                     </Grid>
 
-                    <Grid Margin="0 28 0 0">
+                    <Grid Margin="0 3 0 0">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
                             <ColumnDefinition />
@@ -142,9 +148,9 @@
                                   Content="Show preview"
                                   VerticalAlignment="Center" />
                         <shared:ColorPicker Grid.Column="1"
-                                            Margin="0,0,5,0"
                                             HorizontalAlignment="Right"
                                             Color="{Binding CurrentColor, Converter={StaticResource SKColorToColorConverter}}"
+                                            TextBoxStyle="{StaticResource MaterialDesignFilledTextBox}"
                                             VerticalAlignment="Center" />
                     </Grid>
                 </StackPanel>
@@ -161,7 +167,7 @@
                 Select a custom layout below if you want to change the appearance and/or LEDs of this device.
             </TextBlock>
 
-            <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+            <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
                      Text="{Binding Device.CustomLayoutPath}"
                      VerticalAlignment="Center"
                      materialDesign:TextFieldAssist.HasClearButton="True"
@@ -177,15 +183,15 @@
         </StackPanel>
 
         <!-- Buttons -->
-        <Grid Grid.Row="1" >
+        <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" 
-                    Style="{StaticResource MaterialDesignOutlinedButton}" 
-                    Margin="0 8 8 0" 
-                    Command="{s:Action SelectPhysicalLayout}" 
+            <Button Grid.Column="0"
+                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0 8 8 0"
+                    Command="{s:Action SelectPhysicalLayout}"
                     ToolTip="Restart device setup, allowing you to select a new physical and logical layout">
                 RESTART SETUP
             </Button>
@@ -199,6 +205,6 @@
                 </Button>
             </StackPanel>
         </Grid>
-       
+
     </Grid>
 </UserControl>

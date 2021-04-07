@@ -29,15 +29,15 @@ namespace Artemis.UI.Shared.Services
             _pluginManagementService = pluginManagementService;
         }
 
-        private async Task<object> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase
+        private async Task<object?> ShowDialog<T>(IParameter[] parameters) where T : DialogViewModelBase
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             return await ShowDialog("RootDialog", GetBestKernel().Get<T>(parameters));
         }
 
-        private async Task<object> ShowDialog(string? identifier, DialogViewModelBase viewModel)
+        private async Task<object?> ShowDialog(string? identifier, DialogViewModelBase viewModel)
         {
-            Task<object>? result = null;
+            Task<object?>? result = null;
             await Execute.OnUIThreadAsync(() =>
             {
                 UIElement view = _viewManager.CreateViewForModel(viewModel);
@@ -54,7 +54,7 @@ namespace Artemis.UI.Shared.Services
             return await result;
         }
 
-        private async Task<object> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
+        private async Task<object?> ShowDialogAt<T>(string identifier, IParameter[] parameters) where T : DialogViewModelBase
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -70,8 +70,8 @@ namespace Artemis.UI.Shared.Services
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
                 new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
-            object result = await ShowDialog<ConfirmDialogViewModel>(arguments);
-            return (bool) result;
+            object? result = await ShowDialog<ConfirmDialogViewModel>(arguments);
+            return result is bool booleanResult && booleanResult;
         }
 
         public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
@@ -84,16 +84,16 @@ namespace Artemis.UI.Shared.Services
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
                 new ConstructorArgument("cancelText", cancelText.ToUpper())
             };
-            object result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
-            return (bool) result;
+            object? result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
+            return result is bool booleanResult && booleanResult;
         }
 
-        public async Task<object> ShowDialog<T>() where T : DialogViewModelBase
+        public async Task<object?> ShowDialog<T>() where T : DialogViewModelBase
         {
             return await ShowDialog("RootDialog", GetBestKernel().Get<T>());
         }
 
-        public Task<object> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase
+        public Task<object?> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase
         {
             if (parameters == null)
                 throw new ArgumentNullException(nameof(parameters));
@@ -102,13 +102,13 @@ namespace Artemis.UI.Shared.Services
             return ShowDialog<T>(paramsArray);
         }
 
-        public async Task<object> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase
+        public async Task<object?> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase
         {
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
             return await ShowDialog(identifier, GetBestKernel().Get<T>());
         }
 
-        public async Task<object> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase
+        public async Task<object?> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase
         {
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
@@ -119,6 +119,7 @@ namespace Artemis.UI.Shared.Services
 
         public void ShowExceptionDialog(string message, Exception exception)
         {
+            if (exception == null) throw new ArgumentNullException(nameof(exception));
             _windowManager.ShowDialog(new ExceptionViewModel(message, exception));
         }
 

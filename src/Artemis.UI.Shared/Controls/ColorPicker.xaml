@@ -66,17 +66,23 @@
     </UserControl.Resources>
     <Grid HorizontalAlignment="Stretch">
         <TextBox x:Name="ColorCodeTextBox"
-                 materialDesign:TextFieldAssist.TextBoxViewMargin="1 0 1 0"
+                 materialDesign:TextFieldAssist.TextBoxViewMargin="0 2 20 0"
+                 materialDesign:HintAssist.IsFloating="False"
+                 Style="{Binding TextBoxStyle, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                  Text="{Binding Color, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource ColorToStringConverter}}"
                  MinWidth="95"
                  MaxLength="9"
                  Margin="0"
-                 HorizontalAlignment="Stretch" />
+                 HorizontalAlignment="Stretch">
+            <materialDesign:TextFieldAssist.CharacterCounterStyle>
+                <Style TargetType="TextBlock" />
+            </materialDesign:TextFieldAssist.CharacterCounterStyle>
+        </TextBox>
 
         <Border Width="15"
                 Height="15"
                 CornerRadius="15"
-                Margin="0,0,0,2"
+                Margin="0 0 8 0"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 Background="{StaticResource Checkerboard}">
@@ -116,7 +122,7 @@
                             PreviewMouseDown="Slider_OnMouseDown"
                             PreviewMouseUp="Slider_OnMouseUp"
                             Maximum="255" />
-                   
+
                     <ItemsControl Grid.Row="2" x:Name="RecentColorsContainer" Margin="10 0" HorizontalAlignment="Left">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
@@ -130,9 +136,9 @@
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <ItemsControl.ItemsPanel>
-                          <ItemsPanelTemplate>
-                              <WrapPanel Orientation="Horizontal"></WrapPanel>
-                          </ItemsPanelTemplate>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal" />
+                            </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                     </ItemsControl>
 

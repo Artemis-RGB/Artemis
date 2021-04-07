@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Globalization;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
@@ -20,6 +19,7 @@ using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
+using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens
 {

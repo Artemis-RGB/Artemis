@@ -54,12 +54,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs
             RuleFor(m => m.InputValue)
                 .Must(ValidateTime)
                 .WithMessage("Input cannot be converted to a time");
-            RuleFor(m => m.InputValue)
-                .Transform(CreateTime)
+            Transform(m => m.InputValue, CreateTime)
                 .GreaterThanOrEqualTo(TimeSpan.FromMilliseconds(100))
                 .WithMessage("Minimum timeline length is 100ms");
-            RuleFor(m => m.InputValue)
-                .Transform(CreateTime)
+            Transform(m => m.InputValue, CreateTime)
                 .LessThanOrEqualTo(TimeSpan.FromHours(24))
                 .WithMessage("Maximum timeline length is 24 hours");
         }

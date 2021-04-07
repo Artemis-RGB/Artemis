@@ -54,7 +54,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '$(artemisSolution)'
-    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
+    arguments: '--runtime win-x64 --self-contained false --configuration Release --output $(Build.ArtifactStagingDirectory)/build /nowarn:cs1591'
     zipAfterPublish: false
     modifyOutputPath: false
 
@@ -74,12 +74,13 @@ steps:
     fileType: 'json'
     targetFiles: '**/buildinfo.json'
 
+# Copy Artemis binaries to where plugin projects expect them
 - task: CopyFiles@2
   displayName: 'Plugins - Prepare Artemis binaries'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)/build'
     Contents: '**'
-    TargetFolder: 'Artemis/src/Artemis.UI/bin/x64/Debug/net5.0-windows'
+    TargetFolder: 'Artemis/src/Artemis.UI/bin/net5.0-windows'
 
 - task: PowerShell@2
   displayName: 'Plugins - Insert build number into plugin.json'
@@ -100,7 +101,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    arguments: '--runtime win-x64 --self-contained false --output $(Build.ArtifactStagingDirectory)/build/Plugins'
+    arguments: '--runtime win-x64 --configuration Release --self-contained false --output $(Build.ArtifactStagingDirectory)/build/Plugins'
     projects: '$(pluginProjects)'
     zipAfterPublish: true
 

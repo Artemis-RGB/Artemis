@@ -40,7 +40,7 @@ namespace Artemis.UI.Shared.Services
         /// </summary>
         /// <typeparam name="T">The type of the view model</typeparam>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialog<T>() where T : DialogViewModelBase;
+        Task<object?> ShowDialog<T>() where T : DialogViewModelBase;
 
         /// <summary>
         ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" /> with arguments passed
@@ -49,7 +49,7 @@ namespace Artemis.UI.Shared.Services
         /// <typeparam name="T">The type of the view model</typeparam>
         /// <param name="parameters">A dictionary of constructor arguments to pass to the view model</param>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase;
+        Task<object?> ShowDialog<T>(Dictionary<string, object> parameters) where T : DialogViewModelBase;
 
         /// <summary>
         ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" />
@@ -60,7 +60,7 @@ namespace Artemis.UI.Shared.Services
         ///     <code>&lt;materialDesign:DialogHost Identifier="MyDialogHost"&gt;</code>
         /// </param>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase;
+        Task<object?> ShowDialogAt<T>(string identifier) where T : DialogViewModelBase;
 
         /// <summary>
         ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" /> with arguments passed
@@ -73,7 +73,7 @@ namespace Artemis.UI.Shared.Services
         /// </param>
         /// <param name="parameters">A dictionary of constructor arguments to pass to the view model</param>
         /// <returns>A task resolving to the result of the dialog's <see cref="DialogSession" /></returns>
-        Task<object> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase;
+        Task<object?> ShowDialogAt<T>(string identifier, Dictionary<string, object> parameters) where T : DialogViewModelBase;
 
         /// <summary>
         ///     Shows a dialog displaying the provided message and exception. Does not handle, log or throw the exception.

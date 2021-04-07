@@ -35,8 +35,15 @@ namespace Artemis.UI.Shared
         public static readonly DependencyProperty StaysOpenProperty = DependencyProperty.Register(nameof(StaysOpen), typeof(bool), typeof(ColorPicker),
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, StaysOpenPropertyChangedCallback));
 
+        /// <summary>
+        ///     Gets or sets the style used on the text box
+        /// </summary>
+        public static readonly DependencyProperty TextBoxStyleProperty = DependencyProperty.Register(nameof(TextBoxStyle), typeof(Style), typeof(ColorPicker), 
+            new FrameworkPropertyMetadata(Application.Current.Resources["MaterialDesignTextBox"]));
+
         internal static readonly DependencyProperty ColorOpacityProperty = DependencyProperty.Register(nameof(ColorOpacity), typeof(byte), typeof(ColorPicker),
             new FrameworkPropertyMetadata((byte) 255, FrameworkPropertyMetadataOptions.AffectsArrange | FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, ColorOpacityPropertyChangedCallback));
+
 
         /// <summary>
         ///     Occurs when the selected color has changed
@@ -98,6 +105,15 @@ namespace Artemis.UI.Shared
         }
 
         /// <summary>
+        ///     Gets or sets the style used on the text box
+        /// </summary>
+        public Style TextBoxStyle
+        {
+            get => (Style) GetValue(TextBoxStyleProperty);
+            set => SetValue(TextBoxStyleProperty, value);
+        }
+
+        /// <summary>
         ///     Used by the gradient picker to load saved gradients, do not touch or it'll just throw an exception
         /// </summary>
         internal static IColorPickerService ColorPickerService
@@ -117,12 +133,38 @@ namespace Artemis.UI.Shared
         }
 
         /// <summary>
+        ///     Occurs when dragging the color picker has started
+        /// </summary>
+        public event EventHandler? DragStarted;
+
+        /// <summary>
+        ///     Occurs when dragging the color picker has ended
+        /// </summary>
+        public event EventHandler? DragEnded;
+
+        /// <summary>
         ///     Invokes the <see cref="PropertyChanged" /> event
         /// </summary>
         /// <param name="propertyName"></param>
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DragStarted" /> event
+        /// </summary>
+        protected virtual void OnDragStarted()
+        {
+            DragStarted?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DragEnded" /> event
+        /// </summary>
+        protected virtual void OnDragEnded()
+        {
+            DragEnded?.Invoke(this, EventArgs.Empty);
         }
 
         private static void ColorPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -245,7 +287,7 @@ namespace Artemis.UI.Shared
 
         private void PopupOpened()
         {
-            if (_colorPickerService != null) 
+            if (_colorPickerService != null)
                 RecentColorsContainer.ItemsSource = new ObservableCollection<Color>(_colorPickerService.RecentColors);
         }
 
@@ -257,36 +299,5 @@ namespace Artemis.UI.Shared
 
         /// <inheritdoc />
         public event PropertyChangedEventHandler? PropertyChanged;
-
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when dragging the color picker has started
-        /// </summary>
-        public event EventHandler? DragStarted;
-
-        /// <summary>
-        ///     Occurs when dragging the color picker has ended
-        /// </summary>
-        public event EventHandler? DragEnded;
-
-        /// <summary>
-        ///     Invokes the <see cref="DragStarted" /> event
-        /// </summary>
-        protected virtual void OnDragStarted()
-        {
-            DragStarted?.Invoke(this, EventArgs.Empty);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DragEnded" /> event
-        /// </summary>
-        protected virtual void OnDragEnded()
-        {
-            DragEnded?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
     }
 }

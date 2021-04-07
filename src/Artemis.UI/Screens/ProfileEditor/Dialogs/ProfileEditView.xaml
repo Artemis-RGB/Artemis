@@ -14,14 +14,15 @@
 
         <TextBox materialDesign:HintAssist.Hint="Profile name"
                  Margin="0 8 0 16"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                 Width="300"
+                 Style="{StaticResource MaterialDesignFilledTextBox}"
                  Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 0 8 0" Command="{s:Action Cancel}">
                 CANCEL
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Accept}">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 0 0 0" Command="{s:Action Accept}">
                 ACCEPT
             </Button>
         </StackPanel>

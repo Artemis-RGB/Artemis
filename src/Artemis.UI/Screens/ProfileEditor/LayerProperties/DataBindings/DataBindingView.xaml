@@ -29,15 +29,16 @@
                              Panel.ZIndex="2">
             <Grid Margin="10 5">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="48" />
-                    <RowDefinition Height="48" />
-                    <RowDefinition Height="48" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <ComboBox Grid.Row="0"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          Style="{StaticResource MaterialDesignFilledComboBox}"
+                          Margin="0 5"
                           materialDesign:HintAssist.Hint="Data binding mode"
                           MinWidth="128"
                           SelectedValue="{Binding SelectedDataBindingMode}"
@@ -45,17 +46,18 @@
                           SelectedValuePath="Value"
                           DisplayMemberPath="Description" />
 
-                <StackPanel Grid.Row="1">
-                    <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                             Text="{Binding EasingTime}"
-                             materialDesign:TextFieldAssist.HasClearButton="True"
-                             materialDesign:TextFieldAssist.SuffixText="ms"
-                             materialDesign:HintAssist.Hint="Easing time"
-                             IsEnabled="{Binding IsDataBindingEnabled}" />
-                </StackPanel>
+                <TextBox Grid.Row="1"
+                         Style="{StaticResource MaterialDesignFilledTextBox}"
+                         Margin="0 5"
+                         Text="{Binding EasingTime}"
+                         materialDesign:TextFieldAssist.HasClearButton="True"
+                         materialDesign:TextFieldAssist.SuffixText="ms"
+                         materialDesign:HintAssist.Hint="Easing time"
+                         IsEnabled="{Binding IsDataBindingEnabled}" />
 
                 <ComboBox Grid.Row="2"
-                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                          Style="{StaticResource MaterialDesignFilledComboBox}"
+                          Margin="0 5"
                           materialDesign:HintAssist.Hint="Easing type"
                           MinWidth="128"
                           IsEnabled="{Binding IsEasingTimeEnabled}"
