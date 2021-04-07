@@ -6,6 +6,11 @@
 	width: 320px;
 }
 
+@media only screen and (max-width: 768px)
+.article.grid-right {
+    margin-left: 0;
+}
+
 .article.grid-right {
 	margin-left: 340px;
 }
