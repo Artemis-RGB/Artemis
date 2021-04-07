@@ -29,7 +29,7 @@ namespace Artemis.UI.Shared.Services
             MainMessageQueue.Enqueue(content, actionContent, actionHandler);
         }
 
-        public void ShowMessage<TArgument>(object content, object actionContent, Action<TArgument> actionHandler, TArgument actionArgument)
+        public void ShowMessage<TArgument>(object content, object? actionContent, Action<object?>? actionHandler, TArgument actionArgument)
         {
             MainMessageQueue.Enqueue(content, actionContent, actionHandler, actionArgument);
         }
@@ -39,19 +39,19 @@ namespace Artemis.UI.Shared.Services
             MainMessageQueue.Enqueue(content, neverConsiderToBeDuplicate);
         }
 
-        public void ShowMessage(object content, object actionContent, Action actionHandler, bool promote)
+        public void ShowMessage(object content, object? actionContent, Action? actionHandler, bool promote)
         {
             MainMessageQueue.Enqueue(content, actionContent, actionHandler, promote);
         }
 
-        public void ShowMessage<TArgument>(object content, object actionContent, Action<TArgument> actionHandler, TArgument actionArgument, bool promote)
+        public void ShowMessage<TArgument>(object content, object? actionContent, Action<TArgument?>? actionHandler, TArgument actionArgument, bool promote)
         {
             MainMessageQueue.Enqueue(content, actionContent, actionHandler, actionArgument, promote);
         }
 
         public void ShowMessage<TArgument>(object content,
-            object actionContent,
-            Action<TArgument> actionHandler,
+            object? actionContent,
+            Action<TArgument?>? actionHandler,
             TArgument actionArgument,
             bool promote,
             bool neverConsiderToBeDuplicate,
@@ -61,8 +61,8 @@ namespace Artemis.UI.Shared.Services
         }
 
         public void ShowMessage(object content,
-            object actionContent,
-            Action<object> actionHandler,
+            object? actionContent,
+            Action<object?>? actionHandler,
             object actionArgument,
             bool promote,
             bool neverConsiderToBeDuplicate,

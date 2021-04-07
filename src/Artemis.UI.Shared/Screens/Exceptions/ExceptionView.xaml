@@ -8,6 +8,7 @@
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                          xmlns:exceptions="clr-namespace:Artemis.UI.Shared.Screens.Exceptions"
                          xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
+                         xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d"
                          Title="Unhandled exception"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -19,41 +20,49 @@
                          d:DesignWidth="800"
                          d:DataContext="{d:DesignInstance exceptions:ExceptionViewModel}">
     <DockPanel>
-        <controls:AppBar Type="Dense" Title="{Binding Header}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
+        <controls:AppBar Type="Dense" Title="{Binding Header, Mode=OneTime}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
             <controls:AppBar.AppIcon>
                 <materialDesign:PackIcon Kind="ErrorOutline" Width="20" Height="28" />
             </controls:AppBar.AppIcon>
         </controls:AppBar>
 
-        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" Margin="16">
-            <StackPanel>
-                <ItemsControl ItemsSource="{Binding Exceptions}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel>
-                                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}"
-                                           Text="Stack trace"
-                                           TextWrapping="Wrap"
-                                           FontWeight="Bold"
-                                           MaxWidth="1000" />
+        <Grid>
+            <Grid Margin="15">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
 
-                                <avalonedit:TextEditor SyntaxHighlighting="C#"
-                                                       FontFamily="pack://application:,,,/Resources/Fonts/#Roboto Mono"
-                                                       FontSize="10pt"
-                                                       IsReadOnly="True"
-                                                       Document="{Binding Document}"
-                                                       HorizontalScrollBarVisibility="Auto"
-                                                       VerticalScrollBarVisibility="Auto"
-                                                       Margin="0 10 10 0"
-                                                       MaxHeight="500"
-                                                       Padding="10" />
+                <materialDesign:Card Grid.Row="0" Grid.ColumnSpan="2" Margin="0 0 0 5">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Margin="16">
+                        <TextBox Text="{Binding Exception, Mode=OneTime}"
+                                 AcceptsReturn="True"
+                                 IsReadOnly="True"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 materialDesign:TextFieldAssist.UnderlineBrush="Transparent"
+                                 BorderThickness="0" />
+                    </ScrollViewer>
+                </materialDesign:Card>
 
-                                <Separator Margin="0 15" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </StackPanel>
-        </ScrollViewer>
+                <TextBlock Grid.Row="1" Grid.Column="0" TextWrapping="Wrap" Margin="0 0 5 0" VerticalAlignment="Center">
+                    <materialDesign:PackIcon Kind="Text" Margin="0 0 0 -3" />
+                    When reporting errors please don't take a screenshot of the error, instead copy the text, thanks!
+                </TextBlock>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 5 0 0">
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Command="{s:Action CopyException}" Width="150" Margin="0 0 5 0">
+                        COPY EXCEPTION
+                    </Button>
+                    <Button Style="{StaticResource MaterialDesignFlatMidBgButton}" Command="{s:Action Close}" Width="150" Margin="5 0 0 0">
+                        CLOSE
+                    </Button>
+                </StackPanel>
+            </Grid>
+            <materialDesign:Snackbar MessageQueue="{Binding MessageQueue}"></materialDesign:Snackbar>
+        </Grid>
     </DockPanel>
 </controls:MaterialWindow>

@@ -47,7 +47,7 @@ namespace Artemis.Core
         ///     <para>Information is retrieved from <c>buildinfo.json</c></para>
         /// </summary>
         public static readonly BuildInfo BuildInfo = File.Exists(Path.Combine(ApplicationFolder, "buildinfo.json"))
-            ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))
+            ? JsonConvert.DeserializeObject<BuildInfo>(File.ReadAllText(Path.Combine(ApplicationFolder, "buildinfo.json")))!
             : new BuildInfo
             {
                 IsLocalBuild = true,

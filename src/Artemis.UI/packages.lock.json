@@ -4,9 +4,9 @@
     ".NETCoreApp,Version=v5.0": {
       "FluentValidation": {
         "type": "Direct",
-        "requested": "[9.3.0, )",
-        "resolved": "9.3.0",
-        "contentHash": "C44l6Ih+YwpED/TsXfl6LIq6Z4wLXahstnr6T70uUg1Hs7/bLBKKAo9Nl0sLhVjDE8TA+fF+O3IM4nDrwabcSQ=="
+        "requested": "[10.0.0, )",
+        "resolved": "10.0.0",
+        "contentHash": "jNFPbLjBy/bfIWx4BV/WVEsS+1OxBVf22mmSdvVa9RCHJDkNhAjbKZkxgA0s1rYNFxVn+a1fQbos95t4j/z3Zg=="
       },
       "Flurl.Http": {
         "type": "Direct",
@@ -43,9 +43,9 @@
       },
       "MaterialDesignExtensions": {
         "type": "Direct",
-        "requested": "[3.3.0-a01, )",
-        "resolved": "3.3.0-a01",
-        "contentHash": "dq8lvcj73H6TCmhjlRud8EeUSgC8S2U7T4jOoefmLieZQigbfQNy29hF1041cnu6b3l8mW00zWJituRMSt0iOQ==",
+        "requested": "[3.3.0, )",
+        "resolved": "3.3.0",
+        "contentHash": "dlxWtdrMH8aHNib3dWJhNQ/nNiA2b/CNvr90w/5KB6erTisuTpyYVx2l2+UGCZvwhSX5mHTHQYHfjgAKbDrgjg==",
         "dependencies": {
           "MaterialDesignColors": "1.2.7",
           "MaterialDesignThemes": "3.2.0"
@@ -53,11 +53,11 @@
       },
       "MaterialDesignThemes": {
         "type": "Direct",
-        "requested": "[3.2.0, )",
-        "resolved": "3.2.0",
-        "contentHash": "aOZQShQuV7sCWOwO98dYz1S4stmIWDBH+Q6KoR3wDiDyuG7twoGnBDzQBhrxuS16I3GQiG5nfvUjEJFVc/zdKg==",
+        "requested": "[4.0.0, )",
+        "resolved": "4.0.0",
+        "contentHash": "+n5oWHuRiYL/gUw2XfQHCRZqHtU8KbrdurgU0IcO98Zsyhw4BvggodfXY8veRtbjjmM9EJ/sG2yKBrgPOGX4JQ==",
         "dependencies": {
-          "MaterialDesignColors": "[1.2.7, 2.0.0)"
+          "MaterialDesignColors": "2.0.0"
         }
       },
       "Microsoft.Win32.Registry": {
@@ -72,9 +72,9 @@
       },
       "Microsoft.Xaml.Behaviors.Wpf": {
         "type": "Direct",
-        "requested": "[1.1.19, )",
-        "resolved": "1.1.19",
-        "contentHash": "5sPWkbqImc2t1aQwIfJcKsUo7tOg1Tr8+6xVzZJB56Nzt4u9NlpcLofgdX/aRYpPKdWDA3U23Akw1KQzU5e82g=="
+        "requested": "[1.1.31, )",
+        "resolved": "1.1.31",
+        "contentHash": "LZpuf82ACZWldmfMuv3CTUMDh3o0xo0uHUaybR5HgqVLDBJJ9RZLykplQ/bTJd0/VDt3EhD4iDgUgbdIUAM+Kg=="
       },
       "Ninject": {
         "type": "Direct",
@@ -138,9 +138,9 @@
       },
       "Stylet": {
         "type": "Direct",
-        "requested": "[1.3.5, )",
-        "resolved": "1.3.5",
-        "contentHash": "9vjjaTgf5sZAGHnxQWIslD32MG5gXj7ANgS+w965L5Eh//UC3qwZDrEf226Pf+v1P/ldAJDpUySnOyGlb3TSSw==",
+        "requested": "[1.3.6, )",
+        "resolved": "1.3.6",
+        "contentHash": "SISR+DsPrgBww3AI5FtHx1tD9VkEfJWZYu+ykq5EFM2o7Se9zxNR6FAa2g5QadQa90NKMYxn/VZEQRDo7/pdkw==",
         "dependencies": {
           "System.Drawing.Common": "4.6.0"
         }
@@ -159,9 +159,9 @@
       },
       "System.Drawing.Common": {
         "type": "Direct",
-        "requested": "[5.0.0, )",
-        "resolved": "5.0.0",
-        "contentHash": "SztFwAnpfKC8+sEKXAFxCBWhKQaEd97EiOL7oZJZP56zbqnLpmxACWA8aGseaUExciuEAUuR9dY8f7HkTRAdnw==",
+        "requested": "[5.0.2, )",
+        "resolved": "5.0.2",
+        "contentHash": "rvr/M1WPf24ljpvvrVd74+NdjRUJu1bBkspkZcnzSZnmAUQWSvanlQ0k/hVHk+cHufZbZfu7vOh/vYc0q5Uu/A==",
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "5.0.0"
         }
@@ -191,22 +191,16 @@
       },
       "Unclassified.NetRevisionTask": {
         "type": "Direct",
-        "requested": "[0.3.0, )",
-        "resolved": "0.3.0",
-        "contentHash": "KwOAbbcAoaOIsyszuOv7ZeLEHfata70iM+0h1jMoMXs87EMXr5E8cFYRrCFbJDdd4Do9dK+L3gwNWjfg/ROUWw=="
-      },
-      "AvalonEdit": {
-        "type": "Transitive",
-        "resolved": "6.0.1",
-        "contentHash": "JmRwKMDRUUkUGLQmTtIHiSgFSQH9567b2/55Wa/gQp+ZtxQN+mnl5Qt6B/Kgz56FMnnDyE/fV23r7J2SV+NP7g=="
+        "requested": "[0.4.0, )",
+        "resolved": "0.4.0",
+        "contentHash": "2Tzz6qoQNciyO4uT6wxByMiyvbve+u4eFIiDewDUbeHuxr/rKuba3/EhhXDsEH9WoKzYlpzqxDfQGPE/bIe5Rw=="
       },
       "Ben.Demystifier": {
         "type": "Transitive",
-        "resolved": "0.1.6",
-        "contentHash": "sYI8+ANUo78i/vIq9Vjrjjl6A00yVbT6XsuSVvUMVRVEKJHXZu4VE00RZHg/CA7QxmaQ1zfw/Bs6DAU+OJUNAg==",
+        "resolved": "0.3.0",
+        "contentHash": "7mTSt0PLeXomarrTXdLcdYAg+zaOunw3KEvWKQ0fQaGySwqOzGxKVq8BDgUXWAyBH2hKhXldkG7uKJGkYBhDiw==",
         "dependencies": {
-          "System.Reflection.Metadata": "1.6.0",
-          "System.Threading.Tasks.Extensions": "4.5.3"
+          "System.Reflection.Metadata": "5.0.0"
         }
       },
       "Castle.Core": {
@@ -251,13 +245,13 @@
       },
       "LiteDB": {
         "type": "Transitive",
-        "resolved": "5.0.9",
-        "contentHash": "cWnNWXL+qaP/qrkUCYZHBUJcv+IsfJfofa+Ed4EyT0zs/gkXqfKvjTbS3uSMBfcd9I7Yf+q9YPmCpmVFrVGQtw=="
+        "resolved": "5.0.10",
+        "contentHash": "x70WuqMDuP75dajqSLvO+AnI/BbwS6da+ukTO7rueV7VoXoQ5CRA9FV4r7cOS4OUr2NS1Up7LDIutjCxQycRvg=="
       },
       "MaterialDesignColors": {
         "type": "Transitive",
-        "resolved": "1.2.7",
-        "contentHash": "e+shDlaSAJcuTArqtfWjVUgAOlwQlgWq8akkzCGe1MvfV1ozmOqqXyWxg5w0vC/3/KZ84wnPUJeI1wzEpI0uJQ=="
+        "resolved": "2.0.0",
+        "contentHash": "+JoghC3QRK0u9Wul1To1ORjcfTbFTVzFPjJ02H7VREOdNzIIn427e8G9gP9hXu9pm1r2OneLnoCG/lTma5cG2w=="
       },
       "McMaster.NETCore.Plugins": {
         "type": "Transitive",
@@ -362,8 +356,8 @@
       },
       "Newtonsoft.Json": {
         "type": "Transitive",
-        "resolved": "12.0.3",
-        "contentHash": "6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg=="
+        "resolved": "13.0.1",
+        "contentHash": "ppPFpBcvxdsfUonNcvITKqLl3bqxWbDCZIzDWHzjpdAHRFfZe0Dw9HmA0+za13IdyrgJwpkDTDA9fHaxOrt20A=="
       },
       "Ninject.Extensions.ChildKernel": {
         "type": "Transitive",
@@ -500,11 +494,10 @@
       },
       "Serilog.Sinks.Debug": {
         "type": "Transitive",
-        "resolved": "1.0.1",
-        "contentHash": "nE5wvw9+J/V4lA+rEkFUETGjBabK8IlLQY5Z9KDzoo5LvILC4vhTOXLs7DGYs8h5juIf2nLZnVxHDXf404FqEQ==",
+        "resolved": "2.0.0",
+        "contentHash": "Y6g3OBJ4JzTyyw16fDqtFcQ41qQAydnEvEqmXjhwhgjsnG/FaJ8GUqF5ldsC/bVkK8KYmqrPhDO+tm4dF6xx4A==",
         "dependencies": {
-          "Serilog": "2.5.0",
-          "System.Diagnostics.Debug": "4.3.0"
+          "Serilog": "2.10.0"
         }
       },
       "Serilog.Sinks.File": {
@@ -1358,8 +1351,13 @@
       },
       "System.Threading.Tasks.Extensions": {
         "type": "Transitive",
-        "resolved": "4.5.3",
-        "contentHash": "+MvhNtcvIbqmhANyKu91jQnvIRVSTiaOiFNfKWwXGHG48YAb4I/TyH8spsySiPYla7gKal5ZnF3teJqZAximyQ=="
+        "resolved": "4.3.0",
+        "contentHash": "npvJkVKl5rKXrtl1Kkm6OhOUaYGEiF9wFbppFRWSMoApKzt2PiPHT2Bb8a5sAWxprvdOAtvaARS9QYMznEUtug==",
+        "dependencies": {
+          "System.Collections": "4.3.0",
+          "System.Runtime": "4.3.0",
+          "System.Threading.Tasks": "4.3.0"
+        }
       },
       "System.Threading.Timer": {
         "type": "Transitive",
@@ -1443,19 +1441,19 @@
         "type": "Project",
         "dependencies": {
           "Artemis.Storage": "1.0.0",
-          "Ben.Demystifier": "0.1.6",
+          "Ben.Demystifier": "0.3.0",
           "EmbedIO": "3.4.3",
           "HidSharp": "2.1.0",
           "Humanizer.Core": "2.8.26",
-          "LiteDB": "5.0.9",
+          "LiteDB": "5.0.10",
           "McMaster.NETCore.Plugins": "1.3.1",
-          "Newtonsoft.Json": "12.0.3",
+          "Newtonsoft.Json": "13.0.1",
           "Ninject": "3.3.4",
           "Ninject.Extensions.ChildKernel": "3.3.0",
           "Ninject.Extensions.Conventions": "3.3.0",
           "Serilog": "2.10.0",
           "Serilog.Enrichers.Demystify": "1.0.0-dev-00019",
-          "Serilog.Sinks.Debug": "1.0.1",
+          "Serilog.Sinks.Debug": "2.0.0",
           "Serilog.Sinks.File": "4.1.0",
           "SkiaSharp": "2.80.2",
           "System.Buffers": "4.5.1",
@@ -1468,7 +1466,7 @@
       "artemis.storage": {
         "type": "Project",
         "dependencies": {
-          "LiteDB": "5.0.9",
+          "LiteDB": "5.0.10",
           "Serilog": "2.10.0"
         }
       },
@@ -1476,17 +1474,17 @@
         "type": "Project",
         "dependencies": {
           "Artemis.Core": "1.0.0",
-          "AvalonEdit": "6.0.1",
+          "Ben.Demystifier": "0.3.0",
           "Humanizer.Core": "2.8.26",
-          "MaterialDesignExtensions": "3.3.0-a01",
-          "MaterialDesignThemes": "3.2.0",
-          "Microsoft.Xaml.Behaviors.Wpf": "1.1.19",
+          "MaterialDesignExtensions": "3.3.0",
+          "MaterialDesignThemes": "4.0.0",
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.31",
           "Ninject": "3.3.4",
           "Ninject.Extensions.Conventions": "3.3.0",
           "SharpVectors.Reloaded": "1.7.1",
           "SkiaSharp": "2.80.2",
           "SkiaSharp.Views.WPF": "2.80.2",
-          "Stylet": "1.3.5",
+          "Stylet": "1.3.6",
           "System.Buffers": "4.5.1",
           "System.Numerics.Vectors": "4.5.0",
           "WriteableBitmapEx": "1.6.7"

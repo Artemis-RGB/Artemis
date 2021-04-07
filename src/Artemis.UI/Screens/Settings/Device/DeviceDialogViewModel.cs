@@ -15,6 +15,7 @@ using Ookii.Dialogs.Wpf;
 using RGB.NET.Layout;
 using SkiaSharp;
 using Stylet;
+using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens.Settings.Device
 {

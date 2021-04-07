@@ -1,45 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
-using ICSharpCode.AvalonEdit.Document;
+using System.Diagnostics;
+using System.Windows;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Shared.Screens.Exceptions
 {
     internal class ExceptionViewModel : Screen
     {
-        private List<DialogException> _exceptions;
-
-        public ExceptionViewModel(string message, Exception? exception)
+        public ExceptionViewModel(string message, Exception exception)
         {
             Header = message;
-            _exceptions = new List<DialogException>();
-
-            Exception? currentException = exception;
-            while (currentException != null)
-            {
-                Exceptions.Add(new DialogException(currentException));
-                currentException = currentException.InnerException;
-            }
+            Exception = exception.ToStringDemystified();
+            MessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(2));
         }
 
         public string Header { get; }
+        public string Exception { get; }
+        public SnackbarMessageQueue MessageQueue { get; }
 
-        public List<DialogException> Exceptions
+        public void CopyException()
         {
-            get => _exceptions;
-            set => SetAndNotify(ref _exceptions, value);
-        }
-    }
-
-    internal class DialogException
-    {
-        public DialogException(Exception exception)
-        {
-            Exception = exception;
-            Document = new TextDocument(new StringTextSource($"{exception.Message}\r\n\r\n{exception.StackTrace}"));
+            Clipboard.SetText(Exception);
+            MessageQueue.Enqueue("Copied exception to clipboard");
         }
 
-        public Exception Exception { get; }
-        public IDocument Document { get; set; }
+        public void Close()
+        {
+            RequestClose();
+        }
     }
 }

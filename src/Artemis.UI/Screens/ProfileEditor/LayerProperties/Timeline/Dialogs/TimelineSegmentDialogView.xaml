@@ -16,9 +16,9 @@
 
         <TextBox materialDesign:HintAssist.Hint="Segment length"
                  materialDesign:TextFieldAssist.SuffixText="seconds"
-                 Margin="0 8 0 16"
+                 Margin="0 16"
                  Text="{Binding InputValue, UpdateSourceTrigger=PropertyChanged}"
-                 Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
+                 Style="{StaticResource MaterialDesignFilledTextBox}" />
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 8 8 0" Command="{s:Action Cancel}">
@@ -29,7 +29,7 @@
                 </Button.CommandParameter>
                 CANCEL
             </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 8 0" Command="{s:Action Accept}">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 8 0 0" Command="{s:Action Accept}">
                 <Button.CommandParameter>
                     <system:Boolean xmlns:system="clr-namespace:System;assembly=mscorlib">
                         True

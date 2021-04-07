@@ -11,6 +11,7 @@ using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
+using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
