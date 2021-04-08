@@ -15,7 +15,7 @@ Artemis 1 is no longer supported and Artemis 2 is in active development. This en
 **Pre-release download**: https://github.com/SpoinkyNL/Artemis/releases (pre-release means your profiles may break at any given time!)  
 **Plugin documentation**: https://artemis-rgb.com/docs/
 
-**Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested. If you run into any issues please let us know on Discord.**  
+**Please note that even though we have plugins for each brand supported by RGB.NET, they have not been thoroughly tested due to a lack of hardware. If you run into any issues please let us know on Discord.**  
 A full list of supported devices can be found on the wiki [here](https://wiki.artemis-rgb.com/en/guides/user/devices).
 
 #### Want to build? Follow these instructions
