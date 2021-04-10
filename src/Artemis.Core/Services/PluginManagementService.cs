@@ -98,11 +98,19 @@ namespace Artemis.Core.Services
                     }
                     else
                     {
+                        PluginInfo pluginInfo;
                         try
                         {
                             // Compare versions, copy if the same when debugging
-                            PluginInfo pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+                            pluginInfo = CoreJson.DeserializeObject<PluginInfo>(File.ReadAllText(metadataFile))!;
+                        }
+                        catch (Exception e)
+                        {
+                            throw new ArtemisPluginException($"Failed read plugin metadata needed to install built-in plugin: {e.Message}", e);
+                        }
 
+                        try
+                        {
                             if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
                                 _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
@@ -111,7 +119,7 @@ namespace Artemis.Core.Services
                         }
                         catch (Exception e)
                         {
-                            throw new ArtemisPluginException("Failed read plugin metadata needed to install built-in plugin", e);
+                            throw new ArtemisPluginException($"Failed to install built-in plugin: {e.Message}", e);
                         }
                     }
                 }
