@@ -289,7 +289,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Layer");
 
             // Ensure the layer is ready
-            if (!Enabled || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
+            if (!Enabled || Suspended || Path == null || LayerShape?.Path == null || !General.PropertiesInitialized || !Transform.PropertiesInitialized)
                 return;
             // Ensure the brush is ready
             if (LayerBrush == null || LayerBrush?.BaseProperties?.PropertiesInitialized == false)
