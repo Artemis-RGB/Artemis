@@ -21,6 +21,9 @@
                     d:DesignHeight="800" d:DesignWidth="800"
                     d:DataContext="{d:DesignInstance device:DeviceDialogViewModel}"
                     Icon="/Resources/Images/Logo/logo-512.png">
+    <mde:MaterialWindow.Resources>
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </mde:MaterialWindow.Resources>
     <mde:MaterialWindow.InputBindings>
         <KeyBinding Command="{s:Action ClearSelection}" Key="Escape" />
     </mde:MaterialWindow.InputBindings>
@@ -111,6 +114,14 @@
                                              VerticalAlignment="Center"
                                              ShowColors="True"
                                              LedClicked="{s:Action OnLedClicked}"/>
+
+                    <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" 
+                               Visibility="{Binding Device.Layout.RgbLayout.Author, Converter={StaticResource NullToVisibilityConverter}}"
+                               VerticalAlignment="Bottom" 
+                               HorizontalAlignment="Left" 
+                               Margin="15">
+                        Device layout by <Run FontWeight="Bold" Text="{Binding Device.Layout.RgbLayout.Author}"/>
+                    </TextBlock>
                 </Grid>
 
                 <GridSplitter Grid.Column="1" Width="15" Margin="-15 0 0 0" Background="Transparent" HorizontalAlignment="Stretch" Panel.ZIndex="3" />

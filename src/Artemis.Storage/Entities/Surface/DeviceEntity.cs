@@ -7,6 +7,7 @@ namespace Artemis.Storage.Entities.Surface
         public DeviceEntity()
         {
             InputIdentifiers = new List<DeviceInputIdentifierEntity>();
+            InputMappings = new List<InputMappingEntity>();
         }
         
         public string Id { get; set; }
@@ -25,7 +26,14 @@ namespace Artemis.Storage.Entities.Surface
         public string CustomLayoutPath { get; set; }
 
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
+        public List<InputMappingEntity> InputMappings { get; set; }
         
+    }
+
+    public class InputMappingEntity
+    {
+        public int OriginalLedId { get; set; }
+        public int MappedLedId { get; set; }
     }
 
     public class DeviceInputIdentifierEntity

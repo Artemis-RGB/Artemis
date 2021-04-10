@@ -12,6 +12,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ookii.Dialogs.Wpf;
+using RGB.NET.Core;
 using RGB.NET.Layout;
 using SkiaSharp;
 using Stylet;
@@ -42,14 +43,16 @@ namespace Artemis.UI.Screens.Settings.Device
 
             Device = device;
             PanZoomViewModel = new PanZoomViewModel();
+            SelectedLeds = new BindableCollection<ArtemisLed>();
 
             Items.Add(factory.DevicePropertiesTabViewModel(device));
+            if (device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
+                Items.Add(factory.InputMappingsTabViewModel(device));
             Items.Add(factory.DeviceInfoTabViewModel(device));
             Items.Add(factory.DeviceLedsTabViewModel(device));
+
             ActiveItem = Items.First();
             DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
-
-            SelectedLeds = new BindableCollection<ArtemisLed>();
         }
 
         public ArtemisDevice Device { get; }

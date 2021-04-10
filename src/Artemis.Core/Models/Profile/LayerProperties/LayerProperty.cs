@@ -34,7 +34,15 @@ namespace Artemis.Core
             CurrentValue = default!;
             DefaultValue = default!;
 
-            _baseValue = default!;
+            // We'll try our best...
+            // TODO: Consider alternatives
+            if (typeof(T).IsValueType)
+                _baseValue = default!;
+            else if (typeof(T).GetConstructor(Type.EmptyTypes) != null)
+                _baseValue = Activator.CreateInstance<T>();
+            else
+                _baseValue = default!;
+
             _keyframes = new List<LayerPropertyKeyframe<T>>();
         }
 

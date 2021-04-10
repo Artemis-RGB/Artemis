@@ -35,10 +35,9 @@ namespace Artemis.Core
             IsEnabled = true;
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
+            InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
 
-            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
-            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
-
+            UpdateLeds();
             ApplyKeyboardLayout();
             ApplyToEntity();
             CalculateRenderProperties();
@@ -52,12 +51,12 @@ namespace Artemis.Core
             DeviceProvider = deviceProvider;
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
+            InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
+
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
 
-            Leds = rgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
-            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
-
+            UpdateLeds();
             ApplyKeyboardLayout();
         }
 
@@ -109,6 +108,8 @@ namespace Artemis.Core
         ///     Gets a list of input identifiers associated with this device
         /// </summary>
         public List<ArtemisDeviceInputIdentifier> InputIdentifiers { get; }
+
+        public Dictionary<ArtemisLed, ArtemisLed> InputMappings { get; }
 
         /// <summary>
         ///     Gets or sets the X-position of the device
@@ -287,20 +288,27 @@ namespace Artemis.Core
         ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="Led" />
         /// </summary>
         /// <param name="led">The RGB.NET <see cref="Led" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
+        /// <param name="applyInputMapping">If <see langword="true"/>, LEDs mapped to different LEDs <see cref="InputMappings"/> are taken into consideration</param>
         /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
-        public ArtemisLed? GetLed(Led led)
+        public ArtemisLed? GetLed(Led led, bool applyInputMapping)
         {
-            return GetLed(led.Id);
+            return GetLed(led.Id, applyInputMapping);
         }
 
         /// <summary>
         ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="LedId" />
         /// </summary>
         /// <param name="ledId">The RGB.NET <see cref="LedId" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
+        /// <param name="applyInputMapping">If <see langword="true"/>, LEDs mapped to different LEDs <see cref="InputMappings"/> are taken into consideration</param>
         /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
-        public ArtemisLed? GetLed(LedId ledId)
+        public ArtemisLed? GetLed(LedId ledId, bool applyInputMapping)
         {
             LedIds.TryGetValue(ledId, out ArtemisLed? artemisLed);
+            if (artemisLed == null)
+                return null;
+
+            if (applyInputMapping && InputMappings.TryGetValue(artemisLed, out ArtemisLed? mappedLed))
+                return mappedLed;
             return artemisLed;
         }
 
@@ -339,13 +347,27 @@ namespace Artemis.Core
             if (layout.IsValid)
                 layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
 
-            Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
-            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+            UpdateLeds();
 
             Layout = layout;
             Layout.ApplyDevice(this);
             CalculateRenderProperties();
             OnDeviceUpdated();
+        }
+
+        private void UpdateLeds()
+        {
+            Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            InputMappings.Clear();
+            foreach (InputMappingEntity deviceEntityInputMapping in DeviceEntity.InputMappings)
+            {
+                ArtemisLed? original = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.OriginalLedId);
+                ArtemisLed? mapped = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.MappedLedId);
+                if (original != null && mapped != null)
+                    InputMappings.Add(original, mapped);
+            }
         }
 
         internal void ApplyToEntity()
@@ -362,6 +384,10 @@ namespace Artemis.Core
                     Identifier = identifier.Identifier
                 });
             }
+
+            DeviceEntity.InputMappings.Clear();
+            foreach (var (original, mapped) in InputMappings)
+                DeviceEntity.InputMappings.Add(new InputMappingEntity {OriginalLedId = (int) original.RgbLed.Id, MappedLedId = (int) mapped.RgbLed.Id});
         }
 
         internal void ApplyToRgbDevice()

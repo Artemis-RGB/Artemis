@@ -12,6 +12,14 @@ namespace Artemis.Core
         /// <summary>
         ///     Creates a new instance of the <see cref="IntRange" /> class
         /// </summary>
+        public IntRange()
+        {
+            _rand = new Random();
+        }
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="IntRange" /> class
+        /// </summary>
         /// <param name="start">The start value of the range</param>
         /// <param name="end">The end value of the range</param>
         public IntRange(int start, int end)

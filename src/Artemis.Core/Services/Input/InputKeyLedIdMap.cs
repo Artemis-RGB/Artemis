@@ -3,9 +3,15 @@ using RGB.NET.Core;
 
 namespace Artemis.Core.Services
 {
-    internal static class InputKeyUtilities
+    /// <summary>
+    ///     Utilities for mapping keys and buttons to LEDs
+    /// </summary>
+    public static class InputKeyUtilities
     {
-        internal static readonly Dictionary<KeyboardKey, LedId> KeyboardKeyLedIdMap = new()
+        /// <summary>
+        ///     A dictionary of mappings between <see cref="KeyboardKey" /> and <see cref="LedId" />
+        /// </summary>
+        public static readonly Dictionary<KeyboardKey, LedId> KeyboardKeyLedIdMap = new()
         {
             {KeyboardKey.None, LedId.Keyboard_Custom1},
             {KeyboardKey.Cancel, LedId.Keyboard_Custom2},
@@ -182,7 +188,10 @@ namespace Artemis.Core.Services
             {KeyboardKey.NumPadEnter, LedId.Keyboard_NumEnter}
         };
 
-        internal static readonly Dictionary<MouseButton, LedId> MouseButtonLedIdMap = new()
+        /// <summary>
+        ///     A dictionary of mappings between <see cref="MouseButton" /> and <see cref="LedId" />
+        /// </summary>
+        public static readonly Dictionary<MouseButton, LedId> MouseButtonLedIdMap = new()
         {
             {MouseButton.Left, LedId.Mouse1},
             {MouseButton.Middle, LedId.Mouse2},

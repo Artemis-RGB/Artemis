@@ -75,8 +75,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 ConstructorArgument argument = new(brushParameter.Name, layerBrush);
                 BrushConfigurationViewModel viewModel = (BrushConfigurationViewModel) layerBrush.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
 
-                _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel);
+                _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel, configurationViewModel);
                 _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
+                
+                // Save changes after the dialog closes
+                _profileEditorService.UpdateSelectedProfile();
             }
             catch (Exception e)
             {
@@ -102,8 +105,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 ConstructorArgument argument = new(effectParameter.Name, layerEffect);
                 EffectConfigurationViewModel viewModel = (EffectConfigurationViewModel) layerEffect.Descriptor.Provider.Plugin.Kernel.Get(configurationViewModel.Type, argument);
                 
-                _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel);
+                _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel, configurationViewModel);
                 _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
+                
+                // Save changes after the dialog closes
+                _profileEditorService.UpdateSelectedProfile();
             }
             catch (Exception e)
             {
