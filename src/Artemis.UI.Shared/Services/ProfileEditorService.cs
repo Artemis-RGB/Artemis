@@ -126,9 +126,16 @@ namespace Artemis.UI.Shared.Services
 
             // Stick to the main segment for any element that is not currently selected
             foreach (Folder folder in SelectedProfile.GetAllFolders())
+            {
+                folder.Enable();
                 folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
+            }
+
             foreach (Layer layer in SelectedProfile.GetAllLayers())
+            {
+                layer.Enable();
                 layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
+            }
 
             _doTick = true;
         }

@@ -241,7 +241,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             ((BindableCollection<TreeItemViewModel>) Items).Sort(i => i.ProfileElement.Order);
         }
 
-        public void EnableToggled()
+        public void SuspendedToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
         }

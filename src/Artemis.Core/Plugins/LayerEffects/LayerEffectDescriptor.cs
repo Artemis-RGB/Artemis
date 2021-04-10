@@ -74,7 +74,7 @@ namespace Artemis.Core.LayerEffects
             effect.EntityId = entity.Id;
             effect.Order = entity.Order;
             effect.Name = entity.Name;
-            effect.Enabled = entity.Enabled;
+            effect.Suspended = entity.Suspended;
             effect.Descriptor = this;
 
             effect.Initialize();
@@ -94,6 +94,9 @@ namespace Artemis.Core.LayerEffects
             };
             effect.Initialize();
             renderElement.ActivateLayerEffect(effect);
+
+            if (renderElement.ShouldBeEnabled)
+                effect.InternalEnable();
         }
     }
 }

@@ -16,9 +16,9 @@ namespace Artemis.Core
     /// </summary>
     public abstract class RenderProfileElement : ProfileElement
     {
-        private SKPath? _path;
         private SKRectI _bounds;
-        
+        private SKPath? _path;
+
         internal RenderProfileElement(Profile profile) : base(profile)
         {
             Timeline = new Timeline();
@@ -30,12 +30,25 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Gets a boolean indicating whether this render element and its layers/brushes are enabled
+        /// </summary>
+        public bool Enabled { get; protected set; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether this render element and its layers/brushes should be enabled
+        /// </summary>
+        public abstract bool ShouldBeEnabled { get; }
+
+        /// <summary>
         ///     Creates a list of all layer properties present on this render element
         /// </summary>
         /// <returns>A list of all layer properties present on this render element</returns>
         public abstract List<ILayerProperty> GetAllLayerProperties();
 
-        #region IDisposable
+        /// <summary>
+        ///     Occurs when a layer effect has been added or removed to this render element
+        /// </summary>
+        public event EventHandler? LayerEffectsUpdated;
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -48,8 +61,6 @@ namespace Artemis.Core
 
             base.Dispose(disposing);
         }
-
-        #endregion
 
         internal void LoadRenderElement()
         {
@@ -75,7 +86,7 @@ namespace Artemis.Core
                     ProviderId = layerEffect.Descriptor?.PlaceholderFor ?? layerEffect.ProviderId,
                     EffectType = layerEffect.GetEffectTypeName(),
                     Name = layerEffect.Name,
-                    Enabled = layerEffect.Enabled,
+                    Suspended = layerEffect.Suspended,
                     HasBeenRenamed = layerEffect.HasBeenRenamed,
                     Order = layerEffect.Order
                 };
@@ -90,6 +101,11 @@ namespace Artemis.Core
             // Timeline
             RenderElementEntity.Timeline = Timeline?.Entity;
             Timeline?.Save();
+        }
+
+        internal void OnLayerEffectsUpdated()
+        {
+            LayerEffectsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #region Timeline
@@ -160,7 +176,7 @@ namespace Artemis.Core
         #region Property group expansion
 
         internal List<string> ExpandedPropertyGroups;
-        
+
         /// <summary>
         ///     Determines whether the provided property group is expanded
         /// </summary>
@@ -188,6 +204,20 @@ namespace Artemis.Core
 
         #endregion
 
+        #region State
+
+        /// <summary>
+        ///     Enables the render element and its brushes and effects
+        /// </summary>
+        public abstract void Disable();
+
+        /// <summary>
+        ///     Disables the render element and its brushes and effects
+        /// </summary>
+        public abstract void Enable();
+
+        #endregion
+
         #region Effect management
 
         internal List<BaseLayerEffect> LayerEffectsList;
@@ -208,7 +238,7 @@ namespace Artemis.Core
             LayerEffectEntity entity = new()
             {
                 Id = Guid.NewGuid(),
-                Enabled = true,
+                Suspended = false,
                 Order = LayerEffects.Count + 1
             };
             descriptor.CreateInstance(this, entity);
@@ -338,6 +368,12 @@ namespace Artemis.Core
         /// </summary>
         public void UpdateDisplayCondition()
         {
+            if (Suspended)
+            {
+                DisplayConditionMet = false;
+                return;
+            }
+
             if (DisplayCondition == null)
             {
                 DisplayConditionMet = true;
@@ -378,20 +414,6 @@ namespace Artemis.Core
             }
 
             DisplayConditionMet = conditionMet;
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a layer effect has been added or removed to this render element
-        /// </summary>
-        public event EventHandler? LayerEffectsUpdated;
-
-        internal void OnLayerEffectsUpdated()
-        {
-            LayerEffectsUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

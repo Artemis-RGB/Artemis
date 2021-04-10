@@ -83,6 +83,11 @@ namespace Artemis.Core.LayerBrushes
         public virtual ILayerBrushPreset? DefaultPreset => Presets?.FirstOrDefault();
 
         /// <summary>
+        ///     Gets a boolean indicating whether the layer brush is enabled or not
+        /// </summary>
+        public bool Enabled { get; private set; }
+
+        /// <summary>
         ///     Gets or sets whether the brush supports transformations
         ///     <para>Note: RGB.NET brushes can never be transformed and setting this to true will throw an exception</para>
         /// </summary>
@@ -113,14 +118,6 @@ namespace Artemis.Core.LayerBrushes
         /// <param name="deltaTime">Seconds passed since last update</param>
         public abstract void Update(double deltaTime);
 
-        // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
-        // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
-        internal abstract void Initialize();
-
-        internal abstract void InternalRender(SKCanvas canvas, SKRect path, SKPaint paint);
-
-        #region IDisposable
-
         /// <summary>
         ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
         /// </summary>
@@ -137,14 +134,42 @@ namespace Artemis.Core.LayerBrushes
             }
         }
 
+        /// <summary>
+        ///     Enables the layer brush if it isn't already enabled
+        /// </summary>
+        internal void InternalEnable()
+        {
+            if (Enabled)
+                return;
+
+            EnableLayerBrush();
+            Enabled = true;
+        }
+
+        /// <summary>
+        ///     Disables the layer brush if it isn't already disabled
+        /// </summary>
+        internal void InternalDisable()
+        {
+            if (!Enabled)
+                return;
+
+            DisableLayerBrush();
+            Enabled = false;
+        }
+
+        // Not only is this needed to initialize properties on the layer brushes, it also prevents implementing anything
+        // but LayerBrush<T> and RgbNetLayerBrush<T> outside the core
+        internal abstract void Initialize();
+
+        internal abstract void InternalRender(SKCanvas canvas, SKRect path, SKPaint paint);
+
         /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
     }
 
     /// <summary>

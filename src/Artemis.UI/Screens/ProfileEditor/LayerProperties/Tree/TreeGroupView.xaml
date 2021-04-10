@@ -13,6 +13,7 @@
              d:DataContext="{d:DesignInstance local:TreeGroupViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <converters:PropertyTreeMarginConverter Length="20" x:Key="PropertyTreeMarginConverter" />
     </UserControl.Resources>
@@ -180,13 +181,13 @@
                         <StackPanel Grid.Column="5" Orientation="Horizontal">
                             <ToggleButton
                                 Style="{StaticResource MaterialDesignFlatToggleButton}"
-                                ToolTip="Toggle enabled state"
+                                ToolTip="Toggle suspended state"
                                 Width="18"
                                 Height="18"
-                                IsChecked="{Binding LayerPropertyGroup.LayerEffect.Enabled}"
+                                IsChecked="{Binding LayerPropertyGroup.LayerEffect.Suspended, Converter={StaticResource InverseBooleanConverter}}"
                                 VerticalAlignment="Center" Padding="-25"
                                 Margin="5 0"
-                                Command="{s:Action EnableToggled}">
+                                Command="{s:Action SuspendedToggled}">
                                 <materialDesign:PackIcon Kind="Eye" Height="13" Width="13" />
                             </ToggleButton>
                             <Button Style="{StaticResource MaterialDesignIconButton}"

@@ -71,6 +71,9 @@ namespace Artemis.Core.LayerBrushes
 
             layer.LayerBrush = brush;
             layer.OnLayerBrushUpdated();
+
+            if (layer.ShouldBeEnabled)
+                brush.InternalEnable();
         }
     }
 }

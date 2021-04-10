@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -35,7 +36,7 @@ namespace Artemis.Core
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
-            Enabled = true;
+            Suspended = false;
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -120,6 +121,9 @@ namespace Artemis.Core
         /// </summary>
         public LayerEntity LayerEntity { get; internal set; }
 
+        /// <inheritdoc />
+        public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet;
+
         internal override RenderElementEntity RenderElementEntity => LayerEntity;
 
         /// <inheritdoc />
@@ -192,7 +196,7 @@ namespace Artemis.Core
         {
             EntityId = LayerEntity.Id;
             Name = LayerEntity.Name;
-            Enabled = LayerEntity.Enabled;
+            Suspended = LayerEntity.Suspended;
             Order = LayerEntity.Order;
 
             ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
@@ -208,7 +212,7 @@ namespace Artemis.Core
             LayerEntity.Id = EntityId;
             LayerEntity.ParentId = Parent?.EntityId ?? new Guid();
             LayerEntity.Order = Order;
-            LayerEntity.Enabled = Enabled;
+            LayerEntity.Suspended = Suspended;
             LayerEntity.Name = Name;
             LayerEntity.ProfileId = Profile.EntityId;
             LayerEntity.ExpandedPropertyGroups.Clear();
@@ -262,11 +266,13 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            if (!Enabled)
-                return;
-
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
+
+            if (ShouldBeEnabled)
+                Enable();
+            else if (Timeline.IsFinished)
+                Disable();
         }
 
         /// <inheritdoc />
@@ -295,6 +301,36 @@ namespace Artemis.Core
             Timeline.ClearDelta();
         }
 
+        /// <inheritdoc />
+        public override void Enable()
+        {
+            if (Enabled)
+                return;
+
+            Debug.WriteLine($"Enabling {this}");
+
+            LayerBrush?.InternalEnable();
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalEnable();
+
+            Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            if (!Enabled)
+                return;
+
+            Debug.WriteLine($"Disabling {this}");
+
+            LayerBrush?.InternalDisable();
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            Enabled = false;
+        }
+
         private void ApplyTimeline(Timeline timeline)
         {
             if (timeline.Delta == TimeSpan.Zero)
@@ -308,7 +344,7 @@ namespace Artemis.Core
                 LayerBrush.Update(timeline.Delta.TotalSeconds);
             }
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
             {
                 baseLayerEffect.BaseProperties?.Update(timeline);
                 baseLayerEffect.Update(timeline.Delta.TotalSeconds);
@@ -387,7 +423,7 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                 baseLayerEffect.PreProcess(canvas, bounds, layerPaint);
 
             try
@@ -398,7 +434,7 @@ namespace Artemis.Core
                 canvas.ClipPath(renderPath);
                 LayerBrush.InternalRender(canvas, bounds, layerPaint);
 
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                     baseLayerEffect.PostProcess(canvas, bounds, layerPaint);
             }
 
