@@ -201,7 +201,7 @@ namespace Artemis.Core.Services
             bool foundLedId = InputKeyUtilities.KeyboardKeyLedIdMap.TryGetValue(e.Key, out LedId ledId);
             ArtemisLed? led = null;
             if (foundLedId && e.Device != null)
-                led = e.Device.GetLed(ledId);
+                led = e.Device.GetLed(ledId, true);
 
             // Create the UpDown event args because it can be used for every event
             ArtemisKeyboardKeyUpDownEventArgs eventArgs = new(e.Device, led, e.Key, keyboardModifierKey, e.IsDown);

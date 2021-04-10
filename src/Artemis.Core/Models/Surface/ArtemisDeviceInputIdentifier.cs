@@ -1,4 +1,5 @@
 ﻿using Artemis.Core.Services;
+using RGB.NET.Core;
 
 namespace Artemis.Core
 {
@@ -12,7 +13,7 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="inputProvider">The full type and namespace of the <see cref="Services.InputProvider" /> this identifier is used by</param>
         /// <param name="identifier">A value used to identify the device</param>
-        public ArtemisDeviceInputIdentifier(string inputProvider, object identifier)
+        internal ArtemisDeviceInputIdentifier(string inputProvider, object identifier)
         {
             InputProvider = inputProvider;
             Identifier = identifier;
@@ -27,5 +28,17 @@ namespace Artemis.Core
         ///     Gets or sets a value used to identify the device
         /// </summary>
         public object Identifier { get; set; }
+    }
+
+    public class ArtemisDeviceInputMapping
+    {
+        public ArtemisLed OriginalLed { get; }
+        public ArtemisLed MappedLed { get; }
+
+        internal ArtemisDeviceInputMapping(ArtemisLed originalLed, ArtemisLed mappedLed)
+        {
+            OriginalLed = originalLed;
+            MappedLed = mappedLed;
+        }
     }
 }

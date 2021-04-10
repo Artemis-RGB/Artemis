@@ -49,6 +49,7 @@ namespace Artemis.UI.Ninject.Factories
         DevicePropertiesTabViewModel DevicePropertiesTabViewModel(ArtemisDevice device);
         DeviceInfoTabViewModel DeviceInfoTabViewModel(ArtemisDevice device);
         DeviceLedsTabViewModel DeviceLedsTabViewModel(ArtemisDevice device);
+        InputMappingsTabViewModel InputMappingsTabViewModel(ArtemisDevice device);
     }
 
     public interface IProfileTreeVmFactory : IVmFactory

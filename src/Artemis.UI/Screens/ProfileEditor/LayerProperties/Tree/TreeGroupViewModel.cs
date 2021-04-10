@@ -77,6 +77,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
                 _layerBrushSettingsWindowVm = new LayerBrushSettingsWindowViewModel(viewModel, configurationViewModel);
                 _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
+                
+                // Save changes after the dialog closes
+                _profileEditorService.UpdateSelectedProfile();
             }
             catch (Exception e)
             {
@@ -104,6 +107,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 
                 _layerEffectSettingsWindowVm = new LayerEffectSettingsWindowViewModel(viewModel, configurationViewModel);
                 _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
+                
+                // Save changes after the dialog closes
+                _profileEditorService.UpdateSelectedProfile();
             }
             catch (Exception e)
             {

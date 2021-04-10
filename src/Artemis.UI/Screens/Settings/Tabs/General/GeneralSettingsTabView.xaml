@@ -72,17 +72,17 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Startup delay</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                Set the amount of seconds to wait before running Artemis with Windows. <LineBreak/>
+                                Set the amount of seconds to wait before running Artemis with Windows. <LineBreak />
                                 If some devices don't work because Artemis starts before the manufacturer's software, try increasing this value.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
-                                     Text="{Binding AutoRunDelay}" 
+                                     Text="{Binding AutoRunDelay}"
                                      IsEnabled="{Binding StartWithWindows}"
-                                     Width="100" 
+                                     Width="100"
                                      materialDesign:TextFieldAssist.SuffixText="sec"
-                                     materialDesign:HintAssist.IsFloating="false"/>
+                                     materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -103,13 +103,13 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}" 
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
                                       Width="100"
-                                      SelectedValue="{Binding SelectedColorScheme}" 
-                                      ItemsSource="{Binding ColorSchemes}" 
-                                      SelectedValuePath="Value" 
-                                      DisplayMemberPath="Description" 
-                                      materialDesign:HintAssist.IsFloating="false"/>
+                                      SelectedValue="{Binding SelectedColorScheme}"
+                                      ItemsSource="{Binding ColorSchemes}"
+                                      SelectedValuePath="Value"
+                                      DisplayMemberPath="Description"
+                                      materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -130,13 +130,13 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}" 
+                            <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
                                       Width="100"
                                       SelectedValue="{Binding SelectedLogLevel}"
                                       ItemsSource="{Binding LogLevels}"
-                                      SelectedValuePath="Value" 
+                                      SelectedValuePath="Value"
                                       DisplayMemberPath="Description"
-                                      materialDesign:HintAssist.IsFloating="false"/>
+                                      materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -187,7 +187,7 @@
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <TextBox Style="{StaticResource MaterialDesignFilledTextBox}" Text="{Binding WebServerPortSetting.Value}" Width="100"
-                                     materialDesign:HintAssist.IsFloating="false"/>
+                                     materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
@@ -343,7 +343,7 @@
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
                                       Width="100"
-                                      SelectedItem="{Binding PreferredGraphicsContext}" 
+                                      SelectedItem="{Binding PreferredGraphicsContext}"
                                       materialDesign:HintAssist.IsFloating="false">
                                 <system:String>Software</system:String>
                                 <system:String>Vulkan</system:String>
@@ -364,16 +364,17 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Render scale</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces.
+                                Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces. <LineBreak />
+                                <Run Foreground="GoldenRod">A scale of 25% may be required for very large surfaces but could cause LED dimming or bleeding.</Run>
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
                             <ComboBox Style="{StaticResource MaterialDesignFilledComboBox}"
                                       Width="100"
-                                      SelectedItem="{Binding SelectedRenderScale}" 
-                                      ItemsSource="{Binding RenderScales}" 
+                                      SelectedItem="{Binding SelectedRenderScale}"
+                                      ItemsSource="{Binding RenderScales}"
                                       DisplayMemberPath="Item1"
-                                      materialDesign:HintAssist.IsFloating="false"/>
+                                      materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                     <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
@@ -399,7 +400,7 @@
                                       SelectedItem="{Binding SelectedTargetFrameRate}"
                                       ItemsSource="{Binding TargetFrameRates}"
                                       DisplayMemberPath="Item1"
-                                      materialDesign:HintAssist.IsFloating="false"/>
+                                      materialDesign:HintAssist.IsFloating="false" />
                         </StackPanel>
                     </Grid>
                 </StackPanel>
