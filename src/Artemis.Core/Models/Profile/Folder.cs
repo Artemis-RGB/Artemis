@@ -180,7 +180,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             // Ensure the folder is ready
-            if (!Enabled || Suspended || Path == null)
+            if (!Enabled || Path == null)
                 return;
 
             // No point rendering if all children are disabled
