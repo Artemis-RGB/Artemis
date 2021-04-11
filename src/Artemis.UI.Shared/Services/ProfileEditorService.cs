@@ -130,7 +130,7 @@ namespace Artemis.UI.Shared.Services
 
         private void TickProfileElement(ProfileElement profileElement)
         {
-            if (profileElement is not RenderProfileElement renderElement) 
+            if (profileElement is not RenderProfileElement renderElement)
                 return;
 
             if (renderElement.Suspended)
@@ -138,12 +138,12 @@ namespace Artemis.UI.Shared.Services
             else
             {
                 renderElement.Enable();
-                if (renderElement is Folder)
-                    renderElement.Timeline.Override(CurrentTime, renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat);
-                else
-                    renderElement.Timeline.Override(CurrentTime, (renderElement != SelectedProfileElement || renderElement.Timeline.Length < CurrentTime) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat);
+                renderElement.Timeline.Override(
+                    CurrentTime,
+                    (renderElement != SelectedProfileElement || renderElement.Timeline.Length < CurrentTime) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat
+                );
 
-                foreach (ProfileElement child in renderElement.Children) 
+                foreach (ProfileElement child in renderElement.Children)
                     TickProfileElement(child);
             }
         }
