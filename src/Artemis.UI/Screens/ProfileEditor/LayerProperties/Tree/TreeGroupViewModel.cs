@@ -145,7 +145,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             _profileEditorService.UpdateSelectedProfile();
         }
 
-        public void EnableToggled()
+        public void SuspendedToggled()
         {
             _profileEditorService.UpdateSelectedProfile();
         }

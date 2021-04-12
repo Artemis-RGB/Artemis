@@ -16,16 +16,16 @@ namespace Artemis.Storage.Migrations
             {
                 foreach (FolderEntity profileEntityFolder in profileEntity.Folders)
                 {
-                    profileEntityFolder.Enabled = true;
+                    profileEntityFolder.Suspended = false;
                     foreach (LayerEffectEntity layerEffectEntity in profileEntityFolder.LayerEffects)
-                        layerEffectEntity.Enabled = true;
+                        layerEffectEntity.Suspended = false;
                 }
 
                 foreach (LayerEntity profileEntityLayer in profileEntity.Layers)
                 {
-                    profileEntityLayer.Enabled = true;
+                    profileEntityLayer.Suspended = false;
                     foreach (LayerEffectEntity layerEffectEntity in profileEntityLayer.LayerEffects)
-                        layerEffectEntity.Enabled = true;
+                        layerEffectEntity.Suspended = false;
                 }
 
                 repository.Upsert(profileEntity);

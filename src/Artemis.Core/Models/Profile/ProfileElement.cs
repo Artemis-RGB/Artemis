@@ -11,7 +11,7 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ProfileElement : CorePropertyChanged, IDisposable
     {
-        private bool _enabled;
+        private bool _suspended;
         private Guid _entityId;
         private string? _name;
         private int _order;
@@ -87,12 +87,12 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets the enabled state, if not enabled the element is skipped in render and update
+        ///     Gets or sets the suspended state, if suspended the element is skipped in render and update
         /// </summary>
-        public bool Enabled
+        public bool Suspended
         {
-            get => _enabled;
-            set => SetAndNotify(ref _enabled, value);
+            get => _suspended;
+            set => SetAndNotify(ref _suspended, value);
         }
 
         /// <summary>

@@ -196,7 +196,7 @@ namespace Artemis.Core
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
         }
-
+        
         internal void Activate(IEnumerable<ArtemisDevice> devices)
         {
             lock (_lock)

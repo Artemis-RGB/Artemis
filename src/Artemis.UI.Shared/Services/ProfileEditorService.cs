@@ -124,13 +124,28 @@ namespace Artemis.UI.Shared.Services
             if (SelectedProfile == null || _doTick)
                 return;
 
-            // Stick to the main segment for any element that is not currently selected
-            foreach (Folder folder in SelectedProfile.GetAllFolders())
-                folder.Timeline.Override(CurrentTime, folder.Timeline.PlayMode == TimelinePlayMode.Repeat);
-            foreach (Layer layer in SelectedProfile.GetAllLayers())
-                layer.Timeline.Override(CurrentTime, (layer != SelectedProfileElement || layer.Timeline.Length < CurrentTime) && layer.Timeline.PlayMode == TimelinePlayMode.Repeat);
-
+            TickProfileElement(SelectedProfile.GetRootFolder());
             _doTick = true;
+        }
+
+        private void TickProfileElement(ProfileElement profileElement)
+        {
+            if (profileElement is not RenderProfileElement renderElement)
+                return;
+
+            if (renderElement.Suspended)
+                renderElement.Disable();
+            else
+            {
+                renderElement.Enable();
+                renderElement.Timeline.Override(
+                    CurrentTime,
+                    (renderElement != SelectedProfileElement || renderElement.Timeline.Length < CurrentTime) && renderElement.Timeline.PlayMode == TimelinePlayMode.Repeat
+                );
+
+                foreach (ProfileElement child in renderElement.Children)
+                    TickProfileElement(child);
+            }
         }
 
         private void SelectedProfileOnDeactivated(object? sender, EventArgs e)

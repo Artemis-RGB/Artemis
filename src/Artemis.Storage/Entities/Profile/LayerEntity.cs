@@ -17,7 +17,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public int Order { get; set; }
         public string Name { get; set; }
-        public bool Enabled { get; set; }
+        public bool Suspended { get; set; }
 
         public List<LedEntity> Leds { get; set; }
 

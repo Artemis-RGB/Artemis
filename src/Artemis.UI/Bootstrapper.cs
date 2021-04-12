@@ -48,7 +48,14 @@ namespace Artemis.UI
                 return;
             }
 
-            try { DPIAwareness.Initalize(); } catch (Exception ex) { logger.Error($"Failed to set DPI-Awareness: {ex.Message}"); }
+            try
+            {
+                DPIAwareness.Initalize();
+            }
+            catch (Exception ex)
+            {
+                logger.Error($"Failed to set DPI-Awareness: {ex.Message}");
+            }
 
             IViewManager viewManager = Kernel.Get<IViewManager>();
             StartupArguments = Args.ToList();
@@ -71,7 +78,7 @@ namespace Artemis.UI
             Execute.OnUIThreadSync(() =>
             {
                 UIElement view = viewManager.CreateAndBindViewForModelIfNecessary(RootViewModel);
-                ((TrayViewModel)RootViewModel).SetTaskbarIcon(view);
+                ((TrayViewModel) RootViewModel).SetTaskbarIcon(view);
             });
 
             // Initialize the core async so the UI can show the progress
@@ -136,15 +143,9 @@ namespace Artemis.UI
         private void HandleFatalException(Exception e, ILogger logger)
         {
             logger.Fatal(e, "Fatal exception during initialization, shutting down.");
-
-            // Can't use a pretty exception dialog here since the UI might not even be visible
             Execute.OnUIThread(() =>
             {
-                Kernel.Get<IWindowManager>().ShowMessageBox(e.Message + "\n\n Please refer the log file for more details.",
-                    "Fatal exception during initialization",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error
-                );
+                _applicationStateManager.DisplayException(e);
                 Environment.Exit(1);
             });
         }

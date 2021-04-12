@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
@@ -27,7 +28,6 @@ namespace Artemis.Core
             Parent = parent ?? throw new ArgumentNullException(nameof(parent));
             Profile = Parent.Profile;
             Name = name;
-            Enabled = true;
 
             Parent.AddChild(this);
         }
@@ -46,7 +46,7 @@ namespace Artemis.Core
             Profile = profile;
             Parent = parent;
             Name = folderEntity.Name;
-            Enabled = folderEntity.Enabled;
+            Suspended = folderEntity.Suspended;
             Order = folderEntity.Order;
 
             Load();
@@ -61,6 +61,9 @@ namespace Artemis.Core
         ///     Gets the folder entity this folder uses for persistent storage
         /// </summary>
         public FolderEntity FolderEntity { get; internal set; }
+
+        /// <inheritdoc />
+        public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet && !Timeline.IsFinished;
 
         internal override RenderElementEntity RenderElementEntity => FolderEntity;
 
@@ -81,11 +84,13 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Folder");
 
-            if (!Enabled)
-                return;
-
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
+
+            if (ShouldBeEnabled)
+                Enable();
+            else if (Timeline.IsFinished)
+                Disable();
 
             foreach (ProfileElement child in Children)
                 child.Update(deltaTime);
@@ -175,16 +180,16 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Folder");
 
             // Ensure the folder is ready
-            if (!Enabled || !Children.Any(c => c.Enabled) || Path == null)
+            if (!Enabled || Path == null)
                 return;
 
-            // No point rendering if none of the children are going to render
-            if (!Children.Any(c => c is RenderProfileElement renderElement && !renderElement.Timeline.IsFinished))
+            // No point rendering if all children are disabled
+            if (!Children.Any(c => c is RenderProfileElement {Enabled: true}))
                 return;
 
             lock (Timeline)
             {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                 {
                     baseLayerEffect.BaseProperties?.Update(Timeline);
                     baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
@@ -194,7 +199,7 @@ namespace Artemis.Core
                 try
                 {
                     SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                         baseLayerEffect.PreProcess(canvas, rendererBounds, layerPaint);
 
                     canvas.SaveLayer(layerPaint);
@@ -215,7 +220,7 @@ namespace Artemis.Core
                     for (int index = Children.Count - 1; index > -1; index--)
                         Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
 
-                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.Enabled))
+                    foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                         baseLayerEffect.PostProcess(canvas, rendererBounds, layerPaint);
                 }
                 finally
@@ -270,13 +275,53 @@ namespace Artemis.Core
 
             FolderEntity.Order = Order;
             FolderEntity.Name = Name;
-            FolderEntity.Enabled = Enabled;
+            FolderEntity.Suspended = Suspended;
 
             FolderEntity.ProfileId = Profile.EntityId;
             FolderEntity.ExpandedPropertyGroups.Clear();
             FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
 
             SaveRenderElement();
+        }
+
+        /// <inheritdoc />
+        public override void Enable()
+        {
+            if (Enabled)
+                return;
+
+            Debug.WriteLine($"Enabling {this}");
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalEnable();
+
+            foreach (ProfileElement profileElement in Children)
+            {
+                if (profileElement is RenderProfileElement renderProfileElement && renderProfileElement.ShouldBeEnabled)
+                    renderProfileElement.Enable();
+            }
+
+            Enabled = true;
+        }
+
+        /// <inheritdoc />
+        public override void Disable()
+        {
+            if (!Enabled)
+                return;
+
+            Debug.WriteLine($"Disabled {this}");
+
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                baseLayerEffect.InternalDisable();
+
+            foreach (ProfileElement profileElement in Children)
+            {
+                if (profileElement is RenderProfileElement renderProfileElement)
+                    renderProfileElement.Disable();
+            }
+
+            Enabled = false;
         }
 
         #region Events

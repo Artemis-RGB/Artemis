@@ -4,13 +4,16 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Core;
+using Artemis.UI.Screens;
 using Artemis.UI.Utilities;
 using Ninject;
+using Ookii.Dialogs.Wpf;
 using Stylet;
 
 namespace Artemis.UI
@@ -126,6 +129,49 @@ namespace Artemis.UI
             Process.Start(info);
 
             Execute.OnUIThread(() => Application.Current.Shutdown());
+        }
+
+        public void DisplayException(Exception e)
+        {
+            using TaskDialog dialog = new();
+            AssemblyInformationalVersionAttribute versionAttribute = typeof(ApplicationStateManager).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            dialog.WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+            dialog.MainInstruction = "Unfortunately Artemis ran into an unhandled exception and cannot continue.";
+            dialog.Content = e.Message;
+            dialog.ExpandedInformation = e.StackTrace.Trim();
+
+            dialog.CollapsedControlText = "Show stack trace";
+            dialog.ExpandedControlText = "Hide stack trace";
+
+            dialog.Footer = "If this keeps happening check out the <a href=\"https://wiki.artemis-rgb.com\">wiki</a> or hit us up on <a href=\"https://discord.gg/S3MVaC9\">Discord</a>.";
+            dialog.FooterIcon = TaskDialogIcon.Error;
+            dialog.EnableHyperlinks = true;
+            dialog.HyperlinkClicked += OpenHyperlink;
+
+            TaskDialogButton copyButton = new("Copy stack trace");
+            TaskDialogButton closeButton = new("Close") {Default = true};
+            dialog.Buttons.Add(copyButton);
+            dialog.Buttons.Add(closeButton);
+            dialog.ButtonClicked += (_, args) =>
+            {
+                if (args.Item == copyButton)
+                {
+                    Clipboard.SetText(e.ToString());
+                    args.Cancel = true;
+                }
+            };
+
+            dialog.ShowDialog(Application.Current.MainWindow);
+        }
+
+        private void OpenHyperlink(object sender, HyperlinkClickedEventArgs e)
+        {
+            ProcessStartInfo processInfo = new()
+            {
+                FileName = e.Href,
+                UseShellExecute = true
+            };
+            Process.Start(processInfo);
         }
     }
 }

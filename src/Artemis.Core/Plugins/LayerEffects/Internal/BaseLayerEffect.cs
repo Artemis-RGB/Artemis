@@ -11,7 +11,7 @@ namespace Artemis.Core.LayerEffects
     {
         private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
-        private bool _enabled;
+        private bool _suspended;
         private Guid _entityId;
         private bool _hasBeenRenamed;
         private string _name;
@@ -55,12 +55,12 @@ namespace Artemis.Core.LayerEffects
         }
 
         /// <summary>
-        ///     Gets or sets the enabled state, if not enabled the effect is skipped in render and update
+        ///     Gets or sets the suspended state, if suspended the effect is skipped in render and update
         /// </summary>
-        public bool Enabled
+        public bool Suspended
         {
-            get => _enabled;
-            set => SetAndNotify(ref _enabled, value);
+            get => _suspended;
+            set => SetAndNotify(ref _suspended, value);
         }
 
         /// <summary>
@@ -111,6 +111,11 @@ namespace Artemis.Core.LayerEffects
         public virtual LayerPropertyGroup? BaseProperties => null;
 
         internal string PropertyRootPath => $"LayerEffect.{EntityId}.{GetType().Name}.";
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the layer effect is enabled or not
+        /// </summary>
+        public bool Enabled { get; private set; }
 
         #region IDisposable
 
@@ -176,5 +181,29 @@ namespace Artemis.Core.LayerEffects
         internal abstract void Initialize();
 
         internal virtual string GetEffectTypeName() => GetType().Name;
+
+        /// <summary>
+        ///     Enables the layer effect if it isn't already enabled
+        /// </summary>
+        internal void InternalEnable()
+        {
+            if (Enabled)
+                return;
+
+            EnableLayerEffect();
+            Enabled = true;
+        }
+
+        /// <summary>
+        ///     Disables the layer effect if it isn't already disabled
+        /// </summary>
+        internal void InternalDisable()
+        {
+            if (!Enabled)
+                return;
+
+            DisableLayerEffect();
+            Enabled = false;
+        }
     }
 }

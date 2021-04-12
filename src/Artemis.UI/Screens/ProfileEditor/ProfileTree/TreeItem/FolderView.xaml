@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.FolderView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -6,9 +6,13 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:treeItem1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
+             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.FolderView"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type treeItem1:FolderViewModel}}">
+    <UserControl.Resources>
+        <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </UserControl.Resources>
     <!-- Capture clicks on full tree view item -->
     <StackPanel Margin="-10" Background="Transparent" ContextMenuOpening="{s:Action ContextMenuOpening}">
         <StackPanel.ContextMenu>
@@ -67,11 +71,11 @@
             <TextBlock Grid.Column="1" Text="{Binding ProfileElement.Name}" Margin="10 0 0 0" VerticalAlignment="Center" />
             <ToggleButton Grid.Column="2"
                           Style="{StaticResource MaterialDesignFlatToggleButton}"
-                          ToolTip="Toggle enabled state"
+                          ToolTip="Toggle suspended state"
                           Width="18"
                           Height="18"
-                          IsChecked="{Binding ProfileElement.Enabled}"
-                          Command="{s:Action EnableToggled}"
+                          IsChecked="{Binding ProfileElement.Suspended, Converter={StaticResource InverseBooleanConverter}}"
+                          Command="{s:Action SuspendedToggled}"
                           VerticalAlignment="Center" Padding="-25">
                 <materialDesign:PackIcon Kind="Eye" Height="13" Width="13" />
             </ToggleButton>

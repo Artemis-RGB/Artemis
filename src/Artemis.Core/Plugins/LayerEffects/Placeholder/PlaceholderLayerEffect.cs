@@ -16,7 +16,7 @@ namespace Artemis.Core.LayerEffects.Placeholder
             EntityId = OriginalEntity.Id;
             Order = OriginalEntity.Order;
             Name = OriginalEntity.Name;
-            Enabled = OriginalEntity.Enabled;
+            Suspended = OriginalEntity.Suspended;
             HasBeenRenamed = OriginalEntity.HasBeenRenamed;
         }
 
