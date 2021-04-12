@@ -108,6 +108,8 @@
                         </Grid.Style>
                         <shared:ArtemisIcon Grid.Column="0"
                                             Icon="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Icon}"
+                                            Width="16"
+                                            Height="16"
                                             Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
                                    ToolTip="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Description}"
@@ -156,6 +158,8 @@
                             Grid.Column="0"
                             Cursor="SizeNS"
                             Icon="{Binding LayerPropertyGroup.LayerEffect.Descriptor.Icon}"
+                            Width="16"
+                            Height="16"
                             Margin="0 5 5 0"
                             Background="Transparent" />
                         <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5 0 0">

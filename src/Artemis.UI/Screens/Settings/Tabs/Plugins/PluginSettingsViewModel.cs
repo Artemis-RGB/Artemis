@@ -171,7 +171,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
                 try
                 {
-                    await Task.Run(() => _pluginManagementService.EnablePlugin(Plugin, true));
+                    await Task.Run(() => _pluginManagementService.EnablePlugin(Plugin, true, true));
                 }
                 catch (Exception e)
                 {
