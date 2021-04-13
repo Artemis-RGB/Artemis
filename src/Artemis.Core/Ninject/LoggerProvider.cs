@@ -16,7 +16,10 @@ namespace Artemis.Core.Ninject
             .WriteTo.File(Constants.DataFolder + "logs/Artemis log-.log",
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
+            .WriteTo.Console()
+#if DEBUG
             .WriteTo.Debug()
+#endif
             .WriteTo.Sink<ArtemisSink>()
             .MinimumLevel.ControlledBy(LoggingLevelSwitch)
             .CreateLogger();
