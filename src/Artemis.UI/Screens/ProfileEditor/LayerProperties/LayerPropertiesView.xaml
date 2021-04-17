@@ -317,12 +317,12 @@
                             Margin="6"
                             Visibility="{Binding SelectedLayer, Converter={StaticResource NullToVisibilityConverter}}">
                     <materialDesign:PackIcon Kind="Layers" Width="16" />
-                    <materialDesign:PackIcon Kind="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
-                                             Width="16"
-                                             Margin="5 0 0 0"
-                                             ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
-                                             Background="Transparent"
-                                             Visibility="{Binding SelectedLayer.LayerBrush, Converter={StaticResource NullToVisibilityConverter}}" />
+                    <shared:ArtemisIcon Icon="{Binding SelectedLayer.LayerBrush.Descriptor.Icon}"
+                                        Width="16"
+                                        Margin="5 0 0 0"
+                                        ToolTip="{Binding SelectedLayer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                        Background="Transparent"
+                                        Visibility="{Binding SelectedLayer.LayerBrush, Converter={StaticResource NullToVisibilityConverter}}" />
                     <TextBlock Text="{Binding SelectedLayer.Name}" Margin="5 0 0 0" />
                 </StackPanel>
                 <StackPanel Grid.Column="0"

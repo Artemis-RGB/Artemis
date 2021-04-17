@@ -1,9 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared">
     <DataTemplate x:Key="SimpleLayerBrushDescriptorTemplate">
         <StackPanel Orientation="Horizontal">
-            <materialDesign:PackIcon Kind="{Binding Icon}" Height="13" Width="13" Margin="0 1 3 0" />
+            <shared:ArtemisIcon Icon="{Binding Icon}" Height="13" Width="13" Margin="0 1 3 0" />
             <TextBlock Text="{Binding DisplayName}" />
         </StackPanel>
     </DataTemplate>
@@ -17,7 +18,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
-            <materialDesign:PackIcon Grid.Row="0" Grid.RowSpan="2" Kind="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center" />
+            <shared:ArtemisIcon Grid.Row="0" Grid.RowSpan="2" Icon="{Binding Icon}" Height="20" Width="20" Margin="-5 -2 10 0" VerticalAlignment="Center" />
             <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DisplayName}" TextWrapping="Wrap" MaxWidth="350" />
             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" MaxWidth="350" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
         </Grid>

@@ -9,11 +9,12 @@
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
              xmlns:dd="urn:gong-wpf-dragdrop"
              xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance local:TreeGroupViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <converters:PropertyTreeMarginConverter Length="20" x:Key="PropertyTreeMarginConverter" />
     </UserControl.Resources>
@@ -105,9 +106,11 @@
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
-                        <materialDesign:PackIcon Grid.Column="0"
-                                                 Kind="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Icon}"
-                                                 Margin="0 5 5 0" />
+                        <shared:ArtemisIcon Grid.Column="0"
+                                            Icon="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Icon}"
+                                            Width="16"
+                                            Height="16"
+                                            Margin="0 5 5 0" />
                         <TextBlock Grid.Column="1"
                                    ToolTip="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Description}"
                                    Margin="0 5 0 0">
@@ -151,10 +154,12 @@
                                 </Style.Triggers>
                             </Style>
                         </Grid.Style>
-                        <materialDesign:PackIcon
+                        <shared:ArtemisIcon
                             Grid.Column="0"
                             Cursor="SizeNS"
-                            Kind="{Binding LayerPropertyGroup.LayerEffect.Descriptor.Icon}"
+                            Icon="{Binding LayerPropertyGroup.LayerEffect.Descriptor.Icon}"
+                            Width="16"
+                            Height="16"
                             Margin="0 5 5 0"
                             Background="Transparent" />
                         <TextBlock Grid.Column="1" ToolTip="{Binding LayerPropertyGroup.LayerEffect.Descriptor.Description}" Margin="0 5 0 0">

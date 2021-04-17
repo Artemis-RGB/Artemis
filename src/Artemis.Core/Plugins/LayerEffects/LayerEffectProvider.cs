@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 
 namespace Artemis.Core.LayerEffects
 {
@@ -33,14 +34,16 @@ namespace Artemis.Core.LayerEffects
         /// <param name="displayName">The name to display in the UI</param>
         /// <param name="description">The description to display in the UI</param>
         /// <param name="icon">
-        ///     The Material icon to display in the UI, a full reference can be found
-        ///     <see href="https://materialdesignicons.com">here</see>
+        ///     The Material icon to display in the UI, a full reference can be found <see href="https://materialdesignicons.com">here</see>.
+        ///     <para>May also be a path to an SVG file relative to the directory of the plugin.</para>
         /// </param>
         protected void RegisterLayerEffectDescriptor<T>(string displayName, string description, string icon) where T : BaseLayerEffect
         {
             if (!IsEnabled)
                 throw new ArtemisPluginFeatureException(this, "Can only add a layer effect descriptor when the plugin is enabled");
 
+            if (icon.ToLower().EndsWith(".svg"))
+                icon = Plugin.ResolveRelativePath(icon);
             LayerEffectDescriptor descriptor = new(displayName, description, icon, typeof(T), this);
             _layerEffectDescriptors.Add(descriptor);
             LayerEffectStore.Add(descriptor);

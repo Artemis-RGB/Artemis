@@ -330,14 +330,15 @@ namespace Artemis.UI.Shared
 
         private void Render()
         {
-            DrawingContext drawingContext = _backingStore.Open();
+            DrawingContext drawingContext = _backingStore.Append();
+            // DrawingContext drawingContext = _backingStore.Open();
 
             if (HighlightedLeds != null && HighlightedLeds.Any())
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
             else
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(drawingContext, false);
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
 
             drawingContext.Close();
         }

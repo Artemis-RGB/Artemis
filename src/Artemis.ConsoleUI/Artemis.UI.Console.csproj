@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <TargetFramework>net5.0</TargetFramework>
+        <Platforms>x64</Platforms>
+        <AssemblyName>Artemis.UI.Console</AssemblyName>
+        <RootNamespace>Artemis.UI.Console</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Artemis.Core\Artemis.Core.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Humanizer.Core" Version="2.8.26" />
+        <PackageReference Include="Ninject" Version="3.3.4" />
+        <PackageReference Include="Ninject.Extensions.Conventions" Version="3.3.0" />
+        <PackageReference Include="Serilog" Version="2.10.0" />
+        <PackageReference Include="System.Buffers" Version="4.5.1" />
+        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+        <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+        <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+    </ItemGroup>
+
+</Project>

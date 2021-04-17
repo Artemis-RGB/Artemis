@@ -109,6 +109,9 @@ namespace Artemis.Core
         /// </summary>
         public List<ArtemisDeviceInputIdentifier> InputIdentifiers { get; }
 
+        /// <summary>
+        ///     Gets a list of input mappings configured on the device
+        /// </summary>
         public Dictionary<ArtemisLed, ArtemisLed> InputMappings { get; }
 
         /// <summary>
@@ -288,7 +291,10 @@ namespace Artemis.Core
         ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="Led" />
         /// </summary>
         /// <param name="led">The RGB.NET <see cref="Led" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
-        /// <param name="applyInputMapping">If <see langword="true"/>, LEDs mapped to different LEDs <see cref="InputMappings"/> are taken into consideration</param>
+        /// <param name="applyInputMapping">
+        ///     If <see langword="true" />, LEDs mapped to different LEDs <see cref="InputMappings" />
+        ///     are taken into consideration
+        /// </param>
         /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
         public ArtemisLed? GetLed(Led led, bool applyInputMapping)
         {
@@ -299,7 +305,10 @@ namespace Artemis.Core
         ///     Attempts to retrieve the <see cref="ArtemisLed" /> that corresponds the provided RGB.NET <see cref="LedId" />
         /// </summary>
         /// <param name="ledId">The RGB.NET <see cref="LedId" /> to find the corresponding <see cref="ArtemisLed" /> for </param>
-        /// <param name="applyInputMapping">If <see langword="true"/>, LEDs mapped to different LEDs <see cref="InputMappings"/> are taken into consideration</param>
+        /// <param name="applyInputMapping">
+        ///     If <see langword="true" />, LEDs mapped to different LEDs <see cref="InputMappings" />
+        ///     are taken into consideration
+        /// </param>
         /// <returns>If found, the corresponding <see cref="ArtemisLed" />; otherwise <see langword="null" />.</returns>
         public ArtemisLed? GetLed(LedId ledId, bool applyInputMapping)
         {
@@ -330,11 +339,30 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Occurs when the underlying RGB.NET device was updated
+        /// </summary>
+        public event EventHandler? DeviceUpdated;
+
+        /// <summary>
+        ///     Invokes the <see cref="DeviceUpdated" /> event
+        /// </summary>
+        protected virtual void OnDeviceUpdated()
+        {
+            DeviceUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
         ///     Applies the provided layout to the device
         /// </summary>
         /// <param name="layout">The layout to apply</param>
-        /// <param name="createMissingLeds">A boolean indicating whether to add missing LEDs defined in the layout but missing on the device</param>
-        /// <param name="removeExcessiveLeds">A boolean indicating whether to remove excess LEDs present in the device but missing in the layout</param>
+        /// <param name="createMissingLeds">
+        ///     A boolean indicating whether to add missing LEDs defined in the layout but missing on
+        ///     the device
+        /// </param>
+        /// <param name="removeExcessiveLeds">
+        ///     A boolean indicating whether to remove excess LEDs present in the device but missing
+        ///     in the layout
+        /// </param>
         internal void ApplyLayout(ArtemisLayout layout, bool createMissingLeds, bool removeExcessiveLeds)
         {
             if (createMissingLeds && !DeviceProvider.CreateMissingLedsSupported)
@@ -353,21 +381,6 @@ namespace Artemis.Core
             Layout.ApplyDevice(this);
             CalculateRenderProperties();
             OnDeviceUpdated();
-        }
-
-        private void UpdateLeds()
-        {
-            Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
-            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
-
-            InputMappings.Clear();
-            foreach (InputMappingEntity deviceEntityInputMapping in DeviceEntity.InputMappings)
-            {
-                ArtemisLed? original = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.OriginalLedId);
-                ArtemisLed? mapped = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.MappedLedId);
-                if (original != null && mapped != null)
-                    InputMappings.Add(original, mapped);
-            }
         }
 
         internal void ApplyToEntity()
@@ -427,6 +440,21 @@ namespace Artemis.Core
             Path = path;
         }
 
+        private void UpdateLeds()
+        {
+            Leds = RgbDevice.Select(l => new ArtemisLed(l, this)).ToList().AsReadOnly();
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(Leds.ToDictionary(l => l.RgbLed.Id, l => l));
+
+            InputMappings.Clear();
+            foreach (InputMappingEntity deviceEntityInputMapping in DeviceEntity.InputMappings)
+            {
+                ArtemisLed? original = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.OriginalLedId);
+                ArtemisLed? mapped = Leds.FirstOrDefault(l => l.RgbLed.Id == (LedId) deviceEntityInputMapping.MappedLedId);
+                if (original != null && mapped != null)
+                    InputMappings.Add(original, mapped);
+            }
+        }
+
         private void ApplyKeyboardLayout()
         {
             if (RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard)
@@ -443,22 +471,5 @@ namespace Artemis.Core
             else
                 LogicalLayout = DeviceEntity.LogicalLayout;
         }
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the underlying RGB.NET device was updated
-        /// </summary>
-        public event EventHandler? DeviceUpdated;
-
-        /// <summary>
-        ///     Invokes the <see cref="DeviceUpdated" /> event
-        /// </summary>
-        protected virtual void OnDeviceUpdated()
-        {
-            DeviceUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
     }
 }

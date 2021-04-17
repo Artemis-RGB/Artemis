@@ -7,6 +7,7 @@
                          xmlns:s="https://github.com/canton7/Stylet"
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                          xmlns:windows="clr-namespace:Artemis.UI.Screens.ProfileEditor.Windows"
+                         xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                          mc:Ignorable="d"
                          Title="Layer effect configuration"
                          Background="{DynamicResource MaterialDesignPaper}"
@@ -23,7 +24,7 @@
     <DockPanel>
         <controls:AppBar Type="Dense" Title="{Binding ActiveItem.LayerEffect.Descriptor.DisplayName}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
             <controls:AppBar.AppIcon>
-                <materialDesign:PackIcon Kind="{Binding ActiveItem.LayerEffect.Descriptor.Icon}" Width="20" Height="28" />
+                <shared:ArtemisIcon Icon="{Binding ActiveItem.LayerEffect.Descriptor.Icon}" Width="20" Height="28" />
             </controls:AppBar.AppIcon>
         </controls:AppBar>
 

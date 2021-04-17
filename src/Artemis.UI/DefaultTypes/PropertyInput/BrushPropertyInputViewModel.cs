@@ -55,7 +55,7 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
                     Execute.PostToUIThread(async () =>
                     {
                         await Task.Delay(400);
-                        _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
+                        await _dialogService.ShowDialogAt<LayerBrushPresetViewModel>("LayerProperties", new Dictionary<string, object> {{"layerBrush", layer.LayerBrush}});
                     });
                 }
             }

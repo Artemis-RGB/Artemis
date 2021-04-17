@@ -6,7 +6,9 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:treeItem1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
-             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.LayerView"
+             xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.LayerView"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type treeItem1:LayerViewModel}}">
@@ -53,14 +55,14 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <materialDesign:PackIcon Grid.Column="0" Kind="Layers" Width="16" VerticalAlignment="Center" />
-            <materialDesign:PackIcon Grid.Column="1"
-                                     VerticalAlignment="Center"
-                                     Kind="{Binding Layer.LayerBrush.Descriptor.Icon}"
-                                     Width="16"
-                                     Margin="5 0 0 0"
-                                     ToolTip="{Binding Layer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
-                                     Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                                     Background="Transparent" />
+            <shared:ArtemisIcon Grid.Column="1"
+                                VerticalAlignment="Center"
+                                Icon="{Binding Layer.LayerBrush.Descriptor.Icon}"
+                                Width="16"
+                                Margin="5 0 0 0"
+                                ToolTip="{Binding Layer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
+                                Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                                Background="Transparent" />
             <TextBlock Grid.Column="2" Text="{Binding Layer.Name}" VerticalAlignment="Center" Margin="5 0 0 0" />
             <ToggleButton Grid.Column="3"
                           Style="{StaticResource MaterialDesignFlatToggleButton}"

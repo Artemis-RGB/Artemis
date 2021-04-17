@@ -41,6 +41,8 @@ namespace Artemis.Core.LayerBrushes
             if (!IsEnabled)
                 throw new ArtemisPluginException(Plugin, "Can only add a layer brush descriptor when the plugin is enabled");
 
+            if (icon.ToLower().EndsWith(".svg"))
+                icon = Plugin.ResolveRelativePath(icon);
             LayerBrushDescriptor descriptor = new(displayName, description, icon, typeof(T), this);
             _layerBrushDescriptors.Add(descriptor);
             LayerBrushStore.Add(descriptor);
