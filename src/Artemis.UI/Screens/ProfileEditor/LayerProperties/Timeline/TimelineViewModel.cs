@@ -322,6 +322,9 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                     false,
                     keyframeViewModels.Where(k => k != sourceKeyframeViewModel).Select(k => k.Position).ToList()
                 );
+            // If holding down control, round to the closest 50ms
+            else if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)) 
+                cursorTime = TimeSpan.FromMilliseconds(Math.Round(cursorTime.TotalMilliseconds / 50.0) * 50.0);
 
             sourceKeyframeViewModel.UpdatePosition(cursorTime);
 

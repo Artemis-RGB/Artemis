@@ -14,9 +14,10 @@ namespace Artemis.UI.Shared
     {
         private const byte Dimmed = 100;
         private const byte NonDimmed = 255;
+        private GeometryDrawing? _geometryDrawing;
+        private Color _renderColor;
 
         private SolidColorBrush? _renderColorBrush;
-        private Color _renderColor;
 
         public DeviceVisualizerLed(ArtemisLed led)
         {
@@ -40,12 +41,13 @@ namespace Artemis.UI.Shared
         public BitmapImage? LedImage { get; set; }
         public Geometry? DisplayGeometry { get; private set; }
 
-        public void RenderColor(DrawingContext drawingContext, bool isDimmed)
+        public void RenderColor(DrawingGroup backingStore, DrawingContext drawingContext, bool isDimmed)
         {
             if (DisplayGeometry == null)
                 return;
 
             _renderColorBrush ??= new SolidColorBrush();
+            _geometryDrawing ??= new GeometryDrawing(_renderColorBrush, null, new RectangleGeometry(LedRect));
 
             byte r = Led.RgbLed.Color.GetR();
             byte g = Led.RgbLed.Color.GetG();
@@ -56,7 +58,10 @@ namespace Artemis.UI.Shared
             _renderColor.G = g;
             _renderColor.B = b;
             _renderColorBrush.Color = _renderColor;
-            drawingContext.DrawRectangle(_renderColorBrush, null, LedRect);
+
+
+            if (!backingStore.Children.Contains(_geometryDrawing))
+                backingStore.Children.Add(_geometryDrawing);
         }
 
         public void RenderImage(DrawingContext drawingContext)

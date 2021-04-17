@@ -9,7 +9,7 @@
                          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
                          xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
                          mc:Ignorable="d"
-                         Title="Plugin configuration"
+                         Title="Plugin Configuration | Artemis"
                          Background="{DynamicResource MaterialDesignPaper}"
                          FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                          UseLayoutRounding="True"
