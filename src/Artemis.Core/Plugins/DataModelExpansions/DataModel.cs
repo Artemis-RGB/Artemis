@@ -14,7 +14,7 @@ namespace Artemis.Core.DataModelExpansions
     /// </summary>
     public abstract class DataModel
     {
-        private readonly Dictionary<string, DataModel> _dynamicDataModels = new();
+        private readonly Dictionary<string, DynamicChild> _dynamicChildren = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModel" /> class
@@ -47,10 +47,10 @@ namespace Artemis.Core.DataModelExpansions
         public bool IsExpansion { get; internal set; }
 
         /// <summary>
-        ///     Gets an read-only dictionary of all dynamic data models
+        ///     Gets an read-only dictionary of all dynamic children
         /// </summary>
         [DataModelIgnore]
-        public ReadOnlyDictionary<string, DataModel> DynamicDataModels => new(_dynamicDataModels);
+        public ReadOnlyDictionary<string, DynamicChild> DynamicChildren => new(_dynamicChildren);
 
         /// <summary>
         ///     Returns a read-only collection of all properties in this datamodel that are to be ignored
@@ -67,124 +67,211 @@ namespace Artemis.Core.DataModelExpansions
         }
 
         /// <summary>
-        ///     Adds a dynamic data model to this data model
+        ///     Adds a dynamic child to this data model
         /// </summary>
-        /// <param name="dynamicDataModel">The dynamic data model to add</param>
+        /// <param name="dynamicChild">The dynamic child to add</param>
         /// <param name="key">The key of the child, must be unique to this data model</param>
-        /// <param name="name">An optional name, if not provided the key will be used in a humanized form</param>
-        /// <param name="description">An optional description</param>
-        public T AddDynamicChild<T>(T dynamicDataModel, string key, string? name = null, string? description = null) where T : DataModel
+        /// <param name="name">An optional human readable name, if not provided the key will be used in a humanized form</param>
+        public T AddDynamicChild<T>(T dynamicChild, string key, string? name = null)
         {
-            if (dynamicDataModel == null)
-                throw new ArgumentNullException(nameof(dynamicDataModel));
+            if (dynamicChild == null)
+                throw new ArgumentNullException(nameof(dynamicChild));
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
             if (key.Contains('.'))
                 throw new ArtemisCoreException("The provided key contains an illegal character (.)");
-            if (_dynamicDataModels.ContainsKey(key))
-                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
-                                               "because the key is already in use on by another dynamic property this data model.");
-
-            if (_dynamicDataModels.ContainsValue(dynamicDataModel))
+            if (_dynamicChildren.ContainsKey(key))
             {
-                string existingKey = _dynamicDataModels.First(kvp => kvp.Value == dynamicDataModel).Key;
-                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
-                                               $"because the dynamic data model is already added with key '{existingKey}.");
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
+                                               "because the key is already in use on by another dynamic property this data model.");
             }
 
             if (GetType().GetProperty(key) != null)
-                throw new ArtemisCoreException($"Cannot add a dynamic data model with key '{key}' " +
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
                                                "because the key is already in use by a static property on this data model.");
+            }
 
-            dynamicDataModel.Feature = Feature;
-            dynamicDataModel.DataModelDescription = new DataModelPropertyAttribute
+            DataModelPropertyAttribute attribute = new()
+            {
+                Name = string.IsNullOrWhiteSpace(name) ? key.Humanize() : name
+            };
+            if (dynamicChild is DataModel dynamicDataModel)
+            {
+                dynamicDataModel.Feature = Feature;
+                dynamicDataModel.DataModelDescription = attribute;
+            }
+
+            _dynamicChildren.Add(key, new DynamicChild(attribute, dynamicChild));
+
+            OnDynamicDataModelAdded(new DynamicDataModelChildEventArgs(dynamicChild, key));
+            return dynamicChild;
+        }
+
+        /// <summary>
+        ///     Adds a dynamic child to this data model
+        /// </summary>
+        /// <param name="dynamicChild">The dynamic child to add</param>
+        /// <param name="key">The key of the child, must be unique to this data model</param>
+        /// <param name="name">A human readable for your dynamic child, shown in the UI</param>
+        /// <param name="description">An optional description, shown in the UI</param>
+        public T AddDynamicChild<T>(T dynamicChild, string key, string name, string description)
+        {
+            if (dynamicChild == null)
+                throw new ArgumentNullException(nameof(dynamicChild));
+            if (key == null)
+                throw new ArgumentNullException(nameof(key));
+            if (key.Contains('.'))
+                throw new ArtemisCoreException("The provided key contains an illegal character (.)");
+            if (_dynamicChildren.ContainsKey(key))
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
+                                               "because the key is already in use on by another dynamic property this data model.");
+            }
+
+            if (GetType().GetProperty(key) != null)
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
+                                               "because the key is already in use by a static property on this data model.");
+            }
+
+            DataModelPropertyAttribute attribute = new()
             {
                 Name = string.IsNullOrWhiteSpace(name) ? key.Humanize() : name,
                 Description = description
             };
-            _dynamicDataModels.Add(key, dynamicDataModel);
+            if (dynamicChild is DataModel dynamicDataModel)
+            {
+                dynamicDataModel.Feature = Feature;
+                dynamicDataModel.DataModelDescription = attribute;
+            }
 
-            OnDynamicDataModelAdded(new DynamicDataModelEventArgs(dynamicDataModel, key));
-            return dynamicDataModel;
+            _dynamicChildren.Add(key, new DynamicChild(attribute, dynamicChild));
+
+            OnDynamicDataModelAdded(new DynamicDataModelChildEventArgs(dynamicChild, key));
+            return dynamicChild;
         }
 
         /// <summary>
-        ///     Removes a dynamic data model from the data model by its key
+        ///     Adds a dynamic child to this data model
         /// </summary>
-        /// <param name="key">The key of the dynamic data model to remove</param>
+        /// <param name="dynamicChild">The dynamic child to add</param>
+        /// <param name="key">The key of the child, must be unique to this data model</param>
+        /// <param name="attribute">A data model property attribute describing the dynamic child</param>
+        public T AddDynamicChild<T>(T dynamicChild, string key, DataModelPropertyAttribute attribute)
+        {
+            if (dynamicChild == null) throw new ArgumentNullException(nameof(dynamicChild));
+            if (key == null) throw new ArgumentNullException(nameof(key));
+            if (attribute == null) throw new ArgumentNullException(nameof(attribute));
+            if (key.Contains('.'))
+                throw new ArtemisCoreException("The provided key contains an illegal character (.)");
+            if (_dynamicChildren.ContainsKey(key))
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
+                                               "because the key is already in use on by another dynamic property this data model.");
+            }
+
+            if (GetType().GetProperty(key) != null)
+            {
+                throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
+                                               "because the key is already in use by a static property on this data model.");
+            }
+
+            // Make sure a name is on the attribute or funny things might happen
+            attribute.Name ??= key.Humanize();
+            if (dynamicChild is DataModel dynamicDataModel)
+            {
+                dynamicDataModel.Feature = Feature;
+                dynamicDataModel.DataModelDescription = attribute;
+            }
+
+            _dynamicChildren.Add(key, new DynamicChild(attribute, dynamicChild));
+
+            OnDynamicDataModelAdded(new DynamicDataModelChildEventArgs(dynamicChild, key));
+            return dynamicChild;
+        }
+
+        /// <summary>
+        ///     Removes a dynamic child from the data model by its key
+        /// </summary>
+        /// <param name="key">The key of the dynamic child to remove</param>
         public void RemoveDynamicChildByKey(string key)
         {
-            _dynamicDataModels.TryGetValue(key, out DataModel? childDataModel);
-            if (childDataModel == null)
+            if (!_dynamicChildren.TryGetValue(key, out DynamicChild? dynamicChild))
                 return;
 
-            _dynamicDataModels.Remove(key);
-            OnDynamicDataModelRemoved(new DynamicDataModelEventArgs(childDataModel, key));
+            _dynamicChildren.Remove(key);
+            OnDynamicDataModelRemoved(new DynamicDataModelChildEventArgs(dynamicChild.Value, key));
         }
 
         /// <summary>
-        ///     Removes a dynamic data model from this data model
+        ///     Removes a dynamic child from this data model
         /// </summary>
-        /// <param name="dynamicDataModel">The dynamic data model to remove</param>
-        public void RemoveDynamicChild(DataModel dynamicDataModel)
+        /// <param name="dynamicChild">The dynamic data child to remove</param>
+        public void RemoveDynamicChild<T>(T dynamicChild) where T : class
         {
-            List<string> keys = _dynamicDataModels.Where(kvp => kvp.Value == dynamicDataModel).Select(kvp => kvp.Key).ToList();
+            List<string> keys = _dynamicChildren.Where(kvp => kvp.Value.Value == dynamicChild).Select(kvp => kvp.Key).ToList();
             foreach (string key in keys)
             {
-                _dynamicDataModels.Remove(key);
-                OnDynamicDataModelRemoved(new DynamicDataModelEventArgs(dynamicDataModel, key));
+                _dynamicChildren.Remove(key);
+                OnDynamicDataModelRemoved(new DynamicDataModelChildEventArgs(dynamicChild, key));
             }
         }
 
         /// <summary>
-        ///     Removes all dynamic data models from this data model
+        ///     Removes all dynamic children from this data model
         /// </summary>
         public void ClearDynamicChildren()
         {
-            while (_dynamicDataModels.Any())
-                RemoveDynamicChildByKey(_dynamicDataModels.First().Key);
+            while (_dynamicChildren.Any())
+                RemoveDynamicChildByKey(_dynamicChildren.First().Key);
         }
 
         /// <summary>
-        ///     Gets a dynamic data model of type <typeparamref name="T" /> by its key
+        ///     Gets a dynamic child of type <typeparamref name="T" /> by its key
         /// </summary>
         /// <typeparam name="T">The type of data model you expect</typeparam>
-        /// <param name="key">The unique key of the dynamic data model</param>
-        /// <returns>If found, the dynamic data model otherwise <c>null</c></returns>
-        public T? DynamicChild<T>(string key) where T : DataModel
+        /// <param name="key">The unique key of the dynamic child</param>
+        /// <returns>If found, the dynamic child otherwise <c>null</c></returns>
+        public T? DynamicChild<T>(string key)
         {
-            _dynamicDataModels.TryGetValue(key, out DataModel? value);
-            return value as T;
-        }
+            if (!_dynamicChildren.TryGetValue(key, out DynamicChild? dynamicChild))
+                return default;
 
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a dynamic data model has been added to this data model
-        /// </summary>
-        public event EventHandler<DynamicDataModelEventArgs>? DynamicDataModelAdded;
-
-        /// <summary>
-        ///     Occurs when a dynamic data model has been removed from this data model
-        /// </summary>
-        public event EventHandler<DynamicDataModelEventArgs>? DynamicDataModelRemoved;
-
-        /// <summary>
-        ///     Invokes the <see cref="DynamicDataModelAdded" /> event
-        /// </summary>
-        protected virtual void OnDynamicDataModelAdded(DynamicDataModelEventArgs e)
-        {
-            DynamicDataModelAdded?.Invoke(this, e);
+            if (dynamicChild.Value is not T)
+                return default;
+            return (T?) dynamicChild.Value;
         }
 
         /// <summary>
-        ///     Invokes the <see cref="DynamicDataModelRemoved" /> event
+        ///     Occurs when a dynamic child has been added to this data model
         /// </summary>
-        protected virtual void OnDynamicDataModelRemoved(DynamicDataModelEventArgs e)
+        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildAdded;
+
+        /// <summary>
+        ///     Occurs when a dynamic child has been removed from this data model
+        /// </summary>
+        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="DynamicChildAdded" /> event
+        /// </summary>
+        protected virtual void OnDynamicDataModelAdded(DynamicDataModelChildEventArgs e)
         {
-            DynamicDataModelRemoved?.Invoke(this, e);
+            DynamicChildAdded?.Invoke(this, e);
         }
 
-        #endregion
+        /// <summary>
+        ///     Invokes the <see cref="DynamicChildRemoved" /> event
+        /// </summary>
+        protected virtual void OnDynamicDataModelRemoved(DynamicDataModelChildEventArgs e)
+        {
+            DynamicChildRemoved?.Invoke(this, e);
+        }
     }
+
+    /// <summary>
+    ///     Represents a record of a dynamic child value with its property attribute
+    /// </summary>
+    public record DynamicChild(DataModelPropertyAttribute Attribute, object? Value);
 }

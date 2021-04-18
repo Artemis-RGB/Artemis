@@ -239,9 +239,10 @@ namespace Artemis.UI.Shared
             // Add missing dynamic children
             object? value = Parent == null || Parent.IsRootViewModel ? DataModel : DataModelPath?.GetValue();
             if (value is DataModel dataModel)
-                foreach (KeyValuePair<string, DataModel> kvp in dataModel.DynamicDataModels)
+            {
+                foreach (var (key, dynamicChild) in dataModel.DynamicChildren)
                 {
-                    string childPath = AppendToPath(kvp.Key);
+                    string childPath = AppendToPath(key);
                     if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
                         continue;
 
@@ -249,6 +250,7 @@ namespace Artemis.UI.Shared
                     if (child != null)
                         Children.Add(child);
                 }
+            }
 
             // Remove dynamic children that have been removed from the data model
             List<DataModelVisualizationViewModel> toRemoveDynamic = Children.Where(c => c.DataModelPath != null && !c.DataModelPath.IsValid).ToList();

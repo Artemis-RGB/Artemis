@@ -4,20 +4,20 @@ using Artemis.Core.DataModelExpansions;
 namespace Artemis.Core
 {
     /// <summary>
-    ///     Provides data about dynamic data model related events
+    ///     Provides data about dynamic data model child related events
     /// </summary>
-    public class DynamicDataModelEventArgs : EventArgs
+    public class DynamicDataModelChildEventArgs : EventArgs
     {
-        internal DynamicDataModelEventArgs(DataModel dynamicDataModel, string key)
+        internal DynamicDataModelChildEventArgs(object? dynamicChild, string key)
         {
-            DynamicDataModel = dynamicDataModel;
+            DynamicChild = dynamicChild;
             Key = key;
         }
 
         /// <summary>
-        ///     Gets the dynamic data model
+        ///     Gets the dynamic data model child
         /// </summary>
-        public DataModel DynamicDataModel { get; }
+        public object? DynamicChild { get; }
 
         /// <summary>
         ///     Gets the key of the dynamic data model on the parent <see cref="DataModel" />
