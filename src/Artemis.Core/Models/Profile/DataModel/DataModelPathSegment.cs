@@ -15,8 +15,8 @@ namespace Artemis.Core
     {
         private Expression<Func<object, object>>? _accessorLambda;
         private DataModel? _dynamicDataModel;
-        private Type _dynamicDataModelType;
-        private DataModelPropertyAttribute _dynamicDataModelAttribute;
+        private Type? _dynamicDataModelType;
+        private DataModelPropertyAttribute? _dynamicDataModelAttribute;
 
         internal DataModelPathSegment(DataModelPath dataModelPath, string identifier, string path)
         {
@@ -184,8 +184,8 @@ namespace Artemis.Core
 
                 // If a dynamic data model is found the use that
                 bool hasDynamicChild = _dynamicDataModel.DynamicChildren.TryGetValue(Identifier, out DynamicChild? dynamicChild);
-                if (hasDynamicChild && dynamicChild?.Value != null)
-                    DetermineDynamicType(dynamicChild.Value, dynamicChild.Attribute);
+                if (hasDynamicChild && dynamicChild?.BaseValue != null)
+                    DetermineDynamicType(dynamicChild.BaseValue, dynamicChild.Attribute);
 
                 _dynamicDataModel.DynamicChildAdded += DynamicChildOnDynamicChildAdded;
                 _dynamicDataModel.DynamicChildRemoved += DynamicChildOnDynamicChildRemoved;
@@ -212,12 +212,14 @@ namespace Artemis.Core
                 accessorExpression = Expression.PropertyOrField(expression, Identifier);
             // A dynamic segment calls the generic method DataModel.DynamicChild<T> and provides the identifier as an argument
             else
+            {
                 accessorExpression = Expression.Call(
                     expression,
-                    nameof(DataModel.DynamicChild),
+                    nameof(DataModel.GetDynamicChildValue),
                     _dynamicDataModelType != null ? new[] { _dynamicDataModelType } : null,
                     Expression.Constant(Identifier)
                 );
+            }
 
             _accessorLambda = Expression.Lambda<Func<object, object>>(
                 // Wrap with a null check
@@ -290,7 +292,7 @@ namespace Artemis.Core
 
         private void DynamicChildOnDynamicChildRemoved(object? sender, DynamicDataModelChildEventArgs e)
         {
-            if (e.DynamicChild == _dynamicDataModel)
+            if (e.DynamicChild.BaseValue == _dynamicDataModel)
                 DataModelPath.Initialize();
         }
 

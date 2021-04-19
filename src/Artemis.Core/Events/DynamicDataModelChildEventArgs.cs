@@ -8,7 +8,7 @@ namespace Artemis.Core
     /// </summary>
     public class DynamicDataModelChildEventArgs : EventArgs
     {
-        internal DynamicDataModelChildEventArgs(object? dynamicChild, string key)
+        internal DynamicDataModelChildEventArgs(DynamicChild dynamicChild, string key)
         {
             DynamicChild = dynamicChild;
             Key = key;
@@ -17,7 +17,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the dynamic data model child
         /// </summary>
-        public object? DynamicChild { get; }
+        public DynamicChild DynamicChild { get; }
 
         /// <summary>
         ///     Gets the key of the dynamic data model on the parent <see cref="DataModel" />
