@@ -134,12 +134,16 @@ namespace Artemis.Core.DataModelExpansions
             if (key.Contains('.'))
                 throw new ArtemisCoreException("The provided key contains an illegal character (.)");
             if (_dynamicChildren.ContainsKey(key))
+            {
                 throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
                                                "because the key is already in use on by another dynamic property this data model.");
+            }
 
             if (GetType().GetProperty(key) != null)
+            {
                 throw new ArtemisCoreException($"Cannot add a dynamic child with key '{key}' " +
                                                "because the key is already in use by a static property on this data model.");
+            }
 
             // Make sure a name is on the attribute or funny things might happen
             attribute.Name ??= key.Humanize();
@@ -155,7 +159,7 @@ namespace Artemis.Core.DataModelExpansions
             OnDynamicDataModelAdded(new DynamicDataModelChildEventArgs(dynamicChild, key));
             return dynamicChild;
         }
-        
+
         /// <summary>
         ///     Gets a previously added dynamic child by its key
         /// </summary>
@@ -208,7 +212,8 @@ namespace Artemis.Core.DataModelExpansions
         /// <param name="key">The key of the dynamic child</param>
         /// <param name="dynamicChild">
         ///     When this method returns, the <see cref="DynamicChild{T}" /> associated with the specified
-        ///     key, if the key is found; otherwise, <see langword="null" />. This parameter is passed uninitialized.
+        ///     key, if the key is found and the type matches; otherwise, <see langword="null" />. This parameter is passed
+        ///     uninitialized.
         /// </param>
         /// <returns>
         ///     <see langword="true" /> if the data model contains the dynamic child; otherwise <see langword="false" />
@@ -267,7 +272,9 @@ namespace Artemis.Core.DataModelExpansions
         // Used a runtime by data model paths only
         internal T? GetDynamicChildValue<T>(string key)
         {
-            return TryGetDynamicChild(key, out DynamicChild<T>? dynamicChild) ? dynamicChild.Value : default;
+            if (TryGetDynamicChild(key, out DynamicChild? dynamicChild) && dynamicChild.BaseValue != null)
+                return (T) dynamicChild.BaseValue;
+            return default;
         }
 
         #endregion
