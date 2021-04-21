@@ -364,7 +364,7 @@ namespace Artemis.Core
             if (LayerBrush?.BrushType != LayerBrushType.Regular)
                 return;
 
-            SKPaint layerPaint = new();
+            SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
             try
             {
                 canvas.Save();

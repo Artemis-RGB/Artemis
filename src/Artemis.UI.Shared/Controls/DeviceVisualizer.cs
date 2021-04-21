@@ -314,6 +314,7 @@ namespace Artemis.UI.Shared
             ImageBrush bitmapBrush = new(bitmap);
             bitmapBrush.Freeze();
             _backingStore.OpacityMask = bitmapBrush;
+            _backingStore.Children.Clear();
 
             InvalidateMeasure();
         }
@@ -331,14 +332,19 @@ namespace Artemis.UI.Shared
         private void Render()
         {
             DrawingContext drawingContext = _backingStore.Append();
-            // DrawingContext drawingContext = _backingStore.Open();
 
             if (HighlightedLeds != null && HighlightedLeds.Any())
+            {
+                // Faster on large devices, maybe a bit slower on smaller ones but that's ok
+                ILookup<ArtemisLed, ArtemisLed> toHighlight = HighlightedLeds.ToLookup(l => l);
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, !HighlightedLeds.Contains(deviceVisualizerLed.Led));
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, !toHighlight.Contains(deviceVisualizerLed.Led));
+            }
             else
+            {
                 foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
                     deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
+            }
 
             drawingContext.Close();
         }

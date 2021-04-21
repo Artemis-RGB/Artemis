@@ -195,7 +195,7 @@ namespace Artemis.Core
                     baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
                 }
 
-                SKPaint layerPaint = new();
+                SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
                 try
                 {
                     SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);

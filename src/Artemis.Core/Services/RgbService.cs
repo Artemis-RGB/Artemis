@@ -113,7 +113,7 @@ namespace Artemis.Core.Services
 
         private void SurfaceOnException(ExceptionEventArgs args)
         {
-            _logger.Warning("Surface threw e");
+            _logger.Warning(args.Exception, "Surface caught exception");
             throw args.Exception;
         }
 

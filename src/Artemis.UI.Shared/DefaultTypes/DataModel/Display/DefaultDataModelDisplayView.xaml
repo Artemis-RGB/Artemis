@@ -14,16 +14,19 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
+        <!-- Prefix -->
         <TextBlock Grid.Column="0" 
                    Text="{Binding PropertyDescription.Prefix}"
                    Visibility="{Binding PropertyDescription.Prefix, Converter={StaticResource NullToVisibilityConverter}}" 
+                   TextAlignment="Right"
                    Margin="0 0 5 0" />
-        <!-- Value display -->
+
+        <!-- Value -->
         <TextBlock Grid.Column="1"
                    Text="{Binding DisplayValue, Mode=OneWay}"
                    HorizontalAlignment="Right"
@@ -35,6 +38,7 @@
                    Foreground="{DynamicResource MaterialDesignCheckBoxDisabled}"
                    Visibility="{Binding ShowNull, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
 
+        <!-- Affix -->
         <TextBlock Grid.Column="2" 
                    Text="{Binding PropertyDescription.Affix}"
                    Visibility="{Binding PropertyDescription.Affix, Converter={StaticResource NullToVisibilityConverter}}" 

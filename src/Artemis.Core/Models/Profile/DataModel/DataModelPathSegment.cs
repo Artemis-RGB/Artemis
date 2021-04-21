@@ -15,6 +15,8 @@ namespace Artemis.Core
     {
         private Expression<Func<object, object>>? _accessorLambda;
         private DataModel? _dynamicDataModel;
+        private Type? _dynamicDataModelType;
+        private DataModelPropertyAttribute? _dynamicDataModelAttribute;
 
         internal DataModelPathSegment(DataModelPath dataModelPath, string identifier, string path)
         {
@@ -48,12 +50,6 @@ namespace Artemis.Core
         ///     Gets the type of data model this segment of the path points to
         /// </summary>
         public DataModelPathSegmentType Type { get; private set; }
-
-        /// <summary>
-        ///     Gets the type of dynamic data model this path points to
-        ///     <para>Not used if the <see cref="Type" /> is <see cref="DataModelPathSegmentType.Static" /></para>
-        /// </summary>
-        public Type? DynamicDataModelType { get; private set; }
 
         /// <summary>
         ///     Gets the previous segment in the path
@@ -114,7 +110,7 @@ namespace Artemis.Core
         {
             // Dynamic types have a data model description
             if (Type == DataModelPathSegmentType.Dynamic)
-                return (GetValue() as DataModel)?.DataModelDescription;
+                return _dynamicDataModelAttribute;
             if (IsStartSegment && DataModelPath.Target != null)
                 return DataModelPath.Target.DataModelDescription;
             if (IsStartSegment)
@@ -187,12 +183,12 @@ namespace Artemis.Core
                     return CreateExpression(parameter, expression, nullCondition);
 
                 // If a dynamic data model is found the use that
-                bool hasDynamicDataModel = _dynamicDataModel.DynamicDataModels.TryGetValue(Identifier, out DataModel? dynamicDataModel);
-                if (hasDynamicDataModel && dynamicDataModel != null)
-                    DetermineDynamicType(dynamicDataModel);
+                bool hasDynamicChild = _dynamicDataModel.DynamicChildren.TryGetValue(Identifier, out DynamicChild? dynamicChild);
+                if (hasDynamicChild && dynamicChild?.BaseValue != null)
+                    DetermineDynamicType(dynamicChild.BaseValue, dynamicChild.Attribute);
 
-                _dynamicDataModel.DynamicDataModelAdded += DynamicDataModelOnDynamicDataModelAdded;
-                _dynamicDataModel.DynamicDataModelRemoved += DynamicDataModelOnDynamicDataModelRemoved;
+                _dynamicDataModel.DynamicChildAdded += DynamicChildOnDynamicChildAdded;
+                _dynamicDataModel.DynamicChildRemoved += DynamicChildOnDynamicChildRemoved;
             }
 
             return CreateExpression(parameter, expression, nullCondition);
@@ -216,12 +212,14 @@ namespace Artemis.Core
                 accessorExpression = Expression.PropertyOrField(expression, Identifier);
             // A dynamic segment calls the generic method DataModel.DynamicChild<T> and provides the identifier as an argument
             else
+            {
                 accessorExpression = Expression.Call(
                     expression,
-                    nameof(DataModel.DynamicChild),
-                    DynamicDataModelType != null ? new[] {DynamicDataModelType} : null,
+                    nameof(DataModel.GetDynamicChildValue),
+                    _dynamicDataModelType != null ? new[] { _dynamicDataModelType } : null,
                     Expression.Constant(Identifier)
                 );
+            }
 
             _accessorLambda = Expression.Lambda<Func<object, object>>(
                 // Wrap with a null check
@@ -236,10 +234,11 @@ namespace Artemis.Core
             return accessorExpression;
         }
 
-        private void DetermineDynamicType(DataModel dynamicDataModel)
+        private void DetermineDynamicType(object dynamicDataModel, DataModelPropertyAttribute attribute)
         {
             Type = DataModelPathSegmentType.Dynamic;
-            DynamicDataModelType = dynamicDataModel.GetType();
+            _dynamicDataModelType = dynamicDataModel.GetType();
+            _dynamicDataModelAttribute = attribute;
         }
 
         private void DetermineStaticType(Type previousType)
@@ -263,8 +262,8 @@ namespace Artemis.Core
             {
                 if (_dynamicDataModel != null)
                 {
-                    _dynamicDataModel.DynamicDataModelAdded -= DynamicDataModelOnDynamicDataModelAdded;
-                    _dynamicDataModel.DynamicDataModelRemoved -= DynamicDataModelOnDynamicDataModelRemoved;
+                    _dynamicDataModel.DynamicChildAdded -= DynamicChildOnDynamicChildAdded;
+                    _dynamicDataModel.DynamicChildRemoved -= DynamicChildOnDynamicChildRemoved;
                 }
 
                 Type = DataModelPathSegmentType.Invalid;
@@ -285,15 +284,15 @@ namespace Artemis.Core
 
         #region Event handlers
 
-        private void DynamicDataModelOnDynamicDataModelAdded(object? sender, DynamicDataModelEventArgs e)
+        private void DynamicChildOnDynamicChildAdded(object? sender, DynamicDataModelChildEventArgs e)
         {
             if (e.Key == Identifier)
                 DataModelPath.Initialize();
         }
 
-        private void DynamicDataModelOnDynamicDataModelRemoved(object? sender, DynamicDataModelEventArgs e)
+        private void DynamicChildOnDynamicChildRemoved(object? sender, DynamicDataModelChildEventArgs e)
         {
-            if (e.DynamicDataModel == _dynamicDataModel)
+            if (e.DynamicChild.BaseValue == _dynamicDataModel)
                 DataModelPath.Initialize();
         }
 
