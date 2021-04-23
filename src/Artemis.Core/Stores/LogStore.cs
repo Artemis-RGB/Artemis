@@ -25,7 +25,7 @@ namespace Artemis.Core
         internal static void Emit(LogEvent logEvent)
         {
             LinkedList.AddLast(logEvent);
-            if (LinkedList.Count > 500)
+            while (LinkedList.Count > 500)
                 LinkedList.RemoveFirst();
 
             OnEventAdded(new LogEventEventArgs(logEvent));
