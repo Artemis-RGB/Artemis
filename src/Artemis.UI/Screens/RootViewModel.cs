@@ -178,21 +178,17 @@ namespace Artemis.UI.Screens
                 if (!PinSidebar.Value)
                     _sidebarViewModel.IsSidebarOpen = false;
 
-                // Don't do a fade when selecting a module because the editor is so bulky the animation slows things down
-                if (!(_sidebarViewModel.SelectedItem is ModuleRootViewModel))
-                    ActiveItemReady = false;
+                ActiveItemReady = false;
 
                 // Allow the menu to close, it's slower but feels more responsive, funny how that works right
-                Execute.PostToUIThreadAsync(async () =>
+                Execute.PostToUIThread(async () =>
                 {
-                    if (PinSidebar.Value)
-                        await Task.Delay(200);
-                    else
-                        await Task.Delay(400);
-
+                    await Task.Delay(400);
                     ActiveItem = _sidebarViewModel.SelectedItem;
+                    await Task.Delay(200);
                     ActiveItemReady = true;
                 });
+
             }
         }
 
@@ -296,7 +292,7 @@ namespace Artemis.UI.Screens
             PluginSetting<bool> setupWizardCompleted = _settingsService.GetSetting("UI.SetupWizardCompleted", false);
             if (!setupWizardCompleted.Value)
                 ShowSetupWizard();
-            
+
             base.OnInitialActivate();
         }
 
