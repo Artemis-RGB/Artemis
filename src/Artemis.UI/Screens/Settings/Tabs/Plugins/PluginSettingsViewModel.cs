@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
@@ -162,9 +164,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     bool confirmed = await _dialogService.ShowConfirmDialog("Enable plugin", "This plugin requires admin rights, are you sure you want to enable it?");
                     if (!confirmed)
                     {
-                        Enabling = false;
-                        NotifyOfPropertyChange(nameof(IsEnabled));
-                        NotifyOfPropertyChange(nameof(CanOpenSettings));
+                        CancelEnable();
+                        return;
+                    }
+                }
+
+                // Check if all prerequisites are met async
+                if (!await ArePrerequisitesMetAsync())
+                {
+                    await _dialogService.ShowDialog<PluginPrerequisitesDialogViewModel>(new Dictionary<string, object> {{"pluginOrFeature", Plugin}});
+                    if (!await ArePrerequisitesMetAsync())
+                    {
+                        CancelEnable();
                         return;
                     }
                 }
@@ -189,6 +200,28 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));
+        }
+
+        private void CancelEnable()
+        {
+            Enabling = false;
+            NotifyOfPropertyChange(nameof(IsEnabled));
+            NotifyOfPropertyChange(nameof(CanOpenSettings));
+        }
+
+        private async Task<bool> ArePrerequisitesMetAsync()
+        {
+            bool needsPrerequisites = false;
+            foreach (PluginPrerequisite pluginPrerequisite in Plugin.Prerequisites)
+            {
+                if (await pluginPrerequisite.IsMet())
+                    continue;
+
+                needsPrerequisites = true;
+                break;
+            }
+
+            return !needsPrerequisites;
         }
     }
 }

@@ -79,6 +79,11 @@ namespace Artemis.Core
         public IKernel? Kernel { get; internal set; }
 
         /// <summary>
+        ///     Gets a list of prerequisites for this plugin feature
+        /// </summary>
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <summary>
         ///     The PluginLoader backing this plugin
         /// </summary>
         internal PluginLoader? PluginLoader { get; set; }
@@ -235,12 +240,12 @@ namespace Artemis.Core
 
             if (enable)
             {
-                Bootstrapper?.Enable(this);
+                Bootstrapper?.OnPluginEnabled(this);
                 OnEnabled();
             }
             else
             {
-                Bootstrapper?.Disable(this);
+                Bootstrapper?.OnPluginDisabled(this);
                 OnDisabled();
             }
         }

@@ -340,7 +340,10 @@ namespace Artemis.Core.Services
             if (bootstrappers.Count > 1)
                 _logger.Warning($"{plugin} has more than one bootstrapper, only initializing {bootstrappers.First().FullName}");
             if (bootstrappers.Any())
+            {
                 plugin.Bootstrapper = (IPluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
+                plugin.Bootstrapper?.OnPluginLoaded(plugin);
+            }
 
             lock (_plugins)
             {

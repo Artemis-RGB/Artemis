@@ -6,7 +6,7 @@ namespace Artemis.UI.Shared.Services
     /// <summary>
     ///     Represents the base class for a dialog view model
     /// </summary>
-    public abstract class DialogViewModelBase : ValidatingModelBase
+    public abstract class DialogViewModelBase : Screen
     {
         private DialogViewModelHost? _dialogViewModelHost;
         private DialogSession? _session;
@@ -47,6 +47,7 @@ namespace Artemis.UI.Shared.Services
         /// </summary>
         public virtual void OnDialogClosed(object sender, DialogClosingEventArgs e)
         {
+            ScreenExtensions.TryClose(this);
         }
 
         /// <summary>
@@ -61,6 +62,7 @@ namespace Artemis.UI.Shared.Services
         internal void OnDialogOpened(object sender, DialogOpenedEventArgs e)
         {
             Session = e.Session;
+            ScreenExtensions.TryActivate(this);
         }
     }
 }

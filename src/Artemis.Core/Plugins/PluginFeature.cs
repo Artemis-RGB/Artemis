@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Artemis.Core
         private readonly Stopwatch _updateStopwatch = new();
         private bool _isEnabled;
         private Exception? _loadException;
-        
+
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>
@@ -58,6 +59,11 @@ namespace Artemis.Core
         ///     Gets the last measured render time of the feature
         /// </summary>
         public TimeSpan RenderTime { get; private set; }
+
+        /// <summary>
+        ///     Gets a list of prerequisites for this plugin feature
+        /// </summary>
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
 
         internal PluginFeatureEntity Entity { get; set; } = null!; // Will be set right after construction
 
