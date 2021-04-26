@@ -148,8 +148,23 @@ namespace Artemis.Core.Services
                     foreach (ArtemisDevice device in toRemove)
                         RemoveDevice(device);
 
-                    deviceProvider.Initialize(RGBDeviceType.All, true);
+                    List<Exception> providerExceptions = new();
+                    void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
+                    {
+                        if (e.IsCritical)
+                            providerExceptions.Add(e.Exception);
+                        else
+                            _logger.Warning(e.Exception, "Device provider {deviceProvider} threw non-critical exception", deviceProvider.GetType().Name);
+                    }
+
+                    deviceProvider.Exception += DeviceProviderOnException;
+                    deviceProvider.Initialize();
                     Surface.Attach(deviceProvider.Devices);
+                    deviceProvider.Exception -= DeviceProviderOnException;
+                    if (providerExceptions.Count == 1)
+                        throw new ArtemisPluginException("RGB.NET threw exception: " + providerExceptions.First().Message, providerExceptions.First());
+                    if (providerExceptions.Count > 1)
+                        throw new ArtemisPluginException("RGB.NET threw multiple exceptions", new AggregateException(providerExceptions));
 
                     if (!deviceProvider.Devices.Any())
                     {
