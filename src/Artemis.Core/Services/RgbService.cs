@@ -149,7 +149,13 @@ namespace Artemis.Core.Services
                         RemoveDevice(device);
 
                     List<Exception> providerExceptions = new();
-                    void DeviceProviderOnException(object? sender, Exception e) => providerExceptions.Add(e);
+                    void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
+                    {
+                        if (e.IsCritical)
+                            providerExceptions.Add(e.Exception);
+                        else
+                            _logger.Warning(e.Exception, "Device provider {deviceProvider} threw non-critical exception", deviceProvider.GetType().Name);
+                    }
 
                     deviceProvider.Exception += DeviceProviderOnException;
                     deviceProvider.Initialize();
