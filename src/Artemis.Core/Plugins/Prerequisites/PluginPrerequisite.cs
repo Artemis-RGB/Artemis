@@ -123,7 +123,7 @@ namespace Artemis.Core
         ///     Called to determine whether the prerequisite is met
         /// </summary>
         /// <returns><see langword="true" /> if the prerequisite is met; otherwise <see langword="false" /></returns>
-        public abstract Task<bool> IsMet();
+        public abstract bool IsMet();
 
         /// <summary>
         ///     Called before installation starts

@@ -10,6 +10,8 @@ namespace Artemis.Core
     public abstract class PluginPrerequisiteAction : CorePropertyChanged
     {
         private bool _progressIndeterminate;
+        private bool _showProgressBar;
+        private bool _showSubProgressBar;
         private string? _status;
         private bool _subProgressIndeterminate;
 
@@ -54,6 +56,24 @@ namespace Artemis.Core
         {
             get => _subProgressIndeterminate;
             set => SetAndNotify(ref _subProgressIndeterminate, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether the progress bar should be shown
+        /// </summary>
+        public bool ShowProgressBar
+        {
+            get => _showProgressBar;
+            set => SetAndNotify(ref _showProgressBar, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether the sub progress bar should be shown
+        /// </summary>
+        public bool ShowSubProgressBar
+        {
+            get => _showSubProgressBar;
+            set => SetAndNotify(ref _showSubProgressBar, value);
         }
 
         /// <summary>

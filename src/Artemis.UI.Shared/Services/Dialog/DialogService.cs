@@ -61,28 +61,30 @@ namespace Artemis.UI.Shared.Services
             return await ShowDialog(identifier, GetBestKernel().Get<T>(parameters));
         }
 
-        public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
+        public async Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string? cancelText = "Cancel")
         {
+            if (confirmText == null) throw new ArgumentNullException(nameof(confirmText));
             IParameter[] arguments =
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
-                new ConstructorArgument("cancelText", cancelText.ToUpper())
+                new ConstructorArgument("cancelText", cancelText?.ToUpper())
             };
             object? result = await ShowDialog<ConfirmDialogViewModel>(arguments);
             return result is bool booleanResult && booleanResult;
         }
 
-        public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel")
+        public async Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string? cancelText = "Cancel")
         {
             if (identifier == null) throw new ArgumentNullException(nameof(identifier));
+            if (confirmText == null) throw new ArgumentNullException(nameof(confirmText));
             IParameter[] arguments =
             {
                 new ConstructorArgument("header", header),
                 new ConstructorArgument("text", text),
                 new ConstructorArgument("confirmText", confirmText.ToUpper()),
-                new ConstructorArgument("cancelText", cancelText.ToUpper())
+                new ConstructorArgument("cancelText", cancelText?.ToUpper())
             };
             object? result = await ShowDialogAt<ConfirmDialogViewModel>(identifier, arguments);
             return result is bool booleanResult && booleanResult;

@@ -12,12 +12,12 @@
     <StackPanel>
         <ProgressBar Value="{Binding Action.Progress.Percentage, Mode=OneWay}"
                      IsIndeterminate="{Binding Action.ProgressIndeterminate, Mode=OneWay}"
-                     Visibility="{Binding ShowProgressBar, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                     Visibility="{Binding Action.ShowProgressBar, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                      materialDesign:TransitionAssist.DisableTransitions="True"
                      Margin="0 10"/>
         <ProgressBar Value="{Binding Action.SubProgress.Percentage, Mode=OneWay}"
                      IsIndeterminate="{Binding Action.SubProgressIndeterminate, Mode=OneWay}"
-                     Visibility="{Binding ShowSubProgressBar, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                     Visibility="{Binding Action.ShowSubProgressBar, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                      materialDesign:TransitionAssist.DisableTransitions="True" 
                      Margin="0 10"/>
 

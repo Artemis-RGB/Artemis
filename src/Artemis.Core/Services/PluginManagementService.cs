@@ -241,7 +241,16 @@ namespace Artemis.Core.Services
             }
 
             foreach (Plugin plugin in _plugins.Where(p => p.Entity.IsEnabled))
-                EnablePlugin(plugin, false, ignorePluginLock);
+            {
+                try
+                {
+                    EnablePlugin(plugin, false, ignorePluginLock);
+                }
+                catch (ArtemisPluginPrerequisiteException)
+                {
+                    _logger.Warning("Skipped enabling plugin {plugin} because not all prerequisites are met", plugin);
+                }
+            }
 
             _logger.Debug("Enabled {count} plugin(s)", _plugins.Count(p => p.IsEnabled));
             // ReSharper restore InconsistentlySynchronizedField
@@ -371,6 +380,9 @@ namespace Artemis.Core.Services
                 Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
                 return;
             }
+
+            if (!plugin.ArePrerequisitesMet())
+                throw new ArtemisPluginPrerequisiteException(plugin, null, "Cannot enable a plugin whose prerequisites aren't all met");
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));

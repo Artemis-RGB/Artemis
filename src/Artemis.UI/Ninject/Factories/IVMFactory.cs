@@ -98,7 +98,7 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IPrerequisitesVmFactory : IVmFactory
     {
-        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite);
+        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
     }
 
     // TODO: Move these two

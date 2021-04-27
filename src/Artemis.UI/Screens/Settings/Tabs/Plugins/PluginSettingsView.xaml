@@ -12,6 +12,14 @@
              d:DataContext="{d:DesignInstance devices:PluginSettingsViewModel}"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <materialDesign:Card Width="900">
         <Grid Margin="8">
             <Grid.ColumnDefinitions>
@@ -61,34 +69,60 @@
             </Grid>
 
 
-            <StackPanel Grid.Row="1"
-                        Grid.Column="0"
-                        VerticalAlignment="Bottom"
-                        Orientation="Horizontal">
-                <Button
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource MaterialDesignRaisedButton}"
-                    ToolTip="Open the plugins settings window"
-                    Margin="4"
-                    Command="{s:Action OpenSettings}">
+            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" Orientation="Horizontal">
+                <Button VerticalAlignment="Bottom"
+                        Style="{StaticResource MaterialDesignRaisedButton}"
+                        ToolTip="Open the plugins settings window"
+                        Margin="4"
+                        Command="{s:Action OpenSettings}">
                     SETTINGS
                 </Button>
-                <Button
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                    ToolTip="Clear plugin settings"
-                    Margin="4"
-                    Command="{s:Action RemoveSettings}">
-                    <materialDesign:PackIcon Kind="DatabaseRemove" />
-                </Button>
-                <Button
-                    VerticalAlignment="Bottom"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                    ToolTip="Remove plugin"
-                    Margin="4"
-                    Command="{s:Action Remove}">
-                    <materialDesign:PackIcon Kind="DeleteForever" />
-                </Button>
+
+                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}"
+                                         Padding="2 0 2 0"
+                                         Foreground="{StaticResource MaterialDesignBody}"
+                                         IsPopupOpen="{Binding IsSettingsPopupOpen, Mode=TwoWay}">
+                    <StackPanel>
+                        <Button Command="{s:Action OpenPluginDirectory}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action Reload}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Reload" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Reload plugin</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Separator />
+                        <Button Command="{s:Action InstallPrerequisites}" >
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="CheckAll" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Install prerequisites</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action RemovePrerequisites}" >
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="Delete" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Remove prerequisites</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Separator />
+                        <Button Command="{s:Action RemoveSettings}" >
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="DatabaseRemove" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Clear plugin settings</TextBlock>
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{s:Action Remove}">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="DeleteForever" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                <TextBlock VerticalAlignment="Center">Remove plugin</TextBlock>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </materialDesign:PopupBox>
             </StackPanel>
 
 

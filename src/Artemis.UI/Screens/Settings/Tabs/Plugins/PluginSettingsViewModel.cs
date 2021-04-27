@@ -10,23 +10,24 @@ using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
-using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 {
     public class PluginSettingsViewModel : Conductor<PluginFeatureViewModel>.Collection.AllActive
     {
+        private readonly ICoreService _coreService;
         private readonly IDialogService _dialogService;
+        private readonly IMessageService _messageService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
-        private readonly ICoreService _coreService;
-        private readonly IMessageService _messageService;
         private readonly IWindowManager _windowManager;
         private bool _enabling;
         private Plugin _plugin;
+        private bool _isSettingsPopupOpen;
+        private bool _canInstallPrerequisites;
+        private bool _canRemovePrerequisites;
 
         public PluginSettingsViewModel(Plugin plugin,
             ISettingsVmFactory settingsVmFactory,
@@ -70,6 +71,28 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             set => Task.Run(() => UpdateEnabled(value));
         }
 
+        public bool IsSettingsPopupOpen
+        {
+            get => _isSettingsPopupOpen;
+            set
+            {
+                if (!SetAndNotify(ref _isSettingsPopupOpen, value)) return;
+                CheckPrerequisites();
+            }
+        }
+
+        public bool CanInstallPrerequisites
+        {
+            get => _canInstallPrerequisites;
+            set => SetAndNotify(ref _canInstallPrerequisites, value);
+        }
+
+        public bool CanRemovePrerequisites
+        {
+            get => _canRemovePrerequisites;
+            set => SetAndNotify(ref _canRemovePrerequisites, value);
+        }
+
         public void OpenSettings()
         {
             PluginConfigurationDialog configurationViewModel = (PluginConfigurationDialog) Plugin.ConfigurationDialog;
@@ -88,6 +111,49 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
+        public void OpenPluginDirectory()
+        {
+            try
+            {
+                Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", Plugin.Directory.FullName);
+            }
+            catch (Exception e)
+            {
+                _dialogService.ShowExceptionDialog("Welp, we couldn't open the device's plugin folder for you", e);
+            }
+        }
+
+        public async Task Reload()
+        {
+            bool wasEnabled = IsEnabled;
+
+            _pluginManagementService.UnloadPlugin(Plugin);
+            Items.Clear();
+
+            Plugin = _pluginManagementService.LoadPlugin(Plugin.Directory);
+            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
+                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
+
+            if (wasEnabled)
+                await UpdateEnabled(true);
+        }
+
+        public async Task InstallPrerequisites()
+        {
+            if (Plugin.Prerequisites.Any())
+                await ShowPrerequisitesDialog(false);
+        }
+
+        public async Task RemovePrerequisites()
+        {
+            if (Plugin.Prerequisites.Any(p => p.UninstallActions.Any()))
+            {
+                await ShowPrerequisitesDialog(true);
+                NotifyOfPropertyChange(nameof(IsEnabled));
+                NotifyOfPropertyChange(nameof(CanOpenSettings));
+            }
+        }
+        
         public async Task RemoveSettings()
         {
             bool confirmed = await _dialogService.ShowConfirmDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
@@ -109,7 +175,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public async Task Remove()
         {
-            bool confirmed = await _dialogService.ShowConfirmDialog("Delete plugin", "Are you sure you want to delete this plugin?");
+            bool confirmed = await _dialogService.ShowConfirmDialog("Remove plugin", "Are you sure you want to remove this plugin?");
             if (!confirmed)
                 return;
 
@@ -170,10 +236,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
 
                 // Check if all prerequisites are met async
-                if (!await ArePrerequisitesMetAsync())
+                if (!Plugin.ArePrerequisitesMet())
                 {
-                    await _dialogService.ShowDialog<PluginPrerequisitesDialogViewModel>(new Dictionary<string, object> {{"pluginOrFeature", Plugin}});
-                    if (!await ArePrerequisitesMetAsync())
+                    await ShowPrerequisitesDialog(false);
+                    if (!Plugin.ArePrerequisitesMet())
                     {
                         CancelEnable();
                         return;
@@ -194,9 +260,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
             }
             else
-            {
                 _pluginManagementService.DisablePlugin(Plugin, true);
-            }
 
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));
@@ -209,19 +273,17 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             NotifyOfPropertyChange(nameof(CanOpenSettings));
         }
 
-        private async Task<bool> ArePrerequisitesMetAsync()
+        private void CheckPrerequisites()
         {
-            bool needsPrerequisites = false;
-            foreach (PluginPrerequisite pluginPrerequisite in Plugin.Prerequisites)
-            {
-                if (await pluginPrerequisite.IsMet())
-                    continue;
+            CanInstallPrerequisites = Plugin.Prerequisites.Any();
+            CanRemovePrerequisites = Plugin.Prerequisites.Any(p => p.UninstallActions.Any());
+        }
 
-                needsPrerequisites = true;
-                break;
-            }
-
-            return !needsPrerequisites;
+        private async Task<object> ShowPrerequisitesDialog(bool uninstall)
+        {
+            if (uninstall)
+                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> { { "pluginOrFeature", Plugin } });
+            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> { { "pluginOrFeature", Plugin } });
         }
     }
 }

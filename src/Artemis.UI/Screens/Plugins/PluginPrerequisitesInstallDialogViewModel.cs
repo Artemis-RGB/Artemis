@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,28 +12,30 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Plugins
 {
-    public class PluginPrerequisitesDialogViewModel : DialogViewModelBase
+    public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase
     {
+        private readonly IDialogService _dialogService;
         private PluginPrerequisiteViewModel _activePrerequisite;
         private bool _canInstall;
         private bool _isFinished;
         private CancellationTokenSource _tokenSource;
 
-        public PluginPrerequisitesDialogViewModel(object pluginOrFeature, IPrerequisitesVmFactory prerequisitesVmFactory)
+        public PluginPrerequisitesInstallDialogViewModel(object pluginOrFeature, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService)
         {
+            _dialogService = dialogService;
             // Constructor overloading doesn't work very well with Kernel.Get<T> :(
             if (pluginOrFeature is Plugin plugin)
             {
                 Plugin = plugin;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(prerequisitesVmFactory.PluginPrerequisiteViewModel));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
             }
             else if (pluginOrFeature is PluginFeature feature)
             {
                 Feature = feature;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(prerequisitesVmFactory.PluginPrerequisiteViewModel));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
             }
             else
-                throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesDialogViewModel)}");
+                throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesInstallDialogViewModel)}");
 
             foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
                 pluginPrerequisiteViewModel.ConductWith(this);
@@ -81,11 +84,11 @@ namespace Artemis.UI.Screens.Plugins
             {
                 foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
                 {
-                    ActivePrerequisite = pluginPrerequisiteViewModel;
-                    ActivePrerequisite.IsMet = await ActivePrerequisite.PluginPrerequisite.IsMet();
-                    if (ActivePrerequisite.IsMet)
+                    pluginPrerequisiteViewModel.IsMet = pluginPrerequisiteViewModel.PluginPrerequisite.IsMet();
+                    if (pluginPrerequisiteViewModel.IsMet)
                         continue;
 
+                    ActivePrerequisite = pluginPrerequisiteViewModel;
                     await ActivePrerequisite.Install(_tokenSource.Token);
 
                     // Wait after the task finished for the user to process what happened
@@ -94,7 +97,21 @@ namespace Artemis.UI.Screens.Plugins
                 }
 
                 if (Prerequisites.All(p => p.IsMet))
+                {
                     IsFinished = true;
+                    return;
+                }
+
+                // This shouldn't be happening and the experience isn't very nice for the user (too lazy to make a nice UI for such an edge case)
+                // but at least give some feedback
+                Session?.Close(false);
+                await _dialogService.ShowConfirmDialog(
+                    "Plugin prerequisites",
+                    "All prerequisites are installed but some still aren't met. \r\nPlease try again or contact the plugin creator.",
+                    "Confirm",
+                    ""
+                );
+                await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{"pluginOrFeature", Plugin}});
             }
             catch (OperationCanceledException)
             {
@@ -118,8 +135,10 @@ namespace Artemis.UI.Screens.Plugins
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
+            CanInstall = false;
+            Task.Run(() => CanInstall = !Plugin.ArePrerequisitesMet());
+
             base.OnInitialActivate();
-            CanInstall = Prerequisites.Any(p => !p.IsMet);
         }
 
         #endregion

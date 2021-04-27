@@ -21,6 +21,9 @@ namespace Artemis.Core
         {
             Source = source;
             Target = target;
+
+            ShowProgressBar = true;
+            ShowSubProgressBar = true;
         }
 
         /// <summary>

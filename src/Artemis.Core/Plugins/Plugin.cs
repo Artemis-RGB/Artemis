@@ -126,6 +126,14 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Determines whether the prerequisites of this plugin are met
+        /// </summary>
+        public bool ArePrerequisitesMet()
+        {
+            return Prerequisites.All(p => p.IsMet());
+        }
+
+        /// <summary>
         ///     Occurs when the plugin is enabled
         /// </summary>
         public event EventHandler? Enabled;

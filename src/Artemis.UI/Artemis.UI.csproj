@@ -359,6 +359,9 @@
 		<Page Update="DefaultTypes\PropertyInput\FloatRangePropertyInputView.xaml">
 			<SubType>Designer</SubType>
 		</Page>
+		<Page Update="Screens\Plugins\PluginPrerequisitesUninstallDialogView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+		</Page>
 		<Page Update="Screens\ProfileEditor\Dialogs\ProfileEditView.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
