@@ -12,9 +12,9 @@
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
              Width="400"
-             Height="400"
-             d:DesignHeight="450"
-             d:DesignWidth="800"
+             Height="425"
+             d:DesignHeight="425"
+             d:DesignWidth="400"
              d:DataContext="{d:DesignInstance local:GradientEditorViewModel}">
     <UserControl.Resources>
         <shared:ColorGradientToGradientStopsConverter x:Key="ColorGradientToGradientStopsConverter" />
@@ -90,8 +90,43 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-
-            <TextBlock Margin="0 5">Selected stop</TextBlock>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 8 8 8"
+                    Command="{s:Action SpreadColorStops}" 
+                    ToolTip="Distribute Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
+                    HorizontalAlignment="Left"
+                    Height="25">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="DistributeHorizontalCenter"/>
+                        <TextBlock Margin="6 0 0 0">Distribute</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 8 8 8"
+                    Command="{s:Action RotateColorStops}" 
+                    ToolTip="Rotate Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
+                    HorizontalAlignment="Left"
+                    Height="25">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="AxisZRotateCounterclockwise" />
+                        <TextBlock Margin="6 0 0 0">Rotate</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 8 8 8"
+                    Command="{s:Action FlipColorStops}" 
+                    IsEnabled="{Binding HasMoreThanOneStop}" 
+                    HorizontalAlignment="Left"
+                    Height="25" ToolTip="Flip Stops">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="FlipHorizontal"/>
+                        <TextBlock Margin="6 0 0 0">Flip</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            
+            <TextBlock Margin="0 6 0 0" FontWeight="Bold">Selected stop:</TextBlock>
 
             <Grid Margin="0 5">
                 <Grid.ColumnDefinitions>
@@ -122,8 +157,12 @@
                         Margin="8,0,0,0"
                         IsEnabled="{Binding HasSelectedColorStopViewModel}"
                         Command="{s:Action RemoveColorStop}"
-                        CommandParameter="{Binding SelectedColorStopViewModel}">
-                    DELETE
+                        CommandParameter="{Binding SelectedColorStopViewModel}"
+                        ToolTip="Delete Selected Stop">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="Delete"/>
+                        <TextBlock Margin="4 0 0 0">Delete</TextBlock>
+                    </StackPanel>
                 </Button>
             </Grid>
         </StackPanel>

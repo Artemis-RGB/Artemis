@@ -27,6 +27,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
             PropertyChanged += UpdateColorStopViewModels;
             ColorGradient.CollectionChanged += ColorGradientOnCollectionChanged;
+            ColorStopViewModels.CollectionChanged += ColorStopViewModelsOnCollectionChanged;
         }
 
         #region Overrides of DialogViewModelBase
@@ -53,6 +54,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         }
 
         public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
+        public bool HasMoreThanOneStop => ColorStopViewModels.Count > 1;
 
         public ColorGradient ColorGradient { get; }
 
@@ -79,6 +81,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             ColorStopViewModels.Insert(index, viewModel);
 
             SelectColorStop(viewModel);
+            NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
         }
 
         public void RemoveColorStop(ColorStopViewModel colorStopViewModel)
@@ -90,6 +93,38 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             ColorGradient.Remove(colorStopViewModel.ColorStop);
 
             SelectColorStop(null);
+            NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
+        }
+
+        public void SpreadColorStops()
+        {
+            var stops = ColorStopViewModels.OrderBy(x => x.OffsetFloat);
+            int index = 0;
+            foreach (ColorStopViewModel stop in stops)
+            {
+                stop.OffsetFloat = index / ((float)stops.Count() - 1);
+                index++;
+            }
+        }
+
+        public void RotateColorStops()
+        {
+            var stops = ColorStopViewModels.OrderByDescending(x => x.OffsetFloat);
+            float lastStopPosition = stops.Last().OffsetFloat;
+            foreach (ColorStopViewModel stop in stops)
+            {
+                float tempStop = stop.OffsetFloat;
+                stop.OffsetFloat = lastStopPosition;
+                lastStopPosition = tempStop;
+            }
+        }
+
+        public void FlipColorStops()
+        {
+            foreach (ColorStopViewModel stop in ColorStopViewModels)
+            {
+                stop.OffsetFloat = 1 - stop.OffsetFloat;
+            }
         }
 
         public Point GetPositionInPreview(object sender, MouseEventArgs e)
@@ -127,10 +162,15 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             foreach (ColorGradientStop colorStop in ColorGradient)
                 ColorStopViewModels.Add(new ColorStopViewModel(this, colorStop));
         }
-        
+
         private void ColorGradientOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(ColorGradient));
+        }
+
+        private void ColorStopViewModelsOnCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
         }
     }
 }
