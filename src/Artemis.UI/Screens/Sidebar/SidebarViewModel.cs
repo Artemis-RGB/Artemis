@@ -9,6 +9,7 @@ using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
+using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.News;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -200,12 +201,19 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void ActivateViewModel<T>()
         {
+            if (SelectedItem != null && SelectedItem.GetType() == typeof(T))
+                return;
             SelectedItem = (IScreen) _kernel.Get<T>();
         }
 
         private void ActivateModule(INavigationItem sidebarItem)
         {
-            SelectedItem = SidebarModules.ContainsKey(sidebarItem) ? _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]) : null;
+            if (!SidebarModules.ContainsKey(sidebarItem))
+                return;
+            if (SelectedItem is ModuleRootViewModel moduleRootViewModel && moduleRootViewModel.Module == SidebarModules[sidebarItem])
+                return;
+            
+            SelectedItem = _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]);
         }
 
         #region IDisposable

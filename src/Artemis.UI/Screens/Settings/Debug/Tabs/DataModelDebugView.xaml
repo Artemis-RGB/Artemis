@@ -69,8 +69,7 @@
         <TreeView Grid.Row="1" 
                   ItemsSource="{Binding MainDataModel.Children}"
                   HorizontalContentAlignment="Stretch"
-                  VirtualizingStackPanel.IsVirtualizing="True"
-                  VirtualizingStackPanel.VirtualizationMode="Recycling">
+                  VirtualizingStackPanel.IsVirtualizing="True">
             <TreeView.Resources>
                 <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
                     <Setter Property="IsExpanded" Value="{Binding IsVisualizationExpanded, Mode=TwoWay}" />
