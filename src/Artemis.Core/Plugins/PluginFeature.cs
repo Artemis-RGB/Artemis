@@ -60,11 +60,6 @@ namespace Artemis.Core
         /// </summary>
         public TimeSpan RenderTime { get; private set; }
 
-        /// <summary>
-        ///     Gets a list of prerequisites for this plugin feature
-        /// </summary>
-        public List<PluginPrerequisite> Prerequisites { get; } = new();
-
         internal PluginFeatureEntity Entity { get; set; } = null!; // Will be set right after construction
 
         /// <summary>

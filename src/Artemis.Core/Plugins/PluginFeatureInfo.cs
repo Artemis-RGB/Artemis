@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.LayerBrushes;
@@ -126,6 +128,19 @@ namespace Artemis.Core
         {
             get => _instance;
             internal set => SetAndNotify(ref _instance, value);
+        }
+
+        /// <summary>
+        ///     Gets a list of prerequisites for this plugin feature
+        /// </summary>
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <summary>
+        ///     Determines whether the prerequisites of this feature are met
+        /// </summary>
+        public bool ArePrerequisitesMet()
+        {
+            return Prerequisites.All(p => p.IsMet());
         }
 
         /// <inheritdoc />

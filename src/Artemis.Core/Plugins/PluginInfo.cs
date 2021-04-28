@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -115,6 +117,20 @@ namespace Artemis.Core
         {
             get => _plugin;
             internal set => SetAndNotify(ref _plugin, value);
+        }
+
+        /// <summary>
+        ///     Gets a list of prerequisites for this plugin
+        /// </summary>
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+
+        /// <summary>
+        ///     Determines whether the prerequisites of this plugin are met
+        /// </summary>
+        public bool ArePrerequisitesMet()
+        {
+            return Prerequisites.All(p => p.IsMet());
         }
 
         /// <inheritdoc />

@@ -381,7 +381,7 @@ namespace Artemis.Core.Services
                 return;
             }
 
-            if (!plugin.ArePrerequisitesMet())
+            if (!plugin.Info.ArePrerequisitesMet())
                 throw new ArtemisPluginPrerequisiteException(plugin, null, "Cannot enable a plugin whose prerequisites aren't all met");
 
             // Create the Ninject child kernel and load the module

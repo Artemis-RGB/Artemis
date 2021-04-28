@@ -32,12 +32,12 @@ namespace Artemis.UI.Screens.Plugins
             if (pluginOrFeature is Plugin plugin)
             {
                 Plugin = plugin;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Info.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
             }
             else if (pluginOrFeature is PluginFeature feature)
             {
                 Feature = feature;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Info.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
             }
             else
                 throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesInstallDialogViewModel)}");
@@ -144,7 +144,10 @@ namespace Artemis.UI.Screens.Plugins
         {
             CanUninstall = false;
             // Could be slow so take it off of the UI thread
-            Task.Run(() => CanUninstall = Plugin.Prerequisites.Any(p => p.IsMet()));
+            if (Plugin != null)
+                Task.Run(() => CanUninstall = Plugin.Info.Prerequisites.Any(p => p.IsMet()));
+            else
+                Task.Run(() => CanUninstall = Feature.Info.Prerequisites.Any(p => p.IsMet()));
 
             base.OnInitialActivate();
         }

@@ -79,11 +79,6 @@ namespace Artemis.Core
         public IKernel? Kernel { get; internal set; }
 
         /// <summary>
-        ///     Gets a list of prerequisites for this plugin feature
-        /// </summary>
-        public List<PluginPrerequisite> Prerequisites { get; } = new();
-
-        /// <summary>
         ///     The PluginLoader backing this plugin
         /// </summary>
         internal PluginLoader? PluginLoader { get; set; }
@@ -118,19 +113,21 @@ namespace Artemis.Core
         {
             return _features.FirstOrDefault(i => i.Instance is T)?.Instance as T;
         }
+        
+        /// <summary>
+        ///     Looks up the feature info the feature of type <typeparamref name="T" />
+        /// </summary>
+        /// <typeparam name="T">The type of feature to find</typeparam>
+        /// <returns>If found, feature info of the feature</returns>
+        public PluginFeatureInfo? GetFeatureInfo<T>() where T : PluginFeature
+        {
+            return _features.FirstOrDefault(i => i.FeatureType == typeof(T));
+        }
 
         /// <inheritdoc />
         public override string ToString()
         {
             return Info.ToString();
-        }
-
-        /// <summary>
-        ///     Determines whether the prerequisites of this plugin are met
-        /// </summary>
-        public bool ArePrerequisitesMet()
-        {
-            return Prerequisites.All(p => p.IsMet());
         }
 
         /// <summary>

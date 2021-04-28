@@ -27,12 +27,12 @@ namespace Artemis.UI.Screens.Plugins
             if (pluginOrFeature is Plugin plugin)
             {
                 Plugin = plugin;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Info.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
             }
             else if (pluginOrFeature is PluginFeature feature)
             {
                 Feature = feature;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
+                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Info.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
             }
             else
                 throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesInstallDialogViewModel)}");
@@ -136,7 +136,10 @@ namespace Artemis.UI.Screens.Plugins
         protected override void OnInitialActivate()
         {
             CanInstall = false;
-            Task.Run(() => CanInstall = !Plugin.ArePrerequisitesMet());
+            if (Plugin != null)
+                Task.Run(() => CanInstall = !Plugin.Info.ArePrerequisitesMet());
+            else
+                Task.Run(() => CanInstall = !Feature.Info.ArePrerequisitesMet());
 
             base.OnInitialActivate();
         }

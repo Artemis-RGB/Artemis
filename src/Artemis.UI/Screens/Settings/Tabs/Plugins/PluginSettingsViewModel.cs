@@ -140,13 +140,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public async Task InstallPrerequisites()
         {
-            if (Plugin.Prerequisites.Any())
+            if (Plugin.Info.Prerequisites.Any())
                 await ShowPrerequisitesDialog(false);
         }
 
         public async Task RemovePrerequisites()
         {
-            if (Plugin.Prerequisites.Any(p => p.UninstallActions.Any()))
+            if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()))
             {
                 await ShowPrerequisitesDialog(true);
                 NotifyOfPropertyChange(nameof(IsEnabled));
@@ -178,6 +178,12 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             bool confirmed = await _dialogService.ShowConfirmDialog("Remove plugin", "Are you sure you want to remove this plugin?");
             if (!confirmed)
                 return;
+
+            // If the plugin or any of its features has uninstall actions, offer to run these
+            if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) || Plugin.Features.Any(f => f.Prerequisites.Any(fp => fp.UninstallActions.Any())))
+            {
+
+            }
 
             try
             {
@@ -236,10 +242,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
 
                 // Check if all prerequisites are met async
-                if (!Plugin.ArePrerequisitesMet())
+                if (!Plugin.Info.ArePrerequisitesMet())
                 {
                     await ShowPrerequisitesDialog(false);
-                    if (!Plugin.ArePrerequisitesMet())
+                    if (!Plugin.Info.ArePrerequisitesMet())
                     {
                         CancelEnable();
                         return;
@@ -275,8 +281,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private void CheckPrerequisites()
         {
-            CanInstallPrerequisites = Plugin.Prerequisites.Any();
-            CanRemovePrerequisites = Plugin.Prerequisites.Any(p => p.UninstallActions.Any());
+            CanInstallPrerequisites = Plugin.Info.Prerequisites.Any();
+            CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any());
         }
 
         private async Task<object> ShowPrerequisitesDialog(bool uninstall)
