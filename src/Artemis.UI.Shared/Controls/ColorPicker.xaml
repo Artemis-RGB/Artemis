@@ -73,7 +73,9 @@
                  MinWidth="95"
                  MaxLength="9"
                  Margin="0"
-                 HorizontalAlignment="Stretch">
+                 HorizontalAlignment="Stretch"
+                 FontFamily="Consolas"
+                 CharacterCasing="Upper">
             <materialDesign:TextFieldAssist.CharacterCounterStyle>
                 <Style TargetType="TextBlock" />
             </materialDesign:TextFieldAssist.CharacterCounterStyle>
@@ -82,7 +84,7 @@
         <Border Width="15"
                 Height="15"
                 CornerRadius="15"
-                Margin="0 0 8 0"
+                Margin="0 0 2 0"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Right"
                 Background="{StaticResource Checkerboard}">
