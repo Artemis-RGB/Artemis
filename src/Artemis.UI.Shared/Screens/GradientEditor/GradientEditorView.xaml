@@ -114,7 +114,7 @@
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
-                    Margin="0 0 8 0"
+                    Margin="0 4 8 8"
                     Command="{s:Action FlipColorStops}" 
                     IsEnabled="{Binding HasMoreThanOneStop}" 
                     HorizontalAlignment="Left"
