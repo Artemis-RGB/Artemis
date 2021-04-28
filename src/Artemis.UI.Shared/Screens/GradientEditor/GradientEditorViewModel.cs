@@ -104,7 +104,12 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public void RotateColorStops()
         {
-            List<ColorStopViewModel> stops = ColorStopViewModels.OrderByDescending(x => x.OffsetFloat).ToList();
+            List<ColorStopViewModel> stops;
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift)) 
+                stops = ColorStopViewModels.OrderBy(x => x.OffsetFloat).ToList();
+            else 
+                stops = ColorStopViewModels.OrderByDescending(x => x.OffsetFloat).ToList();
+
             float lastStopPosition = stops.Last().OffsetFloat;
             foreach (ColorStopViewModel stop in stops)
             {
