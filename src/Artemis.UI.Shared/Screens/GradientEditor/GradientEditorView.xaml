@@ -12,8 +12,8 @@
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
              Width="400"
-             Height="425"
-             d:DesignHeight="425"
+             Height="450"
+             d:DesignHeight="450"
              d:DesignWidth="400"
              d:DataContext="{d:DesignInstance local:GradientEditorViewModel}">
     <UserControl.Resources>
@@ -90,38 +90,63 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
-                    Margin="0 8 8 8"
+                    Margin="0 4 8 8"
                     Command="{s:Action SpreadColorStops}" 
-                    ToolTip="Distribute Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
+                    ToolTip="Spread Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
                     HorizontalAlignment="Left"
-                    Height="25">
+                    Height="25" Width="100">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="DistributeHorizontalCenter"/>
-                        <TextBlock Margin="6 0 0 0">Distribute</TextBlock>
+                        <TextBlock Margin="6 0 0 0">Spread</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
-                    Margin="0 8 8 8"
+                    Margin="0 4 8 8"
                     Command="{s:Action RotateColorStops}" 
                     ToolTip="Rotate Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
                     HorizontalAlignment="Left"
-                    Height="25">
+                    Height="25" Width="100">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="AxisZRotateCounterclockwise" />
                         <TextBlock Margin="6 0 0 0">Rotate</TextBlock>
                     </StackPanel>
                 </Button>
                 <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
-                    Margin="0 8 8 8"
+                    Margin="0 0 8 0"
                     Command="{s:Action FlipColorStops}" 
                     IsEnabled="{Binding HasMoreThanOneStop}" 
                     HorizontalAlignment="Left"
-                    Height="25" ToolTip="Flip Stops">
+                    Height="25" Width="100" ToolTip="Flip Stops">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="FlipHorizontal"/>
                         <TextBlock Margin="6 0 0 0">Flip</TextBlock>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0">
+                
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 0 8 0"
+                    Command="{s:Action ToggleSeam}" 
+                    IsEnabled="{Binding HasMoreThanOneStop}" 
+                    HorizontalAlignment="Left"
+                    Height="25" Width="100" ToolTip="Toggle Seam">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="ArrowSplitVertical"/>
+                        <TextBlock Margin="6 0 0 0">Seam</TextBlock>
+                    </StackPanel>
+                </Button>
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" 
+                    Margin="0 0 8 0"
+                    Command="{s:Action ClearGradient}" 
+                    IsEnabled="{Binding HasMoreThanOneStop}" 
+                    HorizontalAlignment="Left"
+                    Height="25" Width="100" ToolTip="Clear Gradient">
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="DeleteSweep"/>
+                        <TextBlock Margin="6 0 0 0">Clear</TextBlock>
                     </StackPanel>
                 </Button>
             </StackPanel>
@@ -135,7 +160,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" Orientation="Horizontal">
-                    <Label HorizontalAlignment="Left" Margin="-5,0,0,0">Color:</Label>
+                    <Label HorizontalAlignment="Left" Margin="-5,1,0,0">Color:</Label>
                     <shared:ColorPicker
                         x:Name="CurrentColor"
                         Width="85"
@@ -144,7 +169,7 @@
                         IsEnabled="{Binding HasSelectedColorStopViewModel}" />
 
                     <Label HorizontalAlignment="Center">Location:</Label>
-                    <TextBox Width="40"
+                    <TextBox Width="30"
                              Text="{Binding SelectedColorStopViewModel.OffsetPercent}"
                              IsEnabled="{Binding HasSelectedColorStopViewModel}"
                              materialDesign:HintAssist.Hint="0"

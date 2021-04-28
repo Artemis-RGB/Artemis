@@ -36,6 +36,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
         public override void OnDialogClosed(object sender, DialogClosingEventArgs e)
         {
             ColorGradient.CollectionChanged -= ColorGradientOnCollectionChanged;
+            ColorStopViewModels.CollectionChanged -= ColorStopViewModelsOnCollectionChanged;
             base.OnDialogClosed(sender, e);
         }
 
@@ -125,6 +126,43 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             {
                 stop.OffsetFloat = 1 - stop.OffsetFloat;
             }
+        }
+
+        public void ToggleSeam()
+        {
+            if (ColorGradient.IsSeamless())
+            {
+                // Remove the last stop
+                var stop = ColorStopViewModels.OrderBy(x => x.OffsetFloat).Last();
+
+                if (stop == SelectedColorStopViewModel) SelectColorStop(null);
+
+                ColorStopViewModels.Remove(stop);
+                ColorGradient.Remove(stop.ColorStop);
+
+                // Distribute the stops if there is still more than one
+                if (ColorGradient.Count > 1)
+                    SpreadColorStops();
+            }
+            else
+            {
+                // Add a stop to the end that is the same color as the first stop
+                ColorGradientStop stop = new(ColorGradient.First().Color, 100);
+                ColorGradient.Add(stop);
+
+                ColorStopViewModel viewModel = new(this, stop);
+                ColorStopViewModels.Add(viewModel);
+
+                NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
+
+                // Distribute the stops
+                SpreadColorStops();
+            }
+        }
+        public void ClearGradient()
+        {
+            ColorGradient.Clear();
+            ColorStopViewModels.Clear();
         }
 
         public Point GetPositionInPreview(object sender, MouseEventArgs e)
