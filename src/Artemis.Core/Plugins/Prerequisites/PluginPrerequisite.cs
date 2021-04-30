@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -10,24 +11,6 @@ namespace Artemis.Core
     public abstract class PluginPrerequisite : CorePropertyChanged
     {
         private PluginPrerequisiteAction? _currentAction;
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="PluginPrerequisite" /> class
-        /// </summary>
-        /// <param name="plugin">The plugin this is a prerequisite for</param>
-        protected PluginPrerequisite(Plugin plugin)
-        {
-            Plugin = plugin;
-        }
-
-        /// <summary>
-        ///     Creates a new instance of the <see cref="PluginPrerequisite" /> class
-        /// </summary>
-        /// <param name="pluginFeature">The plugin feature this is a prerequisite for</param>
-        protected PluginPrerequisite(PluginFeature pluginFeature)
-        {
-            PluginFeature = pluginFeature;
-        }
 
         /// <summary>
         ///     Gets the name of the prerequisite
@@ -62,18 +45,6 @@ namespace Artemis.Core
             get => _currentAction;
             private set => SetAndNotify(ref _currentAction, value);
         }
-
-        /// <summary>
-        ///     Gets or sets the plugin this prerequisite is for
-        ///     <para>Note: Only one plugin or a plugin feature can be set at once</para>
-        /// </summary>
-        public Plugin? Plugin { get; }
-
-        /// <summary>
-        ///     Gets or sets the feature this prerequisite is for
-        ///     <para>Note: Only one plugin or a plugin feature can be set at once</para>
-        /// </summary>
-        public PluginFeature? PluginFeature { get; }
 
         /// <summary>
         ///     Execute all install actions

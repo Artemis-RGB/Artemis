@@ -10,7 +10,7 @@ namespace Artemis.Core
     ///     Represents basic info about a plugin and contains a reference to the instance of said plugin
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginInfo : CorePropertyChanged
+    public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         private bool _autoEnableFeatures = true;
         private string? _description;
@@ -119,19 +119,11 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _plugin, value);
         }
 
-        /// <summary>
-        ///     Gets a list of prerequisites for this plugin
-        /// </summary>
+        /// <inheritdoc />
         public List<PluginPrerequisite> Prerequisites { get; } = new();
 
-
-        /// <summary>
-        ///     Determines whether the prerequisites of this plugin are met
-        /// </summary>
-        public bool ArePrerequisitesMet()
-        {
-            return Prerequisites.All(p => p.IsMet());
-        }
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
 
         /// <inheritdoc />
         public override string ToString()

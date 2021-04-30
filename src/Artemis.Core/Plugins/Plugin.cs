@@ -71,7 +71,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin bootstrapper
         /// </summary>
-        public IPluginBootstrapper? Bootstrapper { get; internal set; }
+        public PluginBootstrapper? Bootstrapper { get; internal set; }
 
         /// <summary>
         ///     The Ninject kernel of the plugin
@@ -118,10 +118,11 @@ namespace Artemis.Core
         ///     Looks up the feature info the feature of type <typeparamref name="T" />
         /// </summary>
         /// <typeparam name="T">The type of feature to find</typeparam>
-        /// <returns>If found, feature info of the feature</returns>
-        public PluginFeatureInfo? GetFeatureInfo<T>() where T : PluginFeature
+        /// <returns>Feature info of the feature</returns>
+        public PluginFeatureInfo GetFeatureInfo<T>() where T : PluginFeature
         {
-            return _features.FirstOrDefault(i => i.FeatureType == typeof(T));
+            // This should be a safe assumption because any type of PluginFeature is registered and added
+            return _features.First(i => i.FeatureType == typeof(T));
         }
 
         /// <inheritdoc />

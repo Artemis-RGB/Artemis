@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -16,6 +19,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
         private readonly IMessageService _messageService;
+        private bool _isSettingsPopupOpen;
+        private bool _canInstallPrerequisites;
+        private bool _canRemovePrerequisites;
 
         public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
             bool showShield,
@@ -51,6 +57,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         }
 
         public bool CanToggleEnabled => FeatureInfo.Plugin.IsEnabled && !FeatureInfo.AlwaysEnabled;
+        public bool CanInstallPrerequisites => FeatureInfo.Prerequisites.Any();
+        public bool CanRemovePrerequisites => FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any());
+        public bool IsPopupEnabled => CanInstallPrerequisites || CanRemovePrerequisites;
 
         public void ShowLogsFolder()
         {
@@ -96,6 +105,21 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             base.OnClose();
         }
 
+        public async Task InstallPrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any())
+                await ShowPrerequisitesDialog(false, FeatureInfo);
+        }
+
+        public async Task RemovePrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
+            {
+                await ShowPrerequisitesDialog(true, FeatureInfo);
+                NotifyOfPropertyChange(nameof(IsEnabled));
+            }
+        }
+
         private async Task UpdateEnabled(bool enable)
         {
             if (IsEnabled == enable || FeatureInfo.Instance == null)
@@ -120,7 +144,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                         }
                     }
 
-                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance, true));
+                    // Check if all prerequisites are met async
+                    if (!FeatureInfo.ArePrerequisitesMet())
+                    {
+                        await ShowPrerequisitesDialog(false, FeatureInfo);
+                        if (!FeatureInfo.ArePrerequisitesMet())
+                        {
+                            NotifyOfPropertyChange(nameof(IsEnabled));
+                            return;
+                        }
+                    }
+
+                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance!, true));
                 }
                 catch (Exception e)
                 {
@@ -136,6 +171,13 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 _pluginManagementService.DisablePluginFeature(FeatureInfo.Instance, true);
                 NotifyOfPropertyChange(nameof(IsEnabled));
             }
+        }
+
+        private async Task<object> ShowPrerequisitesDialog(bool uninstall, IPrerequisitesSubject subject)
+        {
+            if (uninstall)
+                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> { { "subject", subject } });
+            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> { { "subject", subject } });
         }
 
         #region Event handlers

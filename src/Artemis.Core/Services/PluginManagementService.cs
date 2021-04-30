@@ -345,13 +345,13 @@ namespace Artemis.Core.Services
             if (!featureTypes.Any())
                 _logger.Warning("Plugin {plugin} contains no features", plugin);
 
-            List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(IPluginBootstrapper).IsAssignableFrom(t)).ToList();
+            List<Type> bootstrappers = plugin.Assembly.GetTypes().Where(t => typeof(PluginBootstrapper).IsAssignableFrom(t)).ToList();
             if (bootstrappers.Count > 1)
                 _logger.Warning($"{plugin} has more than one bootstrapper, only initializing {bootstrappers.First().FullName}");
             if (bootstrappers.Any())
             {
-                plugin.Bootstrapper = (IPluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
-                plugin.Bootstrapper?.OnPluginLoaded(plugin);
+                plugin.Bootstrapper = (PluginBootstrapper?) Activator.CreateInstance(bootstrappers.First());
+                plugin.Bootstrapper?.InternalOnPluginLoaded(plugin);
             }
 
             lock (_plugins)

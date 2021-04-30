@@ -15,7 +15,7 @@ namespace Artemis.Core
     ///     Represents basic info about a plugin feature and contains a reference to the instance of said feature
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginFeatureInfo : CorePropertyChanged
+    public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         private string? _description;
         private string? _icon;
@@ -31,7 +31,7 @@ namespace Artemis.Core
             Description = attribute?.Description;
             Icon = attribute?.Icon;
             AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
-            
+
             if (Icon != null) return;
             if (typeof(BaseDataModelExpansion).IsAssignableFrom(featureType))
                 Icon = "TableAdd";
@@ -130,18 +130,11 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _instance, value);
         }
 
-        /// <summary>
-        ///     Gets a list of prerequisites for this plugin feature
-        /// </summary>
+        /// <inheritdoc />
         public List<PluginPrerequisite> Prerequisites { get; } = new();
 
-        /// <summary>
-        ///     Determines whether the prerequisites of this feature are met
-        /// </summary>
-        public bool ArePrerequisitesMet()
-        {
-            return Prerequisites.All(p => p.IsMet());
-        }
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
 
         /// <inheritdoc />
         public override string ToString()

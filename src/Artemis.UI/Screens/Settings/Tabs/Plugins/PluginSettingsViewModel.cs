@@ -136,24 +136,26 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             if (wasEnabled)
                 await UpdateEnabled(true);
+
+            _messageService.ShowMessage("Reloaded plugin.");
         }
 
         public async Task InstallPrerequisites()
         {
             if (Plugin.Info.Prerequisites.Any())
-                await ShowPrerequisitesDialog(false);
+                await ShowPrerequisitesDialog(false, Plugin.Info);
         }
 
         public async Task RemovePrerequisites()
         {
             if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()))
             {
-                await ShowPrerequisitesDialog(true);
+                await ShowPrerequisitesDialog(true, Plugin.Info);
                 NotifyOfPropertyChange(nameof(IsEnabled));
                 NotifyOfPropertyChange(nameof(CanOpenSettings));
             }
         }
-        
+
         public async Task RemoveSettings()
         {
             bool confirmed = await _dialogService.ShowConfirmDialog("Clear plugin settings", "Are you sure you want to clear the settings of this plugin?");
@@ -180,9 +182,31 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 return;
 
             // If the plugin or any of its features has uninstall actions, offer to run these
+            List<PluginFeatureInfo> featuresToUninstall = Plugin.Features.Where(f => f.Prerequisites.Any(fp => fp.UninstallActions.Any())).ToList();
             if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) || Plugin.Features.Any(f => f.Prerequisites.Any(fp => fp.UninstallActions.Any())))
             {
+                bool remove = await _dialogService.ShowConfirmDialog(
+                    "Remove plugin",
+                    "This plugin installed one or more prerequisites.\r\nDo you want to remove these?",
+                    "Uninstall",
+                    "Skip"
+                );
+                if (remove)
+                {
+                    if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()))
+                    {
+                        object result = await ShowPrerequisitesDialog(true, Plugin.Info);
+                        if (result is bool resultBool && !resultBool)
+                            return;
+                    }
 
+                    foreach (PluginFeatureInfo pluginFeatureInfo in featuresToUninstall)
+                    {
+                        object result = await ShowPrerequisitesDialog(true, pluginFeatureInfo);
+                        if (result is bool resultBool && !resultBool)
+                            return;
+                    }
+                }
             }
 
             try
@@ -244,7 +268,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 // Check if all prerequisites are met async
                 if (!Plugin.Info.ArePrerequisitesMet())
                 {
-                    await ShowPrerequisitesDialog(false);
+                    await ShowPrerequisitesDialog(false, Plugin.Info);
                     if (!Plugin.Info.ArePrerequisitesMet())
                     {
                         CancelEnable();
@@ -285,11 +309,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any());
         }
 
-        private async Task<object> ShowPrerequisitesDialog(bool uninstall)
+        private async Task<object> ShowPrerequisitesDialog(bool uninstall, IPrerequisitesSubject subject)
         {
             if (uninstall)
-                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> { { "pluginOrFeature", Plugin } });
-            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> { { "pluginOrFeature", Plugin } });
+                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> {{"subject", subject } });
+            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{ "subject", subject } });
         }
     }
 }
