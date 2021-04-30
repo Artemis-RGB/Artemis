@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -44,6 +45,8 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
 
         public bool HasSelectedColorStopViewModel => SelectedColorStopViewModel != null;
         public bool HasMoreThanOneStop => ColorStopViewModels.Count > 1;
+        private bool popupOpen = false;
+        public bool ClearGradientPopupOpen => popupOpen;
 
         public ColorGradient ColorGradient { get; }
 
@@ -91,6 +94,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
         }
 
+        #region Gradient Tools
         public void SpreadColorStops()
         {
             List<ColorStopViewModel> stops = ColorStopViewModels.OrderBy(x => x.OffsetFloat).ToList();
@@ -129,38 +133,66 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             if (ColorGradient.IsSeamless())
             {
                 // Remove the last stop
-                ColorStopViewModel? stop = ColorStopViewModels.OrderBy(x => x.OffsetFloat).Last();
+                ColorStopViewModel? stopToRemove = ColorStopViewModels.OrderBy(x => x.OffsetFloat).Last();
 
-                if (stop == SelectedColorStopViewModel) SelectColorStop(null);
+                if (stopToRemove == SelectedColorStopViewModel) SelectColorStop(null);
 
-                ColorStopViewModels.Remove(stop);
-                ColorGradient.Remove(stop.ColorStop);
+                ColorStopViewModels.Remove(stopToRemove);
+                ColorGradient.Remove(stopToRemove.ColorStop);
 
-                // Distribute the stops if there is still more than one
-                if (ColorGradient.Count > 1)
-                    SpreadColorStops();
+                // Uncompress the stops if there is still more than one
+                List<ColorStopViewModel> stops = ColorStopViewModels.OrderBy(x => x.OffsetFloat).ToList();
+
+                if (stops.Count >= 2)
+                {
+                    float multiplier = stops.Count/(stops.Count - 1f);
+                    foreach (ColorStopViewModel stop in stops)
+                        stop.OffsetFloat = Math.Min(stop.OffsetFloat * multiplier, 100f);
+                }
+                
+
             }
             else
             {
+                // Compress existing stops to the left
+                List<ColorStopViewModel> stops = ColorStopViewModels.OrderBy(x => x.OffsetFloat).ToList();
+
+                float multiplier = (stops.Count - 1f)/stops.Count;
+                foreach (ColorStopViewModel stop in stops)
+                    stop.OffsetFloat *= multiplier;
+
                 // Add a stop to the end that is the same color as the first stop
-                ColorGradientStop stop = new(ColorGradient.First().Color, 100);
-                ColorGradient.Add(stop);
+                ColorGradientStop newStop = new(ColorGradient.First().Color, 1f);
+                ColorGradient.Add(newStop);
 
-                ColorStopViewModel viewModel = new(this, stop);
-                ColorStopViewModels.Add(viewModel);
-
-                NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
-
-                // Distribute the stops
-                SpreadColorStops();
+                int index = ColorGradient.IndexOf(newStop);
+                ColorStopViewModel viewModel = new(this, newStop);
+                ColorStopViewModels.Insert(index, viewModel);
             }
         }
 
+        public void ShowClearGradientPopup()
+        {
+            popupOpen = true;
+            NotifyOfPropertyChange(nameof(ClearGradientPopupOpen));
+        }
+        public void HideClearGradientPopup()
+        {
+            popupOpen = false;
+            NotifyOfPropertyChange(nameof(ClearGradientPopupOpen));
+        }
+        public void ClearGradientAndHide()
+        {
+            ClearGradient();
+            HideClearGradientPopup();
+        }
         public void ClearGradient()
         {
             ColorGradient.Clear();
             ColorStopViewModels.Clear();
         }
+
+        #endregion
 
         public Point GetPositionInPreview(object sender, MouseEventArgs e)
         {
