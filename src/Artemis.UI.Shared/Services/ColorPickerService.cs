@@ -53,7 +53,7 @@ namespace Artemis.UI.Shared.Services
 
         public LinkedList<Color> RecentColors => RecentColorsSetting.Value;
 
-        public Task<object> ShowGradientPicker(ColorGradient colorGradient, string dialogHost)
+        public Task<object?> ShowGradientPicker(ColorGradient colorGradient, string dialogHost)
         {
             if (!string.IsNullOrWhiteSpace(dialogHost))
                 return _dialogService.ShowDialogAt<GradientEditorViewModel>(dialogHost, new Dictionary<string, object> {{"colorGradient", colorGradient}});

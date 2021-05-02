@@ -1,0 +1,37 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Plugins.PluginPrerequisiteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Plugins"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:PluginPrerequisiteViewModel}">
+
+    <StackPanel>
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" Text="{Binding PluginPrerequisite.Name, Mode=OneWay}" />
+        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" TextWrapping="Wrap" Text="{Binding PluginPrerequisite.Description, Mode=OneWay}" Margin="0 0 0 15" />
+
+        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                   TextWrapping="Wrap"
+                   Visibility="{Binding HasMultipleActions, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            <Run Text="Step" />
+            <Run Text="{Binding ActiveStemNumber, Mode=OneWay}" /><Run Text="/" /><Run Text="{Binding Items.Count, Mode=OneWay}" />
+            <Run Text="-" />
+            <Run Text="{Binding ActiveItem.Action.Name, Mode=OneWay}" />
+        </TextBlock>
+        <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                   Foreground="{DynamicResource MaterialDesignBodyLight}"
+                   TextWrapping="Wrap"
+                   Text="{Binding ActiveItem.Action.Name, Mode=OneWay}"
+                   Visibility="{Binding HasMultipleActions, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}" />
+        <ContentControl s:View.Model="{Binding ActiveItem}"
+                        VerticalContentAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        IsTabStop="False"
+                        Margin="0 10 0 0" />
+    </StackPanel>
+</UserControl>

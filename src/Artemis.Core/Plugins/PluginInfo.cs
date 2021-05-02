@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Newtonsoft.Json;
 
 namespace Artemis.Core
@@ -8,7 +10,7 @@ namespace Artemis.Core
     ///     Represents basic info about a plugin and contains a reference to the instance of said plugin
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginInfo : CorePropertyChanged
+    public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         private bool _autoEnableFeatures = true;
         private string? _description;
@@ -116,6 +118,12 @@ namespace Artemis.Core
             get => _plugin;
             internal set => SetAndNotify(ref _plugin, value);
         }
+
+        /// <inheritdoc />
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
 
         /// <inheritdoc />
         public override string ToString()

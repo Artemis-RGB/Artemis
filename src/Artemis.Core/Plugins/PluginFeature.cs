@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Artemis.Core
         private readonly Stopwatch _updateStopwatch = new();
         private bool _isEnabled;
         private Exception? _loadException;
-        
+
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>

@@ -7,7 +7,7 @@ namespace Artemis.UI.Shared.Services
 {
     internal interface IColorPickerService : IArtemisSharedUIService
     {
-        Task<object> ShowGradientPicker(ColorGradient colorGradient, string dialogHost);
+        Task<object?> ShowGradientPicker(ColorGradient colorGradient, string dialogHost);
 
         PluginSetting<bool> PreviewSetting { get; }
         LinkedList<Color> RecentColors { get; }

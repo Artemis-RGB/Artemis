@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
+using Artemis.Storage.Entities.Plugins;
 using Humanizer;
 using Newtonsoft.Json;
 
@@ -13,23 +16,24 @@ namespace Artemis.Core
     ///     Represents basic info about a plugin feature and contains a reference to the instance of said feature
     /// </summary>
     [JsonObject(MemberSerialization.OptIn)]
-    public class PluginFeatureInfo : CorePropertyChanged
+    public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     {
         private string? _description;
         private string? _icon;
         private PluginFeature? _instance;
         private string _name = null!;
 
-        internal PluginFeatureInfo(Plugin plugin, Type featureType, PluginFeatureAttribute? attribute)
+        internal PluginFeatureInfo(Plugin plugin, Type featureType, PluginFeatureEntity pluginFeatureEntity, PluginFeatureAttribute? attribute)
         {
             Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
             FeatureType = featureType ?? throw new ArgumentNullException(nameof(featureType));
+            Entity = pluginFeatureEntity;
 
             Name = attribute?.Name ?? featureType.Name.Humanize(LetterCasing.Title);
             Description = attribute?.Description;
             Icon = attribute?.Icon;
             AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
-            
+
             if (Icon != null) return;
             if (typeof(BaseDataModelExpansion).IsAssignableFrom(featureType))
                 Icon = "TableAdd";
@@ -46,7 +50,7 @@ namespace Artemis.Core
             else
                 Icon = "Plugin";
         }
-
+        
         internal PluginFeatureInfo(Plugin plugin, PluginFeatureAttribute? attribute, PluginFeature instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
@@ -120,6 +124,11 @@ namespace Artemis.Core
         public bool AlwaysEnabled { get; }
 
         /// <summary>
+        /// Gets a boolean indicating whether the feature is enabled in persistent storage
+        /// </summary>
+        public bool EnabledInStorage => Entity.IsEnabled;
+
+        /// <summary>
         ///     Gets the feature this info is associated with
         /// </summary>
         public PluginFeature? Instance
@@ -127,6 +136,14 @@ namespace Artemis.Core
             get => _instance;
             internal set => SetAndNotify(ref _instance, value);
         }
+
+        /// <inheritdoc />
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
+
+        internal PluginFeatureEntity Entity { get; }
 
         /// <inheritdoc />
         public override string ToString()

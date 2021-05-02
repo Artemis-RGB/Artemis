@@ -2,6 +2,7 @@
 using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
@@ -95,7 +96,13 @@ namespace Artemis.UI.Ninject.Factories
         TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
     }
 
-    public interface IDataBindingsVmFactory
+    public interface IPrerequisitesVmFactory : IVmFactory
+    {
+        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
+    }
+
+    // TODO: Move these two
+    public interface IDataBindingsVmFactory 
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
@@ -104,7 +111,7 @@ namespace Artemis.UI.Ninject.Factories
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
-    public interface IPropertyVmFactory
+    public interface IPropertyVmFactory 
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
