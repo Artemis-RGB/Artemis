@@ -7,32 +7,24 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisPluginPrerequisiteException : Exception
     {
-        internal ArtemisPluginPrerequisiteException(Plugin plugin, PluginPrerequisite? pluginPrerequisite)
+        internal ArtemisPluginPrerequisiteException(IPrerequisitesSubject subject)
         {
-            Plugin = plugin;
-            PluginPrerequisite = pluginPrerequisite;
+            Subject = subject;
         }
 
-        internal ArtemisPluginPrerequisiteException(Plugin plugin, PluginPrerequisite? pluginPrerequisite, string message) : base(message)
+        internal ArtemisPluginPrerequisiteException(IPrerequisitesSubject subject, string message) : base(message)
         {
-            Plugin = plugin;
-            PluginPrerequisite = pluginPrerequisite;
+            Subject = subject;
         }
 
-        internal ArtemisPluginPrerequisiteException(Plugin plugin, PluginPrerequisite? pluginPrerequisite, string message, Exception inner) : base(message, inner)
+        internal ArtemisPluginPrerequisiteException(IPrerequisitesSubject subject, string message, Exception inner) : base(message, inner)
         {
-            Plugin = plugin;
-            PluginPrerequisite = pluginPrerequisite;
+            Subject = subject;
         }
 
         /// <summary>
-        ///     Gets the plugin the error is related to
+        ///     Gets the subject the error is related to
         /// </summary>
-        public Plugin Plugin { get; }
-
-        /// <summary>
-        ///     Gets the plugin prerequisite the error is related to
-        /// </summary>
-        public PluginPrerequisite? PluginPrerequisite { get; }
+        public IPrerequisitesSubject Subject { get; }
     }
 }

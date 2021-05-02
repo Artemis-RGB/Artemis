@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
@@ -17,38 +16,29 @@ namespace Artemis.UI.Screens.Plugins
     {
         private readonly IDialogService _dialogService;
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly List<IPrerequisitesSubject> _subjects;
         private PluginPrerequisiteViewModel _activePrerequisite;
         private bool _canUninstall;
         private bool _isFinished;
         private CancellationTokenSource _tokenSource;
 
-        public PluginPrerequisitesUninstallDialogViewModel(IPrerequisitesSubject subject, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService,
-            IPluginManagementService pluginManagementService)
+        public PluginPrerequisitesUninstallDialogViewModel(List<IPrerequisitesSubject> subjects, string cancelLabel, IPrerequisitesVmFactory prerequisitesVmFactory,
+            IDialogService dialogService, IPluginManagementService pluginManagementService)
         {
+            _subjects = subjects;
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
 
-            // Constructor overloading doesn't work very well with Kernel.Get<T> :(
-            if (subject is PluginInfo plugin)
-            {
-                PluginInfo = plugin;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
-            }
-            else if (subject is PluginFeatureInfo feature)
-            {
-                FeatureInfo = feature;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
-            }
-            else
-                throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesInstallDialogViewModel)}");
+            CancelLabel = cancelLabel;
+            Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>();
+            foreach (IPrerequisitesSubject prerequisitesSubject in subjects)
+                Prerequisites.AddRange(prerequisitesSubject.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, true)));
 
             foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
                 pluginPrerequisiteViewModel.ConductWith(this);
         }
 
-
-        public PluginFeatureInfo FeatureInfo { get; }
-        public PluginInfo PluginInfo { get; }
+        public string CancelLabel { get; }
         public BindableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
         public PluginPrerequisiteViewModel ActivePrerequisite
@@ -69,9 +59,6 @@ namespace Artemis.UI.Screens.Plugins
             set => SetAndNotify(ref _isFinished, value);
         }
 
-        public bool IsSubjectPlugin => PluginInfo != null;
-        public bool IsSubjectFeature => FeatureInfo != null;
-
         #region Overrides of DialogViewModelBase
 
         /// <inheritdoc />
@@ -87,10 +74,26 @@ namespace Artemis.UI.Screens.Plugins
         {
             CanUninstall = false;
 
-            if (PluginInfo != null)
-                _pluginManagementService.DisablePlugin(PluginInfo.Plugin, true);
-            else if (FeatureInfo?.Instance != null)
-                _pluginManagementService.DisablePluginFeature(FeatureInfo.Instance, true);
+            // Disable all subjects that are plugins, this will disable their features too
+            foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
+            {
+                if (prerequisitesSubject is PluginInfo pluginInfo)
+                    _pluginManagementService.DisablePlugin(pluginInfo.Plugin, true);
+            }
+
+            // Disable all subjects that are features if still required
+            foreach (IPrerequisitesSubject prerequisitesSubject in _subjects)
+            {
+                if (prerequisitesSubject is not PluginFeatureInfo featureInfo) 
+                    continue;
+
+                // Disable the parent plugin if the feature is AlwaysEnabled
+                if (featureInfo.AlwaysEnabled)
+                    _pluginManagementService.DisablePlugin(featureInfo.Plugin, true);
+                else if (featureInfo.Instance != null) 
+                    _pluginManagementService.DisablePluginFeature(featureInfo.Instance, true);
+            }
+
             _tokenSource = new CancellationTokenSource();
 
             try
@@ -124,7 +127,7 @@ namespace Artemis.UI.Screens.Plugins
                     "Confirm",
                     ""
                 );
-                await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> {{"subject", PluginInfo}});
+                await Show(_dialogService, _subjects);
             }
             catch (OperationCanceledException)
             {
@@ -143,6 +146,15 @@ namespace Artemis.UI.Screens.Plugins
             Session?.Close(true);
         }
 
+        public static Task<object> Show(IDialogService dialogService, List<IPrerequisitesSubject> subjects, string cancelLabel = "CANCEL")
+        {
+            return dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object>
+            {
+                {"subjects", subjects},
+                {"cancelLabel", cancelLabel},
+            });
+        }
+
         #region Overrides of Screen
 
         /// <inheritdoc />
@@ -150,10 +162,7 @@ namespace Artemis.UI.Screens.Plugins
         {
             CanUninstall = false;
             // Could be slow so take it off of the UI thread
-            if (PluginInfo != null)
-                Task.Run(() => CanUninstall = PluginInfo.Prerequisites.Any(p => p.IsMet()));
-            else
-                Task.Run(() => CanUninstall = FeatureInfo.Prerequisites.Any(p => p.IsMet()));
+            Task.Run(() => CanUninstall = Prerequisites.Any(p => p.PluginPrerequisite.IsMet()));
 
             base.OnInitialActivate();
         }

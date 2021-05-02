@@ -25,6 +25,7 @@ namespace Artemis.Core
             Info = info;
             Directory = directory;
             Entity = pluginEntity ?? new PluginEntity {Id = Guid, IsEnabled = true};
+            Info.Plugin = this;
 
             _features = new List<PluginFeatureInfo>();
         }

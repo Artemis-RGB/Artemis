@@ -23,11 +23,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         private readonly IPluginManagementService _pluginManagementService;
         private readonly ISettingsVmFactory _settingsVmFactory;
         private readonly IWindowManager _windowManager;
-        private bool _enabling;
-        private Plugin _plugin;
-        private bool _isSettingsPopupOpen;
         private bool _canInstallPrerequisites;
         private bool _canRemovePrerequisites;
+        private bool _enabling;
+        private bool _isSettingsPopupOpen;
+        private Plugin _plugin;
 
         public PluginSettingsViewModel(Plugin plugin,
             ISettingsVmFactory settingsVmFactory,
@@ -142,15 +142,21 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         public async Task InstallPrerequisites()
         {
-            if (Plugin.Info.Prerequisites.Any())
-                await ShowPrerequisitesDialog(false, Plugin.Info);
+            List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+            subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled));
+
+            if (subjects.Any(s => s.Prerequisites.Any()))
+                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, subjects);
         }
 
-        public async Task RemovePrerequisites()
+        public async Task RemovePrerequisites(bool forPluginRemoval = false)
         {
-            if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()))
+            List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+            subjects.AddRange(!forPluginRemoval ? Plugin.Features.Where(f => f.AlwaysEnabled) : Plugin.Features);
+
+            if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
             {
-                await ShowPrerequisitesDialog(true, Plugin.Info);
+                await PluginPrerequisitesUninstallDialogViewModel.Show(_dialogService, subjects, forPluginRemoval ? "SKIP, REMOVE PLUGIN" : "CANCEL");
                 NotifyOfPropertyChange(nameof(IsEnabled));
                 NotifyOfPropertyChange(nameof(CanOpenSettings));
             }
@@ -182,32 +188,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 return;
 
             // If the plugin or any of its features has uninstall actions, offer to run these
-            List<PluginFeatureInfo> featuresToUninstall = Plugin.Features.Where(f => f.Prerequisites.Any(fp => fp.UninstallActions.Any())).ToList();
-            if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) || Plugin.Features.Any(f => f.Prerequisites.Any(fp => fp.UninstallActions.Any())))
-            {
-                bool remove = await _dialogService.ShowConfirmDialog(
-                    "Remove plugin",
-                    "This plugin installed one or more prerequisites.\r\nDo you want to remove these?",
-                    "Uninstall",
-                    "Skip"
-                );
-                if (remove)
-                {
-                    if (Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()))
-                    {
-                        object result = await ShowPrerequisitesDialog(true, Plugin.Info);
-                        if (result is bool resultBool && !resultBool)
-                            return;
-                    }
-
-                    foreach (PluginFeatureInfo pluginFeatureInfo in featuresToUninstall)
-                    {
-                        object result = await ShowPrerequisitesDialog(true, pluginFeatureInfo);
-                        if (result is bool resultBool && !resultBool)
-                            return;
-                    }
-                }
-            }
+            List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+            subjects.AddRange(Plugin.Features);
+            if (subjects.Any(s => s.Prerequisites.Any(p => p.UninstallActions.Any())))
+                await RemovePrerequisites(true);
 
             try
             {
@@ -235,12 +219,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
-        protected override void OnInitialActivate()
+        private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
         {
-            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
-                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
-
-            base.OnInitialActivate();
+            NotifyOfPropertyChange(nameof(IsEnabled));
+            NotifyOfPropertyChange(nameof(CanOpenSettings));
         }
 
         private async Task UpdateEnabled(bool enable)
@@ -266,28 +248,34 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
 
                 // Check if all prerequisites are met async
-                if (!Plugin.Info.ArePrerequisitesMet())
+                List<IPrerequisitesSubject> subjects = new() {Plugin.Info};
+                subjects.AddRange(Plugin.Features.Where(f => f.AlwaysEnabled || f.EnabledInStorage));
+
+                if (subjects.Any(s => !s.ArePrerequisitesMet()))
                 {
-                    await ShowPrerequisitesDialog(false, Plugin.Info);
-                    if (!Plugin.Info.ArePrerequisitesMet())
+                    await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, subjects);
+                    if (!subjects.All(s => s.ArePrerequisitesMet()))
                     {
                         CancelEnable();
                         return;
                     }
                 }
 
-                try
+                await Task.Run(() =>
                 {
-                    await Task.Run(() => _pluginManagementService.EnablePlugin(Plugin, true, true));
-                }
-                catch (Exception e)
-                {
-                    _messageService.ShowMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
-                }
-                finally
-                {
-                    Enabling = false;
-                }
+                    try
+                    {
+                        _pluginManagementService.EnablePlugin(Plugin, true, true);
+                    }
+                    catch (Exception e)
+                    {
+                        _messageService.ShowMessage($"Failed to enable plugin {Plugin.Info.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    }
+                    finally
+                    {
+                        Enabling = false;
+                    }
+                });
             }
             else
                 _pluginManagementService.DisablePlugin(Plugin, true);
@@ -305,15 +293,31 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private void CheckPrerequisites()
         {
-            CanInstallPrerequisites = Plugin.Info.Prerequisites.Any();
-            CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any());
+            CanInstallPrerequisites = Plugin.Info.Prerequisites.Any() ||
+                                      Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.Prerequisites.Any());
+            CanRemovePrerequisites = Plugin.Info.Prerequisites.Any(p => p.UninstallActions.Any()) ||
+                                     Plugin.Features.Where(f => f.AlwaysEnabled).Any(f => f.Prerequisites.Any(p => p.UninstallActions.Any()));
         }
 
-        private async Task<object> ShowPrerequisitesDialog(bool uninstall, IPrerequisitesSubject subject)
+        #region Overrides of Screen
+
+        protected override void OnInitialActivate()
         {
-            if (uninstall)
-                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> {{"subject", subject } });
-            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{ "subject", subject } });
+            foreach (PluginFeatureInfo pluginFeatureInfo in Plugin.Features)
+                Items.Add(_settingsVmFactory.CreatePluginFeatureViewModel(pluginFeatureInfo, false));
+
+            _pluginManagementService.PluginDisabled += PluginManagementServiceOnPluginToggled;
+            _pluginManagementService.PluginEnabled += PluginManagementServiceOnPluginToggled;
+            base.OnInitialActivate();
         }
+
+        protected override void OnClose()
+        {
+            _pluginManagementService.PluginDisabled -= PluginManagementServiceOnPluginToggled;
+            _pluginManagementService.PluginEnabled -= PluginManagementServiceOnPluginToggled;
+            base.OnClose();
+        }
+
+        #endregion
     }
 }

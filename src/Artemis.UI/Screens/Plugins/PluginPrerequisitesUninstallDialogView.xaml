@@ -24,7 +24,7 @@
             <ColumnDefinition Width="500" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" Margin="0 0 0 20">
-            Plugin prerequisites
+            Plugin/feature prerequisites
         </TextBlock>
 
         <ListBox Grid.Row="1"
@@ -83,8 +83,8 @@
                    TextWrapping="Wrap"
                    Margin="10 0"
                    Visibility="{Binding ActivePrerequisite, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-            This plugin installed certain prerequisites in order to function. <LineBreak /><LineBreak />
-            In this screen you can chose to remove these, this will mean the plugin will no longer work until you reinstall the prerequisites.
+            This plugin/feature installed certain prerequisites in order to function. <LineBreak /><LineBreak />
+            In this screen you can chose to remove these, this will mean the plugin/feature will no longer work until you reinstall the prerequisites.
         </TextBlock>
 
         <StackPanel Grid.Row="2"
@@ -98,7 +98,7 @@
                     Focusable="False"
                     IsCancel="True"
                     Command="{s:Action Cancel}"
-                    Content="CANCEL" />
+                    Content="{Binding CancelLabel}" />
             <Button x:Name="ConfirmButton"
                     Style="{StaticResource MaterialDesignFlatButton}"
                     IsDefault="True"

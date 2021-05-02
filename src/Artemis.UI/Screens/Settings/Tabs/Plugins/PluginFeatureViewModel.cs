@@ -16,14 +16,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly ICoreService _coreService;
         private readonly IDialogService _dialogService;
+        private readonly IMessageService _messageService;
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
-        private readonly IMessageService _messageService;
-        private bool _isSettingsPopupOpen;
-        private bool _canInstallPrerequisites;
-        private bool _canRemovePrerequisites;
 
-        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
+        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo,
             bool showShield,
             ICoreService coreService,
             IDialogService dialogService,
@@ -81,6 +78,21 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _dialogService.ShowExceptionDialog("Feature failed to enable", LoadException);
         }
 
+        public async Task InstallPrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any())
+                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
+        }
+
+        public async Task RemovePrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
+            {
+                await PluginPrerequisitesUninstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
+                NotifyOfPropertyChange(nameof(IsEnabled));
+            }
+        }
+
         protected override void OnInitialActivate()
         {
             _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
@@ -89,7 +101,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             FeatureInfo.Plugin.Enabled += PluginOnToggled;
             FeatureInfo.Plugin.Disabled += PluginOnToggled;
-            
+
             base.OnInitialActivate();
         }
 
@@ -103,21 +115,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             FeatureInfo.Plugin.Disabled -= PluginOnToggled;
 
             base.OnClose();
-        }
-
-        public async Task InstallPrerequisites()
-        {
-            if (FeatureInfo.Prerequisites.Any())
-                await ShowPrerequisitesDialog(false, FeatureInfo);
-        }
-
-        public async Task RemovePrerequisites()
-        {
-            if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
-            {
-                await ShowPrerequisitesDialog(true, FeatureInfo);
-                NotifyOfPropertyChange(nameof(IsEnabled));
-            }
         }
 
         private async Task UpdateEnabled(bool enable)
@@ -147,7 +144,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     // Check if all prerequisites are met async
                     if (!FeatureInfo.ArePrerequisitesMet())
                     {
-                        await ShowPrerequisitesDialog(false, FeatureInfo);
+                        await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
                         if (!FeatureInfo.ArePrerequisitesMet())
                         {
                             NotifyOfPropertyChange(nameof(IsEnabled));
@@ -173,15 +170,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
-        private async Task<object> ShowPrerequisitesDialog(bool uninstall, IPrerequisitesSubject subject)
-        {
-            if (uninstall)
-                return await _dialogService.ShowDialog<PluginPrerequisitesUninstallDialogViewModel>(new Dictionary<string, object> { { "subject", subject } });
-            return await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> { { "subject", subject } });
-        }
-
-        #region Event handlers
-
         private void OnFeatureEnabling(object sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature != FeatureInfo.Instance) return;
@@ -201,7 +189,5 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             NotifyOfPropertyChange(nameof(CanToggleEnabled));
         }
-
-        #endregion
     }
 }

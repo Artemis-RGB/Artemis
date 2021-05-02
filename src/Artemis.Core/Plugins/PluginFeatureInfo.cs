@@ -6,6 +6,7 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
+using Artemis.Storage.Entities.Plugins;
 using Humanizer;
 using Newtonsoft.Json;
 
@@ -22,10 +23,11 @@ namespace Artemis.Core
         private PluginFeature? _instance;
         private string _name = null!;
 
-        internal PluginFeatureInfo(Plugin plugin, Type featureType, PluginFeatureAttribute? attribute)
+        internal PluginFeatureInfo(Plugin plugin, Type featureType, PluginFeatureEntity pluginFeatureEntity, PluginFeatureAttribute? attribute)
         {
             Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
             FeatureType = featureType ?? throw new ArgumentNullException(nameof(featureType));
+            Entity = pluginFeatureEntity;
 
             Name = attribute?.Name ?? featureType.Name.Humanize(LetterCasing.Title);
             Description = attribute?.Description;
@@ -48,7 +50,7 @@ namespace Artemis.Core
             else
                 Icon = "Plugin";
         }
-
+        
         internal PluginFeatureInfo(Plugin plugin, PluginFeatureAttribute? attribute, PluginFeature instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
@@ -122,6 +124,11 @@ namespace Artemis.Core
         public bool AlwaysEnabled { get; }
 
         /// <summary>
+        /// Gets a boolean indicating whether the feature is enabled in persistent storage
+        /// </summary>
+        public bool EnabledInStorage => Entity.IsEnabled;
+
+        /// <summary>
         ///     Gets the feature this info is associated with
         /// </summary>
         public PluginFeature? Instance
@@ -135,6 +142,8 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
+
+        internal PluginFeatureEntity Entity { get; }
 
         /// <inheritdoc />
         public override string ToString()

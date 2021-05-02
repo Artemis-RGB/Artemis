@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.UI.Exceptions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
@@ -15,35 +14,25 @@ namespace Artemis.UI.Screens.Plugins
     public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase
     {
         private readonly IDialogService _dialogService;
+        private readonly List<IPrerequisitesSubject> _subjects;
         private PluginPrerequisiteViewModel _activePrerequisite;
         private bool _canInstall;
         private bool _isFinished;
         private CancellationTokenSource _tokenSource;
 
-        public PluginPrerequisitesInstallDialogViewModel(IPrerequisitesSubject subject, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService)
+        public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService)
         {
+            _subjects = subjects;
             _dialogService = dialogService;
-            // Constructor overloading doesn't work very well with Kernel.Get<T> :(
-            if (subject is PluginInfo plugin)
-            {
-                PluginInfo = plugin;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(plugin.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
-            }
-            else if (subject is PluginFeatureInfo feature)
-            {
-                FeatureInfo = feature;
-                Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>(feature.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
-            }
-            else
-                throw new ArtemisUIException($"Expected plugin or feature to be passed to {nameof(PluginPrerequisitesInstallDialogViewModel)}");
+
+            Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>();
+            foreach (IPrerequisitesSubject prerequisitesSubject in subjects)
+                Prerequisites.AddRange(prerequisitesSubject.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
 
             foreach (PluginPrerequisiteViewModel pluginPrerequisiteViewModel in Prerequisites)
                 pluginPrerequisiteViewModel.ConductWith(this);
         }
 
-
-        public PluginInfo PluginInfo { get; }
-        public PluginFeatureInfo FeatureInfo { get; }
         public BindableCollection<PluginPrerequisiteViewModel> Prerequisites { get; }
 
         public PluginPrerequisiteViewModel ActivePrerequisite
@@ -63,9 +52,6 @@ namespace Artemis.UI.Screens.Plugins
             get => _isFinished;
             set => SetAndNotify(ref _isFinished, value);
         }
-
-        public bool IsSubjectPlugin => PluginInfo != null;
-        public bool IsSubjectFeature => FeatureInfo != null;
 
         #region Overrides of DialogViewModelBase
 
@@ -114,7 +100,7 @@ namespace Artemis.UI.Screens.Plugins
                     "Confirm",
                     ""
                 );
-                await _dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{"subject", PluginInfo}});
+                await Show(_dialogService, _subjects);
             }
             catch (OperationCanceledException)
             {
@@ -133,16 +119,18 @@ namespace Artemis.UI.Screens.Plugins
             Session?.Close(true);
         }
 
+        public static Task<object> Show(IDialogService dialogService, List<IPrerequisitesSubject> subjects)
+        {
+            return dialogService.ShowDialog<PluginPrerequisitesInstallDialogViewModel>(new Dictionary<string, object> {{"subjects", subjects}});
+        }
+
         #region Overrides of Screen
 
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
             CanInstall = false;
-            if (PluginInfo != null)
-                Task.Run(() => CanInstall = !PluginInfo.ArePrerequisitesMet());
-            else
-                Task.Run(() => CanInstall = !FeatureInfo.ArePrerequisitesMet());
+            Task.Run(() => CanInstall = Prerequisites.Any(p => !p.PluginPrerequisite.IsMet()));
 
             base.OnInitialActivate();
         }

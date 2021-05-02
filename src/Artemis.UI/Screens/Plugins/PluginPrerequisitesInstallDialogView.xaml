@@ -24,7 +24,7 @@
             <ColumnDefinition Width="500" />
         </Grid.ColumnDefinitions>
         <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" Margin="0 0 0 20">
-            Plugin prerequisites
+            Plugin/feature prerequisites
         </TextBlock>
 
         <ListBox Grid.Row="1"
@@ -83,7 +83,7 @@
                    TextWrapping="Wrap"
                    Margin="10 0"
                    Visibility="{Binding ActivePrerequisite, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
-            In order for this plugin to function certain prerequisites must be met. <LineBreak /><LineBreak />
+            In order for this plugin/feature to function certain prerequisites must be met. <LineBreak /><LineBreak />
             On the left side you can see all prerequisites and whether they are currently met or not.
             Clicking install prerequisites will automatically set everything up for you.
         </TextBlock>

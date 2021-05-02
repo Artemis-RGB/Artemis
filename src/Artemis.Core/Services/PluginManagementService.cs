@@ -340,7 +340,12 @@ namespace Artemis.Core.Services
             }
 
             foreach (Type featureType in featureTypes)
-                plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
+            {
+                // Load the enabled state and if not found, default to true
+                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? 
+                                                    new PluginFeatureEntity { IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName! };
+                plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
+            }
 
             if (!featureTypes.Any())
                 _logger.Warning("Plugin {plugin} contains no features", plugin);
@@ -382,7 +387,7 @@ namespace Artemis.Core.Services
             }
 
             if (!plugin.Info.ArePrerequisitesMet())
-                throw new ArtemisPluginPrerequisiteException(plugin, null, "Cannot enable a plugin whose prerequisites aren't all met");
+                throw new ArtemisPluginPrerequisiteException(plugin.Info, "Cannot enable a plugin whose prerequisites aren't all met");
 
             // Create the Ninject child kernel and load the module
             plugin.Kernel = new ChildKernel(_kernel, new PluginModule(plugin));
@@ -406,10 +411,7 @@ namespace Artemis.Core.Services
                     featureInfo.Instance = instance;
                     instance.Info = featureInfo;
                     instance.Plugin = plugin;
-
-                    // Load the enabled state and if not found, default to true
-                    instance.Entity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureInfo.FeatureType.FullName) ??
-                                      new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureInfo.FeatureType.FullName!};
+                    instance.Entity = featureInfo.Entity;
                 }
                 catch (Exception e)
                 {
@@ -418,17 +420,8 @@ namespace Artemis.Core.Services
             }
 
             // Activate features after they are all loaded
-            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.Instance.Entity.IsEnabled || f.AlwaysEnabled)))
-            {
-                try
-                {
-                    EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
-                }
-                catch (Exception)
-                {
-                    // ignored, logged in EnablePluginFeature
-                }
-            }
+            foreach (PluginFeatureInfo pluginFeature in plugin.Features.Where(f => f.Instance != null && (f.EnabledInStorage || f.AlwaysEnabled)))
+                EnablePluginFeature(pluginFeature.Instance!, false, !ignorePluginLock);
 
             if (saveState)
             {
@@ -585,7 +578,10 @@ namespace Artemis.Core.Services
             if (pluginFeature.Plugin.Info.RequiresAdmin && !_isElevated)
             {
                 if (!saveState)
+                {
+                    OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
                     throw new ArtemisCoreException("Cannot enable a feature that requires elevation without saving it's state.");
+                }
 
                 pluginFeature.Entity.IsEnabled = true;
                 pluginFeature.Plugin.Entity.IsEnabled = true;
@@ -594,6 +590,12 @@ namespace Artemis.Core.Services
                 _logger.Information("Restarting because a newly enabled feature requires elevation");
                 Utilities.Restart(true, TimeSpan.FromMilliseconds(500));
                 return;
+            }
+
+            if (!pluginFeature.Info.ArePrerequisitesMet())
+            {
+                OnPluginFeatureEnableFailed(new PluginFeatureEventArgs(pluginFeature));
+                throw new ArtemisPluginPrerequisiteException(pluginFeature.Info, "Cannot enable a plugin feature whose prerequisites aren't all met");
             }
 
             try
@@ -608,7 +610,6 @@ namespace Artemis.Core.Services
                     new ArtemisPluginException(pluginFeature.Plugin, $"Exception during SetEnabled(true) on {pluginFeature}", e),
                     "Failed to enable plugin"
                 );
-                throw;
             }
             finally
             {
