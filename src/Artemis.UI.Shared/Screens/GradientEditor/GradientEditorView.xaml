@@ -40,7 +40,7 @@
         </VisualBrush>
     </UserControl.Resources>
     <UserControl.InputBindings>
-        <KeyBinding Key="Delete" Command="{s:Action RemoveColorStop}" CommandParameter="{Binding SelectedColorStopViewModel}"/>
+        <KeyBinding Key="Delete" Command="{s:Action RemoveColorStop}" CommandParameter="{Binding SelectedColorStopViewModel}" />
     </UserControl.InputBindings>
     <Grid Margin="16">
         <Grid.RowDefinitions>
@@ -60,55 +60,59 @@
         </StackPanel>
         <Separator Grid.Row="1" Margin="0 5" />
         <StackPanel Grid.Row="2" Margin="0 5" ClipToBounds="False">
-            <Grid>
-                <TextBlock Margin="0 5">Gradient</TextBlock>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
-                        Margin="0 0 5 4"
-                        Padding="0"
-                        Command="{s:Action SpreadColorStops}" 
-                        ToolTip="Spread Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
-                        HorizontalAlignment="Left"
-                        Height="25" Width="25">
-                        <materialDesign:PackIcon Kind="ArrowLeftRight"/>
+            <Grid Margin="0 0 0 5">
+                <TextBlock Margin="0 5" VerticalAlignment="Center">Gradient</TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Margin="0 0 5 0"
+                            Padding="0"
+                            Command="{s:Action SpreadColorStops}"
+                            ToolTip="Spread Stops"
+                            IsEnabled="{Binding HasMoreThanOneStop}"
+                            HorizontalAlignment="Left"
+                            Height="25" Width="25">
+                        <materialDesign:PackIcon Kind="ArrowLeftRight" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
-                        Margin="0 0 5 4"
-                        Padding="0"
-                        Command="{s:Action ToggleSeam}" 
-                        ToolTip="Toggle Seamless" IsEnabled="{Binding HasMoreThanOneStop}" 
-                        HorizontalAlignment="Left"
-                        Height="25" Width="25">
-                        <materialDesign:PackIcon Kind="SineWave"/>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Margin="0 0 5 0"
+                            Padding="0"
+                            Command="{s:Action ToggleSeam}"
+                            ToolTip="Toggle Seamless"
+                            IsEnabled="{Binding HasMoreThanOneStop}"
+                            HorizontalAlignment="Left"
+                            Height="25" Width="25">
+                        <materialDesign:PackIcon Kind="SineWave" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
-                        Margin="0 0 5 4"
-                        Padding="0"
-                        Command="{s:Action FlipColorStops}" 
-                        ToolTip="Flip Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
-                        HorizontalAlignment="Left"
-                        Height="25" Width="25">
-                        <materialDesign:PackIcon Kind="FlipHorizontal"/>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Margin="0 0 5 0"
+                            Padding="0"
+                            Command="{s:Action FlipColorStops}"
+                            ToolTip="Flip Stops"
+                            IsEnabled="{Binding HasMoreThanOneStop}"
+                            HorizontalAlignment="Left"
+                            Height="25" Width="25">
+                        <materialDesign:PackIcon Kind="FlipHorizontal" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
-                        Margin="0 0 5 4"
-                        Padding="0"
-                        Command="{s:Action RotateColorStops}" 
-                        ToolTip="Rotate Stops (shift to invert)" IsEnabled="{Binding HasMoreThanOneStop}" 
-                        HorizontalAlignment="Left"
-                        Height="25" Width="25">
-                        <materialDesign:PackIcon Kind="AxisZRotateCounterclockwise"/>
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Margin="0 0 5 0"
+                            Padding="0"
+                            Command="{s:Action RotateColorStops}"
+                            ToolTip="Rotate Stops (shift to invert)"
+                            IsEnabled="{Binding HasMoreThanOneStop}"
+                            HorizontalAlignment="Left"
+                            Height="25" Width="25">
+                        <materialDesign:PackIcon Kind="AxisZRotateCounterclockwise" />
                     </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" 
-                        Margin="0 0 5 4"
-                        Padding="0"
-                        Command="{s:Action ShowClearGradientPopup}" 
-                        ToolTip="Clear All Color Stops" IsEnabled="{Binding HasMoreThanOneStop}" 
-                        HorizontalAlignment="Left"
-                        Height="25" Width="25"
-                        x:Name="ClearGradientButton">
+                    <Button Style="{StaticResource MaterialDesignFlatButton}"
+                            Padding="0"
+                            Command="{s:Action ShowClearGradientPopup}"
+                            ToolTip="Clear All Color Stops"
+                            IsEnabled="{Binding HasMoreThanOneStop}"
+                            HorizontalAlignment="Left"
+                            Height="25" Width="25"
+                            x:Name="ClearGradientButton">
                         <StackPanel>
-                            <materialDesign:PackIcon Kind="DeleteSweep"/>
+                            <materialDesign:PackIcon Kind="DeleteSweep" />
                         </StackPanel>
                     </Button>
                     <Popup
@@ -121,7 +125,7 @@
                         StaysOpen="False"
                         PopupAnimation="Fade"
                         IsOpen="{Binding ClearGradientPopupOpen, Mode=OneWay}">
-                        <materialDesign:Card Margin="30" Padding="12" materialDesign:ShadowAssist.ShadowDepth="Depth4" >
+                        <materialDesign:Card Margin="30" Padding="12" materialDesign:ShadowAssist.ShadowDepth="Depth4">
                             <StackPanel HorizontalAlignment="Center">
                                 <TextBlock Style="{StaticResource MaterialDesignSubtitle2TextBlock}" TextAlignment="Center" Margin="0 0 0 10">Clear Gradient?</TextBlock>
                                 <StackPanel Orientation="Horizontal">
@@ -195,10 +199,10 @@
                         CommandParameter="{Binding SelectedColorStopViewModel}"
                         ToolTip="Delete Selected Stop">
                     <Button.Resources>
-                        <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="#c94848"/>
+                        <SolidColorBrush x:Key="PrimaryHueMidBrush" Color="#c94848" />
                     </Button.Resources>
                     <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Delete"/>
+                        <materialDesign:PackIcon Kind="Delete" />
                         <TextBlock Margin="4 0 0 0">Delete</TextBlock>
                     </StackPanel>
                 </Button>
