@@ -42,6 +42,8 @@
             <StackPanel Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center">
                 <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to Artemis, RGB on steroids.</TextBlock>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="{StaticResource SecondaryHueMidBrush}"
+                        materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
                         Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Binoculars" />

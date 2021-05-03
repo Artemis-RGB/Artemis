@@ -132,7 +132,7 @@
                       VerticalAlignment="Bottom"
                       Margin="8"
                       Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
-                      Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsEnabled}">
+                      Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding IsEnabled}">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Plugin enabled</TextBlock>
                     <materialDesign:PackIcon Kind="ShieldHalfFull"
