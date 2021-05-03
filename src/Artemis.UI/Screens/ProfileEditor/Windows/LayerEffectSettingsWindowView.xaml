@@ -20,7 +20,7 @@
                          d:DesignHeight="800"
                          d:DesignWidth="800"
                          d:DataContext="{d:DesignInstance windows:LayerEffectSettingsWindowViewModel}"
-                         Icon="/Resources/Images/Logo/logo-512.png">
+                         Icon="/Resources/Images/Logo/bow.ico">
     <DockPanel>
         <controls:AppBar Type="Dense" Title="{Binding ActiveItem.LayerEffect.Descriptor.DisplayName}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
             <controls:AppBar.AppIcon>

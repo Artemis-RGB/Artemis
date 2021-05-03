@@ -5,11 +5,14 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Utilities;
 using Hardcodet.Wpf.TaskbarNotification;
 using MaterialDesignThemes.Wpf;
 using Ninject;
@@ -24,10 +27,12 @@ namespace Artemis.UI.Screens
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
         private readonly IWindowManager _windowManager;
+        private readonly ThemeWatcher _themeWatcher;
+        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
-
+        
         public TrayViewModel(IKernel kernel,
             IWindowManager windowManager,
             IWindowService windowService,
@@ -45,6 +50,13 @@ namespace Artemis.UI.Screens
 
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnShutdownRequested;
+
+            _themeWatcher = new ThemeWatcher();
+            _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+            _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
+            _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
+
+            ApplyColorSchemeSetting();
 
             windowService.ConfigureMainWindowProvider(this);
             messageService.ConfigureNotificationProvider(this);
@@ -150,6 +162,50 @@ namespace Artemis.UI.Screens
 
             OnMainWindowClosed();
         }
+
+        #region Theme
+
+        private void ApplyColorSchemeSetting()
+        {
+            if (_colorScheme.Value == ApplicationColorScheme.Automatic)
+                ApplyWindowsTheme(_themeWatcher.GetWindowsTheme());
+            else
+                ChangeMaterialColors(_colorScheme.Value);
+        }
+
+        private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
+        {
+            if (_colorScheme.Value != ApplicationColorScheme.Automatic)
+                return;
+
+            if (windowsTheme == ThemeWatcher.WindowsTheme.Dark)
+                ChangeMaterialColors(ApplicationColorScheme.Dark);
+            else
+                ChangeMaterialColors(ApplicationColorScheme.Light);
+        }
+
+        private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
+        {
+            PaletteHelper paletteHelper = new();
+            ITheme theme = paletteHelper.GetTheme();
+            theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
+            paletteHelper.SetTheme(theme);
+
+            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new();
+            extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
+        }
+
+        private void ThemeWatcherOnThemeChanged(object sender, WindowsThemeEventArgs e)
+        {
+            ApplyWindowsTheme(e.Theme);
+        }
+
+        private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
+        {
+            ApplyColorSchemeSetting();
+        }
+
+        #endregion
 
         #region Implementation of INotificationProvider
 

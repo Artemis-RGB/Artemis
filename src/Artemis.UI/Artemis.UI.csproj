@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\Images\Logo\bow.ico</ApplicationIcon>
 	</PropertyGroup>
 	<PropertyGroup>
 		<PostBuildEvent />
@@ -84,9 +84,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+		<Resource Include="Resources\Images\Logo\bow-white.ico" />
+		<Resource Include="Resources\Images\Logo\bow-white.svg" />
+		<Resource Include="Resources\Images\Logo\bow.ico" />
 		<Resource Include="Resources\Images\Logo\bow.svg" />
-		<Resource Include="Resources\Images\Logo\logo-512.ico" />
-		<Resource Include="Resources\Images\Logo\logo-512.png" />
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
@@ -310,8 +311,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+		<None Remove="Resources\Images\Logo\bow-white.ico" />
+		<None Remove="Resources\Images\Logo\bow-white.svg" />
+		<None Remove="Resources\Images\Logo\bow.ico" />
 		<None Remove="Resources\Images\Logo\bow.svg" />
-		<None Remove="Resources\Images\Logo\logo-512.ico" />
 		<None Remove="Resources\Images\PhysicalLayouts\abnt.png" />
 		<None Remove="Resources\Images\PhysicalLayouts\ansi.png" />
 		<None Remove="Resources\Images\PhysicalLayouts\iso.png" />
