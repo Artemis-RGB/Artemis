@@ -32,6 +32,7 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
                 ColorStop.Position = (float) Math.Round(value / _gradientEditorViewModel.PreviewWidth, 3, MidpointRounding.AwayFromZero);
                 NotifyOfPropertyChange(nameof(Offset));
                 NotifyOfPropertyChange(nameof(OffsetPercent));
+                NotifyOfPropertyChange(nameof(OffsetFloat));
             }
         }
 
@@ -43,6 +44,20 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
                 ColorStop.Position = Math.Min(100, Math.Max(0, value)) / 100f;
                 NotifyOfPropertyChange(nameof(Offset));
                 NotifyOfPropertyChange(nameof(OffsetPercent));
+                NotifyOfPropertyChange(nameof(OffsetFloat));
+            }
+        }
+
+        // Functionally similar to Offset Percent, but doesn't round on get in order to prevent inconsistencies (and is 0 to 1)
+        public float OffsetFloat
+        {
+            get => ColorStop.Position;
+            set
+            {
+                ColorStop.Position = Math.Min(1, Math.Max(0, value));
+                NotifyOfPropertyChange(nameof(Offset));
+                NotifyOfPropertyChange(nameof(OffsetPercent));
+                NotifyOfPropertyChange(nameof(OffsetFloat));
             }
         }
 
