@@ -16,12 +16,12 @@ namespace Artemis.Core
         ///     Creates a new instance of a copy folder action
         /// </summary>
         /// <param name="name">The name of the action</param>
-        /// <param name="source">The source URL to download</param>
-        /// <param name="target">The target file to save as (will be created if needed)</param>
-        public DownloadFileAction(string name, string source, string target) : base(name)
+        /// <param name="url">The source URL to download</param>
+        /// <param name="fileName">The target file to save as (will be created if needed)</param>
+        public DownloadFileAction(string name, string url, string fileName) : base(name)
         {
-            Source = source ?? throw new ArgumentNullException(nameof(source));
-            Target = target ?? throw new ArgumentNullException(nameof(target));
+            Url = url ?? throw new ArgumentNullException(nameof(url));
+            FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
 
             ShowProgressBar = true;
         }
@@ -29,31 +29,31 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the source URL to download
         /// </summary>
-        public string Source { get; }
+        public string Url { get; }
 
         /// <summary>
         ///     Gets the target file to save as (will be created if needed)
         /// </summary>
-        public string Target { get; }
+        public string FileName { get; }
 
         /// <inheritdoc />
         public override async Task Execute(CancellationToken cancellationToken)
         {
             using HttpClient client = new();
-            await using FileStream destinationStream = File.Create(Target);
+            await using FileStream destinationStream = new(FileName, FileMode.OpenOrCreate);
 
             void ProgressOnProgressReported(object? sender, EventArgs e)
             {
                 if (Progress.ProgressPerSecond != 0)
-                    Status = $"Downloading {Target} - {Progress.ProgressPerSecond.Bytes().Humanize("#.##")}/sec";
+                    Status = $"Downloading {Url} - {Progress.ProgressPerSecond.Bytes().Humanize("#.##")}/sec";
                 else
-                    Status = $"Downloading {Target}";
+                    Status = $"Downloading {Url}";
             }
 
             Progress.ProgressReported += ProgressOnProgressReported;
 
             // Get the http headers first to examine the content length
-            using HttpResponseMessage response = await client.GetAsync(Target, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            using HttpResponseMessage response = await client.GetAsync(Url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             await using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
             long? contentLength = response.Content.Headers.ContentLength;
 
@@ -63,6 +63,7 @@ namespace Artemis.Core
             {
                 ProgressIndeterminate = true;
                 await download.CopyToAsync(destinationStream, Progress, cancellationToken);
+                ProgressIndeterminate = false;
             }
             else
             {
@@ -70,8 +71,9 @@ namespace Artemis.Core
                 await download.CopyToAsync(contentLength.Value, destinationStream, Progress, cancellationToken);
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
+            
             Progress.ProgressReported -= ProgressOnProgressReported;
-
             Progress.Report((1, 1));
             Status = "Finished downloading";
         }

@@ -1,4 +1,4 @@
-﻿// Based on: https://www.codeproject.com/Tips/5274597/An-Improved-Stream-CopyToAsync-that-Reports-Progre
+// Based on: https://www.codeproject.com/Tips/5274597/An-Improved-Stream-CopyToAsync-that-Reports-Progre
 // The MIT License
 //
 // Copyright (c) 2020 honey the codewitch
@@ -37,7 +37,7 @@ namespace Artemis.Core
         private const int DefaultBufferSize = 81920;
 
         /// <summary>
-        ///     Copys a stream to another stream
+        ///     Copies a stream to another stream
         /// </summary>
         /// <param name="source">The source <see cref="Stream" /> to copy from</param>
         /// <param name="sourceLength">The length of the source stream, if known - used for progress reporting</param>
@@ -54,32 +54,33 @@ namespace Artemis.Core
             IProgress<(long, long)> progress,
             CancellationToken cancellationToken)
         {
-            if (0 == bufferSize)
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (!source.CanRead)
+                throw new ArgumentException("Has to be readable", nameof(source));
+            if (destination == null)
+                throw new ArgumentNullException(nameof(destination));
+            if (!destination.CanWrite)
+                throw new ArgumentException("Has to be writable", nameof(destination));
+            if (bufferSize <= 0)
                 bufferSize = DefaultBufferSize;
-            byte[]? buffer = new byte[bufferSize];
-            if (0 > sourceLength && source.CanSeek)
-                sourceLength = source.Length - source.Position;
-            long totalBytesCopied = 0L;
-            if (null != progress)
-                progress.Report((totalBytesCopied, sourceLength));
-            int bytesRead = -1;
-            while (0 != bytesRead && !cancellationToken.IsCancellationRequested)
+
+            byte[] buffer = new byte[bufferSize];
+            long totalBytesRead = 0;
+            int bytesRead;
+            while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
             {
-                bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken);
-                if (0 == bytesRead || cancellationToken.IsCancellationRequested)
-                    break;
-                await destination.WriteAsync(buffer, 0, buffer.Length, cancellationToken);
-                totalBytesCopied += bytesRead;
-                progress?.Report((totalBytesCopied, sourceLength));
+                await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
+                totalBytesRead += bytesRead;
+                progress?.Report((totalBytesRead, sourceLength));
             }
 
-            if (0 < totalBytesCopied)
-                progress?.Report((totalBytesCopied, sourceLength));
+            progress?.Report((totalBytesRead, sourceLength));
             cancellationToken.ThrowIfCancellationRequested();
         }
 
         /// <summary>
-        ///     Copys a stream to another stream
+        ///     Copies a stream to another stream
         /// </summary>
         /// <param name="source">The source <see cref="Stream" /> to copy from</param>
         /// <param name="sourceLength">The length of the source stream, if known - used for progress reporting</param>
@@ -93,7 +94,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Copys a stream to another stream
+        ///     Copies a stream to another stream
         /// </summary>
         /// <param name="source">The source <see cref="Stream" /> to copy from</param>
         /// <param name="destination">The destination <see cref="Stream" /> to copy to</param>
@@ -106,7 +107,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Copys a stream to another stream
+        ///     Copies a stream to another stream
         /// </summary>
         /// <param name="source">The source <see cref="Stream" /> to copy from</param>
         /// <param name="sourceLength">The length of the source stream, if known - used for progress reporting</param>
@@ -119,7 +120,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Copys a stream to another stream
+        ///     Copies a stream to another stream
         /// </summary>
         /// <param name="source">The source <see cref="Stream" /> to copy from</param>
         /// <param name="destination">The destination <see cref="Stream" /> to copy to</param>

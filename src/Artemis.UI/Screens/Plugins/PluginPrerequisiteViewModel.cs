@@ -114,7 +114,11 @@ namespace Artemis.UI.Screens.Plugins
 
         private void ActivateCurrentAction()
         {
-            ActiveItem = Items.FirstOrDefault(i => i.Action == PluginPrerequisite.CurrentAction);
+            PluginPrerequisiteActionViewModel newActiveItem = Items.FirstOrDefault(i => i.Action == PluginPrerequisite.CurrentAction);
+            if (newActiveItem == null)
+                return;
+
+            ActiveItem = newActiveItem;
             NotifyOfPropertyChange(nameof(ActiveStemNumber));
         }
 
@@ -123,14 +127,14 @@ namespace Artemis.UI.Screens.Plugins
         /// <inheritdoc />
         protected override void OnClose()
         {
-            PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
+            PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged;
             base.OnClose();
         }
 
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
-            PluginPrerequisite.PropertyChanged -= PluginPrerequisiteOnPropertyChanged;
+            PluginPrerequisite.PropertyChanged += PluginPrerequisiteOnPropertyChanged;
             // Could be slow so take it off of the UI thread
             Task.Run(() => IsMet = PluginPrerequisite.IsMet());
 
