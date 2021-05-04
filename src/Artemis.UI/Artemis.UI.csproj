@@ -87,7 +87,6 @@
 		<Resource Include="Resources\Images\Logo\bow-white.ico" />
 		<Resource Include="Resources\Images\Logo\bow-white.svg" />
 		<Resource Include="Resources\Images\Logo\bow.ico" />
-		<Resource Include="Resources\Images\Logo\bow.svg" />
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
@@ -127,6 +126,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate.cur" />
+		<Resource Include="Resources\Images\Logo\bow.svg" />
 		<Resource Include="Resources\Images\PhysicalLayouts\abnt.png" />
 		<Resource Include="Resources\Images\PhysicalLayouts\ansi.png" />
 		<Resource Include="Resources\Images\PhysicalLayouts\iso.png" />

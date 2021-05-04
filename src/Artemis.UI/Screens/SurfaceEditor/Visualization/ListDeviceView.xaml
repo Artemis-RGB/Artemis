@@ -23,10 +23,11 @@
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Model}" />
             <TextBlock Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer}" Foreground="{DynamicResource MaterialDesignBodyLight}" />
         </StackPanel>
-        <Ellipse Grid.Column="2" 
-                 Width="20" 
-                 Height="20" 
-                 Stroke="{DynamicResource MaterialDesignBody}" 
+        <Ellipse Grid.Column="2"
+                 ToolTip="This is the current random device color"
+                 Width="20"
+                 Height="20"
+                 Stroke="{DynamicResource MaterialDesignDivider}"
                  StrokeThickness="1"
                  Visibility="{Binding Parent.ColorDevices, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
             <Ellipse.Fill>
