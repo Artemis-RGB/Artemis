@@ -7,6 +7,7 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:home="clr-namespace:Artemis.UI.Screens.Home"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d"
              d:DesignHeight="574.026"
              d:DesignWidth="1029.87"
@@ -37,10 +38,26 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
             
-            <shared:ArtemisIcon SvgSource="/Resources/Images/Logo/bow.svg" Width="100" Height="100"/>
+            <Image Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="100" Width="100"/>
             <StackPanel Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">Welcome to Artemis, RGB on steroids.</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">
+                    <Run Text="Welcome to Artemis, the unified"></Run>
+                    <Run Text="RGB">
+                        <Run.Foreground>
+                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                <GradientStop Color="#f19d25"/>
+                                <GradientStop Color="#f63d3d" Offset="0.2"/>
+                                <GradientStop Color="#c93cec" Offset="0.4"/>
+                                <GradientStop Color="#2667f4" Offset="0.6"/>
+                                <GradientStop Color="#1cb6e7" Offset="0.8"/>
+                                <GradientStop Color="#2df4b5" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Run.Foreground></Run>
+                    <Run Text="platform."></Run>
+                </TextBlock>
                 <Button Style="{StaticResource MaterialDesignFlatButton}"
+                        Foreground="{StaticResource SecondaryHueMidBrush}"
+                        materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
                         Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
                     <StackPanel Orientation="Horizontal">
                         <materialDesign:PackIcon Kind="Binoculars" />

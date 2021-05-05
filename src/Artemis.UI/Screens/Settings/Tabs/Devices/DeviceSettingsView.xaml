@@ -49,10 +49,10 @@
                 </TextBlock>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
-                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsDeviceEnabled}">
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding IsDeviceEnabled}">
                     Device enabled
                 </CheckBox>
-                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0">
+                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0" Foreground="{StaticResource MaterialDesignBody}">
                     <StackPanel>
                         <Button Command="{s:Action OpenPluginDirectory}">
                             <StackPanel Orientation="Horizontal">

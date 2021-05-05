@@ -20,7 +20,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<ApplicationIcon>Resources\Images\Logo\logo-512.ico</ApplicationIcon>
+		<ApplicationIcon>Resources\Images\Logo\bow.ico</ApplicationIcon>
 	</PropertyGroup>
 	<PropertyGroup>
 		<PostBuildEvent />
@@ -84,9 +84,9 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
-		<Resource Include="Resources\Images\Logo\bow.svg" />
-		<Resource Include="Resources\Images\Logo\logo-512.ico" />
-		<Resource Include="Resources\Images\Logo\logo-512.png" />
+		<Resource Include="Resources\Images\Logo\bow-white.ico" />
+		<Resource Include="Resources\Images\Logo\bow-white.svg" />
+		<Resource Include="Resources\Images\Logo\bow.ico" />
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate_tl.cur" />
@@ -126,6 +126,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Resource Include="Resources\Cursors\aero_rotate.cur" />
+		<Resource Include="Resources\Images\Logo\bow.svg" />
 		<Resource Include="Resources\Images\PhysicalLayouts\abnt.png" />
 		<Resource Include="Resources\Images\PhysicalLayouts\ansi.png" />
 		<Resource Include="Resources\Images\PhysicalLayouts\iso.png" />
@@ -310,8 +311,10 @@
 	</ItemGroup>
 	<ItemGroup>
 		<None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+		<None Remove="Resources\Images\Logo\bow-white.ico" />
+		<None Remove="Resources\Images\Logo\bow-white.svg" />
+		<None Remove="Resources\Images\Logo\bow.ico" />
 		<None Remove="Resources\Images\Logo\bow.svg" />
-		<None Remove="Resources\Images\Logo\logo-512.ico" />
 		<None Remove="Resources\Images\PhysicalLayouts\abnt.png" />
 		<None Remove="Resources\Images\PhysicalLayouts\ansi.png" />
 		<None Remove="Resources\Images\PhysicalLayouts\iso.png" />
@@ -358,6 +361,9 @@
 		</Page>
 		<Page Update="DefaultTypes\PropertyInput\FloatRangePropertyInputView.xaml">
 			<SubType>Designer</SubType>
+		</Page>
+		<Page Update="Screens\Plugins\PluginPrerequisitesUninstallDialogView.xaml">
+		  <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
 		</Page>
 		<Page Update="Screens\ProfileEditor\Dialogs\ProfileEditView.xaml">
 			<XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>

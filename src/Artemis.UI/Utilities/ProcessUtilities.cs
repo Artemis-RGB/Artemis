@@ -2,33 +2,11 @@
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace Artemis.UI.Utilities
 {
     public static class ProcessUtilities
     {
-        public static Task<int> RunProcessAsync(string fileName, string arguments)
-        {
-            TaskCompletionSource<int> tcs = new();
-
-            Process process = new()
-            {
-                StartInfo = {FileName = fileName, Arguments = arguments},
-                EnableRaisingEvents = true
-            };
-
-            process.Exited += (sender, args) =>
-            {
-                tcs.SetResult(process.ExitCode);
-                process.Dispose();
-            };
-
-            process.Start();
-
-            return tcs.Task;
-        }
-
         public static Process RunAsDesktopUser(string fileName, string arguments, bool hideWindow)
         {
             if (string.IsNullOrWhiteSpace(fileName))
@@ -198,24 +176,24 @@ namespace Artemis.UI.Utilities
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
         private struct STARTUPINFO
         {
-            public int cb;
-            public string lpReserved;
-            public string lpDesktop;
-            public string lpTitle;
-            public int dwX;
-            public int dwY;
-            public int dwXSize;
-            public int dwYSize;
-            public int dwXCountChars;
-            public int dwYCountChars;
-            public int dwFillAttribute;
+            public readonly int cb;
+            public readonly string lpReserved;
+            public readonly string lpDesktop;
+            public readonly string lpTitle;
+            public readonly int dwX;
+            public readonly int dwY;
+            public readonly int dwXSize;
+            public readonly int dwYSize;
+            public readonly int dwXCountChars;
+            public readonly int dwYCountChars;
+            public readonly int dwFillAttribute;
             public int dwFlags;
             public short wShowWindow;
-            public short cbReserved2;
-            public IntPtr lpReserved2;
-            public IntPtr hStdInput;
-            public IntPtr hStdOutput;
-            public IntPtr hStdError;
+            public readonly short cbReserved2;
+            public readonly IntPtr lpReserved2;
+            public readonly IntPtr hStdInput;
+            public readonly IntPtr hStdOutput;
+            public readonly IntPtr hStdError;
         }
 
         [DllImport("kernel32.dll", ExactSpelling = true)]

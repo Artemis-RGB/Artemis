@@ -52,6 +52,7 @@
                                  Items="{Binding SidebarItems}"
                                  SelectedItem="{Binding SelectedItem}"
                                  WillSelectNavigationItemCommand="{s:Action SelectItem}"
+                                 materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
                                  Margin="0 5 0 0" />
     </Grid>
 

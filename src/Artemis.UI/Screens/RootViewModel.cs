@@ -27,7 +27,6 @@ namespace Artemis.UI.Screens
     {
         private readonly IRegistrationService _builtInRegistrationService;
         private readonly IMessageService _messageService;
-        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly ICoreService _coreService;
         private readonly IWindowManager _windowManager;
         private readonly IDebugService _debugService;
@@ -36,7 +35,6 @@ namespace Artemis.UI.Screens
         private readonly ISettingsService _settingsService;
         private readonly Timer _frameTimeUpdateTimer;
         private readonly SidebarViewModel _sidebarViewModel;
-        private readonly ThemeWatcher _themeWatcher;
         private readonly PluginSetting<WindowSize> _windowSize;
         private bool _activeItemReady;
         private string _frameTime;
@@ -67,12 +65,7 @@ namespace Artemis.UI.Screens
             _sidebarViewModel = sidebarViewModel;
             _frameTimeUpdateTimer = new Timer(500);
 
-            _colorScheme = _settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _windowSize = _settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
-
-            _themeWatcher = new ThemeWatcher();
-            ApplyColorSchemeSetting();
-
             _sidebarViewModel.ConductWith(this);
 
             ActiveItem = sidebarViewModel.SelectedItem;
@@ -191,52 +184,12 @@ namespace Artemis.UI.Screens
 
             }
         }
-
-        private void ApplyColorSchemeSetting()
-        {
-            if (_colorScheme.Value == ApplicationColorScheme.Automatic)
-                ApplyWindowsTheme(_themeWatcher.GetWindowsTheme());
-            else
-                ChangeMaterialColors(_colorScheme.Value);
-        }
-
-        private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
-        {
-            if (_colorScheme.Value != ApplicationColorScheme.Automatic)
-                return;
-
-            if (windowsTheme == ThemeWatcher.WindowsTheme.Dark)
-                ChangeMaterialColors(ApplicationColorScheme.Dark);
-            else
-                ChangeMaterialColors(ApplicationColorScheme.Light);
-        }
-
-        private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
-        {
-            PaletteHelper paletteHelper = new();
-            ITheme theme = paletteHelper.GetTheme();
-            theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
-            paletteHelper.SetTheme(theme);
-
-            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new();
-            extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
-        }
-
+        
         private void OnFrameTimeUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
         {
             UpdateFrameTime();
         }
-
-        private void ThemeWatcherOnThemeChanged(object sender, WindowsThemeEventArgs e)
-        {
-            ApplyWindowsTheme(e.Theme);
-        }
-
-        private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
-        {
-            ApplyColorSchemeSetting();
-        }
-
+        
         private void PinSidebarOnSettingChanged(object sender, EventArgs e)
         {
             UpdateSidebarPinState();
@@ -280,8 +233,6 @@ namespace Artemis.UI.Screens
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
 
             _frameTimeUpdateTimer.Elapsed += OnFrameTimeUpdateTimerOnElapsed;
-            _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
-            _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
             _sidebarViewModel.PropertyChanged += SidebarViewModelOnPropertyChanged;
             PinSidebar.SettingChanged += PinSidebarOnSettingChanged;
 
@@ -315,8 +266,6 @@ namespace Artemis.UI.Screens
             _windowSize.Save();
 
             _frameTimeUpdateTimer.Elapsed -= OnFrameTimeUpdateTimerOnElapsed;
-            _colorScheme.SettingChanged -= ColorSchemeOnSettingChanged;
-            _themeWatcher.ThemeChanged -= ThemeWatcherOnThemeChanged;
             _sidebarViewModel.PropertyChanged -= SidebarViewModelOnPropertyChanged;
             PinSidebar.SettingChanged -= PinSidebarOnSettingChanged;
 

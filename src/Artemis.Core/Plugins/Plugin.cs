@@ -25,6 +25,7 @@ namespace Artemis.Core
             Info = info;
             Directory = directory;
             Entity = pluginEntity ?? new PluginEntity {Id = Guid, IsEnabled = true};
+            Info.Plugin = this;
 
             _features = new List<PluginFeatureInfo>();
         }
@@ -71,7 +72,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the plugin bootstrapper
         /// </summary>
-        public IPluginBootstrapper? Bootstrapper { get; internal set; }
+        public PluginBootstrapper? Bootstrapper { get; internal set; }
 
         /// <summary>
         ///     The Ninject kernel of the plugin
@@ -112,6 +113,17 @@ namespace Artemis.Core
         public T? GetFeature<T>() where T : PluginFeature
         {
             return _features.FirstOrDefault(i => i.Instance is T)?.Instance as T;
+        }
+        
+        /// <summary>
+        ///     Looks up the feature info the feature of type <typeparamref name="T" />
+        /// </summary>
+        /// <typeparam name="T">The type of feature to find</typeparam>
+        /// <returns>Feature info of the feature</returns>
+        public PluginFeatureInfo GetFeatureInfo<T>() where T : PluginFeature
+        {
+            // This should be a safe assumption because any type of PluginFeature is registered and added
+            return _features.First(i => i.FeatureType == typeof(T));
         }
 
         /// <inheritdoc />
@@ -235,12 +247,12 @@ namespace Artemis.Core
 
             if (enable)
             {
-                Bootstrapper?.Enable(this);
+                Bootstrapper?.OnPluginEnabled(this);
                 OnEnabled();
             }
             else
             {
-                Bootstrapper?.Disable(this);
+                Bootstrapper?.OnPluginDisabled(this);
                 OnDisabled();
             }
         }

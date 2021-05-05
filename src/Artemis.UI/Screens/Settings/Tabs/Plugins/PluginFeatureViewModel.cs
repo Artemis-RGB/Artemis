@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -13,11 +16,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly ICoreService _coreService;
         private readonly IDialogService _dialogService;
+        private readonly IMessageService _messageService;
         private readonly IPluginManagementService _pluginManagementService;
         private bool _enabling;
-        private readonly IMessageService _messageService;
 
-        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo, 
+        public PluginFeatureViewModel(PluginFeatureInfo pluginFeatureInfo,
             bool showShield,
             ICoreService coreService,
             IDialogService dialogService,
@@ -51,6 +54,9 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         }
 
         public bool CanToggleEnabled => FeatureInfo.Plugin.IsEnabled && !FeatureInfo.AlwaysEnabled;
+        public bool CanInstallPrerequisites => FeatureInfo.Prerequisites.Any();
+        public bool CanRemovePrerequisites => FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any());
+        public bool IsPopupEnabled => CanInstallPrerequisites || CanRemovePrerequisites;
 
         public void ShowLogsFolder()
         {
@@ -72,6 +78,21 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _dialogService.ShowExceptionDialog("Feature failed to enable", LoadException);
         }
 
+        public async Task InstallPrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any())
+                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
+        }
+
+        public async Task RemovePrerequisites()
+        {
+            if (FeatureInfo.Prerequisites.Any(p => p.UninstallActions.Any()))
+            {
+                await PluginPrerequisitesUninstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
+                NotifyOfPropertyChange(nameof(IsEnabled));
+            }
+        }
+
         protected override void OnInitialActivate()
         {
             _pluginManagementService.PluginFeatureEnabling += OnFeatureEnabling;
@@ -80,7 +101,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
             FeatureInfo.Plugin.Enabled += PluginOnToggled;
             FeatureInfo.Plugin.Disabled += PluginOnToggled;
-            
+
             base.OnInitialActivate();
         }
 
@@ -120,7 +141,18 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                         }
                     }
 
-                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance, true));
+                    // Check if all prerequisites are met async
+                    if (!FeatureInfo.ArePrerequisitesMet())
+                    {
+                        await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
+                        if (!FeatureInfo.ArePrerequisitesMet())
+                        {
+                            NotifyOfPropertyChange(nameof(IsEnabled));
+                            return;
+                        }
+                    }
+
+                    await Task.Run(() => _pluginManagementService.EnablePluginFeature(FeatureInfo.Instance!, true));
                 }
                 catch (Exception e)
                 {
@@ -137,8 +169,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 NotifyOfPropertyChange(nameof(IsEnabled));
             }
         }
-
-        #region Event handlers
 
         private void OnFeatureEnabling(object sender, PluginFeatureEventArgs e)
         {
@@ -159,7 +189,5 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         {
             NotifyOfPropertyChange(nameof(CanToggleEnabled));
         }
-
-        #endregion
     }
 }
