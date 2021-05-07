@@ -30,7 +30,12 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Rectangle Grid.Row="0" Fill="{DynamicResource MaterialDesignPaper}" />
-            <shared:DeviceVisualizer Device="{Binding Device}" RenderOptions.BitmapScalingMode="HighQuality" Grid.Row="0" Height="130" Width="190" />
+            <shared:DeviceVisualizer VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Margin="10"
+                                     Device="{Binding Device}"
+                                     RenderOptions.BitmapScalingMode="HighQuality"
+                                     Grid.Row="0" />
             <Button Grid.Row="0"
                     Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                     HorizontalAlignment="Right"
