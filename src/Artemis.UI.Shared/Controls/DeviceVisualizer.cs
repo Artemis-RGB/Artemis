@@ -100,15 +100,11 @@ namespace Artemis.UI.Shared
 
             // Determine the scale required to fit the desired size of the control
             Size measureSize = MeasureDevice();
-            double scale = Math.Min(DesiredSize.Width / measureSize.Width, DesiredSize.Height / measureSize.Height);
-            Rect scaledRect = new(0, 0, measureSize.Width * scale, measureSize.Height * scale);
+            double scale = Math.Min(RenderSize.Width / measureSize.Width, RenderSize.Height / measureSize.Height);
 
-            // Center and scale the visualization in the desired bounding box
-            if (DesiredSize.Width > 0 && DesiredSize.Height > 0)
-            {
-                drawingContext.PushTransform(new TranslateTransform(DesiredSize.Width / 2 - scaledRect.Width / 2, DesiredSize.Height / 2 - scaledRect.Height / 2));
+            // Scale the visualization in the desired bounding box
+            if (RenderSize.Width > 0 && RenderSize.Height > 0)
                 drawingContext.PushTransform(new ScaleTransform(scale, scale));
-            }
 
             // Determine the offset required to rotate within bounds
             Rect rotationRect = new(0, 0, Device.RgbDevice.ActualSize.Width, Device.RgbDevice.ActualSize.Height);
