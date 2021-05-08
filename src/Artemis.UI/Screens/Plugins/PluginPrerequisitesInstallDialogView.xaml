@@ -7,17 +7,20 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:PluginPrerequisitesInstallDialogViewModel}">
     <UserControl.Resources>
-        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition MinHeight="150"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition MinHeight="150" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300" />
@@ -32,7 +35,6 @@
                  ItemsSource="{Binding Prerequisites}"
                  SelectedItem="{Binding ActivePrerequisite, Mode=OneWay}"
                  HorizontalContentAlignment="Stretch">
-
             <ListBox.ItemTemplate>
                 <DataTemplate DataType="{x:Type local:PluginPrerequisiteViewModel}">
                     <Border Padding="8" BorderThickness="0 0 0 1" BorderBrush="{DynamicResource MaterialDesignDivider}" VerticalAlignment="Stretch">
@@ -75,17 +77,27 @@
                         HorizontalContentAlignment="Stretch"
                         Margin="10 0"
                         IsTabStop="False"
-                        Visibility="{Binding ActivePrerequisite, Converter={StaticResource NullToVisibilityConverter}}"/>
+                        Visibility="{Binding ShowProgress, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
 
-        <TextBlock Grid.Row="1" 
-                   Grid.Column="1" 
-                   Style="{StaticResource MaterialDesignBody1TextBlock}" 
+        <TextBlock Grid.Row="1"
+                   Grid.Column="1"
+                   Style="{StaticResource MaterialDesignBody1TextBlock}"
                    TextWrapping="Wrap"
                    Margin="10 0"
-                   Visibility="{Binding ActivePrerequisite, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted}">
+                   Visibility="{Binding ShowIntro, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             In order for this plugin/feature to function certain prerequisites must be met. <LineBreak /><LineBreak />
             On the left side you can see all prerequisites and whether they are currently met or not.
             Clicking install prerequisites will automatically set everything up for you.
+        </TextBlock>
+
+        <TextBlock Grid.Row="1"
+                   Grid.Column="1"
+                   Style="{StaticResource MaterialDesignBody1TextBlock}"
+                   TextWrapping="Wrap"
+                   Margin="10 0"
+                   Visibility="{Binding ShowFailed, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+            Installing <Run Text="{Binding ActivePrerequisite.PluginPrerequisite.Name, Mode=OneWay}" FontWeight="SemiBold" /> failed. <LineBreak /><LineBreak />
+            You may try again to see if that helps, otherwise install the prerequisite manually or contact the plugin developer.
         </TextBlock>
 
         <StackPanel Grid.Row="2"
@@ -94,7 +106,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="0 8 0 0"
-                    Visibility="{Binding IsFinished, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                    Visibility="{Binding ShowInstall, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Focusable="False"
                     IsCancel="True"
@@ -104,6 +116,7 @@
                     Style="{StaticResource MaterialDesignFlatButton}"
                     IsDefault="True"
                     Focusable="True"
+                    IsEnabled="{Binding ShowProgress, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}"
                     Command="{s:Action Install}"
                     Content="INSTALL PREREQUISITES" />
         </StackPanel>
@@ -114,7 +127,7 @@
                     Orientation="Horizontal"
                     HorizontalAlignment="Right"
                     Margin="0 8 0 0"
-                    Visibility="{Binding IsFinished, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                    Visibility="{Binding ShowInstall, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
             <Button Style="{StaticResource MaterialDesignFlatButton}"
                     Focusable="False"
                     IsCancel="True"

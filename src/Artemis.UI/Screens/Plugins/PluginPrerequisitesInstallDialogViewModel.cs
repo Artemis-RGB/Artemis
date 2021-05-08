@@ -13,18 +13,16 @@ namespace Artemis.UI.Screens.Plugins
 {
     public class PluginPrerequisitesInstallDialogViewModel : DialogViewModelBase
     {
-        private readonly IDialogService _dialogService;
-        private readonly List<IPrerequisitesSubject> _subjects;
         private PluginPrerequisiteViewModel _activePrerequisite;
-        private bool _canInstall;
-        private bool _isFinished;
         private CancellationTokenSource _tokenSource;
+        private bool _showProgress;
+        private bool _showIntro = true;
+        private bool _showFailed;
+        private bool _showInstall = true;
+        private bool _canInstall;
 
         public PluginPrerequisitesInstallDialogViewModel(List<IPrerequisitesSubject> subjects, IPrerequisitesVmFactory prerequisitesVmFactory, IDialogService dialogService)
         {
-            _subjects = subjects;
-            _dialogService = dialogService;
-
             Prerequisites = new BindableCollection<PluginPrerequisiteViewModel>();
             foreach (IPrerequisitesSubject prerequisitesSubject in subjects)
                 Prerequisites.AddRange(prerequisitesSubject.Prerequisites.Select(p => prerequisitesVmFactory.PluginPrerequisiteViewModel(p, false)));
@@ -41,16 +39,34 @@ namespace Artemis.UI.Screens.Plugins
             set => SetAndNotify(ref _activePrerequisite, value);
         }
 
+        public bool ShowProgress
+        {
+            get => _showProgress;
+            set => SetAndNotify(ref _showProgress, value);
+        }
+
+        public bool ShowIntro
+        {
+            get => _showIntro;
+            set => SetAndNotify(ref _showIntro, value);
+        }
+
+        public bool ShowFailed
+        {
+            get => _showFailed;
+            set => SetAndNotify(ref _showFailed, value);
+        }
+
+        public bool ShowInstall
+        {
+            get => _showInstall;
+            set => SetAndNotify(ref _showInstall, value);
+        }
+
         public bool CanInstall
         {
             get => _canInstall;
             set => SetAndNotify(ref _canInstall, value);
-        }
-
-        public bool IsFinished
-        {
-            get => _isFinished;
-            set => SetAndNotify(ref _isFinished, value);
         }
 
         #region Overrides of DialogViewModelBase
@@ -67,6 +83,10 @@ namespace Artemis.UI.Screens.Plugins
         public async void Install()
         {
             CanInstall = false;
+            ShowFailed = false;
+            ShowIntro = false;
+            ShowProgress = true;
+
             _tokenSource = new CancellationTokenSource();
 
             try
@@ -80,27 +100,20 @@ namespace Artemis.UI.Screens.Plugins
                     ActivePrerequisite = pluginPrerequisiteViewModel;
                     await ActivePrerequisite.Install(_tokenSource.Token);
 
+                    if (!ActivePrerequisite.IsMet)
+                    {
+                        CanInstall = true;
+                        ShowFailed = true;
+                        ShowProgress = false;
+                        return;
+                    }
+
                     // Wait after the task finished for the user to process what happened
                     if (pluginPrerequisiteViewModel != Prerequisites.Last())
                         await Task.Delay(1000);
                 }
 
-                if (Prerequisites.All(p => p.IsMet))
-                {
-                    IsFinished = true;
-                    return;
-                }
-
-                // This shouldn't be happening and the experience isn't very nice for the user (too lazy to make a nice UI for such an edge case)
-                // but at least give some feedback
-                Session?.Close(false);
-                await _dialogService.ShowConfirmDialog(
-                    "Plugin prerequisites",
-                    "All prerequisites are installed but some still aren't met. \r\nPlease try again or contact the plugin creator.",
-                    "Confirm",
-                    ""
-                );
-                await Show(_dialogService, _subjects);
+                ShowInstall = false;
             }
             catch (OperationCanceledException)
             {
@@ -108,7 +121,6 @@ namespace Artemis.UI.Screens.Plugins
             }
             finally
             {
-                CanInstall = true;
                 _tokenSource.Dispose();
                 _tokenSource = null;
             }
