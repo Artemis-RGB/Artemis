@@ -114,7 +114,8 @@
                                              HorizontalAlignment="Center"
                                              VerticalAlignment="Center"
                                              ShowColors="True"
-                                             LedClicked="{s:Action OnLedClicked}"/>
+                                             LedClicked="{s:Action OnLedClicked}"
+                                             Margin="20"/>
 
                     <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" 
                                Visibility="{Binding Device.Layout.RgbLayout.Author, Converter={StaticResource NullToVisibilityConverter}}"

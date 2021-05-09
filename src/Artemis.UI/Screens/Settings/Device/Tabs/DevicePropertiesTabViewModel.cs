@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using Ookii.Dialogs.Wpf;
+using RGB.NET.Core;
 using SkiaSharp;
 using Stylet;
 
@@ -105,6 +106,8 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.RedScale = RedScale / 100f;
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
+            
+            _rgbService.Surface.Update(true);
         }
 
         public void BrowseCustomLayout(object sender, MouseEventArgs e)

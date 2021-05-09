@@ -55,8 +55,8 @@
                   CanUserAddRows="False"
                   AutoGenerateColumns="False"
                   CanUserResizeRows="False"
-                  materialDesign:DataGridAssist.CellPadding="8"
-                  materialDesign:DataGridAssist.ColumnHeaderPadding="8"
+                  materialDesign:DataGridAssist.CellPadding="16 5 5 5"
+                  materialDesign:DataGridAssist.ColumnHeaderPadding="16 5 5 5"
                   VirtualizingPanel.VirtualizationMode="Standard"
                   Margin="10">
             <DataGrid.Columns>
