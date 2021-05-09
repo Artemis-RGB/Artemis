@@ -7,6 +7,7 @@ using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using RGB.NET.Core;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -229,7 +230,8 @@ namespace Artemis.Core
                 LedEntity ledEntity = new()
                 {
                     DeviceIdentifier = artemisLed.Device.Identifier,
-                    LedName = artemisLed.RgbLed.Id.ToString()
+                    LedName = artemisLed.RgbLed.Id.ToString(),
+                    PhysicalLayout = artemisLed.Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ? (int) artemisLed.Device.PhysicalLayout : null
                 };
                 LayerEntity.Leds.Add(ledEntity);
             }
