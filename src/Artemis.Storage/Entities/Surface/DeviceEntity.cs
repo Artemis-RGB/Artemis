@@ -27,6 +27,7 @@ namespace Artemis.Storage.Entities.Surface
 
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
         public List<InputMappingEntity> InputMappings { get; set; }
+        public List<int> Categories { get; set; }
         
     }
 

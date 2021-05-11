@@ -577,7 +577,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
 
-            _leds.AddRange(leds);
+            _leds.AddRange(leds.Except(_leds));
             CalculateRenderProperties();
         }
 
