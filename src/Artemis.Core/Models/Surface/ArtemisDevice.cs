@@ -471,6 +471,10 @@ namespace Artemis.Core
 
             if (!RgbDevice.ColorCorrections.Any())
                 RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
+            
+            Categories.Clear();
+            foreach (int deviceEntityCategory in DeviceEntity.Categories) 
+                Categories.Add((DeviceCategory) deviceEntityCategory);
 
             CalculateRenderProperties();
             OnDeviceUpdated();

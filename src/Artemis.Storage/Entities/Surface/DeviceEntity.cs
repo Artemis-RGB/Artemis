@@ -8,8 +8,9 @@ namespace Artemis.Storage.Entities.Surface
         {
             InputIdentifiers = new List<DeviceInputIdentifierEntity>();
             InputMappings = new List<InputMappingEntity>();
+            Categories = new List<int>();
         }
-        
+
         public string Id { get; set; }
         public float X { get; set; }
         public float Y { get; set; }
@@ -28,7 +29,6 @@ namespace Artemis.Storage.Entities.Surface
         public List<DeviceInputIdentifierEntity> InputIdentifiers { get; set; }
         public List<InputMappingEntity> InputMappings { get; set; }
         public List<int> Categories { get; set; }
-        
     }
 
     public class InputMappingEntity

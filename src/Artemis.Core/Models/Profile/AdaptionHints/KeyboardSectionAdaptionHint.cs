@@ -22,8 +22,9 @@ namespace Artemis.Core
         {
         }
 
-        public KeyboardSectionAdaptionHint(KeyboardSectionAdaptionHintEntity entity)
+        internal KeyboardSectionAdaptionHint(KeyboardSectionAdaptionHintEntity entity)
         {
+            Section = (KeyboardSection) entity.Section;
         }
 
         /// <summary>
@@ -42,6 +43,18 @@ namespace Artemis.Core
                 List<LedId> ledIds = RegionLedIds[Section];
                 layer.AddLeds(keyboard.Leds.Where(l => ledIds.Contains(l.RgbLed.Id)));
             }
+        }
+
+        /// <inheritdoc />
+        public IAdaptionHintEntity GetEntry()
+        {
+            return new KeyboardSectionAdaptionHintEntity() {Section = (int) Section};
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Keyboard section adaption - {nameof(Section)}: {Section}";
         }
 
         #endregion

@@ -121,5 +121,11 @@ namespace Artemis.Core.Services
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
         /// <returns></returns>
         ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix = "imported");
+
+        /// <summary>
+        ///     Adapts a given profile to the currently active devices
+        /// </summary>
+        /// <param name="profile">The profile to adapt</param>
+        void AdaptProfile(Profile profile);
     }
 }

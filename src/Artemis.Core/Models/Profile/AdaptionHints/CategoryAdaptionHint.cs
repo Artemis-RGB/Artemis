@@ -13,8 +13,12 @@ namespace Artemis.Core
         {
         }
 
-        public CategoryAdaptionHint(CategoryAdaptionHintEntity entity)
+        internal CategoryAdaptionHint(CategoryAdaptionHintEntity entity)
         {
+            Category = (DeviceCategory) entity.Category;
+            Skip = entity.Skip;
+            LimitAmount = entity.LimitAmount;
+            Amount = entity.Amount;
         }
 
         /// <summary>
@@ -53,6 +57,18 @@ namespace Artemis.Core
                 layer.AddLeds(artemisDevice.Leds);
         }
 
+        /// <inheritdoc />
+        public IAdaptionHintEntity GetEntry()
+        {
+            return new CategoryAdaptionHintEntity {Amount = Amount, LimitAmount = LimitAmount, Category = (int) Category, Skip = Skip};
+        }
+
         #endregion
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Category adaption - {nameof(Category)}: {Category}, {nameof(Skip)}: {Skip}, {nameof(LimitAmount)}: {LimitAmount}, {nameof(Amount)}: {Amount}";
+        }
     }
 }

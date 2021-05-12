@@ -21,7 +21,41 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
-            <Grid>
+            <!-- Layout -->
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                Categories
+            </TextBlock>
+            <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Justify">
+                Artemis uses categories to determine where the layers of imported profiles are applied to. <LineBreak/>
+                You can hover over a category for a more detailed description.
+            </TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <CheckBox Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}"
+                          IsChecked="{Binding HasDeskCategory}"
+                          ToolTip="A device acting as desk ornamentation such as a LED strip"
+                          Content="Desk" />
+                <CheckBox Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}"
+                          IsChecked="{Binding HasMonitorCategory}"
+                          ToolTip="A device attached to the monitor such as ambilight LEDs"
+                          Content="Monitor" />
+                <CheckBox Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}"
+                          ToolTip="A device inside your computer case"
+                          IsChecked="{Binding HasCaseCategory}"
+                          Content="Case" />
+                <CheckBox Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}"
+                          IsChecked="{Binding HasRoomCategory}"
+                          ToolTip="A device elsewhere in the room"
+                          Content="Room" />
+                <CheckBox Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}"
+                          IsChecked="{Binding HasPeripheralsCategory}"
+                          ToolTip="A peripheral such as a mouse or keyboard"
+                          Content="Peripheral" />
+            </StackPanel>
+
+            <Grid Margin="0 25">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition Width="40" />
@@ -157,7 +191,7 @@
             </Grid>
 
             <!-- Layout -->
-            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Margin="0 25 0 0">
+            <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
                 Custom layout
             </TextBlock>
             <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"

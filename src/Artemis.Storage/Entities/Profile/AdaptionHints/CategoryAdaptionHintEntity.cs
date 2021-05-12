@@ -4,7 +4,7 @@
     {
         public int Category { get; set; }
 
-        public bool ApplyToAllMatches { get; set; }
+        public bool LimitAmount { get; set; }
         public int Skip { get; set; }
         public int Amount { get; set; }
     }

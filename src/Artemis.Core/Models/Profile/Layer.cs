@@ -43,6 +43,7 @@ namespace Artemis.Core
 
             _leds = new List<ArtemisLed>();
 
+            Adapter = new LayerAdapter(this);
             Initialize();
             Parent.AddChild(this, 0);
         }
@@ -66,6 +67,7 @@ namespace Artemis.Core
             _leds = new List<ArtemisLed>();
 
             Load();
+            Adapter = new LayerAdapter(this);
             Initialize();
         }
 
@@ -122,6 +124,11 @@ namespace Artemis.Core
         /// </summary>
         public LayerEntity LayerEntity { get; internal set; }
 
+        /// <summary>
+        ///     Gets the layer adapter that can be used to adapt this layer to a different set of devices
+        /// </summary>
+        public LayerAdapter Adapter { get; }
+
         /// <inheritdoc />
         public override bool ShouldBeEnabled => !Suspended && DisplayConditionMet;
 
@@ -148,7 +155,15 @@ namespace Artemis.Core
             return $"[Layer] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
-        #region IDisposable
+        /// <summary>
+        ///     Occurs when a property affecting the rendering properties of this layer has been updated
+        /// </summary>
+        public event EventHandler? RenderPropertiesUpdated;
+
+        /// <summary>
+        ///     Occurs when the layer brush of this layer has been updated
+        /// </summary>
+        public event EventHandler? LayerBrushUpdated;
 
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
@@ -163,7 +178,10 @@ namespace Artemis.Core
             base.Dispose(disposing);
         }
 
-        #endregion
+        internal void OnLayerBrushUpdated()
+        {
+            LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
+        }
 
         private void Initialize()
         {
@@ -189,6 +207,28 @@ namespace Artemis.Core
             ActivateLayerBrush();
 
             Reset();
+        }
+
+        private void LayerBrushStoreOnLayerBrushRemoved(object? sender, LayerBrushStoreEvent e)
+        {
+            if (LayerBrush?.Descriptor == e.Registration.LayerBrushDescriptor)
+                DeactivateLayerBrush();
+        }
+
+        private void LayerBrushStoreOnLayerBrushAdded(object? sender, LayerBrushStoreEvent e)
+        {
+            if (LayerBrush != null || !General.PropertiesInitialized)
+                return;
+
+            LayerBrushReference? current = General.BrushReference.CurrentValue;
+            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId &&
+                e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
+                ActivateLayerBrush();
+        }
+
+        private void OnRenderPropertiesUpdated()
+        {
+            RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #region Storage
@@ -691,51 +731,6 @@ namespace Artemis.Core
             brush.Dispose();
 
             OnLayerBrushUpdated();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void LayerBrushStoreOnLayerBrushRemoved(object? sender, LayerBrushStoreEvent e)
-        {
-            if (LayerBrush?.Descriptor == e.Registration.LayerBrushDescriptor)
-                DeactivateLayerBrush();
-        }
-
-        private void LayerBrushStoreOnLayerBrushAdded(object? sender, LayerBrushStoreEvent e)
-        {
-            if (LayerBrush != null || !General.PropertiesInitialized)
-                return;
-
-            LayerBrushReference? current = General.BrushReference.CurrentValue;
-            if (e.Registration.PluginFeature.Id == current?.LayerBrushProviderId &&
-                e.Registration.LayerBrushDescriptor.LayerBrushType.Name == current.BrushType)
-                ActivateLayerBrush();
-        }
-
-        #endregion
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when a property affecting the rendering properties of this layer has been updated
-        /// </summary>
-        public event EventHandler? RenderPropertiesUpdated;
-
-        /// <summary>
-        ///     Occurs when the layer brush of this layer has been updated
-        /// </summary>
-        public event EventHandler? LayerBrushUpdated;
-
-        private void OnRenderPropertiesUpdated()
-        {
-            RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        internal void OnLayerBrushUpdated()
-        {
-            LayerBrushUpdated?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

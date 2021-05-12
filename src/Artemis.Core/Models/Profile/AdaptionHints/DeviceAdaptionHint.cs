@@ -14,8 +14,12 @@ namespace Artemis.Core
         {
         }
 
-        public DeviceAdaptionHint(DeviceAdaptionHintEntity entity)
+        internal DeviceAdaptionHint(DeviceAdaptionHintEntity entity)
         {
+            DeviceType = (RGBDeviceType) entity.DeviceType;
+            Skip = entity.Skip;
+            LimitAmount = entity.LimitAmount;
+            Amount = entity.Amount;
         }
 
         /// <summary>
@@ -52,6 +56,18 @@ namespace Artemis.Core
 
             foreach (ArtemisDevice artemisDevice in matches)
                 layer.AddLeds(artemisDevice.Leds);
+        }
+
+        /// <inheritdoc />
+        public IAdaptionHintEntity GetEntry()
+        {
+            return new DeviceAdaptionHintEntity {Amount = Amount, LimitAmount = LimitAmount, DeviceType = (int) DeviceType, Skip = Skip};
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Device adaption - {nameof(DeviceType)}: {DeviceType}, {nameof(Skip)}: {Skip}, {nameof(LimitAmount)}: {LimitAmount}, {nameof(Amount)}: {Amount}";
         }
 
         #endregion
