@@ -48,7 +48,8 @@ namespace Artemis.Core
         {
             IEnumerable<ArtemisDevice> matches = devices
                 .Where(d => d.Categories.Contains(Category))
-                .OrderBy(d => d.Rectangle)
+                .OrderBy(d => d.Rectangle.Top)
+                .ThenBy(d => d.Rectangle.Left)
                 .Skip(Skip);
             if (LimitAmount)
                 matches = matches.Take(Amount);

@@ -48,7 +48,7 @@ namespace Artemis.Core
         /// <inheritdoc />
         public IAdaptionHintEntity GetEntry()
         {
-            return new KeyboardSectionAdaptionHintEntity() {Section = (int) Section};
+            return new KeyboardSectionAdaptionHintEntity {Section = (int) Section};
         }
 
         /// <inheritdoc />

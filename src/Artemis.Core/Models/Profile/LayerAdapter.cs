@@ -49,10 +49,10 @@ namespace Artemis.Core
                 foreach (LedEntity ledEntity in Layer.LayerEntity.Leds)
                 {
                     // TODO: If this is a keyboard LED and the layouts don't match, convert it before looking for it on the devices
-                    
+
                     LedId ledId = Enum.Parse<LedId>(ledEntity.LedName);
                     ArtemisLed? led = availableLeds.FirstOrDefault(l => l.RgbLed.Id == ledId);
-                    
+
                     if (led != null)
                     {
                         availableLeds.Remove(led);
@@ -67,8 +67,9 @@ namespace Artemis.Core
         /// <summary>
         /// Automatically determine hints for this layer
         /// </summary>
-        public void DetermineHints(List<ArtemisDevice> devices)
+        public List<IAdaptionHint> DetermineHints(IEnumerable<ArtemisDevice> devices)
         {
+            List<IAdaptionHint> newHints = new();
             // Any fully covered device will add a device adaption hint for that type
             foreach (IGrouping<ArtemisDevice, ArtemisLed> deviceLeds in Layer.Leds.GroupBy(l => l.Device))
             {
@@ -77,7 +78,11 @@ namespace Artemis.Core
                 if (AdaptionHints.Any(h => h is DeviceAdaptionHint d && d.DeviceType == device.RgbDevice.DeviceInfo.DeviceType))
                     continue;
                 if (DoesLayerCoverDevice(device))
-                    AdaptionHints.Add(new DeviceAdaptionHint {DeviceType = device.RgbDevice.DeviceInfo.DeviceType});
+                {
+                    DeviceAdaptionHint hint = new() {DeviceType = device.RgbDevice.DeviceInfo.DeviceType};
+                    AdaptionHints.Add(hint);
+                    newHints.Add(hint);
+                }
             }
 
             // Any fully covered category will add a category adaption hint for its category
@@ -87,9 +92,15 @@ namespace Artemis.Core
                     continue;
 
                 List<ArtemisDevice> categoryDevices = devices.Where(d => d.Categories.Contains(deviceCategory)).ToList();
-                if (categoryDevices.All(DoesLayerCoverDevice))
-                    AdaptionHints.Add(new CategoryAdaptionHint {Category = deviceCategory});
+                if (categoryDevices.Any() && categoryDevices.All(DoesLayerCoverDevice))
+                {
+                    CategoryAdaptionHint hint = new() {Category = deviceCategory};
+                    AdaptionHints.Add(hint);
+                    newHints.Add(hint);
+                }
             }
+
+            return newHints;
         }
 
         private bool DoesLayerCoverDevice(ArtemisDevice device)

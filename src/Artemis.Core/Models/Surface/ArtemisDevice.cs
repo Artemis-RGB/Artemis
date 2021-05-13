@@ -475,6 +475,8 @@ namespace Artemis.Core
             Categories.Clear();
             foreach (int deviceEntityCategory in DeviceEntity.Categories) 
                 Categories.Add((DeviceCategory) deviceEntityCategory);
+            if (!Categories.Any())
+                ApplyDefaultCategories();
 
             CalculateRenderProperties();
             OnDeviceUpdated();
