@@ -12,6 +12,8 @@ using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBi
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
@@ -57,6 +59,14 @@ namespace Artemis.UI.Ninject.Factories
     {
         FolderViewModel FolderViewModel(ProfileElement folder);
         LayerViewModel LayerViewModel(ProfileElement layer);
+    }
+
+    public interface ILayerHintVmFactory : IVmFactory
+    {
+        LayerHintsDialogViewModel LayerHintsDialogViewModel(Layer layer);
+        CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
+        DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
+        KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
     }
 
     public interface IProfileLayerVmFactory : IVmFactory

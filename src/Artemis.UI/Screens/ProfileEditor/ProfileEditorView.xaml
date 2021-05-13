@@ -169,6 +169,12 @@
                         </Button>
                         <Separator />
 
+                        <Button Command="{s:Action AdaptActiveProfile}" ToolTip="Adapt the profile to the current surface">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AutoFix" Margin="0 0 15 0" />
+                                <TextBlock>Adapt profile</TextBlock>
+                            </StackPanel>
+                        </Button>
                         <Button Command="{s:Action ExportActiveProfile}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Upload" Margin="0 0 15 0" />

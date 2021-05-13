@@ -122,7 +122,7 @@ namespace Artemis.Core.Services
             ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
             Profile profile = new(module, entity);
             InstantiateProfile(profile);
-            
+
             module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
             module.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
         }
@@ -164,7 +164,6 @@ namespace Artemis.Core.Services
 
             return profile;
         }
-
 
 
         public void ClearActiveProfile(ProfileModule module)
@@ -294,13 +293,21 @@ namespace Artemis.Core.Services
             return new ProfileDescriptor(profileModule, profileEntity);
         }
 
+        /// <inheritdoc />
+        public void AdaptProfile(Profile profile)
+        {
+            List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
+            foreach (Layer layer in profile.GetAllLayers())
+                layer.Adapter.Adapt(devices);
+        }
+
         #region Event handlers
 
         private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
         {
             ActiveProfilesPopulateLeds();
         }
-        
+
         #endregion
     }
 }

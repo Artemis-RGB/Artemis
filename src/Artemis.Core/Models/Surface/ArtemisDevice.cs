@@ -36,10 +36,12 @@ namespace Artemis.Core
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
+            Categories = new HashSet<DeviceCategory>();
 
             UpdateLeds();
             ApplyKeyboardLayout();
             ApplyToEntity();
+            ApplyDefaultCategories();
             CalculateRenderProperties();
         }
 
@@ -52,6 +54,7 @@ namespace Artemis.Core
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
+            Categories = new HashSet<DeviceCategory>();
 
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
@@ -113,6 +116,11 @@ namespace Artemis.Core
         ///     Gets a list of input mappings configured on the device
         /// </summary>
         public Dictionary<ArtemisLed, ArtemisLed> InputMappings { get; }
+
+        /// <summary>
+        ///     Gets a list containing the categories of this device
+        /// </summary>
+        public HashSet<DeviceCategory> Categories { get; }
 
         /// <summary>
         ///     Gets or sets the X-position of the device
@@ -383,6 +391,46 @@ namespace Artemis.Core
             OnDeviceUpdated();
         }
 
+        /// <summary>
+        /// Applies the default categories for this device to the <see cref="Categories"/> list
+        /// </summary>
+        public void ApplyDefaultCategories()
+        {
+            switch (RgbDevice.DeviceInfo.DeviceType)
+            {
+                case RGBDeviceType.Keyboard:
+                case RGBDeviceType.Mouse:
+                case RGBDeviceType.Headset:
+                case RGBDeviceType.Mousepad:
+                case RGBDeviceType.HeadsetStand:
+                case RGBDeviceType.Keypad:
+                    if (!Categories.Contains(DeviceCategory.Peripherals))
+                        Categories.Add(DeviceCategory.Peripherals);
+                    break;
+                case RGBDeviceType.Mainboard:
+                case RGBDeviceType.GraphicsCard:
+                case RGBDeviceType.DRAM:
+                case RGBDeviceType.Fan:
+                case RGBDeviceType.LedStripe:
+                case RGBDeviceType.Cooler:
+                    if (!Categories.Contains(DeviceCategory.Case))
+                        Categories.Add(DeviceCategory.Case);
+                    break;
+                case RGBDeviceType.Speaker:
+                    if (!Categories.Contains(DeviceCategory.Desk))
+                        Categories.Add(DeviceCategory.Desk);
+                    break;
+                case RGBDeviceType.Monitor:
+                    if (!Categories.Contains(DeviceCategory.Monitor))
+                        Categories.Add(DeviceCategory.Monitor);
+                    break;
+                case RGBDeviceType.LedMatrix:
+                    if (!Categories.Contains(DeviceCategory.Room))
+                        Categories.Add(DeviceCategory.Room);
+                    break;
+            }
+        }
+
         internal void ApplyToEntity()
         {
             // Other properties are computed
@@ -401,6 +449,10 @@ namespace Artemis.Core
             DeviceEntity.InputMappings.Clear();
             foreach (var (original, mapped) in InputMappings)
                 DeviceEntity.InputMappings.Add(new InputMappingEntity {OriginalLedId = (int) original.RgbLed.Id, MappedLedId = (int) mapped.RgbLed.Id});
+
+            DeviceEntity.Categories.Clear();
+            foreach (DeviceCategory deviceCategory in Categories)
+                DeviceEntity.Categories.Add((int) deviceCategory);
         }
 
         internal void ApplyToRgbDevice()
@@ -419,6 +471,12 @@ namespace Artemis.Core
 
             if (!RgbDevice.ColorCorrections.Any())
                 RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
+            
+            Categories.Clear();
+            foreach (int deviceEntityCategory in DeviceEntity.Categories) 
+                Categories.Add((DeviceCategory) deviceEntityCategory);
+            if (!Categories.Any())
+                ApplyDefaultCategories();
 
             CalculateRenderProperties();
             OnDeviceUpdated();
@@ -471,5 +529,14 @@ namespace Artemis.Core
             else
                 LogicalLayout = DeviceEntity.LogicalLayout;
         }
+    }
+
+    public enum DeviceCategory
+    {
+        Desk,
+        Monitor,
+        Case,
+        Room,
+        Peripherals
     }
 }
