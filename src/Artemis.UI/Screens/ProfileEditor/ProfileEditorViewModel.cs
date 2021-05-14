@@ -209,6 +209,20 @@ namespace Artemis.UI.Screens.ProfileEditor
             SelectedProfile = copy;
         }
 
+        public async Task AdaptActiveProfile()
+        {
+            if (_profileEditorService.SelectedProfile == null)
+                return;
+
+            if (!await DialogService.ShowConfirmDialog(
+                "Adapt profile",
+                "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."
+            )) 
+                return;
+
+            _profileService.AdaptProfile(_profileEditorService.SelectedProfile);
+        }
+
         public async Task ExportActiveProfile()
         {
             await DialogService.ShowDialog<ProfileExportViewModel>(new Dictionary<string, object>

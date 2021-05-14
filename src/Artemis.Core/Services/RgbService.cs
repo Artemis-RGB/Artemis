@@ -314,6 +314,9 @@ namespace Artemis.Core.Services
         {
             SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
             surfaceArrangement.Arrange(_devices);
+            foreach (ArtemisDevice artemisDevice in _devices) 
+                artemisDevice.ApplyDefaultCategories();
+
             SaveDevices();
         }
 

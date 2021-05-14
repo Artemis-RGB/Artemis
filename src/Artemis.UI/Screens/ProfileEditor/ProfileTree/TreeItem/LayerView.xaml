@@ -35,6 +35,12 @@
                     </MenuItem.Icon>
                 </MenuItem>
                 <Separator />
+                <MenuItem Header="View adaption hints" Command="{s:Action OpenAdaptionHints}">
+                    <MenuItem.Icon>
+                        <materialDesign:PackIcon Kind="AutoFix" />
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator />
                 <MenuItem Header="Rename" Command="{s:Action RenameElement}" InputGestureText="F2">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="RenameBox" />
