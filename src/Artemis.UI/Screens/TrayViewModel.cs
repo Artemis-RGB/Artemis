@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Drawing;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
@@ -17,26 +13,24 @@ using Hardcodet.Wpf.TaskbarNotification;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
-using Icon = System.Drawing.Icon;
 
 namespace Artemis.UI.Screens
 {
-    public class TrayViewModel : Screen, IMainWindowProvider, INotificationProvider
+    public class TrayViewModel : Screen, IMainWindowProvider
     {
+        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
-        private readonly IWindowManager _windowManager;
         private readonly ThemeWatcher _themeWatcher;
-        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
+        private readonly IWindowManager _windowManager;
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
-        
+
         public TrayViewModel(IKernel kernel,
             IWindowManager windowManager,
             IWindowService windowService,
-            IMessageService messageService,
             IUpdateService updateService,
             IEventAggregator eventAggregator,
             ICoreService coreService,
@@ -59,7 +53,6 @@ namespace Artemis.UI.Screens
             ApplyColorSchemeSetting();
 
             windowService.ConfigureMainWindowProvider(this);
-            messageService.ConfigureNotificationProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
             bool minimized = Bootstrapper.StartupArguments.Contains("--minimized");
             bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
@@ -203,43 +196,6 @@ namespace Artemis.UI.Screens
         private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
         {
             ApplyColorSchemeSetting();
-        }
-
-        #endregion
-
-        #region Implementation of INotificationProvider
-
-        /// <inheritdoc />
-        public void ShowNotification(string title, string message, PackIconKind icon)
-        {
-            Execute.OnUIThread(() =>
-            {
-                // Convert the PackIcon to an icon by drawing it on a visual
-                DrawingVisual drawingVisual = new();
-                DrawingContext drawingContext = drawingVisual.RenderOpen();
-
-                PackIcon packIcon = new() {Kind = icon};
-                Geometry geometry = Geometry.Parse(packIcon.Data);
-
-                // Scale the icon up to fit a 256x256 image and draw it
-                geometry = Geometry.Combine(geometry, Geometry.Empty, GeometryCombineMode.Union, new ScaleTransform(256 / geometry.Bounds.Right, 256 / geometry.Bounds.Bottom));
-                drawingContext.DrawGeometry(new SolidColorBrush(Colors.White), null, geometry);
-                drawingContext.Close();
-
-                // Render the visual and add it to a PNG encoder (we want opacity in our icon)
-                RenderTargetBitmap renderTargetBitmap = new(256, 256, 96, 96, PixelFormats.Pbgra32);
-                renderTargetBitmap.Render(drawingVisual);
-                PngBitmapEncoder encoder = new();
-                encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-
-                // Save the PNG and get an icon handle
-                using MemoryStream stream = new();
-                encoder.Save(stream);
-                Icon convertedIcon = Icon.FromHandle(new Bitmap(stream).GetHicon());
-
-                // Show the 'balloon'
-                _taskBarIcon.ShowBalloonTip(title, message, convertedIcon, true);
-            });
         }
 
         #endregion

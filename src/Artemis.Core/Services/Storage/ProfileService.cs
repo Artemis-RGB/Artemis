@@ -107,6 +107,11 @@ namespace Artemis.Core.Services
 
             Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
+            if (profileDescriptor.NeedsAdaption)
+            {
+                AdaptProfile(profile);
+                profileDescriptor.NeedsAdaption = false;
+            }
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
             SaveActiveProfile(profileDescriptor.ProfileModule);
@@ -290,7 +295,7 @@ namespace Artemis.Core.Services
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
 
             _profileRepository.Add(profileEntity);
-            return new ProfileDescriptor(profileModule, profileEntity);
+            return new ProfileDescriptor(profileModule, profileEntity) {NeedsAdaption = true};
         }
 
         /// <inheritdoc />

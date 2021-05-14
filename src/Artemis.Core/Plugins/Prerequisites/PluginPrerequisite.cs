@@ -23,7 +23,7 @@ namespace Artemis.Core
         public abstract string Description { get; }
 
         /// <summary>
-        ///     Gets a boolean indicating whether installing or uninstalling this prerequisite requires admin privileges
+        ///     [NYI] Gets a boolean indicating whether installing or uninstalling this prerequisite requires admin privileges
         /// </summary>
         public abstract bool RequiresElevation { get; }
 

@@ -17,7 +17,7 @@ namespace Artemis.UI.Shared.Services
         ///     Sets up the notification provider that shows desktop notifications
         /// </summary>
         /// <param name="notificationProvider">The notification provider that shows desktop notifications</param>
-        void ConfigureNotificationProvider(INotificationProvider notificationProvider);
+        void SetNotificationProvider(INotificationProvider notificationProvider);
 
         /// <summary>
         ///     Queues a notification message for display in a snackbar.
@@ -123,7 +123,9 @@ namespace Artemis.UI.Shared.Services
         /// </summary>
         /// <param name="title">The title of the notification</param>
         /// <param name="message">The message of the notification</param>
-        void ShowNotification(string title, string message);
+        /// <param name="activatedCallback">An optional callback that is invoked when the notification is clicked</param>
+        /// <param name="dismissedCallback">An optional callback that is invoked when the notification is dismissed</param>
+        void ShowNotification(string title, string message, Action? activatedCallback = null, Action? dismissedCallback = null);
 
         /// <summary>
         ///     Shows a desktop notification with a Material Design icon
@@ -131,7 +133,9 @@ namespace Artemis.UI.Shared.Services
         /// <param name="title">The title of the notification</param>
         /// <param name="message">The message of the notification</param>
         /// <param name="icon">The name of the icon</param>
-        void ShowNotification(string title, string message, PackIconKind icon);
+        /// <param name="activatedCallback">An optional callback that is invoked when the notification is clicked</param>
+        /// <param name="dismissedCallback">An optional callback that is invoked when the notification is dismissed</param>
+        void ShowNotification(string title, string message, PackIconKind icon, Action? activatedCallback = null, Action? dismissedCallback = null);
 
         /// <summary>
         ///     Shows a desktop notification with a Material Design icon
@@ -139,6 +143,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="title">The title of the notification</param>
         /// <param name="message">The message of the notification</param>
         /// <param name="icon">The name of the icon as a string</param>
-        void ShowNotification(string title, string message, string icon);
+        /// <param name="activatedCallback">An optional callback that is invoked when the notification is clicked</param>
+        /// <param name="dismissedCallback">An optional callback that is invoked when the notification is dismissed</param>
+        void ShowNotification(string title, string message, string icon, Action? activatedCallback = null, Action? dismissedCallback = null);
     }
 }

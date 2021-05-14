@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
+using Artemis.Storage.Entities.Profile;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core.Modules
@@ -91,11 +94,13 @@ namespace Artemis.Core.Modules
     /// </summary>
     public abstract class ProfileModule : Module
     {
+        private readonly List<ProfileDescriptor> _defaultProfiles;
+        private readonly object _lock = new();
+
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
-        private readonly object _lock = new();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileModule" /> class
@@ -103,6 +108,7 @@ namespace Artemis.Core.Modules
         protected ProfileModule()
         {
             OpacityOverride = 1;
+            _defaultProfiles = new List<ProfileDescriptor>();
         }
 
         /// <summary>
@@ -131,6 +137,11 @@ namespace Artemis.Core.Modules
         public bool AnimatingProfileChange { get; private set; }
 
         /// <summary>
+        ///     Gets a list of default profiles, to add a new default profile use <see cref="AddDefaultProfile" />
+        /// </summary>
+        public ReadOnlyCollection<ProfileDescriptor> DefaultProfiles => _defaultProfiles.AsReadOnly();
+
+        /// <summary>
         ///     Called after the profile has updated
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
@@ -146,6 +157,40 @@ namespace Artemis.Core.Modules
         /// <param name="canvasInfo"></param>
         public virtual void ProfileRendered(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+        }
+
+        /// <summary>
+        ///     Occurs when the <see cref="ActiveProfile" /> has changed
+        /// </summary>
+        public event EventHandler? ActiveProfileChanged;
+
+        /// <summary>
+        ///     Adds a default profile by reading it from the file found at the provided path
+        /// </summary>
+        /// <param name="file"></param>
+        protected void AddDefaultProfile(string file)
+        {
+            // Ensure the file exists
+            if (!File.Exists(file))
+                throw new ArtemisPluginFeatureException(this, $"Could not find default profile at {file}.");
+            // Deserialize and make sure that succeeded
+            ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(File.ReadAllText(file));
+            if (profileEntity == null)
+                throw new ArtemisPluginFeatureException(this, $"Failed to deserialize default profile at {file}.");
+            // Ensure the profile ID is unique
+            ProfileDescriptor descriptor = new(this, profileEntity) {NeedsAdaption = true};
+            if (_defaultProfiles.Any(d => d.Id == descriptor.Id))
+                throw new ArtemisPluginFeatureException(this, $"Cannot add default profile from {file}, profile ID {descriptor.Id} already in use.");
+
+            _defaultProfiles.Add(descriptor);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ActiveProfileChanged" /> event
+        /// </summary>
+        protected virtual void OnActiveProfileChanged()
+        {
+            ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
         }
 
         internal override void InternalUpdate(double deltaTime)
@@ -245,22 +290,5 @@ namespace Artemis.Core.Modules
             base.Deactivate(isDeactivateOverride);
             Activate(isActivateOverride);
         }
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the <see cref="ActiveProfile" /> has changed
-        /// </summary>
-        public event EventHandler? ActiveProfileChanged;
-
-        /// <summary>
-        ///     Invokes the <see cref="ActiveProfileChanged" /> event
-        /// </summary>
-        protected virtual void OnActiveProfileChanged()
-        {
-            ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
     }
 }

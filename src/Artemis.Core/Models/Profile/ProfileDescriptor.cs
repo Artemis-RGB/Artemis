@@ -12,7 +12,7 @@ namespace Artemis.Core
         internal ProfileDescriptor(ProfileModule profileModule, ProfileEntity profileEntity)
         {
             ProfileModule = profileModule;
-            
+
             Id = profileEntity.Id;
             Name = profileEntity.Name;
             IsLastActiveProfile = profileEntity.IsActive;
@@ -38,5 +38,9 @@ namespace Artemis.Core
         /// </summary>
         public bool IsLastActiveProfile { get; }
 
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether the profile will be adapted the next time it is activated
+        /// </summary>
+        public bool NeedsAdaption { get; set; }
     }
 }

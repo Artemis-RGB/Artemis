@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,11 +18,13 @@ namespace Artemis.Core
         /// <param name="fileName">The target file to execute</param>
         /// <param name="arguments">A set of command-line arguments to use when starting the application</param>
         /// <param name="waitForExit">A boolean indicating whether the action should wait for the process to exit</param>
-        public ExecuteFileAction(string name, string fileName, string? arguments = null, bool waitForExit = true) : base(name)
+        /// <param name="elevate">A boolean indicating whether the file should run with administrator privileges (does not require <see cref="PluginPrerequisite.RequiresElevation"/>)</param>
+        public ExecuteFileAction(string name, string fileName, string? arguments = null, bool waitForExit = true, bool elevate = false) : base(name)
         {
             FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
             Arguments = arguments;
             WaitForExit = waitForExit;
+            Elevate = elevate;
         }
 
         /// <summary>
@@ -30,7 +33,7 @@ namespace Artemis.Core
         public string FileName { get; }
 
         /// <summary>
-        /// Gets a set of command-line arguments to use when starting the application
+        ///     Gets a set of command-line arguments to use when starting the application
         /// </summary>
         public string? Arguments { get; }
 
@@ -38,6 +41,11 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether the action should wait for the process to exit
         /// </summary>
         public bool WaitForExit { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the file should run with administrator privileges
+        /// </summary>
+        public bool Elevate { get; }
 
         /// <inheritdoc />
         public override async Task Execute(CancellationToken cancellationToken)
@@ -48,7 +56,7 @@ namespace Artemis.Core
                 ShowProgressBar = true;
                 ProgressIndeterminate = true;
 
-                int result = await RunProcessAsync(FileName, Arguments);
+                int result = await RunProcessAsync(FileName, Arguments, Elevate);
 
                 Status = $"{FileName} exited with code {result}";
             }
@@ -64,13 +72,19 @@ namespace Artemis.Core
             }
         }
 
-        private static Task<int> RunProcessAsync(string fileName, string? arguments)
+        private static Task<int> RunProcessAsync(string fileName, string? arguments, bool elevate)
         {
             TaskCompletionSource<int> tcs = new();
 
             Process process = new()
             {
-                StartInfo = {FileName = fileName, Arguments = arguments!},
+                StartInfo =
+                {
+                    FileName = fileName,
+                    Arguments = arguments!,
+                    Verb = elevate ? "RunAs" : "",
+                    UseShellExecute = elevate
+                },
                 EnableRaisingEvents = true
             };
 
@@ -80,7 +94,17 @@ namespace Artemis.Core
                 process.Dispose();
             };
 
-            process.Start();
+            try
+            {
+                process.Start();
+            }
+            catch (Win32Exception e)
+            {
+                if (!elevate || e.NativeErrorCode != 0x4c7)
+                    throw;
+                tcs.SetResult(-1);
+            }
+
 
             return tcs.Task;
         }

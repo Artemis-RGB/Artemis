@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Timers;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Interop;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Utilities;
@@ -14,7 +12,7 @@ using Linearstar.Windows.RawInput.Native;
 using Serilog;
 using MouseButton = Artemis.Core.Services.MouseButton;
 
-namespace Artemis.UI.InputProviders
+namespace Artemis.UI.Providers
 {
     public class NativeWindowInputProvider : InputProvider
     {

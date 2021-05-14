@@ -59,6 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             Module = module;
             DialogService = dialogService;
 
+            DefaultProfiles = new BindableCollection<ProfileDescriptor>(module.DefaultProfiles);
             Profiles = new BindableCollection<ProfileDescriptor>();
 
             // Populate the panels
@@ -98,6 +99,9 @@ namespace Artemis.UI.Screens.ProfileEditor
             get => _profileViewModel;
             set => SetAndNotify(ref _profileViewModel, value);
         }
+
+        public BindableCollection<ProfileDescriptor> DefaultProfiles { get; }
+        public bool HasDefaultProfiles => DefaultProfiles.Any();
 
         public BindableCollection<ProfileDescriptor> Profiles
         {
@@ -388,7 +392,9 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             // Get all profiles from the database
             Profiles.Clear();
-            Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(d => d.Name));
+            Profiles.AddRange(_profileService.GetProfileDescriptors(Module));
+            Profiles.AddRange(Module.DefaultProfiles.Where(d => Profiles.All(p => p.Id != d.Id)));
+            Profiles.Sort(p => p.Name);
         }
     }
 }

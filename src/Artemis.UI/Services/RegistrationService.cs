@@ -6,8 +6,8 @@ using Artemis.UI.Controllers;
 using Artemis.UI.DefaultTypes.DataModel.Display;
 using Artemis.UI.DefaultTypes.DataModel.Input;
 using Artemis.UI.DefaultTypes.PropertyInput;
-using Artemis.UI.InputProviders;
 using Artemis.UI.Ninject;
+using Artemis.UI.Providers;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.SkiaSharp;
 using Serilog;
@@ -22,6 +22,7 @@ namespace Artemis.UI.Services
         private readonly IProfileEditorService _profileEditorService;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IInputService _inputService;
+        private readonly IMessageService _messageService;
         private readonly IWebServerService _webServerService;
         private readonly IRgbService _rgbService;
         private readonly ISettingsService _settingsService;
@@ -36,6 +37,7 @@ namespace Artemis.UI.Services
             IProfileEditorService profileEditorService,
             IPluginManagementService pluginManagementService,
             IInputService inputService,
+            IMessageService messageService,
             IWebServerService webServerService,
             IRgbService rgbService,
             ISettingsService settingsService)
@@ -46,6 +48,7 @@ namespace Artemis.UI.Services
             _profileEditorService = profileEditorService;
             _pluginManagementService = pluginManagementService;
             _inputService = inputService;
+            _messageService = messageService;
             _webServerService = webServerService;
             _rgbService = rgbService;
             _settingsService = settingsService;
@@ -99,9 +102,10 @@ namespace Artemis.UI.Services
             _registeredBuiltInPropertyEditors = true;
         }
 
-        public void RegisterInputProvider()
+        public void RegisterProviders()
         {
             _inputService.AddInputProvider(new NativeWindowInputProvider(_logger, _inputService));
+            _messageService.SetNotificationProvider(new ToastNotificationProvider());
         }
 
         public void RegisterControllers()
@@ -160,7 +164,7 @@ namespace Artemis.UI.Services
         void RegisterBuiltInDataModelDisplays();
         void RegisterBuiltInDataModelInputs();
         void RegisterBuiltInPropertyEditors();
-        void RegisterInputProvider();
+        void RegisterProviders();
         void RegisterControllers();
         void ApplyPreferredGraphicsContext();
     }
