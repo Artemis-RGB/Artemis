@@ -85,6 +85,7 @@
     </ItemGroup>
     <ItemGroup>
         <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
+        <Resource Include="Resources\Images\Logo\bow-black.ico" />
         <Resource Include="Resources\Images\Logo\bow-white.ico" />
         <Resource Include="Resources\Images\Logo\bow-white.svg" />
         <Resource Include="Resources\Images\Logo\bow.ico" />
@@ -313,6 +314,7 @@
     </ItemGroup>
     <ItemGroup>
         <None Remove="Resources\Fonts\RobotoMono-Regular.ttf" />
+        <None Remove="Resources\Images\Logo\bow-black.ico" />
         <None Remove="Resources\Images\Logo\bow-white.ico" />
         <None Remove="Resources\Images\Logo\bow-white.svg" />
         <None Remove="Resources\Images\Logo\bow.ico" />

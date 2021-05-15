@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
@@ -27,6 +29,7 @@ namespace Artemis.UI.Screens
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
+        private ImageSource _icon;
 
         public TrayViewModel(IKernel kernel,
             IWindowManager windowManager,
@@ -88,6 +91,12 @@ namespace Artemis.UI.Screens
             });
 
             OnMainWindowOpened();
+        }
+
+        public ImageSource Icon
+        {
+            get => _icon;
+            set => SetAndNotify(ref _icon, value);
         }
 
         public void TrayActivateSidebarItem(string sidebarItem)
@@ -168,9 +177,15 @@ namespace Artemis.UI.Screens
 
         private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
         {
+            Execute.PostToUIThread(() =>
+            {
+                Icon = windowsTheme == ThemeWatcher.WindowsTheme.Dark 
+                    ? new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-white.ico")) 
+                    : new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-black.ico"));
+            });
+
             if (_colorScheme.Value != ApplicationColorScheme.Automatic)
                 return;
-
             if (windowsTheme == ThemeWatcher.WindowsTheme.Dark)
                 ChangeMaterialColors(ApplicationColorScheme.Dark);
             else
