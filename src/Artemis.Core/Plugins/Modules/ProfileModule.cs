@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Services;
+using Artemis.Storage.Entities.Profile;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core.Modules
@@ -91,11 +95,16 @@ namespace Artemis.Core.Modules
     /// </summary>
     public abstract class ProfileModule : Module
     {
+        private readonly List<string> _defaultProfilePaths = new();
+        private readonly List<string> _pendingDefaultProfilePaths = new();
+        private readonly List<ProfileEntity> _defaultProfiles = new();
+        private readonly object _lock = new();
+
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
-        private readonly object _lock = new();
+
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileModule" /> class
@@ -131,6 +140,11 @@ namespace Artemis.Core.Modules
         public bool AnimatingProfileChange { get; private set; }
 
         /// <summary>
+        ///     Gets a list of default profiles, to add a new default profile use <see cref="AddDefaultProfile" />
+        /// </summary>
+        internal ReadOnlyCollection<ProfileEntity> DefaultProfiles => _defaultProfiles.AsReadOnly();
+
+        /// <summary>
         ///     Called after the profile has updated
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
@@ -146,6 +160,71 @@ namespace Artemis.Core.Modules
         /// <param name="canvasInfo"></param>
         public virtual void ProfileRendered(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
         {
+        }
+
+        /// <summary>
+        ///     Occurs when the <see cref="ActiveProfile" /> has changed
+        /// </summary>
+        public event EventHandler? ActiveProfileChanged;
+
+        /// <summary>
+        ///     Adds a default profile by reading it from the file found at the provided path
+        /// </summary>
+        /// <param name="file">A path pointing towards a profile file. May be relative to the plugin directory.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the default profile was added; <see langword="false" /> if it was not because it is
+        ///     already in the list.
+        /// </returns>
+        protected bool AddDefaultProfile(string file)
+        {
+            // It can be null if the plugin has not loaded yet...
+            if (Plugin == null!)
+            {
+                if (_pendingDefaultProfilePaths.Contains(file))
+                    return false;
+                _pendingDefaultProfilePaths.Add(file);
+                return true;
+            }
+
+            if (!Path.IsPathRooted(file))
+                file = Plugin.ResolveRelativePath(file);
+
+            if (_defaultProfilePaths.Contains(file))
+                return false;
+            _defaultProfilePaths.Add(file);
+
+            // Ensure the file exists
+            if (!File.Exists(file))
+                throw new ArtemisPluginFeatureException(this, $"Could not find default profile at {file}.");
+            // Deserialize and make sure that succeeded
+            ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(File.ReadAllText(file), ProfileService.ExportSettings);
+            if (profileEntity == null)
+                throw new ArtemisPluginFeatureException(this, $"Failed to deserialize default profile at {file}.");
+            // Ensure the profile ID is unique
+            if (_defaultProfiles.Any(d => d.Id == profileEntity.Id))
+                throw new ArtemisPluginFeatureException(this, $"Cannot add default profile from {file}, profile ID {profileEntity.Id} already in use.");
+
+            profileEntity.IsFreshImport = true;
+            _defaultProfiles.Add(profileEntity);
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ActiveProfileChanged" /> event
+        /// </summary>
+        protected virtual void OnActiveProfileChanged()
+        {
+            ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal override void InternalEnable()
+        {
+            foreach (string pendingDefaultProfile in _pendingDefaultProfilePaths)
+                AddDefaultProfile(pendingDefaultProfile);
+            _pendingDefaultProfilePaths.Clear();
+
+            base.InternalEnable();
         }
 
         internal override void InternalUpdate(double deltaTime)
@@ -245,22 +324,5 @@ namespace Artemis.Core.Modules
             base.Deactivate(isDeactivateOverride);
             Activate(isActivateOverride);
         }
-
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the <see cref="ActiveProfile" /> has changed
-        /// </summary>
-        public event EventHandler? ActiveProfileChanged;
-
-        /// <summary>
-        ///     Invokes the <see cref="ActiveProfileChanged" /> event
-        /// </summary>
-        protected virtual void OnActiveProfileChanged()
-        {
-            ActiveProfileChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        #endregion
     }
 }

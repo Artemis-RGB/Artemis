@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace Artemis.UI.InputProviders
+namespace Artemis.UI.Providers
 {
     public sealed class SpongeWindow : NativeWindow
     {

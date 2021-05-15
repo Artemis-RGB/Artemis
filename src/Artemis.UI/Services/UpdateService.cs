@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
+using Windows.UI.Notifications;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Exceptions;
@@ -16,9 +17,8 @@ using Artemis.UI.Services.Models.UpdateService;
 using Artemis.UI.Shared.Services;
 using Flurl;
 using Flurl.Http;
-using MaterialDesignThemes.Wpf;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Serilog;
-using Constants = Artemis.Core.Constants;
 using File = System.IO.File;
 
 namespace Artemis.UI.Services
@@ -32,14 +32,12 @@ namespace Artemis.UI.Services
         private readonly PluginSetting<bool> _checkForUpdates;
         private readonly IDialogService _dialogService;
         private readonly ILogger _logger;
-        private readonly IMessageService _messageService;
         private readonly IWindowService _windowService;
 
-        public UpdateService(ILogger logger, ISettingsService settingsService, IDialogService dialogService, IMessageService messageService, IWindowService windowService)
+        public UpdateService(ILogger logger, ISettingsService settingsService, IDialogService dialogService, IWindowService windowService)
         {
             _logger = logger;
             _dialogService = dialogService;
-            _messageService = messageService;
             _windowService = windowService;
             _windowService.MainWindowOpened += WindowServiceOnMainWindowOpened;
 
@@ -51,8 +49,6 @@ namespace Artemis.UI.Services
             timer.Elapsed += async (_, _) => await AutoUpdate();
             timer.Start();
         }
-
-        public bool SuspendAutoUpdate { get; set; }
 
         private async Task OfferUpdate(DevOpsBuild buildInfo)
         {
@@ -81,6 +77,31 @@ namespace Artemis.UI.Services
             await using FileStream fs = new(installerPath, FileMode.Create, FileAccess.Write, FileShare.None);
             await httpResponseMessage.Content.CopyToAsync(fs);
         }
+
+        private async void TOnActivated(ToastNotification sender, object args)
+        {
+            if (args is not ToastActivatedEventArgs toastEventArgs)
+                return;
+
+            if (toastEventArgs.Arguments == "update")
+                await ApplyUpdate();
+            else if (toastEventArgs.Arguments == "later")
+                SuspendAutoUpdate = true;
+        }
+
+        private async void CheckForUpdatesOnSettingChanged(object sender, EventArgs e)
+        {
+            // Run an auto-update as soon as the setting gets changed to enabled
+            if (_checkForUpdates.Value)
+                await AutoUpdate();
+        }
+
+        private async void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
+        {
+            await AutoUpdate();
+        }
+
+        public bool SuspendAutoUpdate { get; set; }
 
         public async Task<bool> AutoUpdate()
         {
@@ -114,27 +135,26 @@ namespace Artemis.UI.Services
                 return false;
 
             if (_windowService.IsMainWindowOpen)
-            {
                 await OfferUpdate(buildInfo);
-            }
             else if (_autoInstallUpdates.Value)
             {
-                // Lets go
-                _messageService.ShowNotification(
-                    "Installing new version",
-                    $"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.",
-                    PackIconKind.Update
-                );
+                new ToastContentBuilder()
+                    .AddText("Installing new version", AdaptiveTextStyle.Header)
+                    .AddText($"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.")
+                    .AddProgressBar(null, null, true)
+                    .Show();
+
                 await ApplyUpdate();
             }
             else
             {
                 // If auto-install is disabled and the window is closed, best we can do is notify the user and stop.
-                _messageService.ShowNotification(
-                    "New version available",
-                    $"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.",
-                    PackIconKind.Update
-                );
+                new ToastContentBuilder()
+                    .AddText("New version available", AdaptiveTextStyle.Header)
+                    .AddText($"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.")
+                    .AddButton("Update", ToastActivationType.Background, "update")
+                    .AddButton("Later", ToastActivationType.Background, "later")
+                    .Show(t => t.Activated += TOnActivated);
             }
 
             return true;
@@ -157,9 +177,7 @@ namespace Artemis.UI.Services
 
             // Always update installer if it is missing ^^
             if (!File.Exists(installerPath))
-            {
                 await UpdateInstaller();
-            }
             // Compare the creation date of the installer with the build date and update if needed
             else
             {
@@ -226,22 +244,6 @@ namespace Artemis.UI.Services
                 .WithHeader("Accept", "application/vnd.github.v3+json")
                 .GetJsonAsync<GitHubDifference>();
         }
-
-        #region Event handlers
-
-        private async void CheckForUpdatesOnSettingChanged(object sender, EventArgs e)
-        {
-            // Run an auto-update as soon as the setting gets changed to enabled
-            if (_checkForUpdates.Value)
-                await AutoUpdate();
-        }
-
-        private async void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
-        {
-            await AutoUpdate();
-        }
-
-        #endregion
     }
 
     public interface IUpdateService : IArtemisUIService

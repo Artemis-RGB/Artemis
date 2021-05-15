@@ -70,33 +70,42 @@ namespace Artemis.Core
         public List<IAdaptionHint> DetermineHints(IEnumerable<ArtemisDevice> devices)
         {
             List<IAdaptionHint> newHints = new();
-            // Any fully covered device will add a device adaption hint for that type
-            foreach (IGrouping<ArtemisDevice, ArtemisLed> deviceLeds in Layer.Leds.GroupBy(l => l.Device))
+            if (devices.All(DoesLayerCoverDevice))
             {
-                ArtemisDevice device = deviceLeds.Key;
-                // If there is already an adaption hint for this type, don't add another
-                if (AdaptionHints.Any(h => h is DeviceAdaptionHint d && d.DeviceType == device.RgbDevice.DeviceInfo.DeviceType))
-                    continue;
-                if (DoesLayerCoverDevice(device))
-                {
-                    DeviceAdaptionHint hint = new() {DeviceType = device.RgbDevice.DeviceInfo.DeviceType};
-                    AdaptionHints.Add(hint);
-                    newHints.Add(hint);
-                }
+                DeviceAdaptionHint hint = new() {DeviceType = RGBDeviceType.All};
+                AdaptionHints.Add(hint);
+                newHints.Add(hint);
             }
-
-            // Any fully covered category will add a category adaption hint for its category
-            foreach (DeviceCategory deviceCategory in Enum.GetValues<DeviceCategory>())
+            else
             {
-                if (AdaptionHints.Any(h => h is CategoryAdaptionHint c && c.Category == deviceCategory))
-                    continue;
-
-                List<ArtemisDevice> categoryDevices = devices.Where(d => d.Categories.Contains(deviceCategory)).ToList();
-                if (categoryDevices.Any() && categoryDevices.All(DoesLayerCoverDevice))
+                // Any fully covered device will add a device adaption hint for that type
+                foreach (IGrouping<ArtemisDevice, ArtemisLed> deviceLeds in Layer.Leds.GroupBy(l => l.Device))
                 {
-                    CategoryAdaptionHint hint = new() {Category = deviceCategory};
-                    AdaptionHints.Add(hint);
-                    newHints.Add(hint);
+                    ArtemisDevice device = deviceLeds.Key;
+                    // If there is already an adaption hint for this type, don't add another
+                    if (AdaptionHints.Any(h => h is DeviceAdaptionHint d && d.DeviceType == device.RgbDevice.DeviceInfo.DeviceType))
+                        continue;
+                    if (DoesLayerCoverDevice(device))
+                    {
+                        DeviceAdaptionHint hint = new() {DeviceType = device.RgbDevice.DeviceInfo.DeviceType};
+                        AdaptionHints.Add(hint);
+                        newHints.Add(hint);
+                    }
+                }
+
+                // Any fully covered category will add a category adaption hint for its category
+                foreach (DeviceCategory deviceCategory in Enum.GetValues<DeviceCategory>())
+                {
+                    if (AdaptionHints.Any(h => h is CategoryAdaptionHint c && c.Category == deviceCategory))
+                        continue;
+
+                    List<ArtemisDevice> categoryDevices = devices.Where(d => d.Categories.Contains(deviceCategory)).ToList();
+                    if (categoryDevices.Any() && categoryDevices.All(DoesLayerCoverDevice))
+                    {
+                        CategoryAdaptionHint hint = new() {Category = deviceCategory};
+                        AdaptionHints.Add(hint);
+                        newHints.Add(hint);
+                    }
                 }
             }
 

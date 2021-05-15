@@ -381,7 +381,8 @@ namespace Artemis.Core
                                                "set to true because the device provider does not support it");
 
             if (layout.IsValid)
-                layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
+                layout.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
+
 
             UpdateLeds();
 

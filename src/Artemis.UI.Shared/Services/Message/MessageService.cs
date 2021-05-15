@@ -3,7 +3,7 @@ using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Shared.Services
 {
-    internal class MessageService : IMessageService
+    internal class MessageService : IMessageService, IDisposable
     {
         private INotificationProvider? _notificationProvider;
         public ISnackbarMessageQueue MainMessageQueue { get; }
@@ -14,8 +14,12 @@ namespace Artemis.UI.Shared.Services
         }
 
         /// <inheritdoc />
-        public void ConfigureNotificationProvider(INotificationProvider notificationProvider)
+        public void SetNotificationProvider(INotificationProvider notificationProvider)
         {
+            if (ReferenceEquals(_notificationProvider, notificationProvider))
+                return;
+
+            _notificationProvider?.Dispose();
             _notificationProvider = notificationProvider;
         }
 
@@ -72,22 +76,32 @@ namespace Artemis.UI.Shared.Services
         }
 
         /// <inheritdoc />
-        public void ShowNotification(string title, string message)
+        public void ShowNotification(string title, string message, Action? activatedCallback = null, Action? dismissedCallback = null)
         {
-            _notificationProvider?.ShowNotification(title, message, PackIconKind.None);
+            _notificationProvider?.ShowNotification(title, message, PackIconKind.None, activatedCallback, dismissedCallback);
         }
 
         /// <inheritdoc />
-        public void ShowNotification(string title, string message, PackIconKind icon)
+        public void ShowNotification(string title, string message, PackIconKind icon, Action? activatedCallback = null, Action? dismissedCallback = null)
         {
-            _notificationProvider?.ShowNotification(title, message, icon);
+            _notificationProvider?.ShowNotification(title, message, icon, activatedCallback, dismissedCallback);
         }
 
         /// <inheritdoc />
-        public void ShowNotification(string title, string message, string icon)
+        public void ShowNotification(string title, string message, string icon, Action? activatedCallback = null, Action? dismissedCallback = null)
         {
             Enum.TryParse(typeof(PackIconKind), icon, true, out object? iconKind);
-            _notificationProvider?.ShowNotification(title, message, (PackIconKind) (iconKind ?? PackIconKind.None));
+            _notificationProvider?.ShowNotification(title, message, (PackIconKind) (iconKind ?? PackIconKind.None), activatedCallback, dismissedCallback);
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _notificationProvider?.Dispose();
+        }
+
+        #endregion
     }
 }

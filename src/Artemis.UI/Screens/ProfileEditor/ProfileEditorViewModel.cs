@@ -14,7 +14,6 @@ using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
@@ -388,7 +387,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             // Get all profiles from the database
             Profiles.Clear();
-            Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(d => d.Name));
+            Profiles.AddRange(_profileService.GetProfileDescriptors(Module).OrderBy(p => p.Name));
         }
     }
 }

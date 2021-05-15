@@ -66,8 +66,8 @@ namespace Artemis.Core
 
             _leds = new List<ArtemisLed>();
 
-            Load();
             Adapter = new LayerAdapter(this);
+            Load();
             Initialize();
         }
 
@@ -242,6 +242,7 @@ namespace Artemis.Core
 
             ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
             LoadRenderElement();
+            Adapter.Load();
         }
 
         internal override void Save()
@@ -275,6 +276,9 @@ namespace Artemis.Core
                 };
                 LayerEntity.Leds.Add(ledEntity);
             }
+
+            // Adaption hints
+            Adapter.Save();
 
             SaveRenderElement();
         }

@@ -118,10 +118,10 @@ namespace Artemis.UI
 
         private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
-            // Use PowerShell to kill the process after 2 sec just in case
+            // Use PowerShell to kill the process after 8 sec just in case
             ProcessStartInfo info = new()
             {
-                Arguments = "-Command \"& {Start-Sleep -s 2; (Get-Process 'Artemis.UI').kill()}",
+                Arguments = "-Command \"& {Start-Sleep -s 8; (Get-Process 'Artemis.UI').kill()}",
                 WindowStyle = ProcessWindowStyle.Hidden,
                 CreateNoWindow = true,
                 FileName = "PowerShell.exe"
