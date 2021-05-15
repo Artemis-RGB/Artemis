@@ -37,10 +37,5 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether this was the last active profile
         /// </summary>
         public bool IsLastActiveProfile { get; }
-
-        /// <summary>
-        ///     Gets or sets a boolean indicating whether the profile will be adapted the next time it is activated
-        /// </summary>
-        public bool NeedsAdaption { get; set; }
     }
 }
