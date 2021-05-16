@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities.Plugins;
@@ -12,11 +10,9 @@ namespace Artemis.Core
     /// </summary>
     public abstract class PluginFeature : CorePropertyChanged, IDisposable
     {
-        private readonly Stopwatch _renderStopwatch = new();
-        private readonly Stopwatch _updateStopwatch = new();
         private bool _isEnabled;
         private Exception? _loadException;
-
+        
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>
@@ -26,6 +22,11 @@ namespace Artemis.Core
         ///     Gets the plugin that provides this feature
         /// </summary>
         public Plugin Plugin { get; internal set; } = null!; // Will be set right after construction
+
+        /// <summary>
+        ///     Gets the profiler that can be used to take profiling measurements
+        /// </summary>
+        public Profiler Profiler { get; internal set; } = null!; // Will be set right after construction
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -112,24 +113,22 @@ namespace Artemis.Core
 
         internal void StartUpdateMeasure()
         {
-            _updateStopwatch.Start();
+            Profiler.StartMeasurement("Update");
         }
 
         internal void StopUpdateMeasure()
         {
-            UpdateTime = _updateStopwatch.Elapsed;
-            _updateStopwatch.Reset();
+            Profiler.StopMeasurement("Update");
         }
 
         internal void StartRenderMeasure()
         {
-            _renderStopwatch.Start();
+            Profiler.StartMeasurement("Render");
         }
 
         internal void StopRenderMeasure()
         {
-            RenderTime = _renderStopwatch.Elapsed;
-            _renderStopwatch.Reset();
+            Profiler.StopMeasurement("Render");
         }
 
         internal void SetEnabled(bool enable, bool isAutoEnable = false)

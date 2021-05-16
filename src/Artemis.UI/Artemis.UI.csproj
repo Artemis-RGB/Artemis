@@ -372,5 +372,8 @@
         <Page Update="Screens\ProfileEditor\Dialogs\ProfileEditView.xaml">
             <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>
+        <Page Update="Screens\Settings\Debug\Tabs\Performance\PerformanceDebugView.xaml">
+          <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+        </Page>
     </ItemGroup>
 </Project>

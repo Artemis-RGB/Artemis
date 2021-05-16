@@ -411,6 +411,7 @@ namespace Artemis.Core.Services
                     featureInfo.Instance = instance;
                     instance.Info = featureInfo;
                     instance.Plugin = plugin;
+                    instance.Profiler = plugin.GetProfiler("Feature - " + featureInfo.Name);
                     instance.Entity = featureInfo.Entity;
                 }
                 catch (Exception e)

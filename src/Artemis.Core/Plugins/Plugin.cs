@@ -17,6 +17,7 @@ namespace Artemis.Core
     public class Plugin : CorePropertyChanged, IDisposable
     {
         private readonly List<PluginFeatureInfo> _features;
+        private readonly List<Profiler> _profilers;
 
         private bool _isEnabled;
 
@@ -28,6 +29,7 @@ namespace Artemis.Core
             Info.Plugin = this;
 
             _features = new List<PluginFeatureInfo>();
+            _profilers = new List<Profiler>();
         }
 
         /// <summary>
@@ -63,6 +65,8 @@ namespace Artemis.Core
         ///     Gets a read-only collection of all features this plugin provides
         /// </summary>
         public ReadOnlyCollection<PluginFeatureInfo> Features => _features.AsReadOnly();
+
+        public ReadOnlyCollection<Profiler> Profilers => _profilers.AsReadOnly();
 
         /// <summary>
         ///     The assembly the plugin code lives in
@@ -114,7 +118,7 @@ namespace Artemis.Core
         {
             return _features.FirstOrDefault(i => i.Instance is T)?.Instance as T;
         }
-        
+
         /// <summary>
         ///     Looks up the feature info the feature of type <typeparamref name="T" />
         /// </summary>
@@ -124,6 +128,22 @@ namespace Artemis.Core
         {
             // This should be a safe assumption because any type of PluginFeature is registered and added
             return _features.First(i => i.FeatureType == typeof(T));
+        }
+
+        /// <summary>
+        ///     Gets a profiler with the provided <paramref name="name" />, if it does not yet exist it will be created.
+        /// </summary>
+        /// <param name="name">The name of the profiler</param>
+        /// <returns>A new or existing profiler with the provided <paramref name="name" /></returns>
+        public Profiler GetProfiler(string name)
+        {
+            Profiler? profiler = _profilers.FirstOrDefault(p => p.Name == name);
+            if (profiler != null)
+                return profiler;
+
+            profiler = new Profiler(this, name);
+            _profilers.Add(profiler);
+            return profiler;
         }
 
         /// <inheritdoc />

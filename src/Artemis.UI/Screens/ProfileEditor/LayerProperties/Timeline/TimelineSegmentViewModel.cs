@@ -190,6 +190,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
             ShowRepeatButton = SegmentWidth > 45 && IsMainSegment;
             ShowDisableButton = SegmentWidth > 25;
+
             if (Segment == SegmentViewModelType.Main)
                 NotifyOfPropertyChange(nameof(RepeatSegment));
         }

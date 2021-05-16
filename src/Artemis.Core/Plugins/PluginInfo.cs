@@ -58,8 +58,7 @@ namespace Artemis.Core
 
         /// <summary>
         ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
-        ///     available
-        ///     icons
+        ///     available icons
         /// </summary>
         [JsonProperty]
         public string? Icon
