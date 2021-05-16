@@ -51,9 +51,11 @@ namespace Artemis.UI.Screens
             _themeWatcher = new ThemeWatcher();
             _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
             _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
-            _themeWatcher.ThemeChanged += ThemeWatcherOnThemeChanged;
+            _themeWatcher.SystemThemeChanged += _themeWatcher_SystemThemeChanged;
+            _themeWatcher.AppsThemeChanged += _themeWatcher_AppsThemeChanged;
 
             ApplyColorSchemeSetting();
+            ApplyTryIconTheme(_themeWatcher.GetSystemTheme());
 
             windowService.ConfigureMainWindowProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -170,26 +172,29 @@ namespace Artemis.UI.Screens
         private void ApplyColorSchemeSetting()
         {
             if (_colorScheme.Value == ApplicationColorScheme.Automatic)
-                ApplyWindowsTheme(_themeWatcher.GetWindowsTheme());
+                ApplyUITheme(_themeWatcher.GetAppsTheme());
             else
                 ChangeMaterialColors(_colorScheme.Value);
         }
 
-        private void ApplyWindowsTheme(ThemeWatcher.WindowsTheme windowsTheme)
+        private void ApplyUITheme(ThemeWatcher.WindowsTheme theme)
         {
-            Execute.PostToUIThread(() =>
-            {
-                Icon = windowsTheme == ThemeWatcher.WindowsTheme.Dark 
-                    ? new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-white.ico")) 
-                    : new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-black.ico"));
-            });
-
             if (_colorScheme.Value != ApplicationColorScheme.Automatic)
                 return;
-            if (windowsTheme == ThemeWatcher.WindowsTheme.Dark)
+            if (theme == ThemeWatcher.WindowsTheme.Dark)
                 ChangeMaterialColors(ApplicationColorScheme.Dark);
             else
                 ChangeMaterialColors(ApplicationColorScheme.Light);
+        }
+
+        private void ApplyTryIconTheme(ThemeWatcher.WindowsTheme theme)
+        {
+            Execute.PostToUIThread(() =>
+            {
+                Icon = theme == ThemeWatcher.WindowsTheme.Dark
+                    ? new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-white.ico"))
+                    : new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-black.ico"));
+            });
         }
 
         private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
@@ -203,9 +208,14 @@ namespace Artemis.UI.Screens
             extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
         }
 
-        private void ThemeWatcherOnThemeChanged(object sender, WindowsThemeEventArgs e)
+        private void _themeWatcher_AppsThemeChanged(object sender, WindowsThemeEventArgs e)
         {
-            ApplyWindowsTheme(e.Theme);
+            ApplyUITheme(e.Theme);
+        }
+
+        private void _themeWatcher_SystemThemeChanged(object sender, WindowsThemeEventArgs e)
+        {
+            ApplyTryIconTheme(e.Theme);
         }
 
         private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
