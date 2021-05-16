@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -107,6 +108,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             {
                 RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
                 RenderProfileElement.DisplayCondition.ChildRemoved -= DisplayConditionOnChildrenModified;
+                RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             }
 
             RenderProfileElement = e.RenderProfileElement;
@@ -134,6 +136,14 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
             RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
             RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
+            RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
+        }
+
+        private void TimelineOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(DisplayContinuously));
+            NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
+            NotifyOfPropertyChange(nameof(EventOverlapMode));
         }
 
         private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
