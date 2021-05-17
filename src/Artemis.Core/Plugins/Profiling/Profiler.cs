@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace Artemis.Core
 {
@@ -35,13 +37,16 @@ namespace Artemis.Core
         /// <param name="identifier">A unique identifier for this measurement</param>
         public void StartMeasurement(string identifier)
         {
-            if (!Measurements.TryGetValue(identifier, out ProfilingMeasurement? measurement))
+            lock (Measurements)
             {
-                measurement = new ProfilingMeasurement(identifier);
-                Measurements.Add(identifier, measurement);
-            }
+                if (!Measurements.TryGetValue(identifier, out ProfilingMeasurement? measurement))
+                {
+                    measurement = new ProfilingMeasurement(identifier);
+                    Measurements.Add(identifier, measurement);
+                }
 
-            measurement.Start();
+                measurement.Start();
+            }
         }
 
         /// <summary>
@@ -51,13 +56,17 @@ namespace Artemis.Core
         /// <returns>The number of ticks that passed since the <see cref="StartMeasurement" /> call with the same identifier</returns>
         public long StopMeasurement(string identifier)
         {
-            if (!Measurements.TryGetValue(identifier, out ProfilingMeasurement? measurement))
+            long lockRequestedAt = Stopwatch.GetTimestamp();
+            lock (Measurements)
             {
-                measurement = new ProfilingMeasurement(identifier);
-                Measurements.Add(identifier, measurement);
-            }
+                if (!Measurements.TryGetValue(identifier, out ProfilingMeasurement? measurement))
+                {
+                    measurement = new ProfilingMeasurement(identifier);
+                    Measurements.Add(identifier, measurement);
+                }
 
-            return measurement.Stop();
+                return measurement.Stop(Stopwatch.GetTimestamp() - lockRequestedAt);
+            }
         }
 
         /// <summary>
@@ -66,7 +75,10 @@ namespace Artemis.Core
         /// <param name="identifier"></param>
         public void ClearMeasurements(string identifier)
         {
-            Measurements.Remove(identifier);
+            lock (Measurements)
+            {
+                Measurements.Remove(identifier);
+            }            
         }
     }
 }

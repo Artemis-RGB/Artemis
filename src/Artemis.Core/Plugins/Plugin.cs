@@ -146,6 +146,15 @@ namespace Artemis.Core
             return profiler;
         }
 
+        /// <summary>
+        ///     Removes a profiler from the plugin
+        /// </summary>
+        /// <param name="profiler">The profiler to remove</param>
+        public void RemoveProfiler(Profiler profiler)
+        {
+            _profilers.Remove(profiler);
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {

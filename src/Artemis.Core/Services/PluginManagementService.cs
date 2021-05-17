@@ -39,9 +39,9 @@ namespace Artemis.Core.Services
             ProcessQueuedActions();
         }
 
-        private void CopyBuiltInPlugin(FileInfo zipFileInfo, ZipArchive zipArchive)
+        private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
         {
-            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins", Path.GetFileNameWithoutExtension(zipFileInfo.Name)));
+            DirectoryInfo pluginDirectory = new(Path.Combine(Constants.DataFolder, "plugins", targetDirectory));
             bool createLockFile = File.Exists(Path.Combine(pluginDirectory.FullName, "artemis.lock"));
 
             // Remove the old directory if it exists
@@ -81,12 +81,18 @@ namespace Artemis.Core.Services
 
                 using StreamReader reader = new(metaDataFileEntry.Open());
                 PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
+                string preferred = builtInPluginInfo.PreferredPluginDirectory;
+                string oldPreferred = Path.GetFileNameWithoutExtension(zipFile.Name);
+                // Rename folders to the new format 
+                // TODO: Get rid of this eventually, it's nice to keep around but it's extra IO that's best avoided
+                if (pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == oldPreferred) != null)
+                    Directory.Move(Path.Combine(pluginDirectory.FullName, oldPreferred), Path.Combine(pluginDirectory.FullName, preferred));
 
                 // Find the matching plugin in the plugin folder
-                DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == Path.GetFileNameWithoutExtension(zipFile.Name));
+                DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
                 if (match == null)
                 {
-                    CopyBuiltInPlugin(zipFile, archive);
+                    CopyBuiltInPlugin(archive, preferred);
                 }
                 else
                 {
@@ -94,7 +100,7 @@ namespace Artemis.Core.Services
                     if (!File.Exists(metadataFile))
                     {
                         _logger.Debug("Copying missing built-in plugin {builtInPluginInfo}", builtInPluginInfo);
-                        CopyBuiltInPlugin(zipFile, archive);
+                        CopyBuiltInPlugin(archive, preferred);
                     }
                     else
                     {
@@ -114,7 +120,7 @@ namespace Artemis.Core.Services
                             if (builtInPluginInfo.Version > pluginInfo.Version)
                             {
                                 _logger.Debug("Copying updated built-in plugin from {pluginInfo} to {builtInPluginInfo}", pluginInfo, builtInPluginInfo);
-                                CopyBuiltInPlugin(zipFile, archive);
+                                CopyBuiltInPlugin(archive, preferred);
                             }
                         }
                         catch (Exception e)
@@ -342,8 +348,8 @@ namespace Artemis.Core.Services
             foreach (Type featureType in featureTypes)
             {
                 // Load the enabled state and if not found, default to true
-                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ?? 
-                                                    new PluginFeatureEntity { IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName! };
+                PluginFeatureEntity featureEntity = plugin.Entity.Features.FirstOrDefault(i => i.Type == featureType.FullName) ??
+                                                    new PluginFeatureEntity {IsEnabled = plugin.Info.AutoEnableFeatures, Type = featureType.FullName!};
                 plugin.AddFeature(new PluginFeatureInfo(plugin, featureType, featureEntity, (PluginFeatureAttribute?) Attribute.GetCustomAttribute(featureType, typeof(PluginFeatureAttribute))));
             }
 
@@ -502,6 +508,7 @@ namespace Artemis.Core.Services
 
             Plugin? existing = _plugins.FirstOrDefault(p => p.Guid == pluginInfo.Guid);
             if (existing != null)
+            {
                 try
                 {
                     RemovePlugin(existing, false);
@@ -510,20 +517,14 @@ namespace Artemis.Core.Services
                 {
                     throw new ArtemisPluginException("A plugin with the same GUID is already loaded, failed to remove old version", e);
                 }
-
-            string targetDirectory = pluginInfo.Main.Split(".dll")[0].Replace("/", "").Replace("\\", "");
-            string uniqueTargetDirectory = targetDirectory;
-            int attempt = 2;
-
-            // Find a unique folder
-            while (pluginDirectory.EnumerateDirectories().Any(d => d.Name == uniqueTargetDirectory))
-            {
-                uniqueTargetDirectory = targetDirectory + "-" + attempt;
-                attempt++;
             }
 
+            string targetDirectory = pluginInfo.PreferredPluginDirectory;
+            if (Directory.Exists(Path.Combine(pluginDirectory.FullName, targetDirectory)))
+                throw new ArtemisPluginException($"A directory for this plugin already exists {Path.Combine(pluginDirectory.FullName, targetDirectory)}");
+
             // Extract everything in the same archive directory to the unique plugin directory
-            DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, uniqueTargetDirectory));
+            DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, targetDirectory));
             Utilities.CreateAccessibleDirectory(directoryInfo.FullName);
             string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
             foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)

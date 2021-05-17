@@ -124,6 +124,8 @@ namespace Artemis.Core
         /// <inheritdoc />
         public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
 
+        internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
+
         /// <inheritdoc />
         public override string ToString()
         {

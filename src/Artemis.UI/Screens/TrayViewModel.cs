@@ -26,10 +26,11 @@ namespace Artemis.UI.Screens
         private readonly IKernel _kernel;
         private readonly ThemeWatcher _themeWatcher;
         private readonly IWindowManager _windowManager;
+        private ImageSource _icon;
+        private bool _openingMainWindow;
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
-        private ImageSource _icon;
 
         public TrayViewModel(IKernel kernel,
             IWindowManager windowManager,
@@ -55,7 +56,7 @@ namespace Artemis.UI.Screens
             _themeWatcher.AppsThemeChanged += _themeWatcher_AppsThemeChanged;
 
             ApplyColorSchemeSetting();
-            ApplyTryIconTheme(_themeWatcher.GetSystemTheme());
+            ApplyTrayIconTheme(_themeWatcher.GetSystemTheme());
 
             windowService.ConfigureMainWindowProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
@@ -63,7 +64,9 @@ namespace Artemis.UI.Screens
             bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
             if (autoRunning && !showOnAutoRun || minimized)
+            {
                 coreService.Initialized += (_, _) => updateService.AutoUpdate();
+            }
             else
             {
                 ShowSplashScreen();
@@ -71,34 +74,53 @@ namespace Artemis.UI.Screens
             }
         }
 
-        public void TrayBringToForeground()
-        {
-            if (IsMainWindowOpen)
-            {
-                Execute.PostToUIThread(FocusMainWindow);
-                return;
-            }
-
-            // Initialize the shared UI when first showing the window
-            if (!UI.Shared.Bootstrapper.Initialized)
-                UI.Shared.Bootstrapper.Initialize(_kernel);
-
-            Execute.OnUIThreadSync(() =>
-            {
-                _splashViewModel?.RequestClose();
-                _splashViewModel = null;
-                _rootViewModel = _kernel.Get<RootViewModel>();
-                _rootViewModel.Closed += RootViewModelOnClosed;
-                _windowManager.ShowWindow(_rootViewModel);
-            });
-
-            OnMainWindowOpened();
-        }
-
         public ImageSource Icon
         {
             get => _icon;
             set => SetAndNotify(ref _icon, value);
+        }
+
+        public void TrayBringToForeground()
+        {
+            if (_openingMainWindow)
+                return;
+
+            try
+            {
+                _openingMainWindow = true;
+
+                if (IsMainWindowOpen)
+                {
+                    Execute.OnUIThreadSync(() =>
+                    {
+                        FocusMainWindow();
+                        _openingMainWindow = false;
+                    });
+                    return;
+                }
+
+                // Initialize the shared UI when first showing the window
+                if (!UI.Shared.Bootstrapper.Initialized)
+                    UI.Shared.Bootstrapper.Initialize(_kernel);
+
+                Execute.OnUIThreadSync(() =>
+                {
+                    _splashViewModel?.RequestClose();
+                    _splashViewModel = null;
+                    _rootViewModel = _kernel.Get<RootViewModel>();
+                    _rootViewModel.Closed += RootViewModelOnClosed;
+                    _windowManager.ShowWindow(_rootViewModel);
+
+                    IsMainWindowOpen = true;
+                    _openingMainWindow = false;
+                });
+
+                OnMainWindowOpened();
+            }
+            finally
+            {
+                _openingMainWindow = false;
+            }
         }
 
         public void TrayActivateSidebarItem(string sidebarItem)
@@ -120,14 +142,6 @@ namespace Artemis.UI.Screens
         public void SetTaskbarIcon(UIElement view)
         {
             _taskBarIcon = (TaskbarIcon) ((ContentControl) view).Content;
-        }
-
-        public void OnTrayBalloonTipClicked(object sender, EventArgs e)
-        {
-            if (!IsMainWindowOpen)
-                TrayBringToForeground();
-            else
-                FocusMainWindow();
         }
 
         private void FocusMainWindow()
@@ -158,10 +172,15 @@ namespace Artemis.UI.Screens
 
         private void RootViewModelOnClosed(object sender, CloseEventArgs e)
         {
-            if (_rootViewModel != null)
+            lock (this)
             {
-                _rootViewModel.Closed -= RootViewModelOnClosed;
-                _rootViewModel = null;
+                if (_rootViewModel != null)
+                {
+                    _rootViewModel.Closed -= RootViewModelOnClosed;
+                    _rootViewModel = null;
+                }
+
+                IsMainWindowOpen = false;
             }
 
             OnMainWindowClosed();
@@ -187,7 +206,7 @@ namespace Artemis.UI.Screens
                 ChangeMaterialColors(ApplicationColorScheme.Light);
         }
 
-        private void ApplyTryIconTheme(ThemeWatcher.WindowsTheme theme)
+        private void ApplyTrayIconTheme(ThemeWatcher.WindowsTheme theme)
         {
             Execute.PostToUIThread(() =>
             {
@@ -215,7 +234,7 @@ namespace Artemis.UI.Screens
 
         private void _themeWatcher_SystemThemeChanged(object sender, WindowsThemeEventArgs e)
         {
-            ApplyTryIconTheme(e.Theme);
+            ApplyTrayIconTheme(e.Theme);
         }
 
         private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
@@ -231,10 +250,7 @@ namespace Artemis.UI.Screens
 
         public bool OpenMainWindow()
         {
-            if (IsMainWindowOpen)
-                Execute.OnUIThread(FocusMainWindow);
-            else
-                TrayBringToForeground();
+            TrayBringToForeground();
             return _rootViewModel.ScreenState == ScreenState.Active;
         }
 
@@ -250,13 +266,11 @@ namespace Artemis.UI.Screens
 
         protected virtual void OnMainWindowOpened()
         {
-            IsMainWindowOpen = true;
             MainWindowOpened?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnMainWindowClosed()
         {
-            IsMainWindowOpen = false;
             MainWindowClosed?.Invoke(this, EventArgs.Empty);
         }
 

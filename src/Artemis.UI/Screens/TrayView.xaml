@@ -10,8 +10,7 @@
     <tb:TaskbarIcon IconSource="{Binding Icon}"
                     MenuActivation="LeftOrRightClick"
                     PopupActivation="DoubleClick"
-                    DoubleClickCommand="{s:Action TrayBringToForeground}"
-                    TrayBalloonTipClicked="{s:Action OnTrayBalloonTipClicked}">
+                    DoubleClickCommand="{s:Action TrayBringToForeground}">
 
         <tb:TaskbarIcon.TrayToolTip>
             <Border Background="{DynamicResource MaterialDesignToolTipBackground}" CornerRadius="2" Padding="5">

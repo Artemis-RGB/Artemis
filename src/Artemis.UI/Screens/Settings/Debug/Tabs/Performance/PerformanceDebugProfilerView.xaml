@@ -27,6 +27,7 @@
                 <materialDesign:DataGridTextColumn Binding="{Binding Min}" Header="Min" />
                 <materialDesign:DataGridTextColumn Binding="{Binding Max}" Header="Max" />
                 <materialDesign:DataGridTextColumn Binding="{Binding Average}" Header="Average" />
+                <materialDesign:DataGridTextColumn Binding="{Binding Percentile}" Header="95th percentile" />
             </DataGrid.Columns>
         </DataGrid>
     </StackPanel>

@@ -9,6 +9,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs.Performance
         private string _last;
         private string _max;
         private string _min;
+        private string _percentile;
 
         public PerformanceDebugMeasurementViewModel(ProfilingMeasurement measurement)
         {
@@ -41,12 +42,19 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs.Performance
             set => SetAndNotify(ref _max, value);
         }
 
+        public string Percentile
+        {
+            get => _percentile;
+            set => SetAndNotify(ref _percentile, value);
+        }
+
         public void Update()
         {
             Last = Measurement.GetLast().TotalMilliseconds + " ms";
             Average = Measurement.GetAverage().TotalMilliseconds + " ms";
             Min = Measurement.GetMin().TotalMilliseconds + " ms";
             Max = Measurement.GetMax().TotalMilliseconds + " ms";
+            Percentile = Measurement.GetPercentile(0.95).TotalMilliseconds + " ms";
         }
     }
 }

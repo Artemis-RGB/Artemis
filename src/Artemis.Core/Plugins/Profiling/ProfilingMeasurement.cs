@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace Artemis.Core
@@ -11,7 +13,8 @@ namespace Artemis.Core
         private bool _filledArray;
         private int _index;
         private long _last;
-        private DateTime? _start;
+        private bool _open;
+        private long _start;
 
         internal ProfilingMeasurement(string identifier)
         {
@@ -33,22 +36,24 @@ namespace Artemis.Core
         /// </summary>
         public void Start()
         {
-            _start = DateTime.UtcNow;
+            _start = Stopwatch.GetTimestamp();
+            _open = true;
         }
 
         /// <summary>
         ///     Stops measuring time and stores the time passed in the <see cref="Measurements" /> list
         /// </summary>
+        /// <param name="correction">An optional correction in ticks to subtract from the measurement</param>
         /// <returns>The time passed since the last <see cref="Start" /> call</returns>
-        public long Stop()
+        public long Stop(long correction = 0)
         {
-            if (_start == null)
+            if (!_open)
                 return 0;
-            
-            long difference = (DateTime.UtcNow - _start.Value).Ticks;
+
+            long difference = Stopwatch.GetTimestamp() - _start - correction;
+            _open = false;
             Measurements[_index] = difference;
-            _start = null;
-            
+
             _index++;
             if (_index >= 1000)
             {
@@ -105,6 +110,32 @@ namespace Artemis.Core
             return _filledArray
                 ? new TimeSpan(Measurements.Max())
                 : new TimeSpan(Measurements.Take(_index).Max());
+        }
+
+        /// <summary>
+        ///     Gets the nth percentile of the last 1000 measurements
+        /// </summary>
+        public TimeSpan GetPercentile(double percentile)
+        {
+            if (!_filledArray && _index == 0)
+                return TimeSpan.Zero;
+
+            long[] collection = _filledArray
+                ? Measurements.OrderBy(l => l).ToArray()
+                : Measurements.Take(_index).OrderBy(l => l).ToArray();
+
+            return new TimeSpan((long) Percentile(collection, percentile));
+        }
+
+        private static double Percentile(long[] elements, double percentile)
+        {
+            Array.Sort(elements);
+            double realIndex = percentile * (elements.Length - 1);
+            int index = (int) realIndex;
+            double frac = realIndex - index;
+            if (index + 1 < elements.Length)
+                return elements[index] * (1 - frac) + elements[index + 1] * frac;
+            return elements[index];
         }
     }
 }

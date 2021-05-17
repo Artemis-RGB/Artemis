@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
 using Artemis.Core.Services;
+using Humanizer;
 using Ninject;
 using Serilog;
 
@@ -13,19 +14,20 @@ namespace Artemis.Core
     /// </summary>
     public class TimedUpdateRegistration : IDisposable
     {
-        private DateTime _lastEvent;
-        private Timer? _timer;
-        private bool _disposed;
         private readonly object _lock = new();
-        private ILogger _logger;
+        private bool _disposed;
+        private DateTime _lastEvent;
+        private readonly ILogger _logger;
+        private Timer? _timer;
 
-        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action)
+        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action, string? name)
         {
             _logger = CoreService.Kernel.Get<ILogger>();
 
             Feature = feature;
             Interval = interval;
             Action = action;
+            Name = name ?? $"TimedUpdate-{Guid.NewGuid().ToString().Substring(0, 8)}";
 
             Feature.Enabled += FeatureOnEnabled;
             Feature.Disabled += FeatureOnDisabled;
@@ -33,13 +35,14 @@ namespace Artemis.Core
                 Start();
         }
 
-        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction)
+        internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction, string? name)
         {
             _logger = CoreService.Kernel.Get<ILogger>();
-            
+
             Feature = feature;
             Interval = interval;
             AsyncAction = asyncAction;
+            Name = name ?? $"TimedUpdate-{Guid.NewGuid().ToString().Substring(0, 8)}";
 
             Feature.Enabled += FeatureOnEnabled;
             Feature.Disabled += FeatureOnDisabled;
@@ -69,7 +72,12 @@ namespace Artemis.Core
         public Func<double, Task>? AsyncAction { get; }
 
         /// <summary>
-        ///     Starts calling the <see cref="Action" /> or <see cref="AsyncAction"/> at the configured <see cref="Interval" />
+        ///     Gets the name of this timed update
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        ///     Starts calling the <see cref="Action" /> or <see cref="AsyncAction" /> at the configured <see cref="Interval" />
         ///     <para>Note: Called automatically when the plugin enables</para>
         /// </summary>
         public void Start()
@@ -93,7 +101,7 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Stops calling the <see cref="Action" /> or <see cref="AsyncAction"/> at the configured <see cref="Interval" />
+        ///     Stops calling the <see cref="Action" /> or <see cref="AsyncAction" /> at the configured <see cref="Interval" />
         ///     <para>Note: Called automatically when the plugin disables</para>
         /// </summary>
         public void Stop()
@@ -112,49 +120,6 @@ namespace Artemis.Core
                 _timer = null;
             }
         }
-
-        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
-        {
-            if (!Feature.IsEnabled)
-                return;
-
-            lock (_lock)
-            {
-                TimeSpan interval = DateTime.Now - _lastEvent;
-                _lastEvent = DateTime.Now;
-
-                // Modules don't always want to update, honor that
-                if (Feature is Module module && !module.IsUpdateAllowed)
-                    return;
-
-                try
-                {
-                    if (Action != null)
-                        Action(interval.TotalSeconds);
-                    else if (AsyncAction != null)
-                    {
-                        Task task = AsyncAction(interval.TotalSeconds);
-                        task.Wait();
-                    }
-                }
-                catch (Exception exception)
-                {
-                    _logger.Error(exception, "Timed update uncaught exception in plugin {plugin}", Feature.Plugin);
-                }
-            }
-        }
-
-        private void FeatureOnEnabled(object? sender, EventArgs e)
-        {
-            Start();
-        }
-
-        private void FeatureOnDisabled(object? sender, EventArgs e)
-        {
-            Stop();
-        }
-
-        #region IDisposable
 
         /// <summary>
         ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
@@ -176,6 +141,55 @@ namespace Artemis.Core
             }
         }
 
+        private void TimerOnElapsed(object? sender, ElapsedEventArgs e)
+        {
+            if (!Feature.IsEnabled)
+                return;
+
+            lock (_lock)
+            {
+                Feature.Profiler.StartMeasurement(ToString());
+
+                TimeSpan interval = DateTime.Now - _lastEvent;
+                _lastEvent = DateTime.Now;
+
+                // Modules don't always want to update, honor that
+                if (Feature is Module module && !module.IsUpdateAllowed)
+                    return;
+
+                try
+                {
+                    if (Action != null)
+                    {
+                        Action(interval.TotalSeconds);
+                    }
+                    else if (AsyncAction != null)
+                    {
+                        Task task = AsyncAction(interval.TotalSeconds);
+                        task.Wait();
+                    }
+                }
+                catch (Exception exception)
+                {
+                    _logger.Error(exception, "{timedUpdate} uncaught exception in plugin {plugin}", this, Feature.Plugin);
+                }
+                finally
+                {
+                    Feature.Profiler.StopMeasurement(ToString());
+                }
+            }
+        }
+
+        private void FeatureOnEnabled(object? sender, EventArgs e)
+        {
+            Start();
+        }
+
+        private void FeatureOnDisabled(object? sender, EventArgs e)
+        {
+            Stop();
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -183,6 +197,12 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        /// <inheritdoc />
+        public sealed override string ToString()
+        {
+            if (Interval.TotalSeconds >= 1)
+                return $"{Name} ({Interval.TotalSeconds} sec)";
+            return $"{Name} ({Interval.TotalMilliseconds} ms)";
+        }
     }
 }
