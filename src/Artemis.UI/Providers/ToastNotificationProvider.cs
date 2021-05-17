@@ -71,7 +71,7 @@ namespace Artemis.UI.Providers
             Execute.OnUIThreadSync(() =>
             {
                 using FileStream stream = File.OpenWrite(imagePath);
-                GetEncoderForIcon(icon, _themeWatcher.GetWindowsTheme() == ThemeWatcher.WindowsTheme.Dark ? Colors.White : Colors.Black).Save(stream);
+                GetEncoderForIcon(icon, _themeWatcher.GetSystemTheme() == ThemeWatcher.WindowsTheme.Dark ? Colors.White : Colors.Black).Save(stream);
             });
 
             new ToastContentBuilder()
