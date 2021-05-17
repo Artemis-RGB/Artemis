@@ -194,6 +194,8 @@ namespace Artemis.Core
         public void Dispose()
         {
             Dispose(true);
+            Feature.Profiler.ClearMeasurements(ToString());
+
             GC.SuppressFinalize(this);
         }
 
