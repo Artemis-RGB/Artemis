@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Artemis.Storage.Entities.Plugins;
@@ -12,11 +10,9 @@ namespace Artemis.Core
     /// </summary>
     public abstract class PluginFeature : CorePropertyChanged, IDisposable
     {
-        private readonly Stopwatch _renderStopwatch = new();
-        private readonly Stopwatch _updateStopwatch = new();
         private bool _isEnabled;
         private Exception? _loadException;
-
+        
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>
@@ -26,6 +22,11 @@ namespace Artemis.Core
         ///     Gets the plugin that provides this feature
         /// </summary>
         public Plugin Plugin { get; internal set; } = null!; // Will be set right after construction
+
+        /// <summary>
+        ///     Gets the profiler that can be used to take profiling measurements
+        /// </summary>
+        public Profiler Profiler { get; internal set; } = null!; // Will be set right after construction
 
         /// <summary>
         ///     Gets whether the plugin is enabled
@@ -49,16 +50,6 @@ namespace Artemis.Core
         ///     Gets the identifier of this plugin feature
         /// </summary>
         public string Id => $"{GetType().FullName}-{Plugin.Guid.ToString().Substring(0, 8)}"; // Not as unique as a GUID but good enough and stays readable
-
-        /// <summary>
-        ///     Gets the last measured update time of the feature
-        /// </summary>
-        public TimeSpan UpdateTime { get; private set; }
-
-        /// <summary>
-        ///     Gets the last measured render time of the feature
-        /// </summary>
-        public TimeSpan RenderTime { get; private set; }
 
         internal PluginFeatureEntity Entity { get; set; } = null!; // Will be set right after construction
 
@@ -112,24 +103,22 @@ namespace Artemis.Core
 
         internal void StartUpdateMeasure()
         {
-            _updateStopwatch.Start();
+            Profiler.StartMeasurement("Update");
         }
 
         internal void StopUpdateMeasure()
         {
-            UpdateTime = _updateStopwatch.Elapsed;
-            _updateStopwatch.Reset();
+            Profiler.StopMeasurement("Update");
         }
 
         internal void StartRenderMeasure()
         {
-            _renderStopwatch.Start();
+            Profiler.StartMeasurement("Render");
         }
 
         internal void StopRenderMeasure()
         {
-            RenderTime = _renderStopwatch.Elapsed;
-            _renderStopwatch.Reset();
+            Profiler.StopMeasurement("Render");
         }
 
         internal void SetEnabled(bool enable, bool isAutoEnable = false)
@@ -239,6 +228,48 @@ namespace Artemis.Core
                 throw new ArtemisCoreException("Cannot lock a plugin feature that is not associated with a plugin");
 
             return File.Exists(Plugin.ResolveRelativePath($"{GetType().FullName}.lock"));
+        }
+
+        #endregion
+
+        #region Timed updates
+
+        /// <summary>
+        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="action" /> at the
+        ///     provided
+        ///     <paramref name="interval" />
+        /// </summary>
+        /// <param name="interval">The interval at which the update should occur</param>
+        /// <param name="action">
+        ///     The action to call every time the interval has passed. The delta time parameter represents the
+        ///     time passed since the last update in seconds
+        /// </param>
+        /// <param name="name">An optional name used in exceptions and profiling</param>
+        /// <returns>The resulting plugin update registration which can be used to stop the update</returns>
+        public TimedUpdateRegistration AddTimedUpdate(TimeSpan interval, Action<double> action, string? name = null)
+        {
+            if (action == null)
+                throw new ArgumentNullException(nameof(action));
+            return new TimedUpdateRegistration(this, interval, action, name);
+        }
+
+        /// <summary>
+        ///     Registers a timed update that whenever the plugin is enabled calls the provided <paramref name="asyncAction" /> at the
+        ///     provided
+        ///     <paramref name="interval" />
+        /// </summary>
+        /// <param name="interval">The interval at which the update should occur</param>
+        /// <param name="asyncAction">
+        ///     The async action to call every time the interval has passed. The delta time parameter
+        ///     represents the time passed since the last update in seconds
+        /// </param>
+        /// <param name="name">An optional name used in exceptions and profiling</param>
+        /// <returns>The resulting plugin update registration</returns>
+        public TimedUpdateRegistration AddTimedUpdate(TimeSpan interval, Func<double, Task> asyncAction, string? name = null)
+        {
+            if (asyncAction == null)
+                throw new ArgumentNullException(nameof(asyncAction));
+            return new TimedUpdateRegistration(this, interval, asyncAction, name);
         }
 
         #endregion

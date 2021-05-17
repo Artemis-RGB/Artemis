@@ -205,6 +205,7 @@ namespace Artemis.Core.Modules
                 throw new ArtemisPluginFeatureException(this, $"Cannot add default profile from {file}, profile ID {profileEntity.Id} already in use.");
 
             profileEntity.IsFreshImport = true;
+            profileEntity.IsActive = false;
             _defaultProfiles.Add(profileEntity);
 
             return true;

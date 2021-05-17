@@ -11,7 +11,8 @@ namespace Artemis.UI.Utilities
     {
         private const string RegistryKeyPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
 
-        private const string RegistryValueName = "AppsUseLightTheme";
+        private const string appsThemeRegistryValueName = "AppsUseLightTheme";
+        private const string systemThemeRegistryValueName = "SystemUsesLightTheme";
 
         public ThemeWatcher()
         {
@@ -21,24 +22,44 @@ namespace Artemis.UI.Utilities
         public void WatchTheme()
         {
             WindowsIdentity currentUser = WindowsIdentity.GetCurrent();
-            string query = string.Format(
+            string appsThemequery = string.Format(
                 CultureInfo.InvariantCulture,
                 @"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS' AND KeyPath = '{0}\\{1}' AND ValueName = '{2}'",
                 currentUser.User.Value,
                 RegistryKeyPath.Replace(@"\", @"\\"),
-                RegistryValueName);
+                appsThemeRegistryValueName);
+
+            string systemThemequery = string.Format(
+                CultureInfo.InvariantCulture,
+                @"SELECT * FROM RegistryValueChangeEvent WHERE Hive = 'HKEY_USERS' AND KeyPath = '{0}\\{1}' AND ValueName = '{2}'",
+                currentUser.User.Value,
+                RegistryKeyPath.Replace(@"\", @"\\"),
+                systemThemeRegistryValueName);
 
             try
             {
-                ManagementEventWatcher watcher = new(query);
-                watcher.EventArrived += (sender, args) =>
+                // For Apps theme
+                ManagementEventWatcher appsThemWatcher = new(appsThemequery);
+                appsThemWatcher.EventArrived += (_, _) =>
                 {
-                    WindowsTheme newWindowsTheme = GetWindowsTheme();
-                    OnThemeChanged(new WindowsThemeEventArgs(newWindowsTheme));
+                    WindowsTheme newWindowsTheme = GetAppsTheme();
+                    OnAppsThemeChanged(new WindowsThemeEventArgs(newWindowsTheme));
                 };
 
-                // Start listening for events
-                watcher.Start();
+                // Start listening for apps theme events
+                appsThemWatcher.Start();
+
+
+                // For System theme
+                ManagementEventWatcher systemThemWatcher = new(systemThemequery);
+                systemThemWatcher.EventArrived += (_, _) =>
+                {
+                    WindowsTheme newWindowsTheme = GetSystemTheme();
+                    OnSystemThemeChanged(new WindowsThemeEventArgs(newWindowsTheme));
+                };
+
+                // Start listening for system theme events
+                systemThemWatcher.Start();
             }
             catch (Exception)
             {
@@ -46,25 +67,40 @@ namespace Artemis.UI.Utilities
             }
         }
 
-        public WindowsTheme GetWindowsTheme()
+        private WindowsTheme GetTheme(string themeKeyName)
         {
             using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKeyPath))
             {
-                object registryValueObject = key?.GetValue(RegistryValueName);
+                object registryValueObject = key?.GetValue(themeKeyName);
                 if (registryValueObject == null) return WindowsTheme.Light;
 
-                int registryValue = (int) registryValueObject;
+                int registryValue = (int)registryValueObject;
 
                 return registryValue > 0 ? WindowsTheme.Light : WindowsTheme.Dark;
             }
         }
 
-        public event EventHandler<WindowsThemeEventArgs> ThemeChanged;
-
-
-        protected virtual void OnThemeChanged(WindowsThemeEventArgs e)
+        public WindowsTheme GetAppsTheme()
         {
-            ThemeChanged?.Invoke(this, e);
+            return GetTheme(appsThemeRegistryValueName);
+        }
+
+        public WindowsTheme GetSystemTheme()
+        {
+            return GetTheme(systemThemeRegistryValueName);
+        }
+
+        public event EventHandler<WindowsThemeEventArgs> AppsThemeChanged;
+        public event EventHandler<WindowsThemeEventArgs> SystemThemeChanged;
+
+        protected virtual void OnAppsThemeChanged(WindowsThemeEventArgs e)
+        {
+            AppsThemeChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSystemThemeChanged(WindowsThemeEventArgs e)
+        {
+            SystemThemeChanged?.Invoke(this, e);
         }
 
         public enum WindowsTheme

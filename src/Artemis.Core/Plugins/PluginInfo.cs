@@ -58,8 +58,7 @@ namespace Artemis.Core
 
         /// <summary>
         ///     The plugins display icon that's shown in the settings see <see href="https://materialdesignicons.com" /> for
-        ///     available
-        ///     icons
+        ///     available icons
         /// </summary>
         [JsonProperty]
         public string? Icon
@@ -124,6 +123,8 @@ namespace Artemis.Core
 
         /// <inheritdoc />
         public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
+
+        internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
 
         /// <inheritdoc />
         public override string ToString()

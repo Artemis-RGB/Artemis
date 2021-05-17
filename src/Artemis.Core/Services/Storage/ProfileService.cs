@@ -311,8 +311,9 @@ namespace Artemis.Core.Services
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             profileEntity.UpdateGuid(Guid.NewGuid());
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
-
             profileEntity.IsFreshImport = true;
+            profileEntity.IsActive = false;
+
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);
         }

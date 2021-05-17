@@ -62,8 +62,8 @@ namespace Artemis.Core
         /// </summary>
         public static readonly Plugin CorePlugin = new(CorePluginInfo, new DirectoryInfo(ApplicationFolder), null);
 
-        internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin};
-        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin};
+        internal static readonly CorePluginFeature CorePluginFeature = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Core")};
+        internal static readonly EffectPlaceholderPlugin EffectPlaceholderPlugin = new() {Plugin = CorePlugin, Profiler = CorePlugin.GetProfiler("Feature - Effect Placeholder")};
 
         internal static JsonSerializerSettings JsonConvertSettings = new()
         {
