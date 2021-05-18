@@ -50,7 +50,7 @@
                 <TextBlock TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
                     <Run Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
                     -
-                    <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType, Mode=OneWay}" />
+                    <Run Text="{Binding Device.DeviceType, Mode=OneWay}" />
                 </TextBlock>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">

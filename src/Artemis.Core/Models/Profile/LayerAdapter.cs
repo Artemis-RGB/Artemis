@@ -83,11 +83,11 @@ namespace Artemis.Core
                 {
                     ArtemisDevice device = deviceLeds.Key;
                     // If there is already an adaption hint for this type, don't add another
-                    if (AdaptionHints.Any(h => h is DeviceAdaptionHint d && d.DeviceType == device.RgbDevice.DeviceInfo.DeviceType))
+                    if (AdaptionHints.Any(h => h is DeviceAdaptionHint d && d.DeviceType == device.DeviceType))
                         continue;
                     if (DoesLayerCoverDevice(device))
                     {
-                        DeviceAdaptionHint hint = new() {DeviceType = device.RgbDevice.DeviceInfo.DeviceType};
+                        DeviceAdaptionHint hint = new() {DeviceType = device.DeviceType};
                         AdaptionHints.Add(hint);
                         newHints.Add(hint);
                     }

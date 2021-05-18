@@ -35,7 +35,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
             _rgbService = rgbService;
             Device = device;
 
-            Type = Device.RgbDevice.DeviceInfo.DeviceType.ToString().Humanize();
+            Type = Device.DeviceType.ToString().Humanize();
             Name = Device.RgbDevice.DeviceInfo.Model;
             Manufacturer = Device.RgbDevice.DeviceInfo.Manufacturer;
         }
@@ -46,8 +46,8 @@ namespace Artemis.UI.Screens.Settings.Tabs.Devices
         public string Name { get; }
         public string Manufacturer { get; }
 
-        public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
-                                      Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
+        public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard ||
+                                      Device.DeviceType == RGBDeviceType.Mouse;
 
         public bool IsDeviceEnabled
         {

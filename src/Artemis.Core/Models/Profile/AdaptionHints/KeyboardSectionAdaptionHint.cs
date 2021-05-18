@@ -38,7 +38,7 @@ namespace Artemis.Core
         public void Apply(Layer layer, List<ArtemisDevice> devices)
         {
             // Only keyboards should have the LEDs we care about
-            foreach (ArtemisDevice keyboard in devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard))
+            foreach (ArtemisDevice keyboard in devices.Where(d => d.DeviceType == RGBDeviceType.Keyboard))
             {
                 List<LedId> ledIds = RegionLedIds[Section];
                 layer.AddLeds(keyboard.Leds.Where(l => ledIds.Contains(l.RgbLed.Id)));

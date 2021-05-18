@@ -74,7 +74,7 @@ namespace Artemis.Core.DeviceProviders
             string filePath = Path.Combine(
                 layoutDir,
                 device.RgbDevice.DeviceInfo.Manufacturer,
-                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.DeviceType.ToString(),
                 device.GetLayoutFileName()
             );
             return new ArtemisLayout(filePath, LayoutSource.Plugin);
@@ -91,7 +91,7 @@ namespace Artemis.Core.DeviceProviders
             string filePath = Path.Combine(
                 layoutDir,
                 device.RgbDevice.DeviceInfo.Manufacturer,
-                device.RgbDevice.DeviceInfo.DeviceType.ToString(),
+                device.DeviceType.ToString(),
                 device.GetLayoutFileName()
             );
             return new ArtemisLayout(filePath, LayoutSource.User);

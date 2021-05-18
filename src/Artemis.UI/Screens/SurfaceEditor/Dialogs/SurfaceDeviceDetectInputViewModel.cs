@@ -19,7 +19,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Dialogs
         {
             Device = device;
             Title = $"{Device.RgbDevice.DeviceInfo.DeviceName} - Detect input";
-            IsMouse = Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
+            IsMouse = Device.DeviceType == RGBDeviceType.Mouse;
 
             _inputService = inputService;
             _messageService = messageService;

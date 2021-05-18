@@ -48,7 +48,7 @@ namespace Artemis.Core
         public void Apply(Layer layer, List<ArtemisDevice> devices)
         {
             IEnumerable<ArtemisDevice> matches = devices
-                .Where(d => DeviceType == RGBDeviceType.All || d.RgbDevice.DeviceInfo.DeviceType == DeviceType)
+                .Where(d => DeviceType == RGBDeviceType.All || d.DeviceType == DeviceType)
                 .OrderBy(d => d.Rectangle.Top)
                 .ThenBy(d => d.Rectangle.Left)
                 .Skip(Skip);

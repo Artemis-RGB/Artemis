@@ -76,8 +76,8 @@ namespace Artemis.Core.Services
 
         public void IdentifyDevice(ArtemisDevice device)
         {
-            if (device.RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard && device.RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Mouse)
-                throw new ArtemisCoreException($"Cannot initialize input-identification for a device of type {device.RgbDevice.DeviceInfo.DeviceType}. \r\n" +
+            if (device.DeviceType != RGBDeviceType.Keyboard && device.DeviceType != RGBDeviceType.Mouse)
+                throw new ArtemisCoreException($"Cannot initialize input-identification for a device of type {device.DeviceType}. \r\n" +
                                                "Only keyboard and mouse is supported.");
 
             _identifyingDevice = device;
@@ -121,7 +121,7 @@ namespace Artemis.Core.Services
             {
                 if (_cachedFallbackKeyboard != null)
                     return _cachedFallbackKeyboard;
-                _cachedFallbackKeyboard = _rgbService.EnabledDevices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard);
+                _cachedFallbackKeyboard = _rgbService.EnabledDevices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard);
                 return _cachedFallbackKeyboard;
             }
 
@@ -129,7 +129,7 @@ namespace Artemis.Core.Services
             {
                 if (_cachedFallbackMouse != null)
                     return _cachedFallbackMouse;
-                _cachedFallbackMouse = _rgbService.EnabledDevices.FirstOrDefault(d => d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse);
+                _cachedFallbackMouse = _rgbService.EnabledDevices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Mouse);
                 return _cachedFallbackMouse;
             }
 
@@ -165,8 +165,8 @@ namespace Artemis.Core.Services
         {
             // Don't match if there is no device or if the device type differs from the event device type
             if (_identifyingDevice == null ||
-                _identifyingDevice.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard && e.DeviceType == InputDeviceType.Mouse ||
-                _identifyingDevice.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse && e.DeviceType == InputDeviceType.Keyboard)
+                _identifyingDevice.DeviceType == RGBDeviceType.Keyboard && e.DeviceType == InputDeviceType.Mouse ||
+                _identifyingDevice.DeviceType == RGBDeviceType.Mouse && e.DeviceType == InputDeviceType.Keyboard)
                 return;
             if (!(sender is InputProvider inputProvider))
                 return;
