@@ -115,7 +115,7 @@ namespace Artemis.UI.Behaviors
 
         private static bool TextIsEmpty(string text)
         {
-            return text.Length == 0;
+            return string.IsNullOrEmpty(text);
         }
 
         private static bool TextIsNotContainingTermToBeHighlighted(string text, string termToBeHighlighted)

@@ -15,29 +15,29 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         </ResourceDictionary>
     </UserControl.Resources>
     <materialDesign:Card Width="900">
         <Grid Margin="8">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="3*" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="5*" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" Grid.ColumnSpan="2" Margin="0 10">
+            <Grid Grid.Row="0" Margin="0 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="80" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
@@ -47,7 +47,7 @@
                                     Height="48"
                                     Margin="0 5 0 0"
                                     Grid.Row="0"
-                                    Grid.RowSpan="2"
+                                    Grid.RowSpan="3"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Top" />
 
@@ -59,6 +59,12 @@
 
                 <TextBlock Grid.Column="1"
                            Grid.Row="1"
+                           Style="{StaticResource MaterialDesignBody2TextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
+                           Text="{Binding Plugin.Info.Author}"
+                           Visibility="{Binding Plugin.Info.Author, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}" />
+
+                <TextBlock Grid.Column="1"
+                           Grid.Row="2"
                            TextWrapping="Wrap"
                            behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Parent.SearchPluginInput}"
                            behaviors:HighlightTermBehavior.Text="{Binding Plugin.Info.Description}"
@@ -68,90 +74,114 @@
                            Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" />
             </Grid>
 
+            <Grid Grid.Row="1" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <StackPanel VerticalAlignment="Bottom" Orientation="Horizontal">
+                    <Button VerticalAlignment="Bottom"
+                            Style="{StaticResource MaterialDesignRaisedButton}"
+                            ToolTip="Open the plugins settings window"
+                            Margin="4"
+                            Command="{s:Action OpenSettings}">
+                        SETTINGS
+                    </Button>
 
-            <StackPanel Grid.Row="1" Grid.Column="0" VerticalAlignment="Bottom" Orientation="Horizontal">
-                <Button VerticalAlignment="Bottom"
-                        Style="{StaticResource MaterialDesignRaisedButton}"
-                        ToolTip="Open the plugins settings window"
-                        Margin="4"
-                        Command="{s:Action OpenSettings}">
-                    SETTINGS
-                </Button>
+                    <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}"
+                                             Padding="2 0 2 0"
+                                             Foreground="{StaticResource MaterialDesignBody}"
+                                             IsPopupOpen="{Binding IsSettingsPopupOpen, Mode=TwoWay}">
+                        <StackPanel>
+                            <Button Command="{s:Action OpenPluginDirectory}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{s:Action Reload}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Reload" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Reload plugin</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Separator />
+                            <Button Command="{s:Action InstallPrerequisites}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="CheckAll" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Install prerequisites</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{s:Action RemovePrerequisites}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Delete" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Remove prerequisites</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Separator />
+                            <Button Command="{s:Action RemoveSettings}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="DatabaseRemove" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Clear plugin settings</TextBlock>
+                                </StackPanel>
+                            </Button>
+                            <Button Command="{s:Action Remove}">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="DeleteForever" Margin="0 0 10 0 " VerticalAlignment="Center" />
+                                    <TextBlock VerticalAlignment="Center">Remove plugin</TextBlock>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+                    </materialDesign:PopupBox>
 
-                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}"
-                                         Padding="2 0 2 0"
-                                         Foreground="{StaticResource MaterialDesignBody}"
-                                         IsPopupOpen="{Binding IsSettingsPopupOpen, Mode=TwoWay}">
-                    <StackPanel>
-                        <Button Command="{s:Action OpenPluginDirectory}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="FolderOpen" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Open plugin directory</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action Reload}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Reload" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Reload plugin</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Separator />
-                        <Button Command="{s:Action InstallPrerequisites}" >
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="CheckAll" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Install prerequisites</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action RemovePrerequisites}" >
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Delete" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Remove prerequisites</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Separator />
-                        <Button Command="{s:Action RemoveSettings}" >
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="DatabaseRemove" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Clear plugin settings</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action Remove}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="DeleteForever" Margin="0 0 10 0 " VerticalAlignment="Center" />
-                                <TextBlock VerticalAlignment="Center">Remove plugin</TextBlock>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </materialDesign:PopupBox>
-            </StackPanel>
+                    <Button Height="40"
+                            Width="40"
+                            Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            ToolTip="{Binding Plugin.Info.Website}"
+                            Visibility="{Binding Plugin.Info.Website, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
+                            Command="{s:Action OpenUri}"
+                            CommandParameter="{Binding Plugin.Info.Website}">
+                        <materialDesign:PackIcon Kind="Web" Width="20" Height="20" />
+                    </Button>
 
-
-            <CheckBox Grid.Row="1"
-                      Grid.Column="1"
-                      HorizontalAlignment="Right"
-                      VerticalAlignment="Bottom"
-                      Margin="8"
-                      Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
-                      Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding IsEnabled}">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock>Plugin enabled</TextBlock>
-                    <materialDesign:PackIcon Kind="ShieldHalfFull"
-                                             Margin="5 0 0 0"
-                                             ToolTip="Plugin requires admin rights"
-                                             Visibility="{Binding Plugin.Info.RequiresAdmin, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                    <Button Height="40"
+                            Width="40"
+                            Style="{StaticResource MaterialDesignIconForegroundButton}"
+                            ToolTip="{Binding Plugin.Info.Repository}"
+                            Visibility="{Binding Plugin.Info.Repository, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}"
+                            Command="{s:Action OpenUri}"
+                            CommandParameter="{Binding Plugin.Info.Repository}">
+                        <materialDesign:PackIcon Kind="Git" Width="20" Height="20" />
+                    </Button>
                 </StackPanel>
-            </CheckBox>
 
-            <ProgressBar Grid.Row="1"
-                         Grid.Column="1"
-                         HorizontalAlignment="Right"
-                         VerticalAlignment="Bottom"
-                         Margin="8"
-                         Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                         Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0"
-                         IsIndeterminate="True" />
+                <CheckBox Grid.Row="0"
+                          Grid.Column="1"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Bottom"
+                          Margin="8"
+                          Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
+                          Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding IsEnabled}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock>Plugin enabled</TextBlock>
+                        <materialDesign:PackIcon Kind="ShieldHalfFull"
+                                                 Margin="5 0 0 0"
+                                                 ToolTip="Plugin requires admin rights"
+                                                 Visibility="{Binding Plugin.Info.RequiresAdmin, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}" />
+                    </StackPanel>
+                </CheckBox>
 
-            <Border Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{StaticResource MaterialDesignDivider}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0">
+                <ProgressBar Grid.Row="0"
+                             Grid.Column="1"
+                             HorizontalAlignment="Right"
+                             VerticalAlignment="Bottom"
+                             Margin="8"
+                             Visibility="{Binding Enabling, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                             Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0"
+                             IsIndeterminate="True" />
+            </Grid>
+
+            <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="{StaticResource MaterialDesignDivider}" BorderThickness="1 0 0 0" Margin="10 0 0 0" Padding="10 0 0 0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

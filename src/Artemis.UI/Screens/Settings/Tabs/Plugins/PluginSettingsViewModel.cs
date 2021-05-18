@@ -219,6 +219,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             }
         }
 
+        public void OpenUri(Uri uri)
+        {
+            Core.Utilities.OpenUrl(uri.ToString());
+        }
+
         private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
         {
             NotifyOfPropertyChange(nameof(IsEnabled));
