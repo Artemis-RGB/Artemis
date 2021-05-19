@@ -113,12 +113,6 @@
         "resolved": "0.4.0",
         "contentHash": "2Tzz6qoQNciyO4uT6wxByMiyvbve+u4eFIiDewDUbeHuxr/rKuba3/EhhXDsEH9WoKzYlpzqxDfQGPE/bIe5Rw=="
       },
-      "WriteableBitmapEx": {
-        "type": "Direct",
-        "requested": "[1.6.7, )",
-        "resolved": "1.6.7",
-        "contentHash": "GoPhIdYzG/DWJq/MADb8gFzRN5PsxM+1DSJFS8Jzupg4DXqFSnlejYEjJw4ffPEUyELL07O4XIGUZydE4jQK0Q=="
-      },
       "Castle.Core": {
         "type": "Transitive",
         "resolved": "4.2.0",

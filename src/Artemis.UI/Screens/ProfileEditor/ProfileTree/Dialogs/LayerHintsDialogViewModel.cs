@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
@@ -28,6 +30,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
         }
 
         public Layer Layer { get; }
+        public bool HasAdaptionHints => Items.Any();
 
         public SnackbarMessageQueue LayerHintsMessageQueue
         {
@@ -46,6 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
             CategoryAdaptionHint hint = new();
             Layer.Adapter.AdaptionHints.Add(hint);
             Items.Add(_vmFactory.CategoryAdaptionHintViewModel(hint));
+            NotifyOfPropertyChange(nameof(HasAdaptionHints));
         }
 
         public void AddDeviceHint()
@@ -53,6 +57,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
             DeviceAdaptionHint hint = new();
             Layer.Adapter.AdaptionHints.Add(hint);
             Items.Add(_vmFactory.DeviceAdaptionHintViewModel(hint));
+            NotifyOfPropertyChange(nameof(HasAdaptionHints));
         }
 
         public void AddKeyboardSectionHint()
@@ -60,12 +65,19 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
             KeyboardSectionAdaptionHint hint = new();
             Layer.Adapter.AdaptionHints.Add(hint);
             Items.Add(_vmFactory.KeyboardSectionAdaptionHintViewModel(hint));
+            NotifyOfPropertyChange(nameof(HasAdaptionHints));
         }
 
         public void RemoveAdaptionHint(AdaptionHintViewModel adaptionHintViewModel)
         {
             Layer.Adapter.AdaptionHints.Remove(adaptionHintViewModel.AdaptionHint);
             Items.Remove(adaptionHintViewModel);
+            NotifyOfPropertyChange(nameof(HasAdaptionHints));
+        }
+
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
+        {
+            Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
         }
 
         #region Overrides of Screen
@@ -109,6 +121,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
                         break;
                 }
             }
+            NotifyOfPropertyChange(nameof(HasAdaptionHints));
         }
     }
 }

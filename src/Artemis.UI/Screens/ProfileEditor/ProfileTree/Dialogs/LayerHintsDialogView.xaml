@@ -22,91 +22,104 @@
                     d:DesignHeight="800" d:DesignWidth="800"
                     d:DataContext="{d:DesignInstance dialogs:LayerHintsDialogViewModel}"
                     Icon="/Resources/Images/Logo/bow.ico">
-    <mde:MaterialWindow.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
-            </ResourceDictionary.MergedDictionaries>
+  <mde:MaterialWindow.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
+      </ResourceDictionary.MergedDictionaries>
 
-        </ResourceDictionary>
-    </mde:MaterialWindow.Resources>
+    </ResourceDictionary>
+  </mde:MaterialWindow.Resources>
 
-    <materialDesign:DialogHost IsTabStop="False"
-                               Focusable="False"
-                               Identifier="DeviceDialog"
-                               DialogTheme="Inherit"
-                               SnackbarMessageQueue="{Binding LayerHintsMessageQueue}">
-        <DockPanel>
-            <mde:AppBar Type="Dense"
-                        Title="{Binding Layer.Name}"
-                        ShowShadow="True"
-                        DockPanel.Dock="Top"
-                        Margin="-18 0 0 0">
-                <mde:AppBar.AppIcon>
-                    <materialDesign:PackIcon Kind="AutoFix" Width="20" Height="28" />
-                </mde:AppBar.AppIcon>
-            </mde:AppBar>
+  <materialDesign:DialogHost IsTabStop="False"
+                             Focusable="False"
+                             Identifier="DeviceDialog"
+                             DialogTheme="Inherit"
+                             SnackbarMessageQueue="{Binding LayerHintsMessageQueue}">
+    <DockPanel>
+      <mde:AppBar Type="Dense"
+                  Title="{Binding Layer.Name}"
+                  ShowShadow="True"
+                  DockPanel.Dock="Top"
+                  Margin="-18 0 0 0">
+        <mde:AppBar.AppIcon>
+          <materialDesign:PackIcon Kind="AutoFix" Width="20" Height="28" />
+        </mde:AppBar.AppIcon>
+      </mde:AppBar>
 
-            <Grid Margin="15">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-                    Introduction
-                </TextBlock>
-                <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignTextBlock}" TextWrapping="Wrap">
-                    In this window you can tell Artemis how this layer should be adapted when the profile is applied to a different set of devices by providing so-called adaption hints.
-                    <LineBreak />
-                    When sharing your profile with other people good hints help them import your profile without the need for manual adjustments.
-                </TextBlock>
+      <Grid Margin="15">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+          Introduction
+        </TextBlock>
+        <TextBlock Grid.Row="1" Style="{StaticResource MaterialDesignTextBlock}" TextWrapping="Wrap">
+          In this window you can tell Artemis how this layer should be adapted when the profile is applied to a different set of devices by providing so-called adaption hints.
+          This is useful when sharing your profile with others, avoiding the need for manual adjustments.
+          <LineBreak />
+          To learn more about profile adaption, check out
+          <Hyperlink Style="{StaticResource ArtemisHyperlink}" RequestNavigate="{s:Action OpenHyperlink}" NavigateUri="https://wiki.artemis-rgb.com/guides/user/profiles/layers/adaption-hints">
+            this wiki article
+          </Hyperlink>
+          .
+        </TextBlock>
 
-                <TextBlock Grid.Row="2" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 25 0 0">
-                    Adaption hints
-                </TextBlock>
-                <ScrollViewer Grid.Row="3">
-                    <ItemsControl ItemsSource="{Binding Items}" Margin="0 0 10 0">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft}"
-                                                                     OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplier 0:0:0.05}">
-                                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-                                </materialDesign:TransitioningContent>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </ScrollViewer>
+        <TextBlock Grid.Row="2" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 25 0 0">
+          Adaption hints
+        </TextBlock>
+        <StackPanel Grid.Row="3"
+                    Margin="0 50 0 0"
+                    Visibility="{Binding HasAdaptionHints, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+          <materialDesign:PackIcon Kind="AlertCircleOutline" HorizontalAlignment="Center" Width="100" Height="100" />
+          <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" HorizontalAlignment="Center">You haven't set up any adaption hints</TextBlock>
+          <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}" HorizontalAlignment="Center">Artemis will attempt to directly map the LEDs of this layer to different surfaces but results may vary.</TextBlock>
+        </StackPanel>
+        <ScrollViewer Grid.Row="3"
+                      Visibility="{Binding HasAdaptionHints, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+          <ItemsControl ItemsSource="{Binding Items}" Margin="0 0 10 0">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <materialDesign:TransitioningContent OpeningEffect="{materialDesign:TransitionEffect SlideInFromLeft}"
+                                                     OpeningEffectsOffset="{materialDesign:IndexedItemOffsetMultiplier 0:0:0.05}">
+                  <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </materialDesign:TransitioningContent>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </ScrollViewer>
 
-                <!-- Buttons -->
-                <Grid Grid.Row="4">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0"
-                            Style="{StaticResource MaterialDesignOutlinedButton}"
-                            Margin="0 8 8 0"
-                            Command="{s:Action AutoDetermineHints}"
-                            ToolTip="Attempt to automatically determine relevant hint(s) for this layer">
-                        AUTO-DETERMINE HINTS
-                    </Button>
+        <!-- Buttons -->
+        <Grid Grid.Row="4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0"
+                  Style="{StaticResource MaterialDesignOutlinedButton}"
+                  Margin="0 8 8 0"
+                  Command="{s:Action AutoDetermineHints}"
+                  ToolTip="Attempt to automatically determine relevant hint(s) for this layer">
+            AUTO-DETERMINE HINTS
+          </Button>
 
-                    <materialDesign:PopupBox Grid.Column="1"
-                                             Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}"
-                                             ToolTip="Add a new hint"
-                                             HorizontalAlignment="Right"
-                                             Margin="0 5 0 0">
-                        <StackPanel>
-                            <Button ToolTip="Add a category hint" Content="{materialDesign:PackIcon Kind=Desk, Size=20}" Command="{s:Action AddCategoryHint}" />
-                            <Button ToolTip="Add a device type hint" Content="{materialDesign:PackIcon Kind=Devices, Size=20}" Command="{s:Action AddDeviceHint}" />
-                            <Button ToolTip="Add a keyboard-section hint" Content="{materialDesign:PackIcon Kind=Keyboard, Size=20}" Command="{s:Action AddKeyboardSectionHint}" />
-                        </StackPanel>
-                    </materialDesign:PopupBox>
-                </Grid>
-            </Grid>
-        </DockPanel>
-    </materialDesign:DialogHost>
+          <materialDesign:PopupBox Grid.Column="1"
+                                   Style="{StaticResource MaterialDesignMultiFloatingActionAccentPopupBox}"
+                                   ToolTip="Add a new hint"
+                                   HorizontalAlignment="Right"
+                                   Margin="0 5 0 0">
+            <StackPanel>
+              <Button ToolTip="Add a category hint" Content="{materialDesign:PackIcon Kind=Desk, Size=20}" Command="{s:Action AddCategoryHint}" />
+              <Button ToolTip="Add a device type hint" Content="{materialDesign:PackIcon Kind=Devices, Size=20}" Command="{s:Action AddDeviceHint}" />
+              <Button ToolTip="Add a keyboard-section hint" Content="{materialDesign:PackIcon Kind=Keyboard, Size=20}" Command="{s:Action AddKeyboardSectionHint}" />
+            </StackPanel>
+          </materialDesign:PopupBox>
+        </Grid>
+      </Grid>
+    </DockPanel>
+  </materialDesign:DialogHost>
 </mde:MaterialWindow>

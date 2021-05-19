@@ -67,9 +67,12 @@ namespace Artemis.Core.Services
             foreach (ProfileModule profileModule in profileModules)
             {
                 // Avoid race condition, make the check here
-                if (profileModule.ActiveProfile != null)
+                if (profileModule.ActiveProfile == null) 
+                    continue;
+                
+                profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
+                if (profileModule.ActiveProfile.IsFreshImport)
                 {
-                    profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
                     _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileModule.ActiveProfile);
                     AdaptProfile(profileModule.ActiveProfile);
                 }
