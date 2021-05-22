@@ -33,6 +33,7 @@
                               Foreground="{DynamicResource MaterialDesignBody}"
                               Style="{StaticResource MaterialDesignExpandCollapseToggleStyle}"
                               IsChecked="{Binding Path=LayerPropertyGroupViewModel.IsExpanded}"
+                              Visibility="{Binding Path=LayerPropertyGroupViewModel.HasChildren, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                               ClickMode="Press" />
 
                 <StackPanel Grid.Column="1">
@@ -121,17 +122,39 @@
                                    ToolTip="{Binding LayerPropertyGroup.LayerBrush.Descriptor.Description}"
                                    Margin="0 5 0 0" />
 
-                        <Button Grid.Column="3"
-                                Style="{StaticResource MaterialDesignIconButton}"
-                                ToolTip="Open brush settings"
-                                Width="24"
-                                Height="24"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Right"
-                                Command="{s:Action OpenBrushSettings}"
-                                Visibility="{Binding LayerPropertyGroup.LayerBrush.ConfigurationDialog, Converter={StaticResource NullToVisibilityConverter}}">
-                            <materialDesign:PackIcon Kind="Settings" Height="16" Width="16" />
-                        </Button>
+                        <StackPanel Grid.Column="3"
+                                    Orientation="Horizontal" 
+                                    HorizontalAlignment="Right" 
+                                    Visibility="{Binding LayerPropertyGroup.LayerBrush.ConfigurationDialog, Converter={StaticResource NullToVisibilityConverter}}">
+                            <TextBlock VerticalAlignment="Center">Extra options available!</TextBlock>
+                            <materialDesign:PackIcon Kind="ChevronRight" VerticalAlignment="Center">
+                                <materialDesign:PackIcon.RenderTransform>
+                                    <TranslateTransform X="0" />
+                                </materialDesign:PackIcon.RenderTransform>
+                                <materialDesign:PackIcon.Triggers>
+                                    <EventTrigger RoutedEvent="materialDesign:PackIcon.Loaded">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="(materialDesign:PackIcon.RenderTransform).(TranslateTransform.X)"
+                                                                 From="0"
+                                                                 To="2"
+                                                                 Duration="0:0:0.5"
+                                                                 AutoReverse="True"
+                                                                 RepeatBehavior="Forever">
+                                                    <DoubleAnimation.EasingFunction>
+                                                        <CubicEase EasingMode="EaseInOut" />
+                                                    </DoubleAnimation.EasingFunction>
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </materialDesign:PackIcon.Triggers>
+                            </materialDesign:PackIcon>
+                            <Button Style="{StaticResource MaterialDesignIconButton}" ToolTip="Open brush settings" Width="24" Height="24" HorizontalAlignment="Right" Command="{s:Action OpenBrushSettings}">
+                                <materialDesign:PackIcon Kind="Settings" Height="16" Width="16" />
+                            </Button>
+                        </StackPanel>
+
                     </Grid>
 
                     <!-- Type: LayerEffectRoot -->

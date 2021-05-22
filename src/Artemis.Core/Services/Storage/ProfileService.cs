@@ -67,9 +67,12 @@ namespace Artemis.Core.Services
             foreach (ProfileModule profileModule in profileModules)
             {
                 // Avoid race condition, make the check here
-                if (profileModule.ActiveProfile != null)
+                if (profileModule.ActiveProfile == null) 
+                    continue;
+                
+                profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
+                if (profileModule.ActiveProfile.IsFreshImport)
                 {
-                    profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
                     _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileModule.ActiveProfile);
                     AdaptProfile(profileModule.ActiveProfile);
                 }
@@ -152,7 +155,7 @@ namespace Artemis.Core.Services
 
             Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
             InstantiateProfile(profile);
-           
+
             void ActivatingRgbServiceOnLedsChanged(object? sender, EventArgs e)
             {
                 profile.PopulateLeds(_rgbService.EnabledDevices);
@@ -220,12 +223,8 @@ namespace Artemis.Core.Services
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
-            _logger.Debug("Updating profile " + profile);
             string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
 
-            profile.IsFreshImport = false;
             profile.Save();
             if (includeChildren)
             {
@@ -234,6 +233,22 @@ namespace Artemis.Core.Services
                 foreach (Layer layer in profile.GetAllLayers())
                     layer.Save();
             }
+
+            // If there are no changes, don't bother saving
+            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            if (memento.Equals(updatedMemento))
+            {
+                _logger.Debug("Updating profile - Skipping save, no changes");
+                return;
+            }
+
+            _logger.Debug("Updating profile - Saving " + profile);
+            profile.RedoStack.Clear();
+            profile.UndoStack.Push(memento);
+
+            // At this point the user made actual changes, save that
+            profile.IsFreshImport = false;
+            profile.ProfileEntity.IsFreshImport = false;
 
             _profileRepository.Save(profile.ProfileEntity);
         }
@@ -321,9 +336,24 @@ namespace Artemis.Core.Services
         /// <inheritdoc />
         public void AdaptProfile(Profile profile)
         {
+            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+
             List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
             foreach (Layer layer in profile.GetAllLayers())
                 layer.Adapter.Adapt(devices);
+
+            profile.Save();
+
+            foreach (Folder folder in profile.GetAllFolders())
+                folder.Save();
+            foreach (Layer layer in profile.GetAllLayers())
+                layer.Save();
+
+            _logger.Debug("Adapt profile - Saving " + profile);
+            profile.RedoStack.Clear();
+            profile.UndoStack.Push(memento);
+
+            _profileRepository.Save(profile.ProfileEntity);
         }
 
         #region Event handlers

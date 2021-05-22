@@ -17,7 +17,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
         public InputMappingsTabViewModel(ArtemisDevice device, IRgbService rgbService, IInputService inputService)
         {
-            if (device.RgbDevice.DeviceInfo.DeviceType != RGBDeviceType.Keyboard)
+            if (device.DeviceType != RGBDeviceType.Keyboard)
                 throw new ArtemisUIException("The input mappings tab only supports keyboards");
             _rgbService = rgbService;
             _inputService = inputService;

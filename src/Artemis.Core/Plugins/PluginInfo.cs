@@ -12,15 +12,19 @@ namespace Artemis.Core
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginInfo : CorePropertyChanged, IPrerequisitesSubject
     {
-        private bool _autoEnableFeatures = true;
-        private string? _description;
         private Guid _guid;
+        private string? _description;
+        private string? _author;
+        private Uri? _website;
+        private Uri? _repository;
         private string? _icon;
         private string _main = null!;
+        private bool _autoEnableFeatures = true;
         private string _name = null!;
         private Plugin _plugin = null!;
-        private bool _requiresAdmin;
         private Version _version = null!;
+        private bool _requiresAdmin;
+
 
         internal PluginInfo()
         {
@@ -54,6 +58,36 @@ namespace Artemis.Core
         {
             get => _description;
             set => SetAndNotify(ref _description, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the author of this plugin
+        /// </summary>
+        [JsonProperty]
+        public string? Author
+        {
+            get => _author;
+            set => SetAndNotify(ref _author, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the website of this plugin or its author
+        /// </summary>
+        [JsonProperty]
+        public Uri? Website
+        {
+            get => _website;
+            set => SetAndNotify(ref _website, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the repository of this plugin
+        /// </summary>
+        [JsonProperty]
+        public Uri? Repository
+        {
+            get => _repository;
+            set => SetAndNotify(ref _repository, value);
         }
 
         /// <summary>
@@ -108,7 +142,7 @@ namespace Artemis.Core
             get => _requiresAdmin;
             internal set => SetAndNotify(ref _requiresAdmin, value);
         }
-
+        
         /// <summary>
         ///     Gets the plugin this info is associated with
         /// </summary>
@@ -118,18 +152,21 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _plugin, value);
         }
 
-        /// <inheritdoc />
-        public List<PluginPrerequisite> Prerequisites { get; } = new();
-
-        /// <inheritdoc />
-        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
-
         internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
 
         /// <inheritdoc />
         public override string ToString()
         {
             return $"{Name} v{Version} - {Guid}";
+        }
+
+        /// <inheritdoc />
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet()
+        {
+            return Prerequisites.All(p => p.IsMet());
         }
     }
 }

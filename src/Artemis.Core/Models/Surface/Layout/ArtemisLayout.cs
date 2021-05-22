@@ -146,6 +146,58 @@ namespace Artemis.Core
             else
                 Image = null;
         }
+
+        internal static ArtemisLayout? GetDefaultLayout(ArtemisDevice device)
+        {
+            string layoutFolder = Path.Combine(Constants.ApplicationFolder, "DefaultLayouts\\Artemis");
+            if (device.DeviceType == RGBDeviceType.Keyboard)
+            {
+                // XL layout is defined by its programmable macro keys
+                if (device.Leds.Any(l => l.RgbLed.Id >= LedId.Keyboard_Programmable1 && l.RgbLed.Id <= LedId.Keyboard_Programmable32))
+                {
+                    if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
+                        return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis XL keyboard-ANSI.xml", LayoutSource.Default);
+                    return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis XL keyboard-ISO.xml", LayoutSource.Default);
+                }
+
+                // L layout is defined by its numpad
+                if (device.Leds.Any(l => l.RgbLed.Id >= LedId.Keyboard_NumLock && l.RgbLed.Id <= LedId.Keyboard_NumPeriodAndDelete))
+                {
+                    if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
+                        return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis L keyboard-ANSI.xml", LayoutSource.Default);
+                    return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis L keyboard-ISO.xml", LayoutSource.Default);
+                }
+
+                // No numpad will result in TKL
+                if (device.PhysicalLayout == KeyboardLayoutType.ANSI)
+                    return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis TKL keyboard-ANSI.xml", LayoutSource.Default);
+                return new ArtemisLayout(layoutFolder + "\\Keyboard\\Artemis TKL keyboard-ISO.xml", LayoutSource.Default);
+            }
+
+            // if (device.DeviceType == RGBDeviceType.Mouse)
+            // {
+            //     if (device.Leds.Count == 1)
+            //     {
+            //         if (device.Leds.Any(l => l.RgbLed.Id == LedId.Logo))
+            //             return new ArtemisLayout(layoutFolder + "\\Mouse\\1 LED mouse logo.xml", LayoutSource.Default);
+            //         return new ArtemisLayout(layoutFolder + "\\Mouse\\1 LED mouse.xml", LayoutSource.Default);
+            //     }
+            //     if (device.Leds.Any(l => l.RgbLed.Id == LedId.Logo))
+            //         return new ArtemisLayout(layoutFolder + "\\Mouse\\4 LED mouse logo.xml", LayoutSource.Default);
+            //     return new ArtemisLayout(layoutFolder + "\\Mouse\\4 LED mouse.xml", LayoutSource.Default);
+            // }
+
+            if (device.DeviceType == RGBDeviceType.Headset)
+            {
+                if (device.Leds.Count == 1)
+                    return new ArtemisLayout(layoutFolder + "\\Headset\\Artemis 1 LED headset.xml", LayoutSource.Default);
+                if (device.Leds.Count == 2)
+                    return new ArtemisLayout(layoutFolder + "\\Headset\\Artemis 2 LED headset.xml", LayoutSource.Default);
+                return new ArtemisLayout(layoutFolder + "\\Headset\\Artemis 4 LED headset.xml", LayoutSource.Default);
+            }
+
+            return null;
+        }
     }
 
     /// <summary>

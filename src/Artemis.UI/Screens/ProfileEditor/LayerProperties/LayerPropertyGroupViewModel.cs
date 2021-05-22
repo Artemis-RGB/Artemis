@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
@@ -17,6 +18,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         private bool _isVisible;
         private TreeGroupViewModel _treeGroupViewModel;
         private TimelineGroupViewModel _timelineGroupViewModel;
+        private bool _hasChildren;
 
         public LayerPropertyGroupViewModel(LayerPropertyGroup layerPropertyGroup, IProfileEditorService profileEditorService, ILayerPropertyVmFactory layerPropertyVmFactory)
         {
@@ -62,6 +64,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             }
         }
 
+        public bool HasChildren
+        {
+            get => _hasChildren;
+            set => SetAndNotify(ref _hasChildren, value);
+        }
 
         protected override void OnInitialActivate()
         {
@@ -169,6 +176,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                         Items.Add(_layerPropertyVmFactory.LayerPropertyGroupViewModel(value));
                 }
             }
+
+            HasChildren = Items.Any(i => i is LayerPropertyViewModel {IsVisible: true} || i is LayerPropertyGroupViewModel {IsVisible: true});
         }
     }
 }

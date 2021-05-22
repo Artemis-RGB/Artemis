@@ -40,7 +40,7 @@
       <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
                  Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}"
                  TextWrapping="Wrap"
-                 Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType}" />
+                 Text="{Binding Device.DeviceType}" />
       <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="0 5" />
 
       <StackPanel Visibility="{Binding IsKeyboard, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">

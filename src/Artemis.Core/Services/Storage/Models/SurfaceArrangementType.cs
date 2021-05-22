@@ -23,12 +23,12 @@ namespace Artemis.Core.Services.Models
 
         public bool HasDevices(List<ArtemisDevice> devices)
         {
-            return devices.Any(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType);
+            return devices.Any(d => d.DeviceType == DeviceType);
         }
 
         public void Arrange(List<ArtemisDevice> devices)
         {
-             devices = devices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType).ToList();
+             devices = devices.Where(d => d.DeviceType == DeviceType).ToList();
             if (!devices.Any())
                 return;
 
@@ -58,7 +58,7 @@ namespace Artemis.Core.Services.Models
 
         public Point GetEdge(HorizontalArrangementPosition horizontalPosition, VerticalArrangementPosition verticalPosition)
         {
-            List<ArtemisDevice> devices = SurfaceArrangement.ArrangedDevices.Where(d => d.RgbDevice.DeviceInfo.DeviceType == DeviceType || DeviceType == RGBDeviceType.All).ToList();
+            List<ArtemisDevice> devices = SurfaceArrangement.ArrangedDevices.Where(d => d.DeviceType == DeviceType || DeviceType == RGBDeviceType.All).ToList();
             if (!devices.Any())
                 return new Point();
 

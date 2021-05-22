@@ -15,7 +15,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             DisplayName = "INFO";
         }
 
-        public bool IsKeyboard => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard;
+        public bool IsKeyboard => Device.DeviceType == RGBDeviceType.Keyboard;
         public ArtemisDevice Device { get; }
 
         public string DefaultLayoutPath

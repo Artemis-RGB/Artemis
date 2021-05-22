@@ -50,7 +50,7 @@ namespace Artemis.Core
             else
                 Icon = "Plugin";
         }
-        
+
         internal PluginFeatureInfo(Plugin plugin, PluginFeatureAttribute? attribute, PluginFeature instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
@@ -124,12 +124,13 @@ namespace Artemis.Core
         public bool AlwaysEnabled { get; }
 
         /// <summary>
-        /// Gets a boolean indicating whether the feature is enabled in persistent storage
+        ///     Gets a boolean indicating whether the feature is enabled in persistent storage
         /// </summary>
         public bool EnabledInStorage => Entity.IsEnabled;
 
         /// <summary>
         ///     Gets the feature this info is associated with
+        ///     <para>Note: <see langword="null" /> if the associated <see cref="Plugin" /> is disabled</para>
         /// </summary>
         public PluginFeature? Instance
         {
@@ -137,18 +138,21 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _instance, value);
         }
 
-        /// <inheritdoc />
-        public List<PluginPrerequisite> Prerequisites { get; } = new();
-
-        /// <inheritdoc />
-        public bool ArePrerequisitesMet() => Prerequisites.All(p => p.IsMet());
-
         internal PluginFeatureEntity Entity { get; }
 
         /// <inheritdoc />
         public override string ToString()
         {
             return Instance?.Id ?? "Uninitialized feature";
+        }
+
+        /// <inheritdoc />
+        public List<PluginPrerequisite> Prerequisites { get; } = new();
+
+        /// <inheritdoc />
+        public bool ArePrerequisitesMet()
+        {
+            return Prerequisites.All(p => p.IsMet());
         }
     }
 }

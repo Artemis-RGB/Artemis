@@ -1,0 +1,964 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>Artemis large keyboard layout</Name>
+  <Description>The default layout for full sized keyboards</Description>
+  <Author>SpoinkyNL</Author>
+  <Type>Keyboard</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Artemis L keyboard</Model>
+  <Width>441</Width>
+  <Height>144</Height>
+  <Leds>
+    <Led Id="Keyboard_Escape">
+      <X>7</X>
+      <Y>18</Y>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Escape.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F1">
+      <X>+12.667</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F1.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F2">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F2.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F3">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F3.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F4">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F4.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F5">
+      <X>+12.667</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F5.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F6">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F6.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F7">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F7.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F8">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F8.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F9">
+      <X>+12.667</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F9.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F10">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F10.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F11">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F11.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F12">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F12.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_PrintScreen">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/PrintScreen.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ScrollLock">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/ScrollLock.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_PauseBreak">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/PauseBreak.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_GraveAccentAndTilde">
+      <X>7</X>
+      <Y>39</Y>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/AccentGrave_Tilde.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_1">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/1_ExclamationMark.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_2">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/2_At.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_3">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/3_Hash.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_4">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/4_Dollar.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_5">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/5_Percent.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_6">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/6_Circumflex.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_7">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/7_Ampersand.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_8">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/8_Asterisk.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_9">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/9_BracketRight.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_0">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/0_BracketRight.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_MinusAndUnderscore">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Hyphen_Underscore.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_EqualsAndPlus">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Equals_Plus.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Backspace">
+      <Width>2</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Backspace.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Insert">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Insert.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Home">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Home.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_PageUp">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/PageUp.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumLock">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/NumLock.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumSlash">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Slash.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumAsterisk">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Asterisk.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumMinus">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Minus.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Tab">
+      <X>7</X>
+      <Y>+</Y>
+      <Width>1.5</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Tab.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Q">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Q.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_W">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/W.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_E">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/E.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_R">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/R.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_T">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/T.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Y">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Y.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_U">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/U.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_I">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/I.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_O">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/O.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_P">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/P.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_BracketLeft">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/SquareBracketLeft_CurlyBracketLeft.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_BracketRight">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/SquareBracketRight_CurlyBracketRight.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Backslash">
+      <Shape>M0,0 L0,0.5 L0.16666666666,0.5 L0.16666666666,1 L1,1 L1,0 Z</Shape>
+      <Width>1.5</Width>
+      <Height>2</Height>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/EnterIso.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Delete">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Delete.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_End">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/End.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_PageDown">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/PageDown.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num7">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num7.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num8">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num8.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num9">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num9.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumPlus">
+      <Height>2</Height>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/NumPlus.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_CapsLock">
+      <X>7</X>
+      <Y>~</Y>
+      <Width>1.75</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/CapsLock.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_A">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/A.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_S">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/S.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_D">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/D.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_F">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/F.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_G">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/G.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_H">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/H.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_J">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/J.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_K">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/K.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_L">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/L.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_SemicolonAndColon">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Semicolon_Colon.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ApostropheAndDoubleQuote">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Apostrophe_QuotationMark.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Enter">
+      <Width>1</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/BlackslashIso.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num4">
+      <X>+90.75</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num4.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num5">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num5.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num6">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num6.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_LeftShift">
+      <X>7</X>
+      <Y>+</Y>
+      <Width>1.25</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Shift.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NonUsBackslash">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Image="Keycaps/BlackslashIso.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Z">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Z.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_X">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/X.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_C">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/C.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_V">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/V.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_B">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/B.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_N">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/N.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_M">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/M.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_CommaAndLessThan">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/LessThan_Comma.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_PeriodAndBiggerThan">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/GreaterThan_Dot.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_SlashAndQuestionMark">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/QuestionMark_Slash.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_RightShift">
+      <Width>2.75</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/ShiftBig.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ArrowUp">
+      <X>+24</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/CaretUp.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num1">
+      <X>+24</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num1.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num2">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num2.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num3">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num3.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumEnter">
+      <Height>2</Height>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/NumEnter.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_LeftCtrl">
+      <X>7</X>
+      <Y>~</Y>
+      <Width>1.5</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Ctrl.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_LeftGui">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Gui.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_LeftAlt">
+      <Width>1.25</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Alt.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Space">
+      <Width>6.5</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Space.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_RightAlt">
+      <Width>1.25</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Alt.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_RightGui">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Gui.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Application">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Menu.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_RightCtrl">
+      <Width>1.5</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Ctrl.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ArrowLeft">
+      <X>+5</X>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/CaretLeft.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ArrowDown">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/CaretDown.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_ArrowRight">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/CaretRight.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_Num0">
+      <X>+5</X>
+      <Width>2</Width>
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Num0_Ins.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="Keyboard_NumPeriodAndDelete">
+      <CustomData>
+        <LogicalLayouts>
+          <LogicalLayout Name="GB" Image="Keycaps/Dot_Del.png" />
+        </LogicalLayouts>
+      </CustomData>
+    </Led>
+    <Led Id="LedStripe1">
+      <X>2</X>
+      <Y>0</Y>
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe2">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe3">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe4">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe5">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe6">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe7">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe8">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe9">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe10">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe11">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe12">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe13">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe14">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe15">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe16">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe17">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe18">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe19">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe20">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe21">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe22">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe23">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe24">
+      <X>2</X>
+      <Y>139</Y>
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe25">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe26">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe27">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe28">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe29">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe30">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe31">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe32">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe33">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe34">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe35">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe36">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe37">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe38">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe39">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe40">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe41">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe42">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe43">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe44">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe45">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="LedStripe46">
+      <Height>0.25</Height>
+    </Led>
+    <Led Id="Logo">
+      <Shape>M0.8314498662948608,0.14738866686820984 L0.9718837738037109,0.14738866686820984 C0.9818984270095825,0.14737924933433533 0.9911608695983887,0.15217334032058716 0.9961943626403809,0.1599714159965515 1.0012279748916626,0.1677694320678711 1.0012708902359009,0.17739155888557434 0.9963071346282959,0.18522578477859497 L0.9271892309188843,0.2952173352241516 C0.9220999479293823,0.303014874458313,0.9128080606460571,0.30780303478240967,0.9027659893035889,0.30780303478240967 C0.892723798751831,0.30780303478240967,0.8834319114685059,0.303014874458313,0.8783426284790039,0.2952173352241516 L0.8644212484359741,0.2732190191745758 0.8512327671051025,0.2802584767341614 C0.8458596467971802,0.2705792188644409 0.8399980068206787,0.26089999079704285 0.8338921070098877,0.25144070386886597 0.8277863264083862,0.2419814169406891 0.8177727460861206,0.22724255919456482 0.8094688653945923,0.2155834138393402 L0.8224133253097534,0.20898395776748657 0.8070266246795654,0.18566575646400452 C0.8019757270812988,0.17778605222702026,0.8019649982452393,0.16808003187179565,0.8069984912872314,0.16019132733345032 C0.8120319843292236,0.15230253338813782,0.8213481903076172,0.1474246382713318,0.8314498662948608,0.14738866686820984z M0.10265883803367615,0.2802584767341614 C0.11096274852752686,0.2850980758666992 0.11951091885566711,0.28993773460388184 0.12708213925361633,0.2943373918533325 0.14149188995361328,0.3020368218421936 0.15663433074951172,0.3090762495994568 0.1715325117111206,0.31633567810058594 0.21944981813430786,0.33654189109802246 0.2699943780899048,0.35124915838241577 0.32197999954223633,0.3601123094558716 L0.20377129316329956,0.4168679714202881 0.1908269226551056,0.42302751541137695 C0.14440736174583435,0.4102410674095154 0.09916770458221436,0.3942067623138428 0.05552190542221069,0.3750711679458618 -0.05462715029716492,0.3422936797142029 0.01937541365623474,0.22108301520347595 0.10265883803367615,0.2802584767341614z M0.4714505672454834,0.5930745005607605 C0.46778708696365356,0.602533757686615 0.4646120071411133,0.6119930148124695 0.4614369869232178,0.6214522123336792 0.4521523118019104,0.6509119868278503 0.4455362558364868,0.6810019016265869 0.44165414571762085,0.7114253044128418 0.4388039708137512,0.7340653538703918 0.4374176263809204,0.7568352818489075 0.4375022053718567,0.7796201109886169 0.4375022053718567,0.7877594828605652 0.4375022053718567,0.7961188554763794 0.4375022053718567,0.8042582273483276 C0.444272518157959,0.8297898769378662,0.42963647842407227,0.8560013771057129,0.40284329652786255,0.8663284778594971 C0.37605005502700806,0.8766556978225708 0.3448934555053711,0.8680944442749023 0.3290627598762512,0.8460550308227539 0.31538575887680054,0.8240567445755005 0.32368963956832886,0.8020584583282471 0.3246665596961975,0.7783002257347107 0.32564353942871094,0.7545420527458191 0.3297954797744751,0.7343035936355591 0.33419162034988403,0.7123052477836609 0.33712244033813477,0.6960265636444092 0.3407859206199646,0.6799677610397339 0.344693660736084,0.6639089584350586 L0.35763800144195557,0.6566495895385742 0.44629454612731934,0.6069333553314209 0.4714505672454834,0.5930745005607605z M0.5317760705947876,0.3625321388244629 C0.5405619740486145,0.3735124468803406 0.5487139821052551,0.384893536567688 0.5561993718147278,0.39662957191467285 0.5627936720848083,0.40674877166748047 0.5688995122909546,0.41730791330337524 0.5732957124710083,0.4278671145439148 L0.551070511341095,0.4404062032699585 0.4829294681549072,0.47824329137802124 0.30463945865631104,0.5792155265808105 0.1959558129310608,0.640370786190033 0.14173611998558044,0.6705085635185242 C0.13235116004943848,0.675317645072937,0.12175974249839783,0.6778919100761414,0.11096274852752686,0.6779879927635193 C0.08286315202713013,0.6767981648445129,0.05947789549827576,0.6581392884254456,0.054777029901742935,0.6331580281257629 C0.05007615685462952,0.6081767678260803,0.06532919406890869,0.583619236946106,0.0914241373538971,0.5741559267044067 L0.10558965802192688,0.56733638048172 0.13733991980552673,0.5521575808525085 0.25139671564102173,0.4971618056297302 0.43701374530792236,0.4080686569213867 0.5088182091712952,0.3735312819480896 0.5317760705947876,0.3625321388244629z M0.1580997109413147,0 L0.17324218153953552,0 C0.1837441623210907,0,0.19424617290496826,0,0.20450395345687866,0 L0.22892725467681885,0.001539871096611023 0.25506019592285156,0.003959685564041138 C0.2677602767944336,0.005499586462974548 0.279483437538147,0.007039457559585571 0.29242783784866333,0.009239301085472107 0.29804515838623047,0.009239301085472107 0.3036625385284424,0.010999158024787903 0.30952417850494385,0.012099072337150574 L0.31294339895248413,0.012099072337150574 C0.321491539478302,0.013858944177627563 0.3297954797744751,0.015398815274238586 0.3373667001724243,0.017598658800125122 0.35522812604904175,0.02149401605129242 0.37283915281295776,0.02626737952232361 0.3901209831237793,0.031897544860839844 0.4018441438674927,0.03541727364063263 0.4130789041519165,0.03915698826313019 0.42431360483169556,0.0433366596698761 0.4323732852935791,0.04641643166542053 0.4406772255897522,0.049496203660964966 0.44873690605163574,0.05301591753959656 0.4567965865135193,0.05653566122055054 0.46290236711502075,0.05895546078681946 0.46974092721939087,0.06225523352622986 L0.47633522748947144,0.06511500477790833 C0.4831737279891968,0.06819474697113037 0.4900122880935669,0.07149451971054077 0.4963623285293579,0.07501423358917236 0.5027123689651489,0.07853397727012634 0.5119932889938354,0.08293363451957703 0.5207855701446533,0.08711332082748413 0.532753050327301,0.09393277764320374 0.5452088713645935,0.10075226426124573 0.5561993718147278,0.10911163687705994 L0.5598629117012024,0.11153143644332886 C0.5674340724945068,0.11637106537818909,0.575005292892456,0.12165066599845886,0.58257657289505,0.12693023681640625 L0.5852631330490112,0.12869009375572205 C0.5940554738044739,0.1348496377468109 0.6026036739349365,0.14144912362098694 0.6111517548561096,0.14826861023902893 0.6192114949226379,0.1544281542301178 0.6267826557159424,0.16080763936042786 0.6355750560760498,0.16762709617614746 0.6443674564361572,0.17444661259651184 0.6512059569358826,0.18126606941223145 0.6585330367088318,0.18852552771568298 0.6609752774238586,0.19072535634040833 0.6631733775138855,0.19314518570899963 0.6656156778335571,0.19556495547294617 0.6719657778739929,0.201944500207901 0.6783158183097839,0.20832398533821106 0.6844216585159302,0.21492350101470947 0.6844216585159302,0.21492350101470947 0.6844216585159302,0.21602341532707214 0.6858870983123779,0.21690335869789124 0.6927255392074585,0.22438275814056396 0.6993198394775391,0.23186218738555908 0.7056698799133301,0.23890167474746704 0.7120199799537659,0.2459411323070526 0.7191027402877808,0.2554003894329071 0.7256970405578613,0.26419970393180847 L0.7325356006622314,0.27387893199920654 C0.7376644611358643,0.28113842010498047 0.7427933216094971,0.2886178195476532 0.7476779222488403,0.29587724804878235 0.887993574142456,0.5147373676300049 0.8601140975952148,0.7894638180732727 0.6780716180801392,0.9817845821380615 0.6709265112876892,0.989209771156311 0.6617487668991089,0.9948219060897827 0.6514502167701721,0.998063325881958 L0.6431463360786438,0.9998232126235962 C0.6424370408058167,1.000058889389038 0.6416575908660889,1.000058889389038 0.6409482359886169,0.9998232126235962 0.6382670402526855,1.0000406503677368 0.6355696320533752,1.0000406503677368 0.6328884959220886,0.9998232126235962 C0.6096473932266235,1.0000758171081543,0.5884177088737488,0.9879860877990723,0.5787044167518616,0.9689667224884033 C0.5689911842346191,0.9499474763870239 0.5726134181022644,0.9275609254837036 0.5879496335983276,0.911829948425293 0.6916045546531677,0.8017895221710205 0.7362658977508545,0.6562486886978149 0.7100660800933838,0.5138804912567139 0.7100660800933838,0.5086009502410889 0.7081122398376465,0.5033213496208191 0.7068911194801331,0.4980417490005493 0.7056698799133301,0.49276214838027954 0.7044487595558167,0.48748254776000977 0.7029833793640137,0.4819830060005188 0.7015179395675659,0.47648340463638306 0.7002968192100525,0.47142380475997925 0.69858717918396,0.4661442041397095 0.6968775987625122,0.4608646035194397 0.6956563591957092,0.45624494552612305 0.6937025189399719,0.45118534564971924 0.6888028383255005,0.4367102384567261 0.6830968260765076,0.42246657609939575 0.6766061782836914,0.4085085988044739 0.6751407384872437,0.4045489430427551 0.6731869578361511,0.40102916955947876 0.6714773178100586,0.3972894549369812 0.6635856032371521,0.381019651889801 0.6546980738639832,0.3651564121246338 0.6448559165000916,0.349773108959198 0.6414366960525513,0.34493350982666016 0.638261616230011,0.3398738503456116 0.6350865960121155,0.3352542519569397 0.6289807558059692,0.32645493745803833 0.622630774974823,0.3180955648422241 0.6162806153297424,0.3097361922264099 0.6099306344985962,0.3013768196105957 0.600894033908844,0.2910376489162445 0.591857373714447,0.2820183336734772 L0.5801341533660889,0.2696993052959442 C0.5715860724449158,0.26089999079704285 0.5625494718551636,0.25254058837890625 0.5535128116607666,0.2446211874485016 0.5493572354316711,0.24065852165222168 0.5449538826942444,0.23691263794898987 0.5403242707252502,0.2334021031856537 L0.529333770275116,0.22460272908210754 C0.5064655542373657,0.20664280652999878 0.48195523023605347,0.19045335054397583 0.4560639262199402,0.17620646953582764 0.45191192626953125,0.17378664016723633 0.44727152585983276,0.171586811542511 0.44287532567977905,0.16938698291778564 0.43847912549972534,0.1671871840953827 0.43261754512786865,0.16410738229751587 0.42748862504959106,0.16168758273124695 L0.416253924369812,0.15662795305252075 C0.39798784255981445,0.14821934700012207,0.37914353609085083,0.14087164402008057,0.3598361015319824,0.13462966680526733 L0.3490898609161377,0.13132989406585693 0.3466475009918213,0.13132989406585693 C0.3337032198905945,0.1273702085018158,0.32051461935043335,0.1238504946231842,0.3068375587463379,0.12077072262763977 L0.3007317781448364,0.11945080757141113 C0.284625768661499,0.11583057045936584 0.26832127571105957,0.1129668653011322 0.25188517570495605,0.11087149381637573 0.2433369755744934,0.1095515787601471 0.23478883504867554,0.108671635389328 0.22746187448501587,0.10801169276237488 0.2201349139213562,0.10735175013542175 0.2079232633113861,0.10647183656692505 0.19815391302108765,0.10625183582305908 0.18838459253311157,0.1060318648815155 0.18227878212928772,0.10625183582305908 0.17373061180114746,0.10625183582305908 0.14096742868423462,0.10622519254684448 0.1082688570022583,0.10887587070465088 0.0760374665260315,0.11417123675346375 0.07254058122634888,0.11437812447547913 0.06903234124183655,0.11437812447547913 0.06553545594215393,0.11417123675346375 C0.03505754470825195,0.11396905779838562,0.00974804162979126,0.09292516112327576,0.007091343402862549,0.06557714939117432 C0.0044345855712890625,0.03822912275791168 0.02530190348625183,0.013545975089073181 0.05527767539024353,0.008579328656196594 0.08923646807670593,0.0032099932432174683 0.12362384796142578,0.00034074485301971436 0.1580997109413147,0z</Shape>
+      <X>214</X>
+      <Y>5</Y>
+      <Width>0.65</Width>
+      <Height>0.7</Height>
+    </Led>
+    <Led Id="Keyboard_MediaMute">
+      <X>361</X>
+      <Y>10</Y>
+      <Width>0.75</Width>
+      <Height>0.5</Height>
+    </Led>
+    <Led Id="Keyboard_MediaStop">
+      <Width>0.75</Width>
+      <Height>0.5</Height>
+    </Led>
+    <Led Id="Keyboard_MediaPreviousTrack">
+      <Width>0.75</Width>
+      <Height>0.5</Height>
+    </Led>
+    <Led Id="Keyboard_MediaPlay">
+      <Width>0.75</Width>
+      <Height>0.5</Height>
+    </Led>
+    <Led Id="Keyboard_MediaNextTrack">
+      <Width>0.75</Width>
+      <Height>0.5</Height>
+    </Led>
+  </Leds>
+  <CustomData>
+    <DeviceImage>L.png</DeviceImage>
+  </CustomData>
+</Device>

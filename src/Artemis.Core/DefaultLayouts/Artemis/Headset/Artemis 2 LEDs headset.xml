@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>2 LEDs headset</Name>
+  <Description>The default layout for headsets with 2 LEDs</Description>
+  <Author>SpoinkyNL &amp; Aureshion</Author>
+  <Type>Headset</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Artemis 2 LEDs headset</Model>
+  <Width>242</Width>
+  <Height>233</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <Leds>
+    <Led Id="Headset1">
+      <Shape> M0.246,0 L0.24,0.02 L0.974,0.938 L0.999,0.941 L0.916,0.965 L0.17,0.023z</Shape>
+      <X>15</X>
+      <Y>125</Y>
+      <Width>64</Width>
+      <Height>108</Height>
+    </Led>
+    <Led Id="Headset2">
+      <Shape> M0.741,-0.003 L0.755,0.012 L0.026,0.937 L0.003,0.939 L0.084,0.965 L0.833,0.027z</Shape>
+      <X>163</X>
+      <Y>~</Y>
+      <Width>64</Width>
+      <Height>108</Height>
+    </Led>
+  </Leds>
+  <CustomData>
+    <DeviceImage>Headset.png</DeviceImage>
+  </CustomData>
+</Device>

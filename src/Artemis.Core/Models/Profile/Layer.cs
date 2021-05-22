@@ -272,7 +272,7 @@ namespace Artemis.Core
                 {
                     DeviceIdentifier = artemisLed.Device.Identifier,
                     LedName = artemisLed.RgbLed.Id.ToString(),
-                    PhysicalLayout = artemisLed.Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ? (int) artemisLed.Device.PhysicalLayout : null
+                    PhysicalLayout = artemisLed.Device.DeviceType == RGBDeviceType.Keyboard ? (int) artemisLed.Device.PhysicalLayout : null
                 };
                 LayerEntity.Leds.Add(ledEntity);
             }

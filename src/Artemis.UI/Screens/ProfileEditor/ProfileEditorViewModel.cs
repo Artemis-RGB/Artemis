@@ -216,7 +216,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             if (!await DialogService.ShowConfirmDialog(
                 "Adapt profile",
                 "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."
-            )) 
+            ))
                 return;
 
             _profileService.AdaptProfile(_profileEditorService.SelectedProfile);
