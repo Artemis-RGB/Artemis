@@ -6,28 +6,29 @@
                          xmlns:splash="clr-namespace:Artemis.UI.Screens.Splash"
                          xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
                          xmlns:s="https://github.com/canton7/Stylet"
+                         xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
                          mc:Ignorable="d"
                          Title=" "
                          ResizeMode="NoResize"
-                         BorderBackgroundBrush="{DynamicResource PrimaryHueMidBrush}"
+                         BorderBackgroundBrush="{DynamicResource MaterialDesignPaper}"
                          Height="450"
                          Width="400"
                          WindowStartupLocation="CenterScreen"
                          FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                          MouseDown="{s:Action MouseDown}"
                          d:DataContext="{d:DesignInstance splash:SplashViewModel}">
-    <Grid Background="{DynamicResource PrimaryHueMidBrush}">
+    <Grid Background="{DynamicResource MaterialDesignPaper}">
         <Grid.RowDefinitions>
             <RowDefinition Height="250" />
             <RowDefinition Height="50" />
             <RowDefinition Height="Auto" />
             <RowDefinition />
         </Grid.RowDefinitions>
-        <Image Source="{StaticResource BowIcon}" Stretch="Uniform" Margin="50" />
-        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="White" FontSize="16">
+        <Image Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Stretch="Uniform" Margin="50"/>
+        <TextBlock Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Bottom" Foreground="{DynamicResource MaterialDesignBody}" FontSize="16">
             Artemis is initializing...
         </TextBlock>
-        <TextBlock Grid.Row="2" HorizontalAlignment="Center" Foreground="#FFDDDDDD" Text="{Binding Status}" />
-        <ProgressBar Grid.Row="3" IsIndeterminate="True" Maximum="1" Minimum="1" Margin="16 0" />
+        <TextBlock Grid.Row="2" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" Text="{Binding Status}" />
+        <ProgressBar  Grid.Row="3" IsIndeterminate="True" Maximum="1" Minimum="1" Margin="16 0" />
     </Grid>
 </controls:MaterialWindow>

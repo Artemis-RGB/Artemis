@@ -119,11 +119,24 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
+                
+                // Render all active modules
+                SKTexture texture = _rgbService.OpenRender();
+
                 lock (_dataModelExpansions)
                 {
                     // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
                     foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.IsEnabled))
-                        dataModelExpansion.InternalUpdate(args.DeltaTime);
+                    {
+                        try
+                        {
+                            dataModelExpansion.InternalUpdate(args.DeltaTime);
+                        }
+                        catch (Exception e)
+                        {
+                            _updateExceptions.Add(e);
+                        }
+                    }
                 }
 
                 List<Module> modules;
@@ -137,10 +150,16 @@ namespace Artemis.Core.Services
 
                 // Update all active modules
                 foreach (Module module in modules)
-                    module.InternalUpdate(args.DeltaTime);
-
-                // Render all active modules
-                SKTexture texture = _rgbService.OpenRender();
+                {
+                    try
+                    {
+                        module.InternalUpdate(args.DeltaTime);
+                    }
+                    catch (Exception e)
+                    {
+                        _updateExceptions.Add(e);
+                    }
+                }
 
                 SKCanvas canvas = texture.Surface.Canvas;
                 canvas.Save();
@@ -152,7 +171,16 @@ namespace Artemis.Core.Services
                 if (!ModuleRenderingDisabled)
                 {
                     foreach (Module module in modules.Where(m => m.IsActivated))
-                        module.InternalRender(args.DeltaTime, canvas, texture.ImageInfo);
+                    {
+                        try
+                        {
+                            module.InternalRender(args.DeltaTime, canvas, texture.ImageInfo);
+                        }
+                        catch (Exception e)
+                        {
+                            _updateExceptions.Add(e);
+                        }
+                    }
                 }
 
                 OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));

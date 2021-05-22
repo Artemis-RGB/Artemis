@@ -49,7 +49,6 @@
 
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Items}"
-                 materialDesign:RippleAssist.IsDisabled="True"
                  VirtualizingPanel.ScrollUnit="Pixel"
                  HorizontalAlignment="Stretch"
                  HorizontalContentAlignment="Center"

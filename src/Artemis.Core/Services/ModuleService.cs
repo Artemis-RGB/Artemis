@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Artemis.Core.Modules;
+using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Serilog;
 using Timer = System.Timers.Timer;
@@ -17,13 +18,15 @@ namespace Artemis.Core.Services
         private static readonly SemaphoreSlim ActiveModuleSemaphore = new(1, 1);
         private readonly ILogger _logger;
         private readonly IModuleRepository _moduleRepository;
+        private readonly IProfileRepository _profileRepository;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
 
-        public ModuleService(ILogger logger, IModuleRepository moduleRepository, IPluginManagementService pluginManagementService, IProfileService profileService)
+        public ModuleService(ILogger logger, IModuleRepository moduleRepository, IProfileRepository profileRepository, IPluginManagementService pluginManagementService, IProfileService profileService)
         {
             _logger = logger;
             _moduleRepository = moduleRepository;
+            _profileRepository = profileRepository;
             _pluginManagementService = pluginManagementService;
             _profileService = profileService;
             _pluginManagementService.PluginFeatureEnabled += OnPluginFeatureEnabled;
@@ -45,12 +48,24 @@ namespace Artemis.Core.Services
         {
             try
             {
+                ProfileModule? profileModule = module as ProfileModule;
+
+                if (profileModule != null && profileModule.DefaultProfiles.Any())
+                {
+                    List<ProfileDescriptor> descriptors = _profileService.GetProfileDescriptors(profileModule);
+                    foreach (ProfileEntity defaultProfile in profileModule.DefaultProfiles)
+                    {
+                        if (descriptors.All(d => d.Id != defaultProfile.Id))
+                            _profileRepository.Add(defaultProfile);
+                    }
+                }
+
                 module.Activate(false);
 
                 try
                 {
                     // If this is a profile module, activate the last active profile after module activation
-                    if (module is ProfileModule profileModule)
+                    if (profileModule != null)
                         await _profileService.ActivateLastProfileAnimated(profileModule);
                 }
                 catch (Exception e)

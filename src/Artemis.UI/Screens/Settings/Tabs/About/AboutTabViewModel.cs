@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Windows.Navigation;
 using Artemis.Core;
 using Stylet;
 
@@ -17,6 +18,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.About
         {
             get => _version;
             set => SetAndNotify(ref _version, value);
+        }
+
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
+        {
+            Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
+        }
+        
+        public void OpenUrl(string url)
+        {
+            Core.Utilities.OpenUrl(url);
         }
 
         #region Overrides of Screen

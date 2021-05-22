@@ -7,6 +7,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using Ookii.Dialogs.Wpf;
+using RGB.NET.Core;
 using SkiaSharp;
 using Stylet;
 
@@ -21,6 +22,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
         private SKColor _currentColor;
         private bool _displayOnDevices;
         private float _greenScale;
+        private List<DeviceCategory> _categories;
         private float _initialBlueScale;
         private float _initialGreenScale;
         private float _initialRedScale;
@@ -99,12 +101,46 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             get => _displayOnDevices;
             set => SetAndNotify(ref _displayOnDevices, value);
         }
+        
+        // This solution won't scale well but I don't expect there to be many more categories.
+        // If for some reason there will be, dynamically creating a view model per category may be more appropriate
+        public bool HasDeskCategory
+        {
+            get => GetCategory(DeviceCategory.Desk);
+            set => SetCategory(DeviceCategory.Desk, value);
+        }
+
+        public bool HasMonitorCategory
+        {
+            get => GetCategory(DeviceCategory.Monitor);
+            set => SetCategory(DeviceCategory.Monitor, value);
+        }
+
+        public bool HasCaseCategory
+        {
+            get => GetCategory(DeviceCategory.Case);
+            set => SetCategory(DeviceCategory.Case, value);
+        }
+
+        public bool HasRoomCategory
+        {
+            get => GetCategory(DeviceCategory.Room);
+            set => SetCategory(DeviceCategory.Room, value);
+        }
+
+        public bool HasPeripheralsCategory
+        {
+            get => GetCategory(DeviceCategory.Peripherals);
+            set => SetCategory(DeviceCategory.Peripherals, value);
+        }
 
         public void ApplyScaling()
         {
             Device.RedScale = RedScale / 100f;
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
+
+            _rgbService.Surface.Update(true);
         }
 
         public void BrowseCustomLayout(object sender, MouseEventArgs e)
@@ -148,6 +184,10 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.RedScale = RedScale / 100f;
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
+            Device.Categories.Clear();
+            foreach (DeviceCategory deviceCategory in _categories)
+                Device.Categories.Add(deviceCategory);
+
             _rgbService.SaveDevice(Device);
 
             _coreService.ModuleRenderingDisabled = false;
@@ -155,6 +195,12 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
         public void Reset()
         {
+            HasDeskCategory = Device.Categories.Contains(DeviceCategory.Desk);
+            HasMonitorCategory = Device.Categories.Contains(DeviceCategory.Monitor);
+            HasCaseCategory = Device.Categories.Contains(DeviceCategory.Case);
+            HasRoomCategory = Device.Categories.Contains(DeviceCategory.Room);
+            HasPeripheralsCategory = Device.Categories.Contains(DeviceCategory.Peripherals);
+
             Device.RedScale = _initialRedScale;
             Device.GreenScale = _initialGreenScale;
             Device.BlueScale = _initialBlueScale;
@@ -173,6 +219,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             _initialRedScale = Device.RedScale;
             _initialGreenScale = Device.GreenScale;
             _initialBlueScale = Device.BlueScale;
+            _categories = new List<DeviceCategory>(Device.Categories);
             CurrentColor = SKColors.White;
 
             _coreService.FrameRendering += OnFrameRendering;
@@ -187,6 +234,21 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.PropertyChanged -= DeviceOnPropertyChanged;
 
             base.OnDeactivate();
+        }
+
+        private bool GetCategory(DeviceCategory category)
+        {
+            return _categories.Contains(category);
+        }
+
+        private void SetCategory(DeviceCategory category, bool value)
+        {
+            if (value && !_categories.Contains(category))
+                _categories.Add(category);
+            else
+                _categories.Remove(category);
+
+            NotifyOfPropertyChange($"Has{category}Category");
         }
 
         #region Event handlers

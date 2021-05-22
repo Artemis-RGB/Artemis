@@ -1,4 +1,5 @@
-﻿using MaterialDesignThemes.Wpf;
+﻿using System;
+using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -6,7 +7,7 @@ namespace Artemis.UI.Shared.Services
     ///     Represents a class provides desktop notifications so that <see cref="IMessageService" /> can us it to show desktop
     ///     notifications
     /// </summary>
-    public interface INotificationProvider
+    public interface INotificationProvider : IDisposable
     {
         /// <summary>
         ///     Shows a notification
@@ -14,6 +15,8 @@ namespace Artemis.UI.Shared.Services
         /// <param name="title">The title of the notification</param>
         /// <param name="message">The message of the notification</param>
         /// <param name="icon">The Material Design icon to show in the notification</param>
-        void ShowNotification(string title, string message, PackIconKind icon);
+        /// <param name="activatedCallback">A callback that is invoked when the notification is clicked</param>
+        /// <param name="dismissedCallback">A callback that is invoked when the notification is dismissed</param>
+        void ShowNotification(string title, string message, PackIconKind icon, Action? activatedCallback, Action? dismissedCallback);
     }
 }

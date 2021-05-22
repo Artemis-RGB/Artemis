@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>1 LEDs headset</Name>
+  <Description>The default layout for headsets with 1 LED</Description>
+  <Author>SpoinkyNL &amp; Aureshion</Author>
+  <Type>Headset</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Artemis 1 LED headset</Model>
+  <Width>242</Width>
+  <Height>233</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <Leds>
+    <Led Id="Headset1">
+      <Shape> M0.073,0.002 L0.073,0.015 L0.293,0.937 L0.3,0.946 L0.275,0.969 L0.048,0.025z M0.925,0.001 L0.925,0.012 L0.706,0.938 L0.697,0.941 L0.729,0.97 L0.95,0.021z</Shape>
+      <X>15</X>
+      <Y>125</Y>
+      <Width>212</Width>
+      <Height>108</Height>
+    </Led>
+  </Leds>
+  <CustomData>
+    <DeviceImage>Headset.png</DeviceImage>
+  </CustomData>
+</Device>

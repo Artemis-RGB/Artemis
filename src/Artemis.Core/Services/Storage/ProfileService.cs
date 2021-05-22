@@ -32,8 +32,8 @@ namespace Artemis.Core.Services
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
         }
 
-        public JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
-        public JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+        public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
+        public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
         public ProfileDescriptor? GetLastActiveProfile(ProfileModule module)
         {
@@ -64,8 +64,19 @@ namespace Artemis.Core.Services
         private void ActiveProfilesPopulateLeds()
         {
             List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
-            foreach (ProfileModule profileModule in profileModules.Where(p => p.ActiveProfile != null).ToList())
-                profileModule.ActiveProfile?.PopulateLeds(_rgbService.EnabledDevices); // Avoid race condition
+            foreach (ProfileModule profileModule in profileModules)
+            {
+                // Avoid race condition, make the check here
+                if (profileModule.ActiveProfile == null) 
+                    continue;
+                
+                profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
+                if (profileModule.ActiveProfile.IsFreshImport)
+                {
+                    _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileModule.ActiveProfile);
+                    AdaptProfile(profileModule.ActiveProfile);
+                }
+            }
         }
 
         public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
@@ -109,6 +120,12 @@ namespace Artemis.Core.Services
             InstantiateProfile(profile);
 
             profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
+            if (profile.IsFreshImport)
+            {
+                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profile);
+                AdaptProfile(profile);
+            }
+
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
             return profile;
@@ -122,7 +139,7 @@ namespace Artemis.Core.Services
             ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
             Profile profile = new(module, entity);
             InstantiateProfile(profile);
-            
+
             module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
             module.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
         }
@@ -156,6 +173,12 @@ namespace Artemis.Core.Services
             _rgbService.LedsChanged += ActivatingRgbServiceOnLedsChanged;
 
             await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _rgbService.EnabledDevices);
+            if (profile.IsFreshImport)
+            {
+                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profile);
+                AdaptProfile(profile);
+            }
+
             SaveActiveProfile(profileDescriptor.ProfileModule);
 
             _pluginManagementService.PluginEnabled -= ActivatingProfilePluginToggle;
@@ -164,7 +187,6 @@ namespace Artemis.Core.Services
 
             return profile;
         }
-
 
 
         public void ClearActiveProfile(ProfileModule module)
@@ -194,15 +216,14 @@ namespace Artemis.Core.Services
         public void DeleteProfile(ProfileDescriptor profileDescriptor)
         {
             ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            if (profileEntity == null)
+                return;
             _profileRepository.Remove(profileEntity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
         {
-            _logger.Debug("Updating profile " + profile);
             string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
-            profile.RedoStack.Clear();
-            profile.UndoStack.Push(memento);
 
             profile.Save();
             if (includeChildren)
@@ -212,6 +233,22 @@ namespace Artemis.Core.Services
                 foreach (Layer layer in profile.GetAllLayers())
                     layer.Save();
             }
+
+            // If there are no changes, don't bother saving
+            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            if (memento.Equals(updatedMemento))
+            {
+                _logger.Debug("Updating profile - Skipping save, no changes");
+                return;
+            }
+
+            _logger.Debug("Updating profile - Saving " + profile);
+            profile.RedoStack.Clear();
+            profile.UndoStack.Push(memento);
+
+            // At this point the user made actual changes, save that
+            profile.IsFreshImport = false;
+            profile.ProfileEntity.IsFreshImport = false;
 
             _profileRepository.Save(profile.ProfileEntity);
         }
@@ -289,9 +326,34 @@ namespace Artemis.Core.Services
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             profileEntity.UpdateGuid(Guid.NewGuid());
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
+            profileEntity.IsFreshImport = true;
+            profileEntity.IsActive = false;
 
             _profileRepository.Add(profileEntity);
             return new ProfileDescriptor(profileModule, profileEntity);
+        }
+
+        /// <inheritdoc />
+        public void AdaptProfile(Profile profile)
+        {
+            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+
+            List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
+            foreach (Layer layer in profile.GetAllLayers())
+                layer.Adapter.Adapt(devices);
+
+            profile.Save();
+
+            foreach (Folder folder in profile.GetAllFolders())
+                folder.Save();
+            foreach (Layer layer in profile.GetAllLayers())
+                layer.Save();
+
+            _logger.Debug("Adapt profile - Saving " + profile);
+            profile.RedoStack.Clear();
+            profile.UndoStack.Push(memento);
+
+            _profileRepository.Save(profile.ProfileEntity);
         }
 
         #region Event handlers
@@ -300,7 +362,7 @@ namespace Artemis.Core.Services
         {
             ActiveProfilesPopulateLeds();
         }
-        
+
         #endregion
     }
 }

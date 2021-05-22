@@ -1,29 +1,33 @@
 ﻿using System;
-using System.Drawing;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Screens.Settings.Tabs.General;
 using Artemis.UI.Screens.Splash;
 using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
+using Artemis.UI.Utilities;
 using Hardcodet.Wpf.TaskbarNotification;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
-using Icon = System.Drawing.Icon;
 
 namespace Artemis.UI.Screens
 {
-    public class TrayViewModel : Screen, IMainWindowProvider, INotificationProvider
+    public class TrayViewModel : Screen, IMainWindowProvider
     {
+        private readonly PluginSetting<ApplicationColorScheme> _colorScheme;
         private readonly IDebugService _debugService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IKernel _kernel;
+        private readonly ThemeWatcher _themeWatcher;
         private readonly IWindowManager _windowManager;
+        private ImageSource _icon;
+        private bool _openingMainWindow;
         private RootViewModel _rootViewModel;
         private SplashViewModel _splashViewModel;
         private TaskbarIcon _taskBarIcon;
@@ -31,7 +35,6 @@ namespace Artemis.UI.Screens
         public TrayViewModel(IKernel kernel,
             IWindowManager windowManager,
             IWindowService windowService,
-            IMessageService messageService,
             IUpdateService updateService,
             IEventAggregator eventAggregator,
             ICoreService coreService,
@@ -46,14 +49,24 @@ namespace Artemis.UI.Screens
             Core.Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             Core.Utilities.RestartRequested += UtilitiesOnShutdownRequested;
 
+            _themeWatcher = new ThemeWatcher();
+            _colorScheme = settingsService.GetSetting("UI.ColorScheme", ApplicationColorScheme.Automatic);
+            _colorScheme.SettingChanged += ColorSchemeOnSettingChanged;
+            _themeWatcher.SystemThemeChanged += _themeWatcher_SystemThemeChanged;
+            _themeWatcher.AppsThemeChanged += _themeWatcher_AppsThemeChanged;
+
+            ApplyColorSchemeSetting();
+            ApplyTrayIconTheme(_themeWatcher.GetSystemTheme());
+
             windowService.ConfigureMainWindowProvider(this);
-            messageService.ConfigureNotificationProvider(this);
             bool autoRunning = Bootstrapper.StartupArguments.Contains("--autorun");
             bool minimized = Bootstrapper.StartupArguments.Contains("--minimized");
             bool showOnAutoRun = settingsService.GetSetting("UI.ShowOnStartup", true).Value;
 
             if (autoRunning && !showOnAutoRun || minimized)
+            {
                 coreService.Initialized += (_, _) => updateService.AutoUpdate();
+            }
             else
             {
                 ShowSplashScreen();
@@ -61,28 +74,53 @@ namespace Artemis.UI.Screens
             }
         }
 
+        public ImageSource Icon
+        {
+            get => _icon;
+            set => SetAndNotify(ref _icon, value);
+        }
+
         public void TrayBringToForeground()
         {
-            if (IsMainWindowOpen)
-            {
-                Execute.PostToUIThread(FocusMainWindow);
+            if (_openingMainWindow)
                 return;
-            }
 
-            // Initialize the shared UI when first showing the window
-            if (!UI.Shared.Bootstrapper.Initialized)
-                UI.Shared.Bootstrapper.Initialize(_kernel);
-
-            Execute.OnUIThreadSync(() =>
+            try
             {
-                _splashViewModel?.RequestClose();
-                _splashViewModel = null;
-                _rootViewModel = _kernel.Get<RootViewModel>();
-                _rootViewModel.Closed += RootViewModelOnClosed;
-                _windowManager.ShowWindow(_rootViewModel);
-            });
+                _openingMainWindow = true;
 
-            OnMainWindowOpened();
+                if (IsMainWindowOpen)
+                {
+                    Execute.OnUIThreadSync(() =>
+                    {
+                        FocusMainWindow();
+                        _openingMainWindow = false;
+                    });
+                    return;
+                }
+
+                // Initialize the shared UI when first showing the window
+                if (!UI.Shared.Bootstrapper.Initialized)
+                    UI.Shared.Bootstrapper.Initialize(_kernel);
+
+                Execute.OnUIThreadSync(() =>
+                {
+                    _splashViewModel?.RequestClose();
+                    _splashViewModel = null;
+                    _rootViewModel = _kernel.Get<RootViewModel>();
+                    _rootViewModel.Closed += RootViewModelOnClosed;
+                    _windowManager.ShowWindow(_rootViewModel);
+
+                    IsMainWindowOpen = true;
+                    _openingMainWindow = false;
+                });
+
+                OnMainWindowOpened();
+            }
+            finally
+            {
+                _openingMainWindow = false;
+            }
         }
 
         public void TrayActivateSidebarItem(string sidebarItem)
@@ -104,14 +142,6 @@ namespace Artemis.UI.Screens
         public void SetTaskbarIcon(UIElement view)
         {
             _taskBarIcon = (TaskbarIcon) ((ContentControl) view).Content;
-        }
-
-        public void OnTrayBalloonTipClicked(object sender, EventArgs e)
-        {
-            if (!IsMainWindowOpen)
-                TrayBringToForeground();
-            else
-                FocusMainWindow();
         }
 
         private void FocusMainWindow()
@@ -142,48 +172,74 @@ namespace Artemis.UI.Screens
 
         private void RootViewModelOnClosed(object sender, CloseEventArgs e)
         {
-            if (_rootViewModel != null)
+            lock (this)
             {
-                _rootViewModel.Closed -= RootViewModelOnClosed;
-                _rootViewModel = null;
+                if (_rootViewModel != null)
+                {
+                    _rootViewModel.Closed -= RootViewModelOnClosed;
+                    _rootViewModel = null;
+                }
+
+                IsMainWindowOpen = false;
             }
 
             OnMainWindowClosed();
         }
 
-        #region Implementation of INotificationProvider
+        #region Theme
 
-        /// <inheritdoc />
-        public void ShowNotification(string title, string message, PackIconKind icon)
+        private void ApplyColorSchemeSetting()
         {
-            Execute.OnUIThread(() =>
+            if (_colorScheme.Value == ApplicationColorScheme.Automatic)
+                ApplyUITheme(_themeWatcher.GetAppsTheme());
+            else
+                ChangeMaterialColors(_colorScheme.Value);
+        }
+
+        private void ApplyUITheme(ThemeWatcher.WindowsTheme theme)
+        {
+            if (_colorScheme.Value != ApplicationColorScheme.Automatic)
+                return;
+            if (theme == ThemeWatcher.WindowsTheme.Dark)
+                ChangeMaterialColors(ApplicationColorScheme.Dark);
+            else
+                ChangeMaterialColors(ApplicationColorScheme.Light);
+        }
+
+        private void ApplyTrayIconTheme(ThemeWatcher.WindowsTheme theme)
+        {
+            Execute.PostToUIThread(() =>
             {
-                // Convert the PackIcon to an icon by drawing it on a visual
-                DrawingVisual drawingVisual = new();
-                DrawingContext drawingContext = drawingVisual.RenderOpen();
-
-                PackIcon packIcon = new() {Kind = icon};
-                Geometry geometry = Geometry.Parse(packIcon.Data);
-
-                // Scale the icon up to fit a 256x256 image and draw it
-                geometry = Geometry.Combine(geometry, Geometry.Empty, GeometryCombineMode.Union, new ScaleTransform(256 / geometry.Bounds.Right, 256 / geometry.Bounds.Bottom));
-                drawingContext.DrawGeometry(new SolidColorBrush(Colors.White), null, geometry);
-                drawingContext.Close();
-
-                // Render the visual and add it to a PNG encoder (we want opacity in our icon)
-                RenderTargetBitmap renderTargetBitmap = new(256, 256, 96, 96, PixelFormats.Pbgra32);
-                renderTargetBitmap.Render(drawingVisual);
-                PngBitmapEncoder encoder = new();
-                encoder.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-
-                // Save the PNG and get an icon handle
-                using MemoryStream stream = new();
-                encoder.Save(stream);
-                Icon convertedIcon = Icon.FromHandle(new Bitmap(stream).GetHicon());
-
-                // Show the 'balloon'
-                _taskBarIcon.ShowBalloonTip(title, message, convertedIcon, true);
+                Icon = theme == ThemeWatcher.WindowsTheme.Dark
+                    ? new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-white.ico"))
+                    : new BitmapImage(new Uri("pack://application:,,,/Artemis.UI;component/Resources/Images/Logo/bow-black.ico"));
             });
+        }
+
+        private void ChangeMaterialColors(ApplicationColorScheme colorScheme)
+        {
+            PaletteHelper paletteHelper = new();
+            ITheme theme = paletteHelper.GetTheme();
+            theme.SetBaseTheme(colorScheme == ApplicationColorScheme.Dark ? Theme.Dark : Theme.Light);
+            paletteHelper.SetTheme(theme);
+
+            MaterialDesignExtensions.Themes.PaletteHelper extensionsPaletteHelper = new();
+            extensionsPaletteHelper.SetLightDark(colorScheme == ApplicationColorScheme.Dark);
+        }
+
+        private void _themeWatcher_AppsThemeChanged(object sender, WindowsThemeEventArgs e)
+        {
+            ApplyUITheme(e.Theme);
+        }
+
+        private void _themeWatcher_SystemThemeChanged(object sender, WindowsThemeEventArgs e)
+        {
+            ApplyTrayIconTheme(e.Theme);
+        }
+
+        private void ColorSchemeOnSettingChanged(object sender, EventArgs e)
+        {
+            ApplyColorSchemeSetting();
         }
 
         #endregion
@@ -194,10 +250,7 @@ namespace Artemis.UI.Screens
 
         public bool OpenMainWindow()
         {
-            if (IsMainWindowOpen)
-                Execute.OnUIThread(FocusMainWindow);
-            else
-                TrayBringToForeground();
+            TrayBringToForeground();
             return _rootViewModel.ScreenState == ScreenState.Active;
         }
 
@@ -213,13 +266,11 @@ namespace Artemis.UI.Screens
 
         protected virtual void OnMainWindowOpened()
         {
-            IsMainWindowOpen = true;
             MainWindowOpened?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnMainWindowClosed()
         {
-            IsMainWindowOpen = false;
             MainWindowClosed?.Invoke(this, EventArgs.Empty);
         }
 

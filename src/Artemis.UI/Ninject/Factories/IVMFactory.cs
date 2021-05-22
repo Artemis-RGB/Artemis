@@ -2,6 +2,7 @@
 using Artemis.Core.Modules;
 using Artemis.UI.Screens.Modules;
 using Artemis.UI.Screens.Modules.Tabs;
+using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
@@ -11,6 +12,8 @@ using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBi
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs;
+using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
@@ -58,6 +61,14 @@ namespace Artemis.UI.Ninject.Factories
         LayerViewModel LayerViewModel(ProfileElement layer);
     }
 
+    public interface ILayerHintVmFactory : IVmFactory
+    {
+        LayerHintsDialogViewModel LayerHintsDialogViewModel(Layer layer);
+        CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
+        DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
+        KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
+    }
+
     public interface IProfileLayerVmFactory : IVmFactory
     {
         ProfileLayerViewModel Create(Layer layer, PanZoomViewModel panZoomViewModel);
@@ -95,7 +106,13 @@ namespace Artemis.UI.Ninject.Factories
         TimelineSegmentViewModel TimelineSegmentViewModel(SegmentViewModelType segment, IObservableCollection<LayerPropertyGroupViewModel> layerPropertyGroups);
     }
 
-    public interface IDataBindingsVmFactory
+    public interface IPrerequisitesVmFactory : IVmFactory
+    {
+        PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
+    }
+
+    // TODO: Move these two
+    public interface IDataBindingsVmFactory 
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
@@ -104,7 +121,7 @@ namespace Artemis.UI.Ninject.Factories
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
-    public interface IPropertyVmFactory
+    public interface IPropertyVmFactory 
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);

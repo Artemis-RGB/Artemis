@@ -14,6 +14,7 @@ namespace Artemis.Core
     {
         private readonly object _lock = new();
         private bool _isActivated;
+        private bool _isFreshImport;
 
         internal Profile(ProfileModule module, string name) : base(null!)
         {
@@ -55,6 +56,20 @@ namespace Artemis.Core
         {
             get => _isActivated;
             private set => SetAndNotify(ref _isActivated, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
+        ///     since import
+        ///     <para>
+        ///         Note: As long as this is <see langword="true" />, profile adaption will be performed on load and any surface
+        ///         changes
+        ///     </para>
+        /// </summary>
+        public bool IsFreshImport
+        {
+            get => _isFreshImport;
+            set => SetAndNotify(ref _isFreshImport, value);
         }
 
         /// <summary>
@@ -134,6 +149,16 @@ namespace Artemis.Core
                 layer.PopulateLeds(devices);
         }
 
+        /// <summary>
+        ///     Occurs when the profile has been activated.
+        /// </summary>
+        public event EventHandler? Activated;
+
+        /// <summary>
+        ///     Occurs when the profile is being deactivated.
+        /// </summary>
+        public event EventHandler? Deactivated;
+
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
@@ -156,6 +181,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Profile");
 
             Name = ProfileEntity.Name;
+            IsFreshImport = ProfileEntity.IsFreshImport;
 
             lock (ChildrenList)
             {
@@ -171,9 +197,7 @@ namespace Artemis.Core
                     Folder _ = new(this, "Root folder");
                 }
                 else
-                {
                     AddChild(new Folder(this, this, rootFolder));
-                }
             }
         }
 
@@ -186,6 +210,7 @@ namespace Artemis.Core
             ProfileEntity.ModuleId = Module.Id;
             ProfileEntity.Name = Name;
             ProfileEntity.IsActive = IsActivated;
+            ProfileEntity.IsFreshImport = IsFreshImport;
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Save();
@@ -196,7 +221,7 @@ namespace Artemis.Core
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
         }
-        
+
         internal void Activate(IEnumerable<ArtemisDevice> devices)
         {
             lock (_lock)
@@ -212,18 +237,6 @@ namespace Artemis.Core
             }
         }
 
-        #region Events
-
-        /// <summary>
-        ///     Occurs when the profile has been activated.
-        /// </summary>
-        public event EventHandler? Activated;
-
-        /// <summary>
-        ///     Occurs when the profile is being deactivated.
-        /// </summary>
-        public event EventHandler? Deactivated;
-
         private void OnActivated()
         {
             Activated?.Invoke(this, EventArgs.Empty);
@@ -233,7 +246,5 @@ namespace Artemis.Core
         {
             Deactivated?.Invoke(this, EventArgs.Empty);
         }
-
-        #endregion
     }
 }

@@ -389,7 +389,7 @@
                         IsEnabled="{Binding SelectedProfileElement, Converter={StaticResource NullToBooleanConverter}}"
                         Visibility="{Binding TimelineVisible, Converter={x:Static s:BoolToVisibilityConverter.Instance}}">
                     <Button.Style>
-                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatMidBgButton}">
+                        <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignFlatAccentBgButton}">
                             <Style.Triggers>
                                 <EventTrigger RoutedEvent="Click">
                                     <EventTrigger.Actions>
@@ -440,6 +440,7 @@
                         IsSnapToTickEnabled="True"
                         AutoToolTipPlacement="TopLeft"
                         Value="{Binding ProfileEditorService.PixelsPerSecond}"
+                        Foreground="{StaticResource SecondaryHueMidBrush}"
                         Width="319" />
 
             </Grid>

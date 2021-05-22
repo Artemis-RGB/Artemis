@@ -6,7 +6,6 @@ using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Surface;
 using RGB.NET.Core;
-using RGB.NET.Layout;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -36,10 +35,12 @@ namespace Artemis.Core
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
+            Categories = new HashSet<DeviceCategory>();
 
             UpdateLeds();
             ApplyKeyboardLayout();
             ApplyToEntity();
+            ApplyDefaultCategories();
             CalculateRenderProperties();
         }
 
@@ -52,6 +53,7 @@ namespace Artemis.Core
 
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
+            Categories = new HashSet<DeviceCategory>();
 
             foreach (DeviceInputIdentifierEntity identifierEntity in DeviceEntity.InputIdentifiers)
                 InputIdentifiers.Add(new ArtemisDeviceInputIdentifier(identifierEntity.InputProvider, identifierEntity.Identifier));
@@ -89,6 +91,11 @@ namespace Artemis.Core
         public IRGBDevice RgbDevice { get; }
 
         /// <summary>
+        ///     Gets the device type of the ArtemisDevice
+        /// </summary>
+        public RGBDeviceType DeviceType => RgbDevice.DeviceInfo.DeviceType;
+
+        /// <summary>
         ///     Gets the device provider that provided this device
         /// </summary>
         public DeviceProvider DeviceProvider { get; }
@@ -113,6 +120,11 @@ namespace Artemis.Core
         ///     Gets a list of input mappings configured on the device
         /// </summary>
         public Dictionary<ArtemisLed, ArtemisLed> InputMappings { get; }
+
+        /// <summary>
+        ///     Gets a list containing the categories of this device
+        /// </summary>
+        public HashSet<DeviceCategory> Categories { get; }
 
         /// <summary>
         ///     Gets or sets the X-position of the device
@@ -344,6 +356,46 @@ namespace Artemis.Core
         public event EventHandler? DeviceUpdated;
 
         /// <summary>
+        ///     Applies the default categories for this device to the <see cref="Categories" /> list
+        /// </summary>
+        public void ApplyDefaultCategories()
+        {
+            switch (RgbDevice.DeviceInfo.DeviceType)
+            {
+                case RGBDeviceType.Keyboard:
+                case RGBDeviceType.Mouse:
+                case RGBDeviceType.Headset:
+                case RGBDeviceType.Mousepad:
+                case RGBDeviceType.HeadsetStand:
+                case RGBDeviceType.Keypad:
+                    if (!Categories.Contains(DeviceCategory.Peripherals))
+                        Categories.Add(DeviceCategory.Peripherals);
+                    break;
+                case RGBDeviceType.Mainboard:
+                case RGBDeviceType.GraphicsCard:
+                case RGBDeviceType.DRAM:
+                case RGBDeviceType.Fan:
+                case RGBDeviceType.LedStripe:
+                case RGBDeviceType.Cooler:
+                    if (!Categories.Contains(DeviceCategory.Case))
+                        Categories.Add(DeviceCategory.Case);
+                    break;
+                case RGBDeviceType.Speaker:
+                    if (!Categories.Contains(DeviceCategory.Desk))
+                        Categories.Add(DeviceCategory.Desk);
+                    break;
+                case RGBDeviceType.Monitor:
+                    if (!Categories.Contains(DeviceCategory.Monitor))
+                        Categories.Add(DeviceCategory.Monitor);
+                    break;
+                case RGBDeviceType.LedMatrix:
+                    if (!Categories.Contains(DeviceCategory.Room))
+                        Categories.Add(DeviceCategory.Room);
+                    break;
+            }
+        }
+
+        /// <summary>
         ///     Invokes the <see cref="DeviceUpdated" /> event
         /// </summary>
         protected virtual void OnDeviceUpdated()
@@ -373,7 +425,8 @@ namespace Artemis.Core
                                                "set to true because the device provider does not support it");
 
             if (layout.IsValid)
-                layout.RgbLayout!.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
+                layout.ApplyTo(RgbDevice, createMissingLeds, removeExcessiveLeds);
+
 
             UpdateLeds();
 
@@ -390,17 +443,19 @@ namespace Artemis.Core
 
             DeviceEntity.InputIdentifiers.Clear();
             foreach (ArtemisDeviceInputIdentifier identifier in InputIdentifiers)
-            {
                 DeviceEntity.InputIdentifiers.Add(new DeviceInputIdentifierEntity
                 {
                     InputProvider = identifier.InputProvider,
                     Identifier = identifier.Identifier
                 });
-            }
 
             DeviceEntity.InputMappings.Clear();
             foreach (var (original, mapped) in InputMappings)
                 DeviceEntity.InputMappings.Add(new InputMappingEntity {OriginalLedId = (int) original.RgbLed.Id, MappedLedId = (int) mapped.RgbLed.Id});
+
+            DeviceEntity.Categories.Clear();
+            foreach (DeviceCategory deviceCategory in Categories)
+                DeviceEntity.Categories.Add((int) deviceCategory);
         }
 
         internal void ApplyToRgbDevice()
@@ -419,6 +474,12 @@ namespace Artemis.Core
 
             if (!RgbDevice.ColorCorrections.Any())
                 RgbDevice.ColorCorrections.Add(new ScaleColorCorrection(this));
+
+            Categories.Clear();
+            foreach (int deviceEntityCategory in DeviceEntity.Categories)
+                Categories.Add((DeviceCategory) deviceEntityCategory);
+            if (!Categories.Any())
+                ApplyDefaultCategories();
 
             CalculateRenderProperties();
             OnDeviceUpdated();
@@ -471,5 +532,36 @@ namespace Artemis.Core
             else
                 LogicalLayout = DeviceEntity.LogicalLayout;
         }
+    }
+
+    /// <summary>
+    ///     Represents a device category
+    /// </summary>
+    public enum DeviceCategory
+    {
+        /// <summary>
+        ///     A device used to light up (part of) the desk
+        /// </summary>
+        Desk,
+
+        /// <summary>
+        ///     A device attached or embedded into the monitor
+        /// </summary>
+        Monitor,
+
+        /// <summary>
+        ///     A device placed or embedded into the case
+        /// </summary>
+        Case,
+
+        /// <summary>
+        ///     A device used to light up (part of) the room
+        /// </summary>
+        Room,
+
+        /// <summary>
+        ///     A peripheral
+        /// </summary>
+        Peripherals
     }
 }

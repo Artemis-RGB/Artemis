@@ -33,8 +33,8 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             set => SetAndNotify(ref _selectionStatus, value);
         }
 
-        public bool CanDetectInput => Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard ||
-                                      Device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Mouse;
+        public bool CanDetectInput => Device.DeviceType == RGBDeviceType.Keyboard ||
+                                      Device.DeviceType == RGBDeviceType.Mouse;
 
         public Cursor Cursor
         {

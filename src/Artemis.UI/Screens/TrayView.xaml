@@ -7,11 +7,10 @@
         xmlns:s="https://github.com/canton7/Stylet"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d">
-    <tb:TaskbarIcon IconSource="/Resources/Images/Logo/logo-512.ico"
+    <tb:TaskbarIcon IconSource="{Binding Icon}"
                     MenuActivation="LeftOrRightClick"
                     PopupActivation="DoubleClick"
-                    DoubleClickCommand="{s:Action TrayBringToForeground}"
-                    TrayBalloonTipClicked="{s:Action OnTrayBalloonTipClicked}">
+                    DoubleClickCommand="{s:Action TrayBringToForeground}">
 
         <tb:TaskbarIcon.TrayToolTip>
             <Border Background="{DynamicResource MaterialDesignToolTipBackground}" CornerRadius="2" Padding="5">

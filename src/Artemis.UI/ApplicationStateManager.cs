@@ -118,15 +118,18 @@ namespace Artemis.UI
 
         private void UtilitiesOnShutdownRequested(object sender, EventArgs e)
         {
-            // Use PowerShell to kill the process after 2 sec just in case
-            ProcessStartInfo info = new()
+            // Use PowerShell to kill the process after 8 sec just in case
+            if (!StartupArguments.Contains("--disable-forced-shutdown"))
             {
-                Arguments = "-Command \"& {Start-Sleep -s 2; (Get-Process 'Artemis.UI').kill()}",
-                WindowStyle = ProcessWindowStyle.Hidden,
-                CreateNoWindow = true,
-                FileName = "PowerShell.exe"
-            };
-            Process.Start(info);
+                ProcessStartInfo info = new()
+                {
+                    Arguments = "-Command \"& {Start-Sleep -s 8; (Get-Process -Id " + Process.GetCurrentProcess().Id + ").kill()}",
+                    WindowStyle = ProcessWindowStyle.Hidden,
+                    CreateNoWindow = true,
+                    FileName = "PowerShell.exe"
+                };
+                Process.Start(info);
+            }
 
             Execute.OnUIThread(() => Application.Current.Shutdown());
         }

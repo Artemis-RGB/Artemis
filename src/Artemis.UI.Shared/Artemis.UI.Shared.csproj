@@ -50,7 +50,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="WriteableBitmapEx" Version="1.6.7" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="obj\x64\Debug\ColorPicker.g.cs" />

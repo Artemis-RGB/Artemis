@@ -52,7 +52,7 @@ namespace Artemis.UI.Services
 
         private bool DeviceNeedsLayout(ArtemisDevice d)
         {
-            return d.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard &&
+            return d.DeviceType == RGBDeviceType.Keyboard &&
                    (d.LogicalLayout == null || d.PhysicalLayout == KeyboardLayoutType.Unknown) &&
                    (!d.DeviceProvider.CanDetectLogicalLayout || !d.DeviceProvider.CanDetectPhysicalLayout);
         }

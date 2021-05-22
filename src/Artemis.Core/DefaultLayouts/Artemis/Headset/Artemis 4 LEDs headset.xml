@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Device xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Name>4 LEDs headset</Name>
+  <Description>The default layout for headsets with 4 LEDs</Description>
+  <Author>SpoinkyNL &amp; Aureshion</Author>
+  <Type>Headset</Type>
+  <Vendor>Artemis</Vendor>
+  <Model>Artemis 4 LEDs headset</Model>
+  <Width>242</Width>
+  <Height>233</Height>
+  <LedUnitWidth>1</LedUnitWidth>
+  <LedUnitHeight>1</LedUnitHeight>
+  <Leds>
+    <Led Id="Headset1">
+      <Shape> M0.241,0.001 L0.231,0.021 L0.62,1 L0.523,1 L0.153,0.056z</Shape>
+      <X>15</X>
+      <Y>125</Y>
+      <Width>64</Width>
+      <Height>54</Height>
+    </Led>
+    <Led Id="Headset2">
+      <Shape> M0.62,0 L0.968,0.87 L0.992,0.886 L0.903,0.943 L0.523,0z</Shape>
+      <X>~</X>
+      <Y>+</Y>
+      <Width>64</Width>
+      <Height>54</Height>
+    </Led>
+    <Led Id="Headset3">
+      <Shape> M0.748,0 L0.752,0.027 L0.377,1 L0.468,1 L0.837,0.053z</Shape>
+      <X>163</X>
+      <Y>125</Y>
+      <Width>64</Width>
+      <Height>54</Height>
+    </Led>
+    <Led Id="Headset4">
+      <Shape> M0.377,0 L0.468,0 L0.09,0.935 L0,0.88 L0.032,0.863z</Shape>
+      <X>~</X>
+      <Y>+</Y>
+      <Width>64</Width>
+      <Height>54</Height>
+    </Led>
+  </Leds>
+  <CustomData>
+    <DeviceImage>Headset.png</DeviceImage>
+  </CustomData>
+</Device>

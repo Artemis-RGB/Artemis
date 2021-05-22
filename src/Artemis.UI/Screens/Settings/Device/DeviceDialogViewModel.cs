@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.Settings.Device
             SelectedLeds = new BindableCollection<ArtemisLed>();
 
             Items.Add(factory.DevicePropertiesTabViewModel(device));
-            if (device.RgbDevice.DeviceInfo.DeviceType == RGBDeviceType.Keyboard)
+            if (device.DeviceType == RGBDeviceType.Keyboard)
                 Items.Add(factory.InputMappingsTabViewModel(device));
             Items.Add(factory.DeviceInfoTabViewModel(device));
             Items.Add(factory.DeviceLedsTabViewModel(device));
@@ -178,7 +178,7 @@ namespace Artemis.UI.Screens.Settings.Device
             string directory = Path.Combine(
                 dialog.SelectedPath,
                 Device.RgbDevice.DeviceInfo.Manufacturer,
-                Device.RgbDevice.DeviceInfo.DeviceType.ToString()
+                Device.DeviceType.ToString()
             );
             string filePath = Path.Combine(directory, Device.GetLayoutFileName());
             Core.Utilities.CreateAccessibleDirectory(directory);

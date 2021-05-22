@@ -24,6 +24,9 @@ namespace Artemis.Core
 
         public void Update()
         {
+            if (!Path.IsValid)
+                return;
+
             object? value = Path.GetValue();
             if (value != null)
                 CurrentValue = (T?) value;

@@ -83,7 +83,7 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="device">The device to apply the best available layout to</param>
         /// <returns>The layout that was applied to the device</returns>
-        ArtemisLayout ApplyBestDeviceLayout(ArtemisDevice device);
+        ArtemisLayout? ApplyBestDeviceLayout(ArtemisDevice device);
 
         /// <summary>
         ///     Apples the provided <see cref="ArtemisLayout" /> to the provided <see cref="ArtemisDevice" />

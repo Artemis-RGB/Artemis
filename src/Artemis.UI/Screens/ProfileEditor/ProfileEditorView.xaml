@@ -35,13 +35,13 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
                     <Button Grid.Column="1"
-                            Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                            Style="{StaticResource MaterialDesignIconForegroundButton}"
                             Width="26"
                             Height="26"
                             VerticalAlignment="Top"
                             Command="{s:Action DeleteProfile}"
                             CommandParameter="{Binding}">
-                        <materialDesign:PackIcon Kind="TrashCanOutline" Height="14" Width="14" HorizontalAlignment="Right" />
+                        <materialDesign:PackIcon Kind="Delete" Height="16" Width="16" HorizontalAlignment="Right" />
                     </Button>
                 </Grid>
             </DataTemplate>
@@ -169,6 +169,12 @@
                         </Button>
                         <Separator />
 
+                        <Button Command="{s:Action AdaptActiveProfile}" ToolTip="Adapt the profile to the current surface">
+                            <StackPanel Orientation="Horizontal">
+                                <materialDesign:PackIcon Kind="AutoFix" Margin="0 0 15 0" />
+                                <TextBlock>Adapt profile</TextBlock>
+                            </StackPanel>
+                        </Button>
                         <Button Command="{s:Action ExportActiveProfile}">
                             <StackPanel Orientation="Horizontal">
                                 <materialDesign:PackIcon Kind="Upload" Margin="0 0 15 0" />

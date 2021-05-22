@@ -4,5 +4,7 @@
     {
         public string LedName { get; set; }
         public string DeviceIdentifier { get; set; }
+
+        public int? PhysicalLayout { get; set; }
     }
 }

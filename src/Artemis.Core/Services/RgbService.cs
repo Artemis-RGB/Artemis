@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services.Models;
@@ -149,6 +150,7 @@ namespace Artemis.Core.Services
                         RemoveDevice(device);
 
                     List<Exception> providerExceptions = new();
+
                     void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
                     {
                         if (e.IsCritical)
@@ -314,12 +316,15 @@ namespace Artemis.Core.Services
         {
             SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
             surfaceArrangement.Arrange(_devices);
+            foreach (ArtemisDevice artemisDevice in _devices)
+                artemisDevice.ApplyDefaultCategories();
+
             SaveDevices();
         }
 
-        public ArtemisLayout ApplyBestDeviceLayout(ArtemisDevice device)
+        public ArtemisLayout? ApplyBestDeviceLayout(ArtemisDevice device)
         {
-            ArtemisLayout layout;
+            ArtemisLayout? layout;
 
             // Configured layout path takes precedence over all other options
             if (device.CustomLayoutPath != null)
@@ -349,19 +354,19 @@ namespace Artemis.Core.Services
             }
 
             // Finally fall back to a default layout
-            layout = LoadDefaultLayout(device);
-            ApplyDeviceLayout(device, layout);
+            layout = ArtemisLayout.GetDefaultLayout(device);
+            if (layout != null)
+                ApplyDeviceLayout(device, layout);
             return layout;
-        }
-
-        private ArtemisLayout LoadDefaultLayout(ArtemisDevice device)
-        {
-            return new("NYI", LayoutSource.Default);
         }
 
         public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout)
         {
-            device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
+            if (layout.Source == LayoutSource.Default)
+                device.ApplyLayout(layout, false, false);
+            else
+                device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
+            
             UpdateLedGroup();
         }
 

@@ -144,7 +144,7 @@
                         <ColumnDefinition />
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
-                            Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
                             Margin="0 0 5 0"
                             ToolTip="Copy the entire data binding"
                             Command="{s:Action CopyDataBinding}">
@@ -154,7 +154,7 @@
                         </StackPanel>
                     </Button>
                     <Button Grid.Column="1"
-                            Style="{StaticResource MaterialDesignRaisedDarkButton}"
+                            Style="{StaticResource MaterialDesignRaisedAccentButton}"
                             Margin="5 0 0 0"
                             ToolTip="Paste the entire data binding"
                             Command="{s:Action PasteDataBinding}">

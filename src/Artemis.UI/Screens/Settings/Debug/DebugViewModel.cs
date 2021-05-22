@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.Settings.Debug.Tabs;
+using Artemis.UI.Screens.Settings.Debug.Tabs.Performance;
 using Stylet;
 
 namespace Artemis.UI.Screens.Settings.Debug
@@ -16,12 +16,14 @@ namespace Artemis.UI.Screens.Settings.Debug
             ICoreService coreService,
             RenderDebugViewModel renderDebugViewModel,
             DataModelDebugViewModel dataModelDebugViewModel,
-            LogsDebugViewModel logsDebugViewModel)
+            LogsDebugViewModel logsDebugViewModel,
+            PerformanceDebugViewModel performanceDebugViewModel)
         {
             _coreService = coreService;
             Items.Add(renderDebugViewModel);
             Items.Add(dataModelDebugViewModel);
             Items.Add(logsDebugViewModel);
+            Items.Add(performanceDebugViewModel);
             ActiveItem = renderDebugViewModel;
 
             StayOnTopSetting = settingsService.GetSetting("Debugger.StayOnTop", false);

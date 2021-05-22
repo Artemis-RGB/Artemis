@@ -1,8 +1,8 @@
 ﻿using System.Windows;
+using System.Windows.Navigation;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
-using MaterialDesignThemes.Wpf;
 
 namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
@@ -20,6 +20,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
         }
 
         public ProfileDescriptor ProfileDescriptor { get; }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnActivate()
+        {
+            // TODO: If the profile has hints on all layers, call Accept
+            base.OnActivate();
+        }
+
+        #endregion
+
+        public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
+        {
+            Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
+        }
 
         public void Accept()
         {

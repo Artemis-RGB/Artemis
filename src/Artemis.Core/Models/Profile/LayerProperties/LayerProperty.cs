@@ -15,7 +15,7 @@ namespace Artemis.Core
     ///     </para>
     /// </summary>
     /// <typeparam name="T">The type of property encapsulated in this layer property</typeparam>
-    public class LayerProperty<T> : ILayerProperty
+    public class LayerProperty<T> : CorePropertyChanged, ILayerProperty
     {
         private bool _disposed;
 
@@ -265,6 +265,7 @@ namespace Artemis.Core
 
                 _baseValue = value;
                 ReapplyUpdate();
+                OnPropertyChanged(nameof(BaseValue));
             }
         }
 

@@ -30,7 +30,12 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
             <Rectangle Grid.Row="0" Fill="{DynamicResource MaterialDesignPaper}" />
-            <shared:DeviceVisualizer Device="{Binding Device}" RenderOptions.BitmapScalingMode="HighQuality" Grid.Row="0" Height="130" Width="190" />
+            <shared:DeviceVisualizer VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Margin="10"
+                                     Device="{Binding Device}"
+                                     RenderOptions.BitmapScalingMode="HighQuality"
+                                     Grid.Row="0" />
             <Button Grid.Row="0"
                     Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                     HorizontalAlignment="Right"
@@ -45,14 +50,14 @@
                 <TextBlock TextWrapping="Wrap" Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">
                     <Run Text="{Binding Device.RgbDevice.DeviceInfo.Manufacturer, Mode=OneWay}" />
                     -
-                    <Run Text="{Binding Device.RgbDevice.DeviceInfo.DeviceType, Mode=OneWay}" />
+                    <Run Text="{Binding Device.DeviceType, Mode=OneWay}" />
                 </TextBlock>
             </StackPanel>
             <StackPanel HorizontalAlignment="Right" Grid.Row="2" Orientation="Horizontal" Margin="8">
-                <CheckBox Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding IsDeviceEnabled}">
+                <CheckBox Style="{StaticResource MaterialDesignAccentCheckBox}" IsChecked="{Binding IsDeviceEnabled}">
                     Device enabled
                 </CheckBox>
-                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0">
+                <materialDesign:PopupBox Style="{StaticResource MaterialDesignToolPopupBox}" Padding="2 0 2 0" Foreground="{StaticResource MaterialDesignBody}">
                     <StackPanel>
                         <Button Command="{s:Action OpenPluginDirectory}">
                             <StackPanel Orientation="Horizontal">
