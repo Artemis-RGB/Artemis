@@ -344,7 +344,7 @@
         </LogicalLayouts>
       </CustomData>
     </Led>
-    <Led Id="Keyboard_Backslash">
+    <Led Id="Keyboard_Enter">
       <Shape>M0,0 L0,0.5 L0.16666666666,0.5 L0.16666666666,1 L1,1 L1,0 Z</Shape>
       <Width>1.5</Width>
       <Height>2</Height>
@@ -463,11 +463,11 @@
         </LogicalLayouts>
       </CustomData>
     </Led>
-    <Led Id="Keyboard_Enter">
+    <Led Id="Keyboard_NonUsTilde">
       <Width>1</Width>
       <CustomData>
         <LogicalLayouts>
-          <LogicalLayout Name="GB" Image="Keycaps/BlackslashIso.png" />
+          <LogicalLayout Name="GB" Image="Keycaps/TildeIso.png" />
         </LogicalLayouts>
       </CustomData>
     </Led>
