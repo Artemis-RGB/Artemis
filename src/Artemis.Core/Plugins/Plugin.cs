@@ -155,6 +155,19 @@ namespace Artemis.Core
             _profilers.Remove(profiler);
         }
 
+        /// <summary>
+        ///     Gets an instance of the specified service using the plugins dependency injection container.
+        ///     <para>Note: To use parameters reference Ninject and use <see cref="Kernel" /> directly.</para>
+        /// </summary>
+        /// <typeparam name="T">The service to resolve.</typeparam>
+        /// <returns>An instance of the service.</returns>
+        public T Get<T>()
+        {
+            if (Kernel == null)
+                throw new ArtemisPluginException("Cannot use Get<T> before the plugin finished loading");
+            return Kernel.Get<T>();
+        }
+
         /// <inheritdoc />
         public override string ToString()
         {
