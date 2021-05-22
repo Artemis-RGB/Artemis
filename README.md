@@ -52,6 +52,7 @@ A few people have already started working on plugins! If you want your plugins t
 - https://github.com/diogotr7/Artemis.Plugins
 - https://github.com/Wibble199/Artemis.Plugins
 - https://github.com/F-Lehmann/MyArtemisPlugins
+- https://github.com/Cheerpipe/Artemis.Plugins.Public
 
 ## Work in progress screenshots
 **Note:** Video tutorials and written guides on many of the features displayed below are planned for when Artemis 2 nears feature-completion.
