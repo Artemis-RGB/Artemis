@@ -85,8 +85,12 @@ namespace Artemis.UI.Shared.Screens.GradientEditor
             NotifyOfPropertyChange(nameof(HasMoreThanOneStop));
         }
 
-        public void RemoveColorStop(ColorStopViewModel colorStopViewModel)
+        public void RemoveColorStop(ColorStopViewModel? colorStopViewModel)
         {
+            // Can be null when called by the view
+            if (colorStopViewModel == null)
+                return;
+
             ColorStopViewModels.Remove(colorStopViewModel);
             ColorGradient.Remove(colorStopViewModel.ColorStop);
 
