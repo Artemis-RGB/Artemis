@@ -68,7 +68,7 @@ namespace Artemis.Core
                 ShowProgressBar = true;
                 ProgressIndeterminate = true;
 
-                int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-File {file} {Arguments}", Elevate);
+                int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-ExecutionPolicy Unrestricted -File {file} {Arguments}", Elevate);
 
                 Status = $"PowerShell exited with code {result}";
             }
