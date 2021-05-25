@@ -17,6 +17,7 @@ namespace Artemis.Core
         private DataModel? _dynamicDataModel;
         private Type? _dynamicDataModelType;
         private DataModelPropertyAttribute? _dynamicDataModelAttribute;
+        private PropertyInfo? _property;
 
         internal DataModelPathSegment(DataModelPath dataModelPath, string identifier, string path)
         {
@@ -99,7 +100,7 @@ namespace Artemis.Core
                 return null;
 
             // If this is not the first segment in a path, the property is located on the previous segment
-            return Previous?.GetPropertyType()?.GetProperty(Identifier);
+            return Previous?.GetPropertyType()?.GetProperties().FirstOrDefault(p => p.Name == Identifier);
         }
 
         /// <summary>
@@ -209,14 +210,18 @@ namespace Artemis.Core
                 accessorExpression = expression;
             // A static segment just needs to access the property or filed
             else if (Type == DataModelPathSegmentType.Static)
-                accessorExpression = Expression.PropertyOrField(expression, Identifier);
+            {
+                accessorExpression = _property != null 
+                    ? Expression.Property(expression, _property)
+                    : Expression.PropertyOrField(expression, Identifier);
+            }
             // A dynamic segment calls the generic method DataModel.DynamicChild<T> and provides the identifier as an argument
             else
             {
                 accessorExpression = Expression.Call(
                     expression,
                     nameof(DataModel.GetDynamicChildValue),
-                    _dynamicDataModelType != null ? new[] { _dynamicDataModelType } : null,
+                    _dynamicDataModelType != null ? new[] {_dynamicDataModelType} : null,
                     Expression.Constant(Identifier)
                 );
             }
@@ -243,8 +248,11 @@ namespace Artemis.Core
 
         private void DetermineStaticType(Type previousType)
         {
-            PropertyInfo? property = previousType.GetProperty(Identifier, BindingFlags.Public | BindingFlags.Instance);
-            Type = property == null ? DataModelPathSegmentType.Invalid : DataModelPathSegmentType.Static;
+            // Situations in which AmbiguousMatchException occurs ...
+            //
+            // ...derived type declares a property that hides an inherited property with the same name, by using the new modifier
+            _property = previousType.GetProperties(BindingFlags.Public | BindingFlags.Instance).FirstOrDefault(p => p.Name == Identifier);
+            Type = _property == null ? DataModelPathSegmentType.Invalid : DataModelPathSegmentType.Static;
         }
 
         #region IDisposable
