@@ -15,10 +15,15 @@ namespace Artemis.Core
         /// <param name="name">The name of the action</param>
         /// <param name="code">The inline code to run</param>
         /// <param name="elevate">A boolean indicating whether the file should run with administrator privileges</param>
-        public RunInlinePowerShellAction(string name, string code, bool elevate = false) : base(name)
+        /// <param name="arguments">
+        ///     Optional arguments to pass to your script, you are responsible for proper quoting etc.
+        ///     <para>Arguments are available in PowerShell as <c>$args[0], $args[1]</c> etc.</para>
+        /// </param>
+        public RunInlinePowerShellAction(string name, string code, bool elevate = false, string? arguments = null) : base(name)
         {
             Code = code;
             Elevate = elevate;
+            Arguments = arguments;
             ProgressIndeterminate = true;
         }
 
@@ -31,6 +36,12 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether the file should run with administrator privileges
         /// </summary>
         public bool Elevate { get; }
+
+        /// <summary>
+        ///     Gets optional arguments to pass to your script, you are responsible for proper quoting etc.
+        ///     <para>Arguments are available in PowerShell as <c>$args[0], $args[1]</c> etc.</para>
+        /// </summary>
+        public string? Arguments { get; }
 
         /// <inheritdoc />
         public override async Task Execute(CancellationToken cancellationToken)
@@ -57,7 +68,7 @@ namespace Artemis.Core
                 ShowProgressBar = true;
                 ProgressIndeterminate = true;
 
-                int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-File {file}", Elevate);
+                int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-File {file} {Arguments}", Elevate);
 
                 Status = $"PowerShell exited with code {result}";
             }

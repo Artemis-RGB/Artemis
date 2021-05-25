@@ -16,10 +16,15 @@ namespace Artemis.Core
         /// <param name="name">The name of the action</param>
         /// <param name="scriptPath">The full path of the script to run</param>
         /// <param name="elevate">A boolean indicating whether the file should run with administrator privileges</param>
-        public RunPowerShellAction(string name, string scriptPath, bool elevate = false) : base(name)
+        /// <param name="arguments">
+        ///     Optional arguments to pass to your script, you are responsible for proper quoting etc.
+        ///     <para>Arguments are available in PowerShell as <c>$args[0], $args[1]</c> etc.</para>
+        /// </param>
+        public RunPowerShellAction(string name, string scriptPath, bool elevate = false, string? arguments = null) : base(name)
         {
             ScriptPath = scriptPath;
             Elevate = elevate;
+            Arguments = arguments;
             ProgressIndeterminate = true;
         }
 
@@ -33,6 +38,12 @@ namespace Artemis.Core
         /// </summary>
         public bool Elevate { get; }
 
+        /// <summary>
+        ///     Gets optional arguments to pass to your script, you are responsible for proper quoting etc.
+        ///     <para>Arguments are available in PowerShell as <c>$args[0], $args[1]</c> etc.</para>
+        /// </summary>
+        public string? Arguments { get; }
+
         /// <inheritdoc />
         public override async Task Execute(CancellationToken cancellationToken)
         {
@@ -45,7 +56,7 @@ namespace Artemis.Core
             ShowProgressBar = true;
             ProgressIndeterminate = true;
 
-            int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-File {ScriptPath}", Elevate);
+            int result = await ExecuteFileAction.RunProcessAsync("powershell.exe", $"-File {ScriptPath} {Arguments}", Elevate);
 
             Status = $"PowerShell exited with code {result}";
         }
