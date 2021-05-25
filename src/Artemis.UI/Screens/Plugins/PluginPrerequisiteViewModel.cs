@@ -13,18 +13,13 @@ namespace Artemis.UI.Screens.Plugins
     public class PluginPrerequisiteViewModel : Conductor<PluginPrerequisiteActionViewModel>.Collection.OneActive
     {
         private readonly bool _uninstall;
-        private readonly ICoreService _coreService;
-        private readonly IDialogService _dialogService;
         private bool _installing;
         private bool _uninstalling;
         private bool _isMet;
 
-        public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall, ICoreService coreService, IDialogService dialogService)
+        public PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall)
         {
             _uninstall = uninstall;
-            _coreService = coreService;
-            _dialogService = dialogService;
-
             PluginPrerequisite = pluginPrerequisite;
         }
 
@@ -65,12 +60,6 @@ namespace Artemis.UI.Screens.Plugins
             if (Busy)
                 return;
 
-            if (PluginPrerequisite.RequiresElevation && !_coreService.IsElevated)
-            {
-                await _dialogService.ShowConfirmDialog("Install plugin prerequisite", "This plugin prerequisite admin rights to install (restart & elevate NYI)");
-                return;
-            }
-
             Installing = true;
             try
             {
@@ -87,12 +76,6 @@ namespace Artemis.UI.Screens.Plugins
         {
             if (Busy)
                 return;
-
-            if (PluginPrerequisite.RequiresElevation && !_coreService.IsElevated)
-            {
-                await _dialogService.ShowConfirmDialog("Install plugin prerequisite", "This plugin prerequisite admin rights to install (restart & elevate NYI)");
-                return;
-            }
 
             Uninstalling = true;
             try
