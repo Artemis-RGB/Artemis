@@ -20,7 +20,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="60" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -33,21 +33,26 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            
-            <shared:DeviceVisualizer Grid.Column="0" Grid.ColumnSpan="2" Device="{Binding HeaderDevice}" ShowColors="True" Height="40">
+
+            <shared:DeviceVisualizer Grid.Column="0"
+                                     Grid.ColumnSpan="2"
+                                     Device="{Binding HeaderDevice}"
+                                     ShowColors="True"
+                                     RenderTransformOrigin="0.5 0.5"
+                                     VerticalAlignment="Center"
+                                     HorizontalAlignment="Center">
                 <shared:DeviceVisualizer.RenderTransform>
-                   <TransformGroup>
-                       <ScaleTransform ScaleX="4" ScaleY="4"></ScaleTransform>
-                       <RotateTransform Angle="20"></RotateTransform>
-                       <TranslateTransform  X="-40" Y="-120"></TranslateTransform>
-                   </TransformGroup>
+                    <TransformGroup>
+                        <RotateTransform Angle="20" />
+                        <ScaleTransform ScaleX="2" ScaleY="2" />
+                    </TransformGroup>
                 </shared:DeviceVisualizer.RenderTransform>
             </shared:DeviceVisualizer>
-            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="50" VerticalAlignment="Bottom">
+            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="60" VerticalAlignment="Bottom">
                 <Rectangle.Fill>
-                    <LinearGradientBrush StartPoint="0,1" EndPoint="0,0" >
-                        <GradientStop Color="#FF212121" Offset="0"/> <!-- TODO: Get the color from MaterialDesign -->
-                        <GradientStop Color="#00000000" Offset="1"/>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                        <GradientStop Color="#FF212121" Offset="0" /> <!-- TODO: Get the color from MaterialDesign -->
+                        <GradientStop Color="#00000000" Offset="1" />
                     </LinearGradientBrush>
                 </Rectangle.Fill>
             </Rectangle>

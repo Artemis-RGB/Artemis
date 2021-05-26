@@ -17,7 +17,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid>
+    <Grid Margin="0 8 0 0">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -38,7 +38,8 @@
                           Margin="5 0" />
             <TextBlock Grid.Column="1" 
                        Padding="0 5" 
-                       FontSize="12"
+                       FontSize="14"
+                       FontWeight="SemiBold"
                        VerticalAlignment="Center" 
                        Text="{Binding ProfileCategory.Name}" 
                        Background="Transparent"
@@ -71,13 +72,34 @@
         </Grid>
 
         <ListBox Grid.Row="1"
-                 ItemContainerStyle="{StaticResource SidebarListBoxItem}"
                  ItemsSource="{Binding Items}"
                  SelectedItem="{Binding SelectedProfile}"
                  VerticalContentAlignment="Stretch"
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  ScrollViewer.VerticalScrollBarVisibility="Disabled">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource SidebarListBoxItem}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.Template>
                 <ControlTemplate>
                     <ItemsPresenter />
