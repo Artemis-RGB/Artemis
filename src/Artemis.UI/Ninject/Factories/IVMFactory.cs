@@ -23,6 +23,7 @@ using Artemis.UI.Screens.Settings.Device.Tabs;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Screens.Shared;
+using Artemis.UI.Screens.Sidebar;
 using Stylet;
 
 namespace Artemis.UI.Ninject.Factories
@@ -109,6 +110,12 @@ namespace Artemis.UI.Ninject.Factories
     public interface IPrerequisitesVmFactory : IVmFactory
     {
         PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
+    }
+    
+    public interface ISidebarVmFactory : IVmFactory
+    {
+        SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
+        SidebarProfileViewModel SidebarProfileViewModel(ProfileDescriptor profileDescriptor);
     }
 
     // TODO: Move these two

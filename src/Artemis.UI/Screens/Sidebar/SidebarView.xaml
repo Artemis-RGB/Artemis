@@ -4,56 +4,129 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
-             xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance sidebar:SidebarViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ArtemisSidebar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"
-               Grid.RowSpan="2"
-               Source="/Resources/Images/Sidebar/sidebar-header.png"
-               Stretch="UniformToFill"
-               VerticalAlignment="Top" Height="120" />
+        <Grid Grid.Row="0" ClipToBounds="True">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            
+            <shared:DeviceVisualizer Grid.Column="0" Grid.ColumnSpan="2" Device="{Binding HeaderDevice}" ShowColors="True" Height="40">
+                <shared:DeviceVisualizer.RenderTransform>
+                   <TransformGroup>
+                       <ScaleTransform ScaleX="4" ScaleY="4"></ScaleTransform>
+                       <RotateTransform Angle="20"></RotateTransform>
+                       <TranslateTransform  X="-40" Y="-120"></TranslateTransform>
+                   </TransformGroup>
+                </shared:DeviceVisualizer.RenderTransform>
+            </shared:DeviceVisualizer>
+            <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="50" VerticalAlignment="Bottom">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="0,0" >
+                        <GradientStop Color="#FF212121" Offset="0"/> <!-- TODO: Get the color from MaterialDesign -->
+                        <GradientStop Color="#00000000" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Image Grid.Column="0" Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="35" Width="35" Margin="10" />
+            <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline5TextBlock}">Artemis 2</TextBlock>
+        </Grid>
 
-        <ToggleButton Grid.Row="0"
-            Style="{StaticResource MaterialDesignSwitchLightToggleButton}"
-            ToolTip="Pin sidebar"
-            HorizontalAlignment="Right" 
-            IsChecked="{Binding PinSidebar.Value, Delay=300}"
-            Margin="10 0">
-            <materialDesign:PackIcon Kind="Pin" RenderTransformOrigin=".5,.5">
-                <materialDesign:PackIcon.RenderTransform>
-                    <RotateTransform Angle="45" />
-                </materialDesign:PackIcon.RenderTransform>
-            </materialDesign:PackIcon>
-            <materialDesign:ToggleButtonAssist.OnContent>
-                <materialDesign:PackIcon Kind="Pin" />
-            </materialDesign:ToggleButtonAssist.OnContent>
-        </ToggleButton>
+        <!-- Built-in screens -->
+        <ListBox Grid.Row="1"
+                 Margin="0 2"
+                 ItemContainerStyle="{StaticResource SidebarListBoxItem}"
+                 ItemsSource="{Binding SidebarScreens}"
+                 SelectedItem="{Binding SelectedSidebarScreen}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Separator Grid.Row="2" Margin="8" />
 
-        <TextBlock Grid.Row="1"
-                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                   Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
-                   Margin="15"
-                   materialDesign:ShadowAssist.ShadowDepth="Depth1"
-                   Text="{Binding ActiveModules}"
-                   VerticalAlignment="Bottom" />
+        <!-- Categories -->
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer.Resources>
+                <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
+            </ScrollViewer.Resources>
+            <ItemsControl ItemsSource="{Binding ProfileCategories}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
 
-        <controls:SideNavigation Grid.Row="3"
-                                 Items="{Binding SidebarItems}"
-                                 SelectedItem="{Binding SelectedItem}"
-                                 WillSelectNavigationItemCommand="{s:Action SelectItem}"
-                                 materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
-                                 Margin="0 5 0 0" />
+        <!-- Bottom buttons -->
+        <Separator Grid.Row="4" Margin="8" />
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0 5 5">
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Width="44"
+                    Height="44"
+                    ToolTip="View website"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://artemis-rgb.com">
+                <materialDesign:PackIcon Kind="Web" Width="20" Height="20" />
+            </Button>
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Width="44"
+                    Height="44"
+                    ToolTip="View GitHub repository"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://github.com/Artemis-RGB/Artemis">
+                <materialDesign:PackIcon Kind="Github" Width="20" Height="20" />
+            </Button>
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Width="44"
+                    Height="44"
+                    ToolTip="View Wiki"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://wiki.artemis-rgb.com">
+                <materialDesign:PackIcon Kind="BookOpenOutline" Width="20" Height="20" />
+            </Button>
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Width="44"
+                    Height="44"
+                    ToolTip="Join our Discord"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://discord.gg/S3MVaC9">
+                <materialDesign:PackIcon Kind="Discord" Width="20" Height="20" />
+            </Button>
+            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                    Width="44"
+                    Height="44"
+                    ToolTip="View donation options"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://wiki.artemis-rgb.com/en/donating">
+                <materialDesign:PackIcon Kind="Gift" Width="20" Height="20" />
+            </Button>
+        </StackPanel>
     </Grid>
 
 </UserControl>

@@ -2,11 +2,11 @@
 {
     public class RequestSelectSidebarItemEvent
     {
-        public RequestSelectSidebarItemEvent(string label)
+        public RequestSelectSidebarItemEvent(string displayName)
         {
-            Label = label;
+            DisplayName = displayName;
         }
 
-        public string Label { get; }
+        public string DisplayName { get; }
     }
 }
