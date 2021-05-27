@@ -96,7 +96,7 @@ namespace Artemis.UI.Shared.Services
         ///     Gets the current module the profile editor is initialized for
         /// </summary>
         /// <returns>The current module the profile editor is initialized for</returns>
-        ProfileModule? GetCurrentModule();
+        Module? GetCurrentModule();
 
         /// <summary>
         ///     Registers a new property input view model used in the profile editor for the generic type defined in

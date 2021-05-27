@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
 using Serilog;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -15,34 +15,86 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
-        private readonly IRgbService _rgbService;
+        private readonly List<ProfileCategory> _profileCategories;
         private readonly IProfileCategoryRepository _profileCategoryRepository;
         private readonly IProfileRepository _profileRepository;
-        private readonly List<ProfileCategory> _profileCategories;
+        private readonly IRgbService _rgbService;
 
         public ProfileService(ILogger logger,
-            IPluginManagementService pluginManagementService,
             IRgbService rgbService,
+            // TODO: Move these two
             IConditionOperatorService conditionOperatorService,
             IDataBindingService dataBindingService,
             IProfileCategoryRepository profileCategoryRepository,
+            IPluginManagementService pluginManagementService,
             IProfileRepository profileRepository)
         {
             _logger = logger;
-            _pluginManagementService = pluginManagementService;
             _rgbService = rgbService;
             _profileCategoryRepository = profileCategoryRepository;
+            _pluginManagementService = pluginManagementService;
             _profileRepository = profileRepository;
             _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
+            _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
         }
 
         public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
         public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
-        public ReadOnlyCollection<ProfileCategory> ProfileCategories => _profileCategories.AsReadOnly();
-        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
+        public void UpdateProfiles(double deltaTime)
+        {
+            lock (_profileRepository)
+            {
+                // Not sure if nested foreach is quicker than LINQ but that seems like unnecessary overhead
+                foreach (ProfileCategory profileCategory in _profileCategories)
+                {
+                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    {
+                        // If suspended or missing modules there's no updating to be done
+                        if (profileConfiguration.IsSuspended || profileConfiguration.IsMissingModules)
+                        {
+                            // Make sure the profile is deactivated though
+                            if (profileConfiguration.Profile != null)
+                                DeactivateProfile(profileConfiguration);
+                        }
+                        // Make sure the profile should still be active according to its activation conditions
+                        else
+                        {
+                            profileConfiguration.Update();
+                            // If met, update the profile after making sure it is active
+                            if (profileConfiguration.ActivationConditionMet)
+                            {
+                                if (profileConfiguration.Profile == null)
+                                    ActivateProfile(profileConfiguration);
+                                profileConfiguration.Profile?.Update(deltaTime);
+                            }
+                            // If not met, make sure it is deactivated
+                            else if (profileConfiguration.Profile != null)
+                                DeactivateProfile(profileConfiguration);
+                        }
+                    }
+                }
+            }
+        }
+
+        public void RenderProfiles(SKCanvas canvas)
+        {
+            lock (_profileRepository)
+            {
+                // Not sure if nested foreach is quicker than LINQ but that seems like unnecessary overhead
+                foreach (ProfileCategory profileCategory in _profileCategories)
+                {
+                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    {
+                        // Ensure all criteria are met before rendering
+                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.ActivationConditionMet)
+                            profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                    }
+                }
+            }
+        }
 
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
@@ -57,6 +109,52 @@ namespace Artemis.Core.Services
                 if (!profileConfiguration.Profile.IsFreshImport) continue;
                 _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
                 AdaptProfile(profileConfiguration.Profile);
+            }
+        }
+
+        private void UpdateModules()
+        {
+            lock (_profileRepository)
+            {
+                List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
+                foreach (ProfileCategory profileCategory in _profileCategories)
+                {
+                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                        profileConfiguration.LoadModules(modules);
+                }
+            }
+        }
+
+        private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
+        {
+            ActiveProfilesPopulateLeds();
+        }
+
+        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        {
+            if (e.PluginFeature is Module)
+                UpdateModules();
+        }
+
+        public ReadOnlyCollection<ProfileCategory> ProfileCategories
+        {
+            get
+            {
+                lock (_profileRepository)
+                {
+                    return _profileCategories.AsReadOnly();
+                }
+            }
+        }
+
+        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations
+        {
+            get
+            {
+                lock (_profileRepository)
+                {
+                    return _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
+                }
             }
         }
 
@@ -103,6 +201,27 @@ namespace Artemis.Core.Services
             profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
             _profileRepository.Remove(profileEntity);
             UpdateProfileCategory(profileConfiguration.Category);
+        }
+
+        public ProfileCategory CreateProfileCategory(string name)
+        {
+            lock (_profileRepository)
+            {
+                ProfileCategory profileCategory = new(name);
+                _profileCategories.Add(profileCategory);
+                UpdateProfileCategory(profileCategory);
+                return profileCategory;
+            }
+        }
+
+        public void DeleteProfileCategory(ProfileCategory profileCategory)
+        {
+            lock (_profileRepository)
+            {
+                _profileCategories.Remove(profileCategory);
+                _profileCategoryRepository.Remove(profileCategory.Entity);
+                // TODO: Archive or remove profiles?
+            }
         }
 
         public void UpdateProfileCategory(ProfileCategory profileCategory)
@@ -242,14 +361,5 @@ namespace Artemis.Core.Services
 
             _profileRepository.Save(profile.ProfileEntity);
         }
-
-        #region Event handlers
-
-        private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
-        {
-            ActiveProfilesPopulateLeds();
-        }
-
-        #endregion
     }
 }

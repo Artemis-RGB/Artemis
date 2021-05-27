@@ -7,6 +7,7 @@ using System.Reflection;
 using Artemis.Core.Modules;
 using Humanizer;
 using Newtonsoft.Json;
+using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.DataModelExpansions
 {
@@ -59,11 +60,9 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
         {
-            if (Feature is ProfileModule profileModule)
-                return profileModule.HiddenProperties;
-            if (Feature is BaseDataModelExpansion dataModelExpansion)
-                return dataModelExpansion.HiddenProperties;
-
+            if (Feature is Module module)
+                return module.HiddenProperties;
+            
             return new List<PropertyInfo>().AsReadOnly();
         }
 

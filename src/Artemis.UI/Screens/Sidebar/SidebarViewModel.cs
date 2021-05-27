@@ -19,14 +19,16 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IKernel _kernel;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IRgbService _rgbService;
+        private readonly IProfileService _profileService;
         private SidebarScreenViewModel _selectedSidebarScreen;
         private ArtemisDevice _headerDevice;
 
-        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, ISidebarVmFactory sidebarVmFactory, IRgbService rgbService)
+        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, ISidebarVmFactory sidebarVmFactory, IRgbService rgbService, IProfileService profileService)
         {
             _kernel = kernel;
             _sidebarVmFactory = sidebarVmFactory;
             _rgbService = rgbService;
+            _profileService = profileService;
             eventAggregator.Subscribe(this);
 
             SidebarScreens = new BindableCollection<SidebarScreenViewModel>
@@ -73,9 +75,13 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void UpdateProfileCategories()
         {
-            ProfileCategories.Add(_sidebarVmFactory.SidebarCategoryViewModel(new ProfileCategory("Test category 1")));
-            ProfileCategories.Add(_sidebarVmFactory.SidebarCategoryViewModel(new ProfileCategory("Test category 2")));
-            ProfileCategories.Add(_sidebarVmFactory.SidebarCategoryViewModel(new ProfileCategory("Test category 3")));
+            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories) 
+                ProfileCategories.Add(new SidebarCategoryViewModel(profileCategory));
+        }
+
+        public void AddCategory()
+        {
+
         }
 
         public void OpenUrl(string url)

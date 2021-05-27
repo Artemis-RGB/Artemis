@@ -1,9 +1,5 @@
 ﻿using Artemis.Core;
-using Artemis.Core.Modules;
-using Artemis.UI.Screens.Modules;
-using Artemis.UI.Screens.Modules.Tabs;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
@@ -17,7 +13,6 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
-using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Device;
 using Artemis.UI.Screens.Settings.Device.Tabs;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
@@ -30,14 +25,6 @@ namespace Artemis.UI.Ninject.Factories
 {
     public interface IVmFactory
     {
-    }
-
-    public interface IModuleVmFactory : IVmFactory
-    {
-        ModuleRootViewModel CreateModuleRootViewModel(Module module);
-        ProfileEditorViewModel CreateProfileEditorViewModel(ProfileModule module);
-        ActivationRequirementsViewModel CreateActivationRequirementsViewModel(Module module);
-        ActivationRequirementViewModel CreateActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
     }
 
     public interface ISettingsVmFactory : IVmFactory
@@ -111,24 +98,27 @@ namespace Artemis.UI.Ninject.Factories
     {
         PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
     }
-    
+
     public interface ISidebarVmFactory : IVmFactory
     {
         SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
-        SidebarProfileConfigurationViewModel SidebarProfileViewModel(ProfileDescriptor profileDescriptor);
+        SidebarProfileConfigurationViewModel SidebarProfileViewModel(ProfileConfiguration profileConfiguration);
     }
 
     // TODO: Move these two
-    public interface IDataBindingsVmFactory 
+    public interface IDataBindingsVmFactory
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
         DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
-        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
+
+        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(
+            ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
+
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
-    public interface IPropertyVmFactory 
+    public interface IPropertyVmFactory
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);

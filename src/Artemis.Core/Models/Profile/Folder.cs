@@ -205,13 +205,6 @@ namespace Artemis.Core
                     canvas.SaveLayer(layerPaint);
                     canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
 
-                    // If required, apply the opacity override of the module to the root folder
-                    if (IsRootFolder && Profile.Module.OpacityOverride < 1)
-                    {
-                        double multiplier = Easings.SineEaseInOut(Profile.Module.OpacityOverride);
-                        layerPaint.Color = layerPaint.Color.WithAlpha((byte) (layerPaint.Color.Alpha * multiplier));
-                    }
-
                     // No point rendering if the alpha was set to zero by one of the effects
                     if (layerPaint.Color.Alpha == 0)
                         return;

@@ -7,20 +7,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
     public class ProfileImportViewModel : DialogViewModelBase
     {
+        public ProfileCategory Category { get; }
         private readonly IProfileService _profileService;
         private readonly IMessageService _messageService;
         private string _profileJson;
 
-        public ProfileImportViewModel(ProfileModule profileModule, IProfileService profileService, IMessageService messageService)
+        public ProfileImportViewModel(ProfileCategory category, IProfileService profileService, IMessageService messageService)
         {
-            ProfileModule = profileModule;
+            Category = category;
 
             _profileService = profileService;
             _messageService = messageService;
         }
 
-        public ProfileModule ProfileModule { get; }
-        
+
         public string ProfileJson
         {
             get => _profileJson;
@@ -29,7 +29,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void Accept()
         {
-            ProfileDescriptor descriptor = _profileService.ImportProfile(ProfileJson, ProfileModule);
+            ProfileConfiguration descriptor = _profileService.ImportProfile(Category, ProfileJson);
             _messageService.ShowMessage("Profile imported.");
             Session.Close(descriptor);
         }

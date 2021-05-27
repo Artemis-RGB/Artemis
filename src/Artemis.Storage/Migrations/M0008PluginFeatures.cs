@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Artemis.Storage.Entities.Module;
 using Artemis.Storage.Migrations.Interfaces;
 using LiteDB;
 
@@ -86,18 +85,6 @@ namespace Artemis.Storage.Migrations
 
             // Remove the default brush the user selected, this will make the UI pick a new one
             repository.Database.Execute("DELETE PluginSettingEntity WHERE $.Name = \"ProfileEditor.DefaultLayerBrushDescriptor\"");
-
-            // Module settings
-            repository.Database.GetCollection<ModuleSettingsEntity>().DropIndex("PluginGuid");
-            ILiteCollection<BsonDocument> modules = repository.Database.GetCollection("ModuleSettingsEntity");
-            foreach (BsonDocument bsonDocument in modules.FindAll())
-            {
-                if (ReplaceIfFound(bsonDocument, "PluginGuid", "ModuleId", pluginMap))
-                    modules.Update(bsonDocument);
-                else if (bsonDocument.ContainsKey("PluginGuid"))
-                    modules.Delete(bsonDocument["_id"]);
-            }
-            repository.Database.GetCollection<ModuleSettingsEntity>().EnsureIndex(s => s.ModuleId, true);
 
             // Profiles
             ILiteCollection<BsonDocument> collection = repository.Database.GetCollection("ProfileEntity");

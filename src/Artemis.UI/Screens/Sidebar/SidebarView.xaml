@@ -79,13 +79,18 @@
             <ScrollViewer.Resources>
                 <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
             </ScrollViewer.Resources>
-            <ItemsControl ItemsSource="{Binding ProfileCategories}">
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+            <StackPanel>
+
+                <ItemsControl Grid.Row="0" ItemsSource="{Binding ProfileCategories}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Button Style="{StaticResource MaterialDesignOutlinedButton}" Content="ADD CATEGORY" Margin="10 0" Command="{s:Action AddCategory}"/>
+            </StackPanel>
         </ScrollViewer>
 
         <!-- Bottom buttons -->

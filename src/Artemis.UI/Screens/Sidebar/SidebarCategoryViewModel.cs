@@ -1,22 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using Artemis.Core;
-using Artemis.Core.Modules;
-using Artemis.Core.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
     public class SidebarCategoryViewModel : Conductor<SidebarProfileConfigurationViewModel>.Collection.AllActive
     {
-        private readonly IPluginManagementService _pluginManagementService;
-        private readonly IProfileService _profileService;
         private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
         private bool _showItems;
 
-        public SidebarCategoryViewModel(ProfileCategory profileCategory, IPluginManagementService pluginManagementService, IProfileService profileService)
+        public SidebarCategoryViewModel(ProfileCategory profileCategory)
         {
-            _pluginManagementService = pluginManagementService;
-            _profileService = profileService;
             _showItems = !profileCategory.IsCollapsed;
 
             ProfileCategory = profileCategory;
@@ -49,15 +43,44 @@ namespace Artemis.UI.Screens.Sidebar
         {
             ShowItems = !ShowItems;
         }
-        
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            ProfileCategory.ProfileConfigurationAdded -= ProfileCategoryOnProfileConfigurationAdded;
+            ProfileCategory.ProfileConfigurationRemoved -= ProfileCategoryOnProfileConfigurationRemoved;
+            base.OnInitialActivate();
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            ProfileCategory.ProfileConfigurationAdded += ProfileCategoryOnProfileConfigurationAdded;
+            ProfileCategory.ProfileConfigurationRemoved += ProfileCategoryOnProfileConfigurationRemoved;
+            base.OnClose();
+        }
+
+        #endregion
+
         private void CreateProfileViewModels()
         {
             Items.Clear();
-            List<ProfileModule> featuresOfType = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
+            foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations)
+                Items.Add(new SidebarProfileConfigurationViewModel(profileConfiguration));
+        }
 
-            foreach (ProfileModule profileModule in featuresOfType)
-            foreach (ProfileDescriptor profileDescriptor in _profileService.GetProfileDescriptors(profileModule))
-                Items.Add(new SidebarProfileConfigurationViewModel(profileDescriptor));
+        private void ProfileCategoryOnProfileConfigurationRemoved(object? sender, ProfileConfigurationEventArgs e)
+        {
+            if (ShowItems)
+                Items.Remove(Items.FirstOrDefault(i => i.ProfileConfiguration == e.ProfileConfiguration));
+        }
+
+        private void ProfileCategoryOnProfileConfigurationAdded(object? sender, ProfileConfigurationEventArgs e)
+        {
+            if (ShowItems)
+                Items.Add(new SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
         }
     }
 }

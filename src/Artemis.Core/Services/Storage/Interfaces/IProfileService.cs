@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -81,5 +82,8 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="profile">The profile to adapt</param>
         void AdaptProfile(Profile profile);
+
+        void UpdateProfiles(double deltaTime);
+        void RenderProfiles(SKCanvas canvas);
     }
 }

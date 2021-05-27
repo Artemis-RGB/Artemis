@@ -142,24 +142,6 @@ namespace Artemis.Core.Services
             return endPoint;
         }
 
-        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(ProfileModule<T> profileModule, string endPointName) where T : DataModel
-        {
-            if (profileModule == null) throw new ArgumentNullException(nameof(profileModule));
-            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
-            DataModelJsonPluginEndPoint<T> endPoint = new(profileModule, endPointName, PluginsModule);
-            PluginsModule.AddPluginEndPoint(endPoint);
-            return endPoint;
-        }
-
-        public DataModelJsonPluginEndPoint<T> AddDataModelJsonEndPoint<T>(DataModelExpansion<T> dataModelExpansion, string endPointName) where T : DataModel
-        {
-            if (dataModelExpansion == null) throw new ArgumentNullException(nameof(dataModelExpansion));
-            if (endPointName == null) throw new ArgumentNullException(nameof(endPointName));
-            DataModelJsonPluginEndPoint<T> endPoint = new(dataModelExpansion, endPointName, PluginsModule);
-            PluginsModule.AddPluginEndPoint(endPoint);
-            return endPoint;
-        }
-
         private void HandleDataModelRequest<T>(Module<T> module, T value) where T : DataModel
         {
         }

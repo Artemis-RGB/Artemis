@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Modules;
-using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -40,6 +39,11 @@ namespace Artemis.Core
         public bool IsSuspended { get; set; }
 
         /// <summary>
+        ///     Gets a boolean indicating whether this profile configuration is missing any modules
+        /// </summary>
+        public bool IsMissingModules { get; private set; }
+
+        /// <summary>
         ///     Gets or sets the behaviour of when this profile is activated
         /// </summary>
         public ActivationBehaviour ActivationBehaviour { get; set; }
@@ -61,23 +65,38 @@ namespace Artemis.Core
         public DataModelConditionGroup? ActivationCondition { get; set; }
 
         /// <summary>
+        ///     Gets a boolean indicating whether the activation conditions where met during the last <see cref="Update" /> call
+        /// </summary>
+        public bool ActivationConditionMet { get; private set; }
+
+        /// <summary>
         ///     Gets a list of modules this profile uses
         /// </summary>
         public List<Module> Modules { get; } = new();
 
         internal ProfileConfigurationEntity Entity { get; }
 
+        /// <summary>
+        ///     Updates this configurations activation condition status
+        /// </summary>
+        public void Update()
+        {
+            ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
+        }
+
         internal void LoadModules(List<Module> enabledModules)
         {
             Modules.Clear();
-            foreach (Module enabledModule in enabledModules.Where(m => Entity.Modules.Contains(m.Id))) 
+            foreach (Module enabledModule in enabledModules.Where(m => Entity.Modules.Contains(m.Id)))
                 Modules.Add(enabledModule);
+
+            IsMissingModules = Modules.Count == Entity.Modules.Count;
         }
 
         internal void SaveModules()
         {
             Entity.Modules.Clear();
-            foreach (Module module in Modules) 
+            foreach (Module module in Modules)
                 Entity.Modules.Add(module.Id);
         }
 
@@ -111,9 +130,7 @@ namespace Artemis.Core
                 Entity.ActivationCondition = ActivationCondition.Entity;
             }
             else
-            {
                 Entity.ActivationCondition = null;
-            }
         }
 
         #endregion

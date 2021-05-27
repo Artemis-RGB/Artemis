@@ -148,12 +148,6 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        private void SelectedProfileOnDeactivated(object? sender, EventArgs e)
-        {
-            // Execute.PostToUIThread(() => ChangeSelectedProfile(null));
-            ChangeSelectedProfile(null);
-        }
-
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
 
         public bool Playing { get; set; }
@@ -190,21 +184,11 @@ namespace Artemis.UI.Shared.Services
                 if (SelectedProfile == profile)
                     return;
 
-                if (profile != null && !profile.IsActivated)
-                    throw new ArtemisSharedUIException("Cannot change the selected profile to an inactive profile");
-
                 _logger.Verbose("ChangeSelectedProfile {profile}", profile);
                 ChangeSelectedProfileElement(null);
 
                 ProfileEventArgs profileElementEvent = new(profile, SelectedProfile);
-
-                // Ensure there is never a deactivated profile as the selected profile
-                if (SelectedProfile != null)
-                    SelectedProfile.Deactivated -= SelectedProfileOnDeactivated;
-                SelectedProfile = profile;
-                if (SelectedProfile != null)
-                    SelectedProfile.Deactivated += SelectedProfileOnDeactivated;
-
+                
                 OnSelectedProfileChanged(profileElementEvent);
                 UpdateProfilePreview();
             }
@@ -419,9 +403,10 @@ namespace Artemis.UI.Shared.Services
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 
-        public ProfileModule? GetCurrentModule()
+        public Module? GetCurrentModule()
         {
-            return SelectedProfile?.Module;
+            throw new NotImplementedException();
+            // return SelectedProfile?.Module;
         }
 
         public List<ArtemisLed> GetLedsInRectangle(Rect rect)

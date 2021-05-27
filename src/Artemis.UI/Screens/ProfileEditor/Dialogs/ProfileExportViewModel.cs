@@ -8,18 +8,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 {
     public class ProfileExportViewModel : DialogViewModelBase
     {
+        public ProfileConfiguration ProfileConfiguration { get; }
         private readonly IProfileService _profileService;
         private readonly IMessageService _messageService;
 
-        public ProfileExportViewModel(ProfileDescriptor profileDescriptor, IProfileService profileService, IMessageService messageService)
+        public ProfileExportViewModel(ProfileConfiguration profileConfiguration, IProfileService profileService, IMessageService messageService)
         {
-            ProfileDescriptor = profileDescriptor;
+            ProfileConfiguration = profileConfiguration;
 
             _profileService = profileService;
             _messageService = messageService;
         }
 
-        public ProfileDescriptor ProfileDescriptor { get; }
 
         #region Overrides of Screen
 
@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Dialogs
 
         public void Accept()
         {
-            string encoded = _profileService.ExportProfile(ProfileDescriptor);
+            string encoded = _profileService.ExportProfile(ProfileConfiguration);
             Clipboard.SetText(encoded);
             _messageService.ShowMessage("Profile contents exported to clipboard.");
 

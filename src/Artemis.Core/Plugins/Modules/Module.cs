@@ -156,21 +156,15 @@ namespace Artemis.Core.Modules
         public abstract void Update(double deltaTime);
 
         /// <summary>
-        ///     Called each frame when the module should render
-        /// </summary>
-        /// <param name="deltaTime">Time since the last render</param>
-        /// <param name="canvas"></param>
-        /// <param name="canvasInfo"></param>
-        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
-
-        /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are met or during an override
         /// </summary>
         /// <param name="isOverride">
         ///     If true, the activation was due to an override. This usually means the module was activated
         ///     by the profile editor
         /// </param>
-        public abstract void ModuleActivated(bool isOverride);
+        public virtual void ModuleActivated(bool isOverride)
+        {
+        }
 
         /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are no longer met or during an override
@@ -179,7 +173,9 @@ namespace Artemis.Core.Modules
         ///     If true, the deactivation was due to an override. This usually means the module was deactivated
         ///     by the profile editor
         /// </param>
-        public abstract void ModuleDeactivated(bool isOverride);
+        public virtual void ModuleDeactivated(bool isOverride)
+        {
+        }
 
         /// <summary>
         ///     Evaluates the activation requirements following the <see cref="ActivationRequirementMode" /> and returns the result
@@ -257,13 +253,6 @@ namespace Artemis.Core.Modules
             if (IsUpdateAllowed)
                 Update(deltaTime);
             StopUpdateMeasure();
-        }
-
-        internal virtual void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
-        {
-            StartRenderMeasure();
-            Render(deltaTime, canvas, canvasInfo);
-            StopRenderMeasure();
         }
 
         internal virtual void Activate(bool isOverride)

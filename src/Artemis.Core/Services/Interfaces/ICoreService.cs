@@ -19,9 +19,9 @@ namespace Artemis.Core.Services
         TimeSpan FrameTime { get; }
 
         /// <summary>
-        ///     Gets or sets whether modules are rendered each frame by calling their Render method
+        ///     Gets or sets whether profiles are rendered each frame by calling their Render method
         /// </summary>
-        bool ModuleRenderingDisabled { get; set; }
+        bool ProfileRenderingDisabled { get; set; }
 
         /// <summary>
         ///     Gets or sets a list of startup arguments
@@ -37,11 +37,6 @@ namespace Artemis.Core.Services
         ///     Initializes the core, only call once
         /// </summary>
         void Initialize();
-
-        /// <summary>
-        ///     Plays the into animation profile defined in <c>Resources/intro-profile.json</c>
-        /// </summary>
-        void PlayIntroAnimation();
 
         /// <summary>
         ///     Occurs the core has finished initializing
