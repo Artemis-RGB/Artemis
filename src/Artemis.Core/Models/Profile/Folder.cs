@@ -240,6 +240,7 @@ namespace Artemis.Core
         {
             Disposed = true;
 
+            Disable();
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
 

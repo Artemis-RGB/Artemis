@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Artemis.Core.Modules;
+﻿using System.Collections.ObjectModel;
 
 namespace Artemis.Core.Services
 {
@@ -10,19 +8,38 @@ namespace Artemis.Core.Services
     public interface IProfileService : IArtemisService
     {
         /// <summary>
-        ///     Creates a new profile for the given module and returns a descriptor pointing to it
+        ///     Gets a read only collection containing all the profile categories
         /// </summary>
-        /// <param name="module">The profile module to create the profile for</param>
-        /// <param name="name">The name of the new profile</param>
-        /// <returns></returns>
-        ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name);
+        ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
 
         /// <summary>
-        ///     Gets a descriptor for each profile stored for the given <see cref="ProfileModule" />
+        ///     Gets a read only collection containing all the profile configurations
         /// </summary>
-        /// <param name="module">The module to return profile descriptors for</param>
-        /// <returns></returns>
-        List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module);
+        ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
+
+        /// <summary>
+        ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to activate</param>
+        Profile ActivateProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Deactivates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to activate</param>
+        void DeactivateProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Permanently deletes the profile of the given <see cref="ProfileConfiguration" />
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to delete</param>
+        void DeleteProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Updates the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration"/>s but not the <see cref="Profile" />s themselves
+        /// </summary>
+        /// <param name="profileCategory">The profile category to update</param>
+        void UpdateProfileCategory(ProfileCategory profileCategory);
 
         /// <summary>
         ///     Writes the profile to persistent storage
@@ -30,61 +47,6 @@ namespace Artemis.Core.Services
         /// <param name="profile"></param>
         /// <param name="includeChildren"></param>
         void UpdateProfile(Profile profile, bool includeChildren);
-
-        /// <summary>
-        ///     Disposes and permanently deletes the provided profile
-        /// </summary>
-        /// <param name="profile">The profile to delete</param>
-        void DeleteProfile(Profile profile);
-
-        /// <summary>
-        ///     Permanently deletes the profile described by the provided profile descriptor
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor pointing to the profile to delete</param>
-        void DeleteProfile(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Activates the last profile of the given profile module
-        /// </summary>
-        /// <param name="profileModule"></param>
-        void ActivateLastProfile(ProfileModule profileModule);
-
-        /// <summary>
-        ///     Reloads the currently active profile on the provided profile module
-        /// </summary>
-        void ReloadProfile(ProfileModule module);
-
-        /// <summary>
-        ///     Asynchronously activates the last profile of the given profile module using a fade animation
-        /// </summary>
-        /// <param name="profileModule"></param>
-        /// <returns></returns>
-        Task ActivateLastProfileAnimated(ProfileModule profileModule);
-
-        /// <summary>
-        ///     Activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently active surface
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor describing the profile to activate</param>
-        Profile ActivateProfile(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Asynchronously activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently
-        ///     active surface using a fade animation
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor describing the profile to activate</param>
-        Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Clears the active profile on the given <see cref="ProfileModule" />
-        /// </summary>
-        /// <param name="module">The profile module to deactivate the active profile on</param>
-        void ClearActiveProfile(ProfileModule module);
-
-        /// <summary>
-        ///     Asynchronously clears the active profile on the given <see cref="ProfileModule" /> using a fade animation
-        /// </summary>
-        /// <param name="module">The profile module to deactivate the active profile on</param>
-        Task ClearActiveProfileAnimated(ProfileModule module);
 
         /// <summary>
         ///     Attempts to restore the profile to the state it had before the last <see cref="UpdateProfile" /> call.
@@ -99,28 +61,20 @@ namespace Artemis.Core.Services
         bool RedoUpdateProfile(Profile profile);
 
         /// <summary>
-        ///     Prepares the profile for rendering. You should not need to call this, it is exposed for some niche usage in the
-        ///     core
-        /// </summary>
-        /// <param name="profile"></param>
-        void InstantiateProfile(Profile profile);
-
-        /// <summary>
         ///     [Placeholder] Exports the profile described in the given <see cref="ProfileDescriptor" /> in a JSON format
         /// </summary>
-        /// <param name="profileDescriptor">The descriptor of the profile to export</param>
+        /// <param name="profileConfiguration">The profile configuration of the profile to export</param>
         /// <returns>The resulting JSON</returns>
-        string ExportProfile(ProfileDescriptor profileDescriptor);
+        string ExportProfile(ProfileConfiguration profileConfiguration);
 
         /// <summary>
-        ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile for the given
-        ///     <see cref="ProfileModule" />
+        ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile configuration
         /// </summary>
+        /// <param name="category">The <see cref="ProfileCategory"/> in which to import the profile</param>
         /// <param name="json">The content of the profile as JSON</param>
-        /// <param name="profileModule">The module to import the profile in to</param>
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
         /// <returns></returns>
-        ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix = "imported");
+        ProfileConfiguration ImportProfile(ProfileCategory category, string json, string nameAffix = "imported");
 
         /// <summary>
         ///     Adapts a given profile to the currently active devices

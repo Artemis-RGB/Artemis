@@ -66,7 +66,7 @@ namespace Artemis.Core.Services
             if (module.InternalDataModel.DataModelDescription == null)
                 throw new ArtemisPluginFeatureException(module, "Module overrides GetDataModelDescription but returned null");
 
-            module.InternalDataModel.IsExpansion = module.InternalExpandsMainDataModel;
+            module.InternalDataModel.IsExpansion = module.IsAlwaysAvailable;
             RegisterDataModel(module.InternalDataModel);
         }
 

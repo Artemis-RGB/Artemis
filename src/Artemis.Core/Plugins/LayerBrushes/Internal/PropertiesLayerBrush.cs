@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Artemis.Core.LayerBrushes
 {
     /// <summary>
-    ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="RgbNetLayerBrush{T}" /> or instead
+    ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="PerLedLayerBrush{T}" /> or instead
     /// </summary>
     public abstract class PropertiesLayerBrush<T> : BaseLayerBrush where T : LayerPropertyGroup
     {

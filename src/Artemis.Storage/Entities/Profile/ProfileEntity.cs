@@ -13,10 +13,8 @@ namespace Artemis.Storage.Entities.Profile
         }
 
         public Guid Id { get; set; }
-        public string ModuleId { get; set; }
-
+        
         public string Name { get; set; }
-        public bool IsActive { get; set; }
         public bool IsFreshImport { get; set; }
 
         public List<FolderEntity> Folders { get; set; }

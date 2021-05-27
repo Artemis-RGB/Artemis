@@ -73,7 +73,7 @@
 
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Items}"
-                 SelectedItem="{Binding SelectedProfile}"
+                 SelectedItem="{Binding SelectedProfileConfiguration}"
                  VerticalContentAlignment="Stretch"
                  HorizontalContentAlignment="Stretch"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"

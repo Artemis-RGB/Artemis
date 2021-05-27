@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core.Modules;
@@ -15,19 +16,24 @@ namespace Artemis.Core.Services
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IRgbService _rgbService;
+        private readonly IProfileCategoryRepository _profileCategoryRepository;
         private readonly IProfileRepository _profileRepository;
+        private readonly List<ProfileCategory> _profileCategories;
 
         public ProfileService(ILogger logger,
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IConditionOperatorService conditionOperatorService,
             IDataBindingService dataBindingService,
+            IProfileCategoryRepository profileCategoryRepository,
             IProfileRepository profileRepository)
         {
             _logger = logger;
             _pluginManagementService = pluginManagementService;
             _rgbService = rgbService;
+            _profileCategoryRepository = profileCategoryRepository;
             _profileRepository = profileRepository;
+            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
         }
@@ -35,190 +41,74 @@ namespace Artemis.Core.Services
         public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
         public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
-        public ProfileDescriptor? GetLastActiveProfile(ProfileModule module)
-        {
-            List<ProfileEntity> moduleProfiles = _profileRepository.GetByModuleId(module.Id);
-            if (!moduleProfiles.Any())
-                return CreateProfileDescriptor(module, "Default");
-
-            ProfileEntity? profileEntity = moduleProfiles.FirstOrDefault(p => p.IsActive) ?? moduleProfiles.FirstOrDefault();
-            return profileEntity == null ? null : new ProfileDescriptor(module, profileEntity);
-        }
-
-        private void SaveActiveProfile(ProfileModule module)
-        {
-            if (module.ActiveProfile == null)
-                return;
-
-            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
-            foreach (ProfileEntity profileEntity in profileEntities)
-            {
-                profileEntity.IsActive = module.ActiveProfile.EntityId == profileEntity.Id;
-                _profileRepository.Save(profileEntity);
-            }
-        }
+        public ReadOnlyCollection<ProfileCategory> ProfileCategories => _profileCategories.AsReadOnly();
+        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
 
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
         /// </summary>
         private void ActiveProfilesPopulateLeds()
         {
-            List<ProfileModule> profileModules = _pluginManagementService.GetFeaturesOfType<ProfileModule>();
-            foreach (ProfileModule profileModule in profileModules)
+            foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
             {
-                // Avoid race condition, make the check here
-                if (profileModule.ActiveProfile == null) 
-                    continue;
-                
-                profileModule.ActiveProfile.PopulateLeds(_rgbService.EnabledDevices);
-                if (profileModule.ActiveProfile.IsFreshImport)
-                {
-                    _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileModule.ActiveProfile);
-                    AdaptProfile(profileModule.ActiveProfile);
-                }
+                if (profileConfiguration.Profile == null) continue;
+                profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
+
+                if (!profileConfiguration.Profile.IsFreshImport) continue;
+                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
+                AdaptProfile(profileConfiguration.Profile);
             }
         }
 
-        public List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module)
+        public Profile ActivateProfile(ProfileConfiguration profileConfiguration)
         {
-            List<ProfileEntity> profileEntities = _profileRepository.GetByModuleId(module.Id);
-            return profileEntities.Select(e => new ProfileDescriptor(module, e)).ToList();
-        }
+            if (profileConfiguration.Profile != null)
+                return profileConfiguration.Profile;
 
-        public ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name)
-        {
-            ProfileEntity profileEntity = new() {Id = Guid.NewGuid(), Name = name, ModuleId = module.Id};
-            _profileRepository.Add(profileEntity);
-
-            return new ProfileDescriptor(module, profileEntity);
-        }
-
-        public void ActivateLastProfile(ProfileModule profileModule)
-        {
-            ProfileDescriptor? activeProfile = GetLastActiveProfile(profileModule);
-            if (activeProfile != null)
-                ActivateProfile(activeProfile);
-        }
-
-        public async Task ActivateLastProfileAnimated(ProfileModule profileModule)
-        {
-            ProfileDescriptor? activeProfile = GetLastActiveProfile(profileModule);
-            if (activeProfile != null)
-                await ActivateProfileAnimated(activeProfile);
-        }
-
-        public Profile ActivateProfile(ProfileDescriptor profileDescriptor)
-        {
-            if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
-                return profileDescriptor.ProfileModule.ActiveProfile;
-
-            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity == null)
-                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
+                throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 
-            Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
-            InstantiateProfile(profile);
+            Profile profile = new(profileConfiguration, profileEntity);
+            profile.PopulateLeds(_rgbService.EnabledDevices);
 
-            profileDescriptor.ProfileModule.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
             if (profile.IsFreshImport)
             {
                 _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profile);
                 AdaptProfile(profile);
             }
 
-            SaveActiveProfile(profileDescriptor.ProfileModule);
-
+            profileConfiguration.Profile = profile;
             return profile;
         }
 
-        public void ReloadProfile(ProfileModule module)
+        public void DeactivateProfile(ProfileConfiguration profileConfiguration)
         {
-            if (module.ActiveProfile == null)
+            if (profileConfiguration.Profile == null)
                 return;
 
-            ProfileEntity entity = _profileRepository.Get(module.ActiveProfile.EntityId);
-            Profile profile = new(module, entity);
-            InstantiateProfile(profile);
-
-            module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
-            module.ChangeActiveProfile(profile, _rgbService.EnabledDevices);
+            Profile profile = profileConfiguration.Profile;
+            profileConfiguration.Profile = null;
+            profile.Dispose();
         }
 
-        public async Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor)
+        public void DeleteProfile(ProfileConfiguration profileConfiguration)
         {
-            if (profileDescriptor.ProfileModule.ActiveProfile?.EntityId == profileDescriptor.Id)
-                return profileDescriptor.ProfileModule.ActiveProfile;
+            DeactivateProfile(profileConfiguration);
 
-            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
-            if (profileEntity == null)
-                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
-
-            Profile profile = new(profileDescriptor.ProfileModule, profileEntity);
-            InstantiateProfile(profile);
-
-            void ActivatingRgbServiceOnLedsChanged(object? sender, EventArgs e)
-            {
-                profile.PopulateLeds(_rgbService.EnabledDevices);
-            }
-
-            void ActivatingProfilePluginToggle(object? sender, PluginEventArgs e)
-            {
-                if (!profile.Disposed)
-                    InstantiateProfile(profile);
-            }
-
-            // This could happen during activation so subscribe to it
-            _pluginManagementService.PluginEnabled += ActivatingProfilePluginToggle;
-            _pluginManagementService.PluginDisabled += ActivatingProfilePluginToggle;
-            _rgbService.LedsChanged += ActivatingRgbServiceOnLedsChanged;
-
-            await profileDescriptor.ProfileModule.ChangeActiveProfileAnimated(profile, _rgbService.EnabledDevices);
-            if (profile.IsFreshImport)
-            {
-                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profile);
-                AdaptProfile(profile);
-            }
-
-            SaveActiveProfile(profileDescriptor.ProfileModule);
-
-            _pluginManagementService.PluginEnabled -= ActivatingProfilePluginToggle;
-            _pluginManagementService.PluginDisabled -= ActivatingProfilePluginToggle;
-            _rgbService.LedsChanged -= ActivatingRgbServiceOnLedsChanged;
-
-            return profile;
-        }
-
-
-        public void ClearActiveProfile(ProfileModule module)
-        {
-            module.ChangeActiveProfile(null, _rgbService.EnabledDevices);
-            SaveActiveProfile(module);
-        }
-
-        public async Task ClearActiveProfileAnimated(ProfileModule module)
-        {
-            await module.ChangeActiveProfileAnimated(null, _rgbService.EnabledDevices);
-        }
-
-        public void DeleteProfile(Profile profile)
-        {
-            _logger.Debug("Removing profile " + profile);
-
-            // If the given profile is currently active, disable it first (this also disposes it)
-            if (profile.Module.ActiveProfile == profile)
-                ClearActiveProfile(profile.Module);
-            else
-                profile.Dispose();
-
-            _profileRepository.Remove(profile.ProfileEntity);
-        }
-
-        public void DeleteProfile(ProfileDescriptor profileDescriptor)
-        {
-            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity == null)
                 return;
+
+            profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
             _profileRepository.Remove(profileEntity);
+            UpdateProfileCategory(profileConfiguration.Category);
+        }
+
+        public void UpdateProfileCategory(ProfileCategory profileCategory)
+        {
+            profileCategory.Save();
+            _profileCategoryRepository.Save(profileCategory.Entity);
         }
 
         public void UpdateProfile(Profile profile, bool includeChildren)
@@ -271,7 +161,7 @@ namespace Artemis.Core.Services
                                         ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
-                InstantiateProfile(profile);
+                profile.PopulateLeds(_rgbService.EnabledDevices);
             }
 
             _logger.Debug("Undo profile update - Success");
@@ -296,28 +186,23 @@ namespace Artemis.Core.Services
                                         ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
-                InstantiateProfile(profile);
+                profile.PopulateLeds(_rgbService.EnabledDevices);
 
                 _logger.Debug("Redo profile update - Success");
                 return true;
             }
         }
 
-        public void InstantiateProfile(Profile profile)
+        public string ExportProfile(ProfileConfiguration profileConfiguration)
         {
-            profile.PopulateLeds(_rgbService.EnabledDevices);
-        }
-
-        public string ExportProfile(ProfileDescriptor profileDescriptor)
-        {
-            ProfileEntity profileEntity = _profileRepository.Get(profileDescriptor.Id);
+            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity == null)
-                throw new ArtemisCoreException($"Cannot find profile named: {profileDescriptor.Name} ID: {profileDescriptor.Id}");
+                throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
 
             return JsonConvert.SerializeObject(profileEntity, ExportSettings);
         }
 
-        public ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix)
+        public ProfileConfiguration ImportProfile(ProfileCategory category, string json, string nameAffix)
         {
             ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
             if (profileEntity == null)
@@ -327,10 +212,12 @@ namespace Artemis.Core.Services
             profileEntity.UpdateGuid(Guid.NewGuid());
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
             profileEntity.IsFreshImport = true;
-            profileEntity.IsActive = false;
 
             _profileRepository.Add(profileEntity);
-            return new ProfileDescriptor(profileModule, profileEntity);
+            ProfileConfiguration profileConfiguration = category.AddProfileConfiguration(profileEntity.Name, "Import");
+            profileConfiguration.Entity.ProfileId = profileEntity.Id;
+
+            return profileConfiguration;
         }
 
         /// <inheritdoc />

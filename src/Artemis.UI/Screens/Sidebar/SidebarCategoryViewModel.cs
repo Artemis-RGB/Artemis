@@ -6,11 +6,11 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public class SidebarCategoryViewModel : Conductor<SidebarProfileViewModel>.Collection.AllActive
+    public class SidebarCategoryViewModel : Conductor<SidebarProfileConfigurationViewModel>.Collection.AllActive
     {
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
-        private SidebarProfileViewModel _selectedProfile;
+        private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
         private bool _showItems;
 
         public SidebarCategoryViewModel(ProfileCategory profileCategory, IPluginManagementService pluginManagementService, IProfileService profileService)
@@ -39,10 +39,10 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public SidebarProfileViewModel SelectedProfile
+        public SidebarProfileConfigurationViewModel SelectedProfileConfiguration
         {
-            get => _selectedProfile;
-            set => SetAndNotify(ref _selectedProfile, value);
+            get => _selectedProfileConfiguration;
+            set => SetAndNotify(ref _selectedProfileConfiguration, value);
         }
 
         public void OnMouseLeftButtonUp()
@@ -57,7 +57,7 @@ namespace Artemis.UI.Screens.Sidebar
 
             foreach (ProfileModule profileModule in featuresOfType)
             foreach (ProfileDescriptor profileDescriptor in _profileService.GetProfileDescriptors(profileModule))
-                Items.Add(new SidebarProfileViewModel(profileDescriptor));
+                Items.Add(new SidebarProfileConfigurationViewModel(profileDescriptor));
         }
     }
 }

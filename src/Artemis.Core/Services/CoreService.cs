@@ -142,7 +142,7 @@ namespace Artemis.Core.Services
                 List<Module> modules;
                 lock (_modules)
                 {
-                    modules = _modules.Where(m => m.IsActivated || m.InternalExpandsMainDataModel)
+                    modules = _modules.Where(m => m.IsActivated || m.IsAlwaysAvailable)
                         .OrderBy(m => m.PriorityCategory)
                         .ThenByDescending(m => m.Priority)
                         .ToList();
