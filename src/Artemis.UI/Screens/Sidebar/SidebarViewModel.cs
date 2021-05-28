@@ -1,10 +1,12 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
+using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
 using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor;
@@ -23,23 +25,29 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IRgbService _rgbService;
         private readonly IProfileService _profileService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IDialogService _dialogService;
         private SidebarScreenViewModel _selectedSidebarScreen;
         private ArtemisDevice _headerDevice;
         private Screen _selectedScreen;
+        private readonly SidebarScreenViewModel<ProfileEditorViewModel> _profileEditor;
 
         public SidebarViewModel(IKernel kernel,
             IEventAggregator eventAggregator,
             ISidebarVmFactory sidebarVmFactory,
             IRgbService rgbService,
             IProfileService profileService,
+            IProfileEditorService profileEditorService,
             IDialogService dialogService)
         {
             _kernel = kernel;
             _sidebarVmFactory = sidebarVmFactory;
             _rgbService = rgbService;
             _profileService = profileService;
+            _profileEditorService = profileEditorService;
             _dialogService = dialogService;
+            _profileEditor = new SidebarScreenViewModel<ProfileEditorViewModel>(PackIconKind.Wrench, "Profile Editor");
+
             eventAggregator.Subscribe(this);
 
             SidebarScreens = new BindableCollection<SidebarScreenViewModel>
@@ -86,6 +94,9 @@ namespace Artemis.UI.Screens.Sidebar
         private void ActivateScreenViewModel(SidebarScreenViewModel screenViewModel)
         {
             SelectedScreen = screenViewModel.CreateInstance(_kernel);
+            OnSelectedScreenChanged();
+            if (screenViewModel != _profileEditor)
+                SelectProfileConfiguration(null);
         }
 
         private void UpdateProfileCategories()
@@ -125,6 +136,25 @@ namespace Artemis.UI.Screens.Sidebar
             Items.Remove(viewModel);
         }
 
+        public void SelectProfileConfiguration(ProfileConfiguration profileConfiguration)
+        {
+            foreach (SidebarCategoryViewModel sidebarCategoryViewModel in Items)
+                sidebarCategoryViewModel.SelectedProfileConfiguration = sidebarCategoryViewModel.Items.FirstOrDefault(i => i.ProfileConfiguration == profileConfiguration);
+
+            _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
+            if (profileConfiguration != null)
+            {
+                // Little workaround to clear the selected item in the menu, ugly but oh well
+                if (_selectedSidebarScreen != _profileEditor)
+                {
+                    _selectedSidebarScreen = null;
+                    NotifyOfPropertyChange(nameof(SelectedSidebarScreen));
+                }
+
+                SelectedSidebarScreen = _profileEditor;
+            }
+        }
+
         #region Overrides of Screen
 
         /// <inheritdoc />
@@ -137,6 +167,17 @@ namespace Artemis.UI.Screens.Sidebar
         protected override void OnClose()
         {
             base.OnClose();
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler SelectedScreenChanged;
+
+        private void OnSelectedScreenChanged()
+        {
+            SelectedScreenChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using Artemis.UI.Shared.Input;
@@ -20,9 +21,9 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelDynamicViewModel" /> class
         /// </summary>
-        /// <param name="module">The module to associate the dynamic view model with</param>
+        /// <param name="modules">The modules to associate the dynamic view model with</param>
         /// <returns>A new instance of the <see cref="DataModelDynamicViewModel" /> class</returns>
-        DataModelDynamicViewModel DataModelDynamicViewModel(Module module);
+        DataModelDynamicViewModel DataModelDynamicViewModel(List<Module> modules);
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DataModelStaticViewModel" /> class

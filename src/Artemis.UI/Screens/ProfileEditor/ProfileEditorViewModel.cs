@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Artemis.UI.Extensions;
-using Artemis.UI.Screens.ProfileEditor.Dialogs;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
@@ -18,7 +14,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : Screen
+    public class ProfileEditorViewModel : Screen, IMainScreenViewModel
     {
         private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
@@ -48,7 +44,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             _settingsService = settingsService;
             _messageService = messageService;
 
-            DisplayName = "PROFILE EDITOR";
+            DisplayName = "Profile Editor";
             DialogService = dialogService;
 
             // Populate the panels
@@ -114,7 +110,7 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         public async Task AdaptActiveProfile()
         {
-            if (_profileEditorService.SelectedProfile == null)
+            if (_profileEditorService.SelectedProfileConfiguration?.Profile == null)
                 return;
 
             if (!await DialogService.ShowConfirmDialog(
@@ -123,7 +119,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             ))
                 return;
 
-            _profileService.AdaptProfile(_profileEditorService.SelectedProfile);
+            _profileService.AdaptProfile(_profileEditorService.SelectedProfileConfiguration.Profile);
         }
 
         public void Undo()
@@ -134,7 +130,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Store the focused element so we can restore it later
             IInputElement focusedElement = FocusManager.GetFocusedElement(Window.GetWindow(View));
 
-            if (!_profileEditorService.UndoUpdateProfile())
+            if (!_profileEditorService.UndoSaveProfile())
             {
                 _messageService.ShowMessage("Nothing to undo");
                 return;
@@ -161,7 +157,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             // Store the focused element so we can restore it later
             IInputElement focusedElement = FocusManager.GetFocusedElement(Window.GetWindow(View));
 
-            if (!_profileEditorService.RedoUpdateProfile())
+            if (!_profileEditorService.RedoSaveProfile())
             {
                 _messageService.ShowMessage("Nothing to redo");
                 return;

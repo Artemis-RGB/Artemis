@@ -75,12 +75,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public override void Delete()
         {
             base.Delete();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public virtual void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideOnPropertySelected;
             if (LeftSideColor != null)
                 LeftSideSelectionViewModel.ButtonBrush = LeftSideColor;
@@ -149,7 +149,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 return;
 
             DataModelConditionPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             SelectedOperator = DataModelConditionPredicate.Operator;
             Update();
@@ -158,7 +158,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyRightSideDynamic()
         {
             DataModelConditionPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -166,7 +166,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyRightSideStatic(object value)
         {
             DataModelConditionPredicate.UpdateRightSideStatic(value);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -174,7 +174,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyOperator()
         {
             DataModelConditionPredicate.UpdateOperator(SelectedOperator);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -227,7 +227,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         private void CreateRightSideSelectionViewModel()
         {
-            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
             RightSideSelectionViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
             RightSideSelectionViewModel.DisplaySwitchButton = true;
             RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;

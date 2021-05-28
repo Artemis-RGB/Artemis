@@ -2,9 +2,9 @@
 
 namespace Artemis.UI.Screens.Sidebar.Dialogs
 {
-    public class IconViewModel
+    public class ProfileIconViewModel
     {
-        public IconViewModel(PackIconKind icon)
+        public ProfileIconViewModel(PackIconKind icon)
         {
             Icon = icon;
             IconName = icon.ToString();

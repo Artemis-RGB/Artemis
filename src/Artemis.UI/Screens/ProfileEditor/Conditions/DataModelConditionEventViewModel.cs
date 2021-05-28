@@ -46,7 +46,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
             LeftSideSelectionViewModel.LoadEventChildren = false;
 
@@ -103,7 +103,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public void ApplyEvent()
         {
             DataModelConditionEvent.UpdateEvent(LeftSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }

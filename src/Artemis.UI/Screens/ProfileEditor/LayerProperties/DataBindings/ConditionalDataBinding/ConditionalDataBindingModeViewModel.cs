@@ -41,7 +41,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             DataBindingConditionViewModel<TLayerProperty, TProperty> viewModel = Items.First(c => c.DataBindingCondition == condition);
             viewModel.ActiveItem.AddCondition();
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void RemoveCondition(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition)
@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
 
             ConditionalDataBinding.ApplyOrder();
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void ConditionalDataBindingOnConditionsUpdated(object sender, EventArgs e)

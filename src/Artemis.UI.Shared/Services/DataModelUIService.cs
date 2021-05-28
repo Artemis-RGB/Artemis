@@ -35,7 +35,7 @@ namespace Artemis.UI.Shared.Services
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {
             DataModelPropertiesViewModel viewModel = new(null, null, null);
-            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().OrderBy(d => d.DataModelDescription.Name))
+            foreach (DataModel dataModelExpansion in _dataModelService.GetDataModels().Where(d => d.IsExpansion).OrderBy(d => d.DataModelDescription.Name))
                 viewModel.Children.Add(new DataModelPropertiesViewModel(dataModelExpansion, viewModel, new DataModelPath(dataModelExpansion)));
 
             // Update to populate children
@@ -65,34 +65,33 @@ namespace Artemis.UI.Shared.Services
             mainDataModelVisualization.Update(this, null);
         }
 
-        public DataModelPropertiesViewModel? GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel)
+        public DataModelPropertiesViewModel? GetPluginDataModelVisualization(List<Module> modules, bool includeMainDataModel)
         {
+            DataModelPropertiesViewModel root;
+            // This will  contain any modules that are always available
             if (includeMainDataModel)
+                root = GetMainDataModelVisualization();
+            else
             {
-                DataModelPropertiesViewModel mainDataModel = GetMainDataModelVisualization();
-
-                // If the main data model already includes the plugin data model we're done
-                if (mainDataModel.Children.Any(c => c.DataModel?.Feature == pluginFeature))
-                    return mainDataModel;
-                // Otherwise get just the plugin data model and add it
-                DataModelPropertiesViewModel? pluginDataModel = GetPluginDataModelVisualization(pluginFeature, false);
-                if (pluginDataModel != null)
-                    mainDataModel.Children.Add(pluginDataModel);
-
-                return mainDataModel;
+                root = new DataModelPropertiesViewModel(null, null, null);
+                root.UpdateRequested += (sender, args) => root.Update(this, null);
             }
 
-            DataModel? dataModel = _dataModelService.GetPluginDataModel(pluginFeature);
-            if (dataModel == null)
+            foreach (Module module in modules)
+            {
+                DataModel? dataModel = _dataModelService.GetPluginDataModel(module);
+                if (dataModel == null)
+                    continue;
+
+                root.Children.Add(new DataModelPropertiesViewModel(dataModel, root, new DataModelPath(dataModel)));
+            }
+
+            if (!root.Children.Any())
                 return null;
 
-            DataModelPropertiesViewModel viewModel = new(null, null, null);
-            viewModel.Children.Add(new DataModelPropertiesViewModel(dataModel, viewModel, new DataModelPath(dataModel)));
-
             // Update to populate children
-            viewModel.Update(this, null);
-            viewModel.UpdateRequested += (sender, args) => viewModel.Update(this, null);
-            return viewModel;
+            root.Update(this, null);
+            return root;
         }
 
         public DataModelVisualizationRegistration RegisterDataModelInput<T>(Plugin plugin, IReadOnlyCollection<Type>? compatibleConversionTypes = null) where T : DataModelInputViewModel
@@ -226,9 +225,9 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module)
+        public DataModelDynamicViewModel GetDynamicSelectionViewModel(List<Module> modules)
         {
-            return _dataModelVmFactory.DataModelDynamicViewModel(module);
+            return _dataModelVmFactory.DataModelDynamicViewModel(modules);
         }
 
         public DataModelStaticViewModel GetStaticInputViewModel(Type targetType, DataModelPropertyAttribute targetDescription)

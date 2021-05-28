@@ -45,7 +45,11 @@ namespace Artemis.UI.Screens.Sidebar
         public SidebarProfileConfigurationViewModel SelectedProfileConfiguration
         {
             get => _selectedProfileConfiguration;
-            set => SetAndNotify(ref _selectedProfileConfiguration, value);
+            set
+            {
+                if (SetAndNotify(ref _selectedProfileConfiguration, value) && value != null)
+                    ((SidebarViewModel) Parent).SelectProfileConfiguration(value.ProfileConfiguration);
+            }
         }
 
         public async Task AddProfile()
@@ -75,6 +79,10 @@ namespace Artemis.UI.Screens.Sidebar
         public void OnMouseLeftButtonUp()
         {
             ShowItems = !ShowItems;
+        }
+
+        public async Task ViewProfileConfigurationProperties(SidebarProfileConfigurationViewModel profileConfigurationViewModel)
+        {
         }
 
         private void CreateProfileViewModels()

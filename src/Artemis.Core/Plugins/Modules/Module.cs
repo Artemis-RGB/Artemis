@@ -9,7 +9,6 @@ using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
-using SkiaSharp;
 
 namespace Artemis.Core.Modules
 {

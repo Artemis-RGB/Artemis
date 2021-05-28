@@ -75,6 +75,7 @@ namespace Artemis.Core
         public List<Module> Modules { get; } = new();
 
         internal ProfileConfigurationEntity Entity { get; }
+        public bool IsBeingEdited { get; set; }
 
         /// <summary>
         ///     Updates this configurations activation condition status
@@ -90,7 +91,7 @@ namespace Artemis.Core
             foreach (Module enabledModule in enabledModules.Where(m => Entity.Modules.Contains(m.Id)))
                 Modules.Add(enabledModule);
 
-            IsMissingModules = Modules.Count == Entity.Modules.Count;
+            IsMissingModules = Modules.Count != Entity.Modules.Count;
         }
 
         internal void SaveModules()

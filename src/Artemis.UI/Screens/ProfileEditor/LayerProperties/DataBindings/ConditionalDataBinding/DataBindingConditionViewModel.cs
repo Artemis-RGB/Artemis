@@ -54,7 +54,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         private void ValueViewModelOnValueUpdated(object sender, DataModelInputStaticEventArgs e)
         {
             DataBindingCondition.Value = (TProperty) Convert.ChangeType(e.Value, typeof(TProperty));
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void Evaluate()

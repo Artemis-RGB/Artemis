@@ -187,7 +187,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             PopulateProperties(ProfileEditorService.SelectedProfileElement);
 
-            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
             ProfileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
@@ -197,7 +197,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         protected override void OnClose()
         {
-            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
             ProfileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
@@ -218,7 +218,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 EffectsViewModel.PopulateDescriptors();
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
+        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             PopulateProperties(e.RenderProfileElement);
         }
@@ -419,7 +419,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 MoveAfter(source, target);
 
             ApplyCurrentEffectsOrder();
-            ProfileEditorService.UpdateSelectedProfile();
+            ProfileEditorService.SaveSelectedProfileConfiguration();
         }
 
         private void MoveBefore(LayerPropertyGroupViewModel source, LayerPropertyGroupViewModel target)

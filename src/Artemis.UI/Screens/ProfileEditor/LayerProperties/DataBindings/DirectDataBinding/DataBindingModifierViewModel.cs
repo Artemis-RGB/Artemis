@@ -71,19 +71,19 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         public void Delete()
         {
             Modifier.DirectDataBinding.RemoveModifier(Modifier);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void ParameterSelectionViewModelOnPropertySelected(object sender, DataModelInputDynamicEventArgs e)
         {
             Modifier.UpdateParameterDynamic(e.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void StaticInputViewModelOnValueUpdated(object sender, DataModelInputStaticEventArgs e)
         {
             Modifier.UpdateParameterStatic(e.Value);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void Update()
@@ -100,7 +100,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             else if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
             {
                 DisposeStaticInputViewModel();
-                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
                 if (DynamicSelectionViewModel != null)
                 {
                     DynamicSelectionViewModel.DisplaySwitchButton = true;
@@ -149,7 +149,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
                 return;
 
             Modifier.UpdateModifierType(modifierTypeViewModel.ModifierType);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }

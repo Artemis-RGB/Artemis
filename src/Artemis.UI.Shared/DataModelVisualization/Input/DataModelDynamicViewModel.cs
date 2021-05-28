@@ -19,8 +19,8 @@ namespace Artemis.UI.Shared.Input
     /// </summary>
     public class DataModelDynamicViewModel : PropertyChangedBase, IDisposable
     {
+        private readonly List<Module> _modules;
         private readonly IDataModelUIService _dataModelUIService;
-        private readonly Module _module;
         private readonly Timer _updateTimer;
         private SolidColorBrush _buttonBrush = new(Color.FromRgb(171, 71, 188));
         private DataModelPath? _dataModelPath;
@@ -31,9 +31,9 @@ namespace Artemis.UI.Shared.Input
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
 
-        internal DataModelDynamicViewModel(Module module, ISettingsService settingsService, IDataModelUIService dataModelUIService)
+        internal DataModelDynamicViewModel(List<Module> modules, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
-            _module = module;
+            _modules = modules;
             _dataModelUIService = dataModelUIService;
             _updateTimer = new Timer(500);
 
@@ -233,7 +233,7 @@ namespace Artemis.UI.Shared.Input
         private void Initialize()
         {
             // Get the data models
-            DataModelViewModel = _dataModelUIService.GetPluginDataModelVisualization(_module, true);
+            DataModelViewModel = _dataModelUIService.GetPluginDataModelVisualization(_modules, true);
             if (DataModelViewModel != null)
                 DataModelViewModel.UpdateRequested += DataModelOnUpdateRequested;
             ExtraDataModelViewModels.CollectionChanged += ExtraDataModelViewModelsOnCollectionChanged;

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Windows;
 using Artemis.Core;
-using Artemis.Core.Modules;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -13,7 +12,14 @@ namespace Artemis.UI.Shared.Services
     public interface IProfileEditorService : IArtemisSharedUIService
     {
         /// <summary>
+        ///     Gets the currently selected profile configuration
+        ///     <para><see langword="null" /> if the editor is closed</para>
+        /// </summary>
+        ProfileConfiguration? SelectedProfileConfiguration { get; }
+
+        /// <summary>
         ///     Gets the currently selected profile
+        ///     <para><see langword="null" /> if the editor is closed, always equal to <see cref="SelectedProfileConfiguration" />.<see cref="Profile" /></para>
         /// </summary>
         Profile? SelectedProfile { get; }
 
@@ -48,15 +54,15 @@ namespace Artemis.UI.Shared.Services
         bool Playing { get; set; }
 
         /// <summary>
-        ///     Changes the selected profile
+        ///     Changes the selected profile by its <see cref="ProfileConfiguration" />
         /// </summary>
-        /// <param name="profile">The profile to select</param>
-        void ChangeSelectedProfile(Profile? profile);
+        /// <param name="profileConfiguration">The profile configuration of the profile to select</param>
+        void ChangeSelectedProfileConfiguration(ProfileConfiguration? profileConfiguration);
 
         /// <summary>
-        ///     Updates the selected profile and saves it to persistent storage
+        ///     Saves the <see cref="Profile" /> of the selected <see cref="ProfileConfiguration" /> to persistent storage
         /// </summary>
-        void UpdateSelectedProfile();
+        void SaveSelectedProfileConfiguration();
 
         /// <summary>
         ///     Changes the selected profile element
@@ -65,9 +71,9 @@ namespace Artemis.UI.Shared.Services
         void ChangeSelectedProfileElement(RenderProfileElement? profileElement);
 
         /// <summary>
-        ///     Updates the selected profile element and saves the profile it is contained in to persistent storage
+        ///     Saves the currently selected <see cref="ProfileElement" /> to persistent storage
         /// </summary>
-        void UpdateSelectedProfileElement();
+        void SaveSelectedProfileElement();
 
         /// <summary>
         ///     Changes the selected data binding property
@@ -81,22 +87,16 @@ namespace Artemis.UI.Shared.Services
         void UpdateProfilePreview();
 
         /// <summary>
-        ///     Restores the profile to the last <see cref="UpdateSelectedProfile" /> call
+        ///     Restores the profile to the last <see cref="SaveSelectedProfileConfiguration" /> call
         /// </summary>
         /// <returns><see langword="true" /> if undo was successful, otherwise <see langword="false" /></returns>
-        bool UndoUpdateProfile();
+        bool UndoSaveProfile();
 
         /// <summary>
-        ///     Restores the profile to the last <see cref="UndoUpdateProfile" /> call
+        ///     Restores the profile to the last <see cref="UndoSaveProfile" /> call
         /// </summary>
         /// <returns><see langword="true" /> if redo was successful, otherwise <see langword="false" /></returns>
-        bool RedoUpdateProfile();
-
-        /// <summary>
-        ///     Gets the current module the profile editor is initialized for
-        /// </summary>
-        /// <returns>The current module the profile editor is initialized for</returns>
-        Module? GetCurrentModule();
+        bool RedoSaveProfile();
 
         /// <summary>
         ///     Registers a new property input view model used in the profile editor for the generic type defined in
@@ -182,22 +182,22 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Occurs when a new profile is selected
         /// </summary>
-        event EventHandler<ProfileEventArgs> ProfileSelected;
+        event EventHandler<ProfileConfigurationEventArgs> SelectedProfileChanged;
 
         /// <summary>
         ///     Occurs then the currently selected profile is updated
         /// </summary>
-        event EventHandler<ProfileEventArgs> SelectedProfileUpdated;
+        event EventHandler<ProfileConfigurationEventArgs> SelectedProfileSaved;
 
         /// <summary>
         ///     Occurs when a new profile element is selected
         /// </summary>
-        event EventHandler<RenderProfileElementEventArgs> ProfileElementSelected;
+        event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementChanged;
 
         /// <summary>
         ///     Occurs when the currently selected profile element is updated
         /// </summary>
-        event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementUpdated;
+        event EventHandler<RenderProfileElementEventArgs> SelectedProfileElementSaved;
 
         /// <summary>
         ///     Occurs when the currently selected data binding layer property is changed

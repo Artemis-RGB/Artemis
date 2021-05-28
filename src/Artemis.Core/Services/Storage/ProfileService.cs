@@ -37,11 +37,13 @@ namespace Artemis.Core.Services
             _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
-            _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
+            _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
+            _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
         }
 
         public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
         public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+        public bool RenderForEditor { get; set; }
 
         public void UpdateProfiles(double deltaTime)
         {
@@ -52,28 +54,24 @@ namespace Artemis.Core.Services
                 {
                     foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
                     {
-                        // If suspended or missing modules there's no updating to be done
-                        if (profileConfiguration.IsSuspended || profileConfiguration.IsMissingModules)
-                        {
-                            // Make sure the profile is deactivated though
-                            if (profileConfiguration.Profile != null)
-                                DeactivateProfile(profileConfiguration);
-                        }
-                        // Make sure the profile should still be active according to its activation conditions
-                        else
+                        // Profiles being edited are updated at their own leisure
+                        if (profileConfiguration.IsBeingEdited)
+                            continue;
+
+                        bool mustBeActive = !profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.Modules.All(m => m.IsActivated);
+                        if (mustBeActive)
                         {
                             profileConfiguration.Update();
-                            // If met, update the profile after making sure it is active
-                            if (profileConfiguration.ActivationConditionMet)
-                            {
-                                if (profileConfiguration.Profile == null)
-                                    ActivateProfile(profileConfiguration);
-                                profileConfiguration.Profile?.Update(deltaTime);
-                            }
-                            // If not met, make sure it is deactivated
-                            else if (profileConfiguration.Profile != null)
-                                DeactivateProfile(profileConfiguration);
+                            mustBeActive = profileConfiguration.ActivationConditionMet;
                         }
+
+                        // Make sure the profile is active or inactive according to the parameters above
+                        if (mustBeActive && profileConfiguration.Profile == null)
+                            ActivateProfile(profileConfiguration);
+                        else if (!mustBeActive && profileConfiguration.Profile != null)
+                            DeactivateProfile(profileConfiguration);
+
+                        profileConfiguration.Profile?.Update(deltaTime);
                     }
                 }
             }
@@ -88,9 +86,17 @@ namespace Artemis.Core.Services
                 {
                     foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
                     {
-                        // Ensure all criteria are met before rendering
-                        if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.ActivationConditionMet)
-                            profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                        if (RenderForEditor)
+                        {
+                            if (profileConfiguration.IsBeingEdited)
+                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                        }
+                        else
+                        {
+                            // Ensure all criteria are met before rendering
+                            if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.ActivationConditionMet)
+                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                        }
                     }
                 }
             }
@@ -130,7 +136,7 @@ namespace Artemis.Core.Services
             ActiveProfilesPopulateLeds();
         }
 
-        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
         {
             if (e.PluginFeature is Module)
                 UpdateModules();
@@ -182,6 +188,8 @@ namespace Artemis.Core.Services
 
         public void DeactivateProfile(ProfileConfiguration profileConfiguration)
         {
+            if (profileConfiguration.IsBeingEdited)
+                throw new ArtemisCoreException("Cannot disable a profile that is being edited, that's rude");
             if (profileConfiguration.Profile == null)
                 return;
 
@@ -200,7 +208,7 @@ namespace Artemis.Core.Services
 
             profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
             _profileRepository.Remove(profileEntity);
-            UpdateProfileCategory(profileConfiguration.Category);
+            SaveProfileCategory(profileConfiguration.Category);
         }
 
         public ProfileCategory CreateProfileCategory(string name)
@@ -209,7 +217,7 @@ namespace Artemis.Core.Services
             {
                 ProfileCategory profileCategory = new(name);
                 _profileCategories.Add(profileCategory);
-                UpdateProfileCategory(profileCategory);
+                SaveProfileCategory(profileCategory);
                 return profileCategory;
             }
         }
@@ -217,7 +225,7 @@ namespace Artemis.Core.Services
         public void DeleteProfileCategory(ProfileCategory profileCategory)
         {
             List<ProfileConfiguration> profileConfigurations = profileCategory.ProfileConfigurations.ToList();
-            foreach (ProfileConfiguration profileConfiguration in profileConfigurations) 
+            foreach (ProfileConfiguration profileConfiguration in profileConfigurations)
                 RemoveProfileConfiguration(profileConfiguration);
 
             lock (_profileRepository)
@@ -234,7 +242,7 @@ namespace Artemis.Core.Services
         /// <param name="name">The name of the new profile configuration</param>
         /// <param name="icon">The icon of the new profile configuration</param>
         /// <returns>The newly created profile configuration</returns>
-        public ProfileConfiguration AddProfileConfiguration(ProfileCategory category, string name, string icon)
+        public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
         {
             ProfileConfiguration configuration = new(name, icon, category);
             ProfileEntity entity = new();
@@ -252,23 +260,22 @@ namespace Artemis.Core.Services
         public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
         {
             profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
-            
+
             DeactivateProfile(profileConfiguration);
             ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity != null)
                 _profileRepository.Remove(profileEntity);
         }
 
-        public void UpdateProfileCategory(ProfileCategory profileCategory)
+        public void SaveProfileCategory(ProfileCategory profileCategory)
         {
             profileCategory.Save();
             _profileCategoryRepository.Save(profileCategory.Entity);
         }
 
-        public void UpdateProfile(Profile profile, bool includeChildren)
+        public void SaveProfile(Profile profile, bool includeChildren)
         {
             string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
-
             profile.Save();
             if (includeChildren)
             {
@@ -297,7 +304,7 @@ namespace Artemis.Core.Services
             _profileRepository.Save(profile.ProfileEntity);
         }
 
-        public bool UndoUpdateProfile(Profile profile)
+        public bool UndoSaveProfile(Profile profile)
         {
             // Keep the profile from being rendered by locking it
             lock (profile)
@@ -322,7 +329,7 @@ namespace Artemis.Core.Services
             return true;
         }
 
-        public bool RedoUpdateProfile(Profile profile)
+        public bool RedoSaveProfile(Profile profile)
         {
             // Keep the profile from being rendered by locking it
             lock (profile)

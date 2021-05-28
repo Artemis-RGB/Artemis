@@ -19,6 +19,11 @@ namespace Artemis.Core.Services
         ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
 
         /// <summary>
+        ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited
+        /// </summary>
+        bool RenderForEditor { get; set; }
+
+        /// <summary>
         ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface
         /// </summary>
         /// <param name="profileConfiguration">The profile configuration of the profile to activate</param>
@@ -37,30 +42,57 @@ namespace Artemis.Core.Services
         void DeleteProfile(ProfileConfiguration profileConfiguration);
 
         /// <summary>
-        ///     Updates the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
+        ///     Saves the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
         ///     <see cref="Profile" />s themselves
         /// </summary>
         /// <param name="profileCategory">The profile category to update</param>
-        void UpdateProfileCategory(ProfileCategory profileCategory);
+        void SaveProfileCategory(ProfileCategory profileCategory);
+
+        /// <summary>
+        ///     Creates a new profile category and saves it to persistent storage
+        /// </summary>
+        /// <param name="name">The name of the new profile category, must be unique</param>
+        /// <returns>The newly created profile category</returns>
+        ProfileCategory CreateProfileCategory(string name);
+
+        /// <summary>
+        ///     Permanently deletes the provided profile category
+        /// </summary>
+        void DeleteProfileCategory(ProfileCategory profileCategory);
+
+        /// <summary>
+        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="category">The profile category to add the profile to</param>
+        /// <param name="name">The name of the new profile configuration</param>
+        /// <param name="icon">The icon of the new profile configuration</param>
+        /// <returns>The newly created profile configuration</returns>
+        ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon);
+
+        /// <summary>
+        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="profileConfiguration"></param>
+        void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
 
         /// <summary>
         ///     Writes the profile to persistent storage
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="includeChildren"></param>
-        void UpdateProfile(Profile profile, bool includeChildren);
+        void SaveProfile(Profile profile, bool includeChildren);
 
         /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="UpdateProfile" /> call.
+        ///     Attempts to restore the profile to the state it had before the last <see cref="SaveProfile" /> call.
         /// </summary>
         /// <param name="profile"></param>
-        bool UndoUpdateProfile(Profile profile);
+        bool UndoSaveProfile(Profile profile);
 
         /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="UndoUpdateProfile" /> call.
+        ///     Attempts to restore the profile to the state it had before the last <see cref="UndoSaveProfile" /> call.
         /// </summary>
         /// <param name="profile"></param>
-        bool RedoUpdateProfile(Profile profile);
+        bool RedoSaveProfile(Profile profile);
 
         /// <summary>
         ///     [Placeholder] Exports the profile described in the given <see cref="ProfileDescriptor" /> in a JSON format
@@ -94,32 +126,5 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="canvas"></param>
         void RenderProfiles(SKCanvas canvas);
-
-        /// <summary>
-        ///     Creates a new profile category and saves it to persistent storage
-        /// </summary>
-        /// <param name="name">The name of the new profile category, must be unique</param>
-        /// <returns>The newly created profile category</returns>
-        ProfileCategory CreateProfileCategory(string name);
-
-        /// <summary>
-        ///     Permanently deletes the provided profile category
-        /// </summary>
-        void DeleteProfileCategory(ProfileCategory profileCategory);
-
-        /// <summary>
-        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="category">The profile category to add the profile to</param>
-        /// <param name="name">The name of the new profile configuration</param>
-        /// <param name="icon">The icon of the new profile configuration</param>
-        /// <returns>The newly created profile configuration</returns>
-        ProfileConfiguration AddProfileConfiguration(ProfileCategory category, string name, string icon);
-
-        /// <summary>
-        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="profileConfiguration"></param>
-        void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
     }
 }

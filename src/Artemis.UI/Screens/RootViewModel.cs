@@ -21,7 +21,7 @@ using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens
 {
-    public sealed class RootViewModel : Screen, IDisposable
+    public sealed class RootViewModel : Conductor<Screen>, IDisposable
     {
         private readonly IRegistrationService _builtInRegistrationService;
         private readonly ICoreService _coreService;
@@ -63,7 +63,6 @@ namespace Artemis.UI.Screens
 
             SidebarViewModel = sidebarViewModel;
             SidebarViewModel.ConductWith(this);
-
 
             AssemblyInformationalVersionAttribute versionAttribute = typeof(RootViewModel).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
@@ -149,6 +148,16 @@ namespace Artemis.UI.Screens
             _frameTimeUpdateTimer?.Dispose();
         }
 
+        private void SidebarViewModelOnSelectedScreenChanged(object? sender, EventArgs e)
+        {
+            ActiveItem = SidebarViewModel.SelectedScreen;
+        }
+
+        private void ShowSetupWizard()
+        {
+            _windowManager.ShowDialog(_kernel.Get<StartupWizardViewModel>());
+        }
+
         #region Overrides of Screen
 
         protected override void OnViewLoaded()
@@ -172,6 +181,9 @@ namespace Artemis.UI.Screens
             MainMessageQueue = _messageService.MainMessageQueue;
             UpdateFrameTime();
 
+            SidebarViewModel.SelectedScreenChanged += SidebarViewModelOnSelectedScreenChanged;
+            ActiveItem = SidebarViewModel.SelectedScreen;
+
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
             _builtInRegistrationService.RegisterBuiltInDataModelInputs();
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
@@ -188,11 +200,6 @@ namespace Artemis.UI.Screens
             base.OnInitialActivate();
         }
 
-        private void ShowSetupWizard()
-        {
-            _windowManager.ShowDialog(_kernel.Get<StartupWizardViewModel>());
-        }
-
         protected override void OnClose()
         {
             // Ensure no element with focus can leak, if we don't do this the root VM is retained by Window.EffectiveValues
@@ -201,6 +208,8 @@ namespace Artemis.UI.Screens
 
             MainMessageQueue = null;
             _frameTimeUpdateTimer.Stop();
+
+            SidebarViewModel.SelectedScreenChanged -= SidebarViewModelOnSelectedScreenChanged;
 
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(_window);

@@ -113,7 +113,7 @@
             </ListBox.ItemTemplate>
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="View properties" Command="{s:Action AddFolder}">
+                    <MenuItem Header="View properties" Command="{s:Action ViewProfileConfigurationProperties}" CommandParameter="{Binding}">
                         <MenuItem.Icon>
                             <materialDesign:PackIcon Kind="Cog" />
                         </MenuItem.Icon>

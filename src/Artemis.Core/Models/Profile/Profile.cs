@@ -13,22 +13,7 @@ namespace Artemis.Core
     {
         private readonly object _lock = new();
         private bool _isFreshImport;
-
-        internal Profile(ProfileConfiguration configuration, string name) : base(null!)
-        {
-            Configuration = configuration;
-            ProfileEntity = new ProfileEntity();
-            EntityId = Guid.NewGuid();
-
-            Profile = this;
-            Name = name;
-            UndoStack = new Stack<string>();
-            RedoStack = new Stack<string>();
-
-            Folder _ = new(this, "Root folder");
-            Save();
-        }
-
+        
         internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
         {
             Configuration = configuration;
@@ -151,7 +136,7 @@ namespace Artemis.Core
             if (Disposed)
                 throw new ObjectDisposedException("Profile");
 
-            Name = ProfileEntity.Name;
+            Name = Configuration.Name;
             IsFreshImport = ProfileEntity.IsFreshImport;
 
             lock (ChildrenList)
@@ -180,7 +165,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Profile");
 
             ProfileEntity.Id = EntityId;
-            ProfileEntity.Name = Name;
+            ProfileEntity.Name = Configuration.Name;
             ProfileEntity.IsFreshImport = IsFreshImport;
 
             foreach (ProfileElement profileElement in Children)

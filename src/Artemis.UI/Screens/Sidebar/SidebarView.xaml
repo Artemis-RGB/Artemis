@@ -41,7 +41,8 @@
                                          ShowColors="True"
                                          RenderTransformOrigin="0.5 0.5"
                                          VerticalAlignment="Center"
-                                         HorizontalAlignment="Center">
+                                         HorizontalAlignment="Center"
+                                         RenderOptions.BitmapScalingMode="HighQuality">
                     <shared:DeviceVisualizer.RenderTransform>
                         <TransformGroup>
                             <RotateTransform Angle="20" />

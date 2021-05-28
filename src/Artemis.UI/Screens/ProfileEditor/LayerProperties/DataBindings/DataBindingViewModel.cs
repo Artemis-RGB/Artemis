@@ -178,7 +178,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 Registration.DataBinding.EasingFunction = SelectedEasingViewModel?.EasingFunction ?? Easings.Functions.Linear;
             }
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
             Update();
         }
 
@@ -198,7 +198,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             }
 
             CreateDataBindingModeModeViewModel();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void UpdateTestResult()
@@ -243,7 +243,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                 return;
 
             Registration.LayerProperty.EnableDataBinding(Registration);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void RemoveDataBinding()
@@ -255,7 +255,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             Registration.LayerProperty.DisableDataBinding(Registration.DataBinding);
             Update();
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void CopyDataBinding()
@@ -282,7 +282,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
             Update();
             
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void OnFrameRendered(object sender, FrameRenderedEventArgs e)

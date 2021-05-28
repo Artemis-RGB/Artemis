@@ -41,7 +41,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
                 return;
 
             ProfileCategory.Name = CategoryName;
-            _profileService.UpdateProfileCategory(ProfileCategory);
+            _profileService.SaveProfileCategory(ProfileCategory);
             
             Session.Close(false);
         }

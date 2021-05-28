@@ -24,68 +24,23 @@ namespace Artemis.UI.Shared.Services
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private readonly IRgbService _rgbService;
+        private readonly IModuleService _moduleService;
         private readonly object _selectedProfileElementLock = new();
         private readonly object _selectedProfileLock = new();
         private TimeSpan _currentTime;
         private bool _doTick;
         private int _pixelsPerSecond;
 
-        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService)
+        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService, IModuleService moduleService)
         {
             _kernel = kernel;
             _logger = logger;
             _profileService = profileService;
             _rgbService = rgbService;
+            _moduleService = moduleService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
             coreService.FrameRendered += CoreServiceOnFrameRendered;
             PixelsPerSecond = 100;
-        }
-
-        public event EventHandler? CurrentTimelineChanged;
-
-        protected virtual void OnSelectedProfileChanged(ProfileEventArgs e)
-        {
-            ProfileSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileUpdated(ProfileEventArgs e)
-        {
-            SelectedProfileUpdated?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
-        {
-            ProfileElementSelected?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
-        {
-            SelectedProfileElementUpdated?.Invoke(this, e);
-        }
-
-        protected virtual void OnCurrentTimeChanged()
-        {
-            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnCurrentTimelineChanged()
-        {
-            CurrentTimelineChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnPixelsPerSecondChanged()
-        {
-            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnProfilePreviewUpdated()
-        {
-            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnSelectedDataBindingChanged()
-        {
-            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
@@ -101,7 +56,7 @@ namespace Artemis.UI.Shared.Services
                 return;
 
             // Trigger a profile change
-            OnSelectedProfileChanged(new ProfileEventArgs(SelectedProfile, SelectedProfile));
+            OnSelectedProfileChanged(new ProfileConfigurationEventArgs(SelectedProfileConfiguration, SelectedProfileConfiguration));
             // Trigger a selected element change
             RenderProfileElement? previousSelectedProfileElement = SelectedProfileElement;
             if (SelectedProfileElement is Folder folder)
@@ -151,7 +106,8 @@ namespace Artemis.UI.Shared.Services
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
 
         public bool Playing { get; set; }
-        public Profile? SelectedProfile { get; private set; }
+        public ProfileConfiguration? SelectedProfileConfiguration { get; private set; }
+        public Profile? SelectedProfile => SelectedProfileConfiguration?.Profile;
         public RenderProfileElement? SelectedProfileElement { get; private set; }
         public ILayerProperty? SelectedDataBinding { get; private set; }
 
@@ -177,33 +133,53 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void ChangeSelectedProfile(Profile? profile)
+        public void ChangeSelectedProfileConfiguration(ProfileConfiguration? profileConfiguration)
         {
             lock (_selectedProfileLock)
             {
-                if (SelectedProfile == profile)
+                if (profileConfiguration?.Profile != null && profileConfiguration.Profile.Disposed)
+                    throw new ArtemisSharedUIException("Cannot select a disposed profile");
+                if (SelectedProfileConfiguration == profileConfiguration)
                     return;
 
-                _logger.Verbose("ChangeSelectedProfile {profile}", profile);
+                _logger.Verbose("ChangeSelectedProfileConfiguration {profile}", profileConfiguration);
                 ChangeSelectedProfileElement(null);
+                ProfileConfigurationEventArgs profileConfigurationElementEvent = new(profileConfiguration, SelectedProfileConfiguration);
 
-                ProfileEventArgs profileElementEvent = new(profile, SelectedProfile);
-                
-                OnSelectedProfileChanged(profileElementEvent);
+                // No need to deactivate the profile, if needed it will be deactivated next update
+                if (SelectedProfileConfiguration != null)
+                    SelectedProfileConfiguration.IsBeingEdited = false;
+
+                // The new profile may need activation
+                SelectedProfileConfiguration = profileConfiguration;
+                if (SelectedProfileConfiguration != null)
+                {
+                    SelectedProfileConfiguration.IsBeingEdited = true;
+                    _moduleService.SetActivationOverride(SelectedProfileConfiguration.Modules);
+                    _profileService.ActivateProfile(SelectedProfileConfiguration);
+                    _profileService.RenderForEditor = true;
+                }
+                else
+                {
+                    _moduleService.SetActivationOverride(Enumerable.Empty<Module>());
+                    _profileService.RenderForEditor = false;
+                }
+
+                OnSelectedProfileChanged(profileConfigurationElementEvent);
                 UpdateProfilePreview();
             }
         }
 
-        public void UpdateSelectedProfile()
+        public void SaveSelectedProfileConfiguration()
         {
             lock (_selectedProfileLock)
             {
-                _logger.Verbose("UpdateSelectedProfile {profile}", SelectedProfile);
+                _logger.Verbose("SaveSelectedProfileConfiguration {profile}", SelectedProfile);
                 if (SelectedProfile == null)
                     return;
 
-                _profileService.UpdateProfile(SelectedProfile, true);
-                OnSelectedProfileUpdated(new ProfileEventArgs(SelectedProfile));
+                _profileService.SaveProfile(SelectedProfile, true);
+                OnSelectedProfileUpdated(new ProfileConfigurationEventArgs(SelectedProfileConfiguration));
                 UpdateProfilePreview();
             }
         }
@@ -224,15 +200,15 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void UpdateSelectedProfileElement()
+        public void SaveSelectedProfileElement()
         {
             lock (_selectedProfileElementLock)
             {
-                _logger.Verbose("UpdateSelectedProfileElement {profile}", SelectedProfileElement);
+                _logger.Verbose("SaveSelectedProfileElement {profile}", SelectedProfileElement);
                 if (SelectedProfile == null)
                     return;
 
-                _profileService.UpdateProfile(SelectedProfile, true);
+                _profileService.SaveProfile(SelectedProfile, true);
                 OnSelectedProfileElementUpdated(new RenderProfileElementEventArgs(SelectedProfileElement));
                 UpdateProfilePreview();
             }
@@ -251,12 +227,12 @@ namespace Artemis.UI.Shared.Services
             Tick();
         }
 
-        public bool UndoUpdateProfile()
+        public bool UndoSaveProfile()
         {
             if (SelectedProfile == null)
                 return false;
 
-            bool undid = _profileService.UndoUpdateProfile(SelectedProfile);
+            bool undid = _profileService.UndoSaveProfile(SelectedProfile);
             if (!undid)
                 return false;
 
@@ -264,12 +240,12 @@ namespace Artemis.UI.Shared.Services
             return true;
         }
 
-        public bool RedoUpdateProfile()
+        public bool RedoSaveProfile()
         {
             if (SelectedProfile == null)
                 return false;
 
-            bool redid = _profileService.RedoUpdateProfile(SelectedProfile);
+            bool redid = _profileService.RedoSaveProfile(SelectedProfile);
             if (!redid)
                 return false;
 
@@ -303,8 +279,11 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.Plugin != plugin)
+                    {
                         throw new ArtemisSharedUIException($"Cannot register property editor for type {supportedType.Name} because an editor was already " +
                                                            $"registered by {existing.Plugin}");
+                    }
+
                     return existing;
                 }
 
@@ -348,8 +327,10 @@ namespace Artemis.UI.Shared.Services
 
             if (snapToCurrentTime)
                 // Snap to the current time
+            {
                 if (Math.Abs(time.TotalMilliseconds - CurrentTime.TotalMilliseconds) < tolerance.TotalMilliseconds)
                     return CurrentTime;
+            }
 
             if (snapTimes != null)
             {
@@ -385,13 +366,9 @@ namespace Artemis.UI.Shared.Services
                     viewModelType = registration.ViewModelType.MakeGenericType(layerProperty.GetType().GenericTypeArguments);
             }
             else if (registration != null)
-            {
                 viewModelType = registration.ViewModelType;
-            }
             else
-            {
                 return null;
-            }
 
             if (viewModelType == null)
                 return null;
@@ -403,12 +380,6 @@ namespace Artemis.UI.Shared.Services
             return (PropertyInputViewModel<T>) kernel.Get(viewModelType, parameter);
         }
 
-        public Module? GetCurrentModule()
-        {
-            throw new NotImplementedException();
-            // return SelectedProfile?.Module;
-        }
-
         public List<ArtemisLed> GetLedsInRectangle(Rect rect)
         {
             return _rgbService.EnabledDevices
@@ -416,15 +387,6 @@ namespace Artemis.UI.Shared.Services
                 .Where(led => led.AbsoluteRectangle.IntersectsWith(SKRectI.Round(rect.ToSKRect())))
                 .ToList();
         }
-
-        public event EventHandler<ProfileEventArgs>? ProfileSelected;
-        public event EventHandler<ProfileEventArgs>? SelectedProfileUpdated;
-        public event EventHandler<RenderProfileElementEventArgs>? ProfileElementSelected;
-        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementUpdated;
-        public event EventHandler? SelectedDataBindingChanged;
-        public event EventHandler? CurrentTimeChanged;
-        public event EventHandler? PixelsPerSecondChanged;
-        public event EventHandler? ProfilePreviewUpdated;
 
         #region Copy/paste
 
@@ -497,11 +459,64 @@ namespace Artemis.UI.Shared.Services
             if (pasted != null)
             {
                 target.Profile.PopulateLeds(_rgbService.EnabledDevices);
-                UpdateSelectedProfile();
+                SaveSelectedProfileConfiguration();
                 ChangeSelectedProfileElement(pasted);
             }
 
             return pasted;
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileChanged;
+        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileSaved;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementChanged;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementSaved;
+        public event EventHandler? SelectedDataBindingChanged;
+        public event EventHandler? CurrentTimeChanged;
+        public event EventHandler? PixelsPerSecondChanged;
+        public event EventHandler? ProfilePreviewUpdated;
+
+        protected virtual void OnSelectedProfileChanged(ProfileConfigurationEventArgs e)
+        {
+            SelectedProfileChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileUpdated(ProfileConfigurationEventArgs e)
+        {
+            SelectedProfileSaved?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
+        {
+            SelectedProfileElementChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
+        {
+            SelectedProfileElementSaved?.Invoke(this, e);
+        }
+
+        protected virtual void OnCurrentTimeChanged()
+        {
+            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPixelsPerSecondChanged()
+        {
+            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnProfilePreviewUpdated()
+        {
+            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnSelectedDataBindingChanged()
+        {
+            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

@@ -11,6 +11,7 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
+        private List<Module> _activationOverride = new();
 
         public ModuleService(ILogger logger, IPluginManagementService pluginManagementService)
         {
@@ -40,7 +41,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void OverrideDeactivate(Module module, bool clearingOverride)
+        public void OverrideDeactivate(Module module)
         {
             try
             {
@@ -50,7 +51,7 @@ namespace Artemis.Core.Services
                 // If deactivating while it should be activated, its an override
                 bool shouldBeActivated = module.EvaluateActivationRequirements();
                 // No need to deactivate if it is not in an overridden state
-                if (shouldBeActivated && !module.IsActivatedOverride && !clearingOverride)
+                if (shouldBeActivated && !module.IsActivatedOverride)
                     return;
 
                 module.Deactivate(true);
@@ -84,6 +85,15 @@ namespace Artemis.Core.Services
             {
                 lock (module)
                 {
+                    if (module.IsActivatedOverride)
+                        continue;
+
+                    if (module.IsAlwaysAvailable)
+                    {
+                        module.Activate(false);
+                        return;
+                    }
+
                     module.Profiler.StartMeasurement("EvaluateActivationRequirements");
                     bool shouldBeActivated = module.IsEnabled && module.EvaluateActivationRequirements();
                     module.Profiler.StopMeasurement("EvaluateActivationRequirements");
@@ -100,6 +110,17 @@ namespace Artemis.Core.Services
                     }
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public void SetActivationOverride(IEnumerable<Module> modules)
+        {
+            foreach (Module module in _activationOverride)
+                OverrideDeactivate(module);
+
+            _activationOverride = modules.ToList();
+            foreach (Module module in _activationOverride)
+                OverrideActivate(module);
         }
 
         public void UpdateActiveModules(double deltaTime)

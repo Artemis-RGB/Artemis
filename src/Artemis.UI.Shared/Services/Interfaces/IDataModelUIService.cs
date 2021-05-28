@@ -34,10 +34,10 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Creates a data model visualization view model for the data model of the provided plugin feature
         /// </summary>
-        /// <param name="pluginFeature">The plugin feature to create hte data model visualization view model for</param>
-        /// <param name="includeMainDataModel">Whether or not also to include the main data model</param>
+        /// <param name="modules">The modules to create the data model visualization view model for</param>
+        /// <param name="includeMainDataModel">Whether or not also to include the main data model (and therefore any modules marked as <see cref="Module.IsAlwaysAvailable"/>)</param>
         /// <returns>A data model visualization view model containing the data model of the provided feature</returns>
-        DataModelPropertiesViewModel? GetPluginDataModelVisualization(PluginFeature pluginFeature, bool includeMainDataModel);
+        DataModelPropertiesViewModel? GetPluginDataModelVisualization(List<Module> modules, bool includeMainDataModel);
 
         /// <summary>
         ///     Updates the children of the provided main data model visualization, removing disabled children and adding newly
@@ -105,9 +105,9 @@ namespace Artemis.UI.Shared.Services
         /// <summary>
         ///     Creates a view model that allows selecting a value from the data model
         /// </summary>
-        /// <param name="module"></param>
+        /// <param name="modules"></param>
         /// <returns>A view model that allows selecting a value from the data model</returns>
-        DataModelDynamicViewModel GetDynamicSelectionViewModel(Module module);
+        DataModelDynamicViewModel GetDynamicSelectionViewModel(List<Module> modules);
 
         /// <summary>
         ///     Creates a view model that allows entering a value matching the target data model type

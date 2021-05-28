@@ -6,46 +6,100 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="280"
-             Width="300">
+             Width="800"
+             Height="400">
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
-    <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 10">
             Add a new profile
         </TextBlock>
 
-        <TextBox materialDesign:HintAssist.Hint="Profile name"
-                 Margin="0 16 0 8"
-                 Style="{StaticResource MaterialDesignFilledTextBox}"
-                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
+        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0 0 5 0">
+            <TextBlock>Provide general info about the profile</TextBlock>
+            <TextBox materialDesign:HintAssist.Hint="Profile name"
+                     Margin="0 4 0 8"
+                     Style="{StaticResource MaterialDesignFilledTextBox}"
+                     Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
-        <ComboBox materialDesign:HintAssist.Hint="Profile icon"
-                  Margin="0 0 0 8"
-                  Style="{StaticResource MaterialDesignFilledComboBox}"
-                  SelectedItem="{Binding SelectedIcon}"
-                  IsEnabled="{Binding Initializing, Converter={StaticResource InverseBooleanConverter}}"
-                  ItemsSource="{Binding Icons}"
-                  IsEditable="True"
-                  TextSearch.TextPath="IconName">
-            <ComboBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                </ItemsPanelTemplate>
-            </ComboBox.ItemsPanel>
-            <ComboBox.ItemTemplate>
-                <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
-                        <TextBlock Text="{Binding IconName}" />
-                    </StackPanel>
-                </DataTemplate>
-            </ComboBox.ItemTemplate>
-        </ComboBox>
+            <ComboBox materialDesign:HintAssist.Hint="Profile icon"
+                      Margin="0 0 0 8"
+                      Style="{StaticResource MaterialDesignFilledComboBox}"
+                      SelectedItem="{Binding SelectedIcon}"
+                      IsEnabled="{Binding Initializing, Converter={StaticResource InverseBooleanConverter}}"
+                      ItemsSource="{Binding Icons}"
+                      IsEditable="True"
+                      TextSearch.TextPath="IconName">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding IconName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+        <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="5 0 0 10">
+            Modules
+        </TextBlock>
+        <Grid Grid.Row="1" Grid.Column="1" Margin="5 0 0 0" >
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0">Optionally pick modules below to bind your profile to them</TextBlock>
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
+                </ScrollViewer.Resources>
+                <ItemsControl ItemsSource="{Binding Modules}" Grid.IsSharedSizeScope="True">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate DataType="{x:Type dialogs:ProfileModuleViewModel}">
+                            <Border x:Name="Border" Padding="8 4" Margin="0 3" CornerRadius="4">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition SharedSizeGroup="Checkerz" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
+                                    <shared:ArtemisIcon Grid.Column="1" Icon="{Binding Icon}" Width="25" Height="25" Margin="10 0" />
+                                    <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Name}" />
+                                </Grid>
+                            </Border>
+                            <DataTemplate.Triggers>
+                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MaterialDesignSelection}" />
+                                </DataTrigger>
+                            </DataTemplate.Triggers>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Command="{s:Action Cancel}">
                 CANCEL
             </Button>
@@ -53,7 +107,5 @@
                 ACCEPT
             </Button>
         </StackPanel>
-    </StackPanel>
-
-
+    </Grid>
 </UserControl>

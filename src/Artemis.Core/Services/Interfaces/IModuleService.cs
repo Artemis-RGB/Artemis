@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.Core.Modules;
 
 namespace Artemis.Core.Services
@@ -18,7 +19,12 @@ namespace Artemis.Core.Services
         ///     Evaluates every enabled module's activation requirements and activates/deactivates modules accordingly
         /// </summary>
         void UpdateModuleActivation();
-        
+
+        /// <summary>
+        ///     Overrides activation on the provided modules and restores regular activation to any remaining modules
+        /// </summary>
+        void SetActivationOverride(IEnumerable<Module> modules);
+
         /// <summary>
         ///     Occurs whenever a module is activated
         /// </summary>

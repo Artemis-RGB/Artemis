@@ -48,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
         public void ResetToDefault()
         {
             LayerProperty.ApplyDefaultValue();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void ApplyKeyframesEnabled(bool enable)
@@ -67,7 +67,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
 
             LayerProperty.KeyframesEnabled = enable;
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public bool HasDataBinding => LayerProperty.HasDataBinding;

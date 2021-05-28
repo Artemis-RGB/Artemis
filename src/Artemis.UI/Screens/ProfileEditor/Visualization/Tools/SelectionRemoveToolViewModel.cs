@@ -45,7 +45,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                 layer.ClearLeds();
                 layer.AddLeds(remainingLeds);
 
-                ProfileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.SaveSelectedProfileElement();
             }
         }
 

@@ -178,8 +178,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         {
             Update();
             Layer.RenderPropertiesUpdated += LayerOnRenderPropertiesUpdated;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementSaved += OnSelectedProfileElementSaved;
             _profileEditorService.ProfilePreviewUpdated += ProfileEditorServiceOnProfilePreviewUpdated;
             _panZoomViewModel.PropertyChanged += PanZoomViewModelOnPropertyChanged;
             base.OnInitialActivate();
@@ -189,8 +189,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         protected override void OnClose()
         {
             Layer.RenderPropertiesUpdated -= LayerOnRenderPropertiesUpdated;
-            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementSaved -= OnSelectedProfileElementSaved;
             _profileEditorService.ProfilePreviewUpdated -= ProfileEditorServiceOnProfilePreviewUpdated;
             _panZoomViewModel.PropertyChanged -= PanZoomViewModelOnPropertyChanged;
             base.OnClose();
@@ -205,12 +205,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             Update();
         }
 
-        private void OnProfileElementSelected(object sender, EventArgs e)
+        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
         {
             IsSelected = _profileEditorService.SelectedProfileElement == Layer;
         }
 
-        private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
+        private void OnSelectedProfileElementSaved(object sender, EventArgs e)
         {
             Update();
         }

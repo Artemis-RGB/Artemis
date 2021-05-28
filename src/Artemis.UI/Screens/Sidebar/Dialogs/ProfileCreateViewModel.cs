@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using FluentValidation;
@@ -15,27 +16,35 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
         private readonly ProfileCategory _profileCategory;
         private readonly IProfileService _profileService;
         private string _profileName;
-        private IconViewModel _selectedIcon;
+        private ProfileIconViewModel _selectedIcon;
         private bool _initializing;
 
-        public ProfileCreateViewModel(ProfileCategory profileCategory, IProfileService profileService, IModelValidator<ProfileCreateViewModel> validator) : base(validator)
+        public ProfileCreateViewModel(ProfileCategory profileCategory, IProfileService profileService, IPluginManagementService pluginManagementService,
+            IModelValidator<ProfileCreateViewModel> validator) : base(validator)
         {
             _profileCategory = profileCategory;
             _profileService = profileService;
 
-            Icons = new BindableCollection<IconViewModel>();
+            Icons = new BindableCollection<ProfileIconViewModel>();
+            Modules = new BindableCollection<ProfileModuleViewModel>(
+                pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
+            );
             Initializing = true;
+
             Task.Run(() =>
             {
                 Icons.AddRange(Enum.GetValues<PackIconKind>()
                     .GroupBy(e => e)
                     .Select(g => g.First())
-                    .Select(e => new IconViewModel(e))
+                    .Select(e => new ProfileIconViewModel(e))
                     .ToList());
                 SelectedIcon = Icons.FirstOrDefault();
                 Initializing = false;
             });
         }
+
+        public BindableCollection<ProfileIconViewModel> Icons { get; }
+        public BindableCollection<ProfileModuleViewModel> Modules { get; }
 
         public bool Initializing
         {
@@ -49,9 +58,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             set => SetAndNotify(ref _profileName, value);
         }
 
-        public BindableCollection<IconViewModel> Icons { get; }
-
-        public IconViewModel SelectedIcon
+        public ProfileIconViewModel SelectedIcon
         {
             get => _selectedIcon;
             set => SetAndNotify(ref _selectedIcon, value);
@@ -64,8 +71,10 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             if (HasErrors)
                 return;
 
-            _profileService.AddProfileConfiguration(_profileCategory, ProfileName, SelectedIcon.Icon.ToString());
-            _profileService.UpdateProfileCategory(_profileCategory);
+            ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(_profileCategory, ProfileName, SelectedIcon.Icon.ToString());
+            profileConfiguration.Modules.AddRange(Modules.Where(m => m.IsSelected).Select(m => m.Module));
+            _profileService.SaveProfileCategory(_profileCategory);
+
             Session.Close();
         }
     }

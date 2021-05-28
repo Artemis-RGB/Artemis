@@ -39,7 +39,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionList.ListOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedListOperator));
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddCondition()
@@ -47,7 +47,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionList.AddChild(new DataModelConditionGeneralPredicate(DataModelConditionList, ProfileRightSideType.Dynamic));
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddGroup()
@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionList.AddChild(new DataModelConditionGroup(DataModelConditionList));
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public override void Evaluate()
@@ -68,12 +68,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Delete()
         {
             base.Delete();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 return;
 
             DataModelConditionList.UpdateList(LeftSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }

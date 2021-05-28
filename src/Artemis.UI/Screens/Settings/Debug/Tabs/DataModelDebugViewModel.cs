@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Artemis.Core;
@@ -134,7 +135,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private void GetDataModel()
         {
             MainDataModel = SelectedModule != null
-                ? _dataModelUIService.GetPluginDataModelVisualization(SelectedModule, false)
+                ? _dataModelUIService.GetPluginDataModelVisualization(new List<Module>() {SelectedModule}, false)
                 : _dataModelUIService.GetMainDataModelVisualization();
         }
 

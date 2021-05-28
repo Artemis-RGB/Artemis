@@ -66,7 +66,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.BooleanOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddCondition()
@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddEventCondition()
@@ -104,7 +104,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.AddChild(new DataModelConditionEvent(DataModelConditionGroup), index);
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddGroup()
@@ -112,7 +112,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.AddChild(new DataModelConditionGroup(DataModelConditionGroup));
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public override void Update()
