@@ -60,30 +60,24 @@ namespace Artemis.Core
         /// </summary>
         public IReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileConfigurations.AsReadOnly();
 
+        /// <summary>
+        ///     Gets the unique ID of this category
+        /// </summary>
+        public Guid EntityId => Entity.Id;
+
         internal ProfileCategoryEntity Entity { get; }
 
-        /// <summary>
-        ///     Creates a new profile configuration and adds it to the <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="name">The name of the new profile configuration</param>
-        /// <param name="icon">The icon of the new profile configuration</param>
-        /// <returns>The newly created profile configuration</returns>
-        public ProfileConfiguration AddProfileConfiguration(string name, string icon)
+        internal void AddProfileConfiguration(ProfileConfiguration configuration)
         {
-            ProfileConfiguration configuration = new(name, icon, this);
             _profileConfigurations.Add(configuration);
+            configuration.Category = this;
             OnProfileConfigurationAdded(new ProfileConfigurationEventArgs(configuration));
-            return configuration;
         }
 
-        /// <summary>
-        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="profileConfiguration"></param>
-        public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
+        internal void RemoveProfileConfiguration(ProfileConfiguration configuration)
         {
-            if (_profileConfigurations.Remove(profileConfiguration))
-                OnProfileConfigurationRemoved(new ProfileConfigurationEventArgs(profileConfiguration));
+            if (_profileConfigurations.Remove(configuration))
+                OnProfileConfigurationRemoved(new ProfileConfigurationEventArgs(configuration));
         }
 
         #region Implementation of IStorageModel
@@ -148,14 +142,44 @@ namespace Artemis.Core
         #endregion
     }
 
+    /// <summary>
+    ///     Represents a type of behaviour when this profile is activated
+    /// </summary>
     public enum ActivationBehaviour
     {
+        /// <summary>
+        ///     Do nothing to other profiles
+        /// </summary>
         None,
+
+        /// <summary>
+        ///     Disable all other profiles
+        /// </summary>
         DisableOthers,
+
+        /// <summary>
+        ///     Disable all other profiles below this one
+        /// </summary>
         DisableOthersBelow,
+
+        /// <summary>
+        ///     Disable all other profiles above this one
+        /// </summary>
         DisableOthersAbove,
+
+        /// <summary>
+        ///     Disable all other profiles in the same category
+        /// </summary>
         DisableOthersInCategory,
+
+        /// <summary>
+        ///     Disable all other profiles below this one in the same category
+        /// </summary>
         DisableOthersBelowInCategory,
+
+        /// <summary>
+        ///     Disable all other profiles above this one in the same category
+        /// </summary>
         DisableOthersAboveInCategory
     }
 }

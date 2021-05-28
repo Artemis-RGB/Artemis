@@ -1,9 +1,8 @@
 ﻿using Artemis.Core;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 
-namespace Artemis.UI.Screens.ProfileEditor.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs
 {
     public class ProfileImportViewModel : DialogViewModelBase
     {

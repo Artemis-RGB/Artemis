@@ -1,12 +1,15 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
+using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using RGB.NET.Core;
@@ -14,21 +17,29 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public sealed class SidebarViewModel : Conductor<Screen>, IHandle<RequestSelectSidebarItemEvent>
+    public sealed class SidebarViewModel : Conductor<SidebarCategoryViewModel>.Collection.AllActive, IHandle<RequestSelectSidebarItemEvent>
     {
         private readonly IKernel _kernel;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IRgbService _rgbService;
         private readonly IProfileService _profileService;
+        private readonly IDialogService _dialogService;
         private SidebarScreenViewModel _selectedSidebarScreen;
         private ArtemisDevice _headerDevice;
+        private Screen _selectedScreen;
 
-        public SidebarViewModel(IKernel kernel, IEventAggregator eventAggregator, ISidebarVmFactory sidebarVmFactory, IRgbService rgbService, IProfileService profileService)
+        public SidebarViewModel(IKernel kernel,
+            IEventAggregator eventAggregator,
+            ISidebarVmFactory sidebarVmFactory,
+            IRgbService rgbService,
+            IProfileService profileService,
+            IDialogService dialogService)
         {
             _kernel = kernel;
             _sidebarVmFactory = sidebarVmFactory;
             _rgbService = rgbService;
             _profileService = profileService;
+            _dialogService = dialogService;
             eventAggregator.Subscribe(this);
 
             SidebarScreens = new BindableCollection<SidebarScreenViewModel>
@@ -39,7 +50,6 @@ namespace Artemis.UI.Screens.Sidebar
                 new SidebarScreenViewModel<SettingsViewModel>(PackIconKind.Cog, "Settings")
             };
             SelectedSidebarScreen = SidebarScreens.First();
-            ProfileCategories = new BindableCollection<SidebarCategoryViewModel>();
             UpdateProfileCategories();
             UpdateHeaderDevice();
         }
@@ -56,7 +66,12 @@ namespace Artemis.UI.Screens.Sidebar
         }
 
         public BindableCollection<SidebarScreenViewModel> SidebarScreens { get; }
-        public BindableCollection<SidebarCategoryViewModel> ProfileCategories { get; }
+
+        public Screen SelectedScreen
+        {
+            get => _selectedScreen;
+            private set => SetAndNotify(ref _selectedScreen, value);
+        }
 
         public SidebarScreenViewModel SelectedSidebarScreen
         {
@@ -70,18 +85,20 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void ActivateScreenViewModel(SidebarScreenViewModel screenViewModel)
         {
-            ActiveItem = screenViewModel.CreateInstance(_kernel);
+            SelectedScreen = screenViewModel.CreateInstance(_kernel);
         }
 
         private void UpdateProfileCategories()
         {
-            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories) 
-                ProfileCategories.Add(new SidebarCategoryViewModel(profileCategory));
+            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories)
+                AddProfileCategoryViewModel(profileCategory);
         }
 
-        public void AddCategory()
+        public async Task AddCategory()
         {
-
+            object result = await _dialogService.ShowDialog<SidebarCategoryCreateViewModel>();
+            if (result is ProfileCategory profileCategory)
+                AddProfileCategoryViewModel(profileCategory);
         }
 
         public void OpenUrl(string url)
@@ -94,6 +111,18 @@ namespace Artemis.UI.Screens.Sidebar
             SidebarScreenViewModel requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
             if (requested != null)
                 SelectedSidebarScreen = requested;
+        }
+
+        public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)
+        {
+            SidebarCategoryViewModel viewModel = _sidebarVmFactory.SidebarCategoryViewModel(profileCategory);
+            Items.Add(viewModel);
+            return viewModel;
+        }
+
+        public void RemoveProfileCategoryViewModel(SidebarCategoryViewModel viewModel)
+        {
+            Items.Remove(viewModel);
         }
 
         #region Overrides of Screen

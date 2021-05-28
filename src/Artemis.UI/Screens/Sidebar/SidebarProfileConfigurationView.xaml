@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileView"
+﻿<UserControl x:Class="Artemis.UI.Screens.Sidebar.SidebarProfileConfigurationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -14,29 +14,12 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <materialDesign:PackIcon Grid.Column="0" Kind="QuestionMark" Width="16" Height="16" />
+        <materialDesign:PackIcon Grid.Column="0" Kind="{Binding ProfileConfiguration.Icon}" Width="16" Height="16" />
         <TextBlock Grid.Column="1"
                    FontSize="12"
                    Margin="10 0"
                    VerticalAlignment="Center"
-                   Text="{Binding ProfileDescriptor.Name}" />
-        <ToggleButton Grid.Row="0"
-                      Grid.Column="2"
-                      Style="{StaticResource MaterialDesignActionToggleButton}"
-                      Focusable="False"
-                      IsHitTestVisible="False"
-                      IsChecked="False"
-                      Width="18"
-                      Height="18"
-                      HorizontalAlignment="Left" Margin="-2">
-            <ToggleButton.Content>
-                <Border Background="#E74C4C" Width="18" Height="18" >
-                    <materialDesign:PackIcon Kind="Close" VerticalAlignment="Center" HorizontalAlignment="Center" Width="14" Height="14" />
-                </Border>
-            </ToggleButton.Content>
-            <materialDesign:ToggleButtonAssist.OnContent>
-                <materialDesign:PackIcon Kind="Check" Width="14" Height="14" />
-            </materialDesign:ToggleButtonAssist.OnContent>
-        </ToggleButton>
+                   Text="{Binding ProfileConfiguration.Name}" />
+        
     </Grid>
 </UserControl>

@@ -1,0 +1,59 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Sidebar.Dialogs.ProfileCreateView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="280"
+             Width="300">
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
+    <StackPanel Margin="16">
+        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
+            Add a new profile
+        </TextBlock>
+
+        <TextBox materialDesign:HintAssist.Hint="Profile name"
+                 Margin="0 16 0 8"
+                 Style="{StaticResource MaterialDesignFilledTextBox}"
+                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
+
+        <ComboBox materialDesign:HintAssist.Hint="Profile icon"
+                  Margin="0 0 0 8"
+                  Style="{StaticResource MaterialDesignFilledComboBox}"
+                  SelectedItem="{Binding SelectedIcon}"
+                  IsEnabled="{Binding Initializing, Converter={StaticResource InverseBooleanConverter}}"
+                  ItemsSource="{Binding Icons}"
+                  IsEditable="True"
+                  TextSearch.TextPath="IconName">
+            <ComboBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                </ItemsPanelTemplate>
+            </ComboBox.ItemsPanel>
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
+                        <TextBlock Text="{Binding IconName}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Command="{s:Action Cancel}">
+                CANCEL
+            </Button>
+            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Command="{s:Action Accept}">
+                ACCEPT
+            </Button>
+        </StackPanel>
+    </StackPanel>
+
+
+</UserControl>

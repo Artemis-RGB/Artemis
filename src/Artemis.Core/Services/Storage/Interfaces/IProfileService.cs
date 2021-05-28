@@ -37,7 +37,8 @@ namespace Artemis.Core.Services
         void DeleteProfile(ProfileConfiguration profileConfiguration);
 
         /// <summary>
-        ///     Updates the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration"/>s but not the <see cref="Profile" />s themselves
+        ///     Updates the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
+        ///     <see cref="Profile" />s themselves
         /// </summary>
         /// <param name="profileCategory">The profile category to update</param>
         void UpdateProfileCategory(ProfileCategory profileCategory);
@@ -71,7 +72,7 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile configuration
         /// </summary>
-        /// <param name="category">The <see cref="ProfileCategory"/> in which to import the profile</param>
+        /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile</param>
         /// <param name="json">The content of the profile as JSON</param>
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
         /// <returns></returns>
@@ -83,7 +84,42 @@ namespace Artemis.Core.Services
         /// <param name="profile">The profile to adapt</param>
         void AdaptProfile(Profile profile);
 
+        /// <summary>
+        ///     Updates all currently active profiles
+        /// </summary>
         void UpdateProfiles(double deltaTime);
+
+        /// <summary>
+        ///     Renders all currently active profiles
+        /// </summary>
+        /// <param name="canvas"></param>
         void RenderProfiles(SKCanvas canvas);
+
+        /// <summary>
+        ///     Creates a new profile category and saves it to persistent storage
+        /// </summary>
+        /// <param name="name">The name of the new profile category, must be unique</param>
+        /// <returns>The newly created profile category</returns>
+        ProfileCategory CreateProfileCategory(string name);
+
+        /// <summary>
+        ///     Permanently deletes the provided profile category
+        /// </summary>
+        void DeleteProfileCategory(ProfileCategory profileCategory);
+
+        /// <summary>
+        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="category">The profile category to add the profile to</param>
+        /// <param name="name">The name of the new profile configuration</param>
+        /// <param name="icon">The icon of the new profile configuration</param>
+        /// <returns>The newly created profile configuration</returns>
+        ProfileConfiguration AddProfileConfiguration(ProfileCategory category, string name, string icon);
+
+        /// <summary>
+        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="profileConfiguration"></param>
+        void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
     }
 }

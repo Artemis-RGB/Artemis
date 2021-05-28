@@ -45,10 +45,10 @@
                        Background="Transparent"
                        MouseLeftButtonUp="{s:Action OnMouseLeftButtonUp}"/>
             <Button Grid.Column="2"
-                    Margin="0 0 2 0"
                     ToolTip="Edit category"
-                    Width="20"
-                    Height="20">
+                    Width="26"
+                    Height="26"
+                    Command="{s:Action UpdateCategory}">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
                         <Setter Property="Visibility" Value="Hidden" />
@@ -59,15 +59,16 @@
                         </Style.Triggers>
                     </Style>
                 </Button.Style>
-                <materialDesign:PackIcon Kind="Edit" Width="18" Height="18" />
+                <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
             </Button>
             <Button Grid.Column="3"
                     Margin="0 0 10 0"
                     Style="{StaticResource MaterialDesignIconForegroundButton}"
                     ToolTip="Add profile"
-                    Width="20"
-                    Height="20">
-                <materialDesign:PackIcon Kind="Plus" Width="18" Height="18" />
+                    Width="26"
+                    Height="26"
+                    Command="{s:Action AddProfile}">
+                <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" />
             </Button>
         </Grid>
 

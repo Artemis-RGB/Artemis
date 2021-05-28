@@ -216,12 +216,47 @@ namespace Artemis.Core.Services
 
         public void DeleteProfileCategory(ProfileCategory profileCategory)
         {
+            List<ProfileConfiguration> profileConfigurations = profileCategory.ProfileConfigurations.ToList();
+            foreach (ProfileConfiguration profileConfiguration in profileConfigurations) 
+                RemoveProfileConfiguration(profileConfiguration);
+
             lock (_profileRepository)
             {
                 _profileCategories.Remove(profileCategory);
                 _profileCategoryRepository.Remove(profileCategory.Entity);
-                // TODO: Archive or remove profiles?
             }
+        }
+
+        /// <summary>
+        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="category">The profile category to add the profile to</param>
+        /// <param name="name">The name of the new profile configuration</param>
+        /// <param name="icon">The icon of the new profile configuration</param>
+        /// <returns>The newly created profile configuration</returns>
+        public ProfileConfiguration AddProfileConfiguration(ProfileCategory category, string name, string icon)
+        {
+            ProfileConfiguration configuration = new(name, icon, category);
+            ProfileEntity entity = new();
+            _profileRepository.Add(entity);
+
+            configuration.Entity.ProfileId = entity.Id;
+            category.AddProfileConfiguration(configuration);
+            return configuration;
+        }
+
+        /// <summary>
+        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="profileConfiguration"></param>
+        public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
+        {
+            profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
+            
+            DeactivateProfile(profileConfiguration);
+            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
+            if (profileEntity != null)
+                _profileRepository.Remove(profileEntity);
         }
 
         public void UpdateProfileCategory(ProfileCategory profileCategory)
@@ -332,11 +367,12 @@ namespace Artemis.Core.Services
             profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
             profileEntity.IsFreshImport = true;
 
+            ProfileConfiguration configuration = new(profileEntity.Name, "Import", category);
             _profileRepository.Add(profileEntity);
-            ProfileConfiguration profileConfiguration = category.AddProfileConfiguration(profileEntity.Name, "Import");
-            profileConfiguration.Entity.ProfileId = profileEntity.Id;
+            configuration.Entity.ProfileId = profileEntity.Id;
+            category.AddProfileConfiguration(configuration);
 
-            return profileConfiguration;
+            return configuration;
         }
 
         /// <inheritdoc />

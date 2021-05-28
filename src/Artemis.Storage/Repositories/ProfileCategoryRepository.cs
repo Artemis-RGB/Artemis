@@ -35,7 +35,14 @@ namespace Artemis.Storage.Repositories
         {
             return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Id == id);
         }
-        
+
+        public ProfileCategoryEntity IsUnique(string name, Guid? id)
+        {
+            if (id == null)
+                return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Name == name);
+            return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Name == name && p.Id != id.Value);
+        }
+
         public void Save(ProfileCategoryEntity profileCategoryEntity)
         {
             _repository.Upsert(profileCategoryEntity);

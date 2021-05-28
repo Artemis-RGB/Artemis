@@ -10,6 +10,7 @@ namespace Artemis.Storage.Repositories.Interfaces
         void Remove(ProfileCategoryEntity profileCategoryEntity);
         List<ProfileCategoryEntity> GetAll();
         ProfileCategoryEntity Get(Guid id);
+        ProfileCategoryEntity IsUnique(string name, Guid? id);
         void Save(ProfileCategoryEntity profileCategoryEntity);
     }
 }

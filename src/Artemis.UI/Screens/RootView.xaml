@@ -7,9 +7,7 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:screens="clr-namespace:Artemis.UI.Screens"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
-                    xmlns:converters="clr-namespace:Artemis.UI.Converters"
                     xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-                    xmlns:localization="clr-namespace:MaterialDesignExtensions.Localization;assembly=MaterialDesignExtensions"
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Resources/Images/Logo/bow.ico"
@@ -51,7 +49,7 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBlock Grid.Column="0" 
-                               Text="{Binding SidebarViewModel.ActiveItem.DisplayName}" 
+                               Text="{Binding SidebarViewModel.SelectedScreen.DisplayName}" 
                                VerticalAlignment="Center" 
                                FontSize="20" 
                                Margin="15 0" />
@@ -71,7 +69,7 @@
             </materialDesign:ColorZone>
 
             <Grid>
-                <ContentControl s:View.Model="{Binding SidebarViewModel.ActiveItem}" />
+                <ContentControl s:View.Model="{Binding SidebarViewModel.SelectedScreen}" />
                 <materialDesign:Snackbar x:Name="MainSnackbar"
                                          MessageQueue="{Binding MainMessageQueue}"
                                          materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"

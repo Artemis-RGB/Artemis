@@ -4,7 +4,7 @@ using Artemis.UI.Shared.Services;
 using FluentValidation;
 using Stylet;
 
-namespace Artemis.UI.Screens.ProfileEditor.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs
 {
     public class ProfileEditViewModel : DialogViewModelBase
     {
