@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
@@ -14,17 +15,20 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     public class DataModelConditionGroupViewModel : DataModelConditionViewModel
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
+        private readonly List<Module> _modules;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isEventGroup;
         private bool _isRootGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             ConditionGroupType groupType,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory)
             : base(dataModelConditionGroup)
         {
             GroupType = groupType;
+            _modules = modules;
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -131,22 +135,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 switch (childModel)
                 {
                     case DataModelConditionGroup dataModelConditionGroup:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType, _modules));
                         break;
                     case DataModelConditionList dataModelConditionList:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList, _modules));
                         break;
                     case DataModelConditionEvent dataModelConditionEvent:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent, _modules));
                         break;
                     case DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate, _modules));
                         break;
                     case DataModelConditionListPredicate dataModelConditionListPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate, _modules));
                         break;
                     case DataModelConditionEventPredicate dataModelConditionEventPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate, _modules));
                         break;
                 }
             }
@@ -171,6 +175,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             IsConditionMet = DataModelConditionGroup.Evaluate();
             foreach (DataModelConditionViewModel dataModelConditionViewModel in Items)
                 dataModelConditionViewModel.Evaluate();
+        }
+
+        public override void UpdateModules()
+        {
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+                dataModelConditionViewModel.UpdateModules();
         }
 
         public void ConvertToConditionList(DataModelConditionViewModel predicateViewModel)

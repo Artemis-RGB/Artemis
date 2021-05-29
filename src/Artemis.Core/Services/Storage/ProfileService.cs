@@ -58,17 +58,17 @@ namespace Artemis.Core.Services
                         if (profileConfiguration.IsBeingEdited)
                             continue;
 
-                        bool mustBeActive = !profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.Modules.All(m => m.IsActivated);
-                        if (mustBeActive)
+                        bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
+                        if (shouldBeActive)
                         {
                             profileConfiguration.Update();
-                            mustBeActive = profileConfiguration.ActivationConditionMet;
+                            shouldBeActive = profileConfiguration.ActivationConditionMet;
                         }
 
                         // Make sure the profile is active or inactive according to the parameters above
-                        if (mustBeActive && profileConfiguration.Profile == null)
+                        if (shouldBeActive && profileConfiguration.Profile == null)
                             ActivateProfile(profileConfiguration);
-                        else if (!mustBeActive && profileConfiguration.Profile != null)
+                        else if (!shouldBeActive && profileConfiguration.Profile != null)
                             DeactivateProfile(profileConfiguration);
 
                         profileConfiguration.Profile?.Update(deltaTime);
@@ -94,7 +94,7 @@ namespace Artemis.Core.Services
                         else
                         {
                             // Ensure all criteria are met before rendering
-                            if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModules && profileConfiguration.ActivationConditionMet)
+                            if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
                                 profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
                         }
                     }

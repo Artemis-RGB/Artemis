@@ -11,7 +11,7 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
-        private List<Module> _activationOverride = new();
+        private Module? _activationOverride;
 
         public ModuleService(ILogger logger, IPluginManagementService pluginManagementService)
         {
@@ -112,15 +112,13 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <inheritdoc />
-        public void SetActivationOverride(IEnumerable<Module> modules)
+        public void SetActivationOverride(Module? module)
         {
-            foreach (Module module in _activationOverride)
-                OverrideDeactivate(module);
-
-            _activationOverride = modules.ToList();
-            foreach (Module module in _activationOverride)
-                OverrideActivate(module);
+            if (_activationOverride != null)
+                OverrideDeactivate(_activationOverride);
+            _activationOverride = module;
+            if (_activationOverride != null)
+                OverrideActivate(_activationOverride);
         }
 
         public void UpdateActiveModules(double deltaTime)

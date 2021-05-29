@@ -93,7 +93,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the data model ID of the <see cref="Target" /> if it is a <see cref="DataModel" />
         /// </summary>
-        public string? DataModelId => Target?.Feature.Id;
+        public string? DataModelId => Target?.Module.Id;
 
         /// <summary>
         ///     Gets the point-separated path associated with this <see cref="DataModelPath" />
@@ -327,7 +327,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelAdded(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.Feature.Id != Entity.DataModelId)
+            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
                 return;
 
             Target = e.Registration.DataModel;
@@ -336,7 +336,7 @@ namespace Artemis.Core
 
         private void DataModelStoreOnDataModelRemoved(object? sender, DataModelStoreEvent e)
         {
-            if (e.Registration.DataModel.Feature.Id != Entity.DataModelId)
+            if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
                 return;
 
             Target = null;

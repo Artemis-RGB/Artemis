@@ -21,9 +21,9 @@ namespace Artemis.Core.Services
         void UpdateModuleActivation();
 
         /// <summary>
-        ///     Overrides activation on the provided modules and restores regular activation to any remaining modules
+        ///     Overrides activation on the provided module and restores regular activation to any remaining modules
         /// </summary>
-        void SetActivationOverride(IEnumerable<Module> modules);
+        void SetActivationOverride(Module? module);
 
         /// <summary>
         ///     Occurs whenever a module is activated

@@ -1,11 +1,12 @@
 ﻿using Artemis.Core.LayerEffects;
+using Artemis.Core.Modules;
 
 namespace Artemis.Core
 {
     /// <summary>
     ///     An empty data model plugin feature used by <see cref="Constants.CorePlugin" />
     /// </summary>
-    internal class CorePluginFeature : DataModelPluginFeature
+    internal class CorePluginFeature : Module
     {
         public CorePluginFeature()
         {
@@ -18,6 +19,10 @@ namespace Artemis.Core
         }
 
         public override void Disable()
+        {
+        }
+
+        public override void Update(double deltaTime)
         {
         }
     }

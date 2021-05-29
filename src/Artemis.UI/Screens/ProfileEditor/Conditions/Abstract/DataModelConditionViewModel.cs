@@ -63,5 +63,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
             groupViewModel.ConvertToPredicate(this);
             return true;
         }
+
+        public abstract void UpdateModules();
     }
 }

@@ -100,7 +100,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             else if (Modifier.ParameterType == ProfileRightSideType.Dynamic)
             {
                 DisposeStaticInputViewModel();
-                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+                DynamicSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Module);
                 if (DynamicSelectionViewModel != null)
                 {
                     DynamicSelectionViewModel.DisplaySwitchButton = true;

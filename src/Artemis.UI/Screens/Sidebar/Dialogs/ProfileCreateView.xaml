@@ -11,7 +11,7 @@
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="280"
              Width="800"
-             Height="400">
+             Height="600">
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
@@ -19,7 +19,8 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -63,43 +64,48 @@
         <TextBlock Grid.Row="0" Grid.Column="1" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="5 0 0 10">
             Modules
         </TextBlock>
-        <Grid Grid.Row="1" Grid.Column="1" Margin="5 0 0 0" >
+        <Grid Grid.Row="1" Grid.Column="1" Margin="5 0 0 0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0">Optionally pick modules below to bind your profile to them</TextBlock>
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                <ScrollViewer.Resources>
-                    <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
-                </ScrollViewer.Resources>
-                <ItemsControl ItemsSource="{Binding Modules}" Grid.IsSharedSizeScope="True">
-                    <ItemsControl.ItemTemplate>
+            <TextBlock Grid.Row="0">Optionally pick a module below to bind your profile to them</TextBlock>
+
+            <materialDesign:Card Grid.Row="1" Background="{DynamicResource MaterialDesignToolBarBackground}" Margin="5">
+                <ListBox ScrollViewer.VerticalScrollBarVisibility="Auto" ItemsSource="{Binding Modules}" SelectedItem="{Binding SelectedModule}">
+                    <ListBox.ItemTemplate>
                         <DataTemplate DataType="{x:Type dialogs:ProfileModuleViewModel}">
-                            <Border x:Name="Border" Padding="8 4" Margin="0 3" CornerRadius="4">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition SharedSizeGroup="Checkerz" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-                                    <CheckBox VerticalAlignment="Center" IsChecked="{Binding IsSelected}" />
-                                    <shared:ArtemisIcon Grid.Column="1" Icon="{Binding Icon}" Width="25" Height="25" Margin="10 0" />
-                                    <TextBlock Grid.Column="2" VerticalAlignment="Center" Text="{Binding Name}" />
-                                </Grid>
-                            </Border>
-                            <DataTemplate.Triggers>
-                                <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                    <Setter TargetName="Border" Property="Background" Value="{DynamicResource MaterialDesignSelection}" />
-                                </DataTrigger>
-                            </DataTemplate.Triggers>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <shared:ArtemisIcon Grid.Column="0" Icon="{Binding Icon}" Width="25" Height="25" Margin="10 0" />
+                                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Name}" />
+                            </Grid>
                         </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </materialDesign:Card>
+        </Grid>
+
+        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0 16 0 0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0"  Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 10">
+                Activation conditions
+            </TextBlock>
+            <TextBlock Grid.Row="1">If you only want this profile to be active under certain conditions, configure those conditions below</TextBlock>
+
+            <ScrollViewer Grid.Row="2" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
+                <ContentControl s:View.Model="{Binding ActivationConditionViewModel}" />
             </ScrollViewer>
         </Grid>
 
-        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
             <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Command="{s:Action Cancel}">
                 CANCEL
             </Button>

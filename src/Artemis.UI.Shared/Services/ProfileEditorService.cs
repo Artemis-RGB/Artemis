@@ -155,13 +155,13 @@ namespace Artemis.UI.Shared.Services
                 if (SelectedProfileConfiguration != null)
                 {
                     SelectedProfileConfiguration.IsBeingEdited = true;
-                    _moduleService.SetActivationOverride(SelectedProfileConfiguration.Modules);
+                    _moduleService.SetActivationOverride(SelectedProfileConfiguration.Module);
                     _profileService.ActivateProfile(SelectedProfileConfiguration);
                     _profileService.RenderForEditor = true;
                 }
                 else
                 {
-                    _moduleService.SetActivationOverride(Enumerable.Empty<Module>());
+                    _moduleService.SetActivationOverride(null);
                     _profileService.RenderForEditor = false;
                 }
 

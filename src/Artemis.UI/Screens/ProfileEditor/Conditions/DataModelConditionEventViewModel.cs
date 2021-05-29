@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
@@ -14,15 +15,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly List<Module> _modules;
         private readonly IProfileEditorService _profileEditorService;
         private DateTime _lastTrigger;
         private string _triggerPastParticiple;
 
         public DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory) : base(dataModelConditionEvent)
         {
+            _modules = modules;
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
@@ -46,7 +50,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
             LeftSideSelectionViewModel.LoadEventChildren = false;
 
@@ -82,7 +86,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 if (!(childModel is DataModelConditionGroup dataModelConditionGroup))
                     continue;
 
-                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.Event);
+                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.Event, _modules);
                 viewModel.IsRootGroup = true;
                 viewModels.Add(viewModel);
             }
@@ -106,6 +110,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService.SaveSelectedProfileElement();
 
             Update();
+        }
+
+        public override void UpdateModules()
+        {
+            LeftSideSelectionViewModel.Dispose();
+            LeftSideSelectionViewModel.PropertySelected -= LeftSideSelectionViewModelOnPropertySelected;
+            Initialize();
         }
 
         protected override void OnInitialActivate()

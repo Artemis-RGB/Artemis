@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
@@ -87,7 +88,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private void Initialize()
         {
             DirectDataBinding.ModifiersUpdated += DirectDataBindingOnModifiersUpdated;
-            TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+            TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Module);
             TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
             ModifierViewModels.CollectionChanged += ModifierViewModelsOnCollectionChanged;
             Update();

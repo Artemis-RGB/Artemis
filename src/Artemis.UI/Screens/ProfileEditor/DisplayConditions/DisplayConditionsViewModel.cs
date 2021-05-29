@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
@@ -127,7 +129,10 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (e.RenderProfileElement.DisplayCondition == null)
                 e.RenderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General);
+            List<Module> modules = new();
+            if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
+                modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
             ActiveItem.IsRootGroup = true;
             ActiveItem.Update();
 

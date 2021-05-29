@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms.VisualStyles;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
@@ -16,14 +16,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly List<Module> _modules;
         private readonly IProfileEditorService _profileEditorService;
 
-        public DataModelConditionListViewModel(
-            DataModelConditionList dataModelConditionList,
+        public DataModelConditionListViewModel(DataModelConditionList dataModelConditionList,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory) : base(dataModelConditionList)
         {
+            _modules = modules;
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
@@ -61,7 +63,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public override void Evaluate()
         {
             IsConditionMet = DataModelConditionList.Evaluate();
-            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items)
                 dataModelConditionViewModel.Evaluate();
         }
 
@@ -71,9 +73,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             _profileEditorService.SaveSelectedProfileElement();
         }
 
+        /// <inheritdoc />
+        public override void UpdateModules()
+        {
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+                dataModelConditionViewModel.UpdateModules();
+        }
+
         public void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideSelectionViewModelOnPropertySelected;
 
             IReadOnlyCollection<DataModelVisualizationRegistration> editors = _dataModelUIService.RegisteredDataModelEditors;
@@ -120,7 +129,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 if (!(childModel is DataModelConditionGroup dataModelConditionGroup))
                     continue;
 
-                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.List);
+                DataModelConditionGroupViewModel viewModel = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, ConditionGroupType.List, _modules);
                 viewModel.IsRootGroup = true;
                 viewModels.Add(viewModel);
             }

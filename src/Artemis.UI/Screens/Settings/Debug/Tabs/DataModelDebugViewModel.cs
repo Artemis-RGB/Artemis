@@ -117,7 +117,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
 
         private void OnPluginFeatureToggled(object sender, PluginFeatureEventArgs e)
         {
-            if (e.PluginFeature is DataModelPluginFeature)
+            if (e.PluginFeature is Module)
                 PopulateModules();
         }
 

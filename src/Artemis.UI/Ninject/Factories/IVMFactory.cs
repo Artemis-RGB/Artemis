@@ -1,4 +1,6 @@
-﻿using Artemis.Core;
+﻿using System.Collections.Generic;
+using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
@@ -72,12 +74,12 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDataModelConditionsVmFactory : IVmFactory
     {
-        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, ConditionGroupType groupType);
-        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList);
-        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent);
-        DataModelConditionGeneralPredicateViewModel DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate);
-        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
-        DataModelConditionEventPredicateViewModel DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate);
+        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, ConditionGroupType groupType, List<Module> modules);
+        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList, List<Module> modules);
+        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent, List<Module> modules);
+        DataModelConditionGeneralPredicateViewModel DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate, List<Module> modules);
+        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate, List<Module> modules);
+        DataModelConditionEventPredicateViewModel DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate, List<Module> modules);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory

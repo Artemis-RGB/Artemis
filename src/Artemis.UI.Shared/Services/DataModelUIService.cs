@@ -47,7 +47,7 @@ namespace Artemis.UI.Shared.Services
         public void UpdateModules(DataModelPropertiesViewModel mainDataModelVisualization)
         {
             List<DataModelVisualizationViewModel> disabledChildren = mainDataModelVisualization.Children
-                .Where(d => d.DataModel != null && !d.DataModel.Feature.IsEnabled)
+                .Where(d => d.DataModel != null && !d.DataModel.Module.IsEnabled)
                 .ToList();
             foreach (DataModelVisualizationViewModel child in disabledChildren)
                 mainDataModelVisualization.Children.Remove(child);
@@ -223,6 +223,11 @@ namespace Artemis.UI.Shared.Services
 
                 return null;
             }
+        }
+
+        public DataModelDynamicViewModel GetDynamicSelectionViewModel(Module? module)
+        {
+            return _dataModelVmFactory.DataModelDynamicViewModel(module == null ? new List<Module>() : new List<Module> {module});
         }
 
         public DataModelDynamicViewModel GetDynamicSelectionViewModel(List<Module> modules)

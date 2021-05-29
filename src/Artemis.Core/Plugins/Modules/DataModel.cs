@@ -24,16 +24,16 @@ namespace Artemis.Core.DataModelExpansions
         protected DataModel()
         {
             // These are both set right after construction to keep the constructor of inherited classes clean
-            Feature = null!;
+            Module = null!;
             DataModelDescription = null!;
         }
 
         /// <summary>
-        ///     Gets the plugin feature this data model belongs to
+        ///     Gets the module this data model belongs to
         /// </summary>
         [JsonIgnore]
         [DataModelIgnore]
-        public DataModelPluginFeature Feature { get; internal set; }
+        public Module Module { get; internal set; }
 
         /// <summary>
         ///     Gets the <see cref="DataModelPropertyAttribute" /> describing this data model
@@ -60,7 +60,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
         {
-            if (Feature is Module module)
+            if (Module is Module module)
                 return module.HiddenProperties;
             
             return new List<PropertyInfo>().AsReadOnly();
@@ -148,7 +148,7 @@ namespace Artemis.Core.DataModelExpansions
             attribute.Name ??= key.Humanize();
             if (initialValue is DataModel dynamicDataModel)
             {
-                dynamicDataModel.Feature = Feature;
+                dynamicDataModel.Module = Module;
                 dynamicDataModel.DataModelDescription = attribute;
             }
 

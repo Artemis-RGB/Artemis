@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Input;
@@ -16,6 +17,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
     {
         private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly List<Module> _modules;
         private readonly IProfileEditorService _profileEditorService;
         private DataModelStaticViewModel _rightSideInputViewModel;
         private DataModelDynamicViewModel _rightSideSelectionViewModel;
@@ -25,11 +27,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         protected DataModelConditionPredicateViewModel(
             DataModelConditionPredicate dataModelConditionPredicate,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService) : base(dataModelConditionPredicate)
         {
+            _modules = modules;
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _conditionOperatorService = conditionOperatorService;
@@ -80,7 +84,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         public virtual void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideOnPropertySelected;
             if (LeftSideColor != null)
                 LeftSideSelectionViewModel.ButtonBrush = LeftSideColor;
@@ -132,7 +136,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
                     CreateRightSideInputViewModel();
-                
+
                 Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
                 if (preferredType != null && RightSideInputViewModel.TargetType != preferredType)
                     RightSideInputViewModel.UpdateTargetType(preferredType);
@@ -196,6 +200,26 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
             ApplyOperator();
         }
 
+        public override void UpdateModules()
+        {
+            if (LeftSideSelectionViewModel != null)
+            {
+                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
+                LeftSideSelectionViewModel.Dispose();
+                LeftSideSelectionViewModel = null;
+            }
+            DisposeRightSideStaticViewModel();
+            DisposeRightSideDynamicViewModel();
+
+            // If the modules changed the paths may no longer be valid if they targeted a module no longer available, in that case clear the path
+            if (DataModelConditionPredicate.LeftPath?.Target != null && !DataModelConditionPredicate.LeftPath.Target.IsExpansion && !_modules.Contains(DataModelConditionPredicate.LeftPath.Target.Module))
+                DataModelConditionPredicate.UpdateLeftSide(null);
+            if (DataModelConditionPredicate.RightPath?.Target != null && !DataModelConditionPredicate.RightPath.Target.IsExpansion && !_modules.Contains(DataModelConditionPredicate.RightPath.Target.Module))
+                DataModelConditionPredicate.UpdateRightSideDynamic(null);
+
+            Initialize();
+        }
+
         #region IDisposable
 
         protected virtual void Dispose(bool disposing)
@@ -227,7 +251,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         private void CreateRightSideSelectionViewModel()
         {
-            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Modules);
+            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             RightSideSelectionViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
             RightSideSelectionViewModel.DisplaySwitchButton = true;
             RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;

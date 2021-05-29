@@ -52,7 +52,7 @@ namespace Artemis.Core.Modules
         internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.Feature = this;
+            DataModel.Module = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
         }
@@ -68,7 +68,7 @@ namespace Artemis.Core.Modules
     /// <summary>
     ///     For internal use only, please use <see cref="Module{T}" />.
     /// </summary>
-    public abstract class Module : DataModelPluginFeature
+    public abstract class Module : PluginFeature
     {
         private readonly List<string> _defaultProfilePaths = new();
         private readonly List<ProfileEntity> _defaultProfiles = new();

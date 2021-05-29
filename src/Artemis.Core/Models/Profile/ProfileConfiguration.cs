@@ -7,6 +7,8 @@ namespace Artemis.Core
 {
     public class ProfileConfiguration : IStorageModel
     {
+        private Module? _module;
+
         internal ProfileConfiguration(string name, string icon, ProfileCategory category)
         {
             Name = name;
@@ -17,6 +19,9 @@ namespace Artemis.Core
 
         internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
         {
+            // Will be loaded from the entity
+            Name = null!;
+            Icon = null!;
             Category = category;
             Entity = entity;
             Load();
@@ -41,7 +46,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether this profile configuration is missing any modules
         /// </summary>
-        public bool IsMissingModules { get; private set; }
+        public bool IsMissingModule { get; private set; }
 
         /// <summary>
         ///     Gets or sets the behaviour of when this profile is activated
@@ -60,9 +65,22 @@ namespace Artemis.Core
 
         /// <summary>
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
-        ///     alongside any activation requirements of the <see cref="Modules" />
+        ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
         public DataModelConditionGroup? ActivationCondition { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the module this profile uses
+        /// </summary>
+        public Module? Module
+        {
+            get => _module;
+            set
+            {
+                _module = value;
+                IsMissingModule = false;
+            }
+        }
 
         /// <summary>
         ///     Gets a boolean indicating whether the activation conditions where met during the last <see cref="Update" /> call
@@ -70,12 +88,11 @@ namespace Artemis.Core
         public bool ActivationConditionMet { get; private set; }
 
         /// <summary>
-        ///     Gets a list of modules this profile uses
+        ///     Gets or sets a boolean indicating whether this profile configuration is being edited
         /// </summary>
-        public List<Module> Modules { get; } = new();
+        public bool IsBeingEdited { get; set; }
 
         internal ProfileConfigurationEntity Entity { get; }
-        public bool IsBeingEdited { get; set; }
 
         /// <summary>
         ///     Updates this configurations activation condition status
@@ -87,18 +104,26 @@ namespace Artemis.Core
 
         internal void LoadModules(List<Module> enabledModules)
         {
-            Modules.Clear();
-            foreach (Module enabledModule in enabledModules.Where(m => Entity.Modules.Contains(m.Id)))
-                Modules.Add(enabledModule);
-
-            IsMissingModules = Modules.Count != Entity.Modules.Count;
+            Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ModuleId);
+            IsMissingModule = Module == null && Entity.ModuleId != null;
         }
 
         internal void SaveModules()
         {
-            Entity.Modules.Clear();
-            foreach (Module module in Modules)
-                Entity.Modules.Add(module.Id);
+            if (IsMissingModule)
+                return;
+
+            Entity.ModuleId = Module?.Id;
+        }
+
+        public bool ShouldBeActive(bool includeActivationCondition)
+        {
+            if (IsSuspended || IsMissingModule)
+                return false;
+
+            if (includeActivationCondition)
+                return ActivationConditionMet && (Module == null || Module.IsActivated);
+            return Module == null || Module.IsActivated;
         }
 
         #region Implementation of IStorageModel
