@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.UI.Screens.Sidebar.Dialogs;
+using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -20,7 +21,11 @@ namespace Artemis.UI.Screens.Sidebar
 
         public async Task ViewProperties()
         {
-            await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object> {{"profileConfiguration", ProfileConfiguration}});
+            await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
+            {
+                {"profileConfiguration", ProfileConfiguration},
+                {"isNew", false}
+            });
         }
     }
 }

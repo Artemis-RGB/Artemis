@@ -12,12 +12,11 @@ using FluentValidation;
 using MaterialDesignThemes.Wpf;
 using Stylet;
 
-namespace Artemis.UI.Screens.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 {
     public class ProfileEditViewModel : DialogViewModelBase
     {
         private readonly DataModelConditionGroup _dataModelConditionGroup;
-        private readonly ProfileConfiguration _profileConfiguration;
         private readonly IProfileService _profileService;
         private readonly IDialogService _dialogService;
         private bool _initializing;
@@ -27,17 +26,21 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
         private readonly List<Module> _modules;
 
         public ProfileEditViewModel(ProfileConfiguration profileConfiguration,
+            bool isNew,
             IProfileService profileService,
             IPluginManagementService pluginManagementService,
             IDialogService dialogService,
+            ISidebarVmFactory sidebarVmFactory,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory,
             IModelValidator<ProfileEditViewModel> validator) : base(validator)
         {
-            _profileConfiguration = profileConfiguration;
+            ProfileConfiguration = profileConfiguration;
+            IsNew = isNew;
+            
             _profileService = profileService;
             _dialogService = dialogService;
-            _dataModelConditionGroup = _profileConfiguration.ActivationCondition ?? new DataModelConditionGroup(null);
-            _modules = _profileConfiguration.Module != null ? new List<Module> {_profileConfiguration.Module} : new List<Module>();
+            _dataModelConditionGroup = ProfileConfiguration.ActivationCondition ?? new DataModelConditionGroup(null);
+            _modules = ProfileConfiguration.Module != null ? new List<Module> { ProfileConfiguration.Module} : new List<Module>();
 
             Icons = new BindableCollection<ProfileIconViewModel>();
             Modules = new BindableCollection<ProfileModuleViewModel>(
@@ -47,10 +50,13 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             ActivationConditionViewModel = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(_dataModelConditionGroup, ConditionGroupType.General, _modules);
             ActivationConditionViewModel.ConductWith(this);
             ActivationConditionViewModel.IsRootGroup = true;
+            ModuleActivationRequirementsViewModel = new ModuleActivationRequirementsViewModel(sidebarVmFactory);
+            ModuleActivationRequirementsViewModel.ConductWith(this);
+            ModuleActivationRequirementsViewModel.SetModule(ProfileConfiguration.Module);
 
-            _profileName = _profileConfiguration.Name;
-            _selectedModule = Modules.FirstOrDefault(m => m.Module == _profileConfiguration.Module);
-
+            _profileName = ProfileConfiguration.Name;
+            _selectedModule = Modules.FirstOrDefault(m => m.Module == ProfileConfiguration.Module);
+            
             Task.Run(() =>
             {
                 Icons.AddRange(Enum.GetValues<PackIconKind>()
@@ -58,11 +64,13 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
                     .Select(g => g.First())
                     .Select(e => new ProfileIconViewModel(e))
                     .ToList());
-                SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == _profileConfiguration.Icon);
+                SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == ProfileConfiguration.Icon);
                 Initializing = false;
             });
         }
 
+        public ProfileConfiguration ProfileConfiguration { get; }
+        public bool IsNew { get; }
         public BindableCollection<ProfileIconViewModel> Icons { get; }
         public BindableCollection<ProfileModuleViewModel> Modules { get; }
 
@@ -91,19 +99,22 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             {
                 if (!SetAndNotify(ref _selectedModule, value)) return;
                 _modules.Clear();
-                if (value != null)
+                if (value != null) 
                     _modules.Add(value.Module);
+
                 ActivationConditionViewModel.UpdateModules();
+                ModuleActivationRequirementsViewModel.SetModule(value?.Module);
             }
         }
 
         public DataModelConditionGroupViewModel ActivationConditionViewModel { get; }
+        public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
 
         public async Task Delete()
         {
             Session.Close(false);
             if (await _dialogService.ShowConfirmDialog("Delete profile", "Are you sure you want to delete this profile?\r\nThis cannot be undone."))
-                _profileService.RemoveProfileConfiguration(_profileConfiguration);
+                _profileService.RemoveProfileConfiguration(ProfileConfiguration);
         }
 
         public async Task Accept()
@@ -113,14 +124,14 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             if (HasErrors)
                 return;
 
-            _profileConfiguration.Name = ProfileName;
-            _profileConfiguration.Icon = SelectedIcon.Icon.ToString();
-            _profileConfiguration.Module = SelectedModule?.Module;
+            ProfileConfiguration.Name = ProfileName;
+            ProfileConfiguration.Icon = SelectedIcon.Icon.ToString();
+            ProfileConfiguration.Module = SelectedModule?.Module;
 
             if (_dataModelConditionGroup.Children.Any())
-                _profileConfiguration.ActivationCondition = _dataModelConditionGroup;
+                ProfileConfiguration.ActivationCondition = _dataModelConditionGroup;
 
-            _profileService.SaveProfileCategory(_profileConfiguration.Category);
+            _profileService.SaveProfileCategory(ProfileConfiguration.Category);
 
             Session.Close(true);
         }

@@ -6,6 +6,7 @@ using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Sidebar.Dialogs;
+using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using Stylet;
@@ -52,8 +53,17 @@ namespace Artemis.UI.Screens.Sidebar
             get => _selectedProfileConfiguration;
             set
             {
-                if (SetAndNotify(ref _selectedProfileConfiguration, value) && value != null)
+                if (!SetAndNotify(ref _selectedProfileConfiguration, value)) return;
+                if (value == null) return;
+                try
+                {
                     ((SidebarViewModel) Parent).SelectProfileConfiguration(value.ProfileConfiguration);
+                }
+                catch (Exception e)
+                {
+                    _dialogService.ShowExceptionDialog("Failed select profile", e);
+                    throw;
+                }
             }
         }
 
@@ -84,7 +94,11 @@ namespace Artemis.UI.Screens.Sidebar
         public async Task AddProfile()
         {
             ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(ProfileCategory, "New profile", Enum.GetValues<PackIconKind>().First().ToString());
-            object save = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object> { { "profileConfiguration", profileConfiguration } });
+            object save = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
+            {
+                {"profileConfiguration", profileConfiguration},
+                {"isNew", true}
+            });
             if (save is not true)
                 _profileService.RemoveProfileConfiguration(profileConfiguration);
         }

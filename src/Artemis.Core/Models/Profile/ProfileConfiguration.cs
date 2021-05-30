@@ -5,9 +5,13 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
-    public class ProfileConfiguration : IStorageModel
+    public class ProfileConfiguration : CorePropertyChanged, IStorageModel
     {
         private Module? _module;
+        private string _name;
+        private string _icon;
+        private bool _isSuspended;
+        private bool _isMissingModule;
 
         internal ProfileConfiguration(string name, string icon, ProfileCategory category)
         {
@@ -30,23 +34,39 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets or sets the name of this profile configuration
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get => _name;
+            set => SetAndNotify(ref _name, value);
+        }
 
         /// <summary>
         ///     Gets or sets the icon of this profile configuration
         /// </summary>
-        public string Icon { get; set; }
+        public string Icon
+        {
+            get => _icon;
+            set => SetAndNotify(ref _icon, value);
+        }
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is suspended, disabling it regardless of the
         ///     <see cref="ActivationCondition" />
         /// </summary>
-        public bool IsSuspended { get; set; }
+        public bool IsSuspended
+        {
+            get => _isSuspended;
+            set => SetAndNotify(ref _isSuspended, value);
+        }
 
         /// <summary>
         ///     Gets a boolean indicating whether this profile configuration is missing any modules
         /// </summary>
-        public bool IsMissingModule { get; private set; }
+        public bool IsMissingModule
+        {
+            get => _isMissingModule;
+            private set => SetAndNotify(ref _isMissingModule, value);
+        }
 
         /// <summary>
         ///     Gets or sets the behaviour of when this profile is activated

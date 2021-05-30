@@ -1,7 +1,7 @@
 ﻿using Artemis.Core.Modules;
 using Stylet;
 
-namespace Artemis.UI.Screens.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 {
     public class ProfileModuleViewModel : PropertyChangedBase
     {

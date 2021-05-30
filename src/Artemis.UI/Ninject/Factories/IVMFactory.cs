@@ -21,6 +21,7 @@ using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Screens.Sidebar;
+using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Stylet;
 
 namespace Artemis.UI.Ninject.Factories
@@ -105,6 +106,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
         SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
+        ModuleActivationRequirementViewModel ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
     }
 
     // TODO: Move these two

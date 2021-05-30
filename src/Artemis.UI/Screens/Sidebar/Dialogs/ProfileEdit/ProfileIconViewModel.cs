@@ -1,6 +1,6 @@
 ﻿using MaterialDesignThemes.Wpf;
 
-namespace Artemis.UI.Screens.Sidebar.Dialogs
+namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 {
     public class ProfileIconViewModel
     {
