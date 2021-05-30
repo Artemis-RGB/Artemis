@@ -5,9 +5,50 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:SidebarProfileConfigurationViewModel}">
+             d:DataContext="{d:DesignInstance local:SidebarProfileConfigurationViewModel}"
+             Background="Transparent"
+             Margin="-8"
+             Padding="8">
+    <!-- Above is a dumb hack to get the context menu to cover the entire item -->
+    <UserControl.ContextMenu>
+        <ContextMenu>
+            <MenuItem Header="View properties" Command="{s:Action ViewProperties}">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Cog" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Duplicate" Command="{s:Action DuplicateElement}" InputGestureText="Ctrl+D" IsEnabled="False">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="ContentDuplicate" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Copy" Command="{s:Action CopyElement}" InputGestureText="Ctrl+C" IsEnabled="False">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="ContentCopy" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Paste" Command="{s:Action PasteElement}" InputGestureText="Ctrl+V">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="ContentPaste" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <Separator />
+            <MenuItem Header="Rename" Command="{s:Action RenameElement}" InputGestureText="F2" IsEnabled="False">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="RenameBox" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Delete" Command="{s:Action DeleteElement}" InputGestureText="Del" IsEnabled="False">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="TrashCan" />
+                </MenuItem.Icon>
+            </MenuItem>
+        </ContextMenu>
+    </UserControl.ContextMenu>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />

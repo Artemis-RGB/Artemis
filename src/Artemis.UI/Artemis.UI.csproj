@@ -369,9 +369,6 @@
         <Page Update="Screens\Plugins\PluginPrerequisitesUninstallDialogView.xaml">
             <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>
-        <Page Update="Screens\Sidebar\Dialogs\ProfileEditView.xaml">
-            <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-        </Page>
         <Page Update="Screens\Settings\Debug\Tabs\Performance\PerformanceDebugView.xaml">
           <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
         </Page>

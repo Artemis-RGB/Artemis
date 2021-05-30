@@ -16,17 +16,15 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
-        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
         private bool _isEventCondition;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory, ICoreService coreService)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
-            _coreService = coreService;
         }
 
         public bool DisplayStartHint
@@ -93,14 +91,12 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         protected override void OnInitialActivate()
         {
             _profileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             _profileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
-            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
             base.OnClose();
         }
 
@@ -134,7 +130,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
             ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
             ActiveItem.IsRootGroup = true;
-            ActiveItem.Update();
 
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
             IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
@@ -149,11 +144,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
             NotifyOfPropertyChange(nameof(EventOverlapMode));
-        }
-
-        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
-        {
-            ActiveItem?.Evaluate();
         }
 
         private void DisplayConditionOnChildrenModified(object sender, EventArgs e)

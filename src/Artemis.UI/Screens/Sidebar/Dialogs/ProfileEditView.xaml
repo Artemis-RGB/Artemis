@@ -5,26 +5,149 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
+             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
-             d:DesignHeight="213.053" d:DesignWidth="254.425">
-    <StackPanel Margin="16">
-        <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}">
-            Edit profile
+             d:DesignHeight="450" d:DesignWidth="280"
+             d:DataContext="{d:DesignInstance {x:Type dialogs:ProfileEditViewModel}}"
+             Width="800">
+    <UserControl.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+    </UserControl.Resources>
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <TextBlock Grid.Row="0" Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 10">
+            Add a new profile
         </TextBlock>
 
-        <TextBox materialDesign:HintAssist.Hint="Profile name"
-                 Margin="0 8 0 16"
-                 Width="300"
-                 Style="{StaticResource MaterialDesignFilledTextBox}"
-                 Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
+        <StackPanel Grid.Row="1" Grid.Column="0">
+            <StackPanel Grid.Row="0">
+                <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" Margin="0 0 0 14">
+                    General
+                </TextBlock>
+            </StackPanel>
+            <TextBox materialDesign:HintAssist.Hint="Profile name"
+                     Margin="0 4 0 8"
+                     Style="{StaticResource MaterialDesignFilledTextBox}"
+                     Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 8 0 0">
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Margin="0 0 8 0" Command="{s:Action Cancel}">
-                CANCEL
-            </Button>
-            <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Margin="0 0 0 0" Command="{s:Action Accept}">
-                ACCEPT
-            </Button>
+            <ComboBox materialDesign:HintAssist.Hint="Profile icon"
+                      Margin="0 0 0 8"
+                      Style="{StaticResource MaterialDesignFilledComboBox}"
+                      SelectedItem="{Binding SelectedIcon}"
+                      IsEnabled="{Binding Initializing, Converter={StaticResource InverseBooleanConverter}}"
+                      ItemsSource="{Binding Icons}"
+                      TextSearch.TextPath="IconName">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type dialogs:ProfileIconViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding IconName}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+
+            <ComboBox materialDesign:HintAssist.Hint="Module"
+                      materialDesign:TextFieldAssist.HasClearButton="True"
+                      materialDesign:HintAssist.HelperText="Optional and binds the profile to the selected module, making module data available."
+                      Margin="0 0 0 8"
+                      Style="{StaticResource MaterialDesignFilledComboBox}"
+                      SelectedItem="{Binding SelectedModule}"
+                      ItemsSource="{Binding Modules}">
+                <ComboBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel />
+                    </ItemsPanelTemplate>
+                </ComboBox.ItemsPanel>
+                <ComboBox.ItemTemplate>
+                    <DataTemplate DataType="{x:Type dialogs:ProfileModuleViewModel}">
+                        <StackPanel Orientation="Horizontal">
+                            <shared:ArtemisIcon Icon="{Binding Icon}" Width="16" Height="16" Margin="0 0 5 0" />
+                            <TextBlock Text="{Binding Name}" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
-    </StackPanel>
+
+        <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="{StaticResource MaterialDesignDivider}" Width="1" Margin="10 0" />
+
+        <Grid Grid.Row="1" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                    Keybinds
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}">You may set up keybinds to activate/deactivate the profile</TextBlock>
+            </StackPanel>
+            
+        </Grid>
+
+        <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 16" BorderThickness="1" Height="1" BorderBrush="{StaticResource MaterialDesignDivider}" />
+
+        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0">
+                <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
+                    Activation conditions
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}">If you only want this profile to be active under certain conditions, configure those conditions below</TextBlock>
+            </StackPanel>
+    
+            <ScrollViewer Grid.Row="1" 
+                          HorizontalScrollBarVisibility="Auto" 
+                          VerticalScrollBarVisibility="Auto" 
+                          MinHeight="150" 
+                          MaxHeight="300"
+                          Margin="0 5">
+                <ContentControl s:View.Model="{Binding ActivationConditionViewModel}" />
+            </ScrollViewer>
+        </Grid>
+
+        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0 8 0 0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0"
+                    HorizontalAlignment="Left"
+                    Style="{StaticResource MaterialDesignFlatAccentButton}"
+                    Command="{s:Action Delete}">
+                DELETE
+            </Button>
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <Button Style="{StaticResource MaterialDesignFlatButton}" IsCancel="True" Command="{s:Action Cancel}">
+                    CANCEL
+                </Button>
+                <Button Style="{StaticResource MaterialDesignFlatButton}" IsDefault="True" Command="{s:Action Accept}">
+                    ACCEPT
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Grid>
 </UserControl>

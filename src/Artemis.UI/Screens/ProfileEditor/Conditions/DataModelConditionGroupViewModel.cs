@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
@@ -16,6 +17,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly List<Module> _modules;
+        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isEventGroup;
         private bool _isRootGroup;
@@ -23,12 +25,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             ConditionGroupType groupType,
             List<Module> modules,
+            ICoreService coreService,
             IProfileEditorService profileEditorService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory)
             : base(dataModelConditionGroup)
         {
             GroupType = groupType;
             _modules = modules;
+            _coreService = coreService;
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -213,7 +217,32 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            if (IsRootGroup)
+                Evaluate();
+        }
+
         public event EventHandler Updated;
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            Update();
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            base.OnClose();
+        }
+        
+        #endregion
 
         protected virtual void OnUpdated()
         {

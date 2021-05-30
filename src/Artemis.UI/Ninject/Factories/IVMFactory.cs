@@ -104,7 +104,7 @@ namespace Artemis.UI.Ninject.Factories
     public interface ISidebarVmFactory : IVmFactory
     {
         SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
-        SidebarProfileConfigurationViewModel SidebarProfileViewModel(ProfileConfiguration profileConfiguration);
+        SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
     }
 
     // TODO: Move these two

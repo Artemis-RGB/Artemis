@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Shared.Services;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -12,14 +15,16 @@ namespace Artemis.UI.Screens.Sidebar
     public class SidebarCategoryViewModel : Conductor<SidebarProfileConfigurationViewModel>.Collection.AllActive
     {
         private readonly IDialogService _dialogService;
+        private readonly ISidebarVmFactory _vmFactory;
         private readonly IProfileService _profileService;
         private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
         private bool _showItems;
 
-        public SidebarCategoryViewModel(ProfileCategory profileCategory, IProfileService profileService, IDialogService dialogService)
+        public SidebarCategoryViewModel(ProfileCategory profileCategory, IProfileService profileService, IDialogService dialogService, ISidebarVmFactory vmFactory)
         {
             _profileService = profileService;
             _dialogService = dialogService;
+            _vmFactory = vmFactory;
             _showItems = !profileCategory.IsCollapsed;
 
             ProfileCategory = profileCategory;
@@ -52,11 +57,6 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        public async Task AddProfile()
-        {
-            await _dialogService.ShowDialog<ProfileCreateViewModel>(new Dictionary<string, object> {{"profileCategory", ProfileCategory}});
-        }
-
         public async Task UpdateCategory()
         {
             object result = await _dialogService.ShowDialog<SidebarCategoryUpdateViewModel>(new Dictionary<string, object> {{"profileCategory", ProfileCategory}});
@@ -81,15 +81,19 @@ namespace Artemis.UI.Screens.Sidebar
             ShowItems = !ShowItems;
         }
 
-        public async Task ViewProfileConfigurationProperties(SidebarProfileConfigurationViewModel profileConfigurationViewModel)
+        public async Task AddProfile()
         {
+            ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(ProfileCategory, "New profile", Enum.GetValues<PackIconKind>().First().ToString());
+            object save = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object> { { "profileConfiguration", profileConfiguration } });
+            if (save is not true)
+                _profileService.RemoveProfileConfiguration(profileConfiguration);
         }
 
         private void CreateProfileViewModels()
         {
             Items.Clear();
             foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations)
-                Items.Add(new SidebarProfileConfigurationViewModel(profileConfiguration));
+                Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(profileConfiguration));
         }
 
         private void ProfileCategoryOnProfileConfigurationRemoved(object? sender, ProfileConfigurationEventArgs e)
@@ -101,7 +105,7 @@ namespace Artemis.UI.Screens.Sidebar
         private void ProfileCategoryOnProfileConfigurationAdded(object? sender, ProfileConfigurationEventArgs e)
         {
             if (ShowItems)
-                Items.Add(new SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
+                Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
         }
 
         #region Overrides of Screen

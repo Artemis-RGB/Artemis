@@ -108,14 +108,6 @@ namespace Artemis.Core
             IsMissingModule = Module == null && Entity.ModuleId != null;
         }
 
-        internal void SaveModules()
-        {
-            if (IsMissingModule)
-                return;
-
-            Entity.ModuleId = Module?.Id;
-        }
-
         public bool ShouldBeActive(bool includeActivationCondition)
         {
             if (IsSuspended || IsMissingModule)
@@ -157,6 +149,9 @@ namespace Artemis.Core
             }
             else
                 Entity.ActivationCondition = null;
+
+            if (!IsMissingModule)
+                Entity.ModuleId = Module?.Id;
         }
 
         #endregion

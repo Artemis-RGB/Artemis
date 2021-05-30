@@ -62,11 +62,6 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
             _profileEditorService.SaveSelectedProfileElement();
         }
 
-        public void Evaluate()
-        {
-            ActiveItem?.Evaluate();
-        }
-
         public void AddCondition()
         {
             ((ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>) Parent).AddCondition();

@@ -11,19 +11,32 @@ namespace Artemis.Core.Services
     {
         private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly object _updateLock = new();
+
         private Module? _activationOverride;
+        private readonly Timer _activationUpdateTimer;
 
         public ModuleService(ILogger logger, IPluginManagementService pluginManagementService)
         {
             _logger = logger;
             _pluginManagementService = pluginManagementService;
 
-            Timer activationUpdateTimer = new(2000);
-            activationUpdateTimer.Start();
-            activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
+            _activationUpdateTimer = new Timer(2000);
+            _activationUpdateTimer.Start();
+            _activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
         }
 
-        public void OverrideActivate(Module module)
+        protected virtual void OnModuleActivated(ModuleEventArgs e)
+        {
+            ModuleActivated?.Invoke(this, e);
+        }
+
+        protected virtual void OnModuleDeactivated(ModuleEventArgs e)
+        {
+            ModuleDeactivated?.Invoke(this, e);
+        }
+
+        private void OverrideActivate(Module module)
         {
             try
             {
@@ -41,7 +54,7 @@ namespace Artemis.Core.Services
             }
         }
 
-        public void OverrideDeactivate(Module module)
+        private void OverrideDeactivate(Module module)
         {
             try
             {
@@ -63,16 +76,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        protected virtual void OnModuleActivated(ModuleEventArgs e)
-        {
-            ModuleActivated?.Invoke(this, e);
-        }
-
-        protected virtual void OnModuleDeactivated(ModuleEventArgs e)
-        {
-            ModuleDeactivated?.Invoke(this, e);
-        }
-
         private void ActivationUpdateTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
             UpdateModuleActivation();
@@ -80,53 +83,64 @@ namespace Artemis.Core.Services
 
         public void UpdateModuleActivation()
         {
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-            foreach (Module module in modules)
+            lock (_updateLock)
             {
-                lock (module)
+                try
                 {
-                    if (module.IsActivatedOverride)
-                        continue;
-
-                    if (module.IsAlwaysAvailable)
+                    _activationUpdateTimer.Elapsed -= ActivationUpdateTimerOnElapsed;
+                    List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
+                    foreach (Module module in modules)
                     {
-                        module.Activate(false);
-                        return;
-                    }
+                        if (module.IsActivatedOverride)
+                            continue;
 
-                    module.Profiler.StartMeasurement("EvaluateActivationRequirements");
-                    bool shouldBeActivated = module.IsEnabled && module.EvaluateActivationRequirements();
-                    module.Profiler.StopMeasurement("EvaluateActivationRequirements");
+                        if (module.IsAlwaysAvailable)
+                        {
+                            module.Activate(false);
+                            continue;
+                        }
 
-                    if (shouldBeActivated && !module.IsActivated)
-                    {
-                        module.Activate(false);
-                        OnModuleActivated(new ModuleEventArgs(module));
+                        module.Profiler.StartMeasurement("EvaluateActivationRequirements");
+                        bool shouldBeActivated = module.IsEnabled && module.EvaluateActivationRequirements();
+                        module.Profiler.StopMeasurement("EvaluateActivationRequirements");
+
+                        if (shouldBeActivated && !module.IsActivated)
+                        {
+                            module.Activate(false);
+                            OnModuleActivated(new ModuleEventArgs(module));
+                        }
+                        else if (!shouldBeActivated && module.IsActivated)
+                        {
+                            module.Deactivate(false);
+                            OnModuleDeactivated(new ModuleEventArgs(module));
+                        }
                     }
-                    else if (!shouldBeActivated && module.IsActivated)
-                    {
-                        module.Deactivate(false);
-                        OnModuleDeactivated(new ModuleEventArgs(module));
-                    }
+                }
+                finally
+                {
+                    _activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
                 }
             }
         }
 
         public void SetActivationOverride(Module? module)
         {
-            if (_activationOverride != null)
-                OverrideDeactivate(_activationOverride);
-            _activationOverride = module;
-            if (_activationOverride != null)
-                OverrideActivate(_activationOverride);
+            lock (_updateLock)
+            {
+                if (_activationOverride != null)
+                    OverrideDeactivate(_activationOverride);
+                _activationOverride = module;
+                if (_activationOverride != null)
+                    OverrideActivate(_activationOverride);
+            }
         }
 
         public void UpdateActiveModules(double deltaTime)
         {
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-            foreach (Module module in modules)
+            lock (_updateLock)
             {
-                if (module.IsActivated)
+                List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
+                foreach (Module module in modules)
                     module.InternalUpdate(deltaTime);
             }
         }
