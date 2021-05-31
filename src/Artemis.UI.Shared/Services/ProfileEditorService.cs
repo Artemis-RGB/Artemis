@@ -137,10 +137,11 @@ namespace Artemis.UI.Shared.Services
         {
             lock (_selectedProfileLock)
             {
-                if (profileConfiguration?.Profile != null && profileConfiguration.Profile.Disposed)
-                    throw new ArtemisSharedUIException("Cannot select a disposed profile");
                 if (SelectedProfileConfiguration == profileConfiguration)
                     return;
+
+                if (profileConfiguration?.Profile != null && profileConfiguration.Profile.Disposed)
+                    throw new ArtemisSharedUIException("Cannot select a disposed profile");
 
                 _logger.Verbose("ChangeSelectedProfileConfiguration {profile}", profileConfiguration);
                 ChangeSelectedProfileElement(null);

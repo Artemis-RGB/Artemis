@@ -115,10 +115,7 @@ namespace Artemis.UI.Ninject.Factories
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
         DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
-
-        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(
-            ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
-
+        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 

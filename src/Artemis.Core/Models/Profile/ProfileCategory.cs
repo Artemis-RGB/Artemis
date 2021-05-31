@@ -79,7 +79,7 @@ namespace Artemis.Core
             configuration.Category.RemoveProfileConfiguration(configuration);
 
             if (targetIndex != null)
-                _profileConfigurations.Insert(Math.Min(_profileConfigurations.Count, targetIndex.Value), configuration);
+                _profileConfigurations.Insert(Math.Clamp(targetIndex.Value, 0, _profileConfigurations.Count), configuration);
             else
                 _profileConfigurations.Add(configuration);
             configuration.Category = this;

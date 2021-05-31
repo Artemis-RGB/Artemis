@@ -185,6 +185,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         protected override void OnClose()
         {
             SaveWorkspaceSettings();
+            _profileEditorService.ChangeSelectedProfileConfiguration(null);
+
             base.OnClose();
         }
 
