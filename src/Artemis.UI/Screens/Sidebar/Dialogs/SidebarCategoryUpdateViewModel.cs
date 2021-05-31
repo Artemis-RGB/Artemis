@@ -43,13 +43,12 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
             ProfileCategory.Name = CategoryName;
             _profileService.SaveProfileCategory(ProfileCategory);
             
-            Session.Close(false);
+            Session.Close(nameof(Accept));
         }
 
         public void Delete()
         {
-            // Let the category VM handle deletion, just indicate that the user wants to do it
-            Session.Close(true);
+            Session.Close(nameof(Delete));
         }
     }
 

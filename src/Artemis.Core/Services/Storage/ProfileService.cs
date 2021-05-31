@@ -249,7 +249,7 @@ namespace Artemis.Core.Services
             _profileRepository.Add(entity);
 
             configuration.Entity.ProfileId = entity.Id;
-            category.AddProfileConfiguration(configuration);
+            category.AddProfileConfiguration(configuration, 0);
             return configuration;
         }
 
@@ -262,6 +262,7 @@ namespace Artemis.Core.Services
             profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);
 
             DeactivateProfile(profileConfiguration);
+            SaveProfileCategory(profileConfiguration.Category);
             ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity != null)
                 _profileRepository.Remove(profileEntity);
@@ -377,7 +378,7 @@ namespace Artemis.Core.Services
             ProfileConfiguration configuration = new(profileEntity.Name, "Import", category);
             _profileRepository.Add(profileEntity);
             configuration.Entity.ProfileId = profileEntity.Id;
-            category.AddProfileConfiguration(configuration);
+            category.AddProfileConfiguration(configuration, 0);
 
             return configuration;
         }

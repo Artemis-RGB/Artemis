@@ -14,7 +14,7 @@
              d:DataContext="{d:DesignInstance {x:Type profileEdit:ProfileEditViewModel}}"
              Width="800">
     <UserControl.Resources>
-        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
     <Grid Margin="16">
@@ -84,8 +84,16 @@
                       materialDesign:HintAssist.HelperText="Optional and binds the profile to the selected module, making module data available."
                       Margin="0 0 0 8"
                       Style="{StaticResource MaterialDesignFilledComboBox}"
-                      SelectedItem="{Binding SelectedModule}"
-                      ItemsSource="{Binding Modules}">
+                      SelectedItem="{Binding SelectedModule}">
+                <ComboBox.ItemsSource>
+                    <CompositeCollection>
+                        <ComboBoxItem IsEnabled="False" 
+                                      Visibility="{Binding HasUsableModules, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+                            No usable modules found
+                        </ComboBoxItem>
+                        <CollectionContainer Collection="{Binding Modules}" />
+                    </CompositeCollection>
+                </ComboBox.ItemsSource>
                 <ComboBox.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel />
@@ -161,8 +169,8 @@
                 <Border Grid.Column="2" BorderThickness="1" Height="1" BorderBrush="{StaticResource MaterialDesignDivider}" />
             </Grid>
 
-            <materialDesign:Card Grid.Row="3" 
-                                 Background="{DynamicResource MaterialDesignToolBarBackground}" 
+            <materialDesign:Card Grid.Row="3"
+                                 Background="{DynamicResource MaterialDesignToolBarBackground}"
                                  Padding="10"
                                  Visibility="{Binding SelectedModule, Converter={StaticResource NullToVisibilityConverter}, Mode=OneWay}">
                 <ContentControl s:View.Model="{Binding ModuleActivationRequirementsViewModel}" />

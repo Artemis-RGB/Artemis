@@ -53,13 +53,18 @@
                 <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="60" VerticalAlignment="Bottom">
                     <Rectangle.Fill>
                         <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
-                            <GradientStop Color="#FF212121" Offset="0" /> <!-- TODO: Get the color from MaterialDesign -->
+                            <GradientStop Color="{Binding Path=Color, Source={StaticResource MaterialDesignToolBarBackground}}" Offset="0" /> <!-- TODO: Get the color from MaterialDesign -->
                             <GradientStop Color="#00000000" Offset="1" />
                         </LinearGradientBrush>
                     </Rectangle.Fill>
                 </Rectangle>
                 <Image Grid.Column="0" Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="35" Width="35" Margin="10" />
-                <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline5TextBlock}">Artemis 2</TextBlock>
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Foreground="{DynamicResource MaterialDesignDarkForeground}">
+                    Artemis 2
+                </TextBlock>
             </Grid>
 
             <!-- Built-in screens -->

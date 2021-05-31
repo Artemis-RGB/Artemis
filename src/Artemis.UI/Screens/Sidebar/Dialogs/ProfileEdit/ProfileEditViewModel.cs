@@ -36,11 +36,11 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         {
             ProfileConfiguration = profileConfiguration;
             IsNew = isNew;
-            
+
             _profileService = profileService;
             _dialogService = dialogService;
             _dataModelConditionGroup = ProfileConfiguration.ActivationCondition ?? new DataModelConditionGroup(null);
-            _modules = ProfileConfiguration.Module != null ? new List<Module> { ProfileConfiguration.Module} : new List<Module>();
+            _modules = ProfileConfiguration.Module != null ? new List<Module> {ProfileConfiguration.Module} : new List<Module>();
 
             Icons = new BindableCollection<ProfileIconViewModel>();
             Modules = new BindableCollection<ProfileModuleViewModel>(
@@ -56,7 +56,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 
             _profileName = ProfileConfiguration.Name;
             _selectedModule = Modules.FirstOrDefault(m => m.Module == ProfileConfiguration.Module);
-            
+
             Task.Run(() =>
             {
                 Icons.AddRange(Enum.GetValues<PackIconKind>()
@@ -73,6 +73,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         public bool IsNew { get; }
         public BindableCollection<ProfileIconViewModel> Icons { get; }
         public BindableCollection<ProfileModuleViewModel> Modules { get; }
+        public bool HasUsableModules => Modules.Any();
 
         public bool Initializing
         {
@@ -99,7 +100,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             {
                 if (!SetAndNotify(ref _selectedModule, value)) return;
                 _modules.Clear();
-                if (value != null) 
+                if (value != null)
                     _modules.Add(value.Module);
 
                 ActivationConditionViewModel.UpdateModules();
@@ -110,11 +111,9 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         public DataModelConditionGroupViewModel ActivationConditionViewModel { get; }
         public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
 
-        public async Task Delete()
+        public void Delete()
         {
-            Session.Close(false);
-            if (await _dialogService.ShowConfirmDialog("Delete profile", "Are you sure you want to delete this profile?\r\nThis cannot be undone."))
-                _profileService.RemoveProfileConfiguration(ProfileConfiguration);
+            Session.Close(nameof(Delete));
         }
 
         public async Task Accept()
@@ -133,7 +132,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
 
             _profileService.SaveProfileCategory(ProfileConfiguration.Category);
 
-            Session.Close(true);
+            Session.Close(nameof(Accept));
         }
     }
 

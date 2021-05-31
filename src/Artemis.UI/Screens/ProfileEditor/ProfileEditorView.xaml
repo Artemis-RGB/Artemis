@@ -21,30 +21,6 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate x:Key="SimpleTemplate">
-                <StackPanel d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}" Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </DataTemplate>
-            <DataTemplate x:Key="ExtendedTemplate">
-                <Grid d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                    <Button Grid.Column="1"
-                            Style="{StaticResource MaterialDesignIconForegroundButton}"
-                            Width="26"
-                            Height="26"
-                            VerticalAlignment="Top"
-                            Command="{s:Action DeleteProfile}"
-                            CommandParameter="{Binding}">
-                        <materialDesign:PackIcon Kind="Delete" Height="16" Width="16" HorizontalAlignment="Right" />
-                    </Button>
-                </Grid>
-            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 

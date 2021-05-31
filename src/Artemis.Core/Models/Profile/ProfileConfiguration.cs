@@ -10,8 +10,11 @@ namespace Artemis.Core
         private Module? _module;
         private string _name;
         private string _icon;
+        private int _order;
         private bool _isSuspended;
         private bool _isMissingModule;
+        private Profile? _profile;
+        private ProfileCategory _category;
 
         internal ProfileConfiguration(string name, string icon, ProfileCategory category)
         {
@@ -50,6 +53,15 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     The order in which this profile appears in the update loop and sidebar
+        /// </summary>
+        public int Order
+        {
+            get => _order;
+            set => SetAndNotify(ref _order, value);
+        }
+
+        /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is suspended, disabling it regardless of the
         ///     <see cref="ActivationCondition" />
         /// </summary>
@@ -69,19 +81,27 @@ namespace Artemis.Core
         }
 
         /// <summary>
-        ///     Gets or sets the behaviour of when this profile is activated
-        /// </summary>
-        public ActivationBehaviour ActivationBehaviour { get; set; }
-
-        /// <summary>
         ///     Gets or sets the category of this profile configuration
         /// </summary>
-        public ProfileCategory Category { get; set; }
+        public ProfileCategory Category
+        {
+            get => _category;
+            internal set => SetAndNotify(ref _category, value);
+        }
 
         /// <summary>
         ///     Gets the profile of this profile configuration
         /// </summary>
-        public Profile? Profile { get; internal set; }
+        public Profile? Profile
+        {
+            get => _profile;
+            internal set => SetAndNotify(ref _profile, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the behaviour of when this profile is activated
+        /// </summary>
+        public ActivationBehaviour ActivationBehaviour { get; set; }
 
         /// <summary>
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
@@ -136,6 +156,12 @@ namespace Artemis.Core
             if (includeActivationCondition)
                 return ActivationConditionMet && (Module == null || Module.IsActivated);
             return Module == null || Module.IsActivated;
+        }
+
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[ProfileConfiguration] {nameof(Name)}: {Name}";
         }
 
         #region Implementation of IStorageModel

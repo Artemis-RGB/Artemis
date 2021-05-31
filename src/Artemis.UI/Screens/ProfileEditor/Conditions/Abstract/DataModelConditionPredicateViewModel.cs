@@ -48,6 +48,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public DataModelConditionPredicate DataModelConditionPredicate => (DataModelConditionPredicate) Model;
         public PluginSetting<bool> ShowDataModelValues { get; }
 
+        public bool CanSelectOperator => DataModelConditionPredicate.LeftPath is {IsValid: true};
+
         public BaseConditionOperator SelectedOperator
         {
             get => _selectedOperator;
@@ -111,10 +113,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
             else if (!Operators.Contains(DataModelConditionPredicate.Operator))
                 DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.Description == DataModelConditionPredicate.Operator.Description) ?? Operators.FirstOrDefault());
 
+            NotifyOfPropertyChange(nameof(CanSelectOperator));
             SelectedOperator = DataModelConditionPredicate.Operator;
 
             // Without a selected operator or one that supports a right side, leave the right side input empty
-            if (SelectedOperator == null || SelectedOperator.RightSideType == null)
+            if (SelectedOperator?.RightSideType == null)
             {
                 DisposeRightSideStaticViewModel();
                 DisposeRightSideDynamicViewModel();

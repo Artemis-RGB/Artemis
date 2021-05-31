@@ -108,6 +108,11 @@ namespace Artemis.UI.Shared.Input
         public BindableCollection<DataModelPropertiesViewModel> ExtraDataModelViewModels { get; }
 
         /// <summary>
+        /// Gets a boolean indicating whether there are any modules providing data models
+        /// </summary>
+        public bool HasNoModules => (DataModelViewModel == null || !DataModelViewModel.Children.Any()) && !HasExtraDataModels;
+
+        /// <summary>
         ///     Gets a boolean indicating whether there are any extra data models
         /// </summary>
         public bool HasExtraDataModels => ExtraDataModelViewModels.Any();

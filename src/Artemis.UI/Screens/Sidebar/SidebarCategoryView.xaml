@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:dd="urn:gong-wpf-dragdrop"
     x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
@@ -75,6 +76,11 @@
         <ListBox Grid.Row="1"
                  ItemsSource="{Binding Items}"
                  SelectedItem="{Binding SelectedProfileConfiguration}"
+                 MinHeight="20"
+                 dd:DragDrop.IsDragSource="True"
+                 dd:DragDrop.IsDropTarget="True"
+                 dd:DragDrop.UseDefaultDragAdorner="True"
+                 dd:DragDrop.DropHandler="{Binding}"
                  PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
                  VerticalContentAlignment="Stretch"
                  HorizontalContentAlignment="Stretch"
@@ -82,24 +88,7 @@
                  ScrollViewer.VerticalScrollBarVisibility="Disabled">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource SidebarListBoxItem}">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
-                            <DataTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.EnterActions>
-                            <DataTrigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </DataTrigger.ExitActions>
-                        </DataTrigger>
-                    </Style.Triggers>
+                    
                 </Style>
             </ListBox.ItemContainerStyle>
             <ListBox.Template>

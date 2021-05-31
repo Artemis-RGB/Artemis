@@ -55,6 +55,7 @@
                 Background="#7B7B7B"
                 BorderBrush="#7B7B7B"
                 Content="{Binding SelectedOperator.Description}"
+                IsEnabled="{Binding CanSelectOperator}"
                 Click="PropertyButton_OnClick">
             <Button.ContextMenu>
                 <ContextMenu ItemsSource="{Binding Operators}">

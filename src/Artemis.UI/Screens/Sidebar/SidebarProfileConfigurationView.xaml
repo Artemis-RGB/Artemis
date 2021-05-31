@@ -21,28 +21,23 @@
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Duplicate" Command="{s:Action DuplicateElement}" InputGestureText="Ctrl+D" IsEnabled="False">
+            <MenuItem Header="Duplicate" Command="{s:Action Duplicate}" InputGestureText="Ctrl+D">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentDuplicate" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Copy" Command="{s:Action CopyElement}" InputGestureText="Ctrl+C" IsEnabled="False">
+            <MenuItem Header="Copy" Command="{s:Action Copy}" InputGestureText="Ctrl+C">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentCopy" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Paste" Command="{s:Action PasteElement}" InputGestureText="Ctrl+V">
+            <MenuItem Header="Paste" Command="{s:Action Paste}" InputGestureText="Ctrl+V">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentPaste" />
                 </MenuItem.Icon>
             </MenuItem>
             <Separator />
-            <MenuItem Header="Rename" Command="{s:Action RenameElement}" InputGestureText="F2" IsEnabled="False">
-                <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="RenameBox" />
-                </MenuItem.Icon>
-            </MenuItem>
-            <MenuItem Header="Delete" Command="{s:Action DeleteElement}" InputGestureText="Del" IsEnabled="False">
+            <MenuItem Header="Delete" Command="{s:Action Delete}" InputGestureText="Del">
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="TrashCan" />
                 </MenuItem.Icon>
@@ -52,15 +47,110 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <materialDesign:PackIcon Grid.Column="0" Kind="{Binding ProfileConfiguration.Icon}" Width="16" Height="16" />
-        <TextBlock Grid.Column="1"
-                   FontSize="12"
-                   Margin="10 0"
-                   VerticalAlignment="Center"
-                   Text="{Binding ProfileConfiguration.Name}" />
-        
+        <materialDesign:PackIcon Grid.Column="0" Kind="{Binding ProfileConfiguration.Icon}" Width="16" Height="16" VerticalAlignment="Center">
+            <materialDesign:PackIcon.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </materialDesign:PackIcon.Style>
+        </materialDesign:PackIcon>
+        <TextBlock Grid.Column="1" FontSize="12" Margin="10 0 0 0" VerticalAlignment="Center" Text="{Binding ProfileConfiguration.Name}">
+            <TextBlock.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+
+        <Border Grid.Column="0" Grid.ColumnSpan="2" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignBody}" Height="1" Opacity="0">
+            <Border.Style>
+                <Style>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsSuspended}" Value="True">
+                            <DataTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.75" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.EnterActions>
+                            <DataTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </DataTrigger.ExitActions>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Border.Style>
+        </Border>
+
+        <Button Grid.Column="2" ToolTip="View properties" Width="20" Height="20" Command="{s:Action ViewProperties}" HorizontalAlignment="Right">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+            <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
+        </Button>
+        <ToggleButton Grid.Column="3" ToolTip="Suspend profile" Width="18" Height="18" Margin="2 0 0 0" IsChecked="{Binding IsSuspended}">
+            <ToggleButton.Style>
+                <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
+                    <Setter Property="Visibility" Value="Hidden" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ToggleButton.Style>
+            <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
+        </ToggleButton>
+
     </Grid>
 </UserControl>

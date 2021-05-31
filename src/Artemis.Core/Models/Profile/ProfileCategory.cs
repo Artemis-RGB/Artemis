@@ -67,17 +67,35 @@ namespace Artemis.Core
 
         internal ProfileCategoryEntity Entity { get; }
 
-        internal void AddProfileConfiguration(ProfileConfiguration configuration)
+        /// <summary>
+        /// Adds a profile configuration to this category
+        /// </summary>
+        public void AddProfileConfiguration(ProfileConfiguration configuration, int? targetIndex)
         {
-            _profileConfigurations.Add(configuration);
+            // Removing the original will shift every item in the list forwards, keep that in mind with the target index
+            if (configuration.Category == this && targetIndex != null && targetIndex.Value > _profileConfigurations.IndexOf(configuration))
+                targetIndex -= 1;
+
+            configuration.Category.RemoveProfileConfiguration(configuration);
+
+            if (targetIndex != null)
+                _profileConfigurations.Insert(Math.Min(_profileConfigurations.Count, targetIndex.Value), configuration);
+            else
+                _profileConfigurations.Add(configuration);
             configuration.Category = this;
+
+            for (int index = 0; index < _profileConfigurations.Count; index++)
+                _profileConfigurations[index].Order = index;
             OnProfileConfigurationAdded(new ProfileConfigurationEventArgs(configuration));
         }
 
         internal void RemoveProfileConfiguration(ProfileConfiguration configuration)
         {
-            if (_profileConfigurations.Remove(configuration))
-                OnProfileConfigurationRemoved(new ProfileConfigurationEventArgs(configuration));
+            if (!_profileConfigurations.Remove(configuration)) return;
+
+            for (int index = 0; index < _profileConfigurations.Count; index++)
+                _profileConfigurations[index].Order = index;
+            OnProfileConfigurationRemoved(new ProfileConfigurationEventArgs(configuration));
         }
 
         #region Implementation of IStorageModel
