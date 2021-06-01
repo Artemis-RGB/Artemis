@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
@@ -162,6 +163,34 @@ namespace Artemis.Core.Services
                     return _profileCategories.SelectMany(c => c.ProfileConfigurations).ToList().AsReadOnly();
                 }
             }
+        }
+
+        public void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
+        {
+            if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
+                return;
+            if (profileConfiguration.Icon.FileIcon != null)
+                return;
+
+            Stream profileIconStream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+            if (profileIconStream.Length != 0)
+                profileConfiguration.Icon.FileIcon = profileIconStream;
+            else
+                profileIconStream.Dispose();
+        }
+
+        public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
+        {
+            if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
+                return;
+
+            _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, profileConfiguration.Icon.FileIcon);
+
+            Stream profileIconStream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
+            if (profileIconStream.Length != 0)
+                profileConfiguration.Icon.FileIcon = profileIconStream;
+            else
+                profileIconStream.Dispose();
         }
 
         public Profile ActivateProfile(ProfileConfiguration profileConfiguration)

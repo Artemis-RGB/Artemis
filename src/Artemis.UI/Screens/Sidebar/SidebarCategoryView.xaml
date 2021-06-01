@@ -26,6 +26,7 @@
         <Grid Grid.Row="0" Background="Transparent">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
@@ -37,19 +38,68 @@
                           IsChecked="{Binding ShowItems}"
                           ClickMode="Press"
                           Margin="5 0" />
-            <TextBlock Grid.Column="1" 
-                       Padding="0 5" 
+            <TextBlock Grid.Column="1"
+                       Padding="0 5"
                        FontSize="14"
                        FontWeight="SemiBold"
-                       VerticalAlignment="Center" 
-                       Text="{Binding ProfileCategory.Name}" 
-                       Background="Transparent"
-                       MouseLeftButtonUp="{s:Action OnMouseLeftButtonUp}"/>
+                       VerticalAlignment="Center"
+                       Text="{Binding ProfileCategory.Name}"
+                       MouseLeftButtonUp="{s:Action OnMouseLeftButtonUp}">
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSuspended}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignBody}" Height="1" Opacity="0">
+                <Border.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSuspended}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.75" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
             <Button Grid.Column="2"
                     ToolTip="Edit category"
                     Width="26"
                     Height="26"
-                    Command="{s:Action UpdateCategory}">
+                    Command="{s:Action UpdateCategory}"
+                    HorizontalAlignment="Right">
                 <Button.Style>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
                         <Setter Property="Visibility" Value="Hidden" />
@@ -62,7 +112,21 @@
                 </Button.Style>
                 <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
             </Button>
-            <Button Grid.Column="3"
+            <ToggleButton Grid.Column="3" ToolTip="Suspend profile" Width="18" Height="18" Margin="2 0 0 0" IsChecked="{Binding IsSuspended}">
+                <ToggleButton.Style>
+                    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+                <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
+            </ToggleButton>
+
+            <Button Grid.Column="4"
                     Margin="0 0 10 0"
                     Style="{StaticResource MaterialDesignIconForegroundButton}"
                     ToolTip="Add profile"
@@ -73,34 +137,37 @@
             </Button>
         </Grid>
 
-        <ListBox Grid.Row="1"
-                 ItemsSource="{Binding Items}"
-                 SelectedItem="{Binding SelectedProfileConfiguration}"
-                 MinHeight="20"
-                 dd:DragDrop.IsDragSource="True"
-                 dd:DragDrop.IsDropTarget="True"
-                 dd:DragDrop.UseDefaultDragAdorner="True"
-                 dd:DragDrop.DropHandler="{Binding}"
-                 PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
-                 VerticalContentAlignment="Stretch"
-                 HorizontalContentAlignment="Stretch"
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ScrollViewer.VerticalScrollBarVisibility="Disabled">
-            <ListBox.ItemContainerStyle>
-                <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource SidebarListBoxItem}">
-                    
-                </Style>
-            </ListBox.ItemContainerStyle>
-            <ListBox.Template>
-                <ControlTemplate>
-                    <ItemsPresenter />
-                </ControlTemplate>
-            </ListBox.Template>
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+        <Border Grid.Row="1">
+            <ListBox ItemsSource="{Binding Items}"
+                     SelectedItem="{Binding SelectedProfileConfiguration}"
+                     MinHeight="10"
+                     dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.UseDefaultDragAdorner="True"
+                     dd:DragDrop.DropHandler="{Binding}"
+                     PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
+                     VerticalContentAlignment="Stretch"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Paste" Command="{s:Action Paste}">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentPaste" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource SidebarListBoxItem}" />
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
     </Grid>
 </UserControl>

@@ -1,10 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
+using Artemis.UI.Screens.Sidebar.Models;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -15,8 +18,6 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IDialogService _dialogService;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileService _profileService;
-        private bool _isProfileActive;
-        private bool _isSuspended;
 
         public SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration,
             IProfileService profileService,
@@ -27,17 +28,11 @@ namespace Artemis.UI.Screens.Sidebar
             _dialogService = dialogService;
             _eventAggregator = eventAggregator;
             ProfileConfiguration = profileConfiguration;
-            ProfileConfiguration.PropertyChanged += ProfileConfigurationOnPropertyChanged;
-            Update();
         }
 
         public ProfileConfiguration ProfileConfiguration { get; }
 
-        public bool IsProfileActive
-        {
-            get => _isProfileActive;
-            set => SetAndNotify(ref _isProfileActive, value);
-        }
+        public bool IsProfileActive => ProfileConfiguration.Profile != null;
 
         public bool IsSuspended
         {
@@ -45,7 +40,6 @@ namespace Artemis.UI.Screens.Sidebar
             set
             {
                 ProfileConfiguration.IsSuspended = value;
-                NotifyOfPropertyChange(nameof(IsSuspended));
                 _profileService.SaveProfileCategory(ProfileConfiguration.Category);
             }
         }
@@ -62,10 +56,48 @@ namespace Artemis.UI.Screens.Sidebar
                 await Delete();
         }
 
+        public void SuspendAbove(string action)
+        {
+            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).TakeWhile(c => c != ProfileConfiguration))
+            {
+                if (profileConfiguration != ProfileConfiguration)
+                    profileConfiguration.IsSuspended = action == "suspend";
+            }
+        }
+
+        public void SuspendBelow(string action)
+        {
+            foreach (ProfileConfiguration profileConfiguration in ProfileConfiguration.Category.ProfileConfigurations.OrderBy(p => p.Order).SkipWhile(c => c != ProfileConfiguration))
+            {
+                if (profileConfiguration != ProfileConfiguration)
+                    profileConfiguration.IsSuspended = action == "suspend";
+            }
+        }
+
         public void Duplicate()
         {
             string export = _profileService.ExportProfile(ProfileConfiguration);
             _profileService.ImportProfile(ProfileConfiguration.Category, export, "copy");
+        }
+
+        public void Copy()
+        {
+            // The profile may not be active and in that case lets activate it real quick
+            Profile profile = ProfileConfiguration.Profile ?? _profileService.ActivateProfile(ProfileConfiguration);
+            JsonClipboard.SetObject(new ProfileConfigurationClipboardModel
+            {
+                ProfileConfigurationEntity = ProfileConfiguration.Entity,
+                ProfileEntity = profile.ProfileEntity
+            });
+        }
+
+        public void Paste()
+        {
+            ProfileConfigurationClipboardModel profileConfiguration = JsonClipboard.GetData<ProfileConfigurationClipboardModel>();
+            if (profileConfiguration == null)
+                return;
+
+            // _profileService.Im
         }
 
         public async Task Delete()
@@ -80,12 +112,17 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
-        private void Update()
-        {
-            IsProfileActive = ProfileConfiguration.Profile != null;
-        }
-
         #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnActivate()
+        {
+            _profileService.LoadProfileConfigurationIcon(ProfileConfiguration);
+            ProfileConfiguration.PropertyChanged += ProfileConfigurationOnPropertyChanged;
+            NotifyOfPropertyChange(nameof(IsProfileActive));
+
+            base.OnActivate();
+        }
 
         /// <inheritdoc />
         protected override void OnDeactivate()
@@ -101,7 +138,9 @@ namespace Artemis.UI.Screens.Sidebar
         private void ProfileConfigurationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(ProfileConfiguration.Profile))
-                Update();
+                NotifyOfPropertyChange(nameof(IsProfileActive));
+            if (e.PropertyName == nameof(ProfileConfiguration.IsSuspended))
+                NotifyOfPropertyChange(nameof(IsSuspended));
         }
 
         #endregion

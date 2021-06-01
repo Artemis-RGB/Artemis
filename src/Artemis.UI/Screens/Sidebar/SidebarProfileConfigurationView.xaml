@@ -6,6 +6,8 @@
              xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:SidebarProfileConfigurationViewModel}"
@@ -19,6 +21,25 @@
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="Cog" />
                 </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend" IsCheckable="True" IsChecked="{Binding IsSuspended}">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Pause" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Suspend all">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Pause" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" Command="{s:Action SuspendAbove}" CommandParameter="suspend" />
+                <MenuItem Header="Below" Command="{s:Action SuspendBelow}" CommandParameter="suspend" />
+            </MenuItem>
+            <MenuItem Header="Resume all">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Play" />
+                </MenuItem.Icon>
+                <MenuItem Header="Above" Command="{s:Action SuspendAbove}" CommandParameter="resume" />
+                <MenuItem Header="Below" Command="{s:Action SuspendBelow}" CommandParameter="resume" />
             </MenuItem>
             <Separator />
             <MenuItem Header="Duplicate" Command="{s:Action Duplicate}" InputGestureText="Ctrl+D">
@@ -51,22 +72,57 @@
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <ContentControl Grid.Column="0" VerticalAlignment="Center">
+            <ContentControl.Style>
+                <Style TargetType="ContentControl">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding ProfileConfiguration.Icon.IconType}" Value="{x:Static core:ProfileConfigurationIconType.MaterialIcon}">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <materialDesign:PackIcon Kind="{Binding ProfileConfiguration.Icon.MaterialIcon, Mode=OneWay}" Width="16" Height="16" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ProfileConfiguration.Icon.IconType}" Value="{x:Static core:ProfileConfigurationIconType.BitmapImage}">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <Image Source="{Binding ProfileConfiguration.Icon.FileIcon, Mode=OneWay}" Width="16" Height="16" />
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding ProfileConfiguration.Icon.IconType}" Value="{x:Static core:ProfileConfigurationIconType.SvgImage}">
+                            <Setter Property="ContentTemplate">
+                                <Setter.Value>
+                                    <DataTemplate>
+                                        <Image Source="{Binding ProfileConfiguration.Icon.FileIcon, Converter={svgc:SvgImageConverter}, Mode=OneWay}"/>
+                                    </DataTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ContentControl.Style>
+        </ContentControl>
         <materialDesign:PackIcon Grid.Column="0" Kind="{Binding ProfileConfiguration.Icon}" Width="16" Height="16" VerticalAlignment="Center">
             <materialDesign:PackIcon.Style>
                 <Style>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
+                        <DataTrigger Binding="{Binding IsProfileActive}" Value="False">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                             <DataTrigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.ExitActions>
@@ -79,18 +135,18 @@
             <TextBlock.Style>
                 <Style>
                     <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsProfileActive}" Value="True">
+                        <DataTrigger Binding="{Binding IsProfileActive}" Value="False">
                             <DataTrigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.EnterActions>
                             <DataTrigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                        <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </DataTrigger.ExitActions>

@@ -76,6 +76,11 @@ namespace Artemis.Core.Services
         void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
 
         /// <summary>
+        ///     Loads the icon of this profile configuration if needed and puts it into <c>ProfileConfiguration.Icon.FileIcon</c>
+        /// </summary>
+        void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
         ///     Writes the profile to persistent storage
         /// </summary>
         /// <param name="profile"></param>

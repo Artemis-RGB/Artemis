@@ -7,30 +7,32 @@ namespace Artemis.Core
 {
     public class ProfileConfiguration : CorePropertyChanged, IStorageModel
     {
+        private ProfileCategory _category;
+
+        private bool _isMissingModule;
+        private bool _isSuspended;
         private Module? _module;
         private string _name;
-        private string _icon;
         private int _order;
-        private bool _isSuspended;
-        private bool _isMissingModule;
         private Profile? _profile;
-        private ProfileCategory _category;
 
         internal ProfileConfiguration(string name, string icon, ProfileCategory category)
         {
-            Name = name;
-            Icon = icon;
-            Category = category;
+            _name = name;
+            _category = category;
+
             Entity = new ProfileConfigurationEntity();
+            Icon = new ProfileConfigurationIcon(Entity) {MaterialIcon = icon};
         }
 
         internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
         {
             // Will be loaded from the entity
-            Name = null!;
-            Icon = null!;
-            Category = category;
+            _name = null!;
+            _category = category;
+
             Entity = entity;
+            Icon = new ProfileConfigurationIcon(Entity);
             Load();
         }
 
@@ -41,15 +43,6 @@ namespace Artemis.Core
         {
             get => _name;
             set => SetAndNotify(ref _name, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets the icon of this profile configuration
-        /// </summary>
-        public string Icon
-        {
-            get => _icon;
-            set => SetAndNotify(ref _icon, value);
         }
 
         /// <summary>
@@ -88,6 +81,11 @@ namespace Artemis.Core
             get => _category;
             internal set => SetAndNotify(ref _category, value);
         }
+
+        /// <summary>
+        ///     Gets the icon configuration
+        /// </summary>
+        public ProfileConfigurationIcon Icon { get; }
 
         /// <summary>
         ///     Gets the profile of this profile configuration
@@ -132,7 +130,10 @@ namespace Artemis.Core
         /// </summary>
         public bool IsBeingEdited { get; set; }
 
-        internal ProfileConfigurationEntity Entity { get; }
+        /// <summary>
+        ///     Gets the entity used by this profile config
+        /// </summary>
+        public ProfileConfigurationEntity Entity { get; }
 
         /// <summary>
         ///     Updates this configurations activation condition status
@@ -142,15 +143,9 @@ namespace Artemis.Core
             ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
         }
 
-        internal void LoadModules(List<Module> enabledModules)
-        {
-            Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ModuleId);
-            IsMissingModule = Module == null && Entity.ModuleId != null;
-        }
-
         public bool ShouldBeActive(bool includeActivationCondition)
         {
-            if (IsSuspended || IsMissingModule)
+            if (Category.IsSuspended || IsSuspended || IsMissingModule)
                 return false;
 
             if (includeActivationCondition)
@@ -164,15 +159,22 @@ namespace Artemis.Core
             return $"[ProfileConfiguration] {nameof(Name)}: {Name}";
         }
 
+        internal void LoadModules(List<Module> enabledModules)
+        {
+            Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ModuleId);
+            IsMissingModule = Module == null && Entity.ModuleId != null;
+        }
+
         #region Implementation of IStorageModel
 
         /// <inheritdoc />
         public void Load()
         {
             Name = Entity.Name;
-            Icon = Entity.Icon;
             IsSuspended = Entity.IsSuspended;
             ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
+
+            Icon.Load();
 
             ActivationCondition = Entity.ActivationCondition != null
                 ? new DataModelConditionGroup(null, Entity.ActivationCondition)
@@ -183,10 +185,11 @@ namespace Artemis.Core
         public void Save()
         {
             Entity.Name = Name;
-            Entity.Icon = Icon;
             Entity.IsSuspended = IsSuspended;
             Entity.ActivationBehaviour = (int) ActivationBehaviour;
             Entity.ProfileCategoryId = Category.Entity.Id;
+
+            Icon.Save();
 
             if (ActivationCondition != null)
             {
@@ -194,7 +197,9 @@ namespace Artemis.Core
                 Entity.ActivationCondition = ActivationCondition.Entity;
             }
             else
+            {
                 Entity.ActivationCondition = null;
+            }
 
             if (!IsMissingModule)
                 Entity.ModuleId = Module?.Id;

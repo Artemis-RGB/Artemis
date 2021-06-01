@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using LiteDB;
@@ -46,6 +47,21 @@ namespace Artemis.Storage.Repositories
         public void Save(ProfileCategoryEntity profileCategoryEntity)
         {
             _repository.Upsert(profileCategoryEntity);
+        }
+
+        public Stream GetProfileIconStream(Guid id)
+        {
+            MemoryStream stream = new();
+            _repository.Database.GetStorage<Guid>("profileIcons")?.Download(id, stream);
+            return stream;
+        }
+
+        public void SaveProfileIconStream(ProfileConfigurationEntity profileConfigurationEntity, Stream stream)
+        {
+            if (stream == null)
+                _repository.Database.GetStorage<Guid>("profileIcons")?.Delete(profileConfigurationEntity.FileIconId);
+
+            _repository.Database.GetStorage<Guid>("profileIcons").Upload(profileConfigurationEntity.FileIconId, "image", stream);
         }
     }
 }

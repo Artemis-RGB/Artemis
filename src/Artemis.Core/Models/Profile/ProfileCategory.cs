@@ -68,7 +68,7 @@ namespace Artemis.Core
         internal ProfileCategoryEntity Entity { get; }
 
         /// <summary>
-        /// Adds a profile configuration to this category
+        ///     Adds a profile configuration to this category
         /// </summary>
         public void AddProfileConfiguration(ProfileConfiguration configuration, int? targetIndex)
         {

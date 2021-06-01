@@ -9,6 +9,8 @@
              xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:profileEdit="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="280"
              d:DataContext="{d:DesignInstance {x:Type profileEdit:ProfileEditViewModel}}"
@@ -57,37 +59,15 @@
                      Style="{StaticResource MaterialDesignFilledTextBox}"
                      Text="{Binding ProfileName, UpdateSourceTrigger=PropertyChanged}" />
 
-            <ComboBox materialDesign:HintAssist.Hint="Profile icon"
-                      Margin="0 0 0 8"
-                      Style="{StaticResource MaterialDesignFilledComboBox}"
-                      SelectedItem="{Binding SelectedIcon}"
-                      IsEnabled="{Binding Initializing, Converter={StaticResource InverseBooleanConverter}}"
-                      ItemsSource="{Binding Icons}"
-                      TextSearch.TextPath="IconName">
-                <ComboBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel />
-                    </ItemsPanelTemplate>
-                </ComboBox.ItemsPanel>
-                <ComboBox.ItemTemplate>
-                    <DataTemplate DataType="{x:Type profileEdit:ProfileIconViewModel}">
-                        <StackPanel Orientation="Horizontal">
-                            <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
-                            <TextBlock Text="{Binding IconName}" />
-                        </StackPanel>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-            </ComboBox>
-
             <ComboBox materialDesign:HintAssist.Hint="Module"
                       materialDesign:TextFieldAssist.HasClearButton="True"
                       materialDesign:HintAssist.HelperText="Optional and binds the profile to the selected module, making module data available."
-                      Margin="0 0 0 8"
+                      Margin="0 0 0 32"
                       Style="{StaticResource MaterialDesignFilledComboBox}"
                       SelectedItem="{Binding SelectedModule}">
                 <ComboBox.ItemsSource>
                     <CompositeCollection>
-                        <ComboBoxItem IsEnabled="False" 
+                        <ComboBoxItem IsEnabled="False"
                                       Visibility="{Binding HasUsableModules, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
                             No usable modules found
                         </ComboBoxItem>
@@ -108,6 +88,109 @@
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
+
+            <ComboBox materialDesign:HintAssist.Hint="Icon type"
+                      Margin="0 0 0 8"
+                      Style="{StaticResource MaterialDesignFilledComboBox}"
+                      SelectedValue="{Binding SelectedIconType}"
+                      ItemsSource="{Binding IconTypes}"
+                      SelectedValuePath="Value"
+                      DisplayMemberPath="Description" />
+
+            <ContentControl VerticalAlignment="Center">
+                <ContentControl.Style>
+                    <Style TargetType="ContentControl">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding SelectedIconType}" Value="{x:Static core:ProfileConfigurationIconType.MaterialIcon}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <materialDesign:PackIcon Grid.Column="0" 
+                                                                         Kind="{Binding DataContext.SelectedIcon.Icon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"
+                                                                         Width="32" 
+                                                                         Height="32"
+                                                                         Margin="10 0"
+                                                                         VerticalAlignment="Center" />
+
+                                                <ComboBox Grid.Column="1"
+                                                          materialDesign:HintAssist.Hint="Profile icon"
+                                                          Margin="0 0 0 8"
+                                                          Style="{StaticResource MaterialDesignFilledComboBox}"
+                                                          SelectedItem="{Binding DataContext.SelectedIcon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                          IsEnabled="{Binding DataContext.Initializing, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource InverseBooleanConverter}}"
+                                                          ItemsSource="{Binding DataContext.Icons, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                          TextSearch.TextPath="IconName">
+                                                    <ComboBox.ItemsPanel>
+                                                        <ItemsPanelTemplate>
+                                                            <VirtualizingStackPanel />
+                                                        </ItemsPanelTemplate>
+                                                    </ComboBox.ItemsPanel>
+                                                    <ComboBox.ItemTemplate>
+                                                        <DataTemplate DataType="{x:Type profileEdit:ProfileIconViewModel}">
+                                                            <StackPanel Orientation="Horizontal">
+                                                                <materialDesign:PackIcon Kind="{Binding Icon}" Width="16" Margin="0 0 5 0" />
+                                                                <TextBlock Text="{Binding IconName}" />
+                                                            </StackPanel>
+                                                        </DataTemplate>
+                                                    </ComboBox.ItemTemplate>
+                                                </ComboBox>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedIconType}" Value="{x:Static core:ProfileConfigurationIconType.BitmapImage}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <Image Grid.Column="0" 
+                                                       Source="{Binding DataContext.SelectedBitmap, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"
+                                                       Margin="10 0" 
+                                                       Width="32" 
+                                                       Height="32" 
+                                                       VerticalAlignment="Center" />
+                                                <Button Grid.Column="1" Command="{s:Action SelectIconFile}" Style="{StaticResource MaterialDesignRaisedButton}" ToolTip="Select an image"
+                                                        Margin="0 10 0 11">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Paperclip" Margin="0 0 10 0" />
+                                                        <TextBlock>BROWSE IMAGE</TextBlock>
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding SelectedIconType}" Value="{x:Static core:ProfileConfigurationIconType.SvgImage}">
+                                <Setter Property="ContentTemplate">
+                                    <Setter.Value>
+                                        <DataTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <Image Grid.Column="0" Source="{Binding SelectedImage, Converter={svgc:SvgImageConverter}, Mode=OneWay}" Width="32" Height="32" Margin="10 0"
+                                                       VerticalAlignment="Center" />
+                                            </Grid>
+                                        </DataTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ContentControl.Style>
+            </ContentControl>
         </StackPanel>
 
         <Border Grid.Row="1" Grid.Column="1" BorderThickness="1" BorderBrush="{StaticResource MaterialDesignDivider}" Width="1" Margin="10 0" />

@@ -13,6 +13,7 @@ using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
+using MaterialDesignThemes.Wpf.Transitions;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -25,6 +26,8 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IProfileService _profileService;
         private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
         private bool _showItems;
+        private readonly DefaultDropHandler _defaultDropHandler;
+        private bool _addingProfile;
 
         public SidebarCategoryViewModel(ProfileCategory profileCategory,
             IProfileService profileService,
@@ -37,6 +40,7 @@ namespace Artemis.UI.Screens.Sidebar
             _vmFactory = vmFactory;
             _eventAggregator = eventAggregator;
             _showItems = !profileCategory.IsCollapsed;
+            _defaultDropHandler = new DefaultDropHandler();
 
             ProfileCategory = profileCategory;
             if (ShowItems)
@@ -56,6 +60,17 @@ namespace Artemis.UI.Screens.Sidebar
                     CreateProfileViewModels();
                 else
                     Items.Clear();
+            }
+        }
+
+        public bool IsSuspended
+        {
+            get => ProfileCategory.IsSuspended;
+            set
+            {
+                ProfileCategory.IsSuspended = value;
+                NotifyOfPropertyChange(nameof(IsSuspended));
+                _profileService.SaveProfileCategory(ProfileCategory);
             }
         }
 
@@ -109,16 +124,29 @@ namespace Artemis.UI.Screens.Sidebar
 
         public async Task AddProfile()
         {
-            ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(ProfileCategory, "New profile", Enum.GetValues<PackIconKind>().First().ToString());
-            object result = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
+            try
             {
-                {"profileConfiguration", profileConfiguration},
-                {"isNew", true}
-            });
-            if (result is nameof(ProfileEditViewModel.Accept))
-                ShowItems = true;
-            else
-                _profileService.RemoveProfileConfiguration(profileConfiguration);
+                _addingProfile = true;
+                ProfileConfiguration profileConfiguration = _profileService.CreateProfileConfiguration(ProfileCategory, "New profile", Enum.GetValues<PackIconKind>().First().ToString());
+                object result = await _dialogService.ShowDialog<ProfileEditViewModel>(new Dictionary<string, object>
+                {
+                    {"profileConfiguration", profileConfiguration},
+                    {"isNew", true}
+                });
+                if (result is nameof(ProfileEditViewModel.Accept))
+                {
+                    if (!ShowItems)
+                        ShowItems = true;
+                    else
+                        CreateProfileViewModels();
+                }
+                else
+                    _profileService.RemoveProfileConfiguration(profileConfiguration);
+            }
+            finally
+            {
+                _addingProfile = false;
+            }
         }
 
         private void CreateProfileViewModels()
@@ -126,24 +154,30 @@ namespace Artemis.UI.Screens.Sidebar
             Items.Clear();
             foreach (ProfileConfiguration profileConfiguration in ProfileCategory.ProfileConfigurations.OrderBy(p => p.Order))
                 Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(profileConfiguration));
+
+            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
         }
 
-        private void ProfileCategoryOnProfileConfigurationRemoved(object? sender, ProfileConfigurationEventArgs e)
+        private void ProfileCategoryOnProfileConfigurationRemoved(object sender, ProfileConfigurationEventArgs e)
         {
-            if (ShowItems)
+            if (!_addingProfile && ShowItems)
             {
                 Items.Remove(Items.FirstOrDefault(i => i.ProfileConfiguration == e.ProfileConfiguration));
                 ((BindableCollection<SidebarProfileConfigurationViewModel>) Items).Sort(p => p.ProfileConfiguration.Order);
             }
+
+            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
         }
 
-        private void ProfileCategoryOnProfileConfigurationAdded(object? sender, ProfileConfigurationEventArgs e)
+        private void ProfileCategoryOnProfileConfigurationAdded(object sender, ProfileConfigurationEventArgs e)
         {
-            if (ShowItems)
+            if (!_addingProfile && ShowItems)
             {
                 Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
-                ((BindableCollection<SidebarProfileConfigurationViewModel>)Items).Sort(p => p.ProfileConfiguration.Order);
+                ((BindableCollection<SidebarProfileConfigurationViewModel>) Items).Sort(p => p.ProfileConfiguration.Order);
             }
+
+            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
         }
 
         #region Overrides of Screen
@@ -171,28 +205,30 @@ namespace Artemis.UI.Screens.Sidebar
         /// <inheritdoc />
         public void DragOver(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is not SidebarProfileConfigurationViewModel || dropInfo.TargetItem is not SidebarProfileConfigurationViewModel) 
-                return;
-
-            dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
-            dropInfo.Effects = DragDropEffects.Move;
+            _defaultDropHandler.DragOver(dropInfo);
         }
 
         /// <inheritdoc />
         public void Drop(IDropInfo dropInfo)
         {
-            if (dropInfo.Data is not SidebarProfileConfigurationViewModel sourceItem || dropInfo.TargetItem is not SidebarProfileConfigurationViewModel targetItem) 
+            if (dropInfo.Data is not SidebarProfileConfigurationViewModel sourceItem)
                 return;
-            if (sourceItem == targetItem)
+            if (dropInfo.Data == dropInfo.TargetItem)
                 return;
 
             SidebarCategoryViewModel sourceCategory = (SidebarCategoryViewModel) sourceItem.Parent;
-            SidebarCategoryViewModel targetCategory = (SidebarCategoryViewModel) targetItem.Parent;
+            SidebarCategoryViewModel targetCategory = (SidebarCategoryViewModel) ((FrameworkElement) dropInfo.VisualTarget).DataContext;
 
-            if (dropInfo.InsertPosition.HasFlag(RelativeInsertPosition.BeforeTargetItem))
-                targetCategory.ProfileCategory.AddProfileConfiguration(sourceItem.ProfileConfiguration, targetCategory.Items.IndexOf(targetItem));
-            else if (dropInfo.InsertPosition.HasFlag(RelativeInsertPosition.AfterTargetItem))
-                targetCategory.ProfileCategory.AddProfileConfiguration(sourceItem.ProfileConfiguration, targetCategory.Items.IndexOf(targetItem) + 1);
+            int targetIndex = 0;
+            if (dropInfo.TargetItem is SidebarProfileConfigurationViewModel targetItem)
+            {
+                if (dropInfo.InsertPosition.HasFlag(RelativeInsertPosition.BeforeTargetItem))
+                    targetIndex = targetCategory.Items.IndexOf(targetItem);
+                else
+                    targetIndex = targetCategory.Items.IndexOf(targetItem) + 1;
+            }
+
+            targetCategory.ProfileCategory.AddProfileConfiguration(sourceItem.ProfileConfiguration, targetIndex);
 
             if (sourceCategory != targetCategory)
                 _profileService.SaveProfileCategory(sourceCategory.ProfileCategory);
