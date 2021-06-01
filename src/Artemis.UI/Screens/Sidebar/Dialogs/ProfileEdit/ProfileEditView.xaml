@@ -16,8 +16,10 @@
              d:DataContext="{d:DesignInstance {x:Type profileEdit:ProfileEditViewModel}}"
              Width="800">
     <UserControl.Resources>
-        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <converters:StreamToBitmapImageConverter x:Key="StreamToBitmapImageConverter"/>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <shared:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
@@ -71,7 +73,7 @@
                                       Visibility="{Binding HasUsableModules, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
                             No usable modules found
                         </ComboBoxItem>
-                        <CollectionContainer Collection="{Binding Modules}" />
+                        <CollectionContainer Collection="{Binding DataContext.Modules, Source={StaticResource DataContextProxy}}" />
                     </CompositeCollection>
                 </ComboBox.ItemsSource>
                 <ComboBox.ItemsPanel>
@@ -112,14 +114,13 @@
                                                 </Grid.ColumnDefinitions>
                                                 <materialDesign:PackIcon Grid.Column="0" 
                                                                          Kind="{Binding DataContext.SelectedIcon.Icon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"
-                                                                         Width="32" 
-                                                                         Height="32"
-                                                                         Margin="10 0"
+                                                                         Width="45" 
+                                                                         Height="45"
+                                                                         Margin="0 0 10 0"
                                                                          VerticalAlignment="Center" />
 
                                                 <ComboBox Grid.Column="1"
                                                           materialDesign:HintAssist.Hint="Profile icon"
-                                                          Margin="0 0 0 8"
                                                           Style="{StaticResource MaterialDesignFilledComboBox}"
                                                           SelectedItem="{Binding DataContext.SelectedIcon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                           IsEnabled="{Binding DataContext.Initializing, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource InverseBooleanConverter}}"
@@ -154,13 +155,16 @@
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
                                                 <Image Grid.Column="0" 
-                                                       Source="{Binding DataContext.SelectedBitmap, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"
-                                                       Margin="10 0" 
-                                                       Width="32" 
-                                                       Height="32" 
+                                                       Source="{Binding DataContext.SelectedImage, Converter={StaticResource StreamToBitmapImageConverter}, RelativeSource={RelativeSource AncestorType={x:Type UserControl}},  Mode=OneWay}"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"
+                                                       Margin="0 0 10 0"
+                                                       Width="45" 
+                                                       Height="45"
                                                        VerticalAlignment="Center" />
-                                                <Button Grid.Column="1" Command="{s:Action SelectIconFile}" Style="{StaticResource MaterialDesignRaisedButton}" ToolTip="Select an image"
-                                                        Margin="0 10 0 11">
+                                                <Button Grid.Column="1" 
+                                                        Command="{s:Action SelectIconFile}"
+                                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                                        ToolTip="Select an image">
                                                     <StackPanel Orientation="Horizontal">
                                                         <materialDesign:PackIcon Kind="Paperclip" Margin="0 0 10 0" />
                                                         <TextBlock>BROWSE IMAGE</TextBlock>
@@ -180,7 +184,11 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <Image Grid.Column="0" Source="{Binding SelectedImage, Converter={svgc:SvgImageConverter}, Mode=OneWay}" Width="32" Height="32" Margin="10 0"
+                                                <Image Grid.Column="0" 
+                                                       Source="{Binding SelectedImage, Converter={svgc:SvgImageConverter}, Mode=OneWay}" 
+                                                       Width="45" 
+                                                       Height="45"
+                                                       Margin="0 0 10 0"
                                                        VerticalAlignment="Center" />
                                             </Grid>
                                         </DataTemplate>

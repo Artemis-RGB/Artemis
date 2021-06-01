@@ -2,7 +2,7 @@
 
 namespace Artemis.UI.Shared
 {
-    internal class BindingProxy : Freezable
+    public class BindingProxy : Freezable
     {
         // Using a DependencyProperty as the backing store for Data.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty DataProperty =

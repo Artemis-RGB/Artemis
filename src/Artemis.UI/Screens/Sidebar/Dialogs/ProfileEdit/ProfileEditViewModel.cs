@@ -22,7 +22,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
     {
         private readonly DataModelConditionGroup _dataModelConditionGroup;
         private readonly IProfileService _profileService;
-        private readonly IDialogService _dialogService;
         private bool _initializing;
         private string _profileName;
         private ProfileIconViewModel _selectedIcon;
@@ -30,13 +29,11 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         private readonly List<Module> _modules;
         private ProfileConfigurationIconType _selectedIconType;
         private Stream _selectedImage;
-        private BitmapImage _selectedBitmap;
+        private bool _changedImage;
 
-        public ProfileEditViewModel(ProfileConfiguration profileConfiguration,
-            bool isNew,
+        public ProfileEditViewModel(ProfileConfiguration profileConfiguration, bool isNew,
             IProfileService profileService,
             IPluginManagementService pluginManagementService,
-            IDialogService dialogService,
             ISidebarVmFactory sidebarVmFactory,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory,
             IModelValidator<ProfileEditViewModel> validator) : base(validator)
@@ -45,7 +42,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             IsNew = isNew;
 
             _profileService = profileService;
-            _dialogService = dialogService;
             _dataModelConditionGroup = ProfileConfiguration.ActivationCondition ?? new DataModelConditionGroup(null);
             _modules = ProfileConfiguration.Module != null ? new List<Module> {ProfileConfiguration.Module} : new List<Module>();
 
@@ -63,8 +59,9 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             ModuleActivationRequirementsViewModel.SetModule(ProfileConfiguration.Module);
 
             _profileName = ProfileConfiguration.Name;
-            _selectedIconType = ProfileConfiguration.Icon.IconType;
             _selectedModule = Modules.FirstOrDefault(m => m.Module == ProfileConfiguration.Module);
+            _selectedIconType = ProfileConfiguration.Icon.IconType;
+            _selectedImage = ProfileConfiguration.Icon.FileIcon;
 
             Task.Run(() =>
             {
@@ -73,7 +70,10 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                     .Select(g => g.First())
                     .Select(e => new ProfileIconViewModel(e))
                     .ToList());
-                SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == ProfileConfiguration.Icon.MaterialIcon);
+                if (IsNew)
+                    SelectedIcon = Icons[new Random().Next(0, Icons.Count - 1)];
+                else
+                    SelectedIcon = Icons.FirstOrDefault(i => i.Icon.ToString() == ProfileConfiguration.Icon.MaterialIcon);
                 Initializing = false;
             });
         }
@@ -107,12 +107,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         {
             get => _selectedImage;
             set => SetAndNotify(ref _selectedImage, value);
-        }
-
-        public BitmapImage SelectedBitmap
-        {
-            get => _selectedBitmap;
-            set => SetAndNotify(ref _selectedBitmap, value);
         }
 
         public ProfileIconViewModel SelectedIcon
@@ -161,6 +155,12 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             if (_dataModelConditionGroup.Children.Any())
                 ProfileConfiguration.ActivationCondition = _dataModelConditionGroup;
 
+            if (_changedImage)
+            {
+                ProfileConfiguration.Icon.FileIcon = SelectedImage;
+                _profileService.SaveProfileConfigurationIcon(ProfileConfiguration);
+            }
+
             _profileService.SaveProfileCategory(ProfileConfiguration.Category);
 
             Session.Close(nameof(Accept));
@@ -174,20 +174,9 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             bool? result = dialog.ShowDialog();
             if (result == true)
             {
+                _changedImage = true;
                 SelectedImage = File.OpenRead(dialog.FileName);
-                Execute.PostToUIThread(LoadIconBitmap);
             }
-        }
-
-        private void LoadIconBitmap()
-        {
-            BitmapImage selectedBitmap = new();
-            selectedBitmap.BeginInit();
-            selectedBitmap.StreamSource = SelectedImage;
-            selectedBitmap.CacheOption = BitmapCacheOption.OnLoad;
-            selectedBitmap.EndInit();
-            selectedBitmap.Freeze();
-            SelectedBitmap = selectedBitmap;
         }
     }
 

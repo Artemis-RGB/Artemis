@@ -184,13 +184,11 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Icon.IconType == ProfileConfigurationIconType.MaterialIcon)
                 return;
 
-            _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, profileConfiguration.Icon.FileIcon);
-
-            Stream profileIconStream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
-            if (profileIconStream.Length != 0)
-                profileConfiguration.Icon.FileIcon = profileIconStream;
-            else
-                profileIconStream.Dispose();
+            if (profileConfiguration.Icon.FileIcon != null)
+            {
+                profileConfiguration.Icon.FileIcon.Position = 0;
+                _profileCategoryRepository.SaveProfileIconStream(profileConfiguration.Entity, profileConfiguration.Icon.FileIcon);
+            }
         }
 
         public Profile ActivateProfile(ProfileConfiguration profileConfiguration)

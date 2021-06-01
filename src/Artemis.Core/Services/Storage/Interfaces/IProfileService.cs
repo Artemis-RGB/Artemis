@@ -81,6 +81,11 @@ namespace Artemis.Core.Services
         void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
 
         /// <summary>
+        ///     Saves the current icon of this profile
+        /// </summary>
+        void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
         ///     Writes the profile to persistent storage
         /// </summary>
         /// <param name="profile"></param>

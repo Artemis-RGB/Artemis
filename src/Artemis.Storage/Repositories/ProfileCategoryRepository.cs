@@ -58,6 +58,9 @@ namespace Artemis.Storage.Repositories
 
         public void SaveProfileIconStream(ProfileConfigurationEntity profileConfigurationEntity, Stream stream)
         {
+            if (profileConfigurationEntity.FileIconId == Guid.Empty)
+                profileConfigurationEntity.FileIconId = Guid.NewGuid();
+
             if (stream == null)
                 _repository.Database.GetStorage<Guid>("profileIcons")?.Delete(profileConfigurationEntity.FileIconId);
 
