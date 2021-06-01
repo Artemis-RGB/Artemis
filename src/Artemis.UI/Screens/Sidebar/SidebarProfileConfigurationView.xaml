@@ -109,7 +109,10 @@
                             <Setter Property="ContentTemplate">
                                 <Setter.Value>
                                     <DataTemplate>
-                                        <Image Source="{Binding ProfileConfiguration.Icon.FileIcon, Converter={svgc:SvgImageConverter}, Mode=OneWay}"/>
+                                        <svgc:SvgViewbox StreamSource="{Binding DataContext.ProfileConfiguration.Icon.FileIcon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                         RenderOptions.BitmapScalingMode="HighQuality"
+                                                         Width="20"
+                                                         Height="20"/>
                                     </DataTemplate>
                                 </Setter.Value>
                             </Setter>

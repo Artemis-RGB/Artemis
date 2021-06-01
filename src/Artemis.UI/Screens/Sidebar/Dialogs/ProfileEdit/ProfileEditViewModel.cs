@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Artemis.Core;
 using Artemis.Core.Modules;
@@ -21,15 +23,15 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
     public class ProfileEditViewModel : DialogViewModelBase
     {
         private readonly DataModelConditionGroup _dataModelConditionGroup;
+        private readonly List<Module> _modules;
         private readonly IProfileService _profileService;
+        private bool _changedImage;
         private bool _initializing;
         private string _profileName;
         private ProfileIconViewModel _selectedIcon;
-        private ProfileModuleViewModel _selectedModule;
-        private readonly List<Module> _modules;
         private ProfileConfigurationIconType _selectedIconType;
         private Stream _selectedImage;
-        private bool _changedImage;
+        private ProfileModuleViewModel _selectedModule;
 
         public ProfileEditViewModel(ProfileConfiguration profileConfiguration, bool isNew,
             IProfileService profileService,
@@ -100,7 +102,11 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         public ProfileConfigurationIconType SelectedIconType
         {
             get => _selectedIconType;
-            set => SetAndNotify(ref _selectedIconType, value);
+            set
+            {
+                if (!SetAndNotify(ref _selectedIconType, value)) return;
+                SelectedImage = null;
+            }
         }
 
         public Stream SelectedImage
@@ -166,17 +172,36 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             Session.Close(nameof(Accept));
         }
 
-        public void SelectIconFile()
+        public void SelectBitmapFile()
         {
-            VistaOpenFileDialog dialog = new();
-            dialog.Filter = "All Graphics Types|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff|BMP |*.bmp|GIF|*.gif|JPG|*.jpg;*.jpeg|PNG|*.png|TIFF|*.tif;*.tiff";
-            dialog.Title = "Select profile icon";
-            bool? result = dialog.ShowDialog();
-            if (result == true)
+            VistaOpenFileDialog dialog = new()
             {
-                _changedImage = true;
-                SelectedImage = File.OpenRead(dialog.FileName);
-            }
+                Filter = "All Graphics Types|*.bmp;*.jpg;*.jpeg;*.png;*.tif;*.tiff|BMP |*.bmp|GIF|*.gif|JPG|*.jpg;*.jpeg|PNG|*.png|TIFF|*.tif;*.tiff",
+                Title = "Select profile icon"
+            };
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return;
+
+            _changedImage = true;
+
+            // TODO: Scale down to 100x100-ish
+            SelectedImage = File.OpenRead(dialog.FileName);
+        }
+
+        public void SelectSvgFile()
+        {
+            VistaOpenFileDialog dialog = new()
+            {
+                Filter = "Scalable Vector Graphics|*.svg",
+                Title = "Select profile icon"
+            };
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return;
+
+            _changedImage = true;
+            SelectedImage = File.OpenRead(dialog.FileName);
         }
     }
 

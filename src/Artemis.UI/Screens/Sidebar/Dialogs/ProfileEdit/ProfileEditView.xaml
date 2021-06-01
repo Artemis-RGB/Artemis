@@ -73,7 +73,7 @@
                                       Visibility="{Binding HasUsableModules, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
                             No usable modules found
                         </ComboBoxItem>
-                        <CollectionContainer Collection="{Binding DataContext.Modules, Source={StaticResource DataContextProxy}}" />
+                        <CollectionContainer Collection="{Binding Data.Modules, Source={StaticResource DataContextProxy}}" />
                     </CompositeCollection>
                 </ComboBox.ItemsSource>
                 <ComboBox.ItemsPanel>
@@ -155,14 +155,14 @@
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
                                                 <Image Grid.Column="0" 
-                                                       Source="{Binding DataContext.SelectedImage, Converter={StaticResource StreamToBitmapImageConverter}, RelativeSource={RelativeSource AncestorType={x:Type UserControl}},  Mode=OneWay}"
+                                                       Source="{Binding DataContext.SelectedImage, Converter={StaticResource StreamToBitmapImageConverter}, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                        RenderOptions.BitmapScalingMode="HighQuality"
                                                        Margin="0 0 10 0"
                                                        Width="45" 
                                                        Height="45"
                                                        VerticalAlignment="Center" />
                                                 <Button Grid.Column="1" 
-                                                        Command="{s:Action SelectIconFile}"
+                                                        Command="{s:Action SelectBitmapFile}"
                                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                                         ToolTip="Select an image">
                                                     <StackPanel Orientation="Horizontal">
@@ -184,12 +184,22 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <Image Grid.Column="0" 
-                                                       Source="{Binding SelectedImage, Converter={svgc:SvgImageConverter}, Mode=OneWay}" 
-                                                       Width="45" 
-                                                       Height="45"
-                                                       Margin="0 0 10 0"
-                                                       VerticalAlignment="Center" />
+
+                                                <svgc:SvgViewbox Grid.Column="0" 
+                                                                 StreamSource="{Binding DataContext.SelectedImage, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
+                                                                 Margin="0 0 10 0"
+                                                                 Width="45" 
+                                                                 Height="45"
+                                                                 VerticalAlignment="Center" />
+                                                <Button Grid.Column="1" 
+                                                        Command="{s:Action SelectSvgFile}"
+                                                        Style="{StaticResource MaterialDesignRaisedButton}"
+                                                        ToolTip="Select an image">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <materialDesign:PackIcon Kind="Paperclip" Margin="0 0 10 0" />
+                                                        <TextBlock>BROWSE IMAGE</TextBlock>
+                                                    </StackPanel>
+                                                </Button>
                                             </Grid>
                                         </DataTemplate>
                                     </Setter.Value>
