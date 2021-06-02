@@ -68,9 +68,8 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             Task.Run(() =>
             {
                 Icons.AddRange(Enum.GetValues<PackIconKind>()
-                    .GroupBy(e => e)
-                    .Select(g => g.First())
-                    .Select(e => new ProfileIconViewModel(e))
+                    .GroupBy(i => i).Select(g => g.First()).Select(i => new ProfileIconViewModel(i))
+                    .OrderBy(i => i.IconName)
                     .ToList());
                 if (IsNew)
                     SelectedIcon = Icons[new Random().Next(0, Icons.Count - 1)];
