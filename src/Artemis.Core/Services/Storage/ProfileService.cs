@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
@@ -35,7 +34,7 @@ namespace Artemis.Core.Services
             _profileCategoryRepository = profileCategoryRepository;
             _pluginManagementService = pluginManagementService;
             _profileRepository = profileRepository;
-            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)));
+            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
@@ -44,17 +43,58 @@ namespace Artemis.Core.Services
 
         public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
         public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+
+        /// <summary>
+        ///     Populates all missing LEDs on all currently active profiles
+        /// </summary>
+        private void ActiveProfilesPopulateLeds()
+        {
+            foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
+            {
+                if (profileConfiguration.Profile == null) continue;
+                profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
+
+                if (!profileConfiguration.Profile.IsFreshImport) continue;
+                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
+                AdaptProfile(profileConfiguration.Profile);
+            }
+        }
+
+        private void UpdateModules()
+        {
+            lock (_profileRepository)
+            {
+                List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
+                foreach (ProfileCategory profileCategory in _profileCategories)
+                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    profileConfiguration.LoadModules(modules);
+            }
+        }
+
+        private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
+        {
+            ActiveProfilesPopulateLeds();
+        }
+
+        private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
+        {
+            if (e.PluginFeature is Module)
+                UpdateModules();
+        }
+
         public bool RenderForEditor { get; set; }
 
         public void UpdateProfiles(double deltaTime)
         {
-            lock (_profileRepository)
+            lock (_profileCategories)
             {
-                // Not sure if nested foreach is quicker than LINQ but that seems like unnecessary overhead
-                foreach (ProfileCategory profileCategory in _profileCategories)
+                // Iterate the children in reverse because the first category must be rendered last to end up on top
+                for (int i = _profileCategories.Count - 1; i > -1; i--)
                 {
-                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    ProfileCategory profileCategory = _profileCategories[i];
+                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
                     {
+                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         // Profiles being edited are updated at their own leisure
                         if (profileConfiguration.IsBeingEdited)
                             continue;
@@ -80,13 +120,15 @@ namespace Artemis.Core.Services
 
         public void RenderProfiles(SKCanvas canvas)
         {
-            lock (_profileRepository)
+            lock (_profileCategories)
             {
-                // Not sure if nested foreach is quicker than LINQ but that seems like unnecessary overhead
-                foreach (ProfileCategory profileCategory in _profileCategories)
+                // Iterate the children in reverse because the first category must be rendered last to end up on top
+                for (int i = _profileCategories.Count - 1; i > -1; i--)
                 {
-                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                    ProfileCategory profileCategory = _profileCategories[i];
+                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
                     {
+                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
                         if (RenderForEditor)
                         {
                             if (profileConfiguration.IsBeingEdited)
@@ -101,46 +143,6 @@ namespace Artemis.Core.Services
                     }
                 }
             }
-        }
-
-        /// <summary>
-        ///     Populates all missing LEDs on all currently active profiles
-        /// </summary>
-        private void ActiveProfilesPopulateLeds()
-        {
-            foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
-            {
-                if (profileConfiguration.Profile == null) continue;
-                profileConfiguration.Profile.PopulateLeds(_rgbService.EnabledDevices);
-
-                if (!profileConfiguration.Profile.IsFreshImport) continue;
-                _logger.Debug("Profile is a fresh import, adapting to surface - {profile}", profileConfiguration.Profile);
-                AdaptProfile(profileConfiguration.Profile);
-            }
-        }
-
-        private void UpdateModules()
-        {
-            lock (_profileRepository)
-            {
-                List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
-                foreach (ProfileCategory profileCategory in _profileCategories)
-                {
-                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                        profileConfiguration.LoadModules(modules);
-                }
-            }
-        }
-
-        private void RgbServiceOnLedsChanged(object? sender, EventArgs e)
-        {
-            ActiveProfilesPopulateLeds();
-        }
-
-        private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
-        {
-            if (e.PluginFeature is Module)
-                UpdateModules();
         }
 
         public ReadOnlyCollection<ProfileCategory> ProfileCategories
@@ -172,11 +174,7 @@ namespace Artemis.Core.Services
             if (profileConfiguration.Icon.FileIcon != null)
                 return;
 
-            Stream profileIconStream = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
-            if (profileIconStream.Length != 0)
-                profileConfiguration.Icon.FileIcon = profileIconStream;
-            else
-                profileIconStream.Dispose();
+            profileConfiguration.Icon.FileIcon = _profileCategoryRepository.GetProfileIconStream(profileConfiguration.Entity.FileIconId);
         }
 
         public void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration)
@@ -299,6 +297,11 @@ namespace Artemis.Core.Services
         {
             profileCategory.Save();
             _profileCategoryRepository.Save(profileCategory.Entity);
+
+            lock (_profileCategories)
+            {
+                _profileCategories.Sort((a, b) => a.Order - b.Order);
+            }
         }
 
         public void SaveProfile(Profile profile, bool includeChildren)

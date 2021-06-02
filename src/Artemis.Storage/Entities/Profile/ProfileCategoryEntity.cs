@@ -10,6 +10,7 @@ namespace Artemis.Storage.Entities.Profile
         public string Name { get; set; }
         public bool IsCollapsed { get; set; }
         public bool IsSuspended { get; set; }
+        public int Order { get; set; }
 
         public List<ProfileConfigurationEntity> ProfileConfigurations { get; set; } = new();
     }

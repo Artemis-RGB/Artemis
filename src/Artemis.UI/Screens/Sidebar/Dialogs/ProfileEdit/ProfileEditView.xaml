@@ -16,8 +16,8 @@
              d:DataContext="{d:DesignInstance {x:Type profileEdit:ProfileEditViewModel}}"
              Width="800">
     <UserControl.Resources>
-        <converters:StreamToBitmapImageConverter x:Key="StreamToBitmapImageConverter"/>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <shared:StreamToBitmapImageConverter x:Key="StreamToBitmapImageConverter"/>
         <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <shared:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
     </UserControl.Resources>

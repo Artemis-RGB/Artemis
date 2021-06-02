@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
@@ -43,8 +44,6 @@ namespace Artemis.UI.Screens.Sidebar
             _defaultDropHandler = new DefaultDropHandler();
 
             ProfileCategory = profileCategory;
-            if (ShowItems)
-                CreateProfileViewModels();
         }
 
         public ProfileCategory ProfileCategory { get; }
@@ -117,7 +116,7 @@ namespace Artemis.UI.Screens.Sidebar
             ((SidebarViewModel) Parent).RemoveProfileCategoryViewModel(this);
         }
 
-        public void OnMouseLeftButtonUp()
+        public void OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ShowItems = !ShowItems;
         }
@@ -181,6 +180,17 @@ namespace Artemis.UI.Screens.Sidebar
         }
 
         #region Overrides of Screen
+
+        #region Overrides of AllActive
+
+        /// <inheritdoc />
+        protected override void OnActivate()
+        {
+            CreateProfileViewModels();
+            base.OnActivate();
+        }
+
+        #endregion
 
         /// <inheritdoc />
         protected override void OnInitialActivate()

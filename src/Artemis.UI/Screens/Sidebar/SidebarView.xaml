@@ -8,6 +8,8 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance sidebar:SidebarViewModel}">
@@ -87,7 +89,24 @@
                     <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
                 </ScrollViewer.Resources>
                 <StackPanel>
-                    <ItemsControl ItemsSource="{Binding Items}">
+                    <StackPanel.Resources>
+                        <DataTemplate x:Key="CategoryDragTemplate" DataType="{x:Type sidebar:SidebarCategoryViewModel}">
+                            <DataTemplate.Resources>
+                                <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                            </DataTemplate.Resources>
+                            <Border Background="{DynamicResource MaterialDesignTextFieldBoxHoverBackground}" 
+                                    Padding="10" 
+                                    CornerRadius="4"
+                                    Visibility="{Binding Path=ProfileCategory, FallbackValue=null, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBlock Text="{Binding ProfileCategory.Name,TargetNullValue='Oops, I am missing'}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                            </Border>
+                        </DataTemplate>
+                    </StackPanel.Resources>
+                    <ItemsControl ItemsSource="{Binding Items}"
+                                  dd:DragDrop.IsDragSource="True"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DragAdornerTemplate="{StaticResource CategoryDragTemplate}"
+                                  dd:DragDrop.DropHandler="{Binding}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />

@@ -10,11 +10,13 @@ namespace Artemis.Storage.Repositories
     internal class ProfileCategoryRepository : IProfileCategoryRepository
     {
         private readonly LiteRepository _repository;
+        private readonly ILiteStorage<Guid> _profileIcons;
 
         public ProfileCategoryRepository(LiteRepository repository)
         {
             _repository = repository;
             _repository.Database.GetCollection<ProfileCategoryEntity>().EnsureIndex(s => s.Name, true);
+            _profileIcons = _repository.Database.GetStorage<Guid>("profileIcons");
         }
 
         public void Add(ProfileCategoryEntity profileCategoryEntity)
@@ -51,8 +53,11 @@ namespace Artemis.Storage.Repositories
 
         public Stream GetProfileIconStream(Guid id)
         {
+            if (!_profileIcons.Exists(id))
+                return null;
+
             MemoryStream stream = new();
-            _repository.Database.GetStorage<Guid>("profileIcons")?.Download(id, stream);
+            _profileIcons.Download(id, stream);
             return stream;
         }
 
@@ -61,10 +66,10 @@ namespace Artemis.Storage.Repositories
             if (profileConfigurationEntity.FileIconId == Guid.Empty)
                 profileConfigurationEntity.FileIconId = Guid.NewGuid();
 
-            if (stream == null)
-                _repository.Database.GetStorage<Guid>("profileIcons")?.Delete(profileConfigurationEntity.FileIconId);
+            if (stream == null && _profileIcons.Exists(profileConfigurationEntity.FileIconId))
+                _profileIcons.Delete(profileConfigurationEntity.FileIconId);
 
-            _repository.Database.GetStorage<Guid>("profileIcons").Upload(profileConfigurationEntity.FileIconId, "image", stream);
+            _profileIcons.Upload(profileConfigurationEntity.FileIconId, "image", stream);
         }
     }
 }

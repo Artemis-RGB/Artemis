@@ -14,8 +14,8 @@
              d:DataContext="{d:DesignInstance local:TreeGroupViewModel}"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <converters:PropertyTreeMarginConverter Length="20" x:Key="PropertyTreeMarginConverter" />
     </UserControl.Resources>
 

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
 using Artemis.UI.Screens.ProfileEditor;
@@ -12,6 +14,7 @@ using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
 using Artemis.UI.Shared.Services;
+using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using RGB.NET.Core;
@@ -19,7 +22,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public sealed class SidebarViewModel : Conductor<SidebarCategoryViewModel>.Collection.AllActive, IHandle<RequestSelectSidebarItemEvent>
+    public sealed class SidebarViewModel : Conductor<SidebarCategoryViewModel>.Collection.AllActive, IHandle<RequestSelectSidebarItemEvent>, IDropTarget
     {
         private readonly IKernel _kernel;
         private readonly ISidebarVmFactory _sidebarVmFactory;
@@ -31,6 +34,7 @@ namespace Artemis.UI.Screens.Sidebar
         private ArtemisDevice _headerDevice;
         private Screen _selectedScreen;
         private readonly SidebarScreenViewModel<ProfileEditorViewModel> _profileEditor;
+        private readonly DefaultDropHandler _defaultDropHandler;
 
         public SidebarViewModel(IKernel kernel,
             IEventAggregator eventAggregator,
@@ -47,6 +51,7 @@ namespace Artemis.UI.Screens.Sidebar
             _profileEditorService = profileEditorService;
             _dialogService = dialogService;
             _profileEditor = new SidebarScreenViewModel<ProfileEditorViewModel>(PackIconKind.Wrench, "Profile Editor");
+            _defaultDropHandler = new DefaultDropHandler();
 
             eventAggregator.Subscribe(this);
 
@@ -101,7 +106,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void UpdateProfileCategories()
         {
-            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories)
+            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories.OrderBy(p => p.Order))
                 AddProfileCategoryViewModel(profileCategory);
         }
 
@@ -110,6 +115,8 @@ namespace Artemis.UI.Screens.Sidebar
             object result = await _dialogService.ShowDialog<SidebarCategoryCreateViewModel>();
             if (result is ProfileCategory profileCategory)
                 AddProfileCategoryViewModel(profileCategory);
+
+            ((BindableCollection<SidebarCategoryViewModel>) Items).Sort(p => p.ProfileCategory.Order);
         }
 
         public void OpenUrl(string url)
@@ -178,6 +185,28 @@ namespace Artemis.UI.Screens.Sidebar
         private void OnSelectedScreenChanged()
         {
             SelectedScreenChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Implementation of IDropTarget
+
+        /// <inheritdoc />
+        public void DragOver(IDropInfo dropInfo)
+        {
+            _defaultDropHandler.DragOver(dropInfo);
+        }
+
+        /// <inheritdoc />
+        public void Drop(IDropInfo dropInfo)
+        {
+            _defaultDropHandler.Drop(dropInfo);
+            for (int index = 0; index < Items.Count; index++)
+                Items[index].ProfileCategory.Order = index;
+
+            // Bit dumb but gets the job done
+            foreach (SidebarCategoryViewModel viewModel in Items) 
+                _profileService.SaveProfileCategory(viewModel.ProfileCategory);
         }
 
         #endregion

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -10,6 +11,7 @@ namespace Artemis.Core
         private bool _isCollapsed;
         private bool _isSuspended;
         private string _name;
+        private int _order;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ProfileCategory" /> class
@@ -37,6 +39,15 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     The order in which this category appears in the update loop and sidebar
+        /// </summary>
+        public int Order
+        {
+            get => _order;
+            set => SetAndNotify(ref _order, value);
+        }
+
+        /// <summary>
         ///     Gets or sets a boolean indicating whether the category is collapsed or not
         ///     <para>Note: Has no implications other than inside the UI</para>
         /// </summary>
@@ -58,7 +69,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read only collection of the profiles inside this category
         /// </summary>
-        public IReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileConfigurations.AsReadOnly();
+        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileConfigurations.AsReadOnly();
 
         /// <summary>
         ///     Gets the unique ID of this category
@@ -66,6 +77,7 @@ namespace Artemis.Core
         public Guid EntityId => Entity.Id;
 
         internal ProfileCategoryEntity Entity { get; }
+
 
         /// <summary>
         ///     Adds a profile configuration to this category
@@ -89,6 +101,12 @@ namespace Artemis.Core
             OnProfileConfigurationAdded(new ProfileConfigurationEventArgs(configuration));
         }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"[ProfileCategory] {Order} {nameof(Name)}: {Name}, {nameof(IsSuspended)}: {IsSuspended}";
+        }
+
         internal void RemoveProfileConfiguration(ProfileConfiguration configuration)
         {
             if (!_profileConfigurations.Remove(configuration)) return;
@@ -106,6 +124,7 @@ namespace Artemis.Core
             Name = Entity.Name;
             IsCollapsed = Entity.IsCollapsed;
             IsSuspended = Entity.IsSuspended;
+            Order = Entity.Order;
 
             _profileConfigurations.Clear();
             foreach (ProfileConfigurationEntity entityProfileConfiguration in Entity.ProfileConfigurations)
@@ -118,6 +137,7 @@ namespace Artemis.Core
             Entity.Name = Name;
             Entity.IsCollapsed = IsCollapsed;
             Entity.IsSuspended = IsSuspended;
+            Entity.Order = Order;
 
             Entity.ProfileConfigurations.Clear();
             foreach (ProfileConfiguration profileConfiguration in ProfileConfigurations)
