@@ -181,6 +181,27 @@ namespace Artemis.Core
     }
 
     /// <summary>
+    ///     Represents a name of one of the default categories
+    /// </summary>
+    public enum DefaultCategoryName
+    {
+        /// <summary>
+        ///     The category used by general profiles
+        /// </summary>
+        General,
+
+        /// <summary>
+        ///     The category used by profiles tied to applications
+        /// </summary>
+        Applications,
+
+        /// <summary>
+        ///     The category used by profiles tied to games
+        /// </summary>
+        Games
+    }
+
+    /// <summary>
     ///     Represents a type of behaviour when this profile is activated
     /// </summary>
     public enum ActivationBehaviour

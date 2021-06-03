@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core.Services
@@ -8,6 +9,16 @@ namespace Artemis.Core.Services
     /// </summary>
     public interface IProfileService : IArtemisService
     {
+        /// <summary>
+        /// Gets the JSON serializer settings used to create profile mementos
+        /// </summary>
+        public static JsonSerializerSettings MementoSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All};
+
+        /// <summary>
+        /// Gets the JSON serializer settings used to import/export profiles
+        /// </summary>
+        public static JsonSerializerSettings ExportSettings { get;  } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+
         /// <summary>
         ///     Gets a read only collection containing all the profile categories
         /// </summary>
@@ -105,20 +116,22 @@ namespace Artemis.Core.Services
         bool RedoSaveProfile(Profile profile);
 
         /// <summary>
-        ///     [Placeholder] Exports the profile described in the given <see cref="ProfileDescriptor" /> in a JSON format
+        ///     Exports the profile described in the given <see cref="ProfileConfiguration" /> into an export model
         /// </summary>
         /// <param name="profileConfiguration">The profile configuration of the profile to export</param>
-        /// <returns>The resulting JSON</returns>
-        string ExportProfile(ProfileConfiguration profileConfiguration);
+        /// <returns>The resulting export model</returns>
+        ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration);
 
         /// <summary>
-        ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile configuration
+        ///     Imports the provided base64 encoded GZIPed JSON as a profile configuration
         /// </summary>
         /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile</param>
-        /// <param name="json">The content of the profile as JSON</param>
+        /// <param name="exportModel">The model containing the profile to import</param>
+        /// <param name="makeUnique">Whether or not to give the profile a new GUID, making it unique</param>
+        /// <param name="markAsFreshImport">Whether or not to mark the profile as a fresh import, causing it to be adapted until any changes are made to it</param>
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
-        /// <returns></returns>
-        ProfileConfiguration ImportProfile(ProfileCategory category, string json, string nameAffix = "imported");
+        /// <returns>The resulting profile configuration</returns>
+        ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique = true, bool markAsFreshImport = true, string? nameAffix = "imported");
 
         /// <summary>
         ///     Adapts a given profile to the currently active devices

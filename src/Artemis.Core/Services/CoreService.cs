@@ -33,7 +33,6 @@ namespace Artemis.Core.Services
         private readonly IRgbService _rgbService;
         private readonly List<Exception> _updateExceptions = new();
         private DateTime _lastExceptionLog;
-        private List<Module> _modules = new();
 
         // ReSharper disable UnusedParameter.Local
         public CoreService(IKernel kernel,
@@ -56,15 +55,10 @@ namespace Artemis.Core.Services
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _frameStopWatch = new Stopwatch();
             StartupArguments = new List<string>();
-
-            UpdatePluginCache();
-
+            
             _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
-
-            _pluginManagementService.PluginFeatureEnabled += (sender, args) => UpdatePluginCache();
-            _pluginManagementService.PluginFeatureDisabled += (sender, args) => UpdatePluginCache();
         }
 
         // ReSharper restore UnusedParameter.Local
@@ -77,11 +71,6 @@ namespace Artemis.Core.Services
         protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
         {
             FrameRendered?.Invoke(this, e);
-        }
-
-        private void UpdatePluginCache()
-        {
-            _modules = _pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).ToList();
         }
 
         private void ApplyLoggingLevel()

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -15,6 +16,8 @@ using Artemis.UI.Shared.Services;
 using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
 using MaterialDesignThemes.Wpf.Transitions;
+using Newtonsoft.Json;
+using Ookii.Dialogs.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -145,6 +148,35 @@ namespace Artemis.UI.Screens.Sidebar
             finally
             {
                 _addingProfile = false;
+            }
+        }
+
+        public async Task ImportProfile()
+        {
+            VistaOpenFileDialog dialog = new()
+            {
+                Filter = "Artemis Profile|*.json",
+                Title = "Export Artemis profile"
+            };
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return;
+
+            string json = await File.ReadAllTextAsync(dialog.FileName);
+            try
+            {
+                ProfileConfigurationExportModel profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(json, IProfileService.ExportSettings);
+                if (profileConfigurationExportModel == null)
+                {
+                    await _dialogService.ShowConfirmDialog("Import profile", "Failed to import this profile, make sure it is a valid Artemis profile.", "Confirm", null);
+                    return;
+                }
+
+                _profileService.ImportProfile(ProfileCategory, profileConfigurationExportModel);
+            }
+            catch (Exception e)
+            {
+                await _dialogService.ShowConfirmDialog("Import profile", $"Failed to import this profile, make sure it is a valid Artemis profile.\r\n{e.Message}", "Confirm", null);
             }
         }
 

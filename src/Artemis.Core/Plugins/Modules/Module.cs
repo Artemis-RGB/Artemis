@@ -6,9 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Core.Services;
-using Artemis.Storage.Entities.Profile;
-using Newtonsoft.Json;
 
 namespace Artemis.Core.Modules
 {
@@ -70,14 +67,18 @@ namespace Artemis.Core.Modules
     /// </summary>
     public abstract class Module : PluginFeature
     {
-        private readonly List<string> _defaultProfilePaths = new();
-        private readonly List<ProfileEntity> _defaultProfiles = new();
-        private readonly List<string> _pendingDefaultProfilePaths = new();
+        private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
+        private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
 
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
         protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+
+        /// <summary>
+        ///     Gets a read only collection of default profile paths
+        /// </summary>
+        public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths => _defaultProfilePaths.AsReadOnly();
 
         /// <summary>
         ///     The modules display name that's shown in the menu
@@ -144,11 +145,6 @@ namespace Artemis.Core.Modules
         internal DataModel? InternalDataModel { get; set; }
 
         /// <summary>
-        ///     Gets a list of default profiles, to add a new default profile use <see cref="AddDefaultProfile" />
-        /// </summary>
-        internal ReadOnlyCollection<ProfileEntity> DefaultProfiles => _defaultProfiles.AsReadOnly();
-
-        /// <summary>
         ///     Called each frame when the module should update
         /// </summary>
         /// <param name="deltaTime">Time in seconds since the last update</param>
@@ -205,46 +201,36 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Adds a default profile by reading it from the file found at the provided path
         /// </summary>
+        /// <param name="category">The category in which to place the default profile</param>
         /// <param name="file">A path pointing towards a profile file. May be relative to the plugin directory.</param>
         /// <returns>
         ///     <see langword="true" /> if the default profile was added; <see langword="false" /> if it was not because it is
         ///     already in the list.
         /// </returns>
-        protected bool AddDefaultProfile(string file)
+        protected bool AddDefaultProfile(DefaultCategoryName category, string file)
         {
-            // It can be null if the plugin has not loaded yet...
+            // It can be null if the plugin has not loaded yet in which case Plugin.ResolveRelativePath fails
             if (Plugin == null!)
             {
-                if (_pendingDefaultProfilePaths.Contains(file))
+                if (_pendingDefaultProfilePaths.Contains((category, file)))
                     return false;
-                _pendingDefaultProfilePaths.Add(file);
+                _pendingDefaultProfilePaths.Add((category, file));
                 return true;
             }
 
             if (!Path.IsPathRooted(file))
                 file = Plugin.ResolveRelativePath(file);
 
-            if (_defaultProfilePaths.Contains(file))
-                return false;
-            _defaultProfilePaths.Add(file);
-
             // Ensure the file exists
             if (!File.Exists(file))
                 throw new ArtemisPluginFeatureException(this, $"Could not find default profile at {file}.");
-            // Deserialize and make sure that succeeded
-            ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(File.ReadAllText(file), ProfileService.ExportSettings);
-            if (profileEntity == null)
-                throw new ArtemisPluginFeatureException(this, $"Failed to deserialize default profile at {file}.");
-            // Ensure the profile ID is unique
-            if (_defaultProfiles.Any(d => d.Id == profileEntity.Id))
-                throw new ArtemisPluginFeatureException(this, $"Cannot add default profile from {file}, profile ID {profileEntity.Id} already in use.");
 
-            profileEntity.IsFreshImport = true;
-            _defaultProfiles.Add(profileEntity);
+            if (_defaultProfilePaths.Contains((category, file)))
+                return false;
+            _defaultProfilePaths.Add((category, file));
 
             return true;
         }
-
 
         internal virtual void InternalUpdate(double deltaTime)
         {
@@ -273,6 +259,20 @@ namespace Artemis.Core.Modules
             IsActivated = false;
             ModuleDeactivated(isOverride);
         }
+
+        #region Overrides of PluginFeature
+
+        /// <inheritdoc />
+        internal override void InternalEnable()
+        {
+            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths) 
+                AddDefaultProfile(categoryName, path);
+            _pendingDefaultProfilePaths.Clear();
+
+            base.InternalEnable();
+        }
+
+        #endregion
 
         internal virtual void Reactivate(bool isDeactivateOverride, bool isActivateOverride)
         {

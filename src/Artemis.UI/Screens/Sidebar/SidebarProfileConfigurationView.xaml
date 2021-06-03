@@ -47,17 +47,22 @@
                 <MenuItem Header="Below" Command="{s:Action SuspendBelow}" CommandParameter="resume" />
             </MenuItem>
             <Separator />
-            <MenuItem Header="Duplicate" Command="{s:Action Duplicate}" InputGestureText="Ctrl+D">
+            <MenuItem Header="Export" Command="{s:Action Export}">
+                <MenuItem.Icon>
+                    <materialDesign:PackIcon Kind="Export" />
+                </MenuItem.Icon>
+            </MenuItem>
+            <MenuItem Header="Duplicate" Command="{s:Action Duplicate}" >
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentDuplicate" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Copy" Command="{s:Action Copy}" InputGestureText="Ctrl+C">
+            <MenuItem Header="Copy" Command="{s:Action Copy}" >
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentCopy" />
                 </MenuItem.Icon>
             </MenuItem>
-            <MenuItem Header="Paste" Command="{s:Action Paste}" InputGestureText="Ctrl+V">
+            <MenuItem Header="Paste" Command="{s:Action Paste}" >
                 <MenuItem.Icon>
                     <materialDesign:PackIcon Kind="ContentPaste" />
                 </MenuItem.Icon>

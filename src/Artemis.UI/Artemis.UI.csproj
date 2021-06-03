@@ -377,4 +377,7 @@
           <SubType>Designer</SubType>
         </Page>
     </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Screens\Sidebar\Models\" />
+    </ItemGroup>
 </Project>

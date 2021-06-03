@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Artemis.Core;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
 using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
-using Artemis.UI.Screens.Sidebar.Models;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Newtonsoft.Json;
+using Ookii.Dialogs.Wpf;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
@@ -74,30 +76,45 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
+        public async Task Export()
+        {
+            string filename = new string(ProfileConfiguration.Name.Select(ch => Path.GetInvalidFileNameChars().Contains(ch) ? '_' : ch).ToArray()) + ".json";
+            VistaSaveFileDialog dialog = new()
+            {
+                Filter = "Artemis Profile|*.json",
+                Title = "Export Artemis profile",
+                FileName = filename
+            };
+            bool? result = dialog.ShowDialog();
+            if (result != true)
+                return;
+
+            ProfileConfigurationExportModel profileConfigurationExportModel = _profileService.ExportProfile(ProfileConfiguration);
+            string json = JsonConvert.SerializeObject(profileConfigurationExportModel, IProfileService.ExportSettings);
+
+            if (!dialog.FileName.EndsWith(".json"))
+                dialog.FileName += ".json";
+            await File.WriteAllTextAsync(dialog.FileName, json);
+        }
+
         public void Duplicate()
         {
-            string export = _profileService.ExportProfile(ProfileConfiguration);
-            _profileService.ImportProfile(ProfileConfiguration.Category, export, "copy");
+            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
         }
 
         public void Copy()
         {
-            // The profile may not be active and in that case lets activate it real quick
-            Profile profile = ProfileConfiguration.Profile ?? _profileService.ActivateProfile(ProfileConfiguration);
-            JsonClipboard.SetObject(new ProfileConfigurationClipboardModel
-            {
-                ProfileConfigurationEntity = ProfileConfiguration.Entity,
-                ProfileEntity = profile.ProfileEntity
-            });
+            JsonClipboard.SetObject(_profileService.ExportProfile(ProfileConfiguration));
         }
 
         public void Paste()
         {
-            ProfileConfigurationClipboardModel profileConfiguration = JsonClipboard.GetData<ProfileConfigurationClipboardModel>();
+            ProfileConfigurationExportModel profileConfiguration = JsonClipboard.GetData<ProfileConfigurationExportModel>();
             if (profileConfiguration == null)
                 return;
 
-            // _profileService.Im
+            _profileService.ImportProfile(ProfileConfiguration.Category, profileConfiguration, true, false, "copy");
         }
 
         public async Task Delete()

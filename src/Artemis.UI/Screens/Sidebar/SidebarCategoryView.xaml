@@ -128,15 +128,39 @@
                 <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
             </ToggleButton>
 
-            <Button Grid.Column="4"
-                    Margin="0 0 10 0"
-                    Style="{StaticResource MaterialDesignIconForegroundButton}"
-                    ToolTip="Add profile"
-                    Width="26"
-                    Height="26"
-                    Command="{s:Action AddProfile}">
-                <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" />
-            </Button>
+
+            <materialDesign:PopupBox Grid.Column="4"
+                                     PlacementMode="BottomAndAlignCentres"
+                                     ToolTip="Add profile"
+                                     Margin="0 0 10 0">
+                <materialDesign:PopupBox.Style>
+                    <Style TargetType="{x:Type materialDesign:PopupBox}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </materialDesign:PopupBox.Style>
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button Command="{s:Action AddProfile}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0 0 5 0" />
+                            <TextBlock VerticalAlignment="Center"> Add new profile</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{s:Action ImportProfile}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Import" VerticalAlignment="Center" Margin="0 0 5 0" />
+                            <TextBlock VerticalAlignment="Center">Import existing profile</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
         </Grid>
 
         <Border Grid.Row="1">

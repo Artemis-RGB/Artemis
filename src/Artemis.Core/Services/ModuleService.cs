@@ -1,29 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Timers;
 using Artemis.Core.Modules;
+using Newtonsoft.Json;
 using Serilog;
 
 namespace Artemis.Core.Services
 {
     internal class ModuleService : IModuleService
     {
+        private readonly Timer _activationUpdateTimer;
         private readonly ILogger _logger;
-        private readonly IPluginManagementService _pluginManagementService;
+        private readonly IProfileService _profileService;
+        private readonly List<Module> _modules;
         private readonly object _updateLock = new();
 
         private Module? _activationOverride;
-        private readonly Timer _activationUpdateTimer;
 
-        public ModuleService(ILogger logger, IPluginManagementService pluginManagementService)
+        public ModuleService(ILogger logger, IPluginManagementService pluginManagementService, IProfileService profileService)
         {
             _logger = logger;
-            _pluginManagementService = pluginManagementService;
+            _profileService = profileService;
 
             _activationUpdateTimer = new Timer(2000);
             _activationUpdateTimer.Start();
             _activationUpdateTimer.Elapsed += ActivationUpdateTimerOnElapsed;
+
+            pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureEnabled;
+            pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureDisabled;
+            _modules = pluginManagementService.GetFeaturesOfType<Module>().ToList();
+            foreach (Module module in _modules)
+                ImportDefaultProfiles(module);
         }
 
         protected virtual void OnModuleActivated(ModuleEventArgs e)
@@ -81,6 +90,52 @@ namespace Artemis.Core.Services
             UpdateModuleActivation();
         }
 
+        private void PluginManagementServiceOnPluginFeatureEnabled(object? sender, PluginFeatureEventArgs e)
+        {
+            lock (_updateLock)
+            {
+                if (e.PluginFeature is Module module && !_modules.Contains(module))
+                {
+                    ImportDefaultProfiles(module);
+                    _modules.Add(module);
+                }
+            }
+        }
+
+        private void PluginManagementServiceOnPluginFeatureDisabled(object? sender, PluginFeatureEventArgs e)
+        {
+            lock (_updateLock)
+            {
+                if (e.PluginFeature is Module module)
+                    _modules.Remove(module);
+            }
+        }
+
+        private void ImportDefaultProfiles(Module module)
+        {
+            try
+            {
+                List<ProfileConfiguration> profileConfigurations = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).ToList();
+                foreach ((DefaultCategoryName categoryName, string profilePath) in module.DefaultProfilePaths)
+                {
+                    ProfileConfigurationExportModel? profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(File.ReadAllText(profilePath));
+                    if (profileConfigurationExportModel?.ProfileEntity == null)
+                        throw new ArtemisCoreException($"Default profile at path {profilePath} contains no valid profile data");
+                    if (profileConfigurations.Any(p => p.Entity.ProfileId == profileConfigurationExportModel.ProfileEntity.Id))
+                        continue;
+
+                    ProfileCategory category = _profileService.ProfileCategories.FirstOrDefault(c => c.Name == categoryName.ToString()) ??
+                                               _profileService.CreateProfileCategory(categoryName.ToString());
+
+                    _profileService.ImportProfile(category, profileConfigurationExportModel, false, true, null);
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to import default profiles for module {module}", module);
+            }
+        }
+
         public void UpdateModuleActivation()
         {
             lock (_updateLock)
@@ -88,8 +143,7 @@ namespace Artemis.Core.Services
                 try
                 {
                     _activationUpdateTimer.Elapsed -= ActivationUpdateTimerOnElapsed;
-                    List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-                    foreach (Module module in modules)
+                    foreach (Module module in _modules)
                     {
                         if (module.IsActivatedOverride)
                             continue;
@@ -139,8 +193,7 @@ namespace Artemis.Core.Services
         {
             lock (_updateLock)
             {
-                List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-                foreach (Module module in modules)
+                foreach (Module module in _modules)
                     module.InternalUpdate(deltaTime);
             }
         }

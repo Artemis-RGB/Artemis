@@ -16,7 +16,7 @@ namespace Artemis.Core
         private int _order;
         private Profile? _profile;
 
-        internal ProfileConfiguration(string name, string icon, ProfileCategory category)
+        internal ProfileConfiguration(ProfileCategory category, string name, string icon)
         {
             _name = name;
             _category = category;

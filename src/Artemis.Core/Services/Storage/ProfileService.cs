@@ -20,6 +20,11 @@ namespace Artemis.Core.Services
         private readonly IProfileRepository _profileRepository;
         private readonly IRgbService _rgbService;
 
+        private readonly List<Exception> _updateExceptions = new();
+        private DateTime _lastUpdateExceptionLog;
+        private readonly List<Exception> _renderExceptions = new();
+        private DateTime _lastRenderExceptionLog;
+
         public ProfileService(ILogger logger,
             IRgbService rgbService,
             // TODO: Move these two
@@ -40,9 +45,6 @@ namespace Artemis.Core.Services
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
         }
-
-        public static JsonSerializerSettings MementoSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All};
-        public static JsonSerializerSettings ExportSettings { get; set; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
         /// <summary>
         ///     Populates all missing LEDs on all currently active profiles
@@ -106,15 +108,24 @@ namespace Artemis.Core.Services
                             shouldBeActive = profileConfiguration.ActivationConditionMet;
                         }
 
-                        // Make sure the profile is active or inactive according to the parameters above
-                        if (shouldBeActive && profileConfiguration.Profile == null)
-                            ActivateProfile(profileConfiguration);
-                        else if (!shouldBeActive && profileConfiguration.Profile != null)
-                            DeactivateProfile(profileConfiguration);
+                        try
+                        {
+                            // Make sure the profile is active or inactive according to the parameters above
+                            if (shouldBeActive && profileConfiguration.Profile == null)
+                                ActivateProfile(profileConfiguration);
+                            else if (!shouldBeActive && profileConfiguration.Profile != null)
+                                DeactivateProfile(profileConfiguration);
 
-                        profileConfiguration.Profile?.Update(deltaTime);
+                            profileConfiguration.Profile?.Update(deltaTime);
+                        }
+                        catch (Exception e)
+                        {
+                            _updateExceptions.Add(e);
+                        }
                     }
                 }
+
+                LogProfileUpdateExceptions();
             }
         }
 
@@ -128,21 +139,66 @@ namespace Artemis.Core.Services
                     ProfileCategory profileCategory = _profileCategories[i];
                     for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
                     {
-                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                        if (RenderForEditor)
+                        try
                         {
-                            if (profileConfiguration.IsBeingEdited)
-                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+                            if (RenderForEditor)
+                            {
+                                if (profileConfiguration.IsBeingEdited)
+                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            }
+                            else
+                            {
+                                // Ensure all criteria are met before rendering
+                                if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
+                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            }
                         }
-                        else
+                        catch (Exception e)
                         {
-                            // Ensure all criteria are met before rendering
-                            if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
-                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            _renderExceptions.Add(e);
                         }
                     }
                 }
+
+                LogProfileRenderExceptions();
             }
+        }
+
+        private void LogProfileUpdateExceptions()
+        {
+            // Only log update exceptions every 10 seconds to avoid spamming the logs
+            if (DateTime.Now - _lastUpdateExceptionLog < TimeSpan.FromSeconds(10))
+                return;
+            _lastUpdateExceptionLog = DateTime.Now;
+
+            if (!_updateExceptions.Any())
+                return;
+
+            // Group by stack trace, that should gather up duplicate exceptions
+            foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
+                _logger.Warning(exceptions.First(), "Exception was thrown {count} times during profile update in the last 10 seconds", exceptions.Count());
+
+            // When logging is finished start with a fresh slate
+            _updateExceptions.Clear();
+        }
+
+        private void LogProfileRenderExceptions()
+        {
+            // Only log update exceptions every 10 seconds to avoid spamming the logs
+            if (DateTime.Now - _lastRenderExceptionLog < TimeSpan.FromSeconds(10))
+                return;
+            _lastRenderExceptionLog = DateTime.Now;
+
+            if (!_renderExceptions.Any())
+                return;
+
+            // Group by stack trace, that should gather up duplicate exceptions
+            foreach (IGrouping<string?, Exception> exceptions in _renderExceptions.GroupBy(e => e.StackTrace))
+                _logger.Warning(exceptions.First(), "Exception was thrown {count} times during profile render in the last 10 seconds", exceptions.Count());
+
+            // When logging is finished start with a fresh slate
+            _renderExceptions.Clear();
         }
 
         public ReadOnlyCollection<ProfileCategory> ProfileCategories
@@ -269,7 +325,7 @@ namespace Artemis.Core.Services
         /// <returns>The newly created profile configuration</returns>
         public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
         {
-            ProfileConfiguration configuration = new(name, icon, category);
+            ProfileConfiguration configuration = new(category, name, icon);
             ProfileEntity entity = new();
             _profileRepository.Add(entity);
 
@@ -306,7 +362,7 @@ namespace Artemis.Core.Services
 
         public void SaveProfile(Profile profile, bool includeChildren)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
             profile.Save();
             if (includeChildren)
             {
@@ -317,7 +373,7 @@ namespace Artemis.Core.Services
             }
 
             // If there are no changes, don't bother saving
-            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            string updatedMemento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
             if (memento.Equals(updatedMemento))
             {
                 _logger.Debug("Updating profile - Skipping save, no changes");
@@ -347,9 +403,9 @@ namespace Artemis.Core.Services
                 }
 
                 string top = profile.UndoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
                 profile.RedoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings)
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
                                         ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
@@ -372,9 +428,9 @@ namespace Artemis.Core.Services
                 }
 
                 string top = profile.RedoStack.Pop();
-                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+                string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
                 profile.UndoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, MementoSettings)
+                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
                                         ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
@@ -385,38 +441,66 @@ namespace Artemis.Core.Services
             }
         }
 
-        public string ExportProfile(ProfileConfiguration profileConfiguration)
+        public ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration)
         {
-            ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
-            if (profileEntity == null)
-                throw new ArtemisCoreException($"Cannot find profile named: {profileConfiguration.Name} ID: {profileConfiguration.Entity.ProfileId}");
+            // The profile may not be active and in that case lets activate it real quick
+            Profile profile = profileConfiguration.Profile ?? ActivateProfile(profileConfiguration);
 
-            return JsonConvert.SerializeObject(profileEntity, ExportSettings);
+            return new ProfileConfigurationExportModel
+            {
+                ProfileConfigurationEntity = profileConfiguration.Entity,
+                ProfileEntity = profile.ProfileEntity,
+                ProfileImage = profileConfiguration.Icon.FileIcon
+            };
         }
 
-        public ProfileConfiguration ImportProfile(ProfileCategory category, string json, string nameAffix)
+        public ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique, bool markAsFreshImport, string? nameAffix)
         {
-            ProfileEntity? profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(json, ExportSettings);
-            if (profileEntity == null)
-                throw new ArtemisCoreException("Failed to import profile but JSON.NET threw no error :(");
+            if (exportModel.ProfileEntity == null)
+                throw new ArtemisCoreException("Cannot import a profile without any data");
+
+            // Create a copy of the entity because we'll be using it from now on
+            ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings))!;
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
-            profileEntity.UpdateGuid(Guid.NewGuid());
-            profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
-            profileEntity.IsFreshImport = true;
+            if (makeUnique)
+                profileEntity.UpdateGuid(Guid.NewGuid());
 
-            ProfileConfiguration configuration = new(profileEntity.Name, "Import", category);
+            if (nameAffix != null)
+                profileEntity.Name = $"{profileEntity.Name} - {nameAffix}";
+            if (markAsFreshImport)
+                profileEntity.IsFreshImport = true;
+
             _profileRepository.Add(profileEntity);
-            configuration.Entity.ProfileId = profileEntity.Id;
-            category.AddProfileConfiguration(configuration, 0);
 
-            return configuration;
+            ProfileConfiguration profileConfiguration;
+            if (exportModel.ProfileConfigurationEntity != null)
+            {
+                // A new GUID will be given on save
+                exportModel.ProfileConfigurationEntity.FileIconId = Guid.Empty;
+                profileConfiguration = new ProfileConfiguration(category, exportModel.ProfileConfigurationEntity);
+                if (nameAffix != null)
+                    profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
+            }
+            else
+            {
+                profileConfiguration = new ProfileConfiguration(category, exportModel.ProfileEntity!.Name, "Import");
+            }
+
+            if (exportModel.ProfileImage != null)
+                profileConfiguration.Icon.FileIcon = exportModel.ProfileImage;
+
+            profileConfiguration.Entity.ProfileId = profileEntity.Id;
+            category.AddProfileConfiguration(profileConfiguration, 0);
+            SaveProfileCategory(category);
+
+            return profileConfiguration;
         }
 
         /// <inheritdoc />
         public void AdaptProfile(Profile profile)
         {
-            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, MementoSettings);
+            string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
 
             List<ArtemisDevice> devices = _rgbService.EnabledDevices.ToList();
             foreach (Layer layer in profile.GetAllLayers())
