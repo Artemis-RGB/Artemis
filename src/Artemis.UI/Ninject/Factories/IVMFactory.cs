@@ -1,9 +1,7 @@
-﻿using Artemis.Core;
+﻿using System.Collections.Generic;
+using Artemis.Core;
 using Artemis.Core.Modules;
-using Artemis.UI.Screens.Modules;
-using Artemis.UI.Screens.Modules.Tabs;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
@@ -17,26 +15,19 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
-using Artemis.UI.Screens.Settings.Debug;
 using Artemis.UI.Screens.Settings.Device;
 using Artemis.UI.Screens.Settings.Device.Tabs;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
 using Artemis.UI.Screens.Settings.Tabs.Plugins;
 using Artemis.UI.Screens.Shared;
+using Artemis.UI.Screens.Sidebar;
+using Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit;
 using Stylet;
 
 namespace Artemis.UI.Ninject.Factories
 {
     public interface IVmFactory
     {
-    }
-
-    public interface IModuleVmFactory : IVmFactory
-    {
-        ModuleRootViewModel CreateModuleRootViewModel(Module module);
-        ProfileEditorViewModel CreateProfileEditorViewModel(ProfileModule module);
-        ActivationRequirementsViewModel CreateActivationRequirementsViewModel(Module module);
-        ActivationRequirementViewModel CreateActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
     }
 
     public interface ISettingsVmFactory : IVmFactory
@@ -84,12 +75,12 @@ namespace Artemis.UI.Ninject.Factories
 
     public interface IDataModelConditionsVmFactory : IVmFactory
     {
-        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, ConditionGroupType groupType);
-        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList);
-        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent);
-        DataModelConditionGeneralPredicateViewModel DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate);
-        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate);
-        DataModelConditionEventPredicateViewModel DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate);
+        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, ConditionGroupType groupType, List<Module> modules);
+        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList, List<Module> modules);
+        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent, List<Module> modules);
+        DataModelConditionGeneralPredicateViewModel DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate, List<Module> modules);
+        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate, List<Module> modules);
+        DataModelConditionEventPredicateViewModel DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate, List<Module> modules);
     }
 
     public interface ILayerPropertyVmFactory : IVmFactory
@@ -111,8 +102,15 @@ namespace Artemis.UI.Ninject.Factories
         PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
     }
 
+    public interface ISidebarVmFactory : IVmFactory
+    {
+        SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
+        SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
+        ModuleActivationRequirementViewModel ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
+    }
+
     // TODO: Move these two
-    public interface IDataBindingsVmFactory 
+    public interface IDataBindingsVmFactory
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
@@ -121,7 +119,7 @@ namespace Artemis.UI.Ninject.Factories
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
-    public interface IPropertyVmFactory 
+    public interface IPropertyVmFactory
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);
         ITimelinePropertyViewModel TimelinePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);

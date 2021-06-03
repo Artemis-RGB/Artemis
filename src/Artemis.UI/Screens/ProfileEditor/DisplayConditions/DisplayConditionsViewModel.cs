@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
@@ -14,17 +16,15 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
-        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
         private bool _isEventCondition;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory, ICoreService coreService)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
-            _coreService = coreService;
         }
 
         public bool DisplayStartHint
@@ -59,7 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 TimelinePlayMode playMode = value ? TimelinePlayMode.Repeat : TimelinePlayMode.Once;
                 if (RenderProfileElement == null || RenderProfileElement?.Timeline.PlayMode == playMode) return;
                 RenderProfileElement.Timeline.PlayMode = playMode;
-                _profileEditorService.UpdateSelectedProfileElement();
+                _profileEditorService.SaveSelectedProfileElement();
             }
         }
 
@@ -71,7 +71,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 TimelineStopMode stopMode = value ? TimelineStopMode.Finish : TimelineStopMode.SkipToEnd;
                 if (RenderProfileElement == null || RenderProfileElement?.Timeline.StopMode == stopMode) return;
                 RenderProfileElement.Timeline.StopMode = stopMode;
-                _profileEditorService.UpdateSelectedProfileElement();
+                _profileEditorService.SaveSelectedProfileElement();
             }
         }
 
@@ -82,7 +82,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             {
                 if (RenderProfileElement == null || RenderProfileElement?.Timeline.EventOverlapMode == value) return;
                 RenderProfileElement.Timeline.EventOverlapMode = value;
-                _profileEditorService.UpdateSelectedProfileElement();
+                _profileEditorService.SaveSelectedProfileElement();
             }
         }
 
@@ -90,19 +90,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         protected override void OnInitialActivate()
         {
-            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
-            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+            _profileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
-            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
-            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            _profileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             base.OnClose();
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
+        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             if (RenderProfileElement != null)
             {
@@ -127,9 +125,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             if (e.RenderProfileElement.DisplayCondition == null)
                 e.RenderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General);
+            List<Module> modules = new();
+            if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
+                modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
             ActiveItem.IsRootGroup = true;
-            ActiveItem.Update();
 
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
             IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
@@ -146,11 +146,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(EventOverlapMode));
         }
 
-        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
-        {
-            ActiveItem?.Evaluate();
-        }
-
         private void DisplayConditionOnChildrenModified(object sender, EventArgs e)
         {
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
@@ -159,7 +154,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         public void EventTriggerModeSelected()
         {
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
     }
 }

@@ -105,37 +105,66 @@ namespace Artemis.Core
                 InitializeRightPath();
             // Right side static
             else if (PredicateType == ProfileRightSideType.Static && Entity.RightStaticValue != null)
+            {
                 try
                 {
-                    if (LeftPath != null && LeftPath.IsValid)
+                    // If the left path is not valid we cannot reliably set up the right side because the type is unknown
+                    // Because of that wait for it to validate first
+                    if (LeftPath != null && !LeftPath.IsValid)
                     {
-                        // Use the left side type so JSON.NET has a better idea what to do
-                        Type leftSideType = LeftPath.GetPropertyType()!;
-                        object? rightSideValue;
-
-                        try
-                        {
-                            rightSideValue = CoreJson.DeserializeObject(Entity.RightStaticValue, leftSideType);
-                        }
-                        // If deserialization fails, use the type's default
-                        catch (JsonSerializationException e)
-                        {
-                            DeserializationLogger.LogPredicateDeserializationFailure(this, e);
-                            rightSideValue = Activator.CreateInstance(leftSideType);
-                        }
-
-                        UpdateRightSideStatic(rightSideValue);
+                        LeftPath.PathValidated += InitializeRightSideStatic;
+                        return;
                     }
-                    else
+                    if (LeftPath == null) 
+                        return;
+
+                    // Use the left side type so JSON.NET has a better idea what to do
+                    Type leftSideType = LeftPath.GetPropertyType()!;
+                    object? rightSideValue;
+
+                    try
                     {
-                        // Hope for the best...
-                        UpdateRightSideStatic(CoreJson.DeserializeObject(Entity.RightStaticValue));
+                        rightSideValue = CoreJson.DeserializeObject(Entity.RightStaticValue, leftSideType);
                     }
+                    // If deserialization fails, use the type's default
+                    catch (JsonSerializationException e)
+                    {
+                        DeserializationLogger.LogPredicateDeserializationFailure(this, e);
+                        rightSideValue = Activator.CreateInstance(leftSideType);
+                    }
+
+                    UpdateRightSideStatic(rightSideValue);
                 }
                 catch (JsonReaderException e)
                 {
                     DeserializationLogger.LogPredicateDeserializationFailure(this, e);
                 }
+            }
+        }
+
+        private void InitializeRightSideStatic(object? sender, EventArgs args)
+        {
+            if (LeftPath == null)
+                return;
+
+            LeftPath.PathValidated -= InitializeRightSideStatic;
+
+            // Use the left side type so JSON.NET has a better idea what to do
+            Type leftSideType = LeftPath.GetPropertyType()!;
+            object? rightSideValue;
+
+            try
+            {
+                rightSideValue = CoreJson.DeserializeObject(Entity.RightStaticValue, leftSideType);
+            }
+            // If deserialization fails, use the type's default
+            catch (JsonSerializationException e)
+            {
+                DeserializationLogger.LogPredicateDeserializationFailure(this, e);
+                rightSideValue = Activator.CreateInstance(leftSideType);
+            }
+
+            UpdateRightSideStatic(rightSideValue);
         }
 
         /// <summary>

@@ -142,7 +142,7 @@ namespace Artemis.UI.Shared
                 if (InputDragging)
                     ProfileEditorService.UpdateProfilePreview();
                 else
-                    ProfileEditorService.UpdateSelectedProfileElement();
+                    ProfileEditorService.SaveSelectedProfileElement();
             }
         }
 
@@ -186,7 +186,7 @@ namespace Artemis.UI.Shared
         public void InputDragEnded(object sender, EventArgs e)
         {
             InputDragging = false;
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
         }
 
         private void LayerPropertyOnUpdated(object? sender, EventArgs e)

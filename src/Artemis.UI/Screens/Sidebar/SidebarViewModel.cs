@@ -1,283 +1,212 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Timers;
 using Artemis.Core;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Events;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.Home;
-using Artemis.UI.Screens.Modules;
-using Artemis.UI.Screens.News;
+using Artemis.UI.Screens.ProfileEditor;
 using Artemis.UI.Screens.Settings;
+using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Screens.SurfaceEditor;
 using Artemis.UI.Screens.Workshop;
-using Artemis.UI.Shared;
-using MaterialDesignExtensions.Controls;
-using MaterialDesignExtensions.Model;
+using Artemis.UI.Shared.Services;
+using GongSolutions.Wpf.DragDrop;
 using MaterialDesignThemes.Wpf;
 using Ninject;
+using RGB.NET.Core;
 using Stylet;
 
 namespace Artemis.UI.Screens.Sidebar
 {
-    public sealed class SidebarViewModel : Screen, IHandle<RequestSelectSidebarItemEvent>, IDisposable
+    public sealed class SidebarViewModel : Conductor<SidebarCategoryViewModel>.Collection.AllActive, IHandle<RequestSelectSidebarItemEvent>, IDropTarget
     {
-        private readonly Timer _activeModulesUpdateTimer;
         private readonly IKernel _kernel;
-        private readonly IModuleVmFactory _moduleVmFactory;
-        private readonly IPluginManagementService _pluginManagementService;
-        private readonly IModuleService _moduleService;
-        private string _activeModules;
-        private bool _isSidebarOpen;
-        private IScreen _selectedItem;
-        private BindableCollection<INavigationItem> _sidebarItems;
-        private Dictionary<INavigationItem, Module> _sidebarModules;
+        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IRgbService _rgbService;
+        private readonly IProfileService _profileService;
+        private readonly IProfileEditorService _profileEditorService;
+        private readonly IDialogService _dialogService;
+        private SidebarScreenViewModel _selectedSidebarScreen;
+        private ArtemisDevice _headerDevice;
+        private Screen _selectedScreen;
+        private readonly SidebarScreenViewModel<ProfileEditorViewModel> _profileEditor;
+        private readonly DefaultDropHandler _defaultDropHandler;
 
-        public SidebarViewModel(IKernel kernel, ISettingsService settingsService, IEventAggregator eventAggregator, IModuleVmFactory moduleVmFactory, IPluginManagementService pluginManagementService, IModuleService moduleService)
+        public SidebarViewModel(IKernel kernel,
+            IEventAggregator eventAggregator,
+            ISidebarVmFactory sidebarVmFactory,
+            IRgbService rgbService,
+            IProfileService profileService,
+            IProfileEditorService profileEditorService,
+            IDialogService dialogService)
         {
             _kernel = kernel;
-            _moduleVmFactory = moduleVmFactory;
-            _pluginManagementService = pluginManagementService;
-            _moduleService = moduleService;
+            _sidebarVmFactory = sidebarVmFactory;
+            _rgbService = rgbService;
+            _profileService = profileService;
+            _profileEditorService = profileEditorService;
+            _dialogService = dialogService;
+            _profileEditor = new SidebarScreenViewModel<ProfileEditorViewModel>(PackIconKind.Wrench, "Profile Editor");
+            _defaultDropHandler = new DefaultDropHandler();
 
-            SidebarModules = new Dictionary<INavigationItem, Module>();
-            SidebarItems = new BindableCollection<INavigationItem>();
-            PinSidebar = settingsService.GetSetting("UI.PinSidebar", false);
-            PinSidebar.AutoSave = true;
-
-            _activeModulesUpdateTimer = new Timer(1000);
             eventAggregator.Subscribe(this);
+
+            SidebarScreens = new BindableCollection<SidebarScreenViewModel>
+            {
+                new SidebarScreenViewModel<HomeViewModel>(PackIconKind.Home, "Home"),
+                new SidebarScreenViewModel<WorkshopViewModel>(PackIconKind.TestTube, "Workshop"),
+                new SidebarScreenViewModel<SurfaceEditorViewModel>(PackIconKind.Devices, "Surface Editor"),
+                new SidebarScreenViewModel<SettingsViewModel>(PackIconKind.Cog, "Settings")
+            };
+            SelectedSidebarScreen = SidebarScreens.First();
+            UpdateProfileCategories();
+            UpdateHeaderDevice();
         }
 
-        public PluginSetting<bool> PinSidebar { get; }
-
-        public BindableCollection<INavigationItem> SidebarItems
+        private void UpdateHeaderDevice()
         {
-            get => _sidebarItems;
-            set => SetAndNotify(ref _sidebarItems, value);
+            HeaderDevice = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard && d.Layout.IsValid);
         }
 
-        public Dictionary<INavigationItem, Module> SidebarModules
+        public ArtemisDevice HeaderDevice
         {
-            get => _sidebarModules;
-            set => SetAndNotify(ref _sidebarModules, value);
+            get => _headerDevice;
+            set => SetAndNotify(ref _headerDevice, value);
         }
 
-        public string ActiveModules
+        public BindableCollection<SidebarScreenViewModel> SidebarScreens { get; }
+
+        public Screen SelectedScreen
         {
-            get => _activeModules;
-            set => SetAndNotify(ref _activeModules, value);
+            get => _selectedScreen;
+            private set => SetAndNotify(ref _selectedScreen, value);
         }
 
-        public IScreen SelectedItem
+        public SidebarScreenViewModel SelectedSidebarScreen
         {
-            get => _selectedItem;
-            set => SetAndNotify(ref _selectedItem, value);
-        }
-
-        public bool IsSidebarOpen
-        {
-            get => _isSidebarOpen;
+            get => _selectedSidebarScreen;
             set
             {
-                SetAndNotify(ref _isSidebarOpen, value);
-                if (value)
-                    ActiveModulesUpdateTimerOnElapsed(this, EventArgs.Empty);
+                if (SetAndNotify(ref _selectedSidebarScreen, value))
+                    ActivateScreenViewModel(_selectedSidebarScreen);
             }
         }
 
-        public void SetupSidebar()
+        private void ActivateScreenViewModel(SidebarScreenViewModel screenViewModel)
         {
-            UpdateSidebarItems();
-
-            // Set the sidebar as open if it's pinned
-            if (PinSidebar.Value)
-                IsSidebarOpen = true;
-
-            // Select the top item, which will be one of the defaults
-            Task.Run(() => SelectSidebarItem(SidebarItems[0]));
+            SelectedScreen = screenViewModel.CreateInstance(_kernel);
+            OnSelectedScreenChanged();
+            if (screenViewModel != _profileEditor)
+                SelectProfileConfiguration(null);
         }
 
-        private void UpdateSidebarItems()
+        private void UpdateProfileCategories()
         {
-            SidebarItems.Clear();
-            SidebarModules.Clear();
-
-            // Add all default sidebar items
-            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Home, Label = "Home" });
-            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Newspaper, Label = "News" });
-            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.TestTube, Label = "Workshop" });
-            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Edit, Label = "Surface Editor" });
-            SidebarItems.Add(new FirstLevelNavigationItem { Icon = PackIconKind.Settings, Label = "Settings" });
-
-            // Add all activated modules
-            SidebarItems.Add(new DividerNavigationItem());
-            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>().ToList();
-
-            foreach (IGrouping<ModulePriorityCategory, Module> category in modules.OrderByDescending(m => m.PriorityCategory).GroupBy(m => m.PriorityCategory))
-            {
-                SidebarItems.Add(new SubheaderNavigationItem { Subheader = category.Key.ToString() });
-                foreach(Module module in category.OrderBy(m => m.Priority))
-                {
-                    AddModule(module);
-                }
-            }
+            foreach (ProfileCategory profileCategory in _profileService.ProfileCategories.OrderBy(p => p.Order))
+                AddProfileCategoryViewModel(profileCategory);
         }
 
-        // ReSharper disable once UnusedMember.Global - Called by view
-        public void SelectItem(WillSelectNavigationItemEventArgs args)
+        public async Task AddCategory()
         {
-            if (args.NavigationItemToSelect == null)
-            {
-                SelectedItem = null;
-                return;
-            }
+            object result = await _dialogService.ShowDialog<SidebarCategoryCreateViewModel>();
+            if (result is ProfileCategory profileCategory)
+                AddProfileCategoryViewModel(profileCategory);
 
-            SelectSidebarItem(args.NavigationItemToSelect);
+            ((BindableCollection<SidebarCategoryViewModel>) Items).Sort(p => p.ProfileCategory.Order);
         }
 
-        public void AddModule(Module module)
+        public void OpenUrl(string url)
         {
-            // Ensure the module is not already in the list
-            if (SidebarModules.Any(io => io.Value == module))
-                return;
-
-            FirstLevelNavigationItem sidebarItem = new()
-            {
-                Icon = PluginUtilities.GetPluginIcon(module.Plugin, module.DisplayIcon),
-                Label = module.DisplayName
-            };
-            SidebarItems.Add(sidebarItem);
-            SidebarModules.Add(sidebarItem, module);
-        }
-
-        public void RemoveModule(Module module)
-        {
-            // If not in the list there's nothing to do
-            if (SidebarModules.All(io => io.Value != module))
-                return;
-
-            KeyValuePair<INavigationItem, Module> existing = SidebarModules.First(io => io.Value == module);
-            SidebarItems.Remove(existing.Key);
-            SidebarModules.Remove(existing.Key);
-        }
-
-        private void ActiveModulesUpdateTimerOnElapsed(object sender, EventArgs e)
-        {
-            if (!IsSidebarOpen)
-                return;
-
-            int activeModules = SidebarModules.Count(m => m.Value.IsActivated);
-            ActiveModules = activeModules == 1 ? "1 active module" : $"{activeModules} active modules";
-        }
-
-        private void SelectSidebarItem(INavigationItem sidebarItem)
-        {
-            // A module was selected if the dictionary contains the selected item
-            if (SidebarModules.ContainsKey(sidebarItem))
-                ActivateModule(sidebarItem);
-            else if (sidebarItem is FirstLevelNavigationItem navigationItem)
-                ActivateViewModel(navigationItem.Label);
-            else
-                SelectedItem = null;
-        }
-
-        private void ActivateViewModel(string label)
-        {
-            if (label == "Home")
-                ActivateViewModel<HomeViewModel>();
-            else if (label == "News")
-                ActivateViewModel<NewsViewModel>();
-            else if (label == "Workshop")
-                ActivateViewModel<WorkshopViewModel>();
-            else if (label == "Surface Editor")
-                ActivateViewModel<SurfaceEditorViewModel>();
-            else if (label == "Settings")
-                ActivateViewModel<SettingsViewModel>();
-        }
-
-        private void ActivateViewModel<T>()
-        {
-            if (SelectedItem != null && SelectedItem.GetType() == typeof(T))
-                return;
-            SelectedItem = (IScreen) _kernel.Get<T>();
-        }
-
-        private void ActivateModule(INavigationItem sidebarItem)
-        {
-            if (!SidebarModules.ContainsKey(sidebarItem))
-                return;
-            if (SelectedItem is ModuleRootViewModel moduleRootViewModel && moduleRootViewModel.Module == SidebarModules[sidebarItem])
-                return;
-            
-            SelectedItem = _moduleVmFactory.CreateModuleRootViewModel(SidebarModules[sidebarItem]);
-        }
-
-        #region IDisposable
-
-        public void Dispose()
-        {
-            _activeModulesUpdateTimer?.Dispose();
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void OnFeatureEnabled(object sender, PluginFeatureEventArgs e)
-        {
-            if (e.PluginFeature is Module)
-                UpdateSidebarItems();
-        }
-
-        private void OnFeatureDisabled(object sender, PluginFeatureEventArgs e)
-        {
-            if (e.PluginFeature is Module)
-                UpdateSidebarItems();
-        }
-
-        private void OnModulePriorityUpdated(object sender, EventArgs e)
-        {
-            UpdateSidebarItems();
+            Core.Utilities.OpenUrl(url);
         }
 
         public void Handle(RequestSelectSidebarItemEvent message)
         {
-            ActivateViewModel(message.Label);
+            SidebarScreenViewModel requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
+            if (requested != null)
+                SelectedSidebarScreen = requested;
         }
 
-        #endregion
+        public SidebarCategoryViewModel AddProfileCategoryViewModel(ProfileCategory profileCategory)
+        {
+            SidebarCategoryViewModel viewModel = _sidebarVmFactory.SidebarCategoryViewModel(profileCategory);
+            Items.Add(viewModel);
+            return viewModel;
+        }
+
+        public void RemoveProfileCategoryViewModel(SidebarCategoryViewModel viewModel)
+        {
+            Items.Remove(viewModel);
+        }
+
+        public void SelectProfileConfiguration(ProfileConfiguration profileConfiguration)
+        {
+            foreach (SidebarCategoryViewModel sidebarCategoryViewModel in Items)
+                sidebarCategoryViewModel.SelectedProfileConfiguration = sidebarCategoryViewModel.Items.FirstOrDefault(i => i.ProfileConfiguration == profileConfiguration);
+
+            _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
+            if (profileConfiguration != null)
+            {
+                // Little workaround to clear the selected item in the menu, ugly but oh well
+                if (_selectedSidebarScreen != _profileEditor)
+                {
+                    _selectedSidebarScreen = null;
+                    NotifyOfPropertyChange(nameof(SelectedSidebarScreen));
+                }
+
+                SelectedSidebarScreen = _profileEditor;
+            }
+        }
 
         #region Overrides of Screen
 
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
-            _activeModulesUpdateTimer.Start();
-            _activeModulesUpdateTimer.Elapsed += ActiveModulesUpdateTimerOnElapsed;
-
-            _pluginManagementService.PluginFeatureEnabled += OnFeatureEnabled;
-            _pluginManagementService.PluginFeatureDisabled += OnFeatureDisabled;
-            _moduleService.ModulePriorityUpdated += OnModulePriorityUpdated;
-
-            SetupSidebar();
-            
             base.OnInitialActivate();
         }
 
         /// <inheritdoc />
         protected override void OnClose()
         {
-            _activeModulesUpdateTimer.Stop();
-            _activeModulesUpdateTimer.Elapsed -= ActiveModulesUpdateTimerOnElapsed;
-
-            _pluginManagementService.PluginFeatureEnabled -= OnFeatureEnabled;
-            _pluginManagementService.PluginFeatureDisabled -= OnFeatureDisabled;
-            _moduleService.ModulePriorityUpdated -= OnModulePriorityUpdated;
             base.OnClose();
+        }
+
+        #endregion
+
+        #region Events
+
+        public event EventHandler SelectedScreenChanged;
+
+        private void OnSelectedScreenChanged()
+        {
+            SelectedScreenChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region Implementation of IDropTarget
+
+        /// <inheritdoc />
+        public void DragOver(IDropInfo dropInfo)
+        {
+            _defaultDropHandler.DragOver(dropInfo);
+        }
+
+        /// <inheritdoc />
+        public void Drop(IDropInfo dropInfo)
+        {
+            _defaultDropHandler.Drop(dropInfo);
+            for (int index = 0; index < Items.Count; index++)
+                Items[index].ProfileCategory.Order = index;
+
+            // Bit dumb but gets the job done
+            foreach (SidebarCategoryViewModel viewModel in Items) 
+                _profileService.SaveProfileCategory(viewModel.ProfileCategory);
         }
 
         #endregion

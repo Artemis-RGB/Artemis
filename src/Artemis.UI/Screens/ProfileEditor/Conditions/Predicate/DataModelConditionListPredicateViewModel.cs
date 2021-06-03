@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
-using Artemis.UI.Extensions;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -16,11 +16,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelUIService _dataModelUIService;
 
         public DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService)
-            : base(dataModelConditionListPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
+            : base(dataModelConditionListPredicate, modules, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
 
@@ -42,6 +43,17 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 DataModelConditionListPredicate.UpdateLeftSide(listDataModel.Children.FirstOrDefault()?.DataModelPath);
                 Update();
             }
+        }
+
+        public override void Evaluate()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void UpdateModules()
+        {
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+                dataModelConditionViewModel.UpdateModules();
         }
 
         protected override void OnInitialActivate()
@@ -80,11 +92,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             );
 
             return wrapper.CreateViewModel(_dataModelUIService, new DataModelUpdateConfiguration(true));
-        }
-
-        public override void Evaluate()
-        {
-            throw new NotImplementedException();
         }
     }
 }

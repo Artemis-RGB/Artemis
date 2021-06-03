@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
@@ -14,11 +15,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelUIService _dataModelUIService;
 
         public DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService)
-            : base(dataModelConditionGeneralPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
+            : base(dataModelConditionGeneralPredicate, modules, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
         }

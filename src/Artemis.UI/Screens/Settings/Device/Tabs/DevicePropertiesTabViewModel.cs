@@ -184,7 +184,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             if (HasErrors)
                 return;
 
-            _coreService.ModuleRenderingDisabled = true;
+            _coreService.ProfileRenderingDisabled = true;
             await Task.Delay(100);
 
             Device.X = X;
@@ -200,7 +200,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
             _rgbService.SaveDevice(Device);
 
-            _coreService.ModuleRenderingDisabled = false;
+            _coreService.ProfileRenderingDisabled = false;
         }
 
         public void Reset()

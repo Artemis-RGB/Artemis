@@ -75,9 +75,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         /// <inheritdoc />
         protected override void OnInitialActivate()
         {
-            ProfileEditorService.ProfileSelected += UpdateEventHandler;
-            ProfileEditorService.ProfileElementSelected += UpdateEventHandler;
-            ProfileEditorService.SelectedProfileElementUpdated += UpdateEventHandler;
+            ProfileEditorService.SelectedProfileChanged += UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementChanged += UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementSaved += UpdateEventHandler;
             ProfileEditorService.ProfilePreviewUpdated += UpdateEventHandler;
 
             Update();
@@ -92,9 +92,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         /// <inheritdoc />
         protected override void OnClose()
         {
-            ProfileEditorService.ProfileSelected -= UpdateEventHandler;
-            ProfileEditorService.ProfileElementSelected -= UpdateEventHandler;
-            ProfileEditorService.SelectedProfileElementUpdated -= UpdateEventHandler;
+            ProfileEditorService.SelectedProfileChanged -= UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementChanged -= UpdateEventHandler;
+            ProfileEditorService.SelectedProfileElementSaved -= UpdateEventHandler;
             ProfileEditorService.ProfilePreviewUpdated -= UpdateEventHandler;
             base.OnClose();
         }
@@ -117,7 +117,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         public void RotateMouseUp(object sender, ShapeControlEventArgs e)
         {
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
             _rotating = false;
         }
 
@@ -173,7 +173,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         public void ResizeMouseUp(object sender, ShapeControlEventArgs e)
         {
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
             _isResizing = false;
         }
 
@@ -329,7 +329,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         public void MoveMouseUp(object sender, ShapeControlEventArgs e)
         {
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
             _movingShape = false;
             _movingAnchor = false;
         }

@@ -55,7 +55,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
                     layer.AddLeds(selectedLeds);
                 }
 
-                ProfileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.SaveSelectedProfileElement();
             }
             // If no layer selected, apply it to a new layer in the selected folder
             else if (ProfileEditorService.SelectedProfileElement is Folder folder)
@@ -94,7 +94,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
             newLayer.AddLeds(selectedLeds);
             ProfileEditorService.ChangeSelectedProfileElement(newLayer);
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
         }
     }
 }

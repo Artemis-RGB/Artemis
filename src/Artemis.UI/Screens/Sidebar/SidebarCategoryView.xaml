@@ -1,0 +1,213 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:s="https://github.com/canton7/Stylet"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+    xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
+    x:Class="Artemis.UI.Screens.Sidebar.SidebarCategoryView"
+    mc:Ignorable="d"
+    d:DesignHeight="450" d:DesignWidth="800"
+    d:DataContext="{d:DesignInstance {x:Type local:SidebarCategoryViewModel}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ArtemisSidebar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid Margin="0 8 0 0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ToggleButton Grid.Column="0"
+                          x:Name="Expander"
+                          Foreground="{DynamicResource MaterialDesignBody}"
+                          Style="{StaticResource MaterialDesignExpandCollapseToggleStyle}"
+                          IsChecked="{Binding ShowItems}"
+                          ClickMode="Press"
+                          Margin="5 0" />
+            <TextBlock Grid.Column="1"
+                       Padding="0 5"
+                       FontSize="14"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"
+                       Text="{Binding ProfileCategory.Name}"
+                       MouseLeftButtonUp="{s:Action OnMouseLeftButtonUp}">
+                <TextBlock.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSuspended}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.33" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+
+            <Border Grid.Column="1" BorderThickness="1" BorderBrush="{DynamicResource MaterialDesignBody}" Height="1" Opacity="0">
+                <Border.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSuspended}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0.75" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+
+            <Button Grid.Column="2"
+                    ToolTip="Edit category"
+                    Width="26"
+                    Height="26"
+                    Command="{s:Action UpdateCategory}"
+                    HorizontalAlignment="Right">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+                <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
+            </Button>
+            <ToggleButton Grid.Column="3" ToolTip="Suspend profile" Width="18" Height="18" Margin="2 0 0 0" IsChecked="{Binding IsSuspended}">
+                <ToggleButton.Style>
+                    <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ToggleButton.Style>
+                <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
+            </ToggleButton>
+
+
+            <materialDesign:PopupBox Grid.Column="4"
+                                     PlacementMode="BottomAndAlignCentres"
+                                     ToolTip="Add profile"
+                                     Margin="0 0 10 0">
+                <materialDesign:PopupBox.Style>
+                    <Style TargetType="{x:Type materialDesign:PopupBox}">
+                        <Setter Property="Visibility" Value="Hidden" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <Setter Property="Visibility" Value="Visible" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </materialDesign:PopupBox.Style>
+                <materialDesign:PopupBox.ToggleContent>
+                    <materialDesign:PackIcon Kind="Plus" Width="20" Height="20" Foreground="{DynamicResource MaterialDesignBody}" />
+                </materialDesign:PopupBox.ToggleContent>
+                <StackPanel>
+                    <Button Command="{s:Action AddProfile}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Plus" VerticalAlignment="Center" Margin="0 0 5 0" />
+                            <TextBlock VerticalAlignment="Center"> Add new profile</TextBlock>
+                        </StackPanel>
+                    </Button>
+                    <Button Command="{s:Action ImportProfile}">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Import" VerticalAlignment="Center" Margin="0 0 5 0" />
+                            <TextBlock VerticalAlignment="Center">Import existing profile</TextBlock>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </materialDesign:PopupBox>
+        </Grid>
+
+        <Border Grid.Row="1">
+            <Border.Resources>
+                <DataTemplate x:Key="ProfileDragTemplate" DataType="{x:Type local:SidebarProfileConfigurationViewModel}">
+                    <Border Background="{DynamicResource MaterialDesignDivider}" Padding="10" CornerRadius="4">
+                        <StackPanel Orientation="Horizontal">
+                            <shared:ProfileConfigurationIcon ConfigurationIcon="{Binding ProfileConfiguration.Icon}"
+                                                             Width="20"
+                                                             Height="20"
+                                                             Margin="0 0 10 0"
+                                                             Foreground="{DynamicResource MaterialDesignBody}" />
+                            <TextBlock Text="{Binding ProfileConfiguration.Name}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                        </StackPanel>
+                    </Border>
+                </DataTemplate>
+            </Border.Resources>
+            <ListBox ItemsSource="{Binding Items}"
+                     SelectedItem="{Binding SelectedProfileConfiguration}"
+                     MinHeight="10"
+                     PreviewMouseRightButtonDown="UIElement_OnPreviewMouseRightButtonDown"
+                     VerticalContentAlignment="Stretch"
+                     HorizontalContentAlignment="Stretch"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                     dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.DropHandler="{Binding}"
+                     dd:DragDrop.DragAdornerTemplate="{StaticResource ProfileDragTemplate}">
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Paste" Command="{s:Action Paste}">
+                            <MenuItem.Icon>
+                                <materialDesign:PackIcon Kind="ContentPaste" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource SidebarListBoxItem}" />
+                </ListBox.ItemContainerStyle>
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </Border>
+    </Grid>
+</UserControl>

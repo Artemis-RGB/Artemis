@@ -79,7 +79,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 _windowManager.ShowDialog(_layerBrushSettingsWindowVm);
                 
                 // Save changes after the dialog closes
-                _profileEditorService.UpdateSelectedProfile();
+                _profileEditorService.SaveSelectedProfileConfiguration();
             }
             catch (Exception e)
             {
@@ -109,7 +109,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 _windowManager.ShowDialog(_layerEffectSettingsWindowVm);
                 
                 // Save changes after the dialog closes
-                _profileEditorService.UpdateSelectedProfile();
+                _profileEditorService.SaveSelectedProfileConfiguration();
             }
             catch (Exception e)
             {
@@ -132,7 +132,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
             {
                 LayerPropertyGroup.LayerEffect.Name = newName;
                 LayerPropertyGroup.LayerEffect.HasBeenRenamed = true;
-                _profileEditorService.UpdateSelectedProfile();
+                _profileEditorService.SaveSelectedProfileConfiguration();
             }
         }
 
@@ -142,12 +142,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree
                 return;
 
             LayerPropertyGroup.ProfileElement.RemoveLayerEffect(LayerPropertyGroup.LayerEffect);
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
         }
 
         public void SuspendedToggled()
         {
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
         }
 
         public double GetDepth()

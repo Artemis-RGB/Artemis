@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared.Services
         /// <param name="confirmText">The text of the confirm button, defaults to "Confirm"</param>
         /// <param name="cancelText">The text of the cancel button, defaults to "Cancel"</param>
         /// <returns>A task that resolves to true if confirmed and false if cancelled</returns>
-        Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string cancelText = "Cancel");
+        Task<bool> ShowConfirmDialog(string header, string text, string confirmText = "Confirm", string? cancelText = "Cancel");
 
         /// <summary>
         ///     Shows a confirm dialog on the dialog host provided in identifier.
@@ -33,7 +33,7 @@ namespace Artemis.UI.Shared.Services
         /// <param name="confirmText">The text of the confirm button, defaults to "Confirm"</param>
         /// <param name="cancelText">The text of the cancel button, defaults to "Cancel"</param>
         /// <returns>A task that resolves to true if confirmed and false if cancelled</returns>
-        Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string cancelText = "Cancel");
+        Task<bool> ShowConfirmDialogAt(string identifier, string header, string text, string confirmText = "Confirm", string? cancelText = "Cancel");
 
         /// <summary>
         ///     Shows a dialog by initializing a view model implementing <see cref="DialogViewModelBase" />

@@ -35,14 +35,10 @@ namespace Artemis.Core
             AlwaysEnabled = attribute?.AlwaysEnabled ?? false;
 
             if (Icon != null) return;
-            if (typeof(BaseDataModelExpansion).IsAssignableFrom(featureType))
-                Icon = "TableAdd";
-            else if (typeof(DeviceProvider).IsAssignableFrom(featureType))
+            if (typeof(DeviceProvider).IsAssignableFrom(featureType))
                 Icon = "Devices";
-            else if (typeof(ProfileModule).IsAssignableFrom(featureType))
-                Icon = "VectorRectangle";
             else if (typeof(Module).IsAssignableFrom(featureType))
-                Icon = "GearBox";
+                Icon = "VectorRectangle";
             else if (typeof(LayerBrushProvider).IsAssignableFrom(featureType))
                 Icon = "Brush";
             else if (typeof(LayerEffectProvider).IsAssignableFrom(featureType))
@@ -66,10 +62,8 @@ namespace Artemis.Core
             if (Icon != null) return;
             Icon = Instance switch
             {
-                BaseDataModelExpansion => "TableAdd",
                 DeviceProvider => "Devices",
-                ProfileModule => "VectorRectangle",
-                Module => "GearBox",
+                Module => "VectorRectangle",
                 LayerBrushProvider => "Brush",
                 LayerEffectProvider => "AutoAwesome",
                 _ => "Plugin"

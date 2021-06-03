@@ -59,13 +59,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         {
             _updatingTree = true;
             ProfileElement firstChild = _profileEditorService.SelectedProfile?.Children?.FirstOrDefault();
-            if (!(firstChild is Folder folder))
+            if (firstChild is not Folder folder)
             {
                 ActivateItem(null);
                 return;
             }
-
-            ActivateItem(_profileTreeVmFactory.FolderViewModel(folder));
+            
+            ActiveItem = _profileTreeVmFactory.FolderViewModel(folder);
             _updatingTree = false;
         }
 
@@ -141,7 +141,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             }
 
             Unsubscribe();
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
             Subscribe();
         }
 
@@ -177,17 +177,17 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
         private void Subscribe()
         {
-            _profileEditorService.ProfileSelected += OnProfileSelected;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
+            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
         }
 
         private void Unsubscribe()
         {
-            _profileEditorService.ProfileSelected -= OnProfileSelected;
-            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
+            _profileEditorService.SelectedProfileChanged -= OnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
         }
 
-        private void OnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
+        private void OnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             if (e.RenderProfileElement == SelectedTreeItem?.ProfileElement)
                 return;
@@ -213,7 +213,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             }
         }
 
-        private void OnProfileSelected(object sender, EventArgs e)
+        private void OnSelectedProfileChanged(object sender, EventArgs e)
         {
             CreateRootFolderViewModel();
         }

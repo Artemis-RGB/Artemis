@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using Artemis.Core.Modules;
 
 namespace Artemis.Core.Services
@@ -10,33 +10,29 @@ namespace Artemis.Core.Services
     public interface IModuleService : IArtemisService
     {
         /// <summary>
-        ///     Gets the current active module override. If set, all other modules are deactivated and only the
-        ///     <see cref="ActiveModuleOverride" /> is active.
+        ///     Updates all currently active modules
         /// </summary>
-        Module? ActiveModuleOverride { get; }
-
-        /// <summary>
-        ///     Changes the current <see cref="ActiveModuleOverride" /> and deactivates all other modules
-        /// </summary>
-        /// <param name="overrideModule"></param>
-        Task SetActiveModuleOverride(Module? overrideModule);
+        /// <param name="deltaTime"></param>
+        void UpdateActiveModules(double deltaTime);
 
         /// <summary>
         ///     Evaluates every enabled module's activation requirements and activates/deactivates modules accordingly
         /// </summary>
-        Task UpdateModuleActivation();
+        void UpdateModuleActivation();
 
         /// <summary>
-        ///     Updates the priority and priority category of the given module
+        ///     Overrides activation on the provided module and restores regular activation to any remaining modules
         /// </summary>
-        /// <param name="module">The module to update</param>
-        /// <param name="category">The new priority category of the module</param>
-        /// <param name="priority">The new priority of the module</param>
-        void UpdateModulePriority(Module module, ModulePriorityCategory category, int priority);
+        void SetActivationOverride(Module? module);
 
         /// <summary>
-        ///     Occurs when the priority of a module is updated.
+        ///     Occurs whenever a module is activated
         /// </summary>
-        event EventHandler? ModulePriorityUpdated;
+        event EventHandler<ModuleEventArgs> ModuleActivated;
+
+        /// <summary>
+        ///     Occurs whenever a module is deactivated
+        /// </summary>
+        event EventHandler<ModuleEventArgs> ModuleDeactivated;
     }
 }

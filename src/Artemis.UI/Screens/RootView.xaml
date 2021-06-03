@@ -7,9 +7,7 @@
                     xmlns:s="https://github.com/canton7/Stylet"
                     xmlns:screens="clr-namespace:Artemis.UI.Screens"
                     xmlns:mde="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
-                    xmlns:converters="clr-namespace:Artemis.UI.Converters"
                     xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
-                    xmlns:localization="clr-namespace:MaterialDesignExtensions.Localization;assembly=MaterialDesignExtensions"
                     mc:Ignorable="d"
                     FadeContentIfInactive="False"
                     Icon="/Resources/Images/Logo/bow.ico"
@@ -25,97 +23,58 @@
                     KeyUp="{s:Action WindowKeyUp}"
                     MouseDown="{s:Action WindowMouseDown}"
                     MouseUp="{s:Action WindowMouseUp}"
-                    d:DesignHeight="640" d:DesignWidth="1200" d:DataContext="{d:DesignInstance screens:RootViewModel}">
-    <mde:MaterialWindow.Resources>
-        <Style TargetType="ContentControl" x:Key="InitializingFade">
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding ActiveItemReady}" Value="False">
-                    <DataTrigger.EnterActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="1.0" To="0.0" Duration="0:0:0.4">
-                                    <DoubleAnimation.EasingFunction>
-                                        <QuadraticEase EasingMode="EaseInOut" />
-                                    </DoubleAnimation.EasingFunction>
-                                </DoubleAnimation>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.EnterActions>
-                    <DataTrigger.ExitActions>
-                        <BeginStoryboard>
-                            <Storyboard>
-                                <DoubleAnimation Storyboard.TargetProperty="Opacity" From="0.0" To="1.0" Duration="0:0:0.25" />
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </DataTrigger.ExitActions>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-    </mde:MaterialWindow.Resources>
-    <materialDesign:DialogHost IsTabStop="False"
-                               Focusable="False"
-                               Identifier="RootDialog"
-                               DialogTheme="Inherit"
-                               SnackbarMessageQueue="{Binding MainMessageQueue}">
+                    d:DesignHeight="640" d:DesignWidth="1200" 
+                    d:DataContext="{d:DesignInstance screens:RootViewModel}">
+    <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="RootDialog" DialogTheme="Inherit" SnackbarMessageQueue="{Binding MainMessageQueue}">
+        <DockPanel>
+            <Border DockPanel.Dock="Left" DockPanel.ZIndex="2" ClipToBounds="True" Background="{DynamicResource MaterialDesignToolBarBackground}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <ContentControl Grid.Column="0" s:View.Model="{Binding SidebarViewModel}" Width="240" />
+                    <Rectangle Grid.Column="1" Fill="DarkGray" Width="1" Margin="0 0 -1 0">
+                        <Rectangle.Effect>
+                            <DropShadowEffect ShadowDepth="0" BlurRadius="10" Color="{StaticResource MaterialDesignShadow}" />
+                        </Rectangle.Effect>
+                    </Rectangle>
+                </Grid>
+            </Border>
 
-        <materialDesign:DrawerHost IsLeftDrawerOpen="{Binding DockedSidebarViewModel.IsSidebarOpen}">
-            <materialDesign:DrawerHost.LeftDrawerContent>
-                <ContentControl s:View.Model="{Binding DockedSidebarViewModel}" 
-                                Width="280" 
-                                Visibility="{Binding PinSidebar.Value, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"/>
-            </materialDesign:DrawerHost.LeftDrawerContent>
-            <DockPanel>
-                <Border DockPanel.Dock="Left" 
-                        DockPanel.ZIndex="2"  
-                        ClipToBounds="True"
-                        Background="{DynamicResource MaterialDesignToolBarBackground}"
-                        Visibility="{Binding PinSidebar.Value, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-                        <ContentControl Grid.Column="0" s:View.Model="{Binding PinnedSidebarViewModel}" Width="280" />
-                        <Rectangle Grid.Column="1" Fill="DarkGray" Width="1" Margin="0 0 -1 0">
-                            <Rectangle.Effect>
-                                <DropShadowEffect ShadowDepth="0" BlurRadius="10" Color="{StaticResource MaterialDesignShadow}"/>
-                            </Rectangle.Effect>
-                        </Rectangle>
-                    </Grid>
-                </Border>
-
-                <mde:AppBar Type="Dense"
-                            IsNavigationDrawerOpen="{Binding DockedSidebarViewModel.IsSidebarOpen, Mode=TwoWay}"
-                            Title="{Binding ActiveItem.DisplayName}"
-                            ShowNavigationDrawerButton="{Binding PinSidebar.Value, Converter={StaticResource InverseBooleanConverter}}"
-                            DockPanel.Dock="Top"
-                            DockPanel.ZIndex="1">
-                    <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="{Binding FrameTime}"
-                                   VerticalAlignment="Center"
-                                   FontSize="14"
-                                   Margin="10 0"
-                                   ToolTip="The time the last frame took to render" />
+            <materialDesign:ColorZone Mode="PrimaryMid" DockPanel.Dock="Top" DockPanel.ZIndex="1" Height="42">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" 
+                               Text="{Binding SidebarViewModel.SelectedScreen.DisplayName}" 
+                               VerticalAlignment="Center" 
+                               FontSize="20" 
+                               Margin="15 0" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBlock Text="{Binding FrameTime}" VerticalAlignment="Center" FontSize="14" Margin="10 0" ToolTip="The time the last frame took to render" />
 
                         <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
                         <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                VerticalAlignment="Center"
                                 ToolTip="Open debugger"
                                 Command="{s:Action ShowDebugger}"
                                 materialDesign:RippleAssist.RippleOnTop="True">
                             <materialDesign:PackIcon Kind="Matrix" />
                         </Button>
                     </StackPanel>
-                </mde:AppBar>
-
-                <Grid>
-                    <ContentControl s:View.Model="{Binding ActiveItem}" Style="{StaticResource InitializingFade}" />
-                    <materialDesign:Snackbar x:Name="MainSnackbar"
-                                             MessageQueue="{Binding MainMessageQueue}"
-                                             materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
-                                             materialDesign:SnackbarMessage.ContentMaxHeight="200" />
                 </Grid>
-            </DockPanel>
-        </materialDesign:DrawerHost>
+            </materialDesign:ColorZone>
+
+            <Grid>
+                <ContentControl s:View.Model="{Binding SidebarViewModel.SelectedScreen}" />
+                <materialDesign:Snackbar x:Name="MainSnackbar"
+                                         MessageQueue="{Binding MainMessageQueue}"
+                                         materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
+                                         materialDesign:SnackbarMessage.ContentMaxHeight="200" />
+            </Grid>
+        </DockPanel>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>

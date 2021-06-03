@@ -96,7 +96,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs
         /// <inheritdoc />
         protected override void OnClose()
         {
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
             base.OnClose();
         }
 

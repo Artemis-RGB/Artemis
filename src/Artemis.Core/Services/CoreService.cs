@@ -29,11 +29,10 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<LogEventLevel> _loggingLevel;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
+        private readonly IModuleService _moduleService;
         private readonly IRgbService _rgbService;
         private readonly List<Exception> _updateExceptions = new();
-        private List<BaseDataModelExpansion> _dataModelExpansions = new();
         private DateTime _lastExceptionLog;
-        private List<Module> _modules = new();
 
         // ReSharper disable UnusedParameter.Local
         public CoreService(IKernel kernel,
@@ -43,8 +42,7 @@ namespace Artemis.Core.Services
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IProfileService profileService,
-            IModuleService moduleService // injected to ensure module priorities get applied
-        )
+            IModuleService moduleService)
         {
             Kernel = kernel;
             Constants.CorePlugin.Kernel = kernel;
@@ -53,18 +51,14 @@ namespace Artemis.Core.Services
             _pluginManagementService = pluginManagementService;
             _rgbService = rgbService;
             _profileService = profileService;
+            _moduleService = moduleService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _frameStopWatch = new Stopwatch();
             StartupArguments = new List<string>();
-
-            UpdatePluginCache();
-
+            
             _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
-
-            _pluginManagementService.PluginFeatureEnabled += (sender, args) => UpdatePluginCache();
-            _pluginManagementService.PluginFeatureDisabled += (sender, args) => UpdatePluginCache();
         }
 
         // ReSharper restore UnusedParameter.Local
@@ -77,12 +71,6 @@ namespace Artemis.Core.Services
         protected virtual void OnFrameRendered(FrameRenderedEventArgs e)
         {
             FrameRendered?.Invoke(this, e);
-        }
-
-        private void UpdatePluginCache()
-        {
-            _modules = _pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).ToList();
-            _dataModelExpansions = _pluginManagementService.GetFeaturesOfType<BaseDataModelExpansion>().Where(p => p.IsEnabled).ToList();
         }
 
         private void ApplyLoggingLevel()
@@ -119,68 +107,19 @@ namespace Artemis.Core.Services
             try
             {
                 _frameStopWatch.Restart();
-                
-                // Render all active modules
+
+                _moduleService.UpdateActiveModules(args.DeltaTime);
                 SKTexture texture = _rgbService.OpenRender();
-
-                lock (_dataModelExpansions)
-                {
-                    // Update all active modules, check Enabled status because it may go false before before the _dataModelExpansions list is updated
-                    foreach (BaseDataModelExpansion dataModelExpansion in _dataModelExpansions.Where(e => e.IsEnabled))
-                    {
-                        try
-                        {
-                            dataModelExpansion.InternalUpdate(args.DeltaTime);
-                        }
-                        catch (Exception e)
-                        {
-                            _updateExceptions.Add(e);
-                        }
-                    }
-                }
-
-                List<Module> modules;
-                lock (_modules)
-                {
-                    modules = _modules.Where(m => m.IsActivated || m.InternalExpandsMainDataModel)
-                        .OrderBy(m => m.PriorityCategory)
-                        .ThenByDescending(m => m.Priority)
-                        .ToList();
-                }
-
-                // Update all active modules
-                foreach (Module module in modules)
-                {
-                    try
-                    {
-                        module.InternalUpdate(args.DeltaTime);
-                    }
-                    catch (Exception e)
-                    {
-                        _updateExceptions.Add(e);
-                    }
-                }
-
                 SKCanvas canvas = texture.Surface.Canvas;
                 canvas.Save();
                 if (Math.Abs(texture.RenderScale - 1) > 0.001)
                     canvas.Scale(texture.RenderScale);
                 canvas.Clear(new SKColor(0, 0, 0));
 
-                // While non-activated modules may be updated above if they expand the main data model, they may never render
-                if (!ModuleRenderingDisabled)
+                if (!ProfileRenderingDisabled)
                 {
-                    foreach (Module module in modules.Where(m => m.IsActivated))
-                    {
-                        try
-                        {
-                            module.InternalRender(args.DeltaTime, canvas, texture.ImageInfo);
-                        }
-                        catch (Exception e)
-                        {
-                            _updateExceptions.Add(e);
-                        }
-                    }
+                    _profileService.UpdateProfiles(args.DeltaTime);
+                    _profileService.RenderProfiles(canvas);
                 }
 
                 OnFrameRendering(new FrameRenderingEventArgs(canvas, args.DeltaTime, _rgbService.Surface));
@@ -228,7 +167,7 @@ namespace Artemis.Core.Services
         }
 
         public TimeSpan FrameTime { get; private set; }
-        public bool ModuleRenderingDisabled { get; set; }
+        public bool ProfileRenderingDisabled { get; set; }
         public List<string> StartupArguments { get; set; }
         public bool IsElevated { get; set; }
 
@@ -270,25 +209,6 @@ namespace Artemis.Core.Services
 
             _rgbService.IsRenderPaused = false;
             OnInitialized();
-        }
-
-        public void PlayIntroAnimation()
-        {
-            IntroAnimation intro = new(_logger, _profileService, _rgbService.EnabledDevices);
-
-            // Draw a white overlay over the device
-            void DrawOverlay(object? sender, FrameRenderingEventArgs args)
-            {
-                if (intro.AnimationProfile.GetAllLayers().All(l => l.Timeline.IsFinished))
-                {
-                    FrameRendering -= DrawOverlay;
-                    intro.AnimationProfile.Dispose();
-                }
-
-                intro.Render(args.DeltaTime, args.Canvas);
-            }
-
-            FrameRendering += DrawOverlay;
         }
 
         public event EventHandler? Initialized;

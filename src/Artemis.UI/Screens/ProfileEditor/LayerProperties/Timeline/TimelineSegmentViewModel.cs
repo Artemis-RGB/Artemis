@@ -103,7 +103,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
                 if (Segment != SegmentViewModelType.Main || SelectedProfileElement == null)
                     return;
                 SelectedProfileElement.Timeline.PlayMode = value ? TimelinePlayMode.Repeat : TimelinePlayMode.Once;
-                ProfileEditorService.UpdateSelectedProfileElement();
+                ProfileEditorService.SaveSelectedProfileElement();
                 NotifyOfPropertyChange(nameof(RepeatSegment));
             }
         }
@@ -159,7 +159,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         protected override void OnInitialActivate()
         {
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            ProfileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             if (ProfileEditorService.SelectedProfileElement != null)
                 ProfileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
 
@@ -171,7 +171,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         protected override void OnClose()
         {
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            ProfileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            ProfileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             if (SelectedProfileElement != null)
                 SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             base.OnClose();
@@ -263,7 +263,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             }
 
             ShiftNextSegment(SegmentLength - oldSegmentLength);
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
             Update();
         }
 
@@ -277,7 +277,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             else if (Segment == SegmentViewModelType.End)
                 SelectedProfileElement.Timeline.EndSegmentLength = TimeSpan.FromSeconds(1);
 
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
             Update();
         }
 
@@ -296,7 +296,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             ((IInputElement) sender).ReleaseMouseCapture();
             _draggingSegment = false;
 
-            ProfileEditorService.UpdateSelectedProfileElement();
+            ProfileEditorService.SaveSelectedProfileElement();
         }
 
         public void SegmentMouseMove(object sender, MouseEventArgs e)
@@ -367,7 +367,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         #region Event handlers
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
+        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             if (e.PreviousRenderProfileElement != null)
                 e.PreviousRenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;

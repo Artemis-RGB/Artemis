@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
@@ -14,17 +16,23 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
     public class DataModelConditionGroupViewModel : DataModelConditionViewModel
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
+        private readonly List<Module> _modules;
+        private readonly ICoreService _coreService;
         private readonly IProfileEditorService _profileEditorService;
         private bool _isEventGroup;
         private bool _isRootGroup;
 
         public DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup,
             ConditionGroupType groupType,
+            List<Module> modules,
+            ICoreService coreService,
             IProfileEditorService profileEditorService,
             IDataModelConditionsVmFactory dataModelConditionsVmFactory)
             : base(dataModelConditionGroup)
         {
             GroupType = groupType;
+            _modules = modules;
+            _coreService = coreService;
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
@@ -66,7 +74,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.BooleanOperator = enumValue;
             NotifyOfPropertyChange(nameof(SelectedBooleanOperator));
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddCondition()
@@ -87,7 +95,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             }
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddEventCondition()
@@ -104,7 +112,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.AddChild(new DataModelConditionEvent(DataModelConditionGroup), index);
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddGroup()
@@ -112,7 +120,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             DataModelConditionGroup.AddChild(new DataModelConditionGroup(DataModelConditionGroup));
 
             Update();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public override void Update()
@@ -131,22 +139,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
                 switch (childModel)
                 {
                     case DataModelConditionGroup dataModelConditionGroup:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGroupViewModel(dataModelConditionGroup, GroupType, _modules));
                         break;
                     case DataModelConditionList dataModelConditionList:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListViewModel(dataModelConditionList, _modules));
                         break;
                     case DataModelConditionEvent dataModelConditionEvent:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventViewModel(dataModelConditionEvent, _modules));
                         break;
                     case DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionGeneralPredicateViewModel(dataModelConditionGeneralPredicate, _modules));
                         break;
                     case DataModelConditionListPredicate dataModelConditionListPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionListPredicateViewModel(dataModelConditionListPredicate, _modules));
                         break;
                     case DataModelConditionEventPredicate dataModelConditionEventPredicate:
-                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate));
+                        Items.Add(_dataModelConditionsVmFactory.DataModelConditionEventPredicateViewModel(dataModelConditionEventPredicate, _modules));
                         break;
                 }
             }
@@ -171,6 +179,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             IsConditionMet = DataModelConditionGroup.Evaluate();
             foreach (DataModelConditionViewModel dataModelConditionViewModel in Items)
                 dataModelConditionViewModel.Evaluate();
+        }
+
+        public override void UpdateModules()
+        {
+            foreach (DataModelConditionViewModel dataModelConditionViewModel in Items) 
+                dataModelConditionViewModel.UpdateModules();
         }
 
         public void ConvertToConditionList(DataModelConditionViewModel predicateViewModel)
@@ -203,7 +217,32 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
+        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        {
+            if (IsRootGroup)
+                Evaluate();
+        }
+
         public event EventHandler Updated;
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            base.OnInitialActivate();
+            Update();
+            _coreService.FrameRendered += CoreServiceOnFrameRendered;
+        }
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _coreService.FrameRendered -= CoreServiceOnFrameRendered;
+            base.OnClose();
+        }
+        
+        #endregion
 
         protected virtual void OnUpdated()
         {

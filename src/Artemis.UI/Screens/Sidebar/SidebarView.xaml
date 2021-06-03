@@ -4,56 +4,163 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sidebar="clr-namespace:Artemis.UI.Screens.Sidebar"
-             xmlns:controls="clr-namespace:MaterialDesignExtensions.Controls;assembly=MaterialDesignExtensions"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:dd="urn:gong-wpf-dragdrop"
+             xmlns:converters="clr-namespace:Artemis.UI.Converters"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance sidebar:SidebarViewModel}">
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="ArtemisSidebar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="SidebarDialog" DialogTheme="Inherit" DialogMargin="14">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-        <Image Grid.Row="0"
-               Grid.RowSpan="2"
-               Source="/Resources/Images/Sidebar/sidebar-header.png"
-               Stretch="UniformToFill"
-               VerticalAlignment="Top" Height="120" />
+            <Grid Grid.Row="0" ClipToBounds="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-        <ToggleButton Grid.Row="0"
-            Style="{StaticResource MaterialDesignSwitchLightToggleButton}"
-            ToolTip="Pin sidebar"
-            HorizontalAlignment="Right" 
-            IsChecked="{Binding PinSidebar.Value, Delay=300}"
-            Margin="10 0">
-            <materialDesign:PackIcon Kind="Pin" RenderTransformOrigin=".5,.5">
-                <materialDesign:PackIcon.RenderTransform>
-                    <RotateTransform Angle="45" />
-                </materialDesign:PackIcon.RenderTransform>
-            </materialDesign:PackIcon>
-            <materialDesign:ToggleButtonAssist.OnContent>
-                <materialDesign:PackIcon Kind="Pin" />
-            </materialDesign:ToggleButtonAssist.OnContent>
-        </ToggleButton>
+                <shared:DeviceVisualizer Grid.Column="0"
+                                         Grid.ColumnSpan="2"
+                                         Device="{Binding HeaderDevice}"
+                                         ShowColors="True"
+                                         RenderTransformOrigin="0.5 0.5"
+                                         VerticalAlignment="Center"
+                                         HorizontalAlignment="Center"
+                                         RenderOptions.BitmapScalingMode="HighQuality">
+                    <shared:DeviceVisualizer.RenderTransform>
+                        <TransformGroup>
+                            <RotateTransform Angle="20" />
+                            <ScaleTransform ScaleX="2" ScaleY="2" />
+                        </TransformGroup>
+                    </shared:DeviceVisualizer.RenderTransform>
+                </shared:DeviceVisualizer>
+                <Rectangle Grid.Column="0" Grid.ColumnSpan="2" Height="60" VerticalAlignment="Bottom">
+                    <Rectangle.Fill>
+                        <LinearGradientBrush StartPoint="0,1" EndPoint="0,0">
+                            <GradientStop Color="{Binding Path=Color, Source={StaticResource MaterialDesignToolBarBackground}}" Offset="0" /> <!-- TODO: Get the color from MaterialDesign -->
+                            <GradientStop Color="#00000000" Offset="1" />
+                        </LinearGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
+                <Image Grid.Column="0" Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="35" Width="35" Margin="10" />
+                <TextBlock Grid.Column="1"
+                           VerticalAlignment="Center"
+                           Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                           Foreground="{DynamicResource MaterialDesignDarkForeground}">
+                    Artemis 2
+                </TextBlock>
+            </Grid>
 
-        <TextBlock Grid.Row="1"
-                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                   Foreground="{StaticResource PrimaryHueDarkForegroundBrush}"
-                   Margin="15"
-                   materialDesign:ShadowAssist.ShadowDepth="Depth1"
-                   Text="{Binding ActiveModules}"
-                   VerticalAlignment="Bottom" />
+            <!-- Built-in screens -->
+            <ListBox Grid.Row="1"
+                     Margin="0 2"
+                     ItemContainerStyle="{StaticResource SidebarListBoxItem}"
+                     ItemsSource="{Binding SidebarScreens}"
+                     SelectedItem="{Binding SelectedSidebarScreen}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Separator Grid.Row="2" Margin="8" />
 
-        <controls:SideNavigation Grid.Row="3"
-                                 Items="{Binding SidebarItems}"
-                                 SelectedItem="{Binding SelectedItem}"
-                                 WillSelectNavigationItemCommand="{s:Action SelectItem}"
-                                 materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
-                                 Margin="0 5 0 0" />
-    </Grid>
+            <!-- Categories -->
+            <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto">
+                <ScrollViewer.Resources>
+                    <Style TargetType="ScrollBar" BasedOn="{StaticResource MaterialDesignScrollBarMinimal}" />
+                </ScrollViewer.Resources>
+                <StackPanel>
+                    <StackPanel.Resources>
+                        <DataTemplate x:Key="CategoryDragTemplate" DataType="{x:Type sidebar:SidebarCategoryViewModel}">
+                            <DataTemplate.Resources>
+                                <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                            </DataTemplate.Resources>
+                            <Border Background="{DynamicResource MaterialDesignTextFieldBoxHoverBackground}" 
+                                    Padding="10" 
+                                    CornerRadius="4"
+                                    Visibility="{Binding Path=ProfileCategory, FallbackValue=null, Converter={StaticResource NullToVisibilityConverter}}">
+                                <TextBlock Text="{Binding ProfileCategory.Name,TargetNullValue='Oops, I am missing'}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                            </Border>
+                        </DataTemplate>
+                    </StackPanel.Resources>
+                    <ItemsControl ItemsSource="{Binding Items}"
+                                  dd:DragDrop.IsDragSource="True"
+                                  dd:DragDrop.IsDropTarget="True"
+                                  dd:DragDrop.DragAdornerTemplate="{StaticResource CategoryDragTemplate}"
+                                  dd:DragDrop.DropHandler="{Binding}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button Style="{StaticResource MaterialDesignOutlinedButton}" Content="ADD NEW CATEGORY" Margin="10 10 10 0" Command="{s:Action AddCategory}" />
+                </StackPanel>
+            </ScrollViewer>
 
+            <!-- Bottom buttons -->
+            <Separator Grid.Row="4" Margin="8" />
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0 5 5">
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="44"
+                        Height="44"
+                        ToolTip="View website"
+                        Command="{s:Action OpenUrl}"
+                        CommandParameter="https://artemis-rgb.com">
+                    <materialDesign:PackIcon Kind="Web" Width="20" Height="20" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="44"
+                        Height="44"
+                        ToolTip="View GitHub repository"
+                        Command="{s:Action OpenUrl}"
+                        CommandParameter="https://github.com/Artemis-RGB/Artemis">
+                    <materialDesign:PackIcon Kind="Github" Width="20" Height="20" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="44"
+                        Height="44"
+                        ToolTip="View Wiki"
+                        Command="{s:Action OpenUrl}"
+                        CommandParameter="https://wiki.artemis-rgb.com">
+                    <materialDesign:PackIcon Kind="BookOpenOutline" Width="20" Height="20" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="44"
+                        Height="44"
+                        ToolTip="Join our Discord"
+                        Command="{s:Action OpenUrl}"
+                        CommandParameter="https://discord.gg/S3MVaC9">
+                    <materialDesign:PackIcon Kind="Discord" Width="20" Height="20" />
+                </Button>
+                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                        Width="44"
+                        Height="44"
+                        ToolTip="View donation options"
+                        Command="{s:Action OpenUrl}"
+                        CommandParameter="https://wiki.artemis-rgb.com/en/donating">
+                    <materialDesign:PackIcon Kind="Gift" Width="20" Height="20" />
+                </Button>
+            </StackPanel>
+        </Grid>
+    </materialDesign:DialogHost>
 </UserControl>

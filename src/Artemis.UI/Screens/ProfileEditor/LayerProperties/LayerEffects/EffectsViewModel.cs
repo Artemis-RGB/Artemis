@@ -70,7 +70,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects
                 {
                     await Task.Delay(500);
                     renderElement.AddLayerEffect(SelectedLayerEffectDescriptor);
-                    _profileEditorService.UpdateSelectedProfileElement();
+                    _profileEditorService.SaveSelectedProfileElement();
                 });
             }
         }
