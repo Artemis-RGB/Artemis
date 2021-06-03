@@ -67,8 +67,8 @@ namespace Artemis.Core.Modules
     /// </summary>
     public abstract class Module : PluginFeature
     {
-        private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
         private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
+        private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
 
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
@@ -126,11 +126,14 @@ namespace Artemis.Core.Modules
         public ActivationRequirementType ActivationRequirementMode { get; set; } = ActivationRequirementType.Any;
 
         /// <summary>
-        ///     Gets or sets a boolean indicating whether this module is always available to profiles or only when profiles
-        ///     specifically target this module.
-        ///     <para>Note: If set to <see langword="true" />, <see cref="ActivationRequirements" /> are not evaluated.</para>
+        ///     Gets a boolean indicating whether this module is always available to profiles or only to profiles that specifically
+        ///     target this module.
+        ///     <para>
+        ///         Note: <see langword="true" /> if there are any <see cref="ActivationRequirements" />; otherwise
+        ///         <see langword="false" />
+        ///     </para>
         /// </summary>
-        public bool IsAlwaysAvailable { get; set; }
+        public bool IsAlwaysAvailable => ActivationRequirements.Count == 0;
 
         /// <summary>
         ///     Gets whether updating this module is currently allowed
@@ -265,7 +268,7 @@ namespace Artemis.Core.Modules
         /// <inheritdoc />
         internal override void InternalEnable()
         {
-            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths) 
+            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths)
                 AddDefaultProfile(categoryName, path);
             _pendingDefaultProfilePaths.Clear();
 
