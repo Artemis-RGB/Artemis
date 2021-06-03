@@ -118,7 +118,7 @@ namespace Artemis.Core.Services
                 List<ProfileConfiguration> profileConfigurations = _profileService.ProfileCategories.SelectMany(c => c.ProfileConfigurations).ToList();
                 foreach ((DefaultCategoryName categoryName, string profilePath) in module.DefaultProfilePaths)
                 {
-                    ProfileConfigurationExportModel? profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(File.ReadAllText(profilePath));
+                    ProfileConfigurationExportModel? profileConfigurationExportModel = JsonConvert.DeserializeObject<ProfileConfigurationExportModel>(File.ReadAllText(profilePath), IProfileService.ExportSettings);
                     if (profileConfigurationExportModel?.ProfileEntity == null)
                         throw new ArtemisCoreException($"Default profile at path {profilePath} contains no valid profile data");
                     if (profileConfigurations.Any(p => p.Entity.ProfileId == profileConfigurationExportModel.ProfileEntity.Id))

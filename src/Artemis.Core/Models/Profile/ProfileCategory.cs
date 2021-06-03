@@ -186,9 +186,9 @@ namespace Artemis.Core
     public enum DefaultCategoryName
     {
         /// <summary>
-        ///     The category used by general profiles
+        ///     The category used by profiles tied to games
         /// </summary>
-        General,
+        Games,
 
         /// <summary>
         ///     The category used by profiles tied to applications
@@ -196,9 +196,9 @@ namespace Artemis.Core
         Applications,
 
         /// <summary>
-        ///     The category used by profiles tied to games
+        ///     The category used by general profiles
         /// </summary>
-        Games
+        General
     }
 
     /// <summary>

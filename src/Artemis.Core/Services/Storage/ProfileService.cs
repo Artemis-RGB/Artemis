@@ -44,6 +44,9 @@ namespace Artemis.Core.Services
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
+
+            if (!_profileCategories.Any())
+                CreateDefaultProfileCategories();
         }
 
         /// <summary>
@@ -163,6 +166,12 @@ namespace Artemis.Core.Services
 
                 LogProfileRenderExceptions();
             }
+        }
+
+        private void CreateDefaultProfileCategories()
+        {
+            foreach (DefaultCategoryName defaultCategoryName in Enum.GetValues<DefaultCategoryName>())
+                CreateProfileCategory(defaultCategoryName.ToString());
         }
 
         private void LogProfileUpdateExceptions()
@@ -460,7 +469,9 @@ namespace Artemis.Core.Services
                 throw new ArtemisCoreException("Cannot import a profile without any data");
 
             // Create a copy of the entity because we'll be using it from now on
-            ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings))!;
+            ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(
+                JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings), IProfileService.ExportSettings
+            )!;
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
             if (makeUnique)
