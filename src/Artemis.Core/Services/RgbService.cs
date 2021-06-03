@@ -354,19 +354,26 @@ namespace Artemis.Core.Services
             }
 
             // Finally fall back to a default layout
-            layout = ArtemisLayout.GetDefaultLayout(device);
-            if (layout != null)
-                ApplyDeviceLayout(device, layout);
+            if (!device.DisableDefaultLayout)
+                layout = ArtemisLayout.GetDefaultLayout(device);
+            ApplyDeviceLayout(device, layout);
             return layout;
         }
 
-        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout layout)
+        public void ApplyDeviceLayout(ArtemisDevice device, ArtemisLayout? layout)
         {
+            if (layout == null)
+            {
+                if (device.Layout != null)
+                    device.ClearLayout();
+                return;
+            }
+
             if (layout.Source == LayoutSource.Default)
                 device.ApplyLayout(layout, false, false);
             else
                 device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
-            
+
             UpdateLedGroup();
         }
 

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
+using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Plugins;
 using Artemis.Storage.Repositories.Interfaces;
 using McMaster.NETCore.Plugins;
@@ -26,17 +27,19 @@ namespace Artemis.Core.Services
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
         private readonly IPluginRepository _pluginRepository;
+        private readonly IQueuedActionRepository _queuedActionRepository;
         private readonly List<Plugin> _plugins;
         private bool _isElevated;
 
-        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository)
+        public PluginManagementService(IKernel kernel, ILogger logger, IPluginRepository pluginRepository, IQueuedActionRepository queuedActionRepository)
         {
             _kernel = kernel;
             _logger = logger;
             _pluginRepository = pluginRepository;
+            _queuedActionRepository = queuedActionRepository;
             _plugins = new List<Plugin>();
 
-            ProcessQueuedActions();
+            ProcessPluginDeletionQueue();
         }
 
         private void CopyBuiltInPlugin(ZipArchive zipArchive, string targetDirectory)
@@ -664,27 +667,51 @@ namespace Artemis.Core.Services
 
         #region Queued actions
 
-        public void QueuePluginAction(Plugin plugin, PluginManagementAction pluginAction)
+        public void QueuePluginDeletion(Plugin plugin)
         {
-            List<PluginQueuedActionEntity> existing = _pluginRepository.GetQueuedActions(plugin.Guid);
-            if (existing.Any(e => pluginAction == PluginManagementAction.Delete && e is PluginQueuedDeleteEntity))
-                return;
-
-            if (pluginAction == PluginManagementAction.Delete)
-                _pluginRepository.AddQueuedAction(new PluginQueuedDeleteEntity {PluginGuid = plugin.Guid, Directory = plugin.Directory.FullName});
+            _queuedActionRepository.Add(new QueuedActionEntity
+            {
+                Type = "DeletePlugin",
+                CreatedAt = DateTimeOffset.Now,
+                Parameters = new Dictionary<string, object>()
+                {
+                    {"pluginGuid", plugin.Guid.ToString()},
+                    {"plugin", plugin.ToString()},
+                    {"directory", plugin.Directory.FullName}
+                }
+            });
         }
 
-        private void ProcessQueuedActions()
+        public void DequeuePluginDeletion(Plugin plugin)
         {
-            foreach (PluginQueuedActionEntity pluginQueuedActionEntity in _pluginRepository.GetQueuedActions())
-            {
-                if (pluginQueuedActionEntity is PluginQueuedDeleteEntity deleteAction)
-                {
-                    if (Directory.Exists(deleteAction.Directory))
-                        Directory.Delete(deleteAction.Directory, true);
-                }
+            QueuedActionEntity? queuedActionEntity = _queuedActionRepository.GetByType("DeletePlugin").FirstOrDefault(q => q.Parameters["pluginGuid"].Equals(plugin.Guid.ToString()));
+            if (queuedActionEntity != null)
+                _queuedActionRepository.Remove(queuedActionEntity);
+        }
 
-                _pluginRepository.RemoveQueuedAction(pluginQueuedActionEntity);
+        private void ProcessPluginDeletionQueue()
+        {
+            foreach (QueuedActionEntity queuedActionEntity in _queuedActionRepository.GetByType("DeletePlugin"))
+            {
+                string? directory = queuedActionEntity.Parameters["directory"].ToString();
+                try
+                {
+                    if (Directory.Exists(directory))
+                    {
+                        _logger.Information("Queued plugin deletion - deleting folder - {plugin}", queuedActionEntity.Parameters["plugin"]);
+                        Directory.Delete(directory!, true);
+                    }
+                    else
+                    {
+                        _logger.Information("Queued plugin deletion - folder already deleted - {plugin}", queuedActionEntity.Parameters["plugin"]);
+                    }
+
+                    _queuedActionRepository.Remove(queuedActionEntity);
+                }
+                catch (Exception e)
+                {
+                    _logger.Warning(e, "Queued plugin deletion failed - {plugin}", queuedActionEntity.Parameters["plugin"]);
+                }
             }
         }
 

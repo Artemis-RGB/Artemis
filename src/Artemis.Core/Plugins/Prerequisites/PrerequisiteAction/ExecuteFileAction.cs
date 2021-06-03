@@ -18,7 +18,7 @@ namespace Artemis.Core
         /// <param name="fileName">The target file to execute</param>
         /// <param name="arguments">A set of command-line arguments to use when starting the application</param>
         /// <param name="waitForExit">A boolean indicating whether the action should wait for the process to exit</param>
-        /// <param name="elevate">A boolean indicating whether the file should run with administrator privileges (does not require <see cref="PluginPrerequisite.RequiresElevation"/>)</param>
+        /// <param name="elevate">A boolean indicating whether the file should run with administrator privileges</param>
         public ExecuteFileAction(string name, string fileName, string? arguments = null, bool waitForExit = true, bool elevate = false) : base(name)
         {
             FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
@@ -72,7 +72,7 @@ namespace Artemis.Core
             }
         }
 
-        private static Task<int> RunProcessAsync(string fileName, string? arguments, bool elevate)
+        internal static Task<int> RunProcessAsync(string fileName, string? arguments, bool elevate)
         {
             TaskCompletionSource<int> tcs = new();
 
