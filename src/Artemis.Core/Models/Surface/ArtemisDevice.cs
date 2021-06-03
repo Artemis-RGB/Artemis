@@ -33,6 +33,8 @@ namespace Artemis.Core
             BlueScale = 1;
             IsEnabled = true;
 
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(new Dictionary<LedId, ArtemisLed>());
+            Leds = new ReadOnlyCollection<ArtemisLed>(new List<ArtemisLed>());
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
             Categories = new HashSet<DeviceCategory>();
@@ -51,6 +53,8 @@ namespace Artemis.Core
             RgbDevice = rgbDevice;
             DeviceProvider = deviceProvider;
 
+            LedIds = new ReadOnlyDictionary<LedId, ArtemisLed>(new Dictionary<LedId, ArtemisLed>());
+            Leds = new ReadOnlyCollection<ArtemisLed>(new List<ArtemisLed>());
             InputIdentifiers = new List<ArtemisDeviceInputIdentifier>();
             InputMappings = new Dictionary<ArtemisLed, ArtemisLed>();
             Categories = new HashSet<DeviceCategory>();
@@ -255,6 +259,19 @@ namespace Artemis.Core
             {
                 DeviceEntity.PhysicalLayout = (int) value;
                 OnPropertyChanged(nameof(PhysicalLayout));
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a boolean indicating whether falling back to default layouts is enabled or not
+        /// </summary>
+        public bool DisableDefaultLayout
+        {
+            get => DeviceEntity.DisableDefaultLayout;
+            set
+            {
+                DeviceEntity.DisableDefaultLayout = value;
+                OnPropertyChanged(nameof(DisableDefaultLayout));
             }
         }
 
@@ -531,6 +548,11 @@ namespace Artemis.Core
                 LogicalLayout = DeviceProvider.GetLogicalLayout(keyboard);
             else
                 LogicalLayout = DeviceEntity.LogicalLayout;
+        }
+
+        public void ClearLayout()
+        {
+            // TODO
         }
     }
 

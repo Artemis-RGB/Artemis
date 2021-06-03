@@ -134,6 +134,16 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             set => SetCategory(DeviceCategory.Peripherals, value);
         }
 
+        public bool UseDefaultLayout
+        {
+            get => !Device.DisableDefaultLayout;
+            set
+            {
+                Device.DisableDefaultLayout = !value;
+                NotifyOfPropertyChange(nameof(UseDefaultLayout));
+            }
+        }
+
         public void ApplyScaling()
         {
             Device.RedScale = RedScale / 100f;
@@ -255,7 +265,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
         private void DeviceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(Device.CustomLayoutPath))
+            if (e.PropertyName == nameof(Device.CustomLayoutPath) || e.PropertyName == nameof(Device.DisableDefaultLayout))
                 _rgbService.ApplyBestDeviceLayout(Device);
         }
 

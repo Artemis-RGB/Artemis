@@ -7,6 +7,7 @@
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:b="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance local:DevicePropertiesTabViewModel}">
@@ -29,7 +30,7 @@
                        Foreground="{DynamicResource MaterialDesignBodyLight}"
                        TextWrapping="Wrap"
                        TextAlignment="Justify">
-                Artemis uses categories to determine where the layers of imported profiles are applied to. <LineBreak/>
+                Artemis uses categories to determine where the layers of imported profiles are applied to. <LineBreak />
                 You can hover over a category for a more detailed description.
             </TextBlock>
             <StackPanel Orientation="Horizontal">
@@ -192,14 +193,24 @@
 
             <!-- Layout -->
             <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
-                Custom layout
+                Layout
             </TextBlock>
             <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
                        Foreground="{DynamicResource MaterialDesignBodyLight}"
                        TextWrapping="Wrap"
                        TextAlignment="Justify">
-                Select a custom layout below if you want to change the appearance and/or LEDs of this device.
+                The device layout is used to determine the position of LEDs and to create the visual representation of the device you see on the left side of this window.
             </TextBlock>
+
+            <CheckBox Margin="0 0 0 5" Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding UseDefaultLayout}">
+                <CheckBox.Content>
+                    <TextBlock Margin="0 -5 0 0">
+                        Use default layout if needed
+                        <materialDesign:PackIcon Kind="HelpCircle"
+                                                 ToolTip="If there is no built-in layout and no custom layout, with this enabled Artemis will fall back to the default layout of this device type." />
+                    </TextBlock>
+                </CheckBox.Content>
+            </CheckBox>
 
             <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
                      Text="{Binding Device.CustomLayoutPath}"
@@ -210,10 +221,25 @@
                 <materialDesign:HintAssist.Hint>
                     <StackPanel Orientation="Horizontal" Margin="-2 0 0 0">
                         <materialDesign:PackIcon Kind="Xml" Width="20" />
-                        <TextBlock>Layout path</TextBlock>
+                        <TextBlock>Custom layout path</TextBlock>
                     </StackPanel>
                 </materialDesign:HintAssist.Hint>
             </TextBox>
+            <TextBlock Style="{StaticResource MaterialDesignCaptionTextBlock}"
+                       Foreground="{DynamicResource MaterialDesignBodyLight}"
+                       TextWrapping="Wrap"
+                       TextAlignment="Justify">
+                Select a custom layout below if you want to change the appearance and/or LEDs of this device.
+                For info on how to create layouts, check out
+                <Hyperlink Style="{StaticResource ArtemisHyperlink}"
+                           NavigateUri="https://wiki.artemis-rgb.com/en/guides/developer/layouts">
+                    this wiki article
+                    <b:Interaction.Behaviors>
+                        <shared:OpenInBrowser />
+                    </b:Interaction.Behaviors>
+                </Hyperlink>
+                .
+            </TextBlock>
         </StackPanel>
 
         <!-- Buttons -->

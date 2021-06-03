@@ -22,6 +22,7 @@ namespace Artemis.Storage.Entities.Surface
         public float BlueScale { get; set; }
         public bool IsEnabled { get; set; }
 
+        public bool DisableDefaultLayout { get; set; }
         public int PhysicalLayout { get; set; }
         public string LogicalLayout { get; set; }
         public string CustomLayoutPath { get; set; }
