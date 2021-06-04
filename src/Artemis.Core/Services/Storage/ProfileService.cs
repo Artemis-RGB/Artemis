@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
@@ -487,19 +488,26 @@ namespace Artemis.Core.Services
             ProfileConfiguration profileConfiguration;
             if (exportModel.ProfileConfigurationEntity != null)
             {
+                ProfileConfigurationEntity profileConfigurationEntity = JsonConvert.DeserializeObject<ProfileConfigurationEntity>(
+                    JsonConvert.SerializeObject(exportModel.ProfileConfigurationEntity, IProfileService.ExportSettings), IProfileService.ExportSettings
+                )!;
                 // A new GUID will be given on save
-                exportModel.ProfileConfigurationEntity.FileIconId = Guid.Empty;
-                profileConfiguration = new ProfileConfiguration(category, exportModel.ProfileConfigurationEntity);
+                profileConfigurationEntity.FileIconId = Guid.Empty;
+                profileConfiguration = new ProfileConfiguration(category, profileConfigurationEntity);
                 if (nameAffix != null)
                     profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
             }
             else
             {
-                profileConfiguration = new ProfileConfiguration(category, exportModel.ProfileEntity!.Name, "Import");
+                profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
             }
 
             if (exportModel.ProfileImage != null)
-                profileConfiguration.Icon.FileIcon = exportModel.ProfileImage;
+            {
+                profileConfiguration.Icon.FileIcon = new MemoryStream();
+                exportModel.ProfileImage.Position = 0;
+                exportModel.ProfileImage.CopyTo(profileConfiguration.Icon.FileIcon);
+            }
 
             profileConfiguration.Entity.ProfileId = profileEntity.Id;
             category.AddProfileConfiguration(profileConfiguration, 0);

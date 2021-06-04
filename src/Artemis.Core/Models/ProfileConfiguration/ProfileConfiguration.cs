@@ -173,6 +173,7 @@ namespace Artemis.Core
             Name = Entity.Name;
             IsSuspended = Entity.IsSuspended;
             ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
+            Order = Entity.Order;
 
             Icon.Load();
 
@@ -188,6 +189,7 @@ namespace Artemis.Core
             Entity.IsSuspended = IsSuspended;
             Entity.ActivationBehaviour = (int) ActivationBehaviour;
             Entity.ProfileCategoryId = Category.Entity.Id;
+            Entity.Order = Order;
 
             Icon.Save();
 

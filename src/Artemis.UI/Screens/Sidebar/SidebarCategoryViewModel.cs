@@ -29,7 +29,6 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileService _profileService;
         private SidebarProfileConfigurationViewModel _selectedProfileConfiguration;
-        private bool _showItems;
         private readonly DefaultDropHandler _defaultDropHandler;
         private bool _addingProfile;
 
@@ -43,7 +42,6 @@ namespace Artemis.UI.Screens.Sidebar
             _dialogService = dialogService;
             _vmFactory = vmFactory;
             _eventAggregator = eventAggregator;
-            _showItems = !profileCategory.IsCollapsed;
             _defaultDropHandler = new DefaultDropHandler();
 
             ProfileCategory = profileCategory;
@@ -53,15 +51,15 @@ namespace Artemis.UI.Screens.Sidebar
 
         public bool ShowItems
         {
-            get => _showItems;
+            get => !ProfileCategory.IsCollapsed;
             set
             {
-                if (!SetAndNotify(ref _showItems, value)) return;
-
-                if (value)
-                    CreateProfileViewModels();
-                else
+                ProfileCategory.IsCollapsed = !value;
+                if (ProfileCategory.IsCollapsed)
                     Items.Clear();
+                else
+                    CreateProfileViewModels();
+                _profileService.SaveProfileCategory(ProfileCategory);
             }
         }
 
@@ -218,7 +216,8 @@ namespace Artemis.UI.Screens.Sidebar
         /// <inheritdoc />
         protected override void OnActivate()
         {
-            CreateProfileViewModels();
+            if (ShowItems)
+                CreateProfileViewModels();
             base.OnActivate();
         }
 
