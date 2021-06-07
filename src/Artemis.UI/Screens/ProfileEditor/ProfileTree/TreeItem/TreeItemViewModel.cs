@@ -129,7 +129,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 throw new ArtemisUIException("Cannot add a folder to a profile element of type " + ProfileElement.GetType().Name);
 
             Folder _ = new(ProfileElement, "New folder");
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
         }
 
         public void AddLayer()
@@ -145,7 +145,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 layer.ChangeLayerBrush(brush);
 
             layer.AddLeds(_rgbService.EnabledDevices.SelectMany(d => d.Leds));
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
             _profileEditorService.ChangeSelectedProfileElement(layer);
         }
 
@@ -163,7 +163,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             if (result is string newName)
             {
                 ProfileElement.Name = newName;
-                _profileEditorService.UpdateSelectedProfile();
+                _profileEditorService.SaveSelectedProfileConfiguration();
             }
         }
 
@@ -189,7 +189,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             ProfileElement.Parent?.RemoveChild(ProfileElement);
             parent.RemoveExistingElement(this);
 
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
             _profileEditorService.ChangeSelectedProfileElement(newSelection as RenderProfileElement);
         }
 
@@ -243,7 +243,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void SuspendedToggled()
         {
-            _profileEditorService.UpdateSelectedProfile();
+            _profileEditorService.SaveSelectedProfileConfiguration();
         }
 
         public void ContextMenuOpening(object sender, EventArgs e)

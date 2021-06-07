@@ -153,9 +153,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             FocusSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
-            _profileEditorService.ProfileSelected += OnProfileSelected;
-            _profileEditorService.ProfileElementSelected += OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated += OnSelectedProfileElementUpdated;
+            _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementSaved += OnSelectedProfileElementSaved;
 
             base.OnInitialActivate();
         }
@@ -166,9 +166,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             FocusSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded -= RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved -= RgbServiceOnDevicesModified;
-            _profileEditorService.ProfileSelected -= OnProfileSelected;
-            _profileEditorService.ProfileElementSelected -= OnProfileElementSelected;
-            _profileEditorService.SelectedProfileElementUpdated -= OnSelectedProfileElementUpdated;
+            _profileEditorService.SelectedProfileChanged -= OnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _profileEditorService.SelectedProfileElementSaved -= OnSelectedProfileElementSaved;
             if (_previousSelectedLayer != null)
                 _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
@@ -330,12 +330,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             UpdateLedsDimStatus();
         }
 
-        private void OnProfileSelected(object sender, EventArgs e)
+        private void OnSelectedProfileChanged(object sender, EventArgs e)
         {
             ApplyActiveProfile();
         }
 
-        private void OnProfileElementSelected(object sender, EventArgs e)
+        private void OnSelectedProfileElementChanged(object sender, EventArgs e)
         {
             if (_previousSelectedLayer != null)
             {
@@ -370,7 +370,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 ActivateToolByIndex(1);
         }
 
-        private void OnSelectedProfileElementUpdated(object sender, EventArgs e)
+        private void OnSelectedProfileElementSaved(object sender, EventArgs e)
         {
             ApplyActiveProfile();
             UpdateLedsDimStatus();

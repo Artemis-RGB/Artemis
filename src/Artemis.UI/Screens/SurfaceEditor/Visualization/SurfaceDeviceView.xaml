@@ -15,7 +15,7 @@
              MouseLeave="{s:Action MouseLeave}"
              ToolTip="{Binding Device.RgbDevice.DeviceInfo.DeviceName}">
     <UserControl.Resources>
-        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <Grid>
         <!-- Content -->

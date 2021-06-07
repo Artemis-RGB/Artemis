@@ -9,6 +9,7 @@
              xmlns:utilities="clr-namespace:Artemis.UI.Utilities"
              xmlns:local="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding"
              xmlns:modifierTypes="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding.ModifierTypes"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800">
     <UserControl.Resources>
@@ -16,7 +17,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="pack://application:,,,/Artemis.UI;component/ResourceDictionaries/DataModelConditions.xaml" />
                 <ResourceDictionary>
-                    <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+                    <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
                     <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>

@@ -84,7 +84,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             Update();
         }
 
-        private void ProfileEditorServiceOnProfileElementSelected(object sender, RenderProfileElementEventArgs e)
+        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
             if (e.PreviousRenderProfileElement != null)
                 e.PreviousRenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
@@ -100,7 +100,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         protected override void OnInitialActivate()
         {
             _profileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
-            _profileEditorService.ProfileElementSelected += ProfileEditorServiceOnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             if (_profileEditorService.SelectedProfileElement != null)
                 _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
             Update();
@@ -111,7 +111,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         protected override void OnClose()
         {
             _profileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
-            _profileEditorService.ProfileElementSelected -= ProfileEditorServiceOnProfileElementSelected;
+            _profileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             if (_profileEditorService.SelectedProfileElement != null)
                 _profileEditorService.SelectedProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             base.OnClose();
@@ -142,7 +142,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
 
         public void KeyframeMouseUp(object sender, MouseButtonEventArgs e)
         {
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
             ReleaseSelectedKeyframes();
 
             ((IInputElement) sender).ReleaseMouseCapture();
@@ -200,7 +200,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             foreach (ITimelineKeyframeViewModel keyframeViewModel in keyframeViewModels)
                 keyframeViewModel.Delete(false);
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void DuplicateKeyframes(object sender)
@@ -213,7 +213,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in GetAllKeyframeViewModels())
                 timelineKeyframeViewModel.IsSelected = newKeyframes.Contains(timelineKeyframeViewModel.Keyframe);
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void CopyKeyframes()
@@ -230,7 +230,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             foreach (ITimelineKeyframeViewModel timelineKeyframeViewModel in GetAllKeyframeViewModels())
                 timelineKeyframeViewModel.IsSelected = newKeyframes.Contains(timelineKeyframeViewModel.Keyframe);
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private TimeSpan GetPastePosition(ITimelineKeyframeViewModel viewModel)

@@ -77,6 +77,11 @@
                     </ContextMenu.Resources>
                     <ContextMenu.ItemsSource>
                         <CompositeCollection>
+                            <MenuItem Header="No modules available" IsEnabled="False" Visibility="{Binding Data.HasNoModules, Source={StaticResource DataContextProxy}, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                                <MenuItem.Icon>
+                                    <materialDesign:PackIcon Kind="EmojiSad" />
+                                </MenuItem.Icon>
+                            </MenuItem>
                             <CollectionContainer Collection="{Binding Data.ExtraDataModelViewModels, Source={StaticResource DataContextProxy}}" />
                             <Separator Visibility="{Binding Data.HasExtraDataModels, Source={StaticResource DataContextProxy}, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
                             <CollectionContainer Collection="{Binding Data.DataModelViewModel.Children, Source={StaticResource DataContextProxy}}" />

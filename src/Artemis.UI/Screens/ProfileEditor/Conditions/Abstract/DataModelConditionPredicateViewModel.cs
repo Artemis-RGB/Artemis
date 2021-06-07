@@ -4,6 +4,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Input;
@@ -16,6 +17,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
     {
         private readonly IConditionOperatorService _conditionOperatorService;
         private readonly IDataModelUIService _dataModelUIService;
+        private readonly List<Module> _modules;
         private readonly IProfileEditorService _profileEditorService;
         private DataModelStaticViewModel _rightSideInputViewModel;
         private DataModelDynamicViewModel _rightSideSelectionViewModel;
@@ -25,11 +27,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         protected DataModelConditionPredicateViewModel(
             DataModelConditionPredicate dataModelConditionPredicate,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService) : base(dataModelConditionPredicate)
         {
+            _modules = modules;
             _profileEditorService = profileEditorService;
             _dataModelUIService = dataModelUIService;
             _conditionOperatorService = conditionOperatorService;
@@ -43,6 +47,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         public DataModelConditionPredicate DataModelConditionPredicate => (DataModelConditionPredicate) Model;
         public PluginSetting<bool> ShowDataModelValues { get; }
+
+        public bool CanSelectOperator => DataModelConditionPredicate.LeftPath is {IsValid: true};
 
         public BaseConditionOperator SelectedOperator
         {
@@ -75,12 +81,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public override void Delete()
         {
             base.Delete();
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public virtual void Initialize()
         {
-            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            LeftSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             LeftSideSelectionViewModel.PropertySelected += LeftSideOnPropertySelected;
             if (LeftSideColor != null)
                 LeftSideSelectionViewModel.ButtonBrush = LeftSideColor;
@@ -107,10 +113,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
             else if (!Operators.Contains(DataModelConditionPredicate.Operator))
                 DataModelConditionPredicate.UpdateOperator(Operators.FirstOrDefault(o => o.Description == DataModelConditionPredicate.Operator.Description) ?? Operators.FirstOrDefault());
 
+            NotifyOfPropertyChange(nameof(CanSelectOperator));
             SelectedOperator = DataModelConditionPredicate.Operator;
 
             // Without a selected operator or one that supports a right side, leave the right side input empty
-            if (SelectedOperator == null || SelectedOperator.RightSideType == null)
+            if (SelectedOperator?.RightSideType == null)
             {
                 DisposeRightSideStaticViewModel();
                 DisposeRightSideDynamicViewModel();
@@ -132,7 +139,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 DisposeRightSideDynamicViewModel();
                 if (RightSideInputViewModel == null)
                     CreateRightSideInputViewModel();
-                
+
                 Type preferredType = DataModelConditionPredicate.GetPreferredRightSideType();
                 if (preferredType != null && RightSideInputViewModel.TargetType != preferredType)
                     RightSideInputViewModel.UpdateTargetType(preferredType);
@@ -149,7 +156,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
                 return;
 
             DataModelConditionPredicate.UpdateLeftSide(LeftSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             SelectedOperator = DataModelConditionPredicate.Operator;
             Update();
@@ -158,7 +165,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyRightSideDynamic()
         {
             DataModelConditionPredicate.UpdateRightSideDynamic(RightSideSelectionViewModel.DataModelPath);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -166,7 +173,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyRightSideStatic(object value)
         {
             DataModelConditionPredicate.UpdateRightSideStatic(value);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -174,7 +181,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
         public void ApplyOperator()
         {
             DataModelConditionPredicate.UpdateOperator(SelectedOperator);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
 
             Update();
         }
@@ -194,6 +201,26 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
             SelectedOperator = dataModelConditionOperator;
             ApplyOperator();
+        }
+
+        public override void UpdateModules()
+        {
+            if (LeftSideSelectionViewModel != null)
+            {
+                LeftSideSelectionViewModel.PropertySelected -= LeftSideOnPropertySelected;
+                LeftSideSelectionViewModel.Dispose();
+                LeftSideSelectionViewModel = null;
+            }
+            DisposeRightSideStaticViewModel();
+            DisposeRightSideDynamicViewModel();
+
+            // If the modules changed the paths may no longer be valid if they targeted a module no longer available, in that case clear the path
+            if (DataModelConditionPredicate.LeftPath?.Target != null && !DataModelConditionPredicate.LeftPath.Target.IsExpansion && !_modules.Contains(DataModelConditionPredicate.LeftPath.Target.Module))
+                DataModelConditionPredicate.UpdateLeftSide(null);
+            if (DataModelConditionPredicate.RightPath?.Target != null && !DataModelConditionPredicate.RightPath.Target.IsExpansion && !_modules.Contains(DataModelConditionPredicate.RightPath.Target.Module))
+                DataModelConditionPredicate.UpdateRightSideDynamic(null);
+
+            Initialize();
         }
 
         #region IDisposable
@@ -227,7 +254,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions.Abstract
 
         private void CreateRightSideSelectionViewModel()
         {
-            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            RightSideSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_modules);
             RightSideSelectionViewModel.ButtonBrush = (SolidColorBrush) Application.Current.FindResource("PrimaryHueMidBrush");
             RightSideSelectionViewModel.DisplaySwitchButton = true;
             RightSideSelectionViewModel.PropertySelected += RightSideOnPropertySelected;

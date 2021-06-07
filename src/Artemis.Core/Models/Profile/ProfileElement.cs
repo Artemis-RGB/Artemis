@@ -11,22 +11,21 @@ namespace Artemis.Core
     /// </summary>
     public abstract class ProfileElement : CorePropertyChanged, IDisposable
     {
-        private bool _suspended;
         private Guid _entityId;
         private string? _name;
         private int _order;
         private ProfileElement? _parent;
         private Profile _profile;
+        private bool _suspended;
 
         internal List<ProfileElement> ChildrenList;
-        internal bool Disposed;
 
         internal ProfileElement(Profile profile)
         {
             _profile = profile;
             ChildrenList = new List<ProfileElement>();
         }
-
+        
         /// <summary>
         ///     Gets the unique ID of this profile element
         /// </summary>
@@ -94,6 +93,11 @@ namespace Artemis.Core
             get => _suspended;
             set => SetAndNotify(ref _suspended, value);
         }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the profile element is disposed
+        /// </summary>
+        public bool Disposed { get; protected set; }
 
         /// <summary>
         ///     Updates the element

@@ -168,6 +168,8 @@ namespace Artemis.Core
         /// <inheritdoc />
         protected override void Dispose(bool disposing)
         {
+            Disable();
+
             Disposed = true;
 
             // Brush first in case it depends on any of the other disposables during it's own disposal

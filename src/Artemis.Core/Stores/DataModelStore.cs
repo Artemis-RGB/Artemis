@@ -17,7 +17,7 @@ namespace Artemis.Core
                 if (Registrations.Any(r => r.DataModel == dataModel))
                     throw new ArtemisCoreException($"Data model store already contains data model '{dataModel.DataModelDescription}'");
 
-                registration = new DataModelRegistration(dataModel, dataModel.Feature) {IsInStore = true};
+                registration = new DataModelRegistration(dataModel, dataModel.Module) {IsInStore = true};
                 Registrations.Add(registration);
             }
 

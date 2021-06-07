@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Artemis.Core.Modules;
+﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
@@ -10,122 +10,144 @@ namespace Artemis.Core.Services
     public interface IProfileService : IArtemisService
     {
         /// <summary>
-        ///     Creates a new profile for the given module and returns a descriptor pointing to it
+        /// Gets the JSON serializer settings used to create profile mementos
         /// </summary>
-        /// <param name="module">The profile module to create the profile for</param>
-        /// <param name="name">The name of the new profile</param>
-        /// <returns></returns>
-        ProfileDescriptor CreateProfileDescriptor(ProfileModule module, string name);
+        public static JsonSerializerSettings MementoSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All};
 
         /// <summary>
-        ///     Gets a descriptor for each profile stored for the given <see cref="ProfileModule" />
+        /// Gets the JSON serializer settings used to import/export profiles
         /// </summary>
-        /// <param name="module">The module to return profile descriptors for</param>
-        /// <returns></returns>
-        List<ProfileDescriptor> GetProfileDescriptors(ProfileModule module);
+        public static JsonSerializerSettings ExportSettings { get;  } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+
+        /// <summary>
+        ///     Gets a read only collection containing all the profile categories
+        /// </summary>
+        ReadOnlyCollection<ProfileCategory> ProfileCategories { get; }
+
+        /// <summary>
+        ///     Gets a read only collection containing all the profile configurations
+        /// </summary>
+        ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited
+        /// </summary>
+        bool RenderForEditor { get; set; }
+
+        /// <summary>
+        ///     Activates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to activate</param>
+        Profile ActivateProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Deactivates the profile of the given <see cref="ProfileConfiguration" /> with the currently active surface
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to activate</param>
+        void DeactivateProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Permanently deletes the profile of the given <see cref="ProfileConfiguration" />
+        /// </summary>
+        /// <param name="profileConfiguration">The profile configuration of the profile to delete</param>
+        void DeleteProfile(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Saves the provided <see cref="ProfileCategory" /> and it's <see cref="ProfileConfiguration" />s but not the
+        ///     <see cref="Profile" />s themselves
+        /// </summary>
+        /// <param name="profileCategory">The profile category to update</param>
+        void SaveProfileCategory(ProfileCategory profileCategory);
+
+        /// <summary>
+        ///     Creates a new profile category and saves it to persistent storage
+        /// </summary>
+        /// <param name="name">The name of the new profile category, must be unique</param>
+        /// <returns>The newly created profile category</returns>
+        ProfileCategory CreateProfileCategory(string name);
+
+        /// <summary>
+        ///     Permanently deletes the provided profile category
+        /// </summary>
+        void DeleteProfileCategory(ProfileCategory profileCategory);
+
+        /// <summary>
+        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="category">The profile category to add the profile to</param>
+        /// <param name="name">The name of the new profile configuration</param>
+        /// <param name="icon">The icon of the new profile configuration</param>
+        /// <returns>The newly created profile configuration</returns>
+        ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon);
+
+        /// <summary>
+        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
+        /// </summary>
+        /// <param name="profileConfiguration"></param>
+        void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Loads the icon of this profile configuration if needed and puts it into <c>ProfileConfiguration.Icon.FileIcon</c>
+        /// </summary>
+        void LoadProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
+
+        /// <summary>
+        ///     Saves the current icon of this profile
+        /// </summary>
+        void SaveProfileConfigurationIcon(ProfileConfiguration profileConfiguration);
 
         /// <summary>
         ///     Writes the profile to persistent storage
         /// </summary>
         /// <param name="profile"></param>
         /// <param name="includeChildren"></param>
-        void UpdateProfile(Profile profile, bool includeChildren);
+        void SaveProfile(Profile profile, bool includeChildren);
 
         /// <summary>
-        ///     Disposes and permanently deletes the provided profile
-        /// </summary>
-        /// <param name="profile">The profile to delete</param>
-        void DeleteProfile(Profile profile);
-
-        /// <summary>
-        ///     Permanently deletes the profile described by the provided profile descriptor
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor pointing to the profile to delete</param>
-        void DeleteProfile(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Activates the last profile of the given profile module
-        /// </summary>
-        /// <param name="profileModule"></param>
-        void ActivateLastProfile(ProfileModule profileModule);
-
-        /// <summary>
-        ///     Reloads the currently active profile on the provided profile module
-        /// </summary>
-        void ReloadProfile(ProfileModule module);
-
-        /// <summary>
-        ///     Asynchronously activates the last profile of the given profile module using a fade animation
-        /// </summary>
-        /// <param name="profileModule"></param>
-        /// <returns></returns>
-        Task ActivateLastProfileAnimated(ProfileModule profileModule);
-
-        /// <summary>
-        ///     Activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently active surface
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor describing the profile to activate</param>
-        Profile ActivateProfile(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Asynchronously activates the profile described in the given <see cref="ProfileDescriptor" /> with the currently
-        ///     active surface using a fade animation
-        /// </summary>
-        /// <param name="profileDescriptor">The descriptor describing the profile to activate</param>
-        Task<Profile> ActivateProfileAnimated(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     Clears the active profile on the given <see cref="ProfileModule" />
-        /// </summary>
-        /// <param name="module">The profile module to deactivate the active profile on</param>
-        void ClearActiveProfile(ProfileModule module);
-
-        /// <summary>
-        ///     Asynchronously clears the active profile on the given <see cref="ProfileModule" /> using a fade animation
-        /// </summary>
-        /// <param name="module">The profile module to deactivate the active profile on</param>
-        Task ClearActiveProfileAnimated(ProfileModule module);
-
-        /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="UpdateProfile" /> call.
+        ///     Attempts to restore the profile to the state it had before the last <see cref="SaveProfile" /> call.
         /// </summary>
         /// <param name="profile"></param>
-        bool UndoUpdateProfile(Profile profile);
+        bool UndoSaveProfile(Profile profile);
 
         /// <summary>
-        ///     Attempts to restore the profile to the state it had before the last <see cref="UndoUpdateProfile" /> call.
+        ///     Attempts to restore the profile to the state it had before the last <see cref="UndoSaveProfile" /> call.
         /// </summary>
         /// <param name="profile"></param>
-        bool RedoUpdateProfile(Profile profile);
+        bool RedoSaveProfile(Profile profile);
 
         /// <summary>
-        ///     Prepares the profile for rendering. You should not need to call this, it is exposed for some niche usage in the
-        ///     core
+        ///     Exports the profile described in the given <see cref="ProfileConfiguration" /> into an export model
         /// </summary>
-        /// <param name="profile"></param>
-        void InstantiateProfile(Profile profile);
+        /// <param name="profileConfiguration">The profile configuration of the profile to export</param>
+        /// <returns>The resulting export model</returns>
+        ProfileConfigurationExportModel ExportProfile(ProfileConfiguration profileConfiguration);
 
         /// <summary>
-        ///     [Placeholder] Exports the profile described in the given <see cref="ProfileDescriptor" /> in a JSON format
+        ///     Imports the provided base64 encoded GZIPed JSON as a profile configuration
         /// </summary>
-        /// <param name="profileDescriptor">The descriptor of the profile to export</param>
-        /// <returns>The resulting JSON</returns>
-        string ExportProfile(ProfileDescriptor profileDescriptor);
-
-        /// <summary>
-        ///     [Placeholder] Imports the provided base64 encoded GZIPed JSON as a profile for the given
-        ///     <see cref="ProfileModule" />
-        /// </summary>
-        /// <param name="json">The content of the profile as JSON</param>
-        /// <param name="profileModule">The module to import the profile in to</param>
+        /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile</param>
+        /// <param name="exportModel">The model containing the profile to import</param>
+        /// <param name="makeUnique">Whether or not to give the profile a new GUID, making it unique</param>
+        /// <param name="markAsFreshImport">Whether or not to mark the profile as a fresh import, causing it to be adapted until any changes are made to it</param>
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
-        /// <returns></returns>
-        ProfileDescriptor ImportProfile(string json, ProfileModule profileModule, string nameAffix = "imported");
+        /// <returns>The resulting profile configuration</returns>
+        ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique = true, bool markAsFreshImport = true, string? nameAffix = "imported");
 
         /// <summary>
         ///     Adapts a given profile to the currently active devices
         /// </summary>
         /// <param name="profile">The profile to adapt</param>
         void AdaptProfile(Profile profile);
+
+        /// <summary>
+        ///     Updates all currently active profiles
+        /// </summary>
+        void UpdateProfiles(double deltaTime);
+
+        /// <summary>
+        ///     Renders all currently active profiles
+        /// </summary>
+        /// <param name="canvas"></param>
+        void RenderProfiles(SKCanvas canvas);
     }
 }

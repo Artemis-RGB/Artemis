@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
@@ -34,7 +36,10 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         protected override void OnInitialActivate()
         {
             base.OnInitialActivate();
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, ConditionGroupType.General);
+            List<Module> modules = new();
+            if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
+                modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(DataBindingCondition.Condition, ConditionGroupType.General, modules);
             ActiveItem.IsRootGroup = true;
             
             ActiveItem.Update();
@@ -54,12 +59,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.Conditio
         private void ValueViewModelOnValueUpdated(object sender, DataModelInputStaticEventArgs e)
         {
             DataBindingCondition.Value = (TProperty) Convert.ChangeType(e.Value, typeof(TProperty));
-            _profileEditorService.UpdateSelectedProfileElement();
-        }
-
-        public void Evaluate()
-        {
-            ActiveItem?.Evaluate();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         public void AddCondition()

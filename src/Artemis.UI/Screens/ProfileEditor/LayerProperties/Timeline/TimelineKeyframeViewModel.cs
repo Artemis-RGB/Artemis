@@ -118,7 +118,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
             foreach (TimelineEasingViewModel propertyTrackEasingViewModel in EasingViewModels.Where(vm => vm != easingViewModel))
                 propertyTrackEasingViewModel.IsEasingModeSelected = false;
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         #endregion
@@ -174,7 +174,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline
         {
             LayerPropertyKeyframe.LayerProperty.RemoveKeyframe(LayerPropertyKeyframe);
             if (save)
-                _profileEditorService.UpdateSelectedProfileElement();
+                _profileEditorService.SaveSelectedProfileElement();
         }
 
         #endregion

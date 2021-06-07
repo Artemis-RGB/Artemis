@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using Artemis.Core.DataModelExpansions;
-using Artemis.Storage.Entities.Module;
-using SkiaSharp;
 
 namespace Artemis.Core.Modules
 {
     /// <summary>
-    ///     Allows you to add support for new games/applications while utilizing your own data model
+    ///     Allows you to add new data to the Artemis data model
     /// </summary>
     public abstract class Module<T> : Module where T : DataModel
     {
         /// <summary>
         ///     The data model driving this module
-        ///     <para>Note: This default data model is automatically registered upon plugin enable</para>
+        ///     <para>Note: This default data model is automatically registered and instantiated upon plugin enable</para>
         /// </summary>
         public T DataModel
         {
@@ -24,43 +25,61 @@ namespace Artemis.Core.Modules
         }
 
         /// <summary>
-        ///     Gets or sets whether this module must also expand the main data model
-        ///     <para>
-        ///         Note: If expanding the main data model is all you want your plugin to do, create a
-        ///         <see cref="DataModelExpansion{T}" /> plugin instead.
-        ///     </para>
+        ///     Hide the provided property using a lambda expression, e.g. HideProperty(dm => dm.TimeDataModel.CurrentTimeUTC)
         /// </summary>
-        public bool ExpandsDataModel
+        /// <param name="propertyLambda">A lambda expression pointing to the property to ignore</param>
+        public void HideProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
         {
-            get => InternalExpandsMainDataModel;
-            set => InternalExpandsMainDataModel = value;
+            PropertyInfo propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            if (!HiddenPropertiesList.Any(p => p.Equals(propertyInfo)))
+                HiddenPropertiesList.Add(propertyInfo);
         }
 
         /// <summary>
-        ///     Override to provide your own data model description. By default this returns a description matching your plugin
-        ///     name and description
+        ///     Stop hiding the provided property using a lambda expression, e.g. ShowProperty(dm =>
+        ///     dm.TimeDataModel.CurrentTimeUTC)
         /// </summary>
-        /// <returns></returns>
-        public virtual DataModelPropertyAttribute GetDataModelDescription()
+        /// <param name="propertyLambda">A lambda expression pointing to the property to stop ignoring</param>
+        public void ShowProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
         {
-            return new() {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+            PropertyInfo propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
+            HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
         }
 
         internal override void InternalEnable()
         {
             DataModel = Activator.CreateInstance<T>();
-            DataModel.Feature = this;
+            DataModel.Module = this;
             DataModel.DataModelDescription = GetDataModelDescription();
             base.InternalEnable();
+        }
+
+        internal override void InternalDisable()
+        {
+            Deactivate(true);
+            base.InternalDisable();
         }
     }
 
 
     /// <summary>
-    ///     Allows you to add support for new games/applications
+    ///     For internal use only, please use <see cref="Module{T}" />.
     /// </summary>
-    public abstract class Module : DataModelPluginFeature
+    public abstract class Module : PluginFeature
     {
+        private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
+        private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
+
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
+        /// </summary>
+        protected internal readonly List<PropertyInfo> HiddenPropertiesList = new();
+
+        /// <summary>
+        ///     Gets a read only collection of default profile paths
+        /// </summary>
+        public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths => _defaultProfilePaths.AsReadOnly();
+
         /// <summary>
         ///     The modules display name that's shown in the menu
         /// </summary>
@@ -107,35 +126,26 @@ namespace Artemis.Core.Modules
         public ActivationRequirementType ActivationRequirementMode { get; set; } = ActivationRequirementType.Any;
 
         /// <summary>
-        ///     Gets or sets the default priority category for this module, defaults to
-        ///     <see cref="ModulePriorityCategory.Normal" />
+        ///     Gets a boolean indicating whether this module is always available to profiles or only to profiles that specifically
+        ///     target this module.
+        ///     <para>
+        ///         Note: <see langword="true" /> if there are any <see cref="ActivationRequirements" />; otherwise
+        ///         <see langword="false" />
+        ///     </para>
         /// </summary>
-        public ModulePriorityCategory DefaultPriorityCategory { get; set; } = ModulePriorityCategory.Normal;
-
-        /// <summary>
-        ///     Gets the current priority category of this module
-        /// </summary>
-        public ModulePriorityCategory PriorityCategory { get; internal set; }
-
-        /// <summary>
-        ///     Gets the current priority of this module within its priority category
-        /// </summary>
-        public int Priority { get; internal set; }
-
-        /// <summary>
-        ///     A list of custom module tabs that show in the UI
-        /// </summary>
-        public IEnumerable<ModuleTab>? ModuleTabs { get; protected set; }
+        public bool IsAlwaysAvailable => ActivationRequirements.Count == 0;
 
         /// <summary>
         ///     Gets whether updating this module is currently allowed
         /// </summary>
         public bool IsUpdateAllowed => IsActivated && (UpdateDuringActivationOverride || !IsActivatedOverride);
 
-        internal DataModel? InternalDataModel { get; set; }
+        /// <summary>
+        ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
+        /// </summary>
+        public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
 
-        internal bool InternalExpandsMainDataModel { get; set; }
-        internal ModuleSettingsEntity? SettingsEntity { get; set; }
+        internal DataModel? InternalDataModel { get; set; }
 
         /// <summary>
         ///     Called each frame when the module should update
@@ -144,21 +154,15 @@ namespace Artemis.Core.Modules
         public abstract void Update(double deltaTime);
 
         /// <summary>
-        ///     Called each frame when the module should render
-        /// </summary>
-        /// <param name="deltaTime">Time since the last render</param>
-        /// <param name="canvas"></param>
-        /// <param name="canvasInfo"></param>
-        public abstract void Render(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo);
-
-        /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are met or during an override
         /// </summary>
         /// <param name="isOverride">
         ///     If true, the activation was due to an override. This usually means the module was activated
         ///     by the profile editor
         /// </param>
-        public abstract void ModuleActivated(bool isOverride);
+        public virtual void ModuleActivated(bool isOverride)
+        {
+        }
 
         /// <summary>
         ///     Called when the <see cref="ActivationRequirements" /> are no longer met or during an override
@@ -167,7 +171,9 @@ namespace Artemis.Core.Modules
         ///     If true, the deactivation was due to an override. This usually means the module was deactivated
         ///     by the profile editor
         /// </param>
-        public abstract void ModuleDeactivated(bool isOverride);
+        public virtual void ModuleDeactivated(bool isOverride)
+        {
+        }
 
         /// <summary>
         ///     Evaluates the activation requirements following the <see cref="ActivationRequirementMode" /> and returns the result
@@ -185,19 +191,56 @@ namespace Artemis.Core.Modules
             return false;
         }
 
+        /// <summary>
+        ///     Override to provide your own data model description. By default this returns a description matching your plugin
+        ///     name and description
+        /// </summary>
+        /// <returns></returns>
+        public virtual DataModelPropertyAttribute GetDataModelDescription()
+        {
+            return new() {Name = Plugin.Info.Name, Description = Plugin.Info.Description};
+        }
+
+        /// <summary>
+        ///     Adds a default profile by reading it from the file found at the provided path
+        /// </summary>
+        /// <param name="category">The category in which to place the default profile</param>
+        /// <param name="file">A path pointing towards a profile file. May be relative to the plugin directory.</param>
+        /// <returns>
+        ///     <see langword="true" /> if the default profile was added; <see langword="false" /> if it was not because it is
+        ///     already in the list.
+        /// </returns>
+        protected bool AddDefaultProfile(DefaultCategoryName category, string file)
+        {
+            // It can be null if the plugin has not loaded yet in which case Plugin.ResolveRelativePath fails
+            if (Plugin == null!)
+            {
+                if (_pendingDefaultProfilePaths.Contains((category, file)))
+                    return false;
+                _pendingDefaultProfilePaths.Add((category, file));
+                return true;
+            }
+
+            if (!Path.IsPathRooted(file))
+                file = Plugin.ResolveRelativePath(file);
+
+            // Ensure the file exists
+            if (!File.Exists(file))
+                throw new ArtemisPluginFeatureException(this, $"Could not find default profile at {file}.");
+
+            if (_defaultProfilePaths.Contains((category, file)))
+                return false;
+            _defaultProfilePaths.Add((category, file));
+
+            return true;
+        }
+
         internal virtual void InternalUpdate(double deltaTime)
         {
             StartUpdateMeasure();
             if (IsUpdateAllowed)
                 Update(deltaTime);
             StopUpdateMeasure();
-        }
-
-        internal virtual void InternalRender(double deltaTime, SKCanvas canvas, SKImageInfo canvasInfo)
-        {
-            StartRenderMeasure();
-            Render(deltaTime, canvas, canvasInfo);
-            StopRenderMeasure();
         }
 
         internal virtual void Activate(bool isOverride)
@@ -220,6 +263,20 @@ namespace Artemis.Core.Modules
             ModuleDeactivated(isOverride);
         }
 
+        #region Overrides of PluginFeature
+
+        /// <inheritdoc />
+        internal override void InternalEnable()
+        {
+            foreach ((DefaultCategoryName categoryName, var path) in _pendingDefaultProfilePaths)
+                AddDefaultProfile(categoryName, path);
+            _pendingDefaultProfilePaths.Clear();
+
+            base.InternalEnable();
+        }
+
+        #endregion
+
         internal virtual void Reactivate(bool isDeactivateOverride, bool isActivateOverride)
         {
             if (!IsActivated)
@@ -227,16 +284,6 @@ namespace Artemis.Core.Modules
 
             Deactivate(isDeactivateOverride);
             Activate(isActivateOverride);
-        }
-
-        internal void ApplyToEntity()
-        {
-            if (SettingsEntity == null)
-                SettingsEntity = new ModuleSettingsEntity();
-
-            SettingsEntity.ModuleId = Id;
-            SettingsEntity.PriorityCategory = (int) PriorityCategory;
-            SettingsEntity.Priority = Priority;
         }
     }
 
@@ -254,26 +301,5 @@ namespace Artemis.Core.Modules
         ///     All activation requirements must be met for the module to activate
         /// </summary>
         All
-    }
-
-    /// <summary>
-    ///     Describes the priority category of a module
-    /// </summary>
-    public enum ModulePriorityCategory
-    {
-        /// <summary>
-        ///     Indicates a normal render priority
-        /// </summary>
-        Normal,
-
-        /// <summary>
-        ///     Indicates that the module renders for a specific application/game, rendering on top of normal modules
-        /// </summary>
-        Application,
-
-        /// <summary>
-        ///     Indicates that the module renders an overlay, always rendering on top
-        /// </summary>
-        Overlay
     }
 }

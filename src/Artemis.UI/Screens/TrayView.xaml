@@ -26,11 +26,6 @@
                         <materialDesign:PackIcon Kind="Home" />
                     </MenuItem.Icon>
                 </MenuItem>
-                <MenuItem Header="News" Command="{s:Action TrayActivateSidebarItem}" CommandParameter="News">
-                    <MenuItem.Icon>
-                        <materialDesign:PackIcon Kind="Newspaper" />
-                    </MenuItem.Icon>
-                </MenuItem>
                 <MenuItem Header="Workshop" Command="{s:Action TrayActivateSidebarItem}" CommandParameter="Workshop">
                     <MenuItem.Icon>
                         <materialDesign:PackIcon Kind="TestTube" />

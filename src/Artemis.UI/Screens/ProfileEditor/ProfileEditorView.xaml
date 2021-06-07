@@ -21,30 +21,6 @@
                 <ResourceDictionary
                     Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.PopupBox.xaml" />
             </ResourceDictionary.MergedDictionaries>
-
-            <DataTemplate x:Key="SimpleTemplate">
-                <StackPanel d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}" Orientation="Horizontal">
-                    <TextBlock Text="{Binding Name}" />
-                </StackPanel>
-            </DataTemplate>
-            <DataTemplate x:Key="ExtendedTemplate">
-                <Grid d:DataContext="{d:DesignInstance {x:Type profile:ProfileDescriptor}}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
-                    <Button Grid.Column="1"
-                            Style="{StaticResource MaterialDesignIconForegroundButton}"
-                            Width="26"
-                            Height="26"
-                            VerticalAlignment="Top"
-                            Command="{s:Action DeleteProfile}"
-                            CommandParameter="{Binding}">
-                        <materialDesign:PackIcon Kind="Delete" Height="16" Width="16" HorizontalAlignment="Right" />
-                    </Button>
-                </Grid>
-            </DataTemplate>
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -53,7 +29,7 @@
         <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
     </UserControl.InputBindings>
 
-    <Grid Margin="16">
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <!-- Left side -->
             <ColumnDefinition Width="*" MinWidth="100" />
@@ -66,8 +42,6 @@
         <!-- Left side -->
         <Grid Grid.Row="0" Grid.Column="0">
             <Grid.RowDefinitions>
-                <!-- Introduction -->
-                <RowDefinition Height="35" />
                 <!-- Design area -->
                 <RowDefinition Height="*" MinHeight="200" />
                 <!-- Bottom panels resize -->
@@ -75,25 +49,17 @@
                 <!-- Bottom panels -->
                 <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="108" />
             </Grid.RowDefinitions>
-
-            <!-- Introduction -->
-            <StackPanel Grid.Row="0">
-                <TextBlock>
-                    <materialDesign:PackIcon Kind="AboutOutline" />  The profile defines what colors the LEDs will have. Multiple groups of LEDs are defined into layers. On these layers you can apply effects.
-                </TextBlock>
-                <Separator Style="{StaticResource MaterialDesignDarkSeparator}" Margin="0 -2.5 0 0" />
-            </StackPanel>
-
+            
             <!-- Design area -->
-            <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+            <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                 <ContentControl s:View.Model="{Binding ProfileViewModel, IsAsync=True}" />
             </materialDesign:Card>
 
             <!-- Bottom panels resize -->
-            <GridSplitter Grid.Row="2" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
             <!-- Bottom panels -->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="2">
                 <!-- Layer elements -->
                 <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                     <ContentControl s:View.Model="{Binding LayerPropertiesViewModel, IsAsync=True}" />
@@ -102,105 +68,29 @@
         </Grid>
 
         <!-- Side panels resize -->
-        <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 35 5 0" />
+        <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
 
         <!-- Side panels -->
         <Grid Grid.Row="0" Grid.Column="2">
             <Grid.RowDefinitions>
-                <!-- Profile selection -->
-                <RowDefinition Height="35" />
-                <!-- Profile elements -->
+               <!-- Profile elements -->
                 <RowDefinition Height="*" MinHeight="100" />
                 <!-- Conditions resize -->
                 <RowDefinition Height="Auto" />
                 <!-- Display conditions -->
                 <RowDefinition Height="{Binding DataModelConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
             </Grid.RowDefinitions>
-
-            <!-- Profile selection -->
-            <Grid Grid.Row="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <ComboBox Height="26"
-                          VerticalAlignment="Top"
-                          ItemsSource="{Binding Profiles}"
-                          SelectedItem="{Binding SelectedProfile}"
-                          ItemTemplateSelector="{dataTemplateSelectors:ComboBoxTemplateSelector
-                                         SelectedItemTemplate={StaticResource SimpleTemplate},
-                                         DropdownItemsTemplate={StaticResource ExtendedTemplate}}">
-                    <ComboBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel />
-                        </ItemsPanelTemplate>
-                    </ComboBox.ItemsPanel>
-                </ComboBox>
-                <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                        ToolTip="Add a new profile"
-                        Margin="5 0 0 0"
-                        Grid.Column="1"
-                        Width="26"
-                        Height="26"
-                        VerticalAlignment="Top"
-                        Command="{s:Action AddProfile}">
-                    <materialDesign:PackIcon Kind="Add" Height="20" Width="20" />
-                </Button>
-                <materialDesign:PopupBox Grid.Column="2" Margin="0 -10 0 0" PlacementMode="BottomAndAlignRightEdges">
-                    <StackPanel>
-                        <Button Command="{s:Action RenameActiveProfile}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="RenameBox" Margin="0 0 15 0" />
-                                <TextBlock>Rename profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action DuplicateActiveProfile}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="ContentDuplicate" Margin="0 0 15 0" />
-                                <TextBlock>Duplicate profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action DeleteActiveProfile}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Trash" Margin="0 0 15 0" />
-                                <TextBlock>Delete profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Separator />
-
-                        <Button Command="{s:Action AdaptActiveProfile}" ToolTip="Adapt the profile to the current surface">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="AutoFix" Margin="0 0 15 0" />
-                                <TextBlock>Adapt profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action ExportActiveProfile}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Upload" Margin="0 0 15 0" />
-                                <TextBlock>Export profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                        <Button Command="{s:Action ImportProfile}">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Download" Margin="0 0 15 0" />
-                                <TextBlock>Import profile</TextBlock>
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-                </materialDesign:PopupBox>
-            </Grid>
-
+            
             <!-- Profile elements -->
-            <materialDesign:Card Grid.Row="1" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+            <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                 <ContentControl s:View.Model="{Binding ProfileTreeViewModel, IsAsync=True}" Margin="0,-1,-0.2,1" />
             </materialDesign:Card>
 
             <!-- Conditions resize -->
-            <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
 
             <!-- Display conditions -->
-            <materialDesign:Card Grid.Row="3" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+            <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
                 <ContentControl s:View.Model="{Binding DisplayConditionsViewModel, IsAsync=True}" />
             </materialDesign:Card>
         </Grid>

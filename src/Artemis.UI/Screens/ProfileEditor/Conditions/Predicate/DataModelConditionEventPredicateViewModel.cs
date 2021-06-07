@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.UI.Extensions;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
@@ -16,11 +17,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private readonly IDataModelUIService _dataModelUIService;
 
         public DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate,
+            List<Module> modules,
             IProfileEditorService profileEditorService,
             IDataModelUIService dataModelUIService,
             IConditionOperatorService conditionOperatorService,
             ISettingsService settingsService)
-            : base(dataModelConditionEventPredicate, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
+            : base(dataModelConditionEventPredicate, modules, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
 

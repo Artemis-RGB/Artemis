@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using Artemis.Core;
+using Artemis.Core.Modules;
 using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Shared;
@@ -87,7 +88,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         private void Initialize()
         {
             DirectDataBinding.ModifiersUpdated += DirectDataBindingOnModifiersUpdated;
-            TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.GetCurrentModule());
+            TargetSelectionViewModel = _dataModelUIService.GetDynamicSelectionViewModel(_profileEditorService.SelectedProfileConfiguration.Module);
             TargetSelectionViewModel.PropertySelected += TargetSelectionViewModelOnPropertySelected;
             ModifierViewModels.CollectionChanged += ModifierViewModelsOnCollectionChanged;
             Update();
@@ -106,7 +107,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
 
             DirectDataBinding.ApplyOrder();
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         #region Target
@@ -116,7 +117,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
             DirectDataBinding.UpdateSource(e.DataModelPath);
             Update();
 
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         #endregion
@@ -126,7 +127,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDa
         public void AddModifier()
         {
             DirectDataBinding.AddModifier(ProfileRightSideType.Dynamic);
-            _profileEditorService.UpdateSelectedProfileElement();
+            _profileEditorService.SaveSelectedProfileElement();
         }
 
         private void UpdateModifierViewModels()

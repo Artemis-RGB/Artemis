@@ -15,29 +15,11 @@ namespace Artemis.Core.Services
     /// </summary>
     public class DataModelJsonPluginEndPoint<T> : PluginEndPoint where T : DataModel
     {
-        private readonly ProfileModule<T>? _profileModule;
-        private readonly Module<T>? _module;
-        private readonly DataModelExpansion<T>? _dataModelExpansion;
-
-        internal DataModelJsonPluginEndPoint(ProfileModule<T> profileModule, string name, PluginsModule pluginsModule) : base(profileModule, name, pluginsModule)
-        {
-            _profileModule = profileModule ?? throw new ArgumentNullException(nameof(profileModule));
-
-            ThrowOnFail = true;
-            Accepts = MimeType.Json;
-        }
+        private readonly Module<T> _module;
 
         internal DataModelJsonPluginEndPoint(Module<T> module, string name, PluginsModule pluginsModule) : base(module, name, pluginsModule)
         {
             _module = module ?? throw new ArgumentNullException(nameof(module));
-
-            ThrowOnFail = true;
-            Accepts = MimeType.Json;
-        }
-
-        internal DataModelJsonPluginEndPoint(DataModelExpansion<T> dataModelExpansion, string name, PluginsModule pluginsModule) : base(dataModelExpansion, name, pluginsModule)
-        {
-            _dataModelExpansion = dataModelExpansion ?? throw new ArgumentNullException(nameof(dataModelExpansion));
 
             ThrowOnFail = true;
             Accepts = MimeType.Json;
@@ -63,12 +45,7 @@ namespace Artemis.Core.Services
             using TextReader reader = context.OpenRequestText();
             try
             {
-                if (_profileModule != null)
-                    JsonConvert.PopulateObject(await reader.ReadToEndAsync(), _profileModule.DataModel);
-                else if (_module != null)
-                    JsonConvert.PopulateObject(await reader.ReadToEndAsync(), _module.DataModel);
-                else
-                    JsonConvert.PopulateObject(await reader.ReadToEndAsync(), _dataModelExpansion!.DataModel);
+                JsonConvert.PopulateObject(await reader.ReadToEndAsync(), _module.DataModel);
             }
             catch (JsonException)
             {

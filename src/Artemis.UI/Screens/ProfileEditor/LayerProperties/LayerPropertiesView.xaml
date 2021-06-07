@@ -18,7 +18,7 @@
     d:DataContext="{d:DesignInstance {x:Type layerProperties:LayerPropertiesViewModel}}"
     behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True">
     <UserControl.Resources>
-        <Converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <Converters:NullToBooleanConverter x:Key="NullToBooleanConverter" />
         <utilities:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
         <Style x:Key="SvStyle" TargetType="{x:Type ScrollViewer}">

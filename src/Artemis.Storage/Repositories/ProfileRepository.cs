@@ -36,15 +36,6 @@ namespace Artemis.Storage.Repositories
             return _repository.FirstOrDefault<ProfileEntity>(p => p.Id == id);
         }
 
-        public List<ProfileEntity> GetByModuleId(string moduleId)
-        {
-            return _repository.Query<ProfileEntity>()
-                .Include(p => p.Folders)
-                .Include(p => p.Layers)
-                .Where(s => s.ModuleId == moduleId)
-                .ToList();
-        }
-
         public void Save(ProfileEntity profileEntity)
         {
             _repository.Upsert(profileEntity);
