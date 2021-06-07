@@ -102,6 +102,26 @@ namespace Artemis.Core
                 foreach (LedId led in ledsToRemove)
                     device.RemoveLed(led);
             }
+
+            List<Led> deviceLeds = device.ToList();
+            foreach (Led led in deviceLeds)
+            {
+                float x = led.Location.X;
+                float y = led.Location.Y;
+
+                // Try to move the LED if it falls outside the boundaries of the layout
+                if (led.Location.X + led.Size.Width > device.Size.Width) 
+                    x -= led.Location.X + led.Size.Width - device.Size.Width;
+
+                if (led.Location.Y + led.Size.Height > device.Size.Height) 
+                    y -= led.Location.Y + led.Size.Height - device.Size.Height;
+
+                // If not possible because it's too large we'll have to drop it to avoid rendering issues
+                if (x < 0 || y < 0)
+                    device.RemoveLed(led.Id);
+                else
+                    led.Location = new Point(x, y);
+            }
         }
 
         internal void ApplyDevice(ArtemisDevice artemisDevice)

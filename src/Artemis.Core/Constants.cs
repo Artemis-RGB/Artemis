@@ -28,12 +28,7 @@ namespace Artemis.Core
         ///     The full path to the Artemis data folder
         /// </summary>
         public static readonly string DataFolder = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData) + "\\Artemis\\";
-
-        /// <summary>
-        ///     The connection string used to connect to the database
-        /// </summary>
-        public static readonly string ConnectionString = $"FileName={DataFolder}\\database.db";
-
+        
         /// <summary>
         ///     The plugin info used by core components of Artemis
         /// </summary>
