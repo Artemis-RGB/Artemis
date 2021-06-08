@@ -50,7 +50,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs
 
         private bool BeUniqueCategory(SidebarCategoryCreateViewModel viewModel, string categoryName)
         {
-            return _profileCategoryRepository.IsUnique(categoryName, null) == null;
+            return _profileCategoryRepository.IsUnique(categoryName.Trim(), null) == null;
         }
     }
 }
