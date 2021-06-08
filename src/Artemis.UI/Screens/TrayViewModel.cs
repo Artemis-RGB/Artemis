@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -129,8 +130,10 @@ namespace Artemis.UI.Screens
             _eventAggregator.Publish(new RequestSelectSidebarItemEvent(sidebarItem));
         }
 
-        public void TrayExit()
+        public async Task TrayExit()
         {
+            // Don't freeze the UI right after clicking
+            await Task.Delay(200);
             Core.Utilities.Shutdown();
         }
 

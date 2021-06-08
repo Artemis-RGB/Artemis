@@ -119,7 +119,7 @@
 
             <!-- Bottom buttons -->
             <Separator Grid.Row="4" Margin="8" />
-            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5 0 5 5">
+            <WrapPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Left" Margin="5 0 5 5">
                 <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
                         Width="44"
                         Height="44"
@@ -160,7 +160,7 @@
                         CommandParameter="https://wiki.artemis-rgb.com/en/donating">
                     <materialDesign:PackIcon Kind="Gift" Width="20" Height="20" />
                 </Button>
-            </StackPanel>
+            </WrapPanel>
         </Grid>
     </materialDesign:DialogHost>
 </UserControl>

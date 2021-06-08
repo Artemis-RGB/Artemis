@@ -23,58 +23,63 @@
                     KeyUp="{s:Action WindowKeyUp}"
                     MouseDown="{s:Action WindowMouseDown}"
                     MouseUp="{s:Action WindowMouseUp}"
-                    d:DesignHeight="640" d:DesignWidth="1200" 
+                    d:DesignHeight="640" d:DesignWidth="1200"
                     d:DataContext="{d:DesignInstance screens:RootViewModel}">
     <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="RootDialog" DialogTheme="Inherit" SnackbarMessageQueue="{Binding MainMessageQueue}">
-        <DockPanel>
-            <Border DockPanel.Dock="Left" DockPanel.ZIndex="2" ClipToBounds="True" Background="{DynamicResource MaterialDesignToolBarBackground}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <ContentControl Grid.Column="0" s:View.Model="{Binding SidebarViewModel}" Width="240" />
-                    <Rectangle Grid.Column="1" Fill="DarkGray" Width="1" Margin="0 0 -1 0">
-                        <Rectangle.Effect>
-                            <DropShadowEffect ShadowDepth="0" BlurRadius="10" Color="{StaticResource MaterialDesignShadow}" />
-                        </Rectangle.Effect>
-                    </Rectangle>
-                </Grid>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding SidebarWidth.Value, Mode=TwoWay}" MinWidth="175" MaxWidth="400" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" ClipToBounds="True" Background="{DynamicResource MaterialDesignToolBarBackground}">
+                <ContentControl s:View.Model="{Binding SidebarViewModel}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
             </Border>
 
-            <materialDesign:ColorZone Mode="PrimaryMid" DockPanel.Dock="Top" DockPanel.ZIndex="1" Height="42">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                    <TextBlock Grid.Column="0" 
-                               Text="{Binding SidebarViewModel.SelectedScreen.DisplayName}" 
-                               VerticalAlignment="Center" 
-                               FontSize="20" 
-                               Margin="15 0" />
-                    <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <TextBlock Text="{Binding FrameTime}" VerticalAlignment="Center" FontSize="14" Margin="10 0" ToolTip="The time the last frame took to render" />
+            <GridSplitter Grid.Column="0" Width="8" Margin="0 0 -4 0" Background="Transparent" />
 
-                        <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
-                        <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
-                                VerticalAlignment="Center"
-                                ToolTip="Open debugger"
-                                Command="{s:Action ShowDebugger}"
-                                materialDesign:RippleAssist.RippleOnTop="True">
-                            <materialDesign:PackIcon Kind="Matrix" />
-                        </Button>
-                    </StackPanel>
-                </Grid>
-            </materialDesign:ColorZone>
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <materialDesign:ColorZone Grid.Row="0" Mode="PrimaryMid" DockPanel.Dock="Top" DockPanel.ZIndex="1" Height="42">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Column="0"
+                                   Text="{Binding SidebarViewModel.SelectedScreen.DisplayName}"
+                                   VerticalAlignment="Center"
+                                   FontSize="20"
+                                   Margin="15 0" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <TextBlock Text="{Binding FrameTime}" VerticalAlignment="Center" FontSize="14" Margin="10 0" ToolTip="The time the last frame took to render" />
 
-            <Grid>
-                <ContentControl s:View.Model="{Binding SidebarViewModel.SelectedScreen}" />
-                <materialDesign:Snackbar x:Name="MainSnackbar"
+                            <!-- Bug: materialDesign:RippleAssist.RippleOnTop doesn't look as nice but otherwise it doesn't work at all, not sure why -->
+                            <Button Style="{StaticResource MaterialDesignIconForegroundButton}"
+                                    VerticalAlignment="Center"
+                                    ToolTip="Open debugger"
+                                    Command="{s:Action ShowDebugger}"
+                                    materialDesign:RippleAssist.RippleOnTop="True">
+                                <materialDesign:PackIcon Kind="Matrix" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </materialDesign:ColorZone>
+
+                <ContentControl Grid.Row="1"
+                                s:View.Model="{Binding SidebarViewModel.SelectedScreen}"
+                                VerticalContentAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch"
+                                IsTabStop="False" />
+                <materialDesign:Snackbar Grid.Row="0"
+                                         Grid.RowSpan="2"
+                                         x:Name="MainSnackbar"
                                          MessageQueue="{Binding MainMessageQueue}"
                                          materialDesign:SnackbarMessage.InlineActionButtonMaxHeight="80"
                                          materialDesign:SnackbarMessage.ContentMaxHeight="200" />
             </Grid>
-        </DockPanel>
+        </Grid>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>

@@ -53,7 +53,6 @@ namespace Artemis.UI.Shared
 
             // Run an update timer at 25 fps
             _timer = new Timer(40);
-            _timer.Elapsed += TimerOnTick;
 
             MouseLeftButtonUp += OnMouseLeftButtonUp;
             Loaded += OnLoaded;
@@ -158,7 +157,8 @@ namespace Artemis.UI.Shared
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing) _timer.Stop();
+            if (disposing) 
+                _timer.Dispose();
         }
 
 
@@ -191,6 +191,7 @@ namespace Artemis.UI.Shared
         private void OnUnloaded(object? sender, RoutedEventArgs e)
         {
             _timer.Stop();
+            _timer.Elapsed -= TimerOnTick;
 
             if (_oldDevice != null)
             {
@@ -222,6 +223,7 @@ namespace Artemis.UI.Shared
         private void OnLoaded(object? sender, RoutedEventArgs e)
         {
             _timer.Start();
+            _timer.Elapsed += TimerOnTick;
         }
 
         private void TimerOnTick(object? sender, EventArgs e)

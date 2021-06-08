@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.Services;
@@ -18,9 +19,9 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
     {
         private readonly IDialogService _dialogService;
         private readonly ILayerBrushService _layerBrushService;
-        private readonly IRgbService _rgbService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
+        private readonly IRgbService _rgbService;
         private ProfileElement _profileElement;
 
         protected TreeItemViewModel(ProfileElement profileElement,
@@ -243,6 +244,39 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
 
         public void SuspendedToggled()
         {
+            // If shift is held toggle focus state
+            if (Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift))
+            {
+                // Get all profile elements
+                List<ProfileElement> elements = ProfileElement.Profile.GetAllFolders().Cast<ProfileElement>().ToList();
+                elements.AddRange(ProfileElement.Profile.GetAllLayers().Cast<ProfileElement>().ToList());
+
+                // Separate out the targets of the focus state, the current profile element and all its parents
+                List<ProfileElement> targets = ProfileElement.GetAllFolders().Cast<ProfileElement>().ToList();
+                targets.AddRange(ProfileElement.GetAllLayers().Cast<ProfileElement>().ToList());
+                ProfileElement target = ProfileElement;
+                while (target != null)
+                {
+                    targets.Add(target);
+                    target = target.Parent;
+                }
+
+                // If any element is suspended, untoggle focus and unsuspend everything
+                if (elements.Except(targets).Any(e => e.Suspended))
+                {
+                    foreach (ProfileElement profileElement in elements)
+                        profileElement.Suspended = false;
+                }
+                // Otherwise suspend everything except the targets
+                else
+                {
+                    foreach (ProfileElement profileElement in elements.Except(targets))
+                        profileElement.Suspended = true;
+                    foreach (ProfileElement profileElement in targets)
+                        profileElement.Suspended = false;
+                }
+            }
+
             _profileEditorService.SaveSelectedProfileConfiguration();
         }
 

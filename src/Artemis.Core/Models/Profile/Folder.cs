@@ -202,13 +202,13 @@ namespace Artemis.Core
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                         baseLayerEffect.PreProcess(canvas, rendererBounds, layerPaint);
 
-                    canvas.SaveLayer(layerPaint);
-                    canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
-
                     // No point rendering if the alpha was set to zero by one of the effects
                     if (layerPaint.Color.Alpha == 0)
                         return;
 
+                    canvas.SaveLayer(layerPaint);
+                    canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
+                    
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
                     for (int index = Children.Count - 1; index > -1; index--)
                         Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));

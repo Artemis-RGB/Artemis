@@ -6,10 +6,8 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:converters="clr-namespace:Artemis.UI.Converters"
-             xmlns:dialogs="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              xmlns:profileEdit="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit"
-             xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
              xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="280"
@@ -17,9 +15,10 @@
              Width="800">
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <shared:StreamToBitmapImageConverter x:Key="StreamToBitmapImageConverter"/>
-        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
         <shared:BindingProxy x:Key="DataContextProxy" Data="{Binding}" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+        <shared:StreamToBitmapImageConverter x:Key="StreamToBitmapImageConverter" />
+        <shared:StreamToSvgImageConverter x:Key="StreamToSvgImageConverter" />
     </UserControl.Resources>
     <Grid Margin="16">
         <Grid.RowDefinitions>
@@ -112,9 +111,9 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <materialDesign:PackIcon Grid.Column="0" 
+                                                <materialDesign:PackIcon Grid.Column="0"
                                                                          Kind="{Binding DataContext.SelectedIcon.Icon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}"
-                                                                         Width="45" 
+                                                                         Width="45"
                                                                          Height="45"
                                                                          Margin="0 0 10 0"
                                                                          VerticalAlignment="Center" />
@@ -154,14 +153,14 @@
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
-                                                <Image Grid.Column="0" 
+                                                <Image Grid.Column="0"
                                                        Source="{Binding DataContext.SelectedImage, Converter={StaticResource StreamToBitmapImageConverter}, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
-                                                       RenderOptions.BitmapScalingMode="HighQuality"
                                                        Margin="0 0 10 0"
-                                                       Width="45" 
+                                                       Width="45"
                                                        Height="45"
-                                                       VerticalAlignment="Center" />
-                                                <Button Grid.Column="1" 
+                                                       VerticalAlignment="Center"
+                                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                                <Button Grid.Column="1"
                                                         Command="{s:Action SelectBitmapFile}"
                                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                                         ToolTip="Select an image">
@@ -185,13 +184,14 @@
                                                     <ColumnDefinition />
                                                 </Grid.ColumnDefinitions>
 
-                                                <svgc:SvgViewbox Grid.Column="0" 
-                                                                 StreamSource="{Binding DataContext.SelectedImage, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" 
-                                                                 Margin="0 0 10 0"
-                                                                 Width="45" 
-                                                                 Height="45"
-                                                                 VerticalAlignment="Center" />
-                                                <Button Grid.Column="1" 
+                                                <Image Grid.Column="0"
+                                                       Source="{Binding DataContext.SelectedImage, Converter={StaticResource StreamToSvgImageConverter}, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
+                                                       Margin="0 0 10 0"
+                                                       Width="45"
+                                                       Height="45"
+                                                       VerticalAlignment="Center"
+                                                       RenderOptions.BitmapScalingMode="HighQuality" />
+                                                <Button Grid.Column="1"
                                                         Command="{s:Action SelectSvgFile}"
                                                         Style="{StaticResource MaterialDesignRaisedButton}"
                                                         ToolTip="Select an image">
