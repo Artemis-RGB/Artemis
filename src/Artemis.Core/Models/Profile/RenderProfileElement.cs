@@ -125,6 +125,7 @@ namespace Artemis.Core
             bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
             if (DisplayCondition != null && DisplayCondition.ContainsEvents)
                 stickToMainSegment = false;
+
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }
 

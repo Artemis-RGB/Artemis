@@ -329,8 +329,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Reset()
         {
-            DisplayConditionMet = false;
-            Timeline.JumpToEnd();
+            UpdateDisplayCondition();
+
+            if (DisplayConditionMet)
+                Timeline.JumpToStart();
+            else
+                Timeline.JumpToEnd();
         }
 
         /// <inheritdoc />

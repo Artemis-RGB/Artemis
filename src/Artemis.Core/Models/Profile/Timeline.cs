@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -322,7 +323,7 @@ namespace Artemis.Core
 
                 IsOverridden = false;
                 _lastOverridePosition = Position;
-
+                
                 if (stickToMainSegment && Position > MainSegmentEndPosition)
                 {
                     // If the main segment has no length, simply stick to the start of the segment

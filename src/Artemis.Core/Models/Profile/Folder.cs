@@ -99,11 +99,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Reset()
         {
-            DisplayConditionMet = false;
-            Timeline.JumpToEnd();
+            UpdateDisplayCondition();
 
-            foreach (ProfileElement child in Children)
-                child.Reset();
+            if (DisplayConditionMet)
+                Timeline.JumpToStart();
+            else
+                Timeline.JumpToEnd();
         }
 
         /// <inheritdoc />
@@ -243,6 +244,7 @@ namespace Artemis.Core
         internal override void Load()
         {
             ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
+            Reset();
 
             // Load child folders
             foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
