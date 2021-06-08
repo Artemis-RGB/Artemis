@@ -60,7 +60,12 @@ namespace Artemis.Core
         {
             using HttpClient client = new();
             await using FileStream destinationStream = new(FileName, FileMode.OpenOrCreate);
-            string url = Url ?? await UrlFunction();
+            string? url = Url;
+            if (url is null)
+            {
+                Status = "Retrieving download URL";
+                url = await UrlFunction!();
+            }
 
             void ProgressOnProgressReported(object? sender, EventArgs e)
             {
