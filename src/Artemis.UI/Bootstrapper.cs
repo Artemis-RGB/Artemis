@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
+using Artemis.Storage;
 using Artemis.UI.Ninject;
 using Artemis.UI.Screens;
 using Artemis.UI.Services;
@@ -25,6 +27,13 @@ namespace Artemis.UI
     {
         private ApplicationStateManager _applicationStateManager;
         private ICoreService _core;
+
+        public Bootstrapper()
+        {
+            // This is done at this kind of odd place to ensure it happens before the database is in use
+            StorageManager.CreateBackup(Constants.DataFolder);
+        }
+
         public static List<string> StartupArguments { get; private set; }
 
         protected override void OnExit(ExitEventArgs e)

@@ -50,24 +50,7 @@ namespace Artemis.Core.Ninject
                     .Configure(c => c.When(HasAccessToProtectedService).InSingletonScope());
             });
 
-            Kernel.Bind<LiteRepository>().ToMethod(t =>
-            {
-                try
-                {
-                    return new LiteRepository(Constants.ConnectionString);
-                }
-                catch (LiteException e)
-                {
-                    // I don't like this way of error reporting, now I need to use reflection if I want a meaningful error code
-                    if (e.ErrorCode != LiteException.INVALID_DATABASE)
-                        throw new ArtemisCoreException($"LiteDB threw error code {e.ErrorCode}. See inner exception for more details", e);
-
-                    // If the DB is invalid it's probably LiteDB v4 (TODO: we'll have to do something better later)
-                    File.Delete($"{Constants.DataFolder}\\database.db");
-                    return new LiteRepository(Constants.ConnectionString);
-                }
-            }).InSingletonScope();
-
+            Kernel.Bind<LiteRepository>().ToMethod(_ => StorageManager.CreateRepository(Constants.DataFolder)).InSingletonScope();
             Kernel.Bind<StorageMigrationService>().ToSelf().InSingletonScope();
 
             // Bind all migrations as singletons

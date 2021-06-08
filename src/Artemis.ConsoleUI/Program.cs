@@ -4,6 +4,7 @@ using System.Threading;
 using Artemis.Core;
 using Artemis.Core.Ninject;
 using Artemis.Core.Services;
+using Artemis.Storage;
 using Ninject;
 
 namespace Artemis.UI.Console
@@ -28,6 +29,8 @@ namespace Artemis.UI.Console
 
         private static void Main(string[] args)
         {
+            StorageManager.CreateBackup(Constants.DataFolder);
+
             Utilities.PrepareFirstLaunch();
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
             StandardKernel kernel = new() {Settings = {InjectNonPublic = true}};
