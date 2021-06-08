@@ -120,6 +120,7 @@
 
                                                 <ComboBox Grid.Column="1"
                                                           materialDesign:HintAssist.Hint="Profile icon"
+                                                          IsEditable="True"
                                                           Style="{StaticResource MaterialDesignFilledComboBox}"
                                                           SelectedItem="{Binding DataContext.SelectedIcon, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}"
                                                           IsEnabled="{Binding DataContext.Initializing, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource InverseBooleanConverter}}"
