@@ -61,7 +61,7 @@ namespace Artemis.UI.Screens
             _frameTimeUpdateTimer = new Timer(500);
             _windowSize = _settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
 
-            SidebarWidth = _settingsService.GetSetting("UI.SidebarWidth", new GridLength(240, GridUnitType.Star));
+            SidebarWidth = _settingsService.GetSetting("UI.SidebarWidth", new GridLength(240));
             SidebarViewModel = sidebarViewModel;
             SidebarViewModel.ConductWith(this);
 
