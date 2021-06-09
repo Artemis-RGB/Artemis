@@ -41,6 +41,7 @@ namespace Artemis.Storage.Repositories
 
         public ProfileCategoryEntity IsUnique(string name, Guid? id)
         {
+            name = name.Trim();
             if (id == null)
                 return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Name == name);
             return _repository.FirstOrDefault<ProfileCategoryEntity>(p => p.Name == name && p.Id != id.Value);

@@ -172,6 +172,9 @@ namespace Artemis.Core
 
             Disposed = true;
 
+            LayerBrushStore.LayerBrushAdded -= LayerBrushStoreOnLayerBrushAdded;
+            LayerBrushStore.LayerBrushRemoved -= LayerBrushStoreOnLayerBrushRemoved;
+
             // Brush first in case it depends on any of the other disposables during it's own disposal
             _layerBrush?.Dispose();
             _general.Dispose();
@@ -326,8 +329,12 @@ namespace Artemis.Core
         /// <inheritdoc />
         public override void Reset()
         {
-            DisplayConditionMet = false;
-            Timeline.JumpToEnd();
+            UpdateDisplayCondition();
+
+            if (DisplayConditionMet)
+                Timeline.JumpToStart();
+            else
+                Timeline.JumpToEnd();
         }
 
         /// <inheritdoc />
@@ -355,8 +362,6 @@ namespace Artemis.Core
             if (Enabled)
                 return;
 
-            Debug.WriteLine($"Enabling {this}");
-
             LayerBrush?.InternalEnable();
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalEnable();
@@ -369,8 +374,6 @@ namespace Artemis.Core
         {
             if (!Enabled)
                 return;
-
-            Debug.WriteLine($"Disabling {this}");
 
             LayerBrush?.InternalDisable();
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)

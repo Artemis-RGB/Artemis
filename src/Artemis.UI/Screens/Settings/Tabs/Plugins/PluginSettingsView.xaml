@@ -42,7 +42,7 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <shared:ArtemisIcon Icon="{Binding Icon}"
+                <shared:ArtemisIcon Icon="{Binding Plugin.Info.ResolvedIcon}"
                                     Width="48"
                                     Height="48"
                                     Margin="0 5 0 0"

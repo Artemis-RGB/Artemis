@@ -529,7 +529,7 @@ namespace Artemis.Core.Services
 
             string targetDirectory = pluginInfo.PreferredPluginDirectory;
             if (Directory.Exists(Path.Combine(pluginDirectory.FullName, targetDirectory)))
-                throw new ArtemisPluginException($"A directory for this plugin already exists {Path.Combine(pluginDirectory.FullName, targetDirectory)}");
+                Directory.Delete(Path.Combine(pluginDirectory.FullName, targetDirectory), true);
 
             // Extract everything in the same archive directory to the unique plugin directory
             DirectoryInfo directoryInfo = new(Path.Combine(pluginDirectory.FullName, targetDirectory));

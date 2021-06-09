@@ -5,11 +5,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:propertyInput="clr-namespace:Artemis.UI.DefaultTypes.PropertyInput"
              mc:Ignorable="d"
              d:DesignHeight="450" d:DesignWidth="800"
-             d:DataContext="{d:DesignInstance local:SKSizePropertyInputViewModel}">
+             d:DataContext="{d:DesignInstance propertyInput:SKSizePropertyInputViewModel}">
     <StackPanel Orientation="Horizontal">
-        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputPrefix}" VerticalAlignment="Center" />
         <shared:DraggableFloat ToolTip="Height"
                                Value="{Binding Height}"
                                StepSize="{Binding LayerProperty.PropertyDescription.InputStepSize}"
@@ -17,7 +18,7 @@
                                Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
-                               IsEnabled="{Binding IsHeightEnabled}"/>
+                               IsEnabled="{Binding IsHeightEnabled}" />
         <TextBlock Margin="5 0" VerticalAlignment="Bottom">,</TextBlock>
         <shared:DraggableFloat ToolTip="Width"
                                Value="{Binding Width}"
@@ -26,7 +27,7 @@
                                Min="{Binding LayerProperty.PropertyDescription.MinInputValue}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
-                               IsEnabled="{Binding IsWidthEnabled}"/>
-        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" />
+                               IsEnabled="{Binding IsWidthEnabled}" />
+        <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" VerticalAlignment="Center" />
     </StackPanel>
 </UserControl>

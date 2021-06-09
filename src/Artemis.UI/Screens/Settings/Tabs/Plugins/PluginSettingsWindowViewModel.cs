@@ -8,10 +8,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
     {
         private readonly PluginConfigurationViewModel _configurationViewModel;
 
-        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel, object icon)
+        public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel)
         {
             _configurationViewModel = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
-            Icon = icon;
+            Icon = configurationViewModel.Plugin.Info.Icon;
         }
 
         public object Icon { get; }

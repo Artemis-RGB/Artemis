@@ -61,6 +61,7 @@ namespace Artemis.UI.Screens
             _frameTimeUpdateTimer = new Timer(500);
             _windowSize = _settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
 
+            SidebarWidth = _settingsService.GetSetting("UI.SidebarWidth", new GridLength(240));
             SidebarViewModel = sidebarViewModel;
             SidebarViewModel.ConductWith(this);
 
@@ -68,6 +69,7 @@ namespace Artemis.UI.Screens
             WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
         }
 
+        public PluginSetting<GridLength> SidebarWidth { get; }
         public SidebarViewModel SidebarViewModel { get; }
 
         public ISnackbarMessageQueue MainMessageQueue
@@ -75,7 +77,7 @@ namespace Artemis.UI.Screens
             get => _mainMessageQueue;
             set => SetAndNotify(ref _mainMessageQueue, value);
         }
-        
+
         public string WindowTitle
         {
             get => _windowTitle;
@@ -210,7 +212,7 @@ namespace Artemis.UI.Screens
             _frameTimeUpdateTimer.Stop();
 
             SidebarViewModel.SelectedScreenChanged -= SidebarViewModelOnSelectedScreenChanged;
-
+            SidebarWidth.Save();
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(_window);
             _windowSize.Save();

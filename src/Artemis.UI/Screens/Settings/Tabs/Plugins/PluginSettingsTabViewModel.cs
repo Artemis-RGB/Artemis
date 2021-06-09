@@ -55,6 +55,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 if (!Items.Contains(pluginSettingsViewModel))
                     Items.Add(pluginSettingsViewModel);
             }
+
             foreach (PluginSettingsViewModel pluginSettingsViewModel in Items.ToList())
             {
                 if (!instances.Contains(pluginSettingsViewModel))
@@ -76,21 +77,28 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             base.OnInitialActivate();
         }
 
-        public void ImportPlugin()
+        public async Task ImportPlugin()
         {
-            VistaOpenFileDialog dialog = new();
-            dialog.Filter = "ZIP files (*.zip)|*.zip";
-            dialog.Title = "Import Artemis plugin";
+            VistaOpenFileDialog dialog = new() {Filter = "ZIP files (*.zip)|*.zip", Title = "Import Artemis plugin"};
             bool? result = dialog.ShowDialog();
-            if (result == true)
+            if (result != true)
+                return;
+
+            // Take the actual import off of the UI thread
+            await Task.Run(() =>
             {
                 Plugin plugin = _pluginManagementService.ImportPlugin(dialog.FileName);
 
                 GetPluginInstances();
                 SearchPluginInput = plugin.Info.Name;
 
+                // Enable it via the VM to enable the prerequisite dialog
+                PluginSettingsViewModel pluginViewModel = Items.FirstOrDefault(i => i.Plugin == plugin);
+                if (pluginViewModel is {IsEnabled: false})
+                    pluginViewModel.IsEnabled = true;
+
                 _messageService.ShowMessage($"Imported plugin: {plugin.Info.Name}");
-            }
+            });
         }
 
         public void GetPluginInstances()

@@ -45,8 +45,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             _dialogService = dialogService;
             _pluginManagementService = pluginManagementService;
             _messageService = messageService;
-
-            Icon = PluginUtilities.GetPluginIcon(Plugin, Plugin.Info.Icon);
         }
 
         public Plugin Plugin
@@ -60,8 +58,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             get => _enabling;
             set => SetAndNotify(ref _enabling, value);
         }
-
-        public object Icon { get; set; }
+        
         public string Type => Plugin.GetType().BaseType?.Name ?? Plugin.GetType().Name;
         public bool CanOpenSettings => IsEnabled && Plugin.ConfigurationDialog != null;
 
@@ -102,7 +99,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             try
             {
                 PluginConfigurationViewModel viewModel = (PluginConfigurationViewModel) Plugin.Kernel.Get(configurationViewModel.Type);
-                _windowManager.ShowWindow(new PluginSettingsWindowViewModel(viewModel, Icon));
+                _windowManager.ShowWindow(new PluginSettingsWindowViewModel(viewModel));
             }
             catch (Exception e)
             {

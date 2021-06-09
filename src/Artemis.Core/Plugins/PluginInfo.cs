@@ -152,6 +152,19 @@ namespace Artemis.Core
             internal set => SetAndNotify(ref _plugin, value);
         }
 
+        /// <summary>
+        ///     Gets a string representing either a full path pointing to an svg or the markdown icon
+        /// </summary>
+        public string? ResolvedIcon
+        {
+            get
+            {
+                if (Icon == null)
+                    return null;
+                return Icon.EndsWith(".svg") ? Plugin.ResolveRelativePath(Icon) : Icon;
+            }
+        }
+
         internal string PreferredPluginDirectory => $"{Main.Split(".dll")[0].Replace("/", "").Replace("\\", "")}-{Guid.ToString().Substring(0, 8)}";
 
         /// <inheritdoc />

@@ -9,11 +9,8 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
         public ProfileModuleViewModel(Module module)
         {
             Module = module;
-            Name = module.DisplayName;
-            if (module.DisplayIcon != null)
-                Icon = module.DisplayIcon.EndsWith(".svg") ? module.Plugin.ResolveRelativePath(module.DisplayIcon) : module.DisplayIcon;
-            else
-                Icon = PackIconKind.QuestionMark.ToString();
+            Name = module.Info.Name;
+            Icon = module.Info.ResolvedIcon ?? PackIconKind.QuestionMark.ToString();
 
             Description = module.Info.Description;
         }
