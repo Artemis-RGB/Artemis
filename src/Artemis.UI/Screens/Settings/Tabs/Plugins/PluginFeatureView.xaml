@@ -29,8 +29,9 @@
 
         <!-- Icon column -->
         <shared:ArtemisIcon Grid.Column="0"
-                            Icon="{Binding FeatureInfo.Icon}"
+                            Icon="{Binding FeatureInfo.ResolvedIcon}"
                             Width="20"
+                            Height="20"
                             VerticalAlignment="Center"
                             HorizontalAlignment="Center"
                             Visibility="{Binding LoadException, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverted, FallbackValue=Collapsed}" />

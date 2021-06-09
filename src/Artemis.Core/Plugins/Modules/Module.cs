@@ -61,7 +61,6 @@ namespace Artemis.Core.Modules
         }
     }
 
-
     /// <summary>
     ///     For internal use only, please use <see cref="Module{T}" />.
     /// </summary>
@@ -79,20 +78,15 @@ namespace Artemis.Core.Modules
         ///     Gets a read only collection of default profile paths
         /// </summary>
         public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths => _defaultProfilePaths.AsReadOnly();
-
+        
         /// <summary>
-        ///     The modules display name that's shown in the menu
-        /// </summary>
-        public string? DisplayName { get; protected set; }
-
-        /// <summary>
-        ///     The modules display icon that's shown in the UI accepts:
+        ///     A list of activation requirements
         ///     <para>
-        ///         Either set to the name of a Material Icon see (<see href="https://materialdesignicons.com" /> for available
-        ///         icons) or set to a path relative to the plugin folder pointing to a .svg file
+        ///         If this list is not <see langword="null" /> and not empty <see cref="IsAlwaysAvailable" /> becomes
+        ///         <see langword="false" /> and the data of this module is only available to profiles specifically targeting it.
         ///     </para>
         /// </summary>
-        public string? DisplayIcon { get; set; }
+        public abstract List<IModuleActivationRequirement>? ActivationRequirements { get; }
 
         /// <summary>
         ///     Gets whether this module is activated. A module can only be active while its <see cref="ActivationRequirements" />
@@ -115,12 +109,6 @@ namespace Artemis.Core.Modules
         public bool UpdateDuringActivationOverride { get; protected set; }
 
         /// <summary>
-        ///     A list of activation requirements
-        ///     <para>Note: if empty the module is always activated</para>
-        /// </summary>
-        public List<IModuleActivationRequirement> ActivationRequirements { get; } = new();
-
-        /// <summary>
         ///     Gets or sets the activation requirement mode, defaults to <see cref="ActivationRequirementType.Any" />
         /// </summary>
         public ActivationRequirementType ActivationRequirementMode { get; set; } = ActivationRequirementType.Any;
@@ -133,7 +121,7 @@ namespace Artemis.Core.Modules
         ///         <see langword="false" />
         ///     </para>
         /// </summary>
-        public bool IsAlwaysAvailable => ActivationRequirements.Count == 0;
+        public bool IsAlwaysAvailable => ActivationRequirements == null || ActivationRequirements.Count == 0;
 
         /// <summary>
         ///     Gets whether updating this module is currently allowed
@@ -181,12 +169,12 @@ namespace Artemis.Core.Modules
         /// <returns>The evaluated result of the activation requirements</returns>
         public bool EvaluateActivationRequirements()
         {
-            if (!ActivationRequirements.Any())
+            if (IsAlwaysAvailable)
                 return true;
             if (ActivationRequirementMode == ActivationRequirementType.All)
-                return ActivationRequirements.All(r => r.Evaluate());
+                return ActivationRequirements!.All(r => r.Evaluate());
             if (ActivationRequirementMode == ActivationRequirementType.Any)
-                return ActivationRequirements.Any(r => r.Evaluate());
+                return ActivationRequirements!.Any(r => r.Evaluate());
 
             return false;
         }

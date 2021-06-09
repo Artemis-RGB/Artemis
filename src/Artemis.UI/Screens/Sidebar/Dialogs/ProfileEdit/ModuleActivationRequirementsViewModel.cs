@@ -36,7 +36,7 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 : "any requirement is met";
 
             Items.Clear();
-            if (Module != null)
+            if (Module?.ActivationRequirements != null)
                 Items.AddRange(Module.ActivationRequirements.Select(_sidebarVmFactory.ModuleActivationRequirementViewModel));
         }
     }

@@ -1,4 +1,5 @@
-﻿using Artemis.Core.LayerEffects;
+﻿using System.Collections.Generic;
+using Artemis.Core.LayerEffects;
 using Artemis.Core.Modules;
 
 namespace Artemis.Core
@@ -13,6 +14,8 @@ namespace Artemis.Core
             Constants.CorePlugin.AddFeature(new PluginFeatureInfo(Constants.CorePlugin, null, this));
             IsEnabled = true;
         }
+
+        public override List<IModuleActivationRequirement>? ActivationRequirements => null;
 
         public override void Enable()
         {

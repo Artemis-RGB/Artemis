@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
@@ -130,6 +129,19 @@ namespace Artemis.Core
         {
             get => _instance;
             internal set => SetAndNotify(ref _instance, value);
+        }
+
+        /// <summary>
+        ///     Gets a string representing either a full path pointing to an svg or the markdown icon
+        /// </summary>
+        public string? ResolvedIcon
+        {
+            get
+            {
+                if (Icon == null)
+                    return null;
+                return Icon.EndsWith(".svg") ? Plugin.ResolveRelativePath(Icon) : Icon;
+            }
         }
 
         internal PluginFeatureEntity Entity { get; }

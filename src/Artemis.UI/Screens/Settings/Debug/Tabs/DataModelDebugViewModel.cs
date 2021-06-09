@@ -142,7 +142,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         private void PopulateModules()
         {
             Modules.Clear();
-            Modules.AddRange(_pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).OrderBy(m => m.DisplayName));
+            Modules.AddRange(_pluginManagementService.GetFeaturesOfType<Module>().Where(p => p.IsEnabled).OrderBy(m => m.Info.Name));
 
             if (SelectedModule == null)
                 _dataModelUIService.UpdateModules(MainDataModel);

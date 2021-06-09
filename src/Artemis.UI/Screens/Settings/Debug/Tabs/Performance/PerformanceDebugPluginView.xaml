@@ -17,7 +17,7 @@
                     <ColumnDefinition Width="40"/>
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <shared:ArtemisIcon Grid.Column="0" Icon="{Binding Icon}" Width="24" Height="24" />
+                <shared:ArtemisIcon Grid.Column="0" Icon="{Binding Plugin.Info.ResolvedIcon}" Width="24" Height="24" />
                 <TextBlock Grid.Column="1" VerticalAlignment="Center" Style="{StaticResource MaterialDesignSubtitle1TextBlock}" Text="{Binding Plugin.Info.Name}" />
             </Grid>
 
