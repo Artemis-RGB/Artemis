@@ -27,9 +27,28 @@ namespace Artemis.Core
         }
 
         /// <summary>
+        ///     Creates a new instance of a copy folder action
+        /// </summary>
+        /// <param name="name">The name of the action</param>
+        /// <param name="urlFunction">A function returning the URL to download</param>
+        /// <param name="fileName">The target file to save as (will be created if needed)</param>
+        public DownloadFileAction(string name, Func<Task<string>> urlFunction, string fileName) : base(name)
+        {
+            UrlFunction = urlFunction ?? throw new ArgumentNullException(nameof(urlFunction));
+            FileName = fileName ?? throw new ArgumentNullException(nameof(fileName));
+
+            ShowProgressBar = true;
+        }
+
+        /// <summary>
         ///     Gets the source URL to download
         /// </summary>
-        public string Url { get; }
+        public string? Url { get; }
+
+        /// <summary>
+        ///     Gets the function returning the URL to download
+        /// </summary>
+        public Func<Task<string>>? UrlFunction { get; }
 
         /// <summary>
         ///     Gets the target file to save as (will be created if needed)
@@ -41,19 +60,25 @@ namespace Artemis.Core
         {
             using HttpClient client = new();
             await using FileStream destinationStream = new(FileName, FileMode.OpenOrCreate);
+            string? url = Url;
+            if (url is null)
+            {
+                Status = "Retrieving download URL";
+                url = await UrlFunction!();
+            }
 
             void ProgressOnProgressReported(object? sender, EventArgs e)
             {
                 if (Progress.ProgressPerSecond != 0)
-                    Status = $"Downloading {Url} - {Progress.ProgressPerSecond.Bytes().Humanize("#.##")}/sec";
+                    Status = $"Downloading {url} - {Progress.ProgressPerSecond.Bytes().Humanize("#.##")}/sec";
                 else
-                    Status = $"Downloading {Url}";
+                    Status = $"Downloading {url}";
             }
 
             Progress.ProgressReported += ProgressOnProgressReported;
 
             // Get the http headers first to examine the content length
-            using HttpResponseMessage response = await client.GetAsync(Url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
+            using HttpResponseMessage response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead, cancellationToken);
             await using Stream download = await response.Content.ReadAsStreamAsync(cancellationToken);
             long? contentLength = response.Content.Headers.ContentLength;
 
