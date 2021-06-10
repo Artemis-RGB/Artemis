@@ -22,7 +22,7 @@ namespace Artemis.Core.Modules
         /// <param name="location">The location of where the process must be running from (optional)</param>
         public ProcessActivationRequirement(string? processName, string? location = null)
         {
-            if (string.IsNullOrWhiteSpace(ProcessName) && string.IsNullOrWhiteSpace(Location))
+            if (string.IsNullOrWhiteSpace(processName) && string.IsNullOrWhiteSpace(location))
                 throw new ArgumentNullException($"Atleast one {nameof(processName)} and {nameof(location)} must not be null");
 
             // Let's not make a habit out of this :P
