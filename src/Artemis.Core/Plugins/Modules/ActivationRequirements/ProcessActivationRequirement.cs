@@ -50,13 +50,13 @@ namespace Artemis.Core.Modules
             if (ProcessName == null && Location == null)
                 return false;
 
-            IEnumerable<Process> processes = _processMonitorService.GetRunningProcesses().Where(p => !p.HasExited);
+            IEnumerable<Process> processes = _processMonitorService.GetRunningProcesses();
             if (ProcessName != null)
                 processes = processes.Where(p => string.Equals(p.ProcessName, ProcessName, StringComparison.InvariantCultureIgnoreCase));
             if (Location != null)
                 processes = processes.Where(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.InvariantCultureIgnoreCase));
 
-            return processes.Any();
+            return processes.Where(p => !p.HasExited).Any();
         }
 
         /// <inheritdoc />
