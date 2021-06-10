@@ -69,7 +69,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void UpdateHeaderDevice()
         {
-            HeaderDevice = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard && d.Layout.IsValid);
+            HeaderDevice = _rgbService.Devices.FirstOrDefault(d => d.DeviceType == RGBDeviceType.Keyboard && d.Layout is {IsValid: true});
         }
 
         public ArtemisDevice HeaderDevice

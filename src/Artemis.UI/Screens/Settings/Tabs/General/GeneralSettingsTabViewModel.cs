@@ -158,20 +158,6 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
                 _settingsService.GetSetting("UI.CheckForUpdates", true).Value = value;
                 _settingsService.GetSetting("UI.CheckForUpdates", true).Save();
                 NotifyOfPropertyChange(nameof(CheckForUpdates));
-
-                if (!value)
-                    AutoInstallUpdates = false;
-            }
-        }
-
-        public bool AutoInstallUpdates
-        {
-            get => _settingsService.GetSetting("UI.AutoInstallUpdates", false).Value;
-            set
-            {
-                _settingsService.GetSetting("UI.AutoInstallUpdates", false).Value = value;
-                _settingsService.GetSetting("UI.AutoInstallUpdates", false).Save();
-                NotifyOfPropertyChange(nameof(AutoInstallUpdates));
             }
         }
 

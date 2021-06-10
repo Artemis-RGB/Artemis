@@ -91,14 +91,10 @@
                 <StackPanel>
                     <StackPanel.Resources>
                         <DataTemplate x:Key="CategoryDragTemplate" DataType="{x:Type sidebar:SidebarCategoryViewModel}">
-                            <DataTemplate.Resources>
-                                <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
-                            </DataTemplate.Resources>
-                            <Border Background="{DynamicResource MaterialDesignTextFieldBoxHoverBackground}" 
-                                    Padding="10" 
-                                    CornerRadius="4"
-                                    Visibility="{Binding Path=ProfileCategory, FallbackValue=null, Converter={StaticResource NullToVisibilityConverter}}">
-                                <TextBlock Text="{Binding ProfileCategory.Name,TargetNullValue='Oops, I am missing'}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
+                            <Border Background="{DynamicResource MaterialDesignTextFieldBoxHoverBackground}"
+                                    Padding="10"
+                                    CornerRadius="4">
+                                <TextBlock Text="{Binding ProfileCategory.Name}" VerticalAlignment="Center" Foreground="{DynamicResource MaterialDesignBody}" />
                             </Border>
                         </DataTemplate>
                     </StackPanel.Resources>

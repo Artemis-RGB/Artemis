@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
@@ -15,6 +16,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
     {
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
+        private bool _draggingTreeView;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
 
@@ -33,15 +35,24 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             {
                 if (_updatingTree) return;
                 if (!SetAndNotify(ref _selectedTreeItem, value)) return;
+                if (_draggingTreeView) return;
 
-                if (value != null && value.ProfileElement is RenderProfileElement renderElement)
-                    _profileEditorService.ChangeSelectedProfileElement(renderElement);
-                else
-                    _profileEditorService.ChangeSelectedProfileElement(null);
+                ApplySelectedTreeItem();
             }
         }
 
         public bool CanPasteElement => _profileEditorService.GetCanPasteProfileElement();
+
+        public void TreeViewPreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _draggingTreeView = true;
+        }
+
+        public void TreeViewPreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            _draggingTreeView = false;
+            ApplySelectedTreeItem();
+        }
 
         protected override void OnInitialActivate()
         {
@@ -55,6 +66,14 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             base.OnClose();
         }
 
+        private void ApplySelectedTreeItem()
+        {
+            if (_selectedTreeItem != null && _selectedTreeItem.ProfileElement is RenderProfileElement renderElement)
+                _profileEditorService.ChangeSelectedProfileElement(renderElement);
+            else
+                _profileEditorService.ChangeSelectedProfileElement(null);
+        }
+
         private void CreateRootFolderViewModel()
         {
             _updatingTree = true;
@@ -64,7 +83,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
                 ActivateItem(null);
                 return;
             }
-            
+
             ActiveItem = _profileTreeVmFactory.FolderViewModel(folder);
             _updatingTree = false;
         }

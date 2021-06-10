@@ -25,9 +25,11 @@ namespace Artemis.UI.Screens.Settings.Device
         private readonly ICoreService _coreService;
         private readonly IDeviceService _deviceService;
         private readonly IDialogService _dialogService;
+        private readonly IDeviceDebugVmFactory _factory;
         private readonly IRgbService _rgbService;
         private SnackbarMessageQueue _deviceMessageQueue;
         private BindableCollection<ArtemisLed> _selectedLeds;
+        private ArtemisDevice _device;
 
         public DeviceDialogViewModel(ArtemisDevice device,
             ICoreService coreService,
@@ -40,22 +42,46 @@ namespace Artemis.UI.Screens.Settings.Device
             _deviceService = deviceService;
             _rgbService = rgbService;
             _dialogService = dialogService;
+            _factory = factory;
 
-            Device = device;
             PanZoomViewModel = new PanZoomViewModel();
             SelectedLeds = new BindableCollection<ArtemisLed>();
 
-            Items.Add(factory.DevicePropertiesTabViewModel(device));
-            if (device.DeviceType == RGBDeviceType.Keyboard)
-                Items.Add(factory.InputMappingsTabViewModel(device));
-            Items.Add(factory.DeviceInfoTabViewModel(device));
-            Items.Add(factory.DeviceLedsTabViewModel(device));
-
-            ActiveItem = Items.First();
-            DisplayName = $"{device.RgbDevice.DeviceInfo.Model} | Artemis";
+            Initialize(device);
         }
 
-        public ArtemisDevice Device { get; }
+        private void Initialize(ArtemisDevice device)
+        {
+            if (SelectedLeds.Any())
+                SelectedLeds.Clear();
+
+            if (Device != null)
+                Device.DeviceUpdated -= DeviceOnDeviceUpdated;
+            Device = device;
+            Device.DeviceUpdated += DeviceOnDeviceUpdated;
+            
+            int activeTabIndex = 0;
+            if (Items.Any())
+            {
+                activeTabIndex = Items.IndexOf(ActiveItem);
+                Items.Clear();
+            }
+            Items.Add(_factory.DevicePropertiesTabViewModel(Device));
+            if (Device.DeviceType == RGBDeviceType.Keyboard)
+                Items.Add(_factory.InputMappingsTabViewModel(Device));
+            Items.Add(_factory.DeviceInfoTabViewModel(Device));
+            Items.Add(_factory.DeviceLedsTabViewModel(Device));
+
+            ActiveItem = Items[activeTabIndex];
+            DisplayName = $"{Device.RgbDevice.DeviceInfo.Model} | Artemis";
+        }
+
+        public ArtemisDevice Device
+        {
+            get => _device;
+            set => SetAndNotify(ref _device, value);
+        }
+
         public PanZoomViewModel PanZoomViewModel { get; }
 
         public SnackbarMessageQueue DeviceMessageQueue
@@ -84,14 +110,21 @@ namespace Artemis.UI.Screens.Settings.Device
         protected override void OnInitialActivate()
         {
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
+            _rgbService.DeviceAdded += RgbServiceOnDeviceAdded;
             DeviceMessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(5));
-            Device.DeviceUpdated += DeviceOnDeviceUpdated;
             base.OnInitialActivate();
+        }
+
+        private void RgbServiceOnDeviceAdded(object sender, DeviceEventArgs e)
+        {
+            if (e.Device != Device && e.Device.Identifier == Device.Identifier)
+                Execute.OnUIThread(() => Initialize(e.Device));
         }
 
         protected override void OnClose()
         {
             _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+            _rgbService.DeviceAdded -= RgbServiceOnDeviceAdded;
             Device.DeviceUpdated -= DeviceOnDeviceUpdated;
             base.OnClose();
         }
