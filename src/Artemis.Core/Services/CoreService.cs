@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Ninject;
 using Artemis.Storage;
 using HidSharp;

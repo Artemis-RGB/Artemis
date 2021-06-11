@@ -272,6 +272,7 @@ namespace Artemis.UI.Shared.Input
                 _updateTimer.Dispose();
                 _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
 
+                DataModelViewModel?.Dispose();
                 DataModelPath?.Dispose();
             }
         }

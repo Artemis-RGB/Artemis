@@ -5,6 +5,9 @@ using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
+    /// <summary>
+    ///     Represents a category containing <see cref="ProfileConfigurations" />
+    /// </summary>
     public class ProfileCategory : CorePropertyChanged, IStorageModel
     {
         private readonly List<ProfileConfiguration> _profileConfigurations = new();

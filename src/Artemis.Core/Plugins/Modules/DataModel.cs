@@ -6,15 +6,15 @@ using System.Linq;
 using System.Reflection;
 using Humanizer;
 using Newtonsoft.Json;
-using Module = Artemis.Core.Modules.Module;
 
-namespace Artemis.Core.DataModelExpansions
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Represents a data model that contains information on a game/application etc.
     /// </summary>
     public abstract class DataModel
     {
+        private readonly HashSet<string> _activePathsHashSet = new();
         private readonly List<DataModelPath> _activePaths = new();
         private readonly Dictionary<string, DynamicChild> _dynamicChildren = new();
 
@@ -65,36 +65,7 @@ namespace Artemis.Core.DataModelExpansions
         /// <returns></returns>
         public ReadOnlyCollection<PropertyInfo> GetHiddenProperties()
         {
-            if (Module is Module module)
-                return module.HiddenProperties;
-            
-            return new List<PropertyInfo>().AsReadOnly();
-        }
-
-        /// <summary>
-        ///     Occurs when a dynamic child has been added to this data model
-        /// </summary>
-        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildAdded;
-
-        /// <summary>
-        ///     Occurs when a dynamic child has been removed from this data model
-        /// </summary>
-        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildRemoved;
-
-        /// <summary>
-        ///     Invokes the <see cref="DynamicChildAdded" /> event
-        /// </summary>
-        protected virtual void OnDynamicDataModelAdded(DynamicDataModelChildEventArgs e)
-        {
-            DynamicChildAdded?.Invoke(this, e);
-        }
-
-        /// <summary>
-        ///     Invokes the <see cref="DynamicChildRemoved" /> event
-        /// </summary>
-        protected virtual void OnDynamicDataModelRemoved(DynamicDataModelChildEventArgs e)
-        {
-            DynamicChildRemoved?.Invoke(this, e);
+            return Module.HiddenProperties;
         }
 
         #region Dynamic children
@@ -285,15 +256,103 @@ namespace Artemis.Core.DataModelExpansions
 
         #region Paths
 
+        /// <summary>
+        ///     Determines whether the provided dot-separated path is in use
+        /// </summary>
+        /// <param name="path">The path to check per example: <c>MyDataModelChild.MyDataModelProperty</c></param>
+        /// <param name="includeChildren">
+        ///     If <see langword="true" /> any child of the given path will return true as well; if
+        ///     <see langword="false" /> only an exact path match returns <see langword="true" />.
+        /// </param>
+        internal bool IsPropertyInUse(string path, bool includeChildren)
+        {
+            path = path.ToUpperInvariant();
+            return includeChildren
+                ? _activePathsHashSet.Any(p => p.StartsWith(path, StringComparison.Ordinal))
+                : _activePathsHashSet.Contains(path);
+        }
+
         internal void AddDataModelPath(DataModelPath path)
         {
-            if (!_activePaths.Contains(path))
-                _activePaths.Add(path);
+            if (_activePaths.Contains(path))
+                return;
+
+            _activePaths.Add(path);
+
+            // Add to the hashset if this is the first path pointing 
+            string hashPath = path.Path.ToUpperInvariant();
+            if (!_activePathsHashSet.Contains(hashPath))
+                _activePathsHashSet.Add(hashPath);
+
+            OnActivePathAdded(new DataModelPathEventArgs(path));
         }
 
         internal void RemoveDataModelPath(DataModelPath path)
         {
-            _activePaths.Remove(path);
+            if (!_activePaths.Remove(path))
+                return;
+
+            // Remove from the hashset if this was the last path pointing there
+            if (_activePaths.All(p => p.Path != path.Path))
+                _activePathsHashSet.Remove(path.Path.ToUpperInvariant());
+
+            OnActivePathRemoved(new DataModelPathEventArgs(path));
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when a dynamic child has been added to this data model
+        /// </summary>
+        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildAdded;
+
+        /// <summary>
+        ///     Occurs when a dynamic child has been removed from this data model
+        /// </summary>
+        public event EventHandler<DynamicDataModelChildEventArgs>? DynamicChildRemoved;
+
+        /// <summary>
+        ///     Occurs when a dynamic child has been added to this data model
+        /// </summary>
+        public event EventHandler<DataModelPathEventArgs>? ActivePathAdded;
+
+        /// <summary>
+        ///     Occurs when a dynamic child has been removed from this data model
+        /// </summary>
+        public event EventHandler<DataModelPathEventArgs>? ActivePathRemoved;
+
+        /// <summary>
+        ///     Invokes the <see cref="DynamicChildAdded" /> event
+        /// </summary>
+        protected virtual void OnDynamicDataModelAdded(DynamicDataModelChildEventArgs e)
+        {
+            DynamicChildAdded?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="DynamicChildRemoved" /> event
+        /// </summary>
+        protected virtual void OnDynamicDataModelRemoved(DynamicDataModelChildEventArgs e)
+        {
+            DynamicChildRemoved?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ActivePathAdded" /> event
+        /// </summary>
+        protected virtual void OnActivePathAdded(DataModelPathEventArgs e)
+        {
+            ActivePathAdded?.Invoke(this, e);
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="ActivePathRemoved" /> event
+        /// </summary>
+        protected virtual void OnActivePathRemoved(DataModelPathEventArgs e)
+        {
+            ActivePathRemoved?.Invoke(this, e);
         }
 
         #endregion

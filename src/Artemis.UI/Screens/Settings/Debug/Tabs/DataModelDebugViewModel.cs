@@ -87,7 +87,7 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         protected override void OnClose()
         {
             _updateTimer.Dispose();
-            base.OnClose();
+           base.OnClose();
         }
 
         #endregion
@@ -109,6 +109,9 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs
         {
             _updateTimer.Stop();
             _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
+            MainDataModel?.Dispose();
+            MainDataModel = null;
+
             _pluginManagementService.PluginFeatureEnabled -= OnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled -= OnPluginFeatureToggled;
 

@@ -59,6 +59,8 @@ namespace Artemis.Core
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
 
+            DisplayCondition?.Dispose();
+
             base.Dispose(disposing);
         }
 

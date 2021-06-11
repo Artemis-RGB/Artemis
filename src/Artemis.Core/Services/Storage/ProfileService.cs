@@ -357,6 +357,8 @@ namespace Artemis.Core.Services
             ProfileEntity profileEntity = _profileRepository.Get(profileConfiguration.Entity.ProfileId);
             if (profileEntity != null)
                 _profileRepository.Remove(profileEntity);
+
+            profileConfiguration.Dispose();
         }
 
         public void SaveProfileCategory(ProfileCategory profileCategory)

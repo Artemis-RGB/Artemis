@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using EmbedIO;
 using Newtonsoft.Json;

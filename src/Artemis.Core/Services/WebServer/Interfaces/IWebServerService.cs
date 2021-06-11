@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Modules;
 using EmbedIO;
 using EmbedIO.WebApi;

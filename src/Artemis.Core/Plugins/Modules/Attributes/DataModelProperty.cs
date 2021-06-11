@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DataModelExpansions
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Represents an attribute that describes a data model property

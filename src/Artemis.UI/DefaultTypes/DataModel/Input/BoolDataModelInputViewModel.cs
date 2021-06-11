@@ -1,4 +1,4 @@
-﻿using Artemis.Core.DataModelExpansions;
+﻿using Artemis.Core.Modules;
 using Artemis.UI.Shared;
 
 namespace Artemis.UI.DefaultTypes.DataModel.Input

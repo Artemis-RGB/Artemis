@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Humanizer;
 
 namespace Artemis.Core
@@ -301,7 +301,7 @@ namespace Artemis.Core
         private void DynamicChildOnDynamicChildRemoved(object? sender, DynamicDataModelChildEventArgs e)
         {
             if (e.DynamicChild.BaseValue == _dynamicDataModel)
-                DataModelPath.Initialize();
+                DataModelPath.Invalidate();
         }
 
         #endregion

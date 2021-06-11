@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 
 namespace Artemis.Core
 {
