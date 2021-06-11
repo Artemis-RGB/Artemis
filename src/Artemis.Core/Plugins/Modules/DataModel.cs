@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using Artemis.Core.Modules;
 using Humanizer;
 using Newtonsoft.Json;
 using Module = Artemis.Core.Modules.Module;
@@ -16,6 +15,7 @@ namespace Artemis.Core.DataModelExpansions
     /// </summary>
     public abstract class DataModel
     {
+        private readonly List<DataModelPath> _activePaths = new();
         private readonly Dictionary<string, DynamicChild> _dynamicChildren = new();
 
         /// <summary>
@@ -53,6 +53,11 @@ namespace Artemis.Core.DataModelExpansions
         /// </summary>
         [DataModelIgnore]
         public ReadOnlyDictionary<string, DynamicChild> DynamicChildren => new(_dynamicChildren);
+
+        /// <summary>
+        ///     Gets a read-only list of <see cref="DataModelPath" />s targeting this data model
+        /// </summary>
+        public ReadOnlyCollection<DataModelPath> ActivePaths => _activePaths.AsReadOnly();
 
         /// <summary>
         ///     Returns a read-only collection of all properties in this datamodel that are to be ignored
@@ -274,6 +279,21 @@ namespace Artemis.Core.DataModelExpansions
             if (TryGetDynamicChild(key, out DynamicChild? dynamicChild) && dynamicChild.BaseValue != null)
                 return (T) dynamicChild.BaseValue;
             return default;
+        }
+
+        #endregion
+
+        #region Paths
+
+        internal void AddDataModelPath(DataModelPath path)
+        {
+            if (!_activePaths.Contains(path))
+                _activePaths.Add(path);
+        }
+
+        internal void RemoveDataModelPath(DataModelPath path)
+        {
+            _activePaths.Remove(path);
         }
 
         #endregion
