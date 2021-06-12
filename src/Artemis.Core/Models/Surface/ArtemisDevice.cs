@@ -549,11 +549,6 @@ namespace Artemis.Core
             else
                 LogicalLayout = DeviceEntity.LogicalLayout;
         }
-
-        public void ClearLayout()
-        {
-            // TODO
-        }
     }
 
     /// <summary>

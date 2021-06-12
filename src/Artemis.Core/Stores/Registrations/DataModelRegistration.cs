@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 
 namespace Artemis.Core
 {

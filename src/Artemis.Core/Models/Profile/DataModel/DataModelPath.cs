@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -175,6 +175,8 @@ namespace Artemis.Core
 
         internal void Invalidate()
         {
+            Target?.RemoveDataModelPath(this);
+
             foreach (DataModelPathSegment dataModelPathSegment in _segments)
                 dataModelPathSegment.Dispose();
             _segments.Clear();
@@ -187,10 +189,10 @@ namespace Artemis.Core
 
         internal void Initialize()
         {
-            Invalidate();
-
             if (Target == null)
                 return;
+
+            Target.AddDataModelPath(this);
 
             DataModelPathSegment startSegment = new(this, "target", "target");
             startSegment.Node = _segments.AddFirst(startSegment);
@@ -260,7 +262,7 @@ namespace Artemis.Core
             DataModelStore.DataModelAdded += DataModelStoreOnDataModelAdded;
             DataModelStore.DataModelRemoved += DataModelStoreOnDataModelRemoved;
         }
-
+        
         #region IDisposable
 
         /// <summary>
@@ -330,6 +332,7 @@ namespace Artemis.Core
             if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
                 return;
 
+            Invalidate();
             Target = e.Registration.DataModel;
             Initialize();
         }
@@ -339,8 +342,8 @@ namespace Artemis.Core
             if (e.Registration.DataModel.Module.Id != Entity.DataModelId)
                 return;
 
-            Target = null;
             Invalidate();
+            Target = null;
         }
 
         #endregion

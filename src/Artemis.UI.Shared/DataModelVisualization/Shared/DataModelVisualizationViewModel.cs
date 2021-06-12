@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
@@ -13,7 +14,7 @@ namespace Artemis.UI.Shared
     /// <summary>
     ///     Represents a base class for a view model that visualizes a part of the data model
     /// </summary>
-    public abstract class DataModelVisualizationViewModel : PropertyChangedBase
+    public abstract class DataModelVisualizationViewModel : PropertyChangedBase, IDisposable
     {
         private const int MaxDepth = 4;
         private BindableCollection<DataModelVisualizationViewModel> _children;
@@ -22,6 +23,7 @@ namespace Artemis.UI.Shared
         private bool _isVisualizationExpanded;
         private DataModelVisualizationViewModel? _parent;
         private DataModelPropertyAttribute? _propertyDescription;
+        private bool _populatedStaticChildren;
 
         internal DataModelVisualizationViewModel(DataModel? dataModel, DataModelVisualizationViewModel? parent, DataModelPath? dataModelPath)
         {
@@ -206,21 +208,26 @@ namespace Artemis.UI.Shared
             if (modelType == null)
                 throw new ArtemisSharedUIException("Failed to populate data model visualization properties, couldn't get a property type");
 
-            // Add missing static children
-            foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
+            // Add missing static children only once, they're static after all
+            if (!_populatedStaticChildren)
             {
-                string childPath = AppendToPath(propertyInfo.Name);
-                if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
-                    continue;
-                if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
-                    continue;
-                MethodInfo? getMethod = propertyInfo.GetGetMethod();
-                if (getMethod == null || getMethod.GetParameters().Any())
-                    continue;
+                foreach (PropertyInfo propertyInfo in modelType.GetProperties(BindingFlags.Public | BindingFlags.Instance).OrderBy(t => t.MetadataToken))
+                {
+                    string childPath = AppendToPath(propertyInfo.Name);
+                    if (Children.Any(c => c.Path != null && c.Path.Equals(childPath)))
+                        continue;
+                    if (propertyInfo.GetCustomAttribute<DataModelIgnoreAttribute>() != null)
+                        continue;
+                    MethodInfo? getMethod = propertyInfo.GetGetMethod();
+                    if (getMethod == null || getMethod.GetParameters().Any())
+                        continue;
 
-                DataModelVisualizationViewModel? child = CreateChild(dataModelUIService, childPath, GetChildDepth());
-                if (child != null)
-                    Children.Add(child);
+                    DataModelVisualizationViewModel? child = CreateChild(dataModelUIService, childPath, GetChildDepth());
+                    if (child != null)
+                        Children.Add(child);
+                }
+
+                _populatedStaticChildren = true;
             }
 
             // Remove static children that should be hidden
@@ -302,7 +309,14 @@ namespace Artemis.UI.Shared
 
         private string AppendToPath(string toAppend)
         {
-            return !string.IsNullOrEmpty(Path) ? $"{Path}.{toAppend}" : toAppend;
+            if (string.IsNullOrEmpty(Path))
+                return toAppend;
+
+            StringBuilder builder = new();
+            builder.Append(Path);
+            builder.Append(".");
+            builder.Append(toAppend);
+            return builder.ToString();
         }
 
         private void RequestUpdate()
@@ -324,6 +338,34 @@ namespace Artemis.UI.Shared
         protected virtual void OnUpdateRequested()
         {
             UpdateRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <summary>
+        ///     Releases the unmanaged resources used by the object and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">
+        ///     <see langword="true" /> to release both managed and unmanaged resources;
+        ///     <see langword="false" /> to release only unmanaged resources.
+        /// </param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                DataModelPath?.Dispose();
+                foreach (DataModelVisualizationViewModel dataModelVisualizationViewModel in Children) 
+                    dataModelVisualizationViewModel.Dispose(true);
+            }
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         #endregion

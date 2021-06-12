@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Artemis.Core.DataModelExpansions;
+using System.Text;
 
 namespace Artemis.Core.Modules
 {
@@ -25,7 +25,8 @@ namespace Artemis.Core.Modules
         }
 
         /// <summary>
-        ///     Hide the provided property using a lambda expression, e.g. HideProperty(dm => dm.TimeDataModel.CurrentTimeUTC)
+        ///     Hide the provided property using a lambda expression, e.g.
+        ///     <c>HideProperty(dm => dm.TimeDataModel.CurrentTimeUTC)</c>
         /// </summary>
         /// <param name="propertyLambda">A lambda expression pointing to the property to ignore</param>
         public void HideProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
@@ -36,14 +37,44 @@ namespace Artemis.Core.Modules
         }
 
         /// <summary>
-        ///     Stop hiding the provided property using a lambda expression, e.g. ShowProperty(dm =>
-        ///     dm.TimeDataModel.CurrentTimeUTC)
+        ///     Stop hiding the provided property using a lambda expression, e.g.
+        ///     <c>ShowProperty(dm => dm.TimeDataModel.CurrentTimeUTC)</c>
         /// </summary>
         /// <param name="propertyLambda">A lambda expression pointing to the property to stop ignoring</param>
         public void ShowProperty<TProperty>(Expression<Func<T, TProperty>> propertyLambda)
         {
             PropertyInfo propertyInfo = ReflectionUtilities.GetPropertyInfo(DataModel, propertyLambda);
             HiddenPropertiesList.RemoveAll(p => p.Equals(propertyInfo));
+        }
+
+        /// <summary>
+        ///     Determines whether the provided dot-separated path is actively being used by Artemis
+        ///     <para>Note: <see cref="IsPropertyInUse" /> is slightly faster but string-based.</para>
+        /// </summary>
+        /// <param name="propertyLambda">
+        ///     The path to check per example: <c>IsPropertyInUse(dm => dm.TimeDataModel.CurrentTimeUTC)</c>
+        /// </param>
+        /// <param name="includeChildren">
+        ///     If <see langword="true" /> any child of the given path will return true as well; if
+        ///     <see langword="false" /> only an exact path match returns <see langword="true" />.
+        /// </param>
+        public bool IsPropertyInUse<TProperty>(Expression<Func<T, TProperty>> propertyLambda, bool includeChildren)
+        {
+            string path = GetMemberPath((MemberExpression) propertyLambda.Body);
+            return IsPropertyInUse(path, includeChildren);
+        }
+
+        /// <summary>
+        ///     Determines whether the provided dot-separated path is actively being used by Artemis
+        /// </summary>
+        /// <param name="path">The path to check per example: <c>MyDataModelChild.MyDataModelProperty</c></param>
+        /// <param name="includeChildren">
+        ///     If <see langword="true" /> any child of the given path will return true as well; if
+        ///     <see langword="false" /> only an exact path match returns <see langword="true" />.
+        /// </param>
+        public bool IsPropertyInUse(string path, bool includeChildren)
+        {
+            return DataModel.IsPropertyInUse(path, includeChildren);
         }
 
         internal override void InternalEnable()
@@ -58,6 +89,20 @@ namespace Artemis.Core.Modules
         {
             Deactivate(true);
             base.InternalDisable();
+        }
+
+        private static string GetMemberPath(MemberExpression? me)
+        {
+            StringBuilder builder = new();
+            while (me != null)
+            {
+                builder.Insert(0, me.Member.Name);
+                me = me.Expression as MemberExpression;
+                if (me != null)
+                    builder.Insert(0, ".");
+            }
+
+            return builder.ToString();
         }
     }
 
@@ -78,7 +123,7 @@ namespace Artemis.Core.Modules
         ///     Gets a read only collection of default profile paths
         /// </summary>
         public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths => _defaultProfilePaths.AsReadOnly();
-        
+
         /// <summary>
         ///     A list of activation requirements
         ///     <para>

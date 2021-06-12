@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Artemis.Core.Services;
+using Ninject;
 
 namespace Artemis.Core.Modules
 {
@@ -11,6 +13,8 @@ namespace Artemis.Core.Modules
     /// </summary>
     public class ProcessActivationRequirement : IModuleActivationRequirement
     {
+        private readonly IProcessMonitorService _processMonitorService;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="ProcessActivationRequirement" /> class
         /// </summary>
@@ -18,6 +22,14 @@ namespace Artemis.Core.Modules
         /// <param name="location">The location of where the process must be running from (optional)</param>
         public ProcessActivationRequirement(string? processName, string? location = null)
         {
+            if (string.IsNullOrWhiteSpace(processName) && string.IsNullOrWhiteSpace(location))
+                throw new ArgumentNullException($"Atleast one {nameof(processName)} and {nameof(location)} must not be null");
+
+            // Let's not make a habit out of this :P
+            if (CoreService.Kernel == null)
+                throw new ArtemisCoreException("Cannot create a ProcessActivationRequirement before initializing the Core");
+            _processMonitorService = CoreService.Kernel.Get<IProcessMonitorService>();
+
             ProcessName = processName;
             Location = location;
         }
@@ -38,10 +50,13 @@ namespace Artemis.Core.Modules
             if (ProcessName == null && Location == null)
                 return false;
 
-            IEnumerable<Process> processes = ProcessName != null ? Process.GetProcessesByName(ProcessName).Where(p => !p.HasExited) : Process.GetProcesses().Where(p => !p.HasExited);
-            return Location != null
-                ? processes.Any(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.CurrentCultureIgnoreCase))
-                : processes.Any();
+            IEnumerable<Process> processes = _processMonitorService.GetRunningProcesses();
+            if (ProcessName != null)
+                processes = processes.Where(p => string.Equals(p.ProcessName, ProcessName, StringComparison.InvariantCultureIgnoreCase));
+            if (Location != null)
+                processes = processes.Where(p => string.Equals(Path.GetDirectoryName(p.GetProcessFilename()), Location, StringComparison.InvariantCultureIgnoreCase));
+
+            return processes.Any();
         }
 
         /// <inheritdoc />

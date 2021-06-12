@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Stylet;
 
 namespace Artemis.UI.Shared

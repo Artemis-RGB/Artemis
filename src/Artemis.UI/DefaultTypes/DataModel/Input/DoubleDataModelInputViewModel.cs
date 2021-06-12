@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Input;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.UI.Shared;
 
 namespace Artemis.UI.DefaultTypes.DataModel.Input

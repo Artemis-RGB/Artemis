@@ -184,6 +184,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
                 else
                     newSelection = ProfileElement.Parent;
             }
+            _profileEditorService.ChangeSelectedProfileElement(newSelection as RenderProfileElement);
 
             // Farewell, cruel world
             TreeItemViewModel parent = (TreeItemViewModel) Parent;
@@ -191,7 +192,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
             parent.RemoveExistingElement(this);
 
             _profileEditorService.SaveSelectedProfileConfiguration();
-            _profileEditorService.ChangeSelectedProfileElement(newSelection as RenderProfileElement);
         }
 
         public void DuplicateElement()

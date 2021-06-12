@@ -7,10 +7,8 @@ using System.Net.Http;
 using System.Reflection;
 using System.Security.Principal;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using Artemis.Core;
-using Artemis.UI.Screens;
 using Artemis.UI.Utilities;
 using Ninject;
 using Ookii.Dialogs.Wpf;
@@ -44,30 +42,82 @@ namespace Artemis.UI
             if (createdNew)
                 return false;
 
-            try
-            {
-                // Blocking is required here otherwise Artemis shuts down before the remote call gets a chance to finish
-                RemoteFocus().GetAwaiter().GetResult();
-            }
-            catch (Exception)
-            {
-                // Not much could go wrong here but this code runs so early it'll crash if something does go wrong
-                return true;
-            }
-
-            return true;
+            return RemoteFocus();
         }
 
-        private async Task RemoteFocus()
+        public void DisplayException(Exception e)
+        {
+            using TaskDialog dialog = new();
+            AssemblyInformationalVersionAttribute versionAttribute = typeof(ApplicationStateManager).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            dialog.WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
+            dialog.MainInstruction = "Unfortunately Artemis ran into an unhandled exception and cannot continue.";
+            dialog.Content = e.Message;
+            dialog.ExpandedInformation = e.StackTrace.Trim();
+
+            dialog.CollapsedControlText = "Show stack trace";
+            dialog.ExpandedControlText = "Hide stack trace";
+
+            dialog.Footer = "If this keeps happening check out the <a href=\"https://wiki.artemis-rgb.com\">wiki</a> or hit us up on <a href=\"https://discord.gg/S3MVaC9\">Discord</a>.";
+            dialog.FooterIcon = TaskDialogIcon.Error;
+            dialog.EnableHyperlinks = true;
+            dialog.HyperlinkClicked += OpenHyperlink;
+
+            TaskDialogButton copyButton = new("Copy stack trace");
+            TaskDialogButton closeButton = new("Close") {Default = true};
+            dialog.Buttons.Add(copyButton);
+            dialog.Buttons.Add(closeButton);
+            dialog.ButtonClicked += (_, args) =>
+            {
+                if (args.Item == copyButton)
+                {
+                    Clipboard.SetText(e.ToString());
+                    args.Cancel = true;
+                }
+            };
+
+            dialog.ShowDialog(Application.Current.MainWindow);
+        }
+
+        private bool RemoteFocus()
         {
             // At this point we cannot read the database yet to retrieve the web server port.
             // Instead use the method external applications should use as well.
             if (!File.Exists(Path.Combine(Constants.DataFolder, "webserver.txt")))
-                return;
+            {
+                KillOtherInstances();
+                return false;
+            }
 
-            string url = await File.ReadAllTextAsync(Path.Combine(Constants.DataFolder, "webserver.txt"));
+            string url = File.ReadAllText(Path.Combine(Constants.DataFolder, "webserver.txt"));
             using HttpClient client = new();
-            await client.PostAsync(url + "remote/bring-to-foreground", null!);
+            try
+            {
+                HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground"));
+                httpResponseMessage.EnsureSuccessStatusCode();
+                return true;
+            }
+            catch (Exception)
+            {
+                KillOtherInstances();
+                return false;
+            }
+        }
+
+        private void KillOtherInstances()
+        {
+            // Kill everything else heh
+            List<Process> processes = Process.GetProcessesByName("Artemis.UI").Where(p => p.Id != Process.GetCurrentProcess().Id).ToList();
+            foreach (Process process in processes)
+            {
+                try
+                {
+                    process.Kill(true);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            }
         }
 
         private void UtilitiesOnRestartRequested(object sender, RestartEventArgs e)
@@ -132,39 +182,6 @@ namespace Artemis.UI
             }
 
             Execute.OnUIThread(() => Application.Current.Shutdown());
-        }
-
-        public void DisplayException(Exception e)
-        {
-            using TaskDialog dialog = new();
-            AssemblyInformationalVersionAttribute versionAttribute = typeof(ApplicationStateManager).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
-            dialog.WindowTitle = $"Artemis {versionAttribute?.InformationalVersion} build {Constants.BuildInfo.BuildNumberDisplay}";
-            dialog.MainInstruction = "Unfortunately Artemis ran into an unhandled exception and cannot continue.";
-            dialog.Content = e.Message;
-            dialog.ExpandedInformation = e.StackTrace.Trim();
-
-            dialog.CollapsedControlText = "Show stack trace";
-            dialog.ExpandedControlText = "Hide stack trace";
-
-            dialog.Footer = "If this keeps happening check out the <a href=\"https://wiki.artemis-rgb.com\">wiki</a> or hit us up on <a href=\"https://discord.gg/S3MVaC9\">Discord</a>.";
-            dialog.FooterIcon = TaskDialogIcon.Error;
-            dialog.EnableHyperlinks = true;
-            dialog.HyperlinkClicked += OpenHyperlink;
-
-            TaskDialogButton copyButton = new("Copy stack trace");
-            TaskDialogButton closeButton = new("Close") {Default = true};
-            dialog.Buttons.Add(copyButton);
-            dialog.Buttons.Add(closeButton);
-            dialog.ButtonClicked += (_, args) =>
-            {
-                if (args.Item == copyButton)
-                {
-                    Clipboard.SetText(e.ToString());
-                    args.Cancel = true;
-                }
-            };
-
-            dialog.ShowDialog(Application.Current.MainWindow);
         }
 
         private void OpenHyperlink(object sender, HyperlinkClickedEventArgs e)

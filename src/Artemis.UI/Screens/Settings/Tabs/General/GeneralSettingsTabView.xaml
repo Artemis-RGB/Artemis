@@ -227,27 +227,6 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Automatically install updates</TextBlock>
-                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                If enabled updates are installed automatically without asking first.
-                            </TextBlock>
-                        </StackPanel>
-                        <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">
-                            <ToggleButton Style="{StaticResource MaterialDesignSwitchToggleButton}" IsChecked="{Binding AutoInstallUpdates}" IsEnabled="{Binding CheckForUpdates}" />
-                        </StackPanel>
-                    </Grid>
-                    <Separator Style="{StaticResource MaterialDesignSeparator}" Margin="-15 5" />
-
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" VerticalAlignment="Center">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Update</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}">

@@ -1,13 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
 {
-    public class ProfileConfiguration : CorePropertyChanged, IStorageModel
+    /// <summary>
+    ///     Represents the configuration of a profile, contained in a <see cref="ProfileCategory" />
+    /// </summary>
+    public class ProfileConfiguration : CorePropertyChanged, IStorageModel, IDisposable
     {
         private ProfileCategory _category;
+        private bool _disposed;
 
         private bool _isMissingModule;
         private bool _isSuspended;
@@ -140,11 +145,17 @@ namespace Artemis.Core
         /// </summary>
         public void Update()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ProfileConfiguration");
+
             ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
         }
 
         public bool ShouldBeActive(bool includeActivationCondition)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ProfileConfiguration");
+
             if (Category.IsSuspended || IsSuspended || IsMissingModule)
                 return false;
 
@@ -161,15 +172,32 @@ namespace Artemis.Core
 
         internal void LoadModules(List<Module> enabledModules)
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ProfileConfiguration");
+
             Module = enabledModules.FirstOrDefault(m => m.Id == Entity.ModuleId);
             IsMissingModule = Module == null && Entity.ModuleId != null;
         }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            _disposed = true;
+            ActivationCondition?.Dispose();
+        }
+
+        #endregion
 
         #region Implementation of IStorageModel
 
         /// <inheritdoc />
         public void Load()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ProfileConfiguration");
+
             Name = Entity.Name;
             IsSuspended = Entity.IsSuspended;
             ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
@@ -185,6 +213,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Save()
         {
+            if (_disposed)
+                throw new ObjectDisposedException("ProfileConfiguration");
+
             Entity.Name = Name;
             Entity.IsSuspended = IsSuspended;
             Entity.ActivationBehaviour = (int) ActivationBehaviour;
@@ -199,9 +230,7 @@ namespace Artemis.Core
                 Entity.ActivationCondition = ActivationCondition.Entity;
             }
             else
-            {
                 Entity.ActivationCondition = null;
-            }
 
             if (!IsMissingModule)
                 Entity.ModuleId = Module?.Id;

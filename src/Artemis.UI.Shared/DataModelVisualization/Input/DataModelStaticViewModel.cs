@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
 using MaterialDesignColors.ColorManipulation;
 using Stylet;

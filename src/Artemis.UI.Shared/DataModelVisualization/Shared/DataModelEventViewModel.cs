@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
 
 namespace Artemis.UI.Shared

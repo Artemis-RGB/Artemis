@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Artemis.Core.DataModelExpansions;
 using Artemis.Core.Ninject;
 using Artemis.Storage;
 using HidSharp;
@@ -22,7 +21,7 @@ namespace Artemis.Core.Services
     /// </summary>
     internal class CoreService : ICoreService
     {
-        internal static IKernel Kernel = null!;
+        internal static IKernel? Kernel;
 
         private readonly Stopwatch _frameStopWatch;
         private readonly ILogger _logger;
@@ -201,7 +200,7 @@ namespace Artemis.Core.Services
             Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
             _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
 
-            DeserializationLogger.Initialize(Kernel);
+            DeserializationLogger.Initialize(Kernel!);
 
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();

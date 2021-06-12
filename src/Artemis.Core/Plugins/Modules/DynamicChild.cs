@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Artemis.Core.DataModelExpansions
+namespace Artemis.Core.Modules
 {
     /// <summary>
     ///     Represents a dynamic child value with its property attribute

@@ -202,12 +202,12 @@
                 The device layout is used to determine the position of LEDs and to create the visual representation of the device you see on the left side of this window.
             </TextBlock>
 
-            <CheckBox Margin="0 0 0 5" Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding UseDefaultLayout}">
+            <CheckBox Margin="0 0 0 5" Style="{StaticResource MaterialDesignCheckBox}" IsChecked="{Binding Device.DisableDefaultLayout, Delay=300}">
                 <CheckBox.Content>
                     <TextBlock Margin="0 -5 0 0">
-                        Use default layout if needed
+                        Don't load default layout
                         <materialDesign:PackIcon Kind="HelpCircle"
-                                                 ToolTip="If there is no built-in layout and no custom layout, with this enabled Artemis will fall back to the default layout of this device type." />
+                                                 ToolTip="With this enabled Artemis will not load a layout for this device unless you specifically provide one." />
                     </TextBlock>
                 </CheckBox.Content>
             </CheckBox>

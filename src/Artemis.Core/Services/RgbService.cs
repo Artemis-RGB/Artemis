@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Services.Models;
 using Artemis.Core.SkiaSharp;
@@ -345,6 +346,13 @@ namespace Artemis.Core.Services
                 return layout;
             }
 
+            if (device.DisableDefaultLayout)
+            {
+                layout = null;
+                ApplyDeviceLayout(device, layout);
+                return null;
+            }
+
             // Look for a layout provided by the plugin
             layout = device.DeviceProvider.LoadLayout(device);
             if (layout.IsValid)
@@ -354,8 +362,7 @@ namespace Artemis.Core.Services
             }
 
             // Finally fall back to a default layout
-            if (!device.DisableDefaultLayout)
-                layout = ArtemisLayout.GetDefaultLayout(device);
+            layout = ArtemisLayout.GetDefaultLayout(device);
             ApplyDeviceLayout(device, layout);
             return layout;
         }
@@ -365,7 +372,7 @@ namespace Artemis.Core.Services
             if (layout == null)
             {
                 if (device.Layout != null)
-                    device.ClearLayout();
+                    ReloadDevice(device);
                 return;
             }
 
@@ -375,6 +382,16 @@ namespace Artemis.Core.Services
                 device.ApplyLayout(layout, device.DeviceProvider.CreateMissingLedsSupported, device.DeviceProvider.RemoveExcessiveLedsSupported);
 
             UpdateLedGroup();
+        }
+
+        private void ReloadDevice(ArtemisDevice device)
+        {
+            DeviceProvider deviceProvider = device.DeviceProvider;
+            
+            // Feels bad but need to in order to get the initial LEDs back
+            _pluginManagementService.DisablePluginFeature(deviceProvider, false);
+            Thread.Sleep(500);
+            _pluginManagementService.EnablePluginFeature(deviceProvider, false);
         }
 
         public ArtemisDevice? GetDevice(IRGBDevice rgbDevice)

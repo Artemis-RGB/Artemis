@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Artemis.Core;
 using Artemis.Core.LayerEffects;
 using Artemis.Core.Services;
+using Artemis.UI.Extensions;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
@@ -220,7 +221,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
-            PopulateProperties(e.RenderProfileElement);
+            Execute.PostToUIThread(() => PopulateProperties(e.RenderProfileElement));
         }
 
         private void ProfileEditorServiceOnCurrentTimeChanged(object sender, EventArgs e)
@@ -347,7 +348,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 .ToList();
             // Order the effects
             List<LayerPropertyGroupViewModel> effectProperties = Items
-                .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot)
+                .Where(l => l.TreeGroupViewModel.GroupType == LayerEffectRoot && l.LayerPropertyGroup.LayerEffect != null)
                 .OrderBy(l => l.LayerPropertyGroup.LayerEffect.Order)
                 .ToList();
 
@@ -355,14 +356,16 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             for (int index = 0; index < nonEffectProperties.Count; index++)
             {
                 LayerPropertyGroupViewModel layerPropertyGroupViewModel = nonEffectProperties[index];
-                ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index);
+                if (Items.IndexOf(layerPropertyGroupViewModel) != index)
+                    ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index);
             }
 
             // Put the effect properties after, sorted by their order
             for (int index = 0; index < effectProperties.Count; index++)
             {
                 LayerPropertyGroupViewModel layerPropertyGroupViewModel = effectProperties[index];
-                ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
+                if (Items.IndexOf(layerPropertyGroupViewModel) != index + nonEffectProperties.Count)
+                    ((BindableCollection<LayerPropertyGroupViewModel>) Items).Move(Items.IndexOf(layerPropertyGroupViewModel), index + nonEffectProperties.Count);
             }
         }
 
@@ -527,7 +530,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 Repeating = false;
             }
         }
-        
+
         private TimeSpan GetCurrentSegmentStart()
         {
             TimeSpan current = ProfileEditorService.CurrentTime;
@@ -637,7 +640,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         public void TimelineJump(object sender, MouseButtonEventArgs e)
         {
             // Get the parent grid, need that for our position
-            IInputElement parent = (IInputElement)VisualTreeHelper.GetParent((DependencyObject)sender);
+            IInputElement parent = (IInputElement) VisualTreeHelper.GetParent((DependencyObject) sender);
             double x = Math.Max(0, e.GetPosition(parent).X);
             TimeSpan newTime = TimeSpan.FromSeconds(x / ProfileEditorService.PixelsPerSecond);
 

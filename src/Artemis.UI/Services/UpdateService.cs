@@ -28,7 +28,6 @@ namespace Artemis.UI.Services
         private const double UpdateCheckInterval = 3600000; // once per hour
         private const string ApiUrl = "https://dev.azure.com/artemis-rgb/Artemis/_apis/";
 
-        private readonly PluginSetting<bool> _autoInstallUpdates;
         private readonly PluginSetting<bool> _checkForUpdates;
         private readonly IDialogService _dialogService;
         private readonly ILogger _logger;
@@ -42,7 +41,6 @@ namespace Artemis.UI.Services
             _windowService.MainWindowOpened += WindowServiceOnMainWindowOpened;
 
             _checkForUpdates = settingsService.GetSetting("UI.CheckForUpdates", true);
-            _autoInstallUpdates = settingsService.GetSetting("UI.AutoInstallUpdates", false);
             _checkForUpdates.SettingChanged += CheckForUpdatesOnSettingChanged;
 
             Timer timer = new(UpdateCheckInterval);
@@ -136,18 +134,7 @@ namespace Artemis.UI.Services
 
             if (_windowService.IsMainWindowOpen)
                 await OfferUpdate(buildInfo);
-            else if (_autoInstallUpdates.Value)
-            {
-                new ToastContentBuilder()
-                    .AddText("Installing new version", AdaptiveTextStyle.Header)
-                    .AddText($"Build {buildNumberDisplay} is available, currently on {Constants.BuildInfo.BuildNumberDisplay}.")
-                    .AddProgressBar(null, null, true)
-                    .Show();
-
-                await ApplyUpdate();
-            }
             else
-            {
                 // If auto-install is disabled and the window is closed, best we can do is notify the user and stop.
                 new ToastContentBuilder()
                     .AddText("New version available", AdaptiveTextStyle.Header)
@@ -155,7 +142,6 @@ namespace Artemis.UI.Services
                     .AddButton("Update", ToastActivationType.Background, "update")
                     .AddButton("Later", ToastActivationType.Background, "later")
                     .Show(t => t.Activated += TOnActivated);
-            }
 
             return true;
         }

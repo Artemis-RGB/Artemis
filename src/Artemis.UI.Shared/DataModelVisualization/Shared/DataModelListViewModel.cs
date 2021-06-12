@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Windows.Documents;
 using Artemis.Core;
-using Artemis.Core.DataModelExpansions;
+using Artemis.Core.Modules;
 using Artemis.UI.Shared.Services;
 using Stylet;
 

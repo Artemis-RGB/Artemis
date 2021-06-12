@@ -101,7 +101,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             get => _displayOnDevices;
             set => SetAndNotify(ref _displayOnDevices, value);
         }
-        
+
         // This solution won't scale well but I don't expect there to be many more categories.
         // If for some reason there will be, dynamically creating a view model per category may be more appropriate
         public bool HasDeskCategory
@@ -132,16 +132,6 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
         {
             get => GetCategory(DeviceCategory.Peripherals);
             set => SetCategory(DeviceCategory.Peripherals, value);
-        }
-
-        public bool UseDefaultLayout
-        {
-            get => !Device.DisableDefaultLayout;
-            set
-            {
-                Device.DisableDefaultLayout = !value;
-                NotifyOfPropertyChange(nameof(UseDefaultLayout));
-            }
         }
 
         public void ApplyScaling()
@@ -266,7 +256,9 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
         private void DeviceOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(Device.CustomLayoutPath) || e.PropertyName == nameof(Device.DisableDefaultLayout))
-                _rgbService.ApplyBestDeviceLayout(Device);
+            {
+                Task.Run(() => _rgbService.ApplyBestDeviceLayout(Device));
+            }
         }
 
         private void OnFrameRendering(object sender, FrameRenderingEventArgs e)

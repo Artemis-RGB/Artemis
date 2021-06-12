@@ -22,6 +22,8 @@ namespace Artemis.Core
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Action<double> action, string? name)
         {
+            if (CoreService.Kernel == null)
+                throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
             _logger = CoreService.Kernel.Get<ILogger>();
 
             Feature = feature;
@@ -37,6 +39,8 @@ namespace Artemis.Core
 
         internal TimedUpdateRegistration(PluginFeature feature, TimeSpan interval, Func<double, Task> asyncAction, string? name)
         {
+            if (CoreService.Kernel == null)
+                throw new ArtemisCoreException("Cannot create a TimedUpdateRegistration before initializing the Core");
             _logger = CoreService.Kernel.Get<ILogger>();
 
             Feature = feature;
