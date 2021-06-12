@@ -95,7 +95,7 @@
                     </ContextMenu>
                 </TreeView.ContextMenu>
                 <b:Interaction.Behaviors>
-                    <behaviors:TreeViewSelectionBehavior SelectedItem="{Binding SelectedTreeItem, IsAsync=True}" />
+                    <behaviors:TreeViewSelectionBehavior SelectedItem="{Binding SelectedTreeItem}" />
                 </b:Interaction.Behaviors>
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Items}">

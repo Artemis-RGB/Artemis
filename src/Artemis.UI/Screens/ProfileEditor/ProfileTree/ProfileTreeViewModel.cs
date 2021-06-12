@@ -33,11 +33,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             get => _selectedTreeItem;
             set
             {
-                if (_updatingTree) return;
-                if (!SetAndNotify(ref _selectedTreeItem, value)) return;
-                if (_draggingTreeView) return;
-
-                ApplySelectedTreeItem();
+                if (!_updatingTree && SetAndNotify(ref _selectedTreeItem, value) && !_draggingTreeView) 
+                    ApplySelectedTreeItem();
             }
         }
 
