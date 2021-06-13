@@ -386,6 +386,10 @@ namespace Artemis.Core.Services
 
         private void ReloadDevice(ArtemisDevice device)
         {
+            // Any pending changes are otherwise lost including DisableDefaultLayout
+            device.ApplyToEntity();
+            _deviceRepository.Save(device.DeviceEntity);
+
             DeviceProvider deviceProvider = device.DeviceProvider;
             
             // Feels bad but need to in order to get the initial LEDs back
