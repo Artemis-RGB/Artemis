@@ -62,9 +62,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         protected override List<DataModelPropertiesViewModel> GetExtraRightSideDataModelViewModels()
         {
-            // Extra data models are expected to not have an empty root, so lets return the child
-            BindableCollection<DataModelVisualizationViewModel> children = GetEventDataModel().Children;
-            return children.Cast<DataModelPropertiesViewModel>().ToList();
+            // Only the VM housing the event arguments is expected here which is a DataModelPropertiesViewModel
+            return GetEventDataModel().Children.Cast<DataModelPropertiesViewModel>().ToList();
         }
 
         private DataModelPropertiesViewModel GetEventDataModel()
@@ -78,7 +77,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Evaluate()
         {
-            throw new NotImplementedException();
         }
     }
 }

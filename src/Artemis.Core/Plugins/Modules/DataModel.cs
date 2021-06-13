@@ -57,6 +57,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets a read-only list of <see cref="DataModelPath" />s targeting this data model
         /// </summary>
+        [DataModelIgnore]
         public ReadOnlyCollection<DataModelPath> ActivePaths => _activePaths.AsReadOnly();
 
         /// <summary>
