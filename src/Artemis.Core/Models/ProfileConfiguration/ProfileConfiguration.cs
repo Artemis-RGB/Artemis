@@ -93,6 +93,21 @@ namespace Artemis.Core
         public ProfileConfigurationIcon Icon { get; }
 
         /// <summary>
+        ///     Gets or sets the <see cref="ProfileConfigurationHotkeyMode" /> used to determine hotkey behaviour
+        /// </summary>
+        public ProfileConfigurationHotkeyMode HotkeyMode { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the hotkey used to enable or toggle the profile
+        /// </summary>
+        public ProfileConfigurationHotkey? EnableHotkey { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the hotkey used to disable the profile
+        /// </summary>
+        public ProfileConfigurationHotkey? DisableHotkey { get; set; }
+
+        /// <summary>
         ///     Gets the profile of this profile configuration
         /// </summary>
         public Profile? Profile
@@ -151,6 +166,10 @@ namespace Artemis.Core
             ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
         }
 
+        /// <summary>
+        ///     Determines whether the profile of this configuration should be active
+        /// </summary>
+        /// <param name="includeActivationCondition">Whether or not to take activation conditions into consideration</param>
         public bool ShouldBeActive(bool includeActivationCondition)
         {
             if (_disposed)
@@ -201,13 +220,15 @@ namespace Artemis.Core
             Name = Entity.Name;
             IsSuspended = Entity.IsSuspended;
             ActivationBehaviour = (ActivationBehaviour) Entity.ActivationBehaviour;
+            HotkeyMode = (ProfileConfigurationHotkeyMode) Entity.HotkeyMode;
             Order = Entity.Order;
 
             Icon.Load();
 
-            ActivationCondition = Entity.ActivationCondition != null
-                ? new DataModelConditionGroup(null, Entity.ActivationCondition)
-                : null;
+            ActivationCondition = Entity.ActivationCondition != null ? new DataModelConditionGroup(null, Entity.ActivationCondition) : null;
+
+            EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
+            DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;
         }
 
         /// <inheritdoc />
@@ -219,23 +240,86 @@ namespace Artemis.Core
             Entity.Name = Name;
             Entity.IsSuspended = IsSuspended;
             Entity.ActivationBehaviour = (int) ActivationBehaviour;
+            Entity.HotkeyMode = (int) HotkeyMode;
             Entity.ProfileCategoryId = Category.Entity.Id;
             Entity.Order = Order;
 
             Icon.Save();
 
-            if (ActivationCondition != null)
-            {
-                ActivationCondition.Save();
-                Entity.ActivationCondition = ActivationCondition.Entity;
-            }
-            else
-                Entity.ActivationCondition = null;
+            ActivationCondition?.Save();
+            Entity.ActivationCondition = ActivationCondition?.Entity;
+
+            EnableHotkey?.Save();
+            Entity.EnableHotkey = EnableHotkey?.Entity;
+            DisableHotkey?.Save();
+            Entity.DisableHotkey = DisableHotkey?.Entity;
 
             if (!IsMissingModule)
                 Entity.ModuleId = Module?.Id;
         }
 
         #endregion
+    }
+
+    /// <summary>
+    ///     Represents a type of behaviour when this profile is activated
+    /// </summary>
+    public enum ActivationBehaviour
+    {
+        /// <summary>
+        ///     Do nothing to other profiles
+        /// </summary>
+        None,
+
+        /// <summary>
+        ///     Disable all other profiles
+        /// </summary>
+        DisableOthers,
+
+        /// <summary>
+        ///     Disable all other profiles below this one
+        /// </summary>
+        DisableOthersBelow,
+
+        /// <summary>
+        ///     Disable all other profiles above this one
+        /// </summary>
+        DisableOthersAbove,
+
+        /// <summary>
+        ///     Disable all other profiles in the same category
+        /// </summary>
+        DisableOthersInCategory,
+
+        /// <summary>
+        ///     Disable all other profiles below this one in the same category
+        /// </summary>
+        DisableOthersBelowInCategory,
+
+        /// <summary>
+        ///     Disable all other profiles above this one in the same category
+        /// </summary>
+        DisableOthersAboveInCategory
+    }
+
+    /// <summary>
+    ///     Represents a hotkey mode for a profile configuration
+    /// </summary>
+    public enum ProfileConfigurationHotkeyMode
+    {
+        /// <summary>
+        ///     Use no hotkeys
+        /// </summary>
+        None,
+
+        /// <summary>
+        ///     Toggle the profile with one hotkey
+        /// </summary>
+        Toggle,
+
+        /// <summary>
+        ///     Enable and disable the profile with two separate hotkeys
+        /// </summary>
+        EnableDisable
     }
 }

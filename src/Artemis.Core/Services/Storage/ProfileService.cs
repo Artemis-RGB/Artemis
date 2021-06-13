@@ -15,16 +15,17 @@ namespace Artemis.Core.Services
     internal class ProfileService : IProfileService
     {
         private readonly ILogger _logger;
+
+        private readonly List<ArtemisKeyboardKeyEventArgs> _pendingKeyboardEvents = new();
         private readonly IPluginManagementService _pluginManagementService;
         private readonly List<ProfileCategory> _profileCategories;
         private readonly IProfileCategoryRepository _profileCategoryRepository;
         private readonly IProfileRepository _profileRepository;
-        private readonly IRgbService _rgbService;
-
-        private readonly List<Exception> _updateExceptions = new();
-        private DateTime _lastUpdateExceptionLog;
         private readonly List<Exception> _renderExceptions = new();
+        private readonly IRgbService _rgbService;
+        private readonly List<Exception> _updateExceptions = new();
         private DateTime _lastRenderExceptionLog;
+        private DateTime _lastUpdateExceptionLog;
 
         public ProfileService(ILogger logger,
             IRgbService rgbService,
@@ -33,6 +34,7 @@ namespace Artemis.Core.Services
             IDataBindingService dataBindingService,
             IProfileCategoryRepository profileCategoryRepository,
             IPluginManagementService pluginManagementService,
+            IInputService inputService,
             IProfileRepository profileRepository)
         {
             _logger = logger;
@@ -46,8 +48,21 @@ namespace Artemis.Core.Services
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
 
+            inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
+
             if (!_profileCategories.Any())
                 CreateDefaultProfileCategories();
+        }
+
+        private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
+        {
+            if (!HotkeysEnabled)
+                return;
+
+            lock (_profileCategories)
+            {
+                _pendingKeyboardEvents.Add(e);
+            }
         }
 
         /// <summary>
@@ -88,84 +103,25 @@ namespace Artemis.Core.Services
                 UpdateModules();
         }
 
-        public bool RenderForEditor { get; set; }
-
-        public void UpdateProfiles(double deltaTime)
+        private void ProcessPendingKeyEvents(ProfileConfiguration profileConfiguration)
         {
-            lock (_profileCategories)
+            if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.None)
+                return;
+
+            foreach (ArtemisKeyboardKeyEventArgs e in _pendingKeyboardEvents)
             {
-                // Iterate the children in reverse because the first category must be rendered last to end up on top
-                for (int i = _profileCategories.Count - 1; i > -1; i--)
+                if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.Toggle)
                 {
-                    ProfileCategory profileCategory = _profileCategories[i];
-                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
-                    {
-                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                        // Profiles being edited are updated at their own leisure
-                        if (profileConfiguration.IsBeingEdited)
-                            continue;
-
-                        bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
-                        if (shouldBeActive)
-                        {
-                            profileConfiguration.Update();
-                            shouldBeActive = profileConfiguration.ActivationConditionMet;
-                        }
-
-                        try
-                        {
-                            // Make sure the profile is active or inactive according to the parameters above
-                            if (shouldBeActive && profileConfiguration.Profile == null)
-                                ActivateProfile(profileConfiguration);
-                            else if (!shouldBeActive && profileConfiguration.Profile != null)
-                                DeactivateProfile(profileConfiguration);
-
-                            profileConfiguration.Profile?.Update(deltaTime);
-                        }
-                        catch (Exception e)
-                        {
-                            _updateExceptions.Add(e);
-                        }
-                    }
+                    if (profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                        profileConfiguration.IsSuspended = !profileConfiguration.IsSuspended;
                 }
-
-                LogProfileUpdateExceptions();
-            }
-        }
-
-        public void RenderProfiles(SKCanvas canvas)
-        {
-            lock (_profileCategories)
-            {
-                // Iterate the children in reverse because the first category must be rendered last to end up on top
-                for (int i = _profileCategories.Count - 1; i > -1; i--)
+                else
                 {
-                    ProfileCategory profileCategory = _profileCategories[i];
-                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
-                    {
-                        try
-                        {
-                            ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                            if (RenderForEditor)
-                            {
-                                if (profileConfiguration.IsBeingEdited)
-                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
-                            }
-                            else
-                            {
-                                // Ensure all criteria are met before rendering
-                                if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
-                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
-                            }
-                        }
-                        catch (Exception e)
-                        {
-                            _renderExceptions.Add(e);
-                        }
-                    }
+                    if (profileConfiguration.IsSuspended && profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                        profileConfiguration.IsSuspended = false;
+                    if (!profileConfiguration.IsSuspended && profileConfiguration.DisableHotkey != null && profileConfiguration.DisableHotkey.MatchesEventArgs(e))
+                        profileConfiguration.IsSuspended = true;
                 }
-
-                LogProfileRenderExceptions();
             }
         }
 
@@ -209,6 +165,93 @@ namespace Artemis.Core.Services
 
             // When logging is finished start with a fresh slate
             _renderExceptions.Clear();
+        }
+
+        public bool HotkeysEnabled { get; set; }
+        public bool RenderForEditor { get; set; }
+
+        public void UpdateProfiles(double deltaTime)
+        {
+            lock (_profileCategories)
+            {
+                // Iterate the children in reverse because the first category must be rendered last to end up on top
+                for (int i = _profileCategories.Count - 1; i > -1; i--)
+                {
+                    ProfileCategory profileCategory = _profileCategories[i];
+                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
+                    {
+                        ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+
+                        // Process hotkeys that where pressed since this profile last updated
+                        ProcessPendingKeyEvents(profileConfiguration);
+
+                        // Profiles being edited are updated at their own leisure
+                        if (profileConfiguration.IsBeingEdited)
+                            continue;
+
+                        bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
+                        if (shouldBeActive)
+                        {
+                            profileConfiguration.Update();
+                            shouldBeActive = profileConfiguration.ActivationConditionMet;
+                        }
+
+                        try
+                        {
+                            // Make sure the profile is active or inactive according to the parameters above
+                            if (shouldBeActive && profileConfiguration.Profile == null)
+                                ActivateProfile(profileConfiguration);
+                            else if (!shouldBeActive && profileConfiguration.Profile != null)
+                                DeactivateProfile(profileConfiguration);
+
+                            profileConfiguration.Profile?.Update(deltaTime);
+                        }
+                        catch (Exception e)
+                        {
+                            _updateExceptions.Add(e);
+                        }
+                    }
+                }
+
+                LogProfileUpdateExceptions();
+                _pendingKeyboardEvents.Clear();
+            }
+        }
+
+        public void RenderProfiles(SKCanvas canvas)
+        {
+            lock (_profileCategories)
+            {
+                // Iterate the children in reverse because the first category must be rendered last to end up on top
+                for (int i = _profileCategories.Count - 1; i > -1; i--)
+                {
+                    ProfileCategory profileCategory = _profileCategories[i];
+                    for (int j = profileCategory.ProfileConfigurations.Count - 1; j > -1; j--)
+                    {
+                        try
+                        {
+                            ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
+                            if (RenderForEditor)
+                            {
+                                if (profileConfiguration.IsBeingEdited)
+                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            }
+                            else
+                            {
+                                // Ensure all criteria are met before rendering
+                                if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
+                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            _renderExceptions.Add(e);
+                        }
+                    }
+                }
+
+                LogProfileRenderExceptions();
+            }
         }
 
         public ReadOnlyCollection<ProfileCategory> ProfileCategories
@@ -485,7 +528,8 @@ namespace Artemis.Core.Services
             if (markAsFreshImport)
                 profileEntity.IsFreshImport = true;
 
-            _profileRepository.Add(profileEntity);
+            if (!makeUnique && _profileRepository.Get(profileEntity.Id) == null)
+                _profileRepository.Add(profileEntity);
 
             ProfileConfiguration profileConfiguration;
             if (exportModel.ProfileConfigurationEntity != null)
@@ -500,9 +544,7 @@ namespace Artemis.Core.Services
                     profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
             }
             else
-            {
                 profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
-            }
 
             if (exportModel.ProfileImage != null)
             {

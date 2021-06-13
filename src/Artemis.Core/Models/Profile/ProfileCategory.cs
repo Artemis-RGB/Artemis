@@ -203,45 +203,4 @@ namespace Artemis.Core
         /// </summary>
         General
     }
-
-    /// <summary>
-    ///     Represents a type of behaviour when this profile is activated
-    /// </summary>
-    public enum ActivationBehaviour
-    {
-        /// <summary>
-        ///     Do nothing to other profiles
-        /// </summary>
-        None,
-
-        /// <summary>
-        ///     Disable all other profiles
-        /// </summary>
-        DisableOthers,
-
-        /// <summary>
-        ///     Disable all other profiles below this one
-        /// </summary>
-        DisableOthersBelow,
-
-        /// <summary>
-        ///     Disable all other profiles above this one
-        /// </summary>
-        DisableOthersAbove,
-
-        /// <summary>
-        ///     Disable all other profiles in the same category
-        /// </summary>
-        DisableOthersInCategory,
-
-        /// <summary>
-        ///     Disable all other profiles below this one in the same category
-        /// </summary>
-        DisableOthersBelowInCategory,
-
-        /// <summary>
-        ///     Disable all other profiles above this one in the same category
-        /// </summary>
-        DisableOthersAboveInCategory
-    }
 }

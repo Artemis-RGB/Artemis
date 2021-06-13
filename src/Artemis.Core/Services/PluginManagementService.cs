@@ -537,15 +537,13 @@ namespace Artemis.Core.Services
             string metaDataDirectory = metaDataFileEntry.FullName.Replace(metaDataFileEntry.Name, "");
             foreach (ZipArchiveEntry zipArchiveEntry in archive.Entries)
             {
-                if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory))
+                if (zipArchiveEntry.FullName.StartsWith(metaDataDirectory) && !zipArchiveEntry.FullName.EndsWith("/"))
                 {
                     string target = Path.Combine(directoryInfo.FullName, zipArchiveEntry.FullName.Remove(0, metaDataDirectory.Length));
                     // Create folders
-                    if (zipArchiveEntry.FullName.EndsWith("/"))
-                        Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
+                    Utilities.CreateAccessibleDirectory(Path.GetDirectoryName(target)!);
                     // Extract files
-                    else
-                        zipArchiveEntry.ExtractToFile(target);
+                    zipArchiveEntry.ExtractToFile(target);
                 }
             }
 

@@ -9,6 +9,7 @@ using Artemis.UI.Extensions;
 using Artemis.UI.Screens.ProfileEditor.Conditions.Abstract;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Conditions
 {
@@ -62,7 +63,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         protected override List<DataModelPropertiesViewModel> GetExtraRightSideDataModelViewModels()
         {
             // Extra data models are expected to not have an empty root, so lets return the child
-            return GetEventDataModel().Children.Cast<DataModelPropertiesViewModel>().ToList();
+            BindableCollection<DataModelVisualizationViewModel> children = GetEventDataModel().Children;
+            return children.Cast<DataModelPropertiesViewModel>().ToList();
         }
 
         private DataModelPropertiesViewModel GetEventDataModel()

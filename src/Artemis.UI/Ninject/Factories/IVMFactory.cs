@@ -106,6 +106,7 @@ namespace Artemis.UI.Ninject.Factories
     {
         SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
         SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
+        ProfileConfigurationHotkeyViewModel ProfileConfigurationHotkeyViewModel(ProfileConfiguration profileConfiguration, bool isDisableHotkey);
         ModuleActivationRequirementViewModel ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
     }
 

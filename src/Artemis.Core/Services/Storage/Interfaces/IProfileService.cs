@@ -10,14 +10,14 @@ namespace Artemis.Core.Services
     public interface IProfileService : IArtemisService
     {
         /// <summary>
-        /// Gets the JSON serializer settings used to create profile mementos
+        ///     Gets the JSON serializer settings used to create profile mementos
         /// </summary>
         public static JsonSerializerSettings MementoSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All};
 
         /// <summary>
-        /// Gets the JSON serializer settings used to import/export profiles
+        ///     Gets the JSON serializer settings used to import/export profiles
         /// </summary>
-        public static JsonSerializerSettings ExportSettings { get;  } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
+        public static JsonSerializerSettings ExportSettings { get; } = new() {TypeNameHandling = TypeNameHandling.All, Formatting = Formatting.Indented};
 
         /// <summary>
         ///     Gets a read only collection containing all the profile categories
@@ -28,6 +28,11 @@ namespace Artemis.Core.Services
         ///     Gets a read only collection containing all the profile configurations
         /// </summary>
         ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether hotkeys are enabled
+        /// </summary>
+        bool HotkeysEnabled { get; set; }
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether rendering should only be done for profiles being edited
@@ -128,10 +133,14 @@ namespace Artemis.Core.Services
         /// <param name="category">The <see cref="ProfileCategory" /> in which to import the profile</param>
         /// <param name="exportModel">The model containing the profile to import</param>
         /// <param name="makeUnique">Whether or not to give the profile a new GUID, making it unique</param>
-        /// <param name="markAsFreshImport">Whether or not to mark the profile as a fresh import, causing it to be adapted until any changes are made to it</param>
+        /// <param name="markAsFreshImport">
+        ///     Whether or not to mark the profile as a fresh import, causing it to be adapted until
+        ///     any changes are made to it
+        /// </param>
         /// <param name="nameAffix">Text to add after the name of the profile (separated by a dash)</param>
         /// <returns>The resulting profile configuration</returns>
-        ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique = true, bool markAsFreshImport = true, string? nameAffix = "imported");
+        ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique = true, bool markAsFreshImport = true,
+            string? nameAffix = "imported");
 
         /// <summary>
         ///     Adapts a given profile to the currently active devices

@@ -200,13 +200,16 @@ namespace Artemis.UI.Screens.Sidebar
 
         private void ProfileCategoryOnProfileConfigurationAdded(object sender, ProfileConfigurationEventArgs e)
         {
-            if (!_addingProfile && ShowItems)
+            Execute.PostToUIThread(() =>
             {
-                Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
-                ((BindableCollection<SidebarProfileConfigurationViewModel>) Items).Sort(p => p.ProfileConfiguration.Order);
-            }
+                if (!_addingProfile && ShowItems)
+                {
+                    Items.Add(_vmFactory.SidebarProfileConfigurationViewModel(e.ProfileConfiguration));
+                    ((BindableCollection<SidebarProfileConfigurationViewModel>)Items).Sort(p => p.ProfileConfiguration.Order);
+                }
 
-            SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
+                SelectedProfileConfiguration = Items.FirstOrDefault(i => i.ProfileConfiguration.IsBeingEdited);
+            });
         }
 
         #region Overrides of Screen

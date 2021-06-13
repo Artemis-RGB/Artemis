@@ -15,6 +15,10 @@ namespace Artemis.Storage.Entities.Profile
         public int ActivationBehaviour { get; set; }
         public DataModelConditionGroupEntity ActivationCondition { get; set; }
 
+        public int HotkeyMode { get; set; }
+        public ProfileConfigurationHotkeyEntity EnableHotkey { get; set; }
+        public ProfileConfigurationHotkeyEntity DisableHotkey { get; set; }
+
         public string ModuleId { get; set; }
 
         public Guid ProfileCategoryId { get; set; }

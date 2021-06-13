@@ -1,0 +1,20 @@
+﻿<UserControl x:Class="Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit.ProfileConfigurationHotkeyView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:s="https://github.com/canton7/Stylet"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance local:ProfileConfigurationHotkeyViewModel}">
+    <TextBox Style="{StaticResource MaterialDesignFilledTextBox}"
+             IsReadOnly="True"
+             IsReadOnlyCaretVisible="True"
+             Text="{Binding HotkeyDisplay, UpdateSourceTrigger=PropertyChanged}"
+             VerticalAlignment="Center"
+             materialDesign:TextFieldAssist.HasClearButton="True"
+             materialDesign:HintAssist.Hint="{Binding Hint}"
+             KeyUp="{s:Action TextBoxKeyUp}"/>
+</UserControl>
