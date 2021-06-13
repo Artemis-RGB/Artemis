@@ -30,22 +30,20 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
 
         #region Overrides of Screen
 
-        /// <inheritdoc />
-        protected override void OnInitialActivate()
+        protected override void OnActivate()
         {
             BindableCollection<ArtemisLed> selectedLeds = ((DeviceDialogViewModel) Parent).SelectedLeds;
             LedViewModels.Clear();
             LedViewModels.AddRange(Device.Leds.Select(l => new DeviceLedsTabLedViewModel(l, selectedLeds)));
             selectedLeds.CollectionChanged += SelectedLedsOnCollectionChanged;
 
-            base.OnInitialActivate();
+            base.OnActivate();
         }
 
-        /// <inheritdoc />
-        protected override void OnClose()
+        protected override void OnDeactivate()
         {
             ((DeviceDialogViewModel) Parent).SelectedLeds.CollectionChanged -= SelectedLedsOnCollectionChanged;
-            base.OnClose();
+            base.OnDeactivate();
         }
 
         #endregion

@@ -48,17 +48,23 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             _modules = ProfileConfiguration.Module != null ? new List<Module> {ProfileConfiguration.Module} : new List<Module>();
 
             IconTypes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ProfileConfigurationIconType)));
+            HotkeyModes = new BindableCollection<ValueDescription>(EnumUtilities.GetAllValuesAndDescriptions(typeof(ProfileConfigurationHotkeyMode)));
             Icons = new BindableCollection<ProfileIconViewModel>();
             Modules = new BindableCollection<ProfileModuleViewModel>(
                 pluginManagementService.GetFeaturesOfType<Module>().Where(m => !m.IsAlwaysAvailable).Select(m => new ProfileModuleViewModel(m))
             );
             Initializing = true;
+           
             ActivationConditionViewModel = dataModelConditionsVmFactory.DataModelConditionGroupViewModel(_dataModelConditionGroup, ConditionGroupType.General, _modules);
             ActivationConditionViewModel.ConductWith(this);
             ActivationConditionViewModel.IsRootGroup = true;
             ModuleActivationRequirementsViewModel = new ModuleActivationRequirementsViewModel(sidebarVmFactory);
             ModuleActivationRequirementsViewModel.ConductWith(this);
             ModuleActivationRequirementsViewModel.SetModule(ProfileConfiguration.Module);
+            EnableHotkeyViewModel = sidebarVmFactory.ProfileConfigurationHotkeyViewModel(ProfileConfiguration, false);
+            EnableHotkeyViewModel.ConductWith(this);
+            DisableHotkeyViewModel = sidebarVmFactory.ProfileConfigurationHotkeyViewModel(ProfileConfiguration, true);
+            DisableHotkeyViewModel.ConductWith(this);
 
             _profileName = ProfileConfiguration.Name;
             _selectedModule = Modules.FirstOrDefault(m => m.Module == ProfileConfiguration.Module);
@@ -79,9 +85,15 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             });
         }
 
-        public ProfileConfiguration ProfileConfiguration { get; }
+        public DataModelConditionGroupViewModel ActivationConditionViewModel { get; }
+        public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
+        public ProfileConfigurationHotkeyViewModel EnableHotkeyViewModel { get; }
+        public ProfileConfigurationHotkeyViewModel DisableHotkeyViewModel { get; }
+
         public bool IsNew { get; }
+        public ProfileConfiguration ProfileConfiguration { get; }
         public BindableCollection<ValueDescription> IconTypes { get; }
+        public BindableCollection<ValueDescription> HotkeyModes { get; }
         public BindableCollection<ProfileIconViewModel> Icons { get; }
         public BindableCollection<ProfileModuleViewModel> Modules { get; }
         public bool HasUsableModules => Modules.Any();
@@ -107,6 +119,24 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 SelectedImage = null;
             }
         }
+
+        public ProfileConfigurationHotkeyMode SelectedHotkeyMode
+        {
+            get => ProfileConfiguration.HotkeyMode;
+            set
+            {
+                ProfileConfiguration.HotkeyMode = value;
+                NotifyOfPropertyChange(nameof(SelectedHotkeyMode));
+                NotifyOfPropertyChange(nameof(ShowEnableHotkey));
+                NotifyOfPropertyChange(nameof(ShowDisableHotkey));
+
+                EnableHotkeyViewModel.UpdateHotkeyDisplay();
+                DisableHotkeyViewModel.UpdateHotkeyDisplay();
+            }
+        }
+
+        public bool ShowEnableHotkey => ProfileConfiguration.HotkeyMode != ProfileConfigurationHotkeyMode.None;
+        public bool ShowDisableHotkey => ProfileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.EnableDisable;
 
         public Stream SelectedImage
         {
@@ -134,9 +164,6 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
                 ModuleActivationRequirementsViewModel.SetModule(value?.Module);
             }
         }
-
-        public DataModelConditionGroupViewModel ActivationConditionViewModel { get; }
-        public ModuleActivationRequirementsViewModel ModuleActivationRequirementsViewModel { get; }
 
         public void Delete()
         {
@@ -202,6 +229,22 @@ namespace Artemis.UI.Screens.Sidebar.Dialogs.ProfileEdit
             _changedImage = true;
             SelectedImage = File.OpenRead(dialog.FileName);
         }
+
+        #region Overrides of Screen
+
+        protected override void OnInitialActivate()
+        {
+            _profileService.HotkeysEnabled = false;
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _profileService.HotkeysEnabled = true;
+            base.OnClose();
+        }
+
+        #endregion
     }
 
     public class ProfileEditViewModelValidator : AbstractValidator<ProfileEditViewModel>

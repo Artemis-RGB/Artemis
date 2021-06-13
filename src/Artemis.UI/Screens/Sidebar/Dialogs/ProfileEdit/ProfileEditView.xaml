@@ -221,16 +221,29 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0">
                 <TextBlock Style="{StaticResource MaterialDesignSubtitle1TextBlock}">
-                    Keybinds
+                    Hotkeys
                 </TextBlock>
-                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}">You may set up keybinds to activate/deactivate the profile</TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}">You may set up hotkeys to activate/deactivate the profile</TextBlock>
 
-                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Top" Margin="16">
-                    <materialDesign:PackIcon Kind="Crane" Width="100" Height="100" HorizontalAlignment="Center" />
-                    <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 20">
-                        Keybinds are not yet implemented
-                    </TextBlock>
-                </StackPanel>
+                <ComboBox materialDesign:HintAssist.Hint="Hotkey mode"
+                          Margin="0 6 0 8"
+                          Style="{StaticResource MaterialDesignFilledComboBox}"
+                          SelectedValue="{Binding SelectedHotkeyMode}"
+                          ItemsSource="{Binding HotkeyModes}"
+                          SelectedValuePath="Value"
+                          DisplayMemberPath="Description" />
+
+                <ContentControl s:View.Model="{Binding EnableHotkeyViewModel}"
+                                VerticalContentAlignment="Stretch" 
+                                HorizontalContentAlignment="Stretch"
+                                IsTabStop="False" 
+                                Visibility="{Binding ShowEnableHotkey, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
+                                Margin="0 0 0 8"/>
+                <ContentControl s:View.Model="{Binding DisableHotkeyViewModel}"
+                                VerticalContentAlignment="Stretch" 
+                                HorizontalContentAlignment="Stretch"
+                                IsTabStop="False" 
+                                Visibility="{Binding ShowDisableHotkey, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"/>
             </StackPanel>
         </Grid>
 
