@@ -8,8 +8,8 @@ namespace Artemis.Core
     /// </summary>
     public class ArtemisLed : CorePropertyChanged
     {
-        private SKRectI _absoluteRectangle;
-        private SKRectI _rectangle;
+        private SKRect _absoluteRectangle;
+        private SKRect _rectangle;
 
         internal ArtemisLed(Led led, ArtemisDevice device)
         {
@@ -31,7 +31,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the rectangle covering the LED positioned relative to the<see cref="Device" />
         /// </summary>
-        public SKRectI Rectangle
+        public SKRect Rectangle
         {
             get => _rectangle;
             private set => SetAndNotify(ref _rectangle, value);
@@ -40,7 +40,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the rectangle covering the LED
         /// </summary>
-        public SKRectI AbsoluteRectangle
+        public SKRect AbsoluteRectangle
         {
             get => _absoluteRectangle;
             private set => SetAndNotify(ref _absoluteRectangle, value);
@@ -59,8 +59,8 @@ namespace Artemis.Core
 
         internal void CalculateRectangles()
         {
-            Rectangle = RgbLed.Boundary.ToSKRectI();
-            AbsoluteRectangle = RgbLed.AbsoluteBoundary.ToSKRectI();
+            Rectangle = RgbLed.Boundary.ToSKRect();
+            AbsoluteRectangle = RgbLed.AbsoluteBoundary.ToSKRect();
         }
     }
 }

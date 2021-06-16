@@ -157,7 +157,7 @@ namespace Artemis.UI.Shared
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing) 
+            if (disposing)
                 _timer.Dispose();
         }
 
@@ -215,7 +215,7 @@ namespace Artemis.UI.Shared
             double y = position.Y / RenderSize.Height;
 
             Point scaledPosition = new(x * Device.Rectangle.Width, y * Device.Rectangle.Height);
-            DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.DisplayGeometry != null && l.LedRect.Contains(scaledPosition));
+            DeviceVisualizerLed? deviceVisualizerLed = _deviceVisualizerLeds.FirstOrDefault(l => l.HitTest(scaledPosition));
             if (deviceVisualizerLed != null)
                 OnLedClicked(new LedClickedEventArgs(deviceVisualizerLed.Led.Device, deviceVisualizerLed.Led));
         }

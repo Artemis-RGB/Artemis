@@ -87,8 +87,8 @@ namespace Artemis.Core
 
                     if (led != null)
                     {
-                        led.Location = new Point(MathF.Round(layoutLed.X), MathF.Round(layoutLed.Y));
-                        led.Size = new Size(MathF.Round(layoutLed.Width), MathF.Round(layoutLed.Height));
+                        led.Location = new Point(layoutLed.X, layoutLed.Y);
+                        led.Size = new Size(layoutLed.Width, layoutLed.Height);
                         led.Shape = layoutLed.Shape;
                         led.ShapeData = layoutLed.ShapeData;
                         led.LayoutMetadata = layoutLed.CustomData;
