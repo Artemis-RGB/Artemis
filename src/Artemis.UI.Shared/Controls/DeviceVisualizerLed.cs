@@ -6,6 +6,7 @@ using System.Windows.Media.Imaging;
 using Artemis.Core;
 using RGB.NET.Core;
 using Color = System.Windows.Media.Color;
+using Point = System.Windows.Point;
 using SolidColorBrush = System.Windows.Media.SolidColorBrush;
 
 namespace Artemis.UI.Shared
@@ -14,10 +15,10 @@ namespace Artemis.UI.Shared
     {
         private const byte Dimmed = 100;
         private const byte NonDimmed = 255;
-        private Color _renderColor;
         private GeometryDrawing? _geometryDrawing;
-        private SolidColorBrush? _renderColorBrush;
         private DrawingGroup? _lastBackingStore;
+        private Color _renderColor;
+        private SolidColorBrush? _renderColorBrush;
 
         public DeviceVisualizerLed(ArtemisLed led)
         {
@@ -48,7 +49,7 @@ namespace Artemis.UI.Shared
 
             _renderColorBrush ??= new SolidColorBrush();
             _geometryDrawing ??= new GeometryDrawing(_renderColorBrush, null, new RectangleGeometry(LedRect));
-            
+
             byte r = Led.RgbLed.Color.GetR();
             byte g = Led.RgbLed.Color.GetG();
             byte b = Led.RgbLed.Color.GetB();
@@ -64,7 +65,6 @@ namespace Artemis.UI.Shared
                 backingStore.Children.Add(_geometryDrawing);
                 _lastBackingStore = backingStore;
             }
-            
         }
 
         public void RenderImage(DrawingContext drawingContext)
@@ -93,6 +93,20 @@ namespace Artemis.UI.Shared
             drawingContext.DrawGeometry(fillBrush, new Pen(penBrush, 1) {LineJoin = PenLineJoin.Round}, DisplayGeometry.GetOutlinedPathGeometry());
             // Restore the drawing context
             drawingContext.Pop();
+        }
+
+        public bool HitTest(Point position)
+        {
+            if (DisplayGeometry == null)
+                return false;
+
+            PathGeometry translatedGeometry = Geometry.Combine(
+                Geometry.Empty,
+                DisplayGeometry,
+                GeometryCombineMode.Union,
+                new TranslateTransform(Led.RgbLed.Location.X, Led.RgbLed.Location.Y)
+            );
+            return translatedGeometry.FillContains(position);
         }
 
         private void CreateLedGeometry()

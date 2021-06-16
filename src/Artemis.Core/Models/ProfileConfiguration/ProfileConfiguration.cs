@@ -108,6 +108,11 @@ namespace Artemis.Core
         public ProfileConfigurationHotkey? DisableHotkey { get; set; }
 
         /// <summary>
+        ///     Gets the ID of the profile of this profile configuration
+        /// </summary>
+        public Guid ProfileId => Entity.ProfileId;
+
+        /// <summary>
         ///     Gets the profile of this profile configuration
         /// </summary>
         public Profile? Profile
