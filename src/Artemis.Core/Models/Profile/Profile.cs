@@ -35,9 +35,15 @@ namespace Artemis.Core
         public ProfileConfiguration Configuration { get; }
 
         /// <summary>
-        ///     Gets a collection of all scripts assigned to this profile
+        ///     Gets a collection of all active scripts assigned to this profile
         /// </summary>
         public List<ProfileScript> Scripts { get; }
+
+        /// <summary>
+        /// Gets a collection of all script configurations assigned to this profile
+        /// </summary>
+        public List<ScriptConfiguration> ScriptConfigurations { get; set; }
+
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it

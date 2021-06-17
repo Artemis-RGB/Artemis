@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Storage.Entities.General;
 
 namespace Artemis.Storage.Entities.Profile
 {
@@ -10,15 +11,17 @@ namespace Artemis.Storage.Entities.Profile
         {
             Folders = new List<FolderEntity>();
             Layers = new List<LayerEntity>();
+            ScriptConfiguration = new List<ScriptConfigurationEntity>();
         }
 
         public Guid Id { get; set; }
-        
+
         public string Name { get; set; }
         public bool IsFreshImport { get; set; }
 
         public List<FolderEntity> Folders { get; set; }
         public List<LayerEntity> Layers { get; set; }
+        public List<ScriptConfigurationEntity> ScriptConfiguration { get; set; }
 
         public void UpdateGuid(Guid guid)
         {

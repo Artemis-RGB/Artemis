@@ -7,39 +7,25 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class Script : CorePropertyChanged, IDisposable
     {
-        private bool _isAvailable;
-        private string? _scriptContent;
-        private ScriptingProvider? _scriptingProvider;
-
+        private ScriptConfiguration _scriptConfiguration;
+        private ScriptingProvider _scriptingProvider;
+        
         /// <summary>
         ///     Gets the scripting provider this script belongs to
         /// </summary>
-        public ScriptingProvider? ScriptingProvider
+        public ScriptingProvider ScriptingProvider
         {
             get => _scriptingProvider;
             internal set => SetAndNotify(ref _scriptingProvider, value);
         }
 
         /// <summary>
-        ///     Gets a boolean indicating whether this script is available
+        ///     Gets the script configuration this script belongs to
         /// </summary>
-        public bool IsAvailable
+        public ScriptConfiguration ScriptConfiguration
         {
-            get => _isAvailable;
-            private set => SetAndNotify(ref _isAvailable, value);
-        }
-
-        /// <summary>
-        ///     Gets or sets the content of the script
-        /// </summary>
-        public string? ScriptContent
-        {
-            get => _scriptContent;
-            set
-            {
-                if (!SetAndNotify(ref _scriptContent, value)) return;
-                OnScriptContentChanged();
-            }
+            get => _scriptConfiguration;
+            internal set => SetAndNotify(ref _scriptConfiguration, value);
         }
 
         internal void Initialize(ScriptingProvider scriptingProvider)
@@ -49,15 +35,12 @@ namespace Artemis.Core.ScriptingProviders
 
             ScriptingProvider = scriptingProvider;
             ScriptingProvider.Disabled += ScriptingProviderOnDisabled;
-            IsAvailable = true;
         }
 
 
         private void ScriptingProviderOnDisabled(object? sender, EventArgs e)
         {
-            IsAvailable = false;
             Dispose(true);
-            ScriptingProvider = null;
         }
 
         #region IDisposable
