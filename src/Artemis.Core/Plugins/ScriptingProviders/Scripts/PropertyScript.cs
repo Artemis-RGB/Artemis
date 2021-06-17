@@ -7,18 +7,9 @@
     public abstract class PropertyScript : Script
     {
         /// <summary>
-        ///     Creates a new instance of the <see cref="PropertyScript" /> class.
-        /// </summary>
-        /// <param name="layerProperty"></param>
-        protected PropertyScript(ILayerProperty layerProperty)
-        {
-            LayerProperty = layerProperty;
-        }
-
-        /// <summary>
         ///     Gets the layer property this script is bound to
         /// </summary>
-        public ILayerProperty LayerProperty { get; }
+        public ILayerProperty? LayerProperty { get; internal set; }
 
         /// <summary>
         ///     Called whenever the property is about to update

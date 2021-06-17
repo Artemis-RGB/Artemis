@@ -8,6 +8,11 @@ namespace Artemis.Core.ScriptingProviders
     public abstract class ProfileScript : Script
     {
         /// <summary>
+        ///     Gets the profile this script is bound to
+        /// </summary>
+        public Profile? Profile { get; internal set; }
+
+        /// <summary>
         ///     Called whenever the profile is about to update
         /// </summary>
         /// <param name="deltaTime">Seconds passed since last update</param>
@@ -28,8 +33,7 @@ namespace Artemis.Core.ScriptingProviders
         /// </summary>
         /// <param name="canvas">The profile canvas</param>
         /// <param name="bounds">The area to be filled, covers the entire canvas</param>
-        /// <param name="paint">The paint to be used to fill render the profile</param>
-        public virtual void OnProfileRendering(SKCanvas canvas, SKRect bounds, SKPaint paint)
+        public virtual void OnProfileRendering(SKCanvas canvas, SKRect bounds)
         {
         }
 
@@ -38,8 +42,7 @@ namespace Artemis.Core.ScriptingProviders
         /// </summary>
         /// <param name="canvas">The profile canvas</param>
         /// <param name="bounds">The area to be filled, covers the entire canvas</param>
-        /// <param name="paint">The paint to be used to fill render the profile</param>
-        public virtual void OnProfileRendered(SKCanvas canvas, SKRect bounds, SKPaint paint)
+        public virtual void OnProfileRendered(SKCanvas canvas, SKRect bounds)
         {
         }
     }

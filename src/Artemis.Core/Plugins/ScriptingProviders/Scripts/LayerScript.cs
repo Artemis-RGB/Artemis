@@ -8,6 +8,11 @@ namespace Artemis.Core.ScriptingProviders
     public abstract class LayerScript : Script
     {
         /// <summary>
+        /// Gets the layer this script is bound to
+        /// </summary>
+        public Layer Layer { get; internal set; }
+
+        /// <summary>
         ///     Called whenever the layer is about to update
         /// </summary>
         /// <param name="deltaTime">Seconds passed since last update</param>

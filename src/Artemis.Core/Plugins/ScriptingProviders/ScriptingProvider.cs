@@ -1,10 +1,15 @@
-﻿namespace Artemis.Core.ScriptingProviders
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
+
+namespace Artemis.Core.ScriptingProviders
 {
     /// <summary>
     ///     Allows you to implement and register your own scripting provider
     /// </summary>
     public abstract class ScriptingProvider : PluginFeature
     {
+        private readonly List<Script> _scripts = new();
+
         /// <summary>
         ///     Called when the UI needs a script editor for a <see cref="ProfileScript" />
         /// </summary>
@@ -28,6 +33,27 @@
         /// </summary>
         /// <param name="script">The script the editor must edit</param>
         public abstract IScriptEditorViewModel GetScriptEditor(Script script);
+
+        /// <summary>
+        /// Gets a list of all active scripts belonging to this scripting provider
+        /// </summary>
+        public ReadOnlyCollection<Script> Scripts => _scripts.AsReadOnly();
+
+        #region Overrides of PluginFeature
+
+        /// <inheritdoc />
+        internal override void InternalEnable()
+        {
+            base.InternalEnable();
+        }
+
+        /// <inheritdoc />
+        internal override void InternalDisable()
+        {
+            base.InternalDisable();
+        }
+
+        #endregion
     }
 
     /// <summary>

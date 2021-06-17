@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core.LayerBrushes;
 using Artemis.Core.LayerEffects;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
 using RGB.NET.Core;
@@ -37,6 +38,7 @@ namespace Artemis.Core
             Profile = Parent.Profile;
             Name = name;
             Suspended = false;
+            Scripts = new List<LayerScript>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -60,6 +62,7 @@ namespace Artemis.Core
 
             Profile = profile;
             Parent = parent;
+            Scripts = new List<LayerScript>();
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -74,6 +77,11 @@ namespace Artemis.Core
         ///     A collection of all the LEDs this layer is assigned to.
         /// </summary>
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
+
+        /// <summary>
+        ///     Gets a collection of all scripts assigned to this layer
+        /// </summary>
+        public List<LayerScript> Scripts { get; }
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -142,8 +150,10 @@ namespace Artemis.Core
             if (LayerBrush?.BaseProperties != null)
                 result.AddRange(LayerBrush.BaseProperties.GetAllLayerProperties());
             foreach (BaseLayerEffect layerEffect in LayerEffects)
+            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
+            }
 
             return result;
         }
@@ -315,6 +325,9 @@ namespace Artemis.Core
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
+            
+            foreach (LayerScript layerScript in Scripts) 
+                layerScript.OnLayerUpdating(deltaTime);
 
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
@@ -323,6 +336,9 @@ namespace Artemis.Core
                 Enable();
             else if (Timeline.IsFinished)
                 Disable();
+
+            foreach (LayerScript layerScript in Scripts)
+                layerScript.OnLayerUpdated(deltaTime);
         }
 
         /// <inheritdoc />
@@ -473,6 +489,9 @@ namespace Artemis.Core
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
 
+            foreach (LayerScript layerScript in Scripts)
+                layerScript.OnLayerRendering(canvas, bounds, layerPaint);
+
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                 baseLayerEffect.PreProcess(canvas, bounds, layerPaint);
 
@@ -486,6 +505,9 @@ namespace Artemis.Core
 
                 foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
                     baseLayerEffect.PostProcess(canvas, bounds, layerPaint);
+
+                foreach (LayerScript layerScript in Scripts)
+                    layerScript.OnLayerRendered(canvas, bounds, layerPaint);
             }
 
             finally
@@ -500,9 +522,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("Layer");
 
             if (!Leds.Any())
-            {
                 Path = new SKPath();
-            }
             else
             {
                 SKPath path = new() {FillType = SKPathFillType.Winding};

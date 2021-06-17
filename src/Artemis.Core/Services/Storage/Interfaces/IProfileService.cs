@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using SkiaSharp;
 
@@ -158,5 +159,15 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="canvas"></param>
         void RenderProfiles(SKCanvas canvas);
+
+        /// <summary>
+        ///     Occurs whenever a profile has been activated
+        /// </summary>
+        public event EventHandler<ProfileConfigurationEventArgs>? ProfileActivated;
+
+        /// <summary>
+        ///     Occurs whenever a profile has been deactivated
+        /// </summary>
+        public event EventHandler<ProfileConfigurationEventArgs>? ProfileDeactivated;
     }
 }

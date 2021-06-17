@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -20,6 +21,7 @@ namespace Artemis.Core
             Profile = this;
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
+            Scripts = new List<ProfileScript>();
 
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
@@ -31,6 +33,11 @@ namespace Artemis.Core
         ///     Gets the profile configuration of this profile
         /// </summary>
         public ProfileConfiguration Configuration { get; }
+
+        /// <summary>
+        ///     Gets a collection of all scripts assigned to this profile
+        /// </summary>
+        public List<ProfileScript> Scripts { get; }
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
@@ -61,9 +68,15 @@ namespace Artemis.Core
             {
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
+                
+                foreach (ProfileScript profileScript in Scripts) 
+                    profileScript.OnProfileUpdating(deltaTime);
 
                 foreach (ProfileElement profileElement in Children)
                     profileElement.Update(deltaTime);
+
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileUpdated(deltaTime);
             }
         }
 
@@ -75,8 +88,14 @@ namespace Artemis.Core
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
 
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
+
                 foreach (ProfileElement profileElement in Children)
                     profileElement.Render(canvas, basePosition);
+
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
             }
         }
 

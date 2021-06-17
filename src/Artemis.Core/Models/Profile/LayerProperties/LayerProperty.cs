@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -30,6 +31,7 @@ namespace Artemis.Core
             Path = null!;
             Entity = null!;
             PropertyDescription = null!;
+            Scripts = new List<PropertyScript>();
 
             CurrentValue = default!;
             DefaultValue = default!;
@@ -151,6 +153,9 @@ namespace Artemis.Core
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
         /// <inheritdoc />
+        public List<PropertyScript> Scripts { get; }
+
+        /// <inheritdoc />
         public string Path { get; private set; }
 
         /// <inheritdoc />
@@ -162,12 +167,18 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
+            foreach (PropertyScript propertyScript in Scripts) 
+                propertyScript.OnPropertyUpdating(timeline.Delta.TotalSeconds);
+
             CurrentValue = BaseValue;
 
             UpdateKeyframes(timeline);
             UpdateDataBindings(timeline);
 
             OnUpdated();
+
+            foreach (PropertyScript propertyScript in Scripts)
+                propertyScript.OnPropertyUpdated(timeline.Delta.TotalSeconds);
         }
 
         /// <inheritdoc />

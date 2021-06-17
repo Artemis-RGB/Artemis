@@ -317,6 +317,8 @@ namespace Artemis.Core.Services
             }
 
             profileConfiguration.Profile = profile;
+
+            OnProfileActivated(new ProfileConfigurationEventArgs(profileConfiguration));
             return profile;
         }
 
@@ -330,6 +332,8 @@ namespace Artemis.Core.Services
             Profile profile = profileConfiguration.Profile;
             profileConfiguration.Profile = null;
             profile.Dispose();
+
+            OnProfileDeactivated(new ProfileConfigurationEventArgs(profileConfiguration));
         }
 
         public void DeleteProfile(ProfileConfiguration profileConfiguration)
@@ -582,5 +586,22 @@ namespace Artemis.Core.Services
 
             _profileRepository.Save(profile.ProfileEntity);
         }
+
+        #region Events
+
+        public event EventHandler<ProfileConfigurationEventArgs>? ProfileActivated;
+        public event EventHandler<ProfileConfigurationEventArgs>? ProfileDeactivated;
+
+        protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
+        {
+            ProfileActivated?.Invoke(this, e);
+        }
+
+        protected virtual void OnProfileDeactivated(ProfileConfigurationEventArgs e)
+        {
+            ProfileDeactivated?.Invoke(this, e);
+        }
+
+        #endregion
     }
 }

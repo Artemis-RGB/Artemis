@@ -5,27 +5,59 @@ namespace Artemis.Core.ScriptingProviders
     /// <summary>
     ///     Represents a script processed by a <see cref="ScriptingProviders.ScriptingProvider" />.
     /// </summary>
-    public abstract class Script : IDisposable
+    public abstract class Script : CorePropertyChanged, IDisposable
     {
+        private bool _isAvailable;
+        private string? _scriptContent;
+        private ScriptingProvider? _scriptingProvider;
+
         /// <summary>
         ///     Gets the scripting provider this script belongs to
         /// </summary>
-        public ScriptingProvider ScriptingProvider { get; internal set; } = null!;
-
-        /// <summary>
-        ///     Called whenever the Artemis Core is about to update
-        /// </summary>
-        /// <param name="deltaTime">Seconds passed since last update</param>
-        public virtual void OnCoreUpdating(double deltaTime)
+        public ScriptingProvider? ScriptingProvider
         {
+            get => _scriptingProvider;
+            internal set => SetAndNotify(ref _scriptingProvider, value);
         }
 
         /// <summary>
-        ///     Called whenever the Artemis Core has been updated
+        ///     Gets a boolean indicating whether this script is available
         /// </summary>
-        /// <param name="deltaTime">Seconds passed since last update</param>
-        public virtual void OnCoreUpdated(double deltaTime)
+        public bool IsAvailable
         {
+            get => _isAvailable;
+            private set => SetAndNotify(ref _isAvailable, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the content of the script
+        /// </summary>
+        public string? ScriptContent
+        {
+            get => _scriptContent;
+            set
+            {
+                if (!SetAndNotify(ref _scriptContent, value)) return;
+                OnScriptContentChanged();
+            }
+        }
+
+        internal void Initialize(ScriptingProvider scriptingProvider)
+        {
+            if (ScriptingProvider != null)
+                throw new ArtemisCoreException("Script is already initialized");
+
+            ScriptingProvider = scriptingProvider;
+            ScriptingProvider.Disabled += ScriptingProviderOnDisabled;
+            IsAvailable = true;
+        }
+
+
+        private void ScriptingProviderOnDisabled(object? sender, EventArgs e)
+        {
+            IsAvailable = false;
+            Dispose(true);
+            ScriptingProvider = null;
         }
 
         #region IDisposable
@@ -49,6 +81,24 @@ namespace Artemis.Core.ScriptingProviders
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        #endregion
+
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs when the contents of the script have changed
+        /// </summary>
+        public event EventHandler? ScriptContentChanged;
+
+        /// <summary>
+        ///     Invokes the <see cref="ScriptContentChanged" /> event
+        /// </summary>
+        protected virtual void OnScriptContentChanged()
+        {
+            ScriptContentChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion
