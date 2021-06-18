@@ -7,8 +7,6 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
-             xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
-             xmlns:profile="clr-namespace:Artemis.Core;assembly=Artemis.Core"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True"
@@ -34,6 +32,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -50,7 +49,7 @@
 
         <Menu Grid.Row="0" Grid.Column="1" IsMainMenu="True" Margin="0 -4 0 0">
             <MenuItem Header="_File">
-                <MenuItem Header="New"  Icon="{materialDesign:PackIcon Kind=Plus}">
+                <MenuItem Header="New" Icon="{materialDesign:PackIcon Kind=Plus}">
                     <MenuItem Header="Category" Icon="{materialDesign:PackIcon Kind=FormatListBulletedType}" />
                     <MenuItem Header="Profile" Icon="{materialDesign:PackIcon Kind=BookEdit}" />
                     <MenuItem Header="Folder" Icon="{materialDesign:PackIcon Kind=Folder}" />
@@ -59,10 +58,10 @@
                 <MenuItem Header="Export..." Icon="{materialDesign:PackIcon Kind=Export}" />
                 <MenuItem Header="Import..." Icon="{materialDesign:PackIcon Kind=Import}" />
             </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Header="_Duplicate" Command="Cut" Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" InputGestureText="Ctrl+D" />
-                <MenuItem Header="_Copy" Command="Copy" Icon="{materialDesign:PackIcon Kind=ContentCopy}" InputGestureText="Ctrl+C" />
-                <MenuItem Header="_Paste" Command="Paste" Icon="{materialDesign:PackIcon Kind=ContentPaste}" InputGestureText="Ctrl+V" />
+            <MenuItem Header="_Edit" SubmenuOpened="{s:Action EditMenuOpened}">
+                <MenuItem Header="_Duplicate" Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" Command="{s:Action Duplicate}" InputGestureText="Ctrl+D" />
+                <MenuItem Header="_Copy" Icon="{materialDesign:PackIcon Kind=ContentCopy}" Command="{s:Action Copy}" InputGestureText="Ctrl+C" />
+                <MenuItem Header="_Paste" Icon="{materialDesign:PackIcon Kind=ContentPaste}" Command="{s:Action Paste}" InputGestureText="Ctrl+V" />
             </MenuItem>
             <MenuItem Header="_Scripting">
                 <MenuItem Header="_Profile scripts" Icon="{materialDesign:PackIcon Kind=BookEdit}" />
@@ -70,20 +69,59 @@
                 <MenuItem Header="_Property scripts" Icon="{materialDesign:PackIcon Kind=FormTextbox}" />
             </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="Artemis FAQ" Icon="{materialDesign:PackIcon Kind=BookEdit}" />
+                <MenuItem Header="Artemis wiki"
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/" />
                 <Separator />
-                <MenuItem Header="Editor" Icon="{materialDesign:PackIcon Kind=Edit}" />
-                <MenuItem Header="Layers" Icon="{materialDesign:PackIcon Kind=Layers}" />
-                <MenuItem Header="Display conditions" Icon="{materialDesign:PackIcon Kind=NotEqual}" />
-                <MenuItem Header="Data bindings" Icon="{materialDesign:PackIcon Kind=VectorLink}" />
-                <MenuItem Header="Scripting" Icon="{materialDesign:PackIcon Kind=CodeJson}" />
+                <MenuItem Header="Editor"
+                          Icon="{materialDesign:PackIcon Kind=Edit}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles" />
+                <MenuItem Header="Layers"
+                          Icon="{materialDesign:PackIcon Kind=Layers}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers" />
+                <MenuItem Header="Display conditions"
+                          Icon="{materialDesign:PackIcon Kind=NotEqual}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions" />
+                <MenuItem Header="Timeline"
+                          Icon="{materialDesign:PackIcon Kind=Stopwatch}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline" />
+                <MenuItem Header="Data bindings"
+                          Icon="{materialDesign:PackIcon Kind=VectorLink}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings" />
+                <MenuItem Header="Scripting"
+                          Icon="{materialDesign:PackIcon Kind=CodeJson}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting" />
                 <Separator />
-                <MenuItem Header="Report a bug" Icon="{materialDesign:PackIcon Kind=Github}" />
-                <MenuItem Header="Get help on Discord" Icon="{materialDesign:PackIcon Kind=Discord}" />
+                <MenuItem Header="Report a bug"
+                          Icon="{materialDesign:PackIcon Kind=Github}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://github.com/Artemis-RGB/Artemis/issues" />
+                <MenuItem Header="Get help on Discord"
+                          Icon="{materialDesign:PackIcon Kind=Discord}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://discord.gg/S3MVaC9" />
             </MenuItem>
         </Menu>
 
-        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Margin="10 -5 10 10">
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                ToolTip="Open debugger"
+                Margin="10 -4 10 0"
+                Width="34"
+                Height="34"
+                Command="{s:Action OpenDebugger}">
+            <materialDesign:PackIcon Kind="Matrix" Width="20" Height="20" />
+        </Button>
+
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10 -5 10 10">
             <Grid.ColumnDefinitions>
                 <!-- Left side -->
                 <ColumnDefinition Width="*" MinWidth="100" />

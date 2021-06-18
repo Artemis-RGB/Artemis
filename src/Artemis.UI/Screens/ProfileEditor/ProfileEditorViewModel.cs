@@ -9,6 +9,7 @@ using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 using ProfileConfigurationEventArgs = Artemis.UI.Shared.ProfileConfigurationEventArgs;
@@ -179,9 +180,53 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
+        #region Menu
+
+        public bool CanCopy => _profileEditorService.SelectedProfileElement != null;
+        public bool CanDuplicate => _profileEditorService.SelectedProfileElement != null;
+        public bool CanPaste => _profileEditorService.GetCanPasteProfileElement();
+
+        public void Copy()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.CopyProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Duplicate()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.DuplicateProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Paste()
+        {
+            if (_profileEditorService.SelectedProfileElement != null && _profileEditorService.SelectedProfileElement.Parent is Folder parent)
+                _profileEditorService.PasteProfileElement(parent, _profileEditorService.SelectedProfileElement.Order - 1);
+            else
+            {
+                Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
+                if (rootFolder != null)
+                    _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
+            }
+        }
+
+        public void OpenUrl(string url)
+        {
+            Core.Utilities.OpenUrl(url);
+        }
+
+        public void EditMenuOpened()
+        {
+            NotifyOfPropertyChange(nameof(CanPaste));
+        }
+
+        #endregion
+
+
         protected override void OnInitialActivate()
         {
             _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
             LoadWorkspaceSettings();
             base.OnInitialActivate();
         }
@@ -189,15 +234,22 @@ namespace Artemis.UI.Screens.ProfileEditor
         protected override void OnClose()
         {
             _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
             SaveWorkspaceSettings();
             _profileEditorService.ChangeSelectedProfileConfiguration(null);
 
             base.OnClose();
         }
 
-        private void ProfileEditorServiceOnSelectedProfileChanged(object? sender, ProfileConfigurationEventArgs e)
+        private void ProfileEditorServiceOnSelectedProfileChanged(object sender, ProfileConfigurationEventArgs e)
         {
             NotifyOfPropertyChange(nameof(ProfileConfiguration));
+        }
+
+        private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(CanCopy));
+            NotifyOfPropertyChange(nameof(CanDuplicate));
         }
 
         private void LoadWorkspaceSettings()
