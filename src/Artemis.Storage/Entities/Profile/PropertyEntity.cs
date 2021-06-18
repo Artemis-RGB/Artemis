@@ -10,7 +10,7 @@ namespace Artemis.Storage.Entities.Profile
         {
             KeyframeEntities = new List<KeyframeEntity>();
             DataBindingEntities = new List<DataBindingEntity>();
-            ScriptConfiguration = new List<ScriptConfigurationEntity>();
+            ScriptConfigurations = new List<ScriptConfigurationEntity>();
         }
 
         public string FeatureId { get; set; }
@@ -21,6 +21,6 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
         public List<DataBindingEntity> DataBindingEntities { get; set; }
-        public List<ScriptConfigurationEntity> ScriptConfiguration { get; set; }
+        public List<ScriptConfigurationEntity> ScriptConfigurations { get; set; }
     }
 }

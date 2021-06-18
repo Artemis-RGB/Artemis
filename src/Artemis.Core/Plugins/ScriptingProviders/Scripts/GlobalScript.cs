@@ -1,10 +1,19 @@
-﻿namespace Artemis.Core.ScriptingProviders
+﻿using Artemis.Core.Services;
+
+namespace Artemis.Core.ScriptingProviders
 {
     /// <summary>
     ///     Represents a script running globally
     /// </summary>
     public abstract class GlobalScript : Script
     {
+        /// <inheritdoc />
+        protected GlobalScript(ScriptConfiguration configuration) : base(configuration)
+        {
+        }
+
+        internal ScriptingService ScriptingService { get; set; }
+
         /// <summary>
         ///     Called whenever the Artemis Core is about to update
         /// </summary>
@@ -20,5 +29,15 @@
         public virtual void OnCoreUpdated(double deltaTime)
         {
         }
+
+        #region Overrides of Script
+
+        /// <inheritdoc />
+        internal override void InternalCleanup()
+        {
+            ScriptingService.InternalGlobalScripts.Remove(this);
+        }
+
+        #endregion
     }
 }

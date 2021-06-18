@@ -14,7 +14,7 @@ namespace Artemis.Core
     {
         private readonly object _lock = new();
         private bool _isFreshImport;
-        
+
         internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
         {
             Configuration = configuration;
@@ -22,6 +22,7 @@ namespace Artemis.Core
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
             Scripts = new List<ProfileScript>();
+            ScriptConfigurations = new List<ScriptConfiguration>();
 
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
@@ -40,9 +41,9 @@ namespace Artemis.Core
         public List<ProfileScript> Scripts { get; }
 
         /// <summary>
-        /// Gets a collection of all script configurations assigned to this profile
+        ///     Gets a collection of all script configurations assigned to this profile
         /// </summary>
-        public List<ScriptConfiguration> ScriptConfigurations { get; set; }
+        public List<ScriptConfiguration> ScriptConfigurations { get; }
 
 
         /// <summary>
@@ -74,8 +75,8 @@ namespace Artemis.Core
             {
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
-                
-                foreach (ProfileScript profileScript in Scripts) 
+
+                foreach (ProfileScript profileScript in Scripts)
                     profileScript.OnProfileUpdating(deltaTime);
 
                 foreach (ProfileElement profileElement in Children)
@@ -150,6 +151,9 @@ namespace Artemis.Core
             if (!disposing)
                 return;
 
+            while (Scripts.Count > 1)
+                Scripts[0].Dispose();
+
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
             ChildrenList.Clear();
@@ -182,6 +186,11 @@ namespace Artemis.Core
                     AddChild(new Folder(this, this, rootFolder));
                 }
             }
+
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+                scriptConfiguration.Script?.Dispose();
+            ScriptConfigurations.Clear();
+            ScriptConfigurations.AddRange(ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
         }
 
         internal override void Save()
@@ -201,6 +210,13 @@ namespace Artemis.Core
 
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
+
+            ProfileEntity.ScriptConfigurations.Clear();
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+            {
+                scriptConfiguration.Save();
+                ProfileEntity.ScriptConfigurations.Add(scriptConfiguration.Entity);
+            }
         }
     }
 }

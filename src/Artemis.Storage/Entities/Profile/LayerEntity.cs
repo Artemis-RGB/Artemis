@@ -13,7 +13,7 @@ namespace Artemis.Storage.Entities.Profile
         {
             Leds = new List<LedEntity>();
             AdaptionHints = new List<IAdaptionHintEntity>();
-            ScriptConfiguration = new List<ScriptConfigurationEntity>();
+            ScriptConfigurations = new List<ScriptConfigurationEntity>();
             PropertyEntities = new List<PropertyEntity>();
             LayerEffects = new List<LayerEffectEntity>();
             ExpandedPropertyGroups = new List<string>();
@@ -25,7 +25,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<LedEntity> Leds { get; set; }
         public List<IAdaptionHintEntity> AdaptionHints { get; set; }
-        public List<ScriptConfigurationEntity> ScriptConfiguration { get; set; }
+        public List<ScriptConfigurationEntity> ScriptConfigurations { get; set; }
 
         [BsonRef("ProfileEntity")]
         public ProfileEntity Profile { get; set; }

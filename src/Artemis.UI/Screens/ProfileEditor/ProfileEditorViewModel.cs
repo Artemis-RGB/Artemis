@@ -11,10 +11,11 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Shared.Services;
 using Stylet;
+using ProfileConfigurationEventArgs = Artemis.UI.Shared.ProfileConfigurationEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : Screen, IMainScreenViewModel
+    public class ProfileEditorViewModel : MainScreenViewModel
     {
         private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
@@ -59,6 +60,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         }
 
         public IDialogService DialogService { get; }
+
+        public ProfileConfiguration ProfileConfiguration => _profileEditorService.SelectedProfileConfiguration;
 
         public DisplayConditionsViewModel DisplayConditionsViewModel
         {
@@ -178,16 +181,23 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         protected override void OnInitialActivate()
         {
+            _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
             LoadWorkspaceSettings();
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
+            _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
             SaveWorkspaceSettings();
             _profileEditorService.ChangeSelectedProfileConfiguration(null);
 
             base.OnClose();
+        }
+
+        private void ProfileEditorServiceOnSelectedProfileChanged(object? sender, ProfileConfigurationEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(ProfileConfiguration));
         }
 
         private void LoadWorkspaceSettings()

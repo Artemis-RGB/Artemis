@@ -7,10 +7,16 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class ProfileScript : Script
     {
+        /// <inheritdoc />
+        protected ProfileScript(Profile profile, ScriptConfiguration configuration) : base(configuration)
+        {
+            Profile = profile;
+        }
+
         /// <summary>
         ///     Gets the profile this script is bound to
         /// </summary>
-        public Profile? Profile { get; internal set; }
+        public Profile Profile { get; }
 
         /// <summary>
         ///     Called whenever the profile is about to update
@@ -45,5 +51,18 @@ namespace Artemis.Core.ScriptingProviders
         public virtual void OnProfileRendered(SKCanvas canvas, SKRect bounds)
         {
         }
+
+        #region Overrides of Script
+
+        /// <inheritdoc />
+        internal override void InternalCleanup()
+        {
+            lock (Profile.Scripts)
+            {
+                Profile.Scripts.Remove(this);
+            }
+        }
+
+        #endregion
     }
 }

@@ -39,6 +39,8 @@ namespace Artemis.Core
             Name = name;
             Suspended = false;
             Scripts = new List<LayerScript>();
+            ScriptConfigurations = new List<ScriptConfiguration>();
+
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -63,6 +65,8 @@ namespace Artemis.Core
             Profile = profile;
             Parent = parent;
             Scripts = new List<LayerScript>();
+            ScriptConfigurations = new List<ScriptConfiguration>();
+
             _general = new LayerGeneralProperties();
             _transform = new LayerTransformProperties();
 
@@ -79,9 +83,14 @@ namespace Artemis.Core
         public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
 
         /// <summary>
-        ///     Gets a collection of all scripts assigned to this layer
+        ///     Gets a collection of all active scripts assigned to this layer
         /// </summary>
         public List<LayerScript> Scripts { get; }
+
+        /// <summary>
+        /// Gets a collection of all script configurations assigned to this layer
+        /// </summary>
+        public List<ScriptConfiguration> ScriptConfigurations { get; }
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -181,6 +190,9 @@ namespace Artemis.Core
 
             Disposed = true;
 
+            while (Scripts.Count > 1)
+                Scripts[0].Dispose();
+
             LayerBrushStore.LayerBrushAdded -= LayerBrushStoreOnLayerBrushAdded;
             LayerBrushStore.LayerBrushRemoved -= LayerBrushStoreOnLayerBrushRemoved;
 
@@ -257,6 +269,11 @@ namespace Artemis.Core
             ExpandedPropertyGroups.AddRange(LayerEntity.ExpandedPropertyGroups);
             LoadRenderElement();
             Adapter.Load();
+
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+                scriptConfiguration.Script?.Dispose();
+            ScriptConfigurations.Clear();
+            ScriptConfigurations.AddRange(LayerEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
         }
 
         internal override void Save()
@@ -294,6 +311,13 @@ namespace Artemis.Core
             // Adaption hints
             Adapter.Save();
 
+            LayerEntity.ScriptConfigurations.Clear();
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+            {
+                scriptConfiguration.Save();
+                LayerEntity.ScriptConfigurations.Add(scriptConfiguration.Entity);
+            }
+
             SaveRenderElement();
         }
 
@@ -325,8 +349,8 @@ namespace Artemis.Core
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
-            
-            foreach (LayerScript layerScript in Scripts) 
+
+            foreach (LayerScript layerScript in Scripts)
                 layerScript.OnLayerUpdating(deltaTime);
 
             UpdateDisplayCondition();
@@ -498,9 +522,11 @@ namespace Artemis.Core
             try
             {
                 canvas.SaveLayer(layerPaint);
-
-                // If a brush is a bad boy and tries to color outside the lines, ensure that its clipped off
                 canvas.ClipPath(renderPath);
+
+                // Restore the blend mode before doing the actual render
+                layerPaint.BlendMode = SKBlendMode.SrcOver;
+
                 LayerBrush.InternalRender(canvas, bounds, layerPaint);
 
                 foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))

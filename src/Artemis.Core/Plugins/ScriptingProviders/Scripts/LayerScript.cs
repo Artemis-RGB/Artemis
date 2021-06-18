@@ -7,8 +7,14 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class LayerScript : Script
     {
+        /// <inheritdoc />
+        protected LayerScript(Layer layer, ScriptConfiguration configuration) : base(configuration)
+        {
+            Layer = layer;
+        }
+
         /// <summary>
-        /// Gets the layer this script is bound to
+        ///     Gets the layer this script is bound to
         /// </summary>
         public Layer Layer { get; internal set; }
 
@@ -47,5 +53,18 @@ namespace Artemis.Core.ScriptingProviders
         public virtual void OnLayerRendered(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
         }
+
+        #region Overrides of Script
+
+        /// <inheritdoc />
+        internal override void InternalCleanup()
+        {
+            lock (Layer.Scripts)
+            {
+                Layer.Scripts.Remove(this);
+            }
+        }
+
+        #endregion
     }
 }

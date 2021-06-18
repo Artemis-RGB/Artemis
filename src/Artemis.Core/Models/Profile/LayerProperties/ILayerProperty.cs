@@ -25,9 +25,14 @@ namespace Artemis.Core
         LayerPropertyGroup LayerPropertyGroup { get; }
 
         /// <summary>
-        ///     Gets a collection of all scripts assigned to this layer property
+        ///     Gets a collection of all active scripts assigned to this layer property
         /// </summary>
         List<PropertyScript> Scripts { get; }
+
+        /// <summary>
+        /// Gets a collection of all script configurations assigned to this layer property
+        /// </summary>
+        public List<ScriptConfiguration> ScriptConfigurations { get; }
 
         /// <summary>
         ///     Gets the unique path of the property on the layer

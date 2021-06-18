@@ -11,7 +11,7 @@ namespace Artemis.Storage.Entities.Profile
         {
             Folders = new List<FolderEntity>();
             Layers = new List<LayerEntity>();
-            ScriptConfiguration = new List<ScriptConfigurationEntity>();
+            ScriptConfigurations = new List<ScriptConfigurationEntity>();
         }
 
         public Guid Id { get; set; }
@@ -21,7 +21,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<FolderEntity> Folders { get; set; }
         public List<LayerEntity> Layers { get; set; }
-        public List<ScriptConfigurationEntity> ScriptConfiguration { get; set; }
+        public List<ScriptConfigurationEntity> ScriptConfigurations { get; set; }
 
         public void UpdateGuid(Guid guid)
         {

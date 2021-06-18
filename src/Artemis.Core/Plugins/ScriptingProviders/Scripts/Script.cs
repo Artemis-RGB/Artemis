@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 
 namespace Artemis.Core.ScriptingProviders
 {
@@ -7,9 +8,23 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class Script : CorePropertyChanged, IDisposable
     {
-        private ScriptConfiguration _scriptConfiguration;
-        private ScriptingProvider _scriptingProvider;
-        
+        private ScriptingProvider _scriptingProvider = null!;
+
+        /// <summary>
+        ///     The base constructor of any script
+        /// </summary>
+        /// <param name="configuration">The script configuration this script belongs to</param>
+        protected Script(ScriptConfiguration configuration)
+        {
+            if (configuration.Script != null)
+                throw new ArtemisCoreException("The provided script configuration already has an active script");
+
+            ScriptConfiguration = configuration;
+            ScriptConfiguration.Script = this;
+
+            ScriptConfiguration.PropertyChanged += ScriptConfigurationOnPropertyChanged;
+        }
+
         /// <summary>
         ///     Gets the scripting provider this script belongs to
         /// </summary>
@@ -22,26 +37,17 @@ namespace Artemis.Core.ScriptingProviders
         /// <summary>
         ///     Gets the script configuration this script belongs to
         /// </summary>
-        public ScriptConfiguration ScriptConfiguration
+        public ScriptConfiguration ScriptConfiguration { get; }
+
+        #region Event handlers
+
+        private void ScriptConfigurationOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            get => _scriptConfiguration;
-            internal set => SetAndNotify(ref _scriptConfiguration, value);
+            if (e.PropertyName == nameof(ScriptConfiguration.ScriptContent))
+                OnScriptContentChanged();
         }
 
-        internal void Initialize(ScriptingProvider scriptingProvider)
-        {
-            if (ScriptingProvider != null)
-                throw new ArtemisCoreException("Script is already initialized");
-
-            ScriptingProvider = scriptingProvider;
-            ScriptingProvider.Disabled += ScriptingProviderOnDisabled;
-        }
-
-
-        private void ScriptingProviderOnDisabled(object? sender, EventArgs e)
-        {
-            Dispose(true);
-        }
+        #endregion
 
         #region IDisposable
 
@@ -62,12 +68,20 @@ namespace Artemis.Core.ScriptingProviders
         /// <inheritdoc />
         public void Dispose()
         {
+            ScriptConfiguration.PropertyChanged -= ScriptConfigurationOnPropertyChanged;
+            ScriptConfiguration.Script = null;
+            ScriptingProvider.InternalScripts.Remove(this);
+            
+            // Can't trust those pesky plugin devs!
+            InternalCleanup();
+
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        #endregion
+        internal abstract void InternalCleanup();
 
+        #endregion
 
         #region Events
 

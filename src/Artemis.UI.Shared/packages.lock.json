@@ -29,11 +29,11 @@
       },
       "MaterialDesignThemes": {
         "type": "Direct",
-        "requested": "[4.0.0, )",
-        "resolved": "4.0.0",
-        "contentHash": "+n5oWHuRiYL/gUw2XfQHCRZqHtU8KbrdurgU0IcO98Zsyhw4BvggodfXY8veRtbjjmM9EJ/sG2yKBrgPOGX4JQ==",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "WqrO9AbtdE4pLPtDk/C5BZRnkgWFwVGyUHWj7tRJrgnKl089DEobVXBCLeqp2mkgBeFHj4Xe3AfWyhmlnO6AZA==",
         "dependencies": {
-          "MaterialDesignColors": "2.0.0"
+          "MaterialDesignColors": "2.0.1"
         }
       },
       "Microsoft.Xaml.Behaviors.Wpf": {
@@ -150,8 +150,8 @@
       },
       "MaterialDesignColors": {
         "type": "Transitive",
-        "resolved": "2.0.0",
-        "contentHash": "+JoghC3QRK0u9Wul1To1ORjcfTbFTVzFPjJ02H7VREOdNzIIn427e8G9gP9hXu9pm1r2OneLnoCG/lTma5cG2w=="
+        "resolved": "2.0.1",
+        "contentHash": "Azl8nN23SD6QPE0PdsfpKiIqWTvH7rzXwgXPiFSEt91NFOrwB5cx3iq/sbINWMZunhXJ32+jVUHiV03B8eJbZw=="
       },
       "McMaster.NETCore.Plugins": {
         "type": "Transitive",
