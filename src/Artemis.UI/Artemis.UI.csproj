@@ -143,7 +143,7 @@
         <PackageReference Include="Hardcodet.NotifyIcon.Wpf.NetCore" Version="1.0.18" />
         <PackageReference Include="Humanizer.Core" Version="2.8.26" />
         <PackageReference Include="MaterialDesignExtensions" Version="3.3.0" />
-        <PackageReference Include="MaterialDesignThemes" Version="4.0.0" />
+        <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
         <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications" Version="7.0.2" />
         <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
         <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.31" />

@@ -21,7 +21,7 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Grid Margin="16">
+    <Grid Margin="10">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="100" />
             <ColumnDefinition Width="5" />
@@ -204,12 +204,12 @@
                 <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Cursor="Arrow">
                     <materialDesign:Card Padding="8">
                         <StackPanel Orientation="Horizontal">
-                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
                                       IsChecked="{Binding ColorDevices}"
                                       ToolTip="If selected, each device is completely lid up with a random color">
                                 Show random device colors
                             </CheckBox>
-                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                            <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
                                       IsChecked="{Binding ColorFirstLedOnly}"
                                       IsEnabled="{Binding ColorDevices}"
                                       ToolTip="If selected, only the first LED of each device is lid up, aiding with rotation settings"
@@ -220,7 +220,7 @@
                     </materialDesign:Card>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0, 0, 15, 15">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 15 15">
                     <Button Command="{s:Action AutoArrange}"
                             Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                             HorizontalAlignment="Right"
@@ -228,15 +228,14 @@
                             VerticalAlignment="Bottom">
                         <materialDesign:PackIcon Kind="Wand" Height="24" Width="24" />
                     </Button>
-                    <StackPanel Orientation="Vertical">
-                        <Slider Margin="0,0,14,0"
-                                Orientation="Vertical"
+                    <StackPanel Orientation="Vertical" Margin="10 0 0 0">
+                        <Slider Orientation="Vertical"
+                                HorizontalAlignment="Center"
+                                Margin="0 10"
+                                Height="120"
                                 Minimum="10"
                                 Maximum="400"
-                                Height="100"
-                                FocusVisualStyle="{x:Null}"
-                                Value="{Binding PanZoomViewModel.ZoomPercentage}"
-                                Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                                Value="{Binding PanZoomViewModel.ZoomPercentage}" />
                         <Button Command="{s:Action ResetZoomAndPan}"
                                 Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                                 HorizontalAlignment="Right"
@@ -317,7 +316,7 @@
             </materialDesign:DialogHost>
         </materialDesign:Card>
 
-        <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0,5,0,0">
+        <TextBlock Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Style="{StaticResource MaterialDesignCaptionTextBlock}" Margin="0 5 0 -5">
             <InlineUIContainer>
                 <materialDesign:PackIcon Kind="Keyboard" Margin="0 0 0 -3" />
             </InlineUIContainer>

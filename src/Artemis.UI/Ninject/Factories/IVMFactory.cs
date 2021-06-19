@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Modules;
+using Artemis.UI.Screens.Header;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
@@ -58,6 +59,11 @@ namespace Artemis.UI.Ninject.Factories
         CategoryAdaptionHintViewModel CategoryAdaptionHintViewModel(CategoryAdaptionHint adaptionHint);
         DeviceAdaptionHintViewModel DeviceAdaptionHintViewModel(DeviceAdaptionHint adaptionHint);
         KeyboardSectionAdaptionHintViewModel KeyboardSectionAdaptionHintViewModel(KeyboardSectionAdaptionHint adaptionHint);
+    }
+
+    public interface IHeaderVmFactory : IVmFactory
+    {
+        SimpleHeaderViewModel SimpleHeaderViewModel(string displayName);
     }
 
     public interface IProfileLayerVmFactory : IVmFactory

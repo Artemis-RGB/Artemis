@@ -372,6 +372,7 @@
                   Grid.Column="2"
                   HorizontalAlignment="Stretch"
                   Panel.ZIndex="2"
+                  ClipToBounds="False"
                   Background="{DynamicResource MaterialDesignCardBackground}">
 
                 <Grid.ColumnDefinitions>
@@ -433,12 +434,11 @@
                 <Slider Grid.Column="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
-                        Margin="10 5"
+                        VerticalAlignment="Center"
+                        materialDesign:SliderAssist.OnlyShowFocusVisualWhileDragging="True"
                         Minimum="31"
                         Maximum="350"
-                        TickFrequency="1"
-                        IsSnapToTickEnabled="True"
-                        AutoToolTipPlacement="TopLeft"
+                        Margin="10 0"
                         Value="{Binding ProfileEditorService.PixelsPerSecond}"
                         Foreground="{StaticResource SecondaryHueMidBrush}"
                         Width="319" />

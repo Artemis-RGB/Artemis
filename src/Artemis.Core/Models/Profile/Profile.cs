@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using SkiaSharp;
 
@@ -13,13 +14,15 @@ namespace Artemis.Core
     {
         private readonly object _lock = new();
         private bool _isFreshImport;
-        
+
         internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
         {
             Configuration = configuration;
             Profile = this;
             ProfileEntity = profileEntity;
             EntityId = profileEntity.Id;
+            Scripts = new List<ProfileScript>();
+            ScriptConfigurations = new List<ScriptConfiguration>();
 
             UndoStack = new Stack<string>();
             RedoStack = new Stack<string>();
@@ -31,6 +34,17 @@ namespace Artemis.Core
         ///     Gets the profile configuration of this profile
         /// </summary>
         public ProfileConfiguration Configuration { get; }
+
+        /// <summary>
+        ///     Gets a collection of all active scripts assigned to this profile
+        /// </summary>
+        public List<ProfileScript> Scripts { get; }
+
+        /// <summary>
+        ///     Gets a collection of all script configurations assigned to this profile
+        /// </summary>
+        public List<ScriptConfiguration> ScriptConfigurations { get; }
+
 
         /// <summary>
         ///     Gets or sets a boolean indicating whether this profile is freshly imported i.e. no changes have been made to it
@@ -62,8 +76,14 @@ namespace Artemis.Core
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
 
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileUpdating(deltaTime);
+
                 foreach (ProfileElement profileElement in Children)
                     profileElement.Update(deltaTime);
+
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileUpdated(deltaTime);
             }
         }
 
@@ -75,8 +95,14 @@ namespace Artemis.Core
                 if (Disposed)
                     throw new ObjectDisposedException("Profile");
 
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileRendering(canvas, canvas.LocalClipBounds);
+
                 foreach (ProfileElement profileElement in Children)
                     profileElement.Render(canvas, basePosition);
+
+                foreach (ProfileScript profileScript in Scripts)
+                    profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
             }
         }
 
@@ -125,6 +151,9 @@ namespace Artemis.Core
             if (!disposing)
                 return;
 
+            while (Scripts.Count > 1)
+                Scripts[0].Dispose();
+
             foreach (ProfileElement profileElement in Children)
                 profileElement.Dispose();
             ChildrenList.Clear();
@@ -157,6 +186,11 @@ namespace Artemis.Core
                     AddChild(new Folder(this, this, rootFolder));
                 }
             }
+
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+                scriptConfiguration.Script?.Dispose();
+            ScriptConfigurations.Clear();
+            ScriptConfigurations.AddRange(ProfileEntity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
         }
 
         internal override void Save()
@@ -176,6 +210,13 @@ namespace Artemis.Core
 
             ProfileEntity.Layers.Clear();
             ProfileEntity.Layers.AddRange(GetAllLayers().Select(f => f.LayerEntity));
+
+            ProfileEntity.ScriptConfigurations.Clear();
+            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
+            {
+                scriptConfiguration.Save();
+                ProfileEntity.ScriptConfigurations.Add(scriptConfiguration.Entity);
+            }
         }
     }
 }

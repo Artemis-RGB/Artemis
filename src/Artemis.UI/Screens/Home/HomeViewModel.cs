@@ -1,12 +1,13 @@
-﻿using Stylet;
+﻿using Artemis.UI.Ninject.Factories;
 
 namespace Artemis.UI.Screens.Home
 {
-    public class HomeViewModel : Screen, IMainScreenViewModel
+    public class HomeViewModel : MainScreenViewModel
     {
-        public HomeViewModel()
+        public HomeViewModel(IHeaderVmFactory headerVmFactory)
         {
             DisplayName = "Home";
+            HeaderViewModel = headerVmFactory.SimpleHeaderViewModel(DisplayName);
         }
 
         public void OpenUrl(string url)

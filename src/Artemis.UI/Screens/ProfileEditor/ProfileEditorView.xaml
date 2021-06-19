@@ -7,8 +7,7 @@
              xmlns:s="https://github.com/canton7/Stylet"
              xmlns:profileEditor="clr-namespace:Artemis.UI.Screens.ProfileEditor"
              xmlns:behaviors="clr-namespace:Artemis.UI.Behaviors"
-             xmlns:dataTemplateSelectors="clr-namespace:Artemis.UI.DataTemplateSelectors"
-             xmlns:profile="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+             xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
              mc:Ignorable="d"
              behaviors:InputBindingBehavior.PropagateInputBindingsToWindow="True"
              d:DesignHeight="450" d:DesignWidth="800"
@@ -29,70 +28,200 @@
         <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
     </UserControl.InputBindings>
 
-    <Grid Margin="10">
+    <Grid ClipToBounds="True">
         <Grid.ColumnDefinitions>
-            <!-- Left side -->
-            <ColumnDefinition Width="*" MinWidth="100" />
-            <!-- Side panels resize -->
             <ColumnDefinition Width="Auto" />
-            <!-- Side panels -->
-            <ColumnDefinition Width="{Binding SidePanelsWidth.Value, Mode=TwoWay}" MinWidth="100" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <!-- Left side -->
-        <Grid Grid.Row="0" Grid.Column="0">
-            <Grid.RowDefinitions>
+        <shared:ProfileConfigurationIcon Grid.Row="0"
+                                         Grid.Column="0"
+                                         Width="25"
+                                         Height="25"
+                                         Margin="25 -5 25 0"
+                                         ToolTip="{Binding ProfileConfiguration.Name}"
+                                         ConfigurationIcon="{Binding ProfileConfiguration.Icon}" />
+
+        <Menu Grid.Row="0" Grid.Column="1" IsMainMenu="True" Margin="0 -4 0 0">
+            <MenuItem Header="_File">
+                <MenuItem Header="New" Icon="{materialDesign:PackIcon Kind=Plus}">
+                    <MenuItem Header="Folder"
+                              Icon="{materialDesign:PackIcon Kind=Folder}" 
+                              Command="{s:Action AddFolder}" 
+                              s:View.ActionTarget="{Binding ProfileTreeViewModel}" />
+                    <MenuItem Header="Layer" 
+                              Icon="{materialDesign:PackIcon Kind=Layers}" 
+                              Command="{s:Action AddLayer}" 
+                              s:View.ActionTarget="{Binding ProfileTreeViewModel}" />
+                </MenuItem>
+                <Separator />
+                <MenuItem Header="View properties"
+                          Icon="{materialDesign:PackIcon Kind=Settings}"
+                          Command="{s:Action ViewProperties}"/>
+                <MenuItem Header="Suspend profile"
+                          IsCheckable="True"
+                          IsChecked="{Binding ProfileConfiguration.IsSuspended}" />
+                <Separator />
+                <MenuItem Header="Export profile"
+                          Icon="{materialDesign:PackIcon Kind=Export}" 
+                          Command="{s:Action ExportProfile}" />
+                <MenuItem Header="Duplicate profile"
+                          Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" 
+                          Command="{s:Action DuplicateProfile}" />
+                <Separator />
+                <MenuItem Header="Delete profile" 
+                          Icon="{materialDesign:PackIcon Kind=Trash}" 
+                          Command="{s:Action DeleteProfile}" />
+            </MenuItem>
+            <MenuItem Header="_Edit" SubmenuOpened="{s:Action EditMenuOpened}">
+                <MenuItem Header="_Duplicate" 
+                          Icon="{materialDesign:PackIcon Kind=ContentDuplicate}"
+                          Command="{s:Action Duplicate}" 
+                          InputGestureText="Ctrl+D"
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Copy" 
+                          Icon="{materialDesign:PackIcon Kind=ContentCopy}" 
+                          Command="{s:Action Copy}"
+                          InputGestureText="Ctrl+C" 
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Paste"
+                          Icon="{materialDesign:PackIcon Kind=ContentPaste}" 
+                          Command="{s:Action Paste}" 
+                          InputGestureText="Ctrl+V" />
+            </MenuItem>
+            <MenuItem Header="_Scripting" IsEnabled="False">
+                <MenuItem Header="_Profile scripts"
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}" />
+                <MenuItem Header="_Layer scripts" 
+                          Icon="{materialDesign:PackIcon Kind=Layers}"
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Property scripts" 
+                          Icon="{materialDesign:PackIcon Kind=FormTextbox}"
+                          IsEnabled="{Binding HasSelectedElement}"/>
+            </MenuItem>
+            <MenuItem Header="_Help">
+                <MenuItem Header="Artemis wiki"
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/" />
+                <Separator />
+                <MenuItem Header="Editor"
+                          Icon="{materialDesign:PackIcon Kind=Edit}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/profiles" />
+                <MenuItem Header="Layers"
+                          Icon="{materialDesign:PackIcon Kind=Layers}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers" />
+                <MenuItem Header="Display conditions"
+                          Icon="{materialDesign:PackIcon Kind=NotEqual}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions" />
+                <MenuItem Header="Timeline"
+                          Icon="{materialDesign:PackIcon Kind=Stopwatch}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline" />
+                <MenuItem Header="Data bindings"
+                          Icon="{materialDesign:PackIcon Kind=VectorLink}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings" />
+                <MenuItem Header="Scripting"
+                          Icon="{materialDesign:PackIcon Kind=CodeJson}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting" />
+                <Separator />
+                <MenuItem Header="Report a bug"
+                          Icon="{materialDesign:PackIcon Kind=Github}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://github.com/Artemis-RGB/Artemis/issues" />
+                <MenuItem Header="Get help on Discord"
+                          Icon="{materialDesign:PackIcon Kind=Discord}"
+                          Command="{s:Action OpenUrl}"
+                          CommandParameter="https://discord.gg/S3MVaC9" />
+            </MenuItem>
+        </Menu>
+
+        <Button Grid.Row="0"
+                Grid.Column="2"
+                Style="{StaticResource MaterialDesignIconForegroundButton}"
+                ToolTip="Open debugger"
+                Margin="10 -4 10 0"
+                Width="34"
+                Height="34"
+                Command="{s:Action OpenDebugger}">
+            <materialDesign:PackIcon Kind="Matrix" Width="20" Height="20" />
+        </Button>
+
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="10 -5 10 10">
+            <Grid.ColumnDefinitions>
+                <!-- Left side -->
+                <ColumnDefinition Width="*" MinWidth="100" />
+                <!-- Side panels resize -->
+                <ColumnDefinition Width="Auto" />
+                <!-- Side panels -->
+                <ColumnDefinition Width="{Binding SidePanelsWidth.Value, Mode=TwoWay}" MinWidth="100" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Left side -->
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <!-- Design area -->
+                    <RowDefinition Height="*" MinHeight="200" />
+                    <!-- Bottom panels resize -->
+                    <RowDefinition Height="Auto" />
+                    <!-- Bottom panels -->
+                    <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="108" />
+                </Grid.RowDefinitions>
+
                 <!-- Design area -->
-                <RowDefinition Height="*" MinHeight="200" />
+                <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                    <ContentControl s:View.Model="{Binding ProfileViewModel, IsAsync=True}" />
+                </materialDesign:Card>
+
                 <!-- Bottom panels resize -->
-                <RowDefinition Height="Auto" />
+                <GridSplitter Grid.Row="1" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+
                 <!-- Bottom panels -->
-                <RowDefinition Height="{Binding BottomPanelsHeight.Value, Mode=TwoWay}" MinHeight="108" />
-            </Grid.RowDefinitions>
-            
-            <!-- Design area -->
-            <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ProfileViewModel, IsAsync=True}" />
-            </materialDesign:Card>
+                <Grid Grid.Row="2">
+                    <!-- Layer elements -->
+                    <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                        <ContentControl s:View.Model="{Binding LayerPropertiesViewModel, IsAsync=True}" />
+                    </materialDesign:Card>
+                </Grid>
+            </Grid>
 
-            <!-- Bottom panels resize -->
-            <GridSplitter Grid.Row="1" Grid.Column="0" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+            <!-- Side panels resize -->
+            <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
 
-            <!-- Bottom panels -->
-            <Grid Grid.Row="2">
-                <!-- Layer elements -->
-                <materialDesign:Card Grid.Column="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                    <ContentControl s:View.Model="{Binding LayerPropertiesViewModel, IsAsync=True}" />
+            <!-- Side panels -->
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <!-- Profile elements -->
+                    <RowDefinition Height="*" MinHeight="100" />
+                    <!-- Conditions resize -->
+                    <RowDefinition Height="Auto" />
+                    <!-- Display conditions -->
+                    <RowDefinition Height="{Binding DataModelConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
+                </Grid.RowDefinitions>
+
+                <!-- Profile elements -->
+                <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                    <ContentControl s:View.Model="{Binding ProfileTreeViewModel, IsAsync=True}" Margin="0,-1,-0.2,1" />
+                </materialDesign:Card>
+
+                <!-- Conditions resize -->
+                <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
+
+                <!-- Display conditions -->
+                <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
+                    <ContentControl s:View.Model="{Binding DisplayConditionsViewModel, IsAsync=True}" />
                 </materialDesign:Card>
             </Grid>
-        </Grid>
-
-        <!-- Side panels resize -->
-        <GridSplitter Grid.Row="0" Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Cursor="SizeWE" Margin="5 0" />
-
-        <!-- Side panels -->
-        <Grid Grid.Row="0" Grid.Column="2">
-            <Grid.RowDefinitions>
-               <!-- Profile elements -->
-                <RowDefinition Height="*" MinHeight="100" />
-                <!-- Conditions resize -->
-                <RowDefinition Height="Auto" />
-                <!-- Display conditions -->
-                <RowDefinition Height="{Binding DataModelConditionsHeight.Value, Mode=TwoWay}" MinHeight="100" />
-            </Grid.RowDefinitions>
-            
-            <!-- Profile elements -->
-            <materialDesign:Card Grid.Row="0" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding ProfileTreeViewModel, IsAsync=True}" Margin="0,-1,-0.2,1" />
-            </materialDesign:Card>
-
-            <!-- Conditions resize -->
-            <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" Cursor="SizeNS" Margin="0 5" />
-
-            <!-- Display conditions -->
-            <materialDesign:Card Grid.Row="2" materialDesign:ShadowAssist.ShadowDepth="Depth1" VerticalAlignment="Stretch">
-                <ContentControl s:View.Model="{Binding DisplayConditionsViewModel, IsAsync=True}" />
-            </materialDesign:Card>
         </Grid>
     </Grid>
 </UserControl>

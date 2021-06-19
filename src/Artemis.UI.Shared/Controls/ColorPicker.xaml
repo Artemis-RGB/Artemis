@@ -44,10 +44,10 @@
                                Grid.Row="1"
                                OpacityMask="{x:Null}">
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{DynamicResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
+                                <RepeatButton Command="{x:Static Slider.DecreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
                             </Track.DecreaseRepeatButton>
                             <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{DynamicResource MaterialDesignHorizontalColorSliderTrackRepeatButton}" />
+                                <RepeatButton Command="{x:Static Slider.IncreaseLarge}" Style="{StaticResource MaterialDesignRepeatButton}" />
                             </Track.IncreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb x:Name="Thumb" Width="20" Height="20" VerticalAlignment="Center" Focusable="False" OverridesDefaultStyle="True"

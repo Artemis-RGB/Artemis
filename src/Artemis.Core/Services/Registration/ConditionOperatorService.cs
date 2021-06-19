@@ -64,6 +64,10 @@ namespace Artemis.Core.Services
             RegisterConditionOperator(Constants.CorePlugin, new StringNullConditionOperator());
             RegisterConditionOperator(Constants.CorePlugin, new StringNotNullConditionOperator());
 
+            // Enum operators
+            RegisterConditionOperator(Constants.CorePlugin, new EnumContainsConditionOperator());
+            RegisterConditionOperator(Constants.CorePlugin, new EnumNotContainsConditionOperator());
+
             // Null checks, at the bottom
             // TODO: Implement a priority mechanism
             RegisterConditionOperator(Constants.CorePlugin, new NullConditionOperator());
