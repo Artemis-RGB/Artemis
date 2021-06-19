@@ -8,26 +8,5 @@
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance settings:SettingsViewModel}"
              d:DesignHeight="600" d:DesignWidth="600">
-    <UserControl.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary
-                    Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.TextBlock.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </UserControl.Resources>
-    <TabControl Style="{StaticResource MaterialDesignTabControl}"
-                ItemsSource="{Binding Items}"
-                SelectedItem="{Binding ActiveItem}"
-                DisplayMemberPath="DisplayName">
-        <TabControl.ContentTemplate>
-            <DataTemplate>
-                <ContentControl s:View.Model="{Binding IsAsync=True}"
-                                VerticalContentAlignment="Stretch"
-                                HorizontalContentAlignment="Stretch"
-                                IsTabStop="False"
-                                TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
-            </DataTemplate>
-        </TabControl.ContentTemplate>
-    </TabControl>
+    <ContentControl s:View.Model="{Binding ActiveItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
 </UserControl>

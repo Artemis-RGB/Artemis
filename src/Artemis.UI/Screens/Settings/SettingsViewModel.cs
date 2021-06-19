@@ -1,27 +1,17 @@
-﻿using Artemis.UI.Screens.Settings.Tabs.About;
-using Artemis.UI.Screens.Settings.Tabs.Devices;
-using Artemis.UI.Screens.Settings.Tabs.General;
-using Artemis.UI.Screens.Settings.Tabs.Plugins;
-using Stylet;
+﻿using Stylet;
 
 namespace Artemis.UI.Screens.Settings
 {
-    public class SettingsViewModel : Conductor<Screen>.Collection.OneActive, IMainScreenViewModel
+    public class SettingsViewModel : MainScreenViewModel
     {
-        public SettingsViewModel(
-            GeneralSettingsTabViewModel generalSettingsTabViewModel,
-            PluginSettingsTabViewModel pluginSettingsTabViewModel,
-            DeviceSettingsTabViewModel deviceSettingsTabViewModel,
-            AboutTabViewModel aboutTabViewModel)
+        public SettingsViewModel(SettingsTabsViewModel settingsTabsViewModel)
         {
             DisplayName = "Settings";
 
-            Items.Add(generalSettingsTabViewModel);
-            Items.Add(pluginSettingsTabViewModel);
-            Items.Add(deviceSettingsTabViewModel);
-            Items.Add(aboutTabViewModel);
-
-            ActiveItem = generalSettingsTabViewModel;
+            settingsTabsViewModel.ConductWith(this);
+            ActiveItem = settingsTabsViewModel;
         }
+
+        public SettingsTabsViewModel ActiveItem { get; }
     }
 }

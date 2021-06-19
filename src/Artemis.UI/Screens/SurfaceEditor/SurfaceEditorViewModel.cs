@@ -22,7 +22,7 @@ using MouseButton = System.Windows.Input.MouseButton;
 
 namespace Artemis.UI.Screens.SurfaceEditor
 {
-    public class SurfaceEditorViewModel : Screen, IMainScreenViewModel
+    public class SurfaceEditorViewModel : MainScreenViewModel
     {
         private readonly ICoreService _coreService;
         private readonly IDeviceService _deviceService;

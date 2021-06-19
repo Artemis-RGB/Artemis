@@ -3,7 +3,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.Workshop
 {
-    public class WorkshopViewModel : Screen, IMainScreenViewModel
+    public class WorkshopViewModel : MainScreenViewModel
     {
         private Color _testColor;
         private bool _testPopupOpen;

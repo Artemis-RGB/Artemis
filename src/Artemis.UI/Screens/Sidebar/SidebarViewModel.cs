@@ -30,9 +30,9 @@ namespace Artemis.UI.Screens.Sidebar
         private readonly IProfileService _profileService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IDialogService _dialogService;
-        private SidebarScreenViewModel _selectedSidebarScreen;
         private ArtemisDevice _headerDevice;
-        private Screen _selectedScreen;
+        private SidebarScreenViewModel _selectedSidebarScreen;
+        private MainScreenViewModel _selectedScreen;
         private readonly SidebarScreenViewModel<ProfileEditorViewModel> _profileEditor;
         private readonly DefaultDropHandler _defaultDropHandler;
 
@@ -80,7 +80,7 @@ namespace Artemis.UI.Screens.Sidebar
 
         public BindableCollection<SidebarScreenViewModel> SidebarScreens { get; }
 
-        public Screen SelectedScreen
+        public MainScreenViewModel SelectedScreen
         {
             get => _selectedScreen;
             private set => SetAndNotify(ref _selectedScreen, value);

@@ -100,7 +100,7 @@
                 </ItemsControl>
             </Grid>
 
-            <Grid Name="EditorDisplayGrid" 
+            <Grid Name="EditorDisplayGrid"
                   shared:SizeObserver.Observe="True"
                   shared:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight}"
                   shared:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth}">
@@ -133,13 +133,13 @@
             <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Cursor="Arrow">
                 <materialDesign:Card Padding="8">
                     <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
                                   IsChecked="{Binding FocusSelectedLayer.Value}"
                                   ToolTip="If selected, dims all LEDs that are not part of the selected layer">
                             Focus selected layer
                         </CheckBox>
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}" 
-                                  Margin="10 0 0 0" 
+                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
+                                  Margin="10 0 0 0"
                                   IsChecked="{Binding AlwaysApplyDataBindings.Value}"
                                   ToolTip="If selected, updates all data bindings instead of only the one you are editing">
                             Apply all data bindings in editor
@@ -150,14 +150,13 @@
 
             <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
                         Margin="10" ZIndex="1">
-                <Slider Margin="0,0,14,0"
-                        Orientation="Vertical"
+                <Slider Orientation="Vertical"
+                        HorizontalAlignment="Center"
+                        Margin="0 10"
+                        Height="120"
                         Minimum="10"
                         Maximum="250"
-                        Height="100"
-                        FocusVisualStyle="{x:Null}"
-                        Value="{Binding PanZoomViewModel.ZoomPercentage}"
-                        Style="{StaticResource MaterialDesignDiscreteSlider}" />
+                        Value="{Binding PanZoomViewModel.ZoomPercentage}" />
                 <Button Command="{s:Action ResetZoomAndPan}"
                         Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
                         HorizontalAlignment="Right"

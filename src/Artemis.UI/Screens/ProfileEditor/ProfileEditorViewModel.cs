@@ -5,18 +5,25 @@ using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Events;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Sidebar.Dialogs;
+using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
+using ProfileConfigurationEventArgs = Artemis.UI.Shared.ProfileConfigurationEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : Screen, IMainScreenViewModel
+    public class ProfileEditorViewModel : MainScreenViewModel
     {
         private readonly IMessageService _messageService;
+        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
@@ -37,12 +44,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             IProfileService profileService,
             IDialogService dialogService,
             ISettingsService settingsService,
-            IMessageService messageService)
+            IMessageService messageService, 
+            ISidebarVmFactory sidebarVmFactory)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
             _messageService = messageService;
+            _sidebarVmFactory = sidebarVmFactory;
 
             DisplayName = "Profile Editor";
             DialogService = dialogService;
@@ -59,6 +68,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         }
 
         public IDialogService DialogService { get; }
+
+        public ProfileConfiguration ProfileConfiguration => _profileEditorService.SelectedProfileConfiguration;
 
         public DisplayConditionsViewModel DisplayConditionsViewModel
         {
@@ -176,20 +187,96 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
+        #region Menu
+
+        public bool HasSelectedElement => _profileEditorService.SelectedProfileElement != null;
+        public bool CanPaste => _profileEditorService.GetCanPasteProfileElement();
+
+        public async Task ViewProperties()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
+        }
+
+        public void DuplicateProfile()
+        {
+            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+        }
+
+        public async Task DeleteProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Delete();
+        }
+
+        public async Task ExportProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Export();
+        }
+
+        public void Copy()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.CopyProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Duplicate()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.DuplicateProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Paste()
+        {
+            if (_profileEditorService.SelectedProfileElement != null && _profileEditorService.SelectedProfileElement.Parent is Folder parent)
+                _profileEditorService.PasteProfileElement(parent, _profileEditorService.SelectedProfileElement.Order - 1);
+            else
+            {
+                Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
+                if (rootFolder != null)
+                    _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
+            }
+        }
+
+        public void OpenUrl(string url)
+        {
+            Core.Utilities.OpenUrl(url);
+        }
+
+        public void EditMenuOpened()
+        {
+            NotifyOfPropertyChange(nameof(CanPaste));
+        }
+
+        #endregion
+
+
         protected override void OnInitialActivate()
         {
+            _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
             LoadWorkspaceSettings();
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
+            _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
             SaveWorkspaceSettings();
             _profileEditorService.ChangeSelectedProfileConfiguration(null);
 
             base.OnClose();
         }
 
+        private void ProfileEditorServiceOnSelectedProfileChanged(object sender, ProfileConfigurationEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(ProfileConfiguration));
+        }
+
+        private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(HasSelectedElement));
+        }
         private void LoadWorkspaceSettings()
         {
             SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));

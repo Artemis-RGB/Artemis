@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Artemis.Core.Ninject;
+using Artemis.Core.ScriptingProviders;
 using Artemis.Storage;
 using HidSharp;
 using Ninject;
@@ -29,6 +30,7 @@ namespace Artemis.Core.Services
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
         private readonly IModuleService _moduleService;
+        private readonly IScriptingService _scriptingService;
         private readonly IRgbService _rgbService;
         private readonly List<Exception> _updateExceptions = new();
         private DateTime _lastExceptionLog;
@@ -41,7 +43,8 @@ namespace Artemis.Core.Services
             IPluginManagementService pluginManagementService,
             IRgbService rgbService,
             IProfileService profileService,
-            IModuleService moduleService)
+            IModuleService moduleService,
+            IScriptingService scriptingService)
         {
             Kernel = kernel;
             Constants.CorePlugin.Kernel = kernel;
@@ -51,10 +54,11 @@ namespace Artemis.Core.Services
             _rgbService = rgbService;
             _profileService = profileService;
             _moduleService = moduleService;
+            _scriptingService = scriptingService;
             _loggingLevel = settingsService.GetSetting("Core.LoggingLevel", LogEventLevel.Debug);
             _frameStopWatch = new Stopwatch();
             StartupArguments = new List<string>();
-            
+
             _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
@@ -107,6 +111,9 @@ namespace Artemis.Core.Services
             {
                 _frameStopWatch.Restart();
 
+                foreach (GlobalScript script in _scriptingService.GlobalScripts)
+                    script.OnCoreUpdating(args.DeltaTime);
+
                 _moduleService.UpdateActiveModules(args.DeltaTime);
                 SKTexture texture = _rgbService.OpenRender();
                 SKCanvas canvas = texture.Surface.Canvas;
@@ -126,6 +133,9 @@ namespace Artemis.Core.Services
                 canvas.Flush();
 
                 OnFrameRendered(new FrameRenderedEventArgs(texture, _rgbService.Surface));
+
+                foreach (GlobalScript script in _scriptingService.GlobalScripts)
+                    script.OnCoreUpdated(args.DeltaTime);
             }
             catch (Exception e)
             {

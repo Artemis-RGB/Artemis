@@ -1,8 +1,6 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
@@ -21,19 +19,17 @@ using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens
 {
-    public sealed class RootViewModel : Conductor<Screen>, IDisposable
+    public sealed class RootViewModel : Conductor<Screen>
     {
         private readonly IRegistrationService _builtInRegistrationService;
-        private readonly ICoreService _coreService;
-        private readonly IDebugService _debugService;
+
         private readonly IEventAggregator _eventAggregator;
-        private readonly Timer _frameTimeUpdateTimer;
         private readonly IKernel _kernel;
         private readonly IMessageService _messageService;
         private readonly ISettingsService _settingsService;
         private readonly IWindowManager _windowManager;
         private readonly PluginSetting<WindowSize> _windowSize;
-        private string _frameTime;
+
         private bool _lostFocus;
         private ISnackbarMessageQueue _mainMessageQueue;
         private MaterialWindow _window;
@@ -43,9 +39,7 @@ namespace Artemis.UI.Screens
             IKernel kernel,
             IEventAggregator eventAggregator,
             ISettingsService settingsService,
-            ICoreService coreService,
             IWindowManager windowManager,
-            IDebugService debugService,
             IRegistrationService builtInRegistrationService,
             IMessageService messageService,
             SidebarViewModel sidebarViewModel)
@@ -53,12 +47,9 @@ namespace Artemis.UI.Screens
             _kernel = kernel;
             _eventAggregator = eventAggregator;
             _settingsService = settingsService;
-            _coreService = coreService;
             _windowManager = windowManager;
-            _debugService = debugService;
             _builtInRegistrationService = builtInRegistrationService;
             _messageService = messageService;
-            _frameTimeUpdateTimer = new Timer(500);
             _windowSize = _settingsService.GetSetting<WindowSize>("UI.RootWindowSize");
 
             SidebarWidth = _settingsService.GetSetting("UI.SidebarWidth", new GridLength(240));
@@ -84,11 +75,6 @@ namespace Artemis.UI.Screens
             set => SetAndNotify(ref _windowTitle, value);
         }
 
-        public string FrameTime
-        {
-            get => _frameTime;
-            set => SetAndNotify(ref _frameTime, value);
-        }
 
         public void WindowDeactivated()
         {
@@ -109,11 +95,6 @@ namespace Artemis.UI.Screens
             _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
         }
 
-        public void ShowDebugger()
-        {
-            _debugService.ShowDebugger();
-        }
-
         public void WindowKeyDown(object sender, KeyEventArgs e)
         {
             _eventAggregator.Publish(new MainWindowKeyEvent(sender, true, e));
@@ -132,22 +113,6 @@ namespace Artemis.UI.Screens
         public void WindowMouseUp(object sender, MouseButtonEventArgs e)
         {
             _eventAggregator.Publish(new MainWindowMouseEvent(sender, false, e));
-        }
-
-        private void UpdateFrameTime()
-        {
-            FrameTime = $"Frame time: {_coreService.FrameTime.TotalMilliseconds:F2} ms";
-        }
-
-        private void OnFrameTimeUpdateTimerOnElapsed(object sender, ElapsedEventArgs args)
-        {
-            UpdateFrameTime();
-        }
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            _frameTimeUpdateTimer?.Dispose();
         }
 
         private void SidebarViewModelOnSelectedScreenChanged(object? sender, EventArgs e)
@@ -181,17 +146,12 @@ namespace Artemis.UI.Screens
         protected override void OnInitialActivate()
         {
             MainMessageQueue = _messageService.MainMessageQueue;
-            UpdateFrameTime();
-
             SidebarViewModel.SelectedScreenChanged += SidebarViewModelOnSelectedScreenChanged;
             ActiveItem = SidebarViewModel.SelectedScreen;
 
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
             _builtInRegistrationService.RegisterBuiltInDataModelInputs();
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
-
-            _frameTimeUpdateTimer.Elapsed += OnFrameTimeUpdateTimerOnElapsed;
-            _frameTimeUpdateTimer.Start();
 
             _window = (MaterialWindow) View;
 
@@ -209,15 +169,12 @@ namespace Artemis.UI.Screens
             Keyboard.ClearFocus();
 
             MainMessageQueue = null;
-            _frameTimeUpdateTimer.Stop();
 
             SidebarViewModel.SelectedScreenChanged -= SidebarViewModelOnSelectedScreenChanged;
             SidebarWidth.Save();
             _windowSize.Value ??= new WindowSize();
             _windowSize.Value.ApplyFromWindow(_window);
             _windowSize.Save();
-
-            _frameTimeUpdateTimer.Elapsed -= OnFrameTimeUpdateTimerOnElapsed;
 
             // Lets force the GC to run after closing the window so it is obvious to users watching task manager
             // that closing the UI will decrease the memory footprint of the application.
