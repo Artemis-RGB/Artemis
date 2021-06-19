@@ -70,7 +70,7 @@
             <Separator />
             <MenuItem Header="Delete" Command="{s:Action Delete}" InputGestureText="Del">
                 <MenuItem.Icon>
-                    <materialDesign:PackIcon Kind="TrashCan" />
+                    <materialDesign:PackIcon Kind="Trash" />
                 </MenuItem.Icon>
             </MenuItem>
         </ContextMenu>

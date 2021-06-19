@@ -50,23 +50,59 @@
         <Menu Grid.Row="0" Grid.Column="1" IsMainMenu="True" Margin="0 -4 0 0">
             <MenuItem Header="_File">
                 <MenuItem Header="New" Icon="{materialDesign:PackIcon Kind=Plus}">
-                    <MenuItem Header="Category" Icon="{materialDesign:PackIcon Kind=FormatListBulletedType}" />
-                    <MenuItem Header="Profile" Icon="{materialDesign:PackIcon Kind=BookEdit}" />
-                    <MenuItem Header="Folder" Icon="{materialDesign:PackIcon Kind=Folder}" />
-                    <MenuItem Header="Layer" Icon="{materialDesign:PackIcon Kind=Layers}" />
+                    <MenuItem Header="Folder"
+                              Icon="{materialDesign:PackIcon Kind=Folder}" 
+                              Command="{s:Action AddFolder}" 
+                              s:View.ActionTarget="{Binding ProfileTreeViewModel}" />
+                    <MenuItem Header="Layer" 
+                              Icon="{materialDesign:PackIcon Kind=Layers}" 
+                              Command="{s:Action AddLayer}" 
+                              s:View.ActionTarget="{Binding ProfileTreeViewModel}" />
                 </MenuItem>
-                <MenuItem Header="Export..." Icon="{materialDesign:PackIcon Kind=Export}" />
-                <MenuItem Header="Import..." Icon="{materialDesign:PackIcon Kind=Import}" />
+                <Separator />
+                <MenuItem Header="View properties"
+                          Icon="{materialDesign:PackIcon Kind=Settings}"
+                          Command="{s:Action ViewProperties}"/>
+                <MenuItem Header="Suspend profile"
+                          IsCheckable="True"
+                          IsChecked="{Binding ProfileConfiguration.IsSuspended}" />
+                <Separator />
+                <MenuItem Header="Export profile"
+                          Icon="{materialDesign:PackIcon Kind=Export}" 
+                          Command="{s:Action ExportProfile}" />
+                <MenuItem Header="Duplicate profile"
+                          Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" 
+                          Command="{s:Action DuplicateProfile}" />
+                <Separator />
+                <MenuItem Header="Delete profile" 
+                          Icon="{materialDesign:PackIcon Kind=Trash}" 
+                          Command="{s:Action DeleteProfile}" />
             </MenuItem>
             <MenuItem Header="_Edit" SubmenuOpened="{s:Action EditMenuOpened}">
-                <MenuItem Header="_Duplicate" Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" Command="{s:Action Duplicate}" InputGestureText="Ctrl+D" />
-                <MenuItem Header="_Copy" Icon="{materialDesign:PackIcon Kind=ContentCopy}" Command="{s:Action Copy}" InputGestureText="Ctrl+C" />
-                <MenuItem Header="_Paste" Icon="{materialDesign:PackIcon Kind=ContentPaste}" Command="{s:Action Paste}" InputGestureText="Ctrl+V" />
+                <MenuItem Header="_Duplicate" 
+                          Icon="{materialDesign:PackIcon Kind=ContentDuplicate}"
+                          Command="{s:Action Duplicate}" 
+                          InputGestureText="Ctrl+D"
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Copy" 
+                          Icon="{materialDesign:PackIcon Kind=ContentCopy}" 
+                          Command="{s:Action Copy}"
+                          InputGestureText="Ctrl+C" 
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Paste"
+                          Icon="{materialDesign:PackIcon Kind=ContentPaste}" 
+                          Command="{s:Action Paste}" 
+                          InputGestureText="Ctrl+V" />
             </MenuItem>
-            <MenuItem Header="_Scripting">
-                <MenuItem Header="_Profile scripts" Icon="{materialDesign:PackIcon Kind=BookEdit}" />
-                <MenuItem Header="_Layer scripts" Icon="{materialDesign:PackIcon Kind=Layers}" />
-                <MenuItem Header="_Property scripts" Icon="{materialDesign:PackIcon Kind=FormTextbox}" />
+            <MenuItem Header="_Scripting" IsEnabled="False">
+                <MenuItem Header="_Profile scripts"
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}" />
+                <MenuItem Header="_Layer scripts" 
+                          Icon="{materialDesign:PackIcon Kind=Layers}"
+                          IsEnabled="{Binding HasSelectedElement}"/>
+                <MenuItem Header="_Property scripts" 
+                          Icon="{materialDesign:PackIcon Kind=FormTextbox}"
+                          IsEnabled="{Binding HasSelectedElement}"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="Artemis wiki"

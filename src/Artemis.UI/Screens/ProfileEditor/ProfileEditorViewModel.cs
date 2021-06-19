@@ -5,10 +5,13 @@ using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Events;
+using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -19,6 +22,8 @@ namespace Artemis.UI.Screens.ProfileEditor
     public class ProfileEditorViewModel : MainScreenViewModel
     {
         private readonly IMessageService _messageService;
+        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
@@ -39,12 +44,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             IProfileService profileService,
             IDialogService dialogService,
             ISettingsService settingsService,
-            IMessageService messageService)
+            IMessageService messageService, 
+            ISidebarVmFactory sidebarVmFactory)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
             _messageService = messageService;
+            _sidebarVmFactory = sidebarVmFactory;
 
             DisplayName = "Profile Editor";
             DialogService = dialogService;
@@ -182,9 +189,29 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         #region Menu
 
-        public bool CanCopy => _profileEditorService.SelectedProfileElement != null;
-        public bool CanDuplicate => _profileEditorService.SelectedProfileElement != null;
+        public bool HasSelectedElement => _profileEditorService.SelectedProfileElement != null;
         public bool CanPaste => _profileEditorService.GetCanPasteProfileElement();
+
+        public async Task ViewProperties()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
+        }
+
+        public void DuplicateProfile()
+        {
+            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+        }
+
+        public async Task DeleteProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Delete();
+        }
+
+        public async Task ExportProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Export();
+        }
 
         public void Copy()
         {
@@ -248,10 +275,8 @@ namespace Artemis.UI.Screens.ProfileEditor
 
         private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
-            NotifyOfPropertyChange(nameof(CanCopy));
-            NotifyOfPropertyChange(nameof(CanDuplicate));
+            NotifyOfPropertyChange(nameof(HasSelectedElement));
         }
-
         private void LoadWorkspaceSettings()
         {
             SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
