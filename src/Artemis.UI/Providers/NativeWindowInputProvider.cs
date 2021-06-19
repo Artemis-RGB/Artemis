@@ -128,7 +128,7 @@ namespace Artemis.UI.Providers
                 }
 
             // Duplicate keys with different positions can be identified by the LeftKey flag (even though its set of the key that's physically on the right)
-            if (keyboardData.Keyboard.Flags == RawKeyboardFlags.LeftKey || keyboardData.Keyboard.Flags == (RawKeyboardFlags.LeftKey | RawKeyboardFlags.Up))
+            if (keyboardData.Keyboard.Flags == RawKeyboardFlags.KeyE0 || keyboardData.Keyboard.Flags == (RawKeyboardFlags.KeyE0 | RawKeyboardFlags.Up))
             {
                 if (key == KeyboardKey.Enter)
                     key = KeyboardKey.NumPadEnter;
@@ -142,8 +142,8 @@ namespace Artemis.UI.Providers
                 key = KeyboardKey.RightShift;
 
             bool isDown = keyboardData.Keyboard.Flags != RawKeyboardFlags.Up &&
-                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.LeftKey) &&
-                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.RightKey);
+                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.KeyE0) &&
+                          keyboardData.Keyboard.Flags != (RawKeyboardFlags.Up | RawKeyboardFlags.KeyE1);
 
             OnKeyboardDataReceived(device, key, isDown);
             UpdateToggleStatus();

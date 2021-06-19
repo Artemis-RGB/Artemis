@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Windows;
 using MaterialDesignThemes.Wpf;
 using Stylet;
@@ -11,7 +10,7 @@ namespace Artemis.UI.Shared.Screens.Exceptions
         public ExceptionViewModel(string message, Exception exception)
         {
             Header = message;
-            Exception = exception.ToStringDemystified();
+            Exception = exception.ToString();
             MessageQueue = new SnackbarMessageQueue(TimeSpan.FromSeconds(2));
         }
 

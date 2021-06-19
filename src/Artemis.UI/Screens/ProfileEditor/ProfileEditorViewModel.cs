@@ -12,6 +12,7 @@ using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.Sidebar.Dialogs;
+using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
@@ -22,6 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor
     public class ProfileEditorViewModel : MainScreenViewModel
     {
         private readonly IMessageService _messageService;
+        private readonly IDebugService _debugService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
@@ -45,12 +47,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             IDialogService dialogService,
             ISettingsService settingsService,
             IMessageService messageService, 
+            IDebugService debugService,
             ISidebarVmFactory sidebarVmFactory)
         {
             _profileEditorService = profileEditorService;
             _profileService = profileService;
             _settingsService = settingsService;
             _messageService = messageService;
+            _debugService = debugService;
             _sidebarVmFactory = sidebarVmFactory;
 
             DisplayName = "Profile Editor";
@@ -235,6 +239,11 @@ namespace Artemis.UI.Screens.ProfileEditor
                 if (rootFolder != null)
                     _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
             }
+        }
+
+        public void OpenDebugger()
+        {
+            _debugService.ShowDebugger();
         }
 
         public void OpenUrl(string url)

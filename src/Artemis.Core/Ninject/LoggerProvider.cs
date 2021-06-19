@@ -12,7 +12,6 @@ namespace Artemis.Core.Ninject
 
         private static readonly ILogger Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
-            .Enrich.WithDemystifiedStackTraces()
             .WriteTo.File(Constants.DataFolder + "logs/Artemis log-.log",
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
