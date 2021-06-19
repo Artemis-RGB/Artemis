@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Timers;
+using Artemis.Core.Modules;
 
 namespace Artemis.Core.Services
 {
@@ -22,6 +23,8 @@ namespace Artemis.Core.Services
             _processScanTimer.Elapsed += OnTimerElapsed;
             _processScanTimer.Start();
             _comparer = new ProcessComparer();
+
+            ProcessActivationRequirement.ProcessMonitorService = this;
         }
 
         public event EventHandler<ProcessEventArgs>? ProcessStarted;

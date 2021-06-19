@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Artemis.Core.Services;
-using Ninject;
 
 namespace Artemis.Core.Modules
 {
@@ -13,8 +12,6 @@ namespace Artemis.Core.Modules
     /// </summary>
     public class ProcessActivationRequirement : IModuleActivationRequirement
     {
-        private readonly IProcessMonitorService _processMonitorService;
-
         /// <summary>
         ///     Creates a new instance of the <see cref="ProcessActivationRequirement" /> class
         /// </summary>
@@ -24,11 +21,6 @@ namespace Artemis.Core.Modules
         {
             if (string.IsNullOrWhiteSpace(processName) && string.IsNullOrWhiteSpace(location))
                 throw new ArgumentNullException($"Atleast one {nameof(processName)} and {nameof(location)} must not be null");
-
-            // Let's not make a habit out of this :P
-            if (CoreService.Kernel == null)
-                throw new ArtemisCoreException("Cannot create a ProcessActivationRequirement before initializing the Core");
-            _processMonitorService = CoreService.Kernel.Get<IProcessMonitorService>();
 
             ProcessName = processName;
             Location = location;
@@ -44,13 +36,15 @@ namespace Artemis.Core.Modules
         /// </summary>
         public string? Location { get; set; }
 
+        internal static IProcessMonitorService? ProcessMonitorService { get; set; }
+
         /// <inheritdoc />
         public bool Evaluate()
         {
-            if (ProcessName == null && Location == null)
+            if (ProcessMonitorService == null || ProcessName == null && Location == null)
                 return false;
 
-            IEnumerable<Process> processes = _processMonitorService.GetRunningProcesses();
+            IEnumerable<Process> processes = ProcessMonitorService.GetRunningProcesses();
             if (ProcessName != null)
                 processes = processes.Where(p => string.Equals(p.ProcessName, ProcessName, StringComparison.InvariantCultureIgnoreCase));
             if (Location != null)
