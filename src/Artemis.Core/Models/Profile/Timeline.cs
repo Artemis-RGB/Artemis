@@ -155,7 +155,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a boolean indicating whether the timeline has finished its run
         /// </summary>
-        public bool IsFinished => (Position > Length || Length == TimeSpan.Zero) && !ExtraTimelines.Any();
+        public bool IsFinished => Position > Length && !ExtraTimelines.Any();
 
         /// <summary>
         ///     Gets a boolean indicating whether the timeline progress has been overridden
@@ -516,6 +516,11 @@ namespace Artemis.Core
         /// <summary>
         ///     Play another copy of the timeline on top of the current run
         /// </summary>
-        Copy
+        Copy,
+
+        /// <summary>
+        ///     Repeat the timeline until the event fires again
+        /// </summary>
+        Toggle
     }
 }

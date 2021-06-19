@@ -124,8 +124,8 @@ namespace Artemis.Core
         public void UpdateTimeline(double deltaTime)
         {
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
-            bool stickToMainSegment = Timeline.PlayMode == TimelinePlayMode.Repeat && DisplayConditionMet;
-            if (DisplayCondition != null && DisplayCondition.ContainsEvents)
+            bool stickToMainSegment = (Timeline.PlayMode == TimelinePlayMode.Repeat || Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle) && DisplayConditionMet;
+            if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
                 stickToMainSegment = false;
 
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
@@ -356,6 +356,7 @@ namespace Artemis.Core
 
         private DataModelConditionGroup? _displayCondition;
         private bool _displayConditionMet;
+        private bool _toggledOnByEvent = false;
 
         /// <summary>
         ///     Gets or sets the root display condition group
@@ -383,6 +384,9 @@ namespace Artemis.Core
                 return;
             }
 
+            if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
+                _toggledOnByEvent = false;
+
             bool conditionMet = DisplayCondition.Evaluate();
             if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
                 conditionMet = false;
@@ -398,25 +402,36 @@ namespace Artemis.Core
             }
             else if (conditionMet)
             {
-                // Event conditions reset if the timeline finished
-                if (Timeline.IsFinished)
+                if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
                 {
-                    Timeline.JumpToStart();
+                    _toggledOnByEvent = !_toggledOnByEvent;
+                    if (_toggledOnByEvent)
+                        Timeline.JumpToStart();
                 }
-                // and otherwise apply their overlap mode
                 else
                 {
-                    if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
+                    // Event conditions reset if the timeline finished
+                    if (Timeline.IsFinished)
+                    {
                         Timeline.JumpToStart();
-                    else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
-                        Timeline.AddExtraTimeline();
-                    // The third option is ignore which is handled below:
+                    }
+                    // and otherwise apply their overlap mode
+                    else
+                    {
+                        if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
+                            Timeline.JumpToStart();
+                        else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
+                            Timeline.AddExtraTimeline();
+                        // The third option is ignore which is handled below:
 
-                    // done
+                        // done
+                    }
                 }
             }
 
-            DisplayConditionMet = conditionMet;
+            DisplayConditionMet = Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle
+                ? _toggledOnByEvent
+                : conditionMet;
         }
 
         #endregion

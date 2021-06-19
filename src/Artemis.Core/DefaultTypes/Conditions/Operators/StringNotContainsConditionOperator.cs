@@ -9,7 +9,7 @@ namespace Artemis.Core
 
         public override bool Evaluate(string a, string b)
         {
-            return a != null && b != null && !a.Contains(b, StringComparison.InvariantCultureIgnoreCase);
+            return a != null && (b == null || !a.Contains(b, StringComparison.InvariantCultureIgnoreCase));
         }
     }
 }

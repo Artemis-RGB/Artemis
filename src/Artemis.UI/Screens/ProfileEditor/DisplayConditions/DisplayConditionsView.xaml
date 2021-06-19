@@ -192,11 +192,11 @@
             </Grid.RowDefinitions>
 
             <!-- Trigger mode -->
-            <TextBlock Grid.Column="0" Text="Rapid trigger mode">
+            <TextBlock Grid.Column="0" Text="Trigger mode">
                 <TextBlock.ToolTip>
                     <ToolTip Placement="Center" VerticalOffset="-30">
                         <TextBlock>
-                            Configure how the layer should act when the event(s) trigger before the timeline finishes
+                            Configure how the layer should act when the event(s) trigger
                         </TextBlock>
                     </ToolTip>
                 </TextBlock.ToolTip>
@@ -204,6 +204,7 @@
             <materialDesign:ColorZone Grid.Row="1" Grid.Column="0" Mode="Standard" CornerRadius="3">
                 <Grid HorizontalAlignment="Stretch">
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
                         <ColumnDefinition />
                         <ColumnDefinition />
                         <ColumnDefinition />
@@ -225,6 +226,21 @@
                     </RadioButton>
                     <RadioButton Grid.Column="1"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
+                                 IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Toggle}}">
+                        <TextBlock VerticalAlignment="Center" FontSize="12">
+                            <materialDesign:PackIcon Kind="TrafficLight" VerticalAlignment="Center" Margin="-3 0 0 -3" />
+                            TOGGLE
+                        </TextBlock>
+                        <RadioButton.ToolTip>
+                            <ToolTip Placement="Center" VerticalOffset="-40">
+                                <TextBlock>
+                                    Repeat the timeline until the event fires again
+                                </TextBlock>
+                            </ToolTip>
+                        </RadioButton.ToolTip>
+                    </RadioButton>
+                    <RadioButton Grid.Column="2"
+                                 Style="{StaticResource MaterialDesignTabRadioButton}"
                                  IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Ignore}}">
                         <TextBlock VerticalAlignment="Center" FontSize="12">
                             <materialDesign:PackIcon Kind="EarHearingOff" VerticalAlignment="Center" Margin="-3 0 0 -3" />
@@ -238,7 +254,7 @@
                             </ToolTip>
                         </RadioButton.ToolTip>
                     </RadioButton>
-                    <RadioButton Grid.Column="2"
+                    <RadioButton Grid.Column="3"
                                  Style="{StaticResource MaterialDesignTabRadioButton}"
                                  IsChecked="{Binding Path=EventOverlapMode, Converter={StaticResource ComparisonConverter}, ConverterParameter={x:Static core:TimeLineEventOverlapMode.Copy}}">
                         <TextBlock VerticalAlignment="Center" FontSize="12">
