@@ -6,10 +6,10 @@ namespace Artemis.UI.Shared.ScriptingProviders
     /// <summary>
     ///     Represents a Stylet view model containing a script editor
     /// </summary>
-    public class ScriptEditorViewModelViewModel : Screen, IScriptEditorViewModel
+    public class ScriptEditorViewModel : Screen, IScriptEditorViewModel
     {
         /// <inheritdoc />
-        public ScriptEditorViewModelViewModel(Script script)
+        public ScriptEditorViewModel(Script script)
         {
             Script = script;
         }

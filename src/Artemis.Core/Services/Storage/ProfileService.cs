@@ -532,7 +532,7 @@ namespace Artemis.Core.Services
             if (markAsFreshImport)
                 profileEntity.IsFreshImport = true;
 
-            if (_profileRepository.Get(profileEntity.Id) != null)
+            if (_profileRepository.Get(profileEntity.Id) == null)
                 _profileRepository.Add(profileEntity);
             else
                 throw new ArtemisCoreException($"Cannot import this profile without {nameof(makeUnique)} being true");

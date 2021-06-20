@@ -1,0 +1,90 @@
+﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.Scripting.ScriptsDialogView"
+                    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:local="clr-namespace:Artemis.UI.Screens.Scripting"
+                    xmlns:mde="https://spiegelp.github.io/MaterialDesignExtensions/winfx/xaml"
+                    xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+                    xmlns:s="https://github.com/canton7/Stylet"
+                    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+                    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+                    mc:Ignorable="d"
+                    FadeContentIfInactive="False"
+                    Icon="/Resources/Images/Logo/bow.ico"
+                    Title="{Binding DisplayName}"
+                    TitleBarIcon="{svgc:SvgImage Source=/Resources/Images/Logo/bow-white.svg}"
+                    Foreground="{DynamicResource MaterialDesignBody}"
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+                    UseLayoutRounding="True"
+                    Height="800" Width="1200"
+                    d:DataContext="{d:DesignInstance {x:Type local:ScriptsDialogViewModel}}">
+    <mde:MaterialWindow.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Sidebar/ArtemisSidebar.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </mde:MaterialWindow.Resources>
+    <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="ScriptsDialog" DialogTheme="Inherit">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Sidebar -->
+            <Border Grid.Column="0" ClipToBounds="True" Background="{DynamicResource MaterialDesignToolBarBackground}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <ListBox Grid.Row="0"
+                             Margin="0 10 0 0"
+                             ItemContainerStyle="{StaticResource SidebarListBoxItem}"
+                             ItemsSource="{Binding Items}"
+                             SelectedItem="{Binding ActiveItem}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type local:ScriptConfigurationViewModel}">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition />
+                                        <RowDefinition />
+                                    </Grid.RowDefinitions>
+                                    <shared:ArtemisIcon Grid.Row="0"
+                                                        Grid.Column="0"
+                                                        Grid.RowSpan="2"
+                                                        Icon="{Binding ScriptConfiguration.Script.ScriptingProvider.Info.ResolvedIcon, FallbackValue=QuestionMark}"
+                                                        Width="18 "
+                                                        Height="18"
+                                                        Margin="0 0 10 0"
+                                                        VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="0"
+                                               Grid.Column="1"
+                                               Text="{Binding ScriptConfiguration.Name}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="1"
+                                               Grid.Column="1"
+                                               Text="{Binding ScriptConfiguration.Script.ScriptingProvider.Info.Name, FallbackValue='Unknown scripting provider'}"
+                                               Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <Button Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedButton}" Content="ADD NEW SCRIPT" Margin="10 10 10 0" Command="{s:Action AddScriptConfiguration}"
+                            VerticalAlignment="Top" />
+                </Grid>
+            </Border>
+
+            <!-- Script editor -->
+            <ContentControl Grid.Column="1" s:View.Model="{Binding ActiveItem.ActiveItem}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+        </Grid>
+    </materialDesign:DialogHost>
+</mde:MaterialWindow>

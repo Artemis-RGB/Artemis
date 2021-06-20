@@ -94,15 +94,18 @@
                           Command="{s:Action Paste}" 
                           InputGestureText="Ctrl+V" />
             </MenuItem>
-            <MenuItem Header="_Scripting" IsEnabled="False">
+            <MenuItem Header="_Scripting">
                 <MenuItem Header="_Profile scripts"
-                          Icon="{materialDesign:PackIcon Kind=BookEdit}" />
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}"
+                          Command="{s:Action OpenProfileScripts}"/>
                 <MenuItem Header="_Layer scripts" 
                           Icon="{materialDesign:PackIcon Kind=Layers}"
-                          IsEnabled="{Binding HasSelectedElement}"/>
+                          IsEnabled="{Binding HasSelectedElement}"
+                          Command="{s:Action OpenLayerScripts}"/>
                 <MenuItem Header="_Property scripts" 
                           Icon="{materialDesign:PackIcon Kind=FormTextbox}"
-                          IsEnabled="{Binding HasSelectedElement}"/>
+                          IsEnabled="{Binding HasSelectedElement}"
+                          Command="{s:Action OpenLayerPropertyScripts}"/>
             </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="Artemis wiki"

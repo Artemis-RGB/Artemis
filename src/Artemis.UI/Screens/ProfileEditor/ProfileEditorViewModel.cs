@@ -11,6 +11,7 @@ using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
@@ -24,8 +25,9 @@ namespace Artemis.UI.Screens.ProfileEditor
     {
         private readonly IMessageService _messageService;
         private readonly IDebugService _debugService;
+        private readonly IWindowManager _windowManager;
+        private readonly IScriptVmFactory _scriptVmFactory;
         private readonly ISidebarVmFactory _sidebarVmFactory;
-        private readonly IEventAggregator _eventAggregator;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
         private readonly ISettingsService _settingsService;
@@ -46,8 +48,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             IProfileService profileService,
             IDialogService dialogService,
             ISettingsService settingsService,
-            IMessageService messageService, 
+            IMessageService messageService,
             IDebugService debugService,
+            IWindowManager windowManager,
+            IScriptVmFactory scriptVmFactory,
             ISidebarVmFactory sidebarVmFactory)
         {
             _profileEditorService = profileEditorService;
@@ -55,6 +59,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             _settingsService = settingsService;
             _messageService = messageService;
             _debugService = debugService;
+            _windowManager = windowManager;
+            _scriptVmFactory = scriptVmFactory;
             _sidebarVmFactory = sidebarVmFactory;
 
             DisplayName = "Profile Editor";
@@ -241,6 +247,22 @@ namespace Artemis.UI.Screens.ProfileEditor
             }
         }
 
+        public void OpenProfileScripts()
+        {
+            _windowManager.ShowDialog(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
+        }
+
+        public void OpenLayerScripts()
+        {
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+                _windowManager.ShowDialog(_scriptVmFactory.ScriptsDialogViewModel(layer));
+        }
+
+        public void OpenLayerPropertyScripts()
+        {
+
+        }
+
         public void OpenDebugger()
         {
             _debugService.ShowDebugger();
@@ -286,6 +308,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             NotifyOfPropertyChange(nameof(HasSelectedElement));
         }
+
         private void LoadWorkspaceSettings()
         {
             SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));

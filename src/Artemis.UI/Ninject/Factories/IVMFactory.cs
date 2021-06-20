@@ -16,6 +16,7 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
+using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Settings.Device;
 using Artemis.UI.Screens.Settings.Device.Tabs;
 using Artemis.UI.Screens.Settings.Tabs.Devices;
@@ -108,6 +109,13 @@ namespace Artemis.UI.Ninject.Factories
         PluginPrerequisiteViewModel PluginPrerequisiteViewModel(PluginPrerequisite pluginPrerequisite, bool uninstall);
     }
 
+    public interface IScriptVmFactory : IVmFactory
+    {
+        ScriptsDialogViewModel ScriptsDialogViewModel(Profile profile);
+        ScriptsDialogViewModel ScriptsDialogViewModel(Layer layer);
+        ScriptsDialogViewModel ScriptsDialogViewModel(ILayerProperty layerProperty);
+    }
+
     public interface ISidebarVmFactory : IVmFactory
     {
         SidebarCategoryViewModel SidebarCategoryViewModel(ProfileCategory profileCategory);
@@ -122,7 +130,10 @@ namespace Artemis.UI.Ninject.Factories
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
         DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
         DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
-        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
+
+        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(
+            ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
+
         DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
