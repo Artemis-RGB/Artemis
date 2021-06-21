@@ -68,6 +68,7 @@ namespace Artemis.UI.Screens.Scripting
             }
 
             ScriptConfiguration.DiscardPendingChanges();
+            ScriptConfiguration.Script?.Dispose();
             RequestClose();
         }
     }

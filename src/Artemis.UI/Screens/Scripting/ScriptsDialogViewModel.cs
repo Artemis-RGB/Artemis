@@ -15,15 +15,17 @@ namespace Artemis.UI.Screens.Scripting
     {
         private readonly IScriptingService _scriptingService;
         private readonly IDialogService _dialogService;
+        private readonly IProfileEditorService _profileEditorService;
         private readonly IScriptVmFactory _scriptVmFactory;
         public Profile Profile { get; }
         public Layer Layer { get; }
         public ILayerProperty LayerProperty { get; }
 
-        public ScriptsDialogViewModel(Profile profile, IScriptingService scriptingService, IDialogService dialogService, IScriptVmFactory scriptVmFactory)
+        public ScriptsDialogViewModel(Profile profile, IScriptingService scriptingService, IDialogService dialogService, IProfileEditorService profileEditorService, IScriptVmFactory scriptVmFactory)
         {
             _scriptingService = scriptingService;
             _dialogService = dialogService;
+            _profileEditorService = profileEditorService;
             _scriptVmFactory = scriptVmFactory;
 
             DisplayName = "Artemis | Profile Scripts";
@@ -74,5 +76,17 @@ namespace Artemis.UI.Screens.Scripting
 
             Items.Add(_scriptVmFactory.ScriptConfigurationViewModel(scriptConfiguration));
         }
+
+        #region Overrides of OneActive
+
+        /// <inheritdoc />
+        protected override void OnClose()
+        {
+            _profileEditorService.SaveSelectedProfileConfiguration();
+
+            base.OnClose();
+        }
+
+        #endregion
     }
 }
