@@ -139,7 +139,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
         }
 
-        private void TimelineOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));

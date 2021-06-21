@@ -43,7 +43,7 @@
                 <DataTemplate DataType="{x:Type scriptingProviders:ScriptingProvider}">
                     <StackPanel Orientation="Horizontal">
                         <shared:ArtemisIcon Icon="{Binding Info.ResolvedIcon}" Width="18 " Height="18" Margin="0 0 5 0" VerticalAlignment="Center" />
-                        <TextBlock Text="{Binding Info.Name}" VerticalAlignment="Center" />
+                        <TextBlock Text="{Binding LanguageName}" VerticalAlignment="Center" />
                     </StackPanel>
                 </DataTemplate>
             </ComboBox.ItemTemplate>

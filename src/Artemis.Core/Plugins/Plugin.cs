@@ -66,6 +66,9 @@ namespace Artemis.Core
         /// </summary>
         public ReadOnlyCollection<PluginFeatureInfo> Features => _features.AsReadOnly();
 
+        /// <summary>
+        ///     Gets a read-only collection of profiles running on the plugin
+        /// </summary>
         public ReadOnlyCollection<Profiler> Profilers => _profilers.AsReadOnly();
 
         /// <summary>

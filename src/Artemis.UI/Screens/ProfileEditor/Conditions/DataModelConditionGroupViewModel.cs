@@ -217,7 +217,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             Update();
         }
 
-        private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
+        private void CoreServiceOnFrameRendered(object sender, FrameRenderedEventArgs e)
         {
             if (IsRootGroup)
                 Evaluate();

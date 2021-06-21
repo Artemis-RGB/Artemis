@@ -175,14 +175,10 @@ namespace Artemis.Core.Services
             provider.InternalScripts.Add(script);
             return script;
         }
-    }
 
-    public interface IScriptingService : IArtemisService
-    {
-        ReadOnlyCollection<GlobalScript> GlobalScripts { get; }
-        GlobalScript? CreateScriptInstance(ScriptConfiguration scriptConfiguration);
-        ProfileScript? CreateScriptInstance(Profile profile, ScriptConfiguration scriptConfiguration);
-        LayerScript? CreateScriptInstance(Layer layer, ScriptConfiguration scriptConfiguration);
-        PropertyScript? CreateScriptInstance(ILayerProperty layerProperty, ScriptConfiguration scriptConfiguration);
+        /// <inheritdoc />
+        public void DeleteScript(ScriptConfiguration scriptConfiguration)
+        {
+        }
     }
 }

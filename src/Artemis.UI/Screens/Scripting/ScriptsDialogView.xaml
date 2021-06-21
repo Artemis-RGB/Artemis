@@ -44,6 +44,7 @@
                     <ListBox Grid.Row="0"
                              Margin="0 10 0 0"
                              ItemContainerStyle="{StaticResource SidebarListBoxItem}"
+                             HorizontalContentAlignment="Stretch"
                              ItemsSource="{Binding Items}"
                              SelectedItem="{Binding ActiveItem}">
                         <ListBox.ItemTemplate>
@@ -52,6 +53,8 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
                                     <Grid.RowDefinitions>
                                         <RowDefinition />
@@ -65,20 +68,56 @@
                                                         Height="18"
                                                         Margin="0 0 10 0"
                                                         VerticalAlignment="Center" />
-                                    <TextBlock Grid.Row="0"
-                                               Grid.Column="1"
-                                               Text="{Binding ScriptConfiguration.Name}" VerticalAlignment="Center" />
+                                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Text="{Binding ScriptConfiguration.Name}"
+                                               Visibility="{Binding ScriptConfiguration.HasChanges, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"/>
+                                    <TextBlock Grid.Row="0" Grid.Column="1" VerticalAlignment="Center"
+                                               Visibility="{Binding ScriptConfiguration.HasChanges, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}">
+                                        <Run Text="{Binding ScriptConfiguration.Name}" FontWeight="Bold" />
+                                        <Run Text="*" />
+                                    </TextBlock>
                                     <TextBlock Grid.Row="1"
                                                Grid.Column="1"
-                                               Text="{Binding ScriptConfiguration.Script.ScriptingProvider.Info.Name, FallbackValue='Unknown scripting provider'}"
+                                               Text="{Binding ScriptConfiguration.Script.ScriptingProvider.LanguageName, FallbackValue='Unknown scripting provider'}"
                                                Foreground="{DynamicResource MaterialDesignBodyLight}"
                                                VerticalAlignment="Center" />
+
+                                    <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="View properties" Width="20" Height="20" Command="{s:Action ViewProperties}" s:View.ActionTarget="{Binding}" HorizontalAlignment="Right">
+                                        <Button.Style>
+                                            <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <materialDesign:PackIcon Kind="Cog" Width="16" Height="16" />
+                                    </Button>
+                                    <ToggleButton Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Suspend profile" Width="18" Height="18" Margin="2 0 0 0" IsChecked="{Binding ScriptConfiguration.IsSuspended}">
+                                        <ToggleButton.Style>
+                                            <Style TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource MaterialDesignFlatToggleButton}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}, Mode=FindAncestor}}" Value="True">
+                                                        <Setter Property="Visibility" Value="Visible" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ToggleButton.Style>
+                                        <materialDesign:PackIcon Kind="Pause" Height="14" Width="14" />
+                                    </ToggleButton>
+
                                 </Grid>
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <Button Grid.Row="1" Style="{StaticResource MaterialDesignOutlinedButton}" Content="ADD NEW SCRIPT" Margin="10 10 10 0" Command="{s:Action AddScriptConfiguration}"
+                    <Button Grid.Row="1" 
+                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                            Content="ADD NEW SCRIPT" 
+                            Margin="10 10 10 0" 
+                            Command="{s:Action AddScriptConfiguration}"
                             VerticalAlignment="Top" />
                 </Grid>
             </Border>

@@ -10,6 +10,9 @@ namespace Artemis.Core
     /// </summary>
     public class DeviceAdaptionHint : IAdaptionHint
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="DeviceAdaptionHint" /> class
+        /// </summary>
         public DeviceAdaptionHint()
         {
         }

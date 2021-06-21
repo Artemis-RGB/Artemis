@@ -1,4 +1,5 @@
-﻿using Artemis.Storage.Entities.General;
+﻿using System;
+using Artemis.Storage.Entities.General;
 
 namespace Artemis.Core.ScriptingProviders
 {
@@ -7,24 +8,26 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public class ScriptConfiguration : CorePropertyChanged, IStorageModel
     {
-        private string _scriptingProviderId;
+        private bool _hasChanges;
         private string _name;
+        private string? _pendingScriptContent;
         private string? _scriptContent;
+        private string _scriptingProviderId;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="ScriptConfiguration" /> class
         /// </summary>
         public ScriptConfiguration(ScriptingProvider provider, string name)
         {
-            ScriptingProviderId = provider.Id;
-            Name = name;
+            _scriptingProviderId = provider.Id;
+            _name = name;
             Entity = new ScriptConfigurationEntity();
         }
 
         internal ScriptConfiguration(ScriptConfigurationEntity entity)
         {
-            ScriptingProviderId = null!;
-            Name = null!;
+            _scriptingProviderId = null!;
+            _name = null!;
             Entity = entity;
 
             Load();
@@ -54,7 +57,36 @@ namespace Artemis.Core.ScriptingProviders
         public string? ScriptContent
         {
             get => _scriptContent;
-            set => SetAndNotify(ref _scriptContent, value);
+            private set
+            {
+                if (!SetAndNotify(ref _scriptContent, value)) return;
+                OnScriptContentChanged();
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the pending changes to the script's content
+        /// </summary>
+        public string? PendingScriptContent
+        {
+            get => _pendingScriptContent;
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    value = null;
+                if (!SetAndNotify(ref _pendingScriptContent, value)) return;
+                HasChanges = ScriptContent != PendingScriptContent;
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this configuration has pending changes to it's
+        ///     <see cref="ScriptContent" />
+        /// </summary>
+        public bool HasChanges
+        {
+            get => _hasChanges;
+            set => SetAndNotify(ref _hasChanges, value);
         }
 
         /// <summary>
@@ -64,6 +96,24 @@ namespace Artemis.Core.ScriptingProviders
 
         internal ScriptConfigurationEntity Entity { get; }
 
+        /// <summary>
+        ///     Applies the <see cref="PendingScriptContent" /> to the <see cref="ScriptContent" />
+        /// </summary>
+        public void ApplyPendingChanges()
+        {
+            ScriptContent = PendingScriptContent;
+            HasChanges = false;
+        }
+
+        /// <summary>
+        ///     Discards the <see cref="PendingScriptContent" />
+        /// </summary>
+        public void DiscardPendingChanges()
+        {
+            PendingScriptContent = ScriptContent;
+            HasChanges = false;
+        }
+
         #region Implementation of IStorageModel
 
         /// <inheritdoc />
@@ -71,6 +121,7 @@ namespace Artemis.Core.ScriptingProviders
         {
             ScriptingProviderId = Entity.ScriptingProviderId;
             ScriptContent = Entity.ScriptContent;
+            PendingScriptContent = Entity.ScriptContent;
             Name = Entity.Name;
         }
 
@@ -79,6 +130,24 @@ namespace Artemis.Core.ScriptingProviders
         {
             Entity.ScriptingProviderId = ScriptingProviderId;
             Entity.ScriptContent = ScriptContent;
+            Entity.Name = Name;
+        }
+
+        #endregion
+
+        #region Events
+
+        /// <summary>
+        ///     Occurs whenever the contents of the script have changed
+        /// </summary>
+        public event EventHandler? ScriptContentChanged;
+
+        /// <summary>
+        ///     Invokes the <see cref="ScriptContentChanged" /> event
+        /// </summary>
+        protected virtual void OnScriptContentChanged()
+        {
+            ScriptContentChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

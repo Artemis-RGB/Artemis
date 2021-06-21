@@ -46,7 +46,7 @@ namespace Artemis.Core
         /// </param>
         /// <returns><c>true</c> if the value was changed, <c>false</c> if the existing value matched the desired value.</returns>
         [NotifyPropertyChangedInvocator]
-        protected virtual bool SetAndNotify<T>(ref T storage, T value, [CallerMemberName] string propertyName = null)
+        protected virtual bool SetAndNotify<T>(ref T storage, T value, [CallerMemberName] string? propertyName = null)
         {
             if (!RequiresUpdate(ref storage, value)) return false;
 
@@ -64,7 +64,7 @@ namespace Artemis.Core
         ///     and can be provided automatically when invoked from compilers that support <see cref="CallerMemberNameAttribute" />
         ///     .
         /// </param>
-        protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }

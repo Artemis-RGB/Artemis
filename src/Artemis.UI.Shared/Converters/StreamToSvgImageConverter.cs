@@ -19,7 +19,7 @@ namespace Artemis.UI.Shared
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is not Stream stream)
-                return null;
+                return Binding.DoNothing;
 
             stream.Position = 0;
 

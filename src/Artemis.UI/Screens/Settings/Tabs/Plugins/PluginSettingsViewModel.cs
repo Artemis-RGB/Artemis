@@ -221,7 +221,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             Core.Utilities.OpenUrl(uri.ToString());
         }
 
-        private void PluginManagementServiceOnPluginToggled(object? sender, PluginEventArgs e)
+        private void PluginManagementServiceOnPluginToggled(object sender, PluginEventArgs e)
         {
             NotifyOfPropertyChange(nameof(IsEnabled));
             NotifyOfPropertyChange(nameof(CanOpenSettings));

@@ -51,6 +51,7 @@ namespace Artemis.Core
             if (instance == null) throw new ArgumentNullException(nameof(instance));
             Plugin = plugin ?? throw new ArgumentNullException(nameof(plugin));
             FeatureType = instance.GetType();
+            Entity = new PluginFeatureEntity();
 
             Name = attribute?.Name ?? instance.GetType().Name.Humanize(LetterCasing.Title);
             Description = attribute?.Description;

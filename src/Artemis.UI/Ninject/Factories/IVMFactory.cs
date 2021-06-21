@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Artemis.Core;
 using Artemis.Core.Modules;
+using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Header;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
@@ -114,6 +115,7 @@ namespace Artemis.UI.Ninject.Factories
         ScriptsDialogViewModel ScriptsDialogViewModel(Profile profile);
         ScriptsDialogViewModel ScriptsDialogViewModel(Layer layer);
         ScriptsDialogViewModel ScriptsDialogViewModel(ILayerProperty layerProperty);
+        ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration);
     }
 
     public interface ISidebarVmFactory : IVmFactory
