@@ -5,14 +5,11 @@ using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
-using Artemis.UI.Screens.Scripting;
-using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -23,14 +20,14 @@ namespace Artemis.UI.Screens.ProfileEditor
 {
     public class ProfileEditorViewModel : MainScreenViewModel
     {
-        private readonly IMessageService _messageService;
         private readonly IDebugService _debugService;
-        private readonly IWindowManager _windowManager;
-        private readonly IScriptVmFactory _scriptVmFactory;
-        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
+        private readonly IScriptVmFactory _scriptVmFactory;
         private readonly ISettingsService _settingsService;
+        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IWindowManager _windowManager;
         private PluginSetting<GridLength> _bottomPanelsHeight;
         private PluginSetting<GridLength> _dataModelConditionsHeight;
         private DisplayConditionsViewModel _displayConditionsViewModel;
@@ -197,89 +194,6 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
-        #region Menu
-
-        public bool HasSelectedElement => _profileEditorService.SelectedProfileElement != null;
-        public bool CanPaste => _profileEditorService.GetCanPasteProfileElement();
-
-        public async Task ViewProperties()
-        {
-            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
-        }
-
-        public void DuplicateProfile()
-        {
-            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
-            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
-        }
-
-        public async Task DeleteProfile()
-        {
-            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Delete();
-        }
-
-        public async Task ExportProfile()
-        {
-            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Export();
-        }
-
-        public void Copy()
-        {
-            if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.CopyProfileElement(_profileEditorService.SelectedProfileElement);
-        }
-
-        public void Duplicate()
-        {
-            if (_profileEditorService.SelectedProfileElement != null)
-                _profileEditorService.DuplicateProfileElement(_profileEditorService.SelectedProfileElement);
-        }
-
-        public void Paste()
-        {
-            if (_profileEditorService.SelectedProfileElement != null && _profileEditorService.SelectedProfileElement.Parent is Folder parent)
-                _profileEditorService.PasteProfileElement(parent, _profileEditorService.SelectedProfileElement.Order - 1);
-            else
-            {
-                Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
-                if (rootFolder != null)
-                    _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
-            }
-        }
-
-        public void OpenProfileScripts()
-        {
-            _windowManager.ShowDialog(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
-        }
-
-        public void OpenLayerScripts()
-        {
-            if (_profileEditorService.SelectedProfileElement is Layer layer)
-                _windowManager.ShowDialog(_scriptVmFactory.ScriptsDialogViewModel(layer));
-        }
-
-        public void OpenLayerPropertyScripts()
-        {
-
-        }
-
-        public void OpenDebugger()
-        {
-            _debugService.ShowDebugger();
-        }
-
-        public void OpenUrl(string url)
-        {
-            Core.Utilities.OpenUrl(url);
-        }
-
-        public void EditMenuOpened()
-        {
-            NotifyOfPropertyChange(nameof(CanPaste));
-        }
-
-        #endregion
-
 
         protected override void OnInitialActivate()
         {
@@ -324,5 +238,89 @@ namespace Artemis.UI.Screens.ProfileEditor
             BottomPanelsHeight.Save();
             ElementPropertiesWidth.Save();
         }
+
+        #region Menu
+
+        public bool HasSelectedElement => _profileEditorService.SelectedProfileElement != null;
+        public bool CanPaste => _profileEditorService.GetCanPasteProfileElement();
+
+        public async Task ViewProperties()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
+        }
+
+        public void DuplicateProfile()
+        {
+            ProfileConfigurationExportModel export = _profileService.ExportProfile(ProfileConfiguration);
+            _profileService.ImportProfile(ProfileConfiguration.Category, export, true, false, "copy");
+        }
+
+        public async Task DeleteProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Delete();
+        }
+
+        public async Task ExportProfile()
+        {
+            await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).Export();
+        }
+
+        public void Copy()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.CopyProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Duplicate()
+        {
+            if (_profileEditorService.SelectedProfileElement != null)
+                _profileEditorService.DuplicateProfileElement(_profileEditorService.SelectedProfileElement);
+        }
+
+        public void Paste()
+        {
+            if (_profileEditorService.SelectedProfileElement != null && _profileEditorService.SelectedProfileElement.Parent is Folder parent)
+            {
+                _profileEditorService.PasteProfileElement(parent, _profileEditorService.SelectedProfileElement.Order - 1);
+            }
+            else
+            {
+                Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
+                if (rootFolder != null)
+                    _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
+            }
+        }
+
+        public void OpenProfileScripts()
+        {
+            _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
+        }
+
+        public void OpenLayerScripts()
+        {
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+                _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(layer));
+        }
+
+        public void OpenLayerPropertyScripts()
+        {
+        }
+
+        public void OpenDebugger()
+        {
+            _debugService.ShowDebugger();
+        }
+
+        public void OpenUrl(string url)
+        {
+            Core.Utilities.OpenUrl(url);
+        }
+
+        public void EditMenuOpened()
+        {
+            NotifyOfPropertyChange(nameof(CanPaste));
+        }
+
+        #endregion
     }
 }

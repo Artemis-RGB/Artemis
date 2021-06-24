@@ -57,10 +57,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);
             ShapeAnchor = _layerEditorService.GetLayerAnchorPosition(layer).ToSKPoint();
 
-            Rect layerBounds = _layerEditorService.GetLayerBounds(layer);
-            TransformGroup layerTransformGroup = _layerEditorService.GetLayerTransformGroup(layer);
             Execute.PostToUIThread(() =>
             {
+                Rect layerBounds = _layerEditorService.GetLayerBounds(layer);
+                TransformGroup layerTransformGroup = _layerEditorService.GetLayerTransformGroup(layer);
+
                 RectangleGeometry shapeGeometry = new(layerBounds) {Transform = layerTransformGroup};
                 shapeGeometry.Freeze();
                 ShapeGeometry = shapeGeometry;
