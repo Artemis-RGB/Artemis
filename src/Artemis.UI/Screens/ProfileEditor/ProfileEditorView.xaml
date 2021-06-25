@@ -94,7 +94,7 @@
                           Command="{s:Action Paste}" 
                           InputGestureText="Ctrl+V" />
             </MenuItem>
-            <MenuItem Header="_Scripting">
+            <MenuItem Header="_Scripting" IsEnabled="False">
                 <MenuItem Header="_Profile scripts"
                           Icon="{materialDesign:PackIcon Kind=BookEdit}"
                           Command="{s:Action OpenProfileScripts}"/>
