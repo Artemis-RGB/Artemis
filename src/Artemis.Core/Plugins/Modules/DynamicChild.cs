@@ -15,7 +15,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets or sets the current value of the dynamic child
         /// </summary>
-        public new T Value { get; set; }
+        public T Value { get; set; }
 
         /// <inheritdoc />
         protected override object? GetValue()

@@ -18,6 +18,9 @@ namespace Artemis.Core
             {KeyboardSection.Extra, Enum.GetValues<LedId>().Where(l => l >= LedId.Keyboard_Custom1 && l <= LedId.Keyboard_Custom64).ToList()}
         };
 
+        /// <summary>
+        ///     Creates a new instance of the <see cref="KeyboardSectionAdaptionHint" /> class
+        /// </summary>
         public KeyboardSectionAdaptionHint()
         {
         }

@@ -175,45 +175,10 @@ namespace Artemis.Core.Services
             provider.InternalScripts.Add(script);
             return script;
         }
-    }
 
-    public interface IScriptingService : IArtemisService
-    {
-        /// <summary>
-        ///     Gets a read only collection of all active global scripts
-        /// </summary>
-        ReadOnlyCollection<GlobalScript> GlobalScripts { get; }
-
-        /// <summary>
-        ///     Attempts to create an instance of a global script configured in the provided <see cref="ScriptConfiguration" />
-        /// </summary>
-        /// <param name="scriptConfiguration">The script configuration of the script to instantiate</param>
-        /// <returns>An instance of the script if the script provider was found; otherwise <see langword="null" /></returns>
-        GlobalScript? CreateScriptInstance(ScriptConfiguration scriptConfiguration);
-
-        /// <summary>
-        ///     Attempts to create an instance of a profile script configured in the provided <see cref="ScriptConfiguration" />
-        /// </summary>
-        /// <param name="profile">The profile the script is bound to</param>
-        /// <param name="scriptConfiguration">The script configuration of the script to instantiate</param>
-        /// <returns>An instance of the script if the script provider was found; otherwise <see langword="null" /></returns>
-        ProfileScript? CreateScriptInstance(Profile profile, ScriptConfiguration scriptConfiguration);
-
-        /// <summary>
-        ///     Attempts to create an instance of a layer script configured in the provided <see cref="ScriptConfiguration" />
-        /// </summary>
-        /// <param name="layer">The layer the script is bound to</param>
-        /// <param name="scriptConfiguration">The script configuration of the script to instantiate</param>
-        /// <returns>An instance of the script if the script provider was found; otherwise <see langword="null" /></returns>
-        LayerScript? CreateScriptInstance(Layer layer, ScriptConfiguration scriptConfiguration);
-
-        /// <summary>
-        ///     Attempts to create an instance of a layer property script configured in the provided
-        ///     <see cref="ScriptConfiguration" />
-        /// </summary>
-        /// <param name="layerProperty">The layer property the script is bound to</param>
-        /// <param name="scriptConfiguration">The script configuration of the script to instantiate</param>
-        /// <returns>An instance of the script if the script provider was found; otherwise <see langword="null" /></returns>
-        PropertyScript? CreateScriptInstance(ILayerProperty layerProperty, ScriptConfiguration scriptConfiguration);
+        /// <inheritdoc />
+        public void DeleteScript(ScriptConfiguration scriptConfiguration)
+        {
+        }
     }
 }

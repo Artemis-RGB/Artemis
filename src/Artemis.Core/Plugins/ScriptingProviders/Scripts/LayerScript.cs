@@ -11,6 +11,10 @@ namespace Artemis.Core.ScriptingProviders
         protected LayerScript(Layer layer, ScriptConfiguration configuration) : base(configuration)
         {
             Layer = layer;
+            lock (Layer.Scripts)
+            {
+                Layer.Scripts.Add(this);
+            }
         }
 
         /// <summary>

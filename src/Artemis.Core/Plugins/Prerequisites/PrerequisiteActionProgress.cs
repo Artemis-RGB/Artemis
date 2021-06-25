@@ -9,10 +9,10 @@ namespace Artemis.Core
     {
         private long _current;
         private DateTime _lastReport;
+        private long _lastReportValue;
         private double _percentage;
         private double _progressPerSecond;
         private long _total;
-        private long _lastReportValue;
 
         /// <summary>
         ///     The current amount
@@ -81,6 +81,9 @@ namespace Artemis.Core
         /// </summary>
         public event EventHandler? ProgressReported;
 
+        /// <summary>
+        ///     Invokes the <see cref="ProgressReported" /> event
+        /// </summary>
         protected virtual void OnProgressReported()
         {
             ProgressReported?.Invoke(this, EventArgs.Empty);

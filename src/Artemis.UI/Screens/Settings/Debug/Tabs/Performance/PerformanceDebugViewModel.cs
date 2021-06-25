@@ -26,13 +26,13 @@ namespace Artemis.UI.Screens.Settings.Debug.Tabs.Performance
                 viewModel.Update();
         }
 
-        private void FeatureToggled(object? sender, PluginFeatureEventArgs e)
+        private void FeatureToggled(object sender, PluginFeatureEventArgs e)
         {
             Items.Clear();
             PopulateItems();
         }
 
-        private void PluginToggled(object? sender, PluginEventArgs e)
+        private void PluginToggled(object sender, PluginEventArgs e)
         {
             Items.Clear();
             PopulateItems();

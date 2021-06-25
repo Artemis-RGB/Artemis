@@ -10,6 +10,10 @@
         protected PropertyScript(ILayerProperty layerProperty, ScriptConfiguration configuration) : base(configuration)
         {
             LayerProperty = layerProperty;
+            lock (LayerProperty.Scripts)
+            {
+                LayerProperty.Scripts.Add(this);
+            }
         }
 
         /// <summary>

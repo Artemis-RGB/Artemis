@@ -12,7 +12,7 @@ namespace Artemis.Core.ScriptingProviders
         {
         }
 
-        internal ScriptingService ScriptingService { get; set; }
+        internal ScriptingService? ScriptingService { get; set; }
 
         /// <summary>
         ///     Called whenever the Artemis Core is about to update
@@ -35,7 +35,7 @@ namespace Artemis.Core.ScriptingProviders
         /// <inheritdoc />
         internal override void InternalCleanup()
         {
-            ScriptingService.InternalGlobalScripts.Remove(this);
+            ScriptingService?.InternalGlobalScripts.Remove(this);
         }
 
         #endregion

@@ -12,9 +12,9 @@ namespace Artemis.Core.Services
             _pluginSettings = new PluginSettings(Constants.CorePlugin, pluginRepository);
         }
 
-        public PluginSetting<T> GetSetting<T>(string name, T defaultValue = default)
+        public PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default)
         {
-            return _pluginSettings.GetSetting(name, defaultValue!);
+            return _pluginSettings.GetSetting(name, defaultValue);
         }
     }
 
@@ -31,6 +31,6 @@ namespace Artemis.Core.Services
         /// <param name="name">The name of the setting</param>
         /// <param name="defaultValue">The default value to use if the setting does not exist yet</param>
         /// <returns></returns>
-        PluginSetting<T> GetSetting<T>(string name, T defaultValue = default);
+        PluginSetting<T> GetSetting<T>(string name, T? defaultValue = default);
     }
 }
