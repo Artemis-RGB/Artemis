@@ -13,7 +13,7 @@ namespace Artemis.Storage.Migrations
         {
             ILiteCollection<ProfileCategoryEntity> profileCategories = repository.Database.GetCollection<ProfileCategoryEntity>();
             profileCategories.EnsureIndex(s => s.Name, true);
-            ProfileCategoryEntity? profileCategoryEntity = profileCategories.Find(c => c.Name == "Converted").FirstOrDefault();
+            ProfileCategoryEntity profileCategoryEntity = profileCategories.Find(c => c.Name == "Converted").FirstOrDefault();
             if (profileCategoryEntity == null)
             {
                 profileCategoryEntity = new ProfileCategoryEntity {Name = "Imported"};

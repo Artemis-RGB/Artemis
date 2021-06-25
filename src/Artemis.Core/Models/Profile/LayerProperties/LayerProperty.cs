@@ -421,7 +421,7 @@ namespace Artemis.Core
         {
             if (keyframeEntity.Position > ProfileElement.Timeline.Length)
                 return null;
-            T value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
+            T? value = CoreJson.DeserializeObject<T>(keyframeEntity.Value);
             if (value == null)
                 return null;
 

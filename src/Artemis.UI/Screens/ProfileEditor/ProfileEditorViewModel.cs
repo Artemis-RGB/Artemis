@@ -5,13 +5,11 @@ using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
-using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
-using Artemis.UI.Screens.Sidebar.Dialogs;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
@@ -22,13 +20,14 @@ namespace Artemis.UI.Screens.ProfileEditor
 {
     public class ProfileEditorViewModel : MainScreenViewModel
     {
-        private readonly IMessageService _messageService;
         private readonly IDebugService _debugService;
-        private readonly ISidebarVmFactory _sidebarVmFactory;
-        private readonly IEventAggregator _eventAggregator;
+        private readonly IMessageService _messageService;
         private readonly IProfileEditorService _profileEditorService;
         private readonly IProfileService _profileService;
+        private readonly IScriptVmFactory _scriptVmFactory;
         private readonly ISettingsService _settingsService;
+        private readonly ISidebarVmFactory _sidebarVmFactory;
+        private readonly IWindowManager _windowManager;
         private PluginSetting<GridLength> _bottomPanelsHeight;
         private PluginSetting<GridLength> _dataModelConditionsHeight;
         private DisplayConditionsViewModel _displayConditionsViewModel;
@@ -46,8 +45,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             IProfileService profileService,
             IDialogService dialogService,
             ISettingsService settingsService,
-            IMessageService messageService, 
+            IMessageService messageService,
             IDebugService debugService,
+            IWindowManager windowManager,
+            IScriptVmFactory scriptVmFactory,
             ISidebarVmFactory sidebarVmFactory)
         {
             _profileEditorService = profileEditorService;
@@ -55,6 +56,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             _settingsService = settingsService;
             _messageService = messageService;
             _debugService = debugService;
+            _windowManager = windowManager;
+            _scriptVmFactory = scriptVmFactory;
             _sidebarVmFactory = sidebarVmFactory;
 
             DisplayName = "Profile Editor";
@@ -191,6 +194,51 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
+
+        protected override void OnInitialActivate()
+        {
+            _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
+            LoadWorkspaceSettings();
+            base.OnInitialActivate();
+        }
+
+        protected override void OnClose()
+        {
+            _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
+            _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
+            SaveWorkspaceSettings();
+            _profileEditorService.ChangeSelectedProfileConfiguration(null);
+
+            base.OnClose();
+        }
+
+        private void ProfileEditorServiceOnSelectedProfileChanged(object sender, ProfileConfigurationEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(ProfileConfiguration));
+        }
+
+        private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(HasSelectedElement));
+        }
+
+        private void LoadWorkspaceSettings()
+        {
+            SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
+            DataModelConditionsHeight = _settingsService.GetSetting("ProfileEditor.DataModelConditionsHeight", new GridLength(345));
+            BottomPanelsHeight = _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
+            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
+        }
+
+        private void SaveWorkspaceSettings()
+        {
+            SidePanelsWidth.Save();
+            DataModelConditionsHeight.Save();
+            BottomPanelsHeight.Save();
+            ElementPropertiesWidth.Save();
+        }
+
         #region Menu
 
         public bool HasSelectedElement => _profileEditorService.SelectedProfileElement != null;
@@ -232,13 +280,30 @@ namespace Artemis.UI.Screens.ProfileEditor
         public void Paste()
         {
             if (_profileEditorService.SelectedProfileElement != null && _profileEditorService.SelectedProfileElement.Parent is Folder parent)
+            {
                 _profileEditorService.PasteProfileElement(parent, _profileEditorService.SelectedProfileElement.Order - 1);
+            }
             else
             {
                 Folder rootFolder = _profileEditorService.SelectedProfile?.GetRootFolder();
                 if (rootFolder != null)
                     _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
             }
+        }
+
+        public void OpenProfileScripts()
+        {
+            _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
+        }
+
+        public void OpenLayerScripts()
+        {
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
+                _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(layer));
+        }
+
+        public void OpenLayerPropertyScripts()
+        {
         }
 
         public void OpenDebugger()
@@ -257,49 +322,5 @@ namespace Artemis.UI.Screens.ProfileEditor
         }
 
         #endregion
-
-
-        protected override void OnInitialActivate()
-        {
-            _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
-            _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
-            LoadWorkspaceSettings();
-            base.OnInitialActivate();
-        }
-
-        protected override void OnClose()
-        {
-            _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
-            _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
-            SaveWorkspaceSettings();
-            _profileEditorService.ChangeSelectedProfileConfiguration(null);
-
-            base.OnClose();
-        }
-
-        private void ProfileEditorServiceOnSelectedProfileChanged(object sender, ProfileConfigurationEventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(ProfileConfiguration));
-        }
-
-        private void ProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(HasSelectedElement));
-        }
-        private void LoadWorkspaceSettings()
-        {
-            SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
-            DataModelConditionsHeight = _settingsService.GetSetting("ProfileEditor.DataModelConditionsHeight", new GridLength(345));
-            BottomPanelsHeight = _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
-            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
-        }
-
-        private void SaveWorkspaceSettings()
-        {
-            SidePanelsWidth.Save();
-            DataModelConditionsHeight.Save();
-            BottomPanelsHeight.Save();
-            ElementPropertiesWidth.Save();
-        }
     }
 }

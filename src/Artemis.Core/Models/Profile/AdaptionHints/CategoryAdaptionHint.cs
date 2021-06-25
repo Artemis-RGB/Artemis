@@ -9,6 +9,9 @@ namespace Artemis.Core
     /// </summary>
     public class CategoryAdaptionHint : IAdaptionHint
     {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="CategoryAdaptionHint" /> class
+        /// </summary>
         public CategoryAdaptionHint()
         {
         }
@@ -41,6 +44,12 @@ namespace Artemis.Core
         /// </summary>
         public int Amount { get; set; }
 
+        /// <inheritdoc />
+        public override string ToString()
+        {
+            return $"Category adaption - {nameof(Category)}: {Category}, {nameof(Skip)}: {Skip}, {nameof(LimitAmount)}: {LimitAmount}, {nameof(Amount)}: {Amount}";
+        }
+
         #region Implementation of IAdaptionHint
 
         /// <inheritdoc />
@@ -65,11 +74,5 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        /// <inheritdoc />
-        public override string ToString()
-        {
-            return $"Category adaption - {nameof(Category)}: {Category}, {nameof(Skip)}: {Skip}, {nameof(LimitAmount)}: {LimitAmount}, {nameof(Amount)}: {Amount}";
-        }
     }
 }

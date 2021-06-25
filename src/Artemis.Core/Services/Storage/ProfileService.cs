@@ -42,7 +42,8 @@ namespace Artemis.Core.Services
             _profileCategoryRepository = profileCategoryRepository;
             _pluginManagementService = pluginManagementService;
             _profileRepository = profileRepository;
-            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
+            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll()
+                .Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
@@ -52,6 +53,17 @@ namespace Artemis.Core.Services
 
             if (!_profileCategories.Any())
                 CreateDefaultProfileCategories();
+            UpdateModules();
+        }
+
+        protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
+        {
+            ProfileActivated?.Invoke(this, e);
+        }
+
+        protected virtual void OnProfileDeactivated(ProfileConfigurationEventArgs e)
+        {
+            ProfileDeactivated?.Invoke(this, e);
         }
 
         private void InputServiceOnKeyboardKeyUp(object? sender, ArtemisKeyboardKeyEventArgs e)
@@ -87,8 +99,10 @@ namespace Artemis.Core.Services
             {
                 List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
                 foreach (ProfileCategory profileCategory in _profileCategories)
-                foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
-                    profileConfiguration.LoadModules(modules);
+                {
+                    foreach (ProfileConfiguration profileConfiguration in profileCategory.ProfileConfigurations)
+                        profileConfiguration.LoadModules(modules);
+                }
             }
         }
 
@@ -112,7 +126,8 @@ namespace Artemis.Core.Services
             {
                 if (profileConfiguration.HotkeyMode == ProfileConfigurationHotkeyMode.Toggle)
                 {
-                    if (profileConfiguration.EnableHotkey != null && profileConfiguration.EnableHotkey.MatchesEventArgs(e))
+                    if (profileConfiguration.EnableHotkey != null &&
+                        profileConfiguration.EnableHotkey.MatchesEventArgs(e))
                         profileConfiguration.IsSuspended = !profileConfiguration.IsSuspended;
                 }
                 else
@@ -143,7 +158,11 @@ namespace Artemis.Core.Services
 
             // Group by stack trace, that should gather up duplicate exceptions
             foreach (IGrouping<string?, Exception> exceptions in _updateExceptions.GroupBy(e => e.StackTrace))
-                _logger.Warning(exceptions.First(), "Exception was thrown {count} times during profile update in the last 10 seconds", exceptions.Count());
+            {
+                _logger.Warning(exceptions.First(),
+                    "Exception was thrown {count} times during profile update in the last 10 seconds",
+                    exceptions.Count());
+            }
 
             // When logging is finished start with a fresh slate
             _updateExceptions.Clear();
@@ -161,7 +180,11 @@ namespace Artemis.Core.Services
 
             // Group by stack trace, that should gather up duplicate exceptions
             foreach (IGrouping<string?, Exception> exceptions in _renderExceptions.GroupBy(e => e.StackTrace))
-                _logger.Warning(exceptions.First(), "Exception was thrown {count} times during profile render in the last 10 seconds", exceptions.Count());
+            {
+                _logger.Warning(exceptions.First(),
+                    "Exception was thrown {count} times during profile render in the last 10 seconds",
+                    exceptions.Count());
+            }
 
             // When logging is finished start with a fresh slate
             _renderExceptions.Clear();
@@ -464,8 +487,9 @@ namespace Artemis.Core.Services
                 string top = profile.UndoStack.Pop();
                 string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
                 profile.RedoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                                        ?? throw new InvalidOperationException("Failed to deserialize memento");
+                profile.ProfileEntity =
+                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
+                    ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
                 profile.PopulateLeds(_rgbService.EnabledDevices);
@@ -489,8 +513,9 @@ namespace Artemis.Core.Services
                 string top = profile.RedoStack.Pop();
                 string memento = JsonConvert.SerializeObject(profile.ProfileEntity, IProfileService.MementoSettings);
                 profile.UndoStack.Push(memento);
-                profile.ProfileEntity = JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
-                                        ?? throw new InvalidOperationException("Failed to deserialize memento");
+                profile.ProfileEntity =
+                    JsonConvert.DeserializeObject<ProfileEntity>(top, IProfileService.MementoSettings)
+                    ?? throw new InvalidOperationException("Failed to deserialize memento");
 
                 profile.Load();
                 profile.PopulateLeds(_rgbService.EnabledDevices);
@@ -513,14 +538,16 @@ namespace Artemis.Core.Services
             };
         }
 
-        public ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel, bool makeUnique, bool markAsFreshImport, string? nameAffix)
+        public ProfileConfiguration ImportProfile(ProfileCategory category, ProfileConfigurationExportModel exportModel,
+            bool makeUnique, bool markAsFreshImport, string? nameAffix)
         {
             if (exportModel.ProfileEntity == null)
                 throw new ArtemisCoreException("Cannot import a profile without any data");
 
             // Create a copy of the entity because we'll be using it from now on
             ProfileEntity profileEntity = JsonConvert.DeserializeObject<ProfileEntity>(
-                JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings), IProfileService.ExportSettings
+                JsonConvert.SerializeObject(exportModel.ProfileEntity, IProfileService.ExportSettings),
+                IProfileService.ExportSettings
             )!;
 
             // Assign a new GUID to make sure it is unique in case of a previous import of the same content
@@ -532,7 +559,7 @@ namespace Artemis.Core.Services
             if (markAsFreshImport)
                 profileEntity.IsFreshImport = true;
 
-            if (_profileRepository.Get(profileEntity.Id) != null)
+            if (_profileRepository.Get(profileEntity.Id) == null)
                 _profileRepository.Add(profileEntity);
             else
                 throw new ArtemisCoreException($"Cannot import this profile without {nameof(makeUnique)} being true");
@@ -550,7 +577,9 @@ namespace Artemis.Core.Services
                     profileConfiguration.Name = $"{profileConfiguration.Name} - {nameAffix}";
             }
             else
+            {
                 profileConfiguration = new ProfileConfiguration(category, profileEntity.Name, "Import");
+            }
 
             if (exportModel.ProfileImage != null)
             {
@@ -561,6 +590,9 @@ namespace Artemis.Core.Services
 
             profileConfiguration.Entity.ProfileId = profileEntity.Id;
             category.AddProfileConfiguration(profileConfiguration, 0);
+
+            List<Module> modules = _pluginManagementService.GetFeaturesOfType<Module>();
+            profileConfiguration.LoadModules(modules);
             SaveProfileCategory(category);
 
             return profileConfiguration;
@@ -589,21 +621,7 @@ namespace Artemis.Core.Services
             _profileRepository.Save(profile.ProfileEntity);
         }
 
-        #region Events
-
         public event EventHandler<ProfileConfigurationEventArgs>? ProfileActivated;
         public event EventHandler<ProfileConfigurationEventArgs>? ProfileDeactivated;
-
-        protected virtual void OnProfileActivated(ProfileConfigurationEventArgs e)
-        {
-            ProfileActivated?.Invoke(this, e);
-        }
-
-        protected virtual void OnProfileDeactivated(ProfileConfigurationEventArgs e)
-        {
-            ProfileDeactivated?.Invoke(this, e);
-        }
-
-        #endregion
     }
 }

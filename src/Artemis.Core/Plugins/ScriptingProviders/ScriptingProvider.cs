@@ -37,6 +37,19 @@ namespace Artemis.Core.ScriptingProviders
         /// <param name="script">The script the editor must edit</param>
         public abstract IScriptEditorViewModel CreatePropertyScriptEditor(TPropertyScript script);
 
+        #region Overrides of PluginFeature
+
+        /// <inheritdoc />
+        internal override void InternalDisable()
+        {
+            base.InternalDisable();
+
+            while (Scripts.Count > 0)
+                Scripts[0].Dispose();
+        }
+
+        #endregion
+
         #region Overrides of ScriptingProvider
 
         /// <inheritdoc />
@@ -104,19 +117,6 @@ namespace Artemis.Core.ScriptingProviders
         }
 
         #endregion
-
-        #region Overrides of PluginFeature
-
-        /// <inheritdoc />
-        internal override void InternalDisable()
-        {
-            base.InternalDisable();
-
-            while (Scripts.Count > 0)
-                Scripts[0].Dispose();
-        }
-
-        #endregion
     }
 
     /// <summary>
@@ -128,16 +128,21 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class ScriptingProvider : PluginFeature
     {
-        internal abstract Type GlobalScriptType { get; }
-        internal abstract Type PropertyScriptType { get; }
-        internal abstract Type LayerScriptType { get; }
-        internal abstract Type ProfileScriptType { get; }
-        internal List<Script> InternalScripts { get; } = new();
+        /// <summary>
+        ///     Gets the name of the scripting language this provider provides
+        /// </summary>
+        public abstract string LanguageName { get; }
 
         /// <summary>
         ///     Gets a list of all active scripts belonging to this scripting provider
         /// </summary>
         public ReadOnlyCollection<Script> Scripts => InternalScripts.AsReadOnly();
+
+        internal abstract Type GlobalScriptType { get; }
+        internal abstract Type PropertyScriptType { get; }
+        internal abstract Type LayerScriptType { get; }
+        internal abstract Type ProfileScriptType { get; }
+        internal List<Script> InternalScripts { get; } = new();
 
         /// <summary>
         ///     Called when the UI needs a script editor for a <see cref="GlobalScript" />

@@ -28,6 +28,7 @@ namespace Artemis.Core
 
         internal ProfileCategory(ProfileCategoryEntity entity)
         {
+            _name = null!;
             Entity = entity;
             Load();
         }

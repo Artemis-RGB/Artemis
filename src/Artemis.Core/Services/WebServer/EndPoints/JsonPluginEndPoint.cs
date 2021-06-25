@@ -52,7 +52,9 @@ namespace Artemis.Core.Services
             object? response = null;
             try
             {
-                T deserialized = JsonConvert.DeserializeObject<T>(await reader.ReadToEndAsync());
+                T? deserialized = JsonConvert.DeserializeObject<T>(await reader.ReadToEndAsync());
+                if (deserialized == null)
+                    throw new JsonException("Deserialization returned null");
 
                 if (_requestHandler != null)
                 {

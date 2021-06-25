@@ -11,6 +11,10 @@ namespace Artemis.Core.ScriptingProviders
         protected ProfileScript(Profile profile, ScriptConfiguration configuration) : base(configuration)
         {
             Profile = profile;
+            lock (Profile.Scripts)
+            {
+                Profile.Scripts.Add(this);
+            }
         }
 
         /// <summary>

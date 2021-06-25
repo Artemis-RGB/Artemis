@@ -115,7 +115,7 @@ namespace Artemis.UI.Screens
             _eventAggregator.Publish(new MainWindowMouseEvent(sender, false, e));
         }
 
-        private void SidebarViewModelOnSelectedScreenChanged(object? sender, EventArgs e)
+        private void SidebarViewModelOnSelectedScreenChanged(object sender, EventArgs e)
         {
             ActiveItem = SidebarViewModel.SelectedScreen;
         }
