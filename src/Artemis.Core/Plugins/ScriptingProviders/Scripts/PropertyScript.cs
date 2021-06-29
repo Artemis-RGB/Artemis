@@ -40,6 +40,9 @@
         #region Overrides of Script
 
         /// <inheritdoc />
+        public override ScriptType ScriptType => ScriptType.LayerProperty;
+
+        /// <inheritdoc />
         internal override void InternalCleanup()
         {
             lock (LayerProperty.Scripts)

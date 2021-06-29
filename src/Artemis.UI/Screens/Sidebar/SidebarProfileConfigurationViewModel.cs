@@ -92,9 +92,8 @@ namespace Artemis.UI.Screens.Sidebar
             ProfileConfigurationExportModel profileConfigurationExportModel = _profileService.ExportProfile(ProfileConfiguration);
             string json = JsonConvert.SerializeObject(profileConfigurationExportModel, IProfileService.ExportSettings);
 
-            if (!dialog.FileName.EndsWith(".json"))
-                dialog.FileName += ".json";
-            await File.WriteAllTextAsync(dialog.FileName, json);
+            string path = Path.ChangeExtension(dialog.FileName, ".json");
+            await File.WriteAllTextAsync(path, json);
         }
 
         public void Duplicate()
