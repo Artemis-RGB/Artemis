@@ -9,6 +9,7 @@ namespace Artemis.Core.ScriptingProviders
     public class ScriptConfiguration : CorePropertyChanged, IStorageModel
     {
         private bool _hasChanges;
+        private bool _isSuspended;
         private string _name;
         private string? _pendingScriptContent;
         private string? _scriptContent;
@@ -77,6 +78,16 @@ namespace Artemis.Core.ScriptingProviders
                 if (!SetAndNotify(ref _pendingScriptContent, value)) return;
                 HasChanges = ScriptContent != PendingScriptContent;
             }
+        }
+
+        // TODO: Implement suspension
+        /// <summary>
+        ///     [NYI] Gets or sets a boolean indicating whether this configuration is suspended
+        /// </summary>
+        public bool IsSuspended
+        {
+            get => _isSuspended;
+            set => SetAndNotify(ref _isSuspended, value);
         }
 
         /// <summary>
