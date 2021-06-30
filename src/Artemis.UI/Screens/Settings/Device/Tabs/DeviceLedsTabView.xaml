@@ -12,6 +12,7 @@
     d:DataContext="{d:DesignInstance {x:Type tabs:DeviceLedsTabViewModel}}">
     <UserControl.Resources>
         <converters:UriToFileNameConverter x:Key="UriToFileNameConverter" />
+        <converters:LedIdToStringConverter x:Key="LedIdToStringConverter" />
     </UserControl.Resources>
     <Grid>
         <DataGrid ItemsSource="{Binding LedViewModels}"
@@ -31,7 +32,7 @@
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
-                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Id}" Header="LED ID" Width="Auto" />
+                <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Id, Converter={StaticResource LedIdToStringConverter}, Mode=OneWay}" Header="LED ID" Width="Auto" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Color}" Header="Color (ARGB)" Width="Auto" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.Layout.Image, Converter={StaticResource UriToFileNameConverter}, Mode=OneWay}" Header="Image file" CanUserSort="False" />
                 <materialDesign:DataGridTextColumn Binding="{Binding ArtemisLed.RgbLed.Shape}" Header="Shape" />

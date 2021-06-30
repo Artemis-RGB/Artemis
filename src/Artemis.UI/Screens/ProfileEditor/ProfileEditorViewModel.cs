@@ -126,20 +126,6 @@ namespace Artemis.UI.Screens.ProfileEditor
             set => SetAndNotify(ref _elementPropertiesWidth, value);
         }
 
-        public async Task AdaptActiveProfile()
-        {
-            if (_profileEditorService.SelectedProfileConfiguration?.Profile == null)
-                return;
-
-            if (!await DialogService.ShowConfirmDialog(
-                "Adapt profile",
-                "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."
-            ))
-                return;
-
-            _profileService.AdaptProfile(_profileEditorService.SelectedProfileConfiguration.Profile);
-        }
-
         public void Undo()
         {
             // Expanded status is also undone because undoing works a bit crude, that's annoying
@@ -247,6 +233,20 @@ namespace Artemis.UI.Screens.ProfileEditor
         public async Task ViewProperties()
         {
             await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
+        }
+        
+        public async Task AdaptProfile()
+        {
+            if (_profileEditorService.SelectedProfileConfiguration?.Profile == null)
+                return;
+
+            if (!await DialogService.ShowConfirmDialog(
+                "Adapt profile",
+                "Are you sure you want to adapt the profile to your current surface? Layer assignments may change."
+            ))
+                return;
+
+            _profileService.AdaptProfile(_profileEditorService.SelectedProfileConfiguration.Profile);
         }
 
         public void DuplicateProfile()
