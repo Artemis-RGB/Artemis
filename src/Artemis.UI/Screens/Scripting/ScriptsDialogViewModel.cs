@@ -87,31 +87,51 @@ namespace Artemis.UI.Screens.Scripting
             ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
         }
 
-        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public ScriptsDialogViewModel(Layer layer,
+            IScriptingService scriptingService,
+            IDialogService dialogService,
+            IProfileService profileService,
+            IProfileEditorService profileEditorService,
+            IScriptVmFactory scriptVmFactory)
         {
-            NotifyOfPropertyChange(nameof(HasScripts));
-        }
-
-        public ScriptsDialogViewModel(Layer layer, IDialogService dialogService)
-        {
+            _scriptingService = scriptingService;
             _dialogService = dialogService;
+            _profileService = profileService;
+            _profileEditorService = profileEditorService;
+            _scriptVmFactory = scriptVmFactory;
 
             DisplayName = "Artemins | Layer Scripts";
             ScriptType = ScriptType.Layer;
             Layer = layer ?? throw new ArgumentNullException(nameof(layer));
 
             ScriptConfigurations.AddRange(Layer.ScriptConfigurations.Select(_scriptVmFactory.ScriptConfigurationViewModel));
+            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
         }
 
-        public ScriptsDialogViewModel(ILayerProperty layerProperty, IDialogService dialogService)
+        public ScriptsDialogViewModel(ILayerProperty layerProperty,
+            IScriptingService scriptingService,
+            IDialogService dialogService,
+            IProfileService profileService,
+            IProfileEditorService profileEditorService,
+            IScriptVmFactory scriptVmFactory)
         {
+            _scriptingService = scriptingService;
             _dialogService = dialogService;
+            _profileService = profileService;
+            _profileEditorService = profileEditorService;
+            _scriptVmFactory = scriptVmFactory;
 
             DisplayName = "Artemins | Layer Property Scripts";
             ScriptType = ScriptType.LayerProperty;
             LayerProperty = layerProperty ?? throw new ArgumentNullException(nameof(layerProperty));
 
             ScriptConfigurations.AddRange(Layer.ScriptConfigurations.Select(_scriptVmFactory.ScriptConfigurationViewModel));
+            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
+        }
+
+        private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(HasScripts));
         }
 
         public async Task AddScriptConfiguration()
@@ -184,16 +204,34 @@ namespace Artemis.UI.Screens.Scripting
             SelectedScript = null;
             ScriptConfigurations.Remove(scriptConfigurationViewModel);
         }
+        
+        #region Overrides of Screen
 
-        #region Overrides of OneActive
+        /// <inheritdoc />
+        protected override void OnInitialActivate()
+        {
+            SelectedScript = ScriptConfigurations.FirstOrDefault();
+            base.OnInitialActivate();
+        }
 
         /// <inheritdoc />
         protected override void OnClose()
         {
-            if (_profileEditorService.SelectedProfile == Profile)
-                _profileEditorService.SaveSelectedProfileConfiguration();
-            else
-                _profileService.SaveProfile(Profile, false);
+            Profile profileToSave = null;
+            if (Profile != null)
+                profileToSave = Profile;
+            else if (Layer != null)
+                profileToSave = Layer.Profile;
+            else if (LayerProperty != null)
+                profileToSave = LayerProperty.LayerPropertyGroup.ProfileElement.Profile;
+
+            if (profileToSave != null)
+            {
+                if (_profileEditorService.SelectedProfile == profileToSave)
+                    _profileEditorService.SaveSelectedProfileConfiguration();
+                else
+                    _profileService.SaveProfile(profileToSave, false);
+            }
 
             ScriptConfigurations.CollectionChanged -= ItemsOnCollectionChanged;
             base.OnClose();
