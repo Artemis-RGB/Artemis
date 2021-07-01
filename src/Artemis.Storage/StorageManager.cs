@@ -19,11 +19,11 @@ namespace Artemis.Storage
             if (_inUse)
                 throw new Exception("Storage is already in use, can't backup now.");
 
-            string database = $"{dataFolder}\\database.db";
+            string database = Path.Combine(dataFolder, "database.db");
             if (!File.Exists(database))
                 return;
 
-            string backupFolder = $"{dataFolder}\\database backups";
+            string backupFolder = Path.Combine(dataFolder, "database backups");
             Directory.CreateDirectory(backupFolder);
             FileSystemInfo[] files = new DirectoryInfo(backupFolder).GetFileSystemInfos();
             if (files.Length >= 5)
@@ -36,7 +36,7 @@ namespace Artemis.Storage
                 oldest.Delete();
             }
 
-            File.Copy(database, $"{backupFolder}\\database-{DateTime.Now:yyyy-dd-M--HH-mm-ss}.db");
+            File.Copy(database, Path.Combine(backupFolder, $"database-{DateTime.Now:yyyy-dd-M--HH-mm-ss}.db"));
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Artemis.Storage
             try
             {
                 _inUse = true;
-                return new LiteRepository($"FileName={dataFolder}\\database.db");
+                return new LiteRepository($"FileName={Path.Combine(dataFolder, "database.db")}");
             }
             catch (LiteException e)
             {
