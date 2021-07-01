@@ -326,7 +326,6 @@ namespace Artemis.UI.Screens.ProfileEditor
                 return;
 
             _profileEditorService.SuspendEditing = !message.IsFocused;
-            ProfileViewModel.SuspendedEditing = !message.IsFocused;
         }
 
         #endregion

@@ -34,7 +34,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
-        private bool _suspendedEditing;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
             IRgbService rgbService,
@@ -77,7 +76,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             get => _highlightedLeds;
             set => SetAndNotify(ref _highlightedLeds, value);
         }
-        
+
         public VisualizationToolViewModel ActiveToolViewModel
         {
             get => _activeToolViewModel;
@@ -119,11 +118,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _canApplyToLayer, value);
         }
 
-        public bool SuspendedEditing
-        {
-            get => _suspendedEditing;
-            set => SetAndNotify(ref _suspendedEditing, value);
-        }
+        public bool SuspendedEditing => _profileEditorService.SuspendEditing;
 
         protected override void OnInitialActivate()
         {
@@ -142,12 +137,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             ActivateToolByIndex(0);
 
             ApplyActiveProfile();
-            
+
             _lastUpdate = DateTime.Now;
             _coreService.FrameRendered += OnFrameRendered;
 
             _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
+            _profileEditorService.SuspendEditingChanged += ProfileEditorServiceOnSuspendEditingChanged;
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
             _profileEditorService.SelectedProfileElementSaved += OnSelectedProfileElementSaved;
@@ -160,6 +156,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             _coreService.FrameRendered -= OnFrameRendered;
             _rgbService.DeviceAdded -= RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved -= RgbServiceOnDevicesModified;
+            _profileEditorService.SuspendEditingChanged -= ProfileEditorServiceOnSuspendEditingChanged;
             _profileEditorService.SelectedProfileChanged -= OnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
             _profileEditorService.SelectedProfileElementSaved -= OnSelectedProfileElementSaved;
@@ -172,7 +169,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             _settingsService.GetSetting("ProfileEditor.PanY", 0d).Save();
             _settingsService.GetSetting("ProfileEditor.Zoom", 0d).Value = PanZoomViewModel.Zoom;
             _settingsService.GetSetting("ProfileEditor.Zoom", 0d).Save();
-            
+
             base.OnClose();
         }
 
@@ -214,6 +211,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private void UpdateCanSelectEditTool()
         {
+            if (SuspendedEditing)
+            {
+                CanApplyToLayer = false;
+                CanSelectEditTool = false;
+                return;
+            }
+
             if (_profileEditorService.SelectedProfileElement is Layer layer)
             {
                 CanApplyToLayer = true;
@@ -229,13 +233,18 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 ActivateToolByIndex(2);
         }
 
+        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(SuspendedEditing));
+        }
+
         #region Buttons
 
         private void ActivateToolByIndex(int value)
         {
             if (value == 1 && !CanSelectEditTool)
                 return;
-            
+
             switch (value)
             {
                 case 0:

@@ -112,6 +112,9 @@ namespace Artemis.UI.Shared.Services
             get => _suspendEditing;
             set
             {
+                if (_suspendEditing == value)
+                    return;
+
                 _suspendEditing = value;
                 if (value)
                 {
@@ -123,6 +126,8 @@ namespace Artemis.UI.Shared.Services
                     if (SelectedProfileConfiguration != null)
                         _profileService.RenderForEditor = true;
                 }
+
+                OnSuspendEditingChanged();
             }
         }
 
@@ -505,6 +510,7 @@ namespace Artemis.UI.Shared.Services
         public event EventHandler? SelectedDataBindingChanged;
         public event EventHandler? CurrentTimeChanged;
         public event EventHandler? PixelsPerSecondChanged;
+        public event EventHandler? SuspendEditingChanged;
         public event EventHandler? ProfilePreviewUpdated;
 
         protected virtual void OnSelectedProfileChanged(ProfileConfigurationEventArgs e)
@@ -535,6 +541,11 @@ namespace Artemis.UI.Shared.Services
         protected virtual void OnPixelsPerSecondChanged()
         {
             PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnSuspendEditingChanged()
+        {
+            SuspendEditingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         protected virtual void OnProfilePreviewUpdated()

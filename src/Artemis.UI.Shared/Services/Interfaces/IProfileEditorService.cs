@@ -228,6 +228,12 @@ namespace Artemis.UI.Shared.Services
         event EventHandler PixelsPerSecondChanged;
 
         /// <summary>
+        /// Occurs when the suspend editing boolean is changed
+        /// </summary>
+
+        event EventHandler SuspendEditingChanged;
+
+        /// <summary>
         ///     Occurs when the profile preview has been updated
         /// </summary>
         event EventHandler ProfilePreviewUpdated;
