@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Artemis.Core;
-using Artemis.Core.Modules;
 using Artemis.Core.Services;
 using Artemis.Storage.Entities.Profile;
 using Artemis.UI.Shared.Services.Models;
@@ -30,6 +29,7 @@ namespace Artemis.UI.Shared.Services
         private TimeSpan _currentTime;
         private bool _doTick;
         private int _pixelsPerSecond;
+        private bool _suspendEditing;
 
         public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService, IModuleService moduleService)
         {
@@ -76,7 +76,7 @@ namespace Artemis.UI.Shared.Services
 
         private void Tick()
         {
-            if (SelectedProfile == null || _doTick)
+            if (SelectedProfile == null || _doTick || SuspendEditing)
                 return;
 
             TickProfileElement(SelectedProfile.GetRootFolder());
@@ -106,6 +106,27 @@ namespace Artemis.UI.Shared.Services
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
 
         public bool Playing { get; set; }
+
+        public bool SuspendEditing
+        {
+            get => _suspendEditing;
+            set
+            {
+                _suspendEditing = value;
+                if (value)
+                {
+                    Playing = false;
+                    _profileService.RenderForEditor = false;
+                }
+                else
+                {
+                    if (SelectedProfileConfiguration != null)
+                        _profileService.RenderForEditor = true;
+                }
+            }
+        }
+
+        public ProfileConfiguration? PreviousSelectedProfileConfiguration { get; private set; }
         public ProfileConfiguration? SelectedProfileConfiguration { get; private set; }
         public Profile? SelectedProfile => SelectedProfileConfiguration?.Profile;
         public RenderProfileElement? SelectedProfileElement { get; private set; }
@@ -152,13 +173,18 @@ namespace Artemis.UI.Shared.Services
                     SelectedProfileConfiguration.IsBeingEdited = false;
 
                 // The new profile may need activation
+                PreviousSelectedProfileConfiguration = SelectedProfileConfiguration;
                 SelectedProfileConfiguration = profileConfiguration;
+                ;
                 if (SelectedProfileConfiguration != null)
                 {
                     SelectedProfileConfiguration.IsBeingEdited = true;
                     _moduleService.SetActivationOverride(SelectedProfileConfiguration.Module);
                     _profileService.ActivateProfile(SelectedProfileConfiguration);
                     _profileService.RenderForEditor = true;
+
+                    if (SelectedProfileConfiguration.Profile?.LastSelectedProfileElement is RenderProfileElement renderProfileElement)
+                        ChangeSelectedProfileElement(renderProfileElement);
                 }
                 else
                 {
@@ -179,6 +205,7 @@ namespace Artemis.UI.Shared.Services
                 if (SelectedProfile == null)
                     return;
 
+                SelectedProfile.LastSelectedProfileElement = SelectedProfileElement;
                 _profileService.SaveProfile(SelectedProfile, true);
                 OnSelectedProfileUpdated(new ProfileConfigurationEventArgs(SelectedProfileConfiguration));
                 UpdateProfilePreview();

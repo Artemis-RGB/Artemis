@@ -52,6 +52,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public bool CanPasteElement => _profileEditorService.GetCanPasteProfileElement();
 
         public abstract bool SupportsChildren { get; }
+        public abstract bool IsExpanded { get; set; }
 
         public List<TreeItemViewModel> GetAllChildren()
         {

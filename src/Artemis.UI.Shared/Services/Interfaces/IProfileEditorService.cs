@@ -18,8 +18,16 @@ namespace Artemis.UI.Shared.Services
         ProfileConfiguration? SelectedProfileConfiguration { get; }
 
         /// <summary>
+        ///     Gets the previous selected profile configuration
+        /// </summary>
+        ProfileConfiguration? PreviousSelectedProfileConfiguration { get; }
+
+        /// <summary>
         ///     Gets the currently selected profile
-        ///     <para><see langword="null" /> if the editor is closed, always equal to <see cref="SelectedProfileConfiguration" />.<see cref="Profile" /></para>
+        ///     <para>
+        ///         <see langword="null" /> if the editor is closed, always equal to <see cref="SelectedProfileConfiguration" />.
+        ///         <see cref="Profile" />
+        ///     </para>
         /// </summary>
         Profile? SelectedProfile { get; }
 
@@ -52,6 +60,11 @@ namespace Artemis.UI.Shared.Services
         ///     Gets or sets a boolean indicating whether the editor is currently playing
         /// </summary>
         bool Playing { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether editing should be suspended
+        /// </summary>
+        bool SuspendEditing { get; set; }
 
         /// <summary>
         ///     Changes the selected profile by its <see cref="ProfileConfiguration" />

@@ -15,6 +15,7 @@ using MaterialDesignExtensions.Controls;
 using MaterialDesignThemes.Wpf;
 using Ninject;
 using Stylet;
+using Stylet.Xaml;
 using Constants = Artemis.Core.Constants;
 
 namespace Artemis.UI.Screens
@@ -89,6 +90,8 @@ namespace Artemis.UI.Screens
         public void WindowActivated()
         {
             if (!_lostFocus)
+                return;
+            if (!((MaterialWindow)View).IsActive)
                 return;
 
             _lostFocus = false;

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
@@ -24,8 +25,6 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         {
             _profileEditorService = profileEditorService;
             _profileTreeVmFactory = profileTreeVmFactory;
-
-            CreateRootFolderViewModel();
         }
 
         public TreeItemViewModel SelectedTreeItem
@@ -33,7 +32,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             get => _selectedTreeItem;
             set
             {
-                if (!_updatingTree && SetAndNotify(ref _selectedTreeItem, value) && !_draggingTreeView) 
+                if (!_updatingTree && SetAndNotify(ref _selectedTreeItem, value) && !_draggingTreeView)
                     ApplySelectedTreeItem();
             }
         }
@@ -54,6 +53,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         protected override void OnInitialActivate()
         {
             Subscribe();
+            CreateRootFolderViewModel();
             base.OnInitialActivate();
         }
 
@@ -83,6 +83,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
 
             ActiveItem = _profileTreeVmFactory.FolderViewModel(folder);
             _updatingTree = false;
+
+            Execute.PostToUIThread(async () =>
+            {
+                await Task.Delay(1500); 
+                SelectedTreeItem = ActiveItem.GetAllChildren().FirstOrDefault(c => c.ProfileElement == _profileEditorService.SelectedProfileElement);
+            });
+            
         }
 
         #region IDropTarget

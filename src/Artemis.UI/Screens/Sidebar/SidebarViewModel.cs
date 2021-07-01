@@ -126,7 +126,12 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void Handle(RequestSelectSidebarItemEvent message)
         {
-            SidebarScreenViewModel requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
+            SidebarScreenViewModel requested = null;
+            if (message.DisplayName != null)
+                requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
+            else
+                requested = message.ViewModel;
+
             if (requested != null)
                 SelectedSidebarScreen = requested;
         }

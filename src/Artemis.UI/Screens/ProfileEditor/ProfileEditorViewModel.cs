@@ -1,24 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.Core.Services;
+using Artemis.UI.Events;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
+using Artemis.UI.Screens.Sidebar;
 using Artemis.UI.Services;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using MaterialDesignThemes.Wpf;
 using Stylet;
 using ProfileConfigurationEventArgs = Artemis.UI.Shared.ProfileConfigurationEventArgs;
 
 namespace Artemis.UI.Screens.ProfileEditor
 {
-    public class ProfileEditorViewModel : MainScreenViewModel
+    public class ProfileEditorViewModel : MainScreenViewModel, IHandle<MainWindowFocusChangedEvent>
     {
         private readonly IDebugService _debugService;
         private readonly IMessageService _messageService;
@@ -28,15 +32,12 @@ namespace Artemis.UI.Screens.ProfileEditor
         private readonly ISettingsService _settingsService;
         private readonly ISidebarVmFactory _sidebarVmFactory;
         private readonly IWindowManager _windowManager;
-        private PluginSetting<GridLength> _bottomPanelsHeight;
-        private PluginSetting<GridLength> _dataModelConditionsHeight;
+        private readonly IEventAggregator _eventAggregator;
         private DisplayConditionsViewModel _displayConditionsViewModel;
-        private PluginSetting<GridLength> _elementPropertiesWidth;
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private ProfileTreeViewModel _profileTreeViewModel;
         private ProfileViewModel _profileViewModel;
-        private PluginSetting<GridLength> _sidePanelsWidth;
-
+        
         public ProfileEditorViewModel(ProfileViewModel profileViewModel,
             ProfileTreeViewModel profileTreeViewModel,
             DisplayConditionsViewModel dataModelConditionsViewModel,
@@ -48,6 +49,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             IMessageService messageService,
             IDebugService debugService,
             IWindowManager windowManager,
+            IEventAggregator eventAggregator,
             IScriptVmFactory scriptVmFactory,
             ISidebarVmFactory sidebarVmFactory)
         {
@@ -57,9 +59,10 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService = messageService;
             _debugService = debugService;
             _windowManager = windowManager;
+            _eventAggregator = eventAggregator;
             _scriptVmFactory = scriptVmFactory;
             _sidebarVmFactory = sidebarVmFactory;
-
+           
             DisplayName = "Profile Editor";
             DialogService = dialogService;
 
@@ -102,29 +105,14 @@ namespace Artemis.UI.Screens.ProfileEditor
             set => SetAndNotify(ref _profileViewModel, value);
         }
 
-        public PluginSetting<GridLength> SidePanelsWidth
-        {
-            get => _sidePanelsWidth;
-            set => SetAndNotify(ref _sidePanelsWidth, value);
-        }
-
-        public PluginSetting<GridLength> DataModelConditionsHeight
-        {
-            get => _dataModelConditionsHeight;
-            set => SetAndNotify(ref _dataModelConditionsHeight, value);
-        }
-
-        public PluginSetting<GridLength> BottomPanelsHeight
-        {
-            get => _bottomPanelsHeight;
-            set => SetAndNotify(ref _bottomPanelsHeight, value);
-        }
-
-        public PluginSetting<GridLength> ElementPropertiesWidth
-        {
-            get => _elementPropertiesWidth;
-            set => SetAndNotify(ref _elementPropertiesWidth, value);
-        }
+        public PluginSetting<GridLength> SidePanelsWidth => _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
+        public PluginSetting<GridLength> DataModelConditionsHeight => _settingsService.GetSetting("ProfileEditor.DataModelConditionsHeight", new GridLength(345));
+        public PluginSetting<GridLength> BottomPanelsHeight => _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
+        public PluginSetting<GridLength> ElementPropertiesWidth => _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
+        public PluginSetting<bool> StopOnFocusLoss => _settingsService.GetSetting("ProfileEditor.StopOnFocusLoss", true);
+        public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
+        public PluginSetting<bool> FocusSelectedLayer => _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", true);
+        public PluginSetting<bool> AlwaysApplyDataBindings => _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
 
         public void Undo()
         {
@@ -180,24 +168,38 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
+        #region Overrides of Screen
 
         protected override void OnInitialActivate()
         {
+            StopOnFocusLoss.AutoSave = true;
+            ShowDataModelValues.AutoSave = true;
+            FocusSelectedLayer.AutoSave = true;
+            AlwaysApplyDataBindings.AutoSave = true;
+
             _profileEditorService.SelectedProfileChanged += ProfileEditorServiceOnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged += ProfileEditorServiceOnSelectedProfileElementChanged;
-            LoadWorkspaceSettings();
+            _eventAggregator.Subscribe(this);
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
+            StopOnFocusLoss.AutoSave = false;
+            ShowDataModelValues.AutoSave = false;
+            FocusSelectedLayer.AutoSave = false;
+            AlwaysApplyDataBindings.AutoSave = false;
+
             _profileEditorService.SelectedProfileChanged -= ProfileEditorServiceOnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
+            _eventAggregator.Unsubscribe(this);
             SaveWorkspaceSettings();
             _profileEditorService.ChangeSelectedProfileConfiguration(null);
 
             base.OnClose();
         }
+
+        #endregion
 
         private void ProfileEditorServiceOnSelectedProfileChanged(object sender, ProfileConfigurationEventArgs e)
         {
@@ -208,15 +210,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             NotifyOfPropertyChange(nameof(HasSelectedElement));
         }
-
-        private void LoadWorkspaceSettings()
-        {
-            SidePanelsWidth = _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
-            DataModelConditionsHeight = _settingsService.GetSetting("ProfileEditor.DataModelConditionsHeight", new GridLength(345));
-            BottomPanelsHeight = _settingsService.GetSetting("ProfileEditor.BottomPanelsHeight", new GridLength(265));
-            ElementPropertiesWidth = _settingsService.GetSetting("ProfileEditor.ElementPropertiesWidth", new GridLength(545));
-        }
-
+        
         private void SaveWorkspaceSettings()
         {
             SidePanelsWidth.Save();
@@ -234,7 +228,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
         }
-        
+
         public async Task AdaptProfile()
         {
             if (_profileEditorService.SelectedProfileConfiguration?.Profile == null)
@@ -319,6 +313,20 @@ namespace Artemis.UI.Screens.ProfileEditor
         public void EditMenuOpened()
         {
             NotifyOfPropertyChange(nameof(CanPaste));
+        }
+
+        #endregion
+
+        #region Implementation of IHandle<in MainWindowFocusChangedEvent>
+
+        /// <inheritdoc />
+        public void Handle(MainWindowFocusChangedEvent message)
+        {
+            if (!StopOnFocusLoss.Value)
+                return;
+
+            _profileEditorService.SuspendEditing = !message.IsFocused;
+            ProfileViewModel.SuspendedEditing = !message.IsFocused;
         }
 
         #endregion

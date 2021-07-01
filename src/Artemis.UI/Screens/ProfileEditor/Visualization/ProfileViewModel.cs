@@ -26,16 +26,15 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         private int _activeToolIndex;
         private VisualizationToolViewModel _activeToolViewModel;
-        private PluginSetting<bool> _alwaysApplyDataBindings;
         private bool _canApplyToLayer;
         private bool _canSelectEditTool;
         private BindableCollection<ArtemisDevice> _devices;
         private BindableCollection<ArtemisLed> _highlightedLeds;
-        private PluginSetting<bool> _focusSelectedLayer;
         private DateTime _lastUpdate;
         private PanZoomViewModel _panZoomViewModel;
         private Layer _previousSelectedLayer;
         private int _previousTool;
+        private bool _suspendedEditing;
 
         public ProfileViewModel(IProfileEditorService profileEditorService,
             IRgbService rgbService,
@@ -78,19 +77,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             get => _highlightedLeds;
             set => SetAndNotify(ref _highlightedLeds, value);
         }
-
-        public PluginSetting<bool> AlwaysApplyDataBindings
-        {
-            get => _alwaysApplyDataBindings;
-            set => SetAndNotify(ref _alwaysApplyDataBindings, value);
-        }
-
-        public PluginSetting<bool> FocusSelectedLayer
-        {
-            get => _focusSelectedLayer;
-            set => SetAndNotify(ref _focusSelectedLayer, value);
-        }
-
+        
         public VisualizationToolViewModel ActiveToolViewModel
         {
             get => _activeToolViewModel;
@@ -132,9 +119,21 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             set => SetAndNotify(ref _canApplyToLayer, value);
         }
 
+        public bool SuspendedEditing
+        {
+            get => _suspendedEditing;
+            set => SetAndNotify(ref _suspendedEditing, value);
+        }
+
         protected override void OnInitialActivate()
         {
-            PanZoomViewModel = new PanZoomViewModel {LimitToZero = false};
+            PanZoomViewModel = new PanZoomViewModel
+            {
+                LimitToZero = false,
+                PanX = _settingsService.GetSetting("ProfileEditor.PanX", 0d).Value,
+                PanY = _settingsService.GetSetting("ProfileEditor.PanY", 0d).Value,
+                Zoom = _settingsService.GetSetting("ProfileEditor.Zoom", 0d).Value
+            };
 
             Devices = new BindableCollection<ArtemisDevice>();
             HighlightedLeds = new BindableCollection<ArtemisLed>();
@@ -143,14 +142,10 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             ActivateToolByIndex(0);
 
             ApplyActiveProfile();
-
-            AlwaysApplyDataBindings = _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
-            FocusSelectedLayer = _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", true);
-
+            
             _lastUpdate = DateTime.Now;
             _coreService.FrameRendered += OnFrameRendered;
 
-            FocusSelectedLayer.SettingChanged += HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded += RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved += RgbServiceOnDevicesModified;
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
@@ -163,7 +158,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         protected override void OnClose()
         {
             _coreService.FrameRendered -= OnFrameRendered;
-            FocusSelectedLayer.SettingChanged -= HighlightSelectedLayerOnSettingChanged;
             _rgbService.DeviceAdded -= RgbServiceOnDevicesModified;
             _rgbService.DeviceRemoved -= RgbServiceOnDevicesModified;
             _profileEditorService.SelectedProfileChanged -= OnSelectedProfileChanged;
@@ -172,9 +166,13 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             if (_previousSelectedLayer != null)
                 _previousSelectedLayer.LayerBrushUpdated -= SelectedLayerOnLayerBrushUpdated;
 
-            AlwaysApplyDataBindings.Save();
-            FocusSelectedLayer.Save();
-
+            _settingsService.GetSetting("ProfileEditor.PanX", 0d).Value = PanZoomViewModel.PanX;
+            _settingsService.GetSetting("ProfileEditor.PanX", 0d).Save();
+            _settingsService.GetSetting("ProfileEditor.PanY", 0d).Value = PanZoomViewModel.PanY;
+            _settingsService.GetSetting("ProfileEditor.PanY", 0d).Save();
+            _settingsService.GetSetting("ProfileEditor.Zoom", 0d).Value = PanZoomViewModel.Zoom;
+            _settingsService.GetSetting("ProfileEditor.Zoom", 0d).Save();
+            
             base.OnClose();
         }
 
@@ -210,7 +208,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
         private void UpdateLedsDimStatus()
         {
             HighlightedLeds.Clear();
-            if (FocusSelectedLayer.Value && _profileEditorService.SelectedProfileElement is Layer layer)
+            if (_profileEditorService.SelectedProfileElement is Layer layer)
                 HighlightedLeds.AddRange(layer.Leds);
         }
 
@@ -308,7 +306,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             TimeSpan delta = DateTime.Now - _lastUpdate;
             _lastUpdate = DateTime.Now;
 
-            if (!AlwaysApplyDataBindings.Value || _profileEditorService.SelectedProfile == null)
+            if (!_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value || _profileEditorService.SelectedProfile == null)
                 return;
 
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()

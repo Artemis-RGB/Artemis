@@ -209,7 +209,7 @@ namespace Artemis.Core.Services
                         ProcessPendingKeyEvents(profileConfiguration);
 
                         // Profiles being edited are updated at their own leisure
-                        if (profileConfiguration.IsBeingEdited)
+                        if (profileConfiguration.IsBeingEdited && RenderForEditor)
                             continue;
 
                         bool shouldBeActive = profileConfiguration.ShouldBeActive(false);
@@ -254,11 +254,9 @@ namespace Artemis.Core.Services
                         try
                         {
                             ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                            if (RenderForEditor)
-                            {
-                                if (profileConfiguration.IsBeingEdited)
-                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
-                            }
+                            // Always render profiles being edited
+                            if (profileConfiguration.IsBeingEdited)
+                                profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
                             else
                             {
                                 // Ensure all criteria are met before rendering

@@ -110,6 +110,24 @@
                           IsEnabled="{Binding HasSelectedElement}"
                           Command="{s:Action OpenLayerPropertyScripts}"/>
             </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Focus Selected Layer" 
+                          ToolTip="If enabled, displays only the layer you currently have selected"
+                          IsCheckable="True"
+                          IsChecked="{Binding FocusSelectedLayer.Value}"
+                          IsEnabled="False"/>
+                <MenuItem Header="Display Data Model Values"
+                          IsCheckable="True"
+                          IsChecked="{Binding ShowDataModelValues.Value}"/>
+                <MenuItem Header="Run Profile on Focus Loss" 
+                          ToolTip="If enabled, regular profile playback is resumed on focus loss"
+                          IsCheckable="True"
+                          IsChecked="{Binding StopOnFocusLoss.Value}"/>
+                <MenuItem Header="Apply All Data Bindings During Edit" 
+                          ToolTip="If enabled, updates all data bindings instead of only the one you are editing"
+                          IsCheckable="True"
+                          IsChecked="{Binding AlwaysApplyDataBindings.Value}"/>
+            </MenuItem>
             <MenuItem Header="_Help">
                 <MenuItem Header="Artemis Wiki"
                           Icon="{materialDesign:PackIcon Kind=BookEdit}"

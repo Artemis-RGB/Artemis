@@ -101,6 +101,7 @@
             </Grid>
 
             <Grid Name="EditorDisplayGrid"
+                  Visibility="{Binding SuspendedEditing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
                   shared:SizeObserver.Observe="True"
                   shared:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight}"
                   shared:SizeObserver.ObservedWidth="{Binding PanZoomViewModel.CanvasWidth}">
@@ -129,25 +130,7 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-
-            <StackPanel ZIndex="1" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="10" Cursor="Arrow">
-                <materialDesign:Card Padding="8">
-                    <StackPanel Orientation="Horizontal">
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
-                                  IsChecked="{Binding FocusSelectedLayer.Value}"
-                                  ToolTip="If selected, dims all LEDs that are not part of the selected layer">
-                            Focus selected layer
-                        </CheckBox>
-                        <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
-                                  Margin="10 0 0 0"
-                                  IsChecked="{Binding AlwaysApplyDataBindings.Value}"
-                                  ToolTip="If selected, updates all data bindings instead of only the one you are editing">
-                            Apply all data bindings in editor
-                        </CheckBox>
-                    </StackPanel>
-                </materialDesign:Card>
-            </StackPanel>
-
+            
             <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
                         Margin="10" ZIndex="1">
                 <Slider Orientation="Vertical"

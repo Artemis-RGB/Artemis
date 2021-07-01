@@ -97,6 +97,11 @@
                 <b:Interaction.Behaviors>
                     <behaviors:TreeViewSelectionBehavior SelectedItem="{Binding SelectedTreeItem}" />
                 </b:Interaction.Behaviors>
+                <TreeView.ItemContainerStyle>
+                    <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource MaterialDesignTreeViewItem}">
+                        <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay, FallbackValue=False}"/>
+                    </Style>
+                </TreeView.ItemContainerStyle>
                 <TreeView.Resources>
                     <HierarchicalDataTemplate DataType="{x:Type treeItem:FolderViewModel}" ItemsSource="{Binding Items}">
                         <ContentControl s:View.Model="{Binding}" />

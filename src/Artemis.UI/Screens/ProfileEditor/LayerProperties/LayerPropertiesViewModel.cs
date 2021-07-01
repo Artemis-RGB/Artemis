@@ -559,6 +559,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
+            if (!ProfileEditorService.Playing)
+            {
+                Pause();
+                return;
+            }
+
             Execute.PostToUIThread(() =>
             {
                 TimeSpan newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
