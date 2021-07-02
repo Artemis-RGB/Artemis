@@ -232,12 +232,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             if (CanSelectEditTool == false && ActiveToolIndex == 1)
                 ActivateToolByIndex(2);
         }
-
-        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
-        {
-            NotifyOfPropertyChange(nameof(SuspendedEditing));
-        }
-
+        
         #region Buttons
 
         private void ActivateToolByIndex(int value)
@@ -315,7 +310,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             TimeSpan delta = DateTime.Now - _lastUpdate;
             _lastUpdate = DateTime.Now;
 
-            if (!_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value || _profileEditorService.SelectedProfile == null)
+            if (SuspendedEditing || !_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value || _profileEditorService.SelectedProfile == null)
                 return;
 
             foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
@@ -394,6 +389,12 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
             if (CanSelectEditTool == false && ActiveToolIndex == 1)
                 ActivateToolByIndex(2);
+        }
+
+        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(SuspendedEditing));
+            UpdateCanSelectEditTool();
         }
 
         public void Handle(MainWindowKeyEvent message)

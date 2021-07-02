@@ -26,6 +26,8 @@
     <UserControl.InputBindings>
         <KeyBinding Command="{s:Action Undo}" Modifiers="Control" Key="Z" />
         <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
+        <KeyBinding Command="{s:Action ToggleSuspend}" Key="F5" />
+        <KeyBinding Command="{s:Action ToggleAutoSuspend}" Modifiers="Ctrl" Key="F5" />
     </UserControl.InputBindings>
 
     <Grid ClipToBounds="True">
@@ -97,6 +99,17 @@
                           Command="{s:Action Paste}" 
                           InputGestureText="Ctrl+V" />
             </MenuItem>
+            <MenuItem Header="_Run">
+                <MenuItem Header="_Switch run mode"
+                          Icon="{materialDesign:PackIcon Kind=SwapHorizontal}"
+                          Command="{s:Action ToggleSuspend}"
+                          InputGestureText="F5" />
+                <MenuItem Header="Run Profile on Focus Loss" 
+                          ToolTip="If enabled, regular profile playback is resumed on focus loss"
+                          IsCheckable="True"
+                          IsChecked="{Binding StopOnFocusLoss.Value}"
+                          InputGestureText="Ctrl+F5" />
+            </MenuItem>
             <MenuItem Header="_Scripting" IsEnabled="False">
                 <MenuItem Header="_Profile Scripts"
                           Icon="{materialDesign:PackIcon Kind=BookEdit}"
@@ -119,10 +132,7 @@
                 <MenuItem Header="Display Data Model Values"
                           IsCheckable="True"
                           IsChecked="{Binding ShowDataModelValues.Value}"/>
-                <MenuItem Header="Run Profile on Focus Loss" 
-                          ToolTip="If enabled, regular profile playback is resumed on focus loss"
-                          IsCheckable="True"
-                          IsChecked="{Binding StopOnFocusLoss.Value}"/>
+               
                 <MenuItem Header="Apply All Data Bindings During Edit" 
                           ToolTip="If enabled, updates all data bindings instead of only the one you are editing"
                           IsCheckable="True"

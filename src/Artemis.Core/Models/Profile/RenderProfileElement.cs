@@ -397,7 +397,7 @@ namespace Artemis.Core
                 if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
                     Timeline.JumpToStart();
                 // If regular conditions are no longer met, jump to the end segment if stop mode requires it
-                if (!conditionMet && DisplayConditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
+                if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
                     Timeline.JumpToEndSegment();
             }
             else if (conditionMet)

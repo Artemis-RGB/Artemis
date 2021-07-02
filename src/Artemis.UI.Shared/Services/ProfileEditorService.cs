@@ -163,6 +163,9 @@ namespace Artemis.UI.Shared.Services
         {
             lock (_selectedProfileLock)
             {
+                if (SuspendEditing)
+                    throw new ArtemisSharedUIException("Cannot change the selected profile while editing is suspended");
+
                 if (SelectedProfileConfiguration == profileConfiguration)
                     return;
 
@@ -170,17 +173,21 @@ namespace Artemis.UI.Shared.Services
                     throw new ArtemisSharedUIException("Cannot select a disposed profile");
 
                 _logger.Verbose("ChangeSelectedProfileConfiguration {profile}", profileConfiguration);
+
+                if (SelectedProfileConfiguration != null)
+                    SaveSelectedProfileConfiguration();
+
                 ChangeSelectedProfileElement(null);
                 ProfileConfigurationEventArgs profileConfigurationElementEvent = new(profileConfiguration, SelectedProfileConfiguration);
 
                 // No need to deactivate the profile, if needed it will be deactivated next update
                 if (SelectedProfileConfiguration != null)
                     SelectedProfileConfiguration.IsBeingEdited = false;
-
-                // The new profile may need activation
+                                                                
                 PreviousSelectedProfileConfiguration = SelectedProfileConfiguration;
                 SelectedProfileConfiguration = profileConfiguration;
-                ;
+                
+                // The new profile may need activation
                 if (SelectedProfileConfiguration != null)
                 {
                     SelectedProfileConfiguration.IsBeingEdited = true;

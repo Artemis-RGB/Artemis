@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -79,8 +80,7 @@ namespace Artemis.UI.Screens
 
         public void WindowDeactivated()
         {
-            WindowState windowState = ((Window) View).WindowState;
-            if (windowState == WindowState.Minimized)
+            if (_lostFocus)
                 return;
 
             _lostFocus = true;
@@ -91,12 +91,29 @@ namespace Artemis.UI.Screens
         {
             if (!_lostFocus)
                 return;
-            if (!((MaterialWindow)View).IsActive)
-                return;
 
             _lostFocus = false;
             _eventAggregator.Publish(new MainWindowFocusChangedEvent(true));
         }
+
+        // This is required because Windows incorrectly tells the window it is activated when minimizing using the taskbar
+        public void WindowStateChanged()
+        {
+            if (((Window) View).WindowState == WindowState.Minimized)
+                WindowDeactivated();
+            else
+                WindowActivated();
+        }
+
+        #region Overrides of Screen
+
+        /// <inheritdoc />
+        protected override void OnStateChanged(ScreenState previousState, ScreenState newState)
+        {
+            base.OnStateChanged(previousState, newState);
+        }
+
+        #endregion
 
         public void WindowKeyDown(object sender, KeyEventArgs e)
         {

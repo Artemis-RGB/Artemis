@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Artemis.UI.Screens.ProfileEditor.Visualization.ProfileView"
+﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,9 +7,13 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:visualization="clr-namespace:Artemis.UI.Screens.ProfileEditor.Visualization"
              xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
+             xmlns:Converters="clr-namespace:Artemis.UI.Converters" x:Class="Artemis.UI.Screens.ProfileEditor.Visualization.ProfileView"
              mc:Ignorable="d"
              d:DesignHeight="510.9" d:DesignWidth="800"
              d:DataContext="{d:DesignInstance {x:Type visualization:ProfileViewModel}}">
+    <UserControl.Resources>
+        <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+    </UserControl.Resources>
     <Grid>
 
         <Grid.ColumnDefinitions>
@@ -27,13 +31,16 @@
                     <ListBoxItem ToolTip="Pan over different parts of the surface - Ctrl">
                         <materialDesign:PackIcon Kind="HandLeft" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Transform layer shape (hold SHIFT for incremental changes and X/Y snapping) - Ctrl+T" IsEnabled="{Binding CanSelectEditTool}">
+                    <ListBoxItem ToolTip="Transform layer shape (hold SHIFT for incremental changes and X/Y snapping) - Ctrl+T" 
+                                 IsEnabled="{Binding CanSelectEditTool}">
                         <materialDesign:PackIcon Kind="TransitConnectionVariant" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection) - Ctrl+Q">
+                    <ListBoxItem ToolTip="Change layer selection (hold SHIFT to add to existing selection) - Ctrl+Q" 
+                                 IsEnabled="{Binding SuspendedEditing, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}">
                         <materialDesign:PackIcon Kind="SelectionDrag" />
                     </ListBoxItem>
-                    <ListBoxItem ToolTip="Remove from layer selection - Ctrl+W">
+                    <ListBoxItem ToolTip="Remove from layer selection - Ctrl+W" 
+                                 IsEnabled="{Binding SuspendedEditing, Converter={StaticResource InverseBooleanConverter}, Mode=OneWay}">
                         <materialDesign:PackIcon Kind="SelectOff" />
                     </ListBoxItem>
                 </ListBox>
@@ -71,7 +78,7 @@
                 </VisualBrush>
             </Grid.Background>
 
-            <Grid Name="DeviceDisplayGrid">
+            <Grid x:Name="DeviceDisplayGrid">
                 <Grid.RenderTransform>
                     <TransformGroup>
                         <ScaleTransform ScaleX="{Binding PanZoomViewModel.Zoom}" ScaleY="{Binding PanZoomViewModel.Zoom}" />
@@ -85,7 +92,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
+                        <Style TargetType="{x:Type ContentPresenter}">
                             <Setter Property="Canvas.Left" Value="{Binding X}" />
                             <Setter Property="Canvas.Top" Value="{Binding Y}" />
                         </Style>
@@ -94,13 +101,13 @@
                         <DataTemplate>
                             <shared:DeviceVisualizer Device="{Binding}"
                                                      ShowColors="True"
-                                                     HighlightedLeds="{Binding DataContext.HighlightedLeds, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Mode=OneWay}" />
+                                                     HighlightedLeds="{Binding DataContext.HighlightedLeds, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
 
-            <Grid Name="EditorDisplayGrid"
+            <Grid x:Name="EditorDisplayGrid"
                   Visibility="{Binding SuspendedEditing, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}"
                   shared:SizeObserver.Observe="True"
                   shared:SizeObserver.ObservedHeight="{Binding PanZoomViewModel.CanvasHeight}"
@@ -118,7 +125,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemContainerStyle>
-                        <Style TargetType="ContentPresenter">
+                        <Style TargetType="{x:Type ContentPresenter}">
                             <Setter Property="Canvas.Left" Value="{Binding X}" />
                             <Setter Property="Canvas.Top" Value="{Binding Y}" />
                         </Style>
@@ -130,9 +137,9 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </Grid>
-            
+
             <StackPanel Orientation="Vertical" VerticalAlignment="Bottom" HorizontalAlignment="Right"
-                        Margin="10" ZIndex="1">
+                        Margin="10" Panel.ZIndex="1">
                 <Slider Orientation="Vertical"
                         HorizontalAlignment="Center"
                         Margin="0 10"

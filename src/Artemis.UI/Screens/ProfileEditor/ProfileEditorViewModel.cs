@@ -37,7 +37,8 @@ namespace Artemis.UI.Screens.ProfileEditor
         private LayerPropertiesViewModel _layerPropertiesViewModel;
         private ProfileTreeViewModel _profileTreeViewModel;
         private ProfileViewModel _profileViewModel;
-        
+        private bool _suspendedManually;
+
         public ProfileEditorViewModel(ProfileViewModel profileViewModel,
             ProfileTreeViewModel profileTreeViewModel,
             DisplayConditionsViewModel dataModelConditionsViewModel,
@@ -62,7 +63,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             _eventAggregator = eventAggregator;
             _scriptVmFactory = scriptVmFactory;
             _sidebarVmFactory = sidebarVmFactory;
-           
+
             DisplayName = "Profile Editor";
             DialogService = dialogService;
 
@@ -103,6 +104,12 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             get => _profileViewModel;
             set => SetAndNotify(ref _profileViewModel, value);
+        }
+
+        public bool SuspendedManually
+        {
+            get => _suspendedManually;
+            set => SetAndNotify(ref _suspendedManually, value);
         }
 
         public PluginSetting<GridLength> SidePanelsWidth => _settingsService.GetSetting("ProfileEditor.SidePanelsWidth", new GridLength(385));
@@ -168,6 +175,17 @@ namespace Artemis.UI.Screens.ProfileEditor
             _messageService.ShowMessage("Redid profile update", "UNDO", Undo);
         }
 
+        public void ToggleSuspend()
+        {
+            _profileEditorService.SuspendEditing = !_profileEditorService.SuspendEditing;
+            SuspendedManually = _profileEditorService.SuspendEditing;
+        }
+
+        public void ToggleAutoSuspend()
+        {
+            StopOnFocusLoss.Value = !StopOnFocusLoss.Value;
+        }
+
         #region Overrides of Screen
 
         protected override void OnInitialActivate()
@@ -194,6 +212,8 @@ namespace Artemis.UI.Screens.ProfileEditor
             _profileEditorService.SelectedProfileElementChanged -= ProfileEditorServiceOnSelectedProfileElementChanged;
             _eventAggregator.Unsubscribe(this);
             SaveWorkspaceSettings();
+
+            _profileEditorService.SuspendEditing = false;
             _profileEditorService.ChangeSelectedProfileConfiguration(null);
 
             base.OnClose();
@@ -210,7 +230,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         {
             NotifyOfPropertyChange(nameof(HasSelectedElement));
         }
-        
+
         private void SaveWorkspaceSettings()
         {
             SidePanelsWidth.Save();
@@ -322,7 +342,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         /// <inheritdoc />
         public void Handle(MainWindowFocusChangedEvent message)
         {
-            if (!StopOnFocusLoss.Value)
+            if (!StopOnFocusLoss.Value || SuspendedManually)
                 return;
 
             _profileEditorService.SuspendEditing = !message.IsFocused;

@@ -20,6 +20,7 @@
                     UseLayoutRounding="True"
                     Deactivated="{s:Action WindowDeactivated}"
                     Activated="{s:Action WindowActivated}"
+                    StateChanged="{s:Action WindowStateChanged}"
                     KeyDown="{s:Action WindowKeyDown}"
                     KeyUp="{s:Action WindowKeyUp}"
                     MouseDown="{s:Action WindowMouseDown}"

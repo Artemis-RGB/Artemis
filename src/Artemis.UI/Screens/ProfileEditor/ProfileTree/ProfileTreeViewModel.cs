@@ -87,7 +87,8 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
             Execute.PostToUIThread(async () =>
             {
                 await Task.Delay(1500); 
-                SelectedTreeItem = ActiveItem.GetAllChildren().FirstOrDefault(c => c.ProfileElement == _profileEditorService.SelectedProfileElement);
+                if (ActiveItem != null)
+                    SelectedTreeItem = ActiveItem.GetAllChildren().FirstOrDefault(c => c.ProfileElement == _profileEditorService.SelectedProfileElement);
             });
             
         }

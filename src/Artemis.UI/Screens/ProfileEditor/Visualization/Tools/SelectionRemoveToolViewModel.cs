@@ -32,6 +32,9 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
         {
             base.MouseUp(sender, e);
 
+            if (ProfileEditorService.SuspendEditing)
+                return;
+
             Point position = PanZoomViewModel.GetRelativeMousePosition(sender, e);
             Rect selectedRect = new(MouseDownStartPosition, position);
 

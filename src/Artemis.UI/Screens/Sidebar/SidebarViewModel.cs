@@ -153,6 +153,8 @@ namespace Artemis.UI.Screens.Sidebar
             foreach (SidebarCategoryViewModel sidebarCategoryViewModel in Items)
                 sidebarCategoryViewModel.SelectedProfileConfiguration = sidebarCategoryViewModel.Items.FirstOrDefault(i => i.ProfileConfiguration == profileConfiguration);
 
+            if (_profileEditorService.SuspendEditing)
+                _profileEditorService.SuspendEditing = false;
             _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
             if (profileConfiguration != null)
             {

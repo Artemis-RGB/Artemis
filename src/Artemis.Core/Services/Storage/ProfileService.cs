@@ -216,7 +216,8 @@ namespace Artemis.Core.Services
                         if (shouldBeActive)
                         {
                             profileConfiguration.Update();
-                            shouldBeActive = profileConfiguration.ActivationConditionMet;
+                            if (!profileConfiguration.IsBeingEdited)
+                                shouldBeActive = profileConfiguration.ActivationConditionMet;
                         }
 
                         try
