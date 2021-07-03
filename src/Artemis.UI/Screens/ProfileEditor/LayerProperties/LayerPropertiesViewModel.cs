@@ -570,7 +570,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             if (!ProfileEditorService.Playing)
             {
-                Pause();
+                CoreService.FrameRendering -= CoreServiceOnFrameRendering;
                 return;
             }
 

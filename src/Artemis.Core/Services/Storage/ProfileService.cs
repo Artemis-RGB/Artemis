@@ -246,6 +246,16 @@ namespace Artemis.Core.Services
         {
             lock (_profileCategories)
             {
+                ProfileConfiguration? editedProfileConfiguration = _profileCategories.SelectMany(c => c.ProfileConfigurations).FirstOrDefault(p => p.IsBeingEdited);
+                if (editedProfileConfiguration != null)
+                {
+                    editedProfileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
+                    return;
+                }
+
+                if (RenderForEditor)
+                    return;
+
                 // Iterate the children in reverse because the first category must be rendered last to end up on top
                 for (int i = _profileCategories.Count - 1; i > -1; i--)
                 {
@@ -255,15 +265,9 @@ namespace Artemis.Core.Services
                         try
                         {
                             ProfileConfiguration profileConfiguration = profileCategory.ProfileConfigurations[j];
-                            // Always render profiles being edited
-                            if (profileConfiguration.IsBeingEdited)
+                            // Ensure all criteria are met before rendering
+                            if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
                                 profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
-                            else
-                            {
-                                // Ensure all criteria are met before rendering
-                                if (!profileConfiguration.IsSuspended && !profileConfiguration.IsMissingModule && profileConfiguration.ActivationConditionMet)
-                                    profileConfiguration.Profile?.Render(canvas, SKPointI.Empty);
-                            }
                         }
                         catch (Exception e)
                         {
@@ -395,13 +399,6 @@ namespace Artemis.Core.Services
             }
         }
 
-        /// <summary>
-        ///     Creates a new profile configuration and adds it to the provided <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="category">The profile category to add the profile to</param>
-        /// <param name="name">The name of the new profile configuration</param>
-        /// <param name="icon">The icon of the new profile configuration</param>
-        /// <returns>The newly created profile configuration</returns>
         public ProfileConfiguration CreateProfileConfiguration(ProfileCategory category, string name, string icon)
         {
             ProfileConfiguration configuration = new(category, name, icon);
@@ -413,10 +410,6 @@ namespace Artemis.Core.Services
             return configuration;
         }
 
-        /// <summary>
-        ///     Removes the provided profile configuration from the <see cref="ProfileCategory" />
-        /// </summary>
-        /// <param name="profileConfiguration"></param>
         public void RemoveProfileConfiguration(ProfileConfiguration profileConfiguration)
         {
             profileConfiguration.Category.RemoveProfileConfiguration(profileConfiguration);

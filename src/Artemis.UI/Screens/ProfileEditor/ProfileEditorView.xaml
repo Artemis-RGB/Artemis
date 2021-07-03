@@ -27,7 +27,7 @@
         <KeyBinding Command="{s:Action Undo}" Modifiers="Control" Key="Z" />
         <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
         <KeyBinding Command="{s:Action ToggleSuspend}" Key="F5" />
-        <KeyBinding Command="{s:Action ToggleAutoSuspend}" Modifiers="Ctrl" Key="F5" />
+        <KeyBinding Command="{s:Action ToggleAutoSuspend}" Modifiers="Shift" Key="F5" />
     </UserControl.InputBindings>
 
     <Grid ClipToBounds="True">
@@ -105,10 +105,10 @@
                           Command="{s:Action ToggleSuspend}"
                           InputGestureText="F5" />
                 <MenuItem Header="Run Profile on Focus Loss" 
-                          ToolTip="If enabled, regular profile playback is resumed on focus loss"
+                          ToolTip="If enabled, run mode is set to normal on focus loss"
                           IsCheckable="True"
                           IsChecked="{Binding StopOnFocusLoss.Value}"
-                          InputGestureText="Ctrl+F5" />
+                          InputGestureText="Shift+F5" />
             </MenuItem>
             <MenuItem Header="_Scripting" IsEnabled="False">
                 <MenuItem Header="_Profile Scripts"

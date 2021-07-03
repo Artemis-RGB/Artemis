@@ -101,6 +101,7 @@
                         <DataTemplate>
                             <shared:DeviceVisualizer Device="{Binding}"
                                                      ShowColors="True"
+                                                     RenderOptions.BitmapScalingMode="HighQuality"
                                                      HighlightedLeds="{Binding DataContext.HighlightedLeds, Mode=OneWay, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}}" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>

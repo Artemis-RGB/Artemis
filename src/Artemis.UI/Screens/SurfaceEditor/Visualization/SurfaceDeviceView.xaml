@@ -33,7 +33,11 @@
                        Visibility="{Binding Device.Layout.Image, ConverterParameter=Inverted, Converter={StaticResource NullToVisibilityConverter}}"
                        IsHitTestVisible="False"/>
 
-            <shared:DeviceVisualizer Device="{Binding Device}" ShowColors="True" VerticalAlignment="Top" HorizontalAlignment="Left" />
+            <shared:DeviceVisualizer Device="{Binding Device}" 
+                                     RenderOptions.BitmapScalingMode="HighQuality"
+                                     ShowColors="True" 
+                                     VerticalAlignment="Top" 
+                                     HorizontalAlignment="Left" />
 
           </Grid>
 
