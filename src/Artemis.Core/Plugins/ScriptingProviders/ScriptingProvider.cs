@@ -7,11 +7,9 @@ namespace Artemis.Core.ScriptingProviders
     /// <summary>
     ///     Allows you to implement and register your own scripting provider.
     /// </summary>
-    public abstract class ScriptingProvider<TGlobalScript, TProfileScript, TLayerScript, TPropertyScript> : ScriptingProvider
+    public abstract class ScriptingProvider<TGlobalScript, TProfileScript> : ScriptingProvider
         where TGlobalScript : GlobalScript
         where TProfileScript : ProfileScript
-        where TLayerScript : LayerScript
-        where TPropertyScript : PropertyScript
     {
         #region Overrides of PluginFeature
 
@@ -29,16 +27,10 @@ namespace Artemis.Core.ScriptingProviders
         #region Overrides of ScriptingProvider
 
         /// <inheritdoc />
-        internal override Type GlobalScriptType => typeof(TGlobalScript);
-
-        /// <inheritdoc />
         internal override Type ProfileScriptType => typeof(TProfileScript);
 
         /// <inheritdoc />
-        internal override Type LayerScriptType => typeof(TLayerScript);
-
-        /// <inheritdoc />
-        internal override Type PropertyScriptType => typeof(TPropertyScript);
+        internal override Type GlobalScriptType => typeof(TGlobalScript);
 
         #endregion
     }
@@ -47,7 +39,7 @@ namespace Artemis.Core.ScriptingProviders
     ///     Allows you to implement and register your own scripting provider.
     ///     <para>
     ///         Note: You can't implement this, implement
-    ///         <see cref="ScriptingProvider{TProfileScript,TLayerScript,TPropertyScript,TGlobalScript}" /> instead.
+    ///         <see cref="ScriptingProvider{TGlobalScript, TProfileScript}" /> instead.
     ///     </para>
     /// </summary>
     public abstract class ScriptingProvider : PluginFeature
@@ -63,8 +55,6 @@ namespace Artemis.Core.ScriptingProviders
         public ReadOnlyCollection<Script> Scripts => InternalScripts.AsReadOnly();
 
         internal abstract Type GlobalScriptType { get; }
-        internal abstract Type PropertyScriptType { get; }
-        internal abstract Type LayerScriptType { get; }
         internal abstract Type ProfileScriptType { get; }
         internal List<Script> InternalScripts { get; } = new();
 

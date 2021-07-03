@@ -113,8 +113,6 @@ namespace Artemis.UI.Ninject.Factories
     public interface IScriptVmFactory : IVmFactory
     {
         ScriptsDialogViewModel ScriptsDialogViewModel(Profile profile);
-        ScriptsDialogViewModel ScriptsDialogViewModel(Layer layer);
-        ScriptsDialogViewModel ScriptsDialogViewModel(ILayerProperty layerProperty);
         ScriptConfigurationViewModel ScriptConfigurationViewModel(ScriptConfiguration scriptConfiguration);
     }
 

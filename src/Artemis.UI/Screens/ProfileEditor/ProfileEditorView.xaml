@@ -65,6 +65,9 @@
                 <MenuItem Header="View Properties"
                           Icon="{materialDesign:PackIcon Kind=Settings}"
                           Command="{s:Action ViewProperties}"/>
+                <MenuItem Header="_View Scripts"
+                          Icon="{materialDesign:PackIcon Kind=BookEdit}"
+                          Command="{s:Action ViewScripts}"/>
                 <MenuItem Header="Adapt Profile"
                           Icon="{materialDesign:PackIcon Kind=Magic}"
                           Command="{s:Action AdaptProfile}"/>
@@ -109,19 +112,6 @@
                           IsCheckable="True"
                           IsChecked="{Binding StopOnFocusLoss.Value}"
                           InputGestureText="Shift+F5" />
-            </MenuItem>
-            <MenuItem Header="_Scripting" IsEnabled="False">
-                <MenuItem Header="_Profile Scripts"
-                          Icon="{materialDesign:PackIcon Kind=BookEdit}"
-                          Command="{s:Action OpenProfileScripts}"/>
-                <MenuItem Header="_Layer Scripts" 
-                          Icon="{materialDesign:PackIcon Kind=Layers}"
-                          IsEnabled="{Binding HasSelectedElement}"
-                          Command="{s:Action OpenLayerScripts}"/>
-                <MenuItem Header="_Property Scripts" 
-                          Icon="{materialDesign:PackIcon Kind=FormTextbox}"
-                          IsEnabled="{Binding HasSelectedElement}"
-                          Command="{s:Action OpenLayerPropertyScripts}"/>
             </MenuItem>
             <MenuItem Header="_Options">
                 <MenuItem Header="Focus Selected Layer" 

@@ -120,15 +120,5 @@ namespace Artemis.Core.ScriptingProviders
         ///     A script tied to a <see cref="Profile" />
         /// </summary>
         Profile,
-
-        /// <summary>
-        ///     A script tied to a <see cref="Layer" />
-        /// </summary>
-        Layer,
-
-        /// <summary>
-        ///     A script tried to a <see cref="ILayerProperty" />
-        /// </summary>
-        LayerProperty
     }
 }

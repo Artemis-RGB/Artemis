@@ -23,11 +23,31 @@ namespace Artemis.UI.Screens.Scripting
         private readonly Dictionary<ScriptingProvider, IScriptEditorViewModel> _providerViewModels = new();
         private ScriptConfigurationViewModel _selectedScript;
 
+        public ScriptsDialogViewModel(Profile profile,
+            IScriptingService scriptingService,
+            IDialogService dialogService,
+            IProfileService profileService,
+            IProfileEditorService profileEditorService,
+            IScriptVmFactory scriptVmFactory)
+        {
+            _scriptingService = scriptingService;
+            _dialogService = dialogService;
+            _profileService = profileService;
+            _profileEditorService = profileEditorService;
+            _scriptVmFactory = scriptVmFactory;
+
+            DisplayName = "Artemis | Profile Scripts";
+            ScriptType = ScriptType.Profile;
+            Profile = profile ?? throw new ArgumentNullException(nameof(profile));
+
+            ScriptConfigurations.AddRange(Profile.ScriptConfigurations.Select(scriptVmFactory.ScriptConfigurationViewModel));
+            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
+        }
+
         public ScriptType ScriptType { get; }
-        public Profile Profile { get; }
-        public Layer Layer { get; }
-        public ILayerProperty LayerProperty { get; }
+        public Profile Profile { get; } 
         public BindableCollection<ScriptConfigurationViewModel> ScriptConfigurations { get; } = new();
+        public bool HasScripts => ScriptConfigurations.Any();
 
         public ScriptConfigurationViewModel SelectedScript
         {
@@ -63,72 +83,7 @@ namespace Artemis.UI.Screens.Scripting
             ActiveItem = viewModel;
             ActiveItem.ChangeScript(scriptConfiguration.Script);
         }
-
-        public bool HasScripts => ScriptConfigurations.Any();
-
-        public ScriptsDialogViewModel(Profile profile,
-            IScriptingService scriptingService,
-            IDialogService dialogService,
-            IProfileService profileService,
-            IProfileEditorService profileEditorService,
-            IScriptVmFactory scriptVmFactory)
-        {
-            _scriptingService = scriptingService;
-            _dialogService = dialogService;
-            _profileService = profileService;
-            _profileEditorService = profileEditorService;
-            _scriptVmFactory = scriptVmFactory;
-
-            DisplayName = "Artemis | Profile Scripts";
-            ScriptType = ScriptType.Profile;
-            Profile = profile ?? throw new ArgumentNullException(nameof(profile));
-
-            ScriptConfigurations.AddRange(Profile.ScriptConfigurations.Select(scriptVmFactory.ScriptConfigurationViewModel));
-            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
-        }
-
-        public ScriptsDialogViewModel(Layer layer,
-            IScriptingService scriptingService,
-            IDialogService dialogService,
-            IProfileService profileService,
-            IProfileEditorService profileEditorService,
-            IScriptVmFactory scriptVmFactory)
-        {
-            _scriptingService = scriptingService;
-            _dialogService = dialogService;
-            _profileService = profileService;
-            _profileEditorService = profileEditorService;
-            _scriptVmFactory = scriptVmFactory;
-
-            DisplayName = "Artemins | Layer Scripts";
-            ScriptType = ScriptType.Layer;
-            Layer = layer ?? throw new ArgumentNullException(nameof(layer));
-
-            ScriptConfigurations.AddRange(Layer.ScriptConfigurations.Select(_scriptVmFactory.ScriptConfigurationViewModel));
-            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
-        }
-
-        public ScriptsDialogViewModel(ILayerProperty layerProperty,
-            IScriptingService scriptingService,
-            IDialogService dialogService,
-            IProfileService profileService,
-            IProfileEditorService profileEditorService,
-            IScriptVmFactory scriptVmFactory)
-        {
-            _scriptingService = scriptingService;
-            _dialogService = dialogService;
-            _profileService = profileService;
-            _profileEditorService = profileEditorService;
-            _scriptVmFactory = scriptVmFactory;
-
-            DisplayName = "Artemins | Layer Property Scripts";
-            ScriptType = ScriptType.LayerProperty;
-            LayerProperty = layerProperty ?? throw new ArgumentNullException(nameof(layerProperty));
-
-            ScriptConfigurations.AddRange(Layer.ScriptConfigurations.Select(_scriptVmFactory.ScriptConfigurationViewModel));
-            ScriptConfigurations.CollectionChanged += ItemsOnCollectionChanged;
-        }
-
+        
         private void ItemsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(HasScripts));
@@ -144,16 +99,6 @@ namespace Artemis.UI.Screens.Scripting
             {
                 Profile.ScriptConfigurations.Add(scriptConfiguration);
                 _scriptingService.CreateScriptInstance(Profile, scriptConfiguration);
-            }
-            else if (Layer != null)
-            {
-                Layer.ScriptConfigurations.Add(scriptConfiguration);
-                _scriptingService.CreateScriptInstance(Layer, scriptConfiguration);
-            }
-            else if (LayerProperty != null)
-            {
-                LayerProperty.ScriptConfigurations.Add(scriptConfiguration);
-                _scriptingService.CreateScriptInstance(LayerProperty, scriptConfiguration);
             }
 
             ScriptConfigurationViewModel viewModel = _scriptVmFactory.ScriptConfigurationViewModel(scriptConfiguration);
@@ -187,14 +132,8 @@ namespace Artemis.UI.Screens.Scripting
                 case GlobalScript:
                     _scriptingService.DeleteScript(scriptConfigurationViewModel.ScriptConfiguration);
                     break;
-                case LayerScript layerScript:
-                    layerScript.Layer.ScriptConfigurations.Remove(scriptConfigurationViewModel.ScriptConfiguration);
-                    break;
                 case ProfileScript profileScript:
                     profileScript.Profile.ScriptConfigurations.Remove(scriptConfigurationViewModel.ScriptConfiguration);
-                    break;
-                case PropertyScript propertyScript:
-                    propertyScript.LayerProperty.ScriptConfigurations.Remove(scriptConfigurationViewModel.ScriptConfiguration);
                     break;
             }
 
@@ -204,7 +143,7 @@ namespace Artemis.UI.Screens.Scripting
             SelectedScript = null;
             ScriptConfigurations.Remove(scriptConfigurationViewModel);
         }
-        
+
         #region Overrides of Screen
 
         /// <inheritdoc />
@@ -217,20 +156,12 @@ namespace Artemis.UI.Screens.Scripting
         /// <inheritdoc />
         protected override void OnClose()
         {
-            Profile profileToSave = null;
             if (Profile != null)
-                profileToSave = Profile;
-            else if (Layer != null)
-                profileToSave = Layer.Profile;
-            else if (LayerProperty != null)
-                profileToSave = LayerProperty.LayerPropertyGroup.ProfileElement.Profile;
-
-            if (profileToSave != null)
             {
-                if (_profileEditorService.SelectedProfile == profileToSave)
+                if (_profileEditorService.SelectedProfile == Profile)
                     _profileEditorService.SaveSelectedProfileConfiguration();
                 else
-                    _profileService.SaveProfile(profileToSave, false);
+                    _profileService.SaveProfile(Profile, false);
             }
 
             ScriptConfigurations.CollectionChanged -= ItemsOnCollectionChanged;

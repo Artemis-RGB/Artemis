@@ -234,7 +234,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
         }
 
-        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnSuspendEditingChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(SuspendedEditing));
         }
