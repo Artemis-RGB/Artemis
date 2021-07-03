@@ -33,5 +33,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public Layer Layer => ProfileElement as Layer;
         public bool ShowIcons => Layer?.LayerBrush != null;
         public override bool SupportsChildren => false;
+
+        public override bool IsExpanded { get; set; }
     }
 }

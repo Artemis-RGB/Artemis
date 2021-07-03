@@ -26,6 +26,8 @@
     <UserControl.InputBindings>
         <KeyBinding Command="{s:Action Undo}" Modifiers="Control" Key="Z" />
         <KeyBinding Command="{s:Action Redo}" Modifiers="Control" Key="Y" />
+        <KeyBinding Command="{s:Action ToggleSuspend}" Key="F5" />
+        <KeyBinding Command="{s:Action ToggleAutoSuspend}" Modifiers="Shift" Key="F5" />
     </UserControl.InputBindings>
 
     <Grid ClipToBounds="True">
@@ -60,21 +62,24 @@
                               s:View.ActionTarget="{Binding ProfileTreeViewModel}" />
                 </MenuItem>
                 <Separator />
-                <MenuItem Header="View properties"
+                <MenuItem Header="View Properties"
                           Icon="{materialDesign:PackIcon Kind=Settings}"
                           Command="{s:Action ViewProperties}"/>
-                <MenuItem Header="Suspend profile"
+                <MenuItem Header="Adapt Profile"
+                          Icon="{materialDesign:PackIcon Kind=Magic}"
+                          Command="{s:Action AdaptProfile}"/>
+                <MenuItem Header="Suspend Profile"
                           IsCheckable="True"
                           IsChecked="{Binding ProfileConfiguration.IsSuspended}" />
                 <Separator />
-                <MenuItem Header="Export profile"
+                <MenuItem Header="Export Profile"
                           Icon="{materialDesign:PackIcon Kind=Export}" 
                           Command="{s:Action ExportProfile}" />
-                <MenuItem Header="Duplicate profile"
+                <MenuItem Header="Duplicate Profile"
                           Icon="{materialDesign:PackIcon Kind=ContentDuplicate}" 
                           Command="{s:Action DuplicateProfile}" />
                 <Separator />
-                <MenuItem Header="Delete profile" 
+                <MenuItem Header="Delete Profile" 
                           Icon="{materialDesign:PackIcon Kind=Trash}" 
                           Command="{s:Action DeleteProfile}" />
             </MenuItem>
@@ -94,21 +99,47 @@
                           Command="{s:Action Paste}" 
                           InputGestureText="Ctrl+V" />
             </MenuItem>
+            <MenuItem Header="_Run">
+                <MenuItem Header="_Switch run mode"
+                          Icon="{materialDesign:PackIcon Kind=SwapHorizontal}"
+                          Command="{s:Action ToggleSuspend}"
+                          InputGestureText="F5" />
+                <MenuItem Header="Run Profile on Focus Loss" 
+                          ToolTip="If enabled, run mode is set to normal on focus loss"
+                          IsCheckable="True"
+                          IsChecked="{Binding StopOnFocusLoss.Value}"
+                          InputGestureText="Shift+F5" />
+            </MenuItem>
             <MenuItem Header="_Scripting" IsEnabled="False">
-                <MenuItem Header="_Profile scripts"
+                <MenuItem Header="_Profile Scripts"
                           Icon="{materialDesign:PackIcon Kind=BookEdit}"
                           Command="{s:Action OpenProfileScripts}"/>
-                <MenuItem Header="_Layer scripts" 
+                <MenuItem Header="_Layer Scripts" 
                           Icon="{materialDesign:PackIcon Kind=Layers}"
                           IsEnabled="{Binding HasSelectedElement}"
                           Command="{s:Action OpenLayerScripts}"/>
-                <MenuItem Header="_Property scripts" 
+                <MenuItem Header="_Property Scripts" 
                           Icon="{materialDesign:PackIcon Kind=FormTextbox}"
                           IsEnabled="{Binding HasSelectedElement}"
                           Command="{s:Action OpenLayerPropertyScripts}"/>
             </MenuItem>
+            <MenuItem Header="_Options">
+                <MenuItem Header="Focus Selected Layer" 
+                          ToolTip="If enabled, displays only the layer you currently have selected"
+                          IsCheckable="True"
+                          IsChecked="{Binding FocusSelectedLayer.Value}"
+                          IsEnabled="False"/>
+                <MenuItem Header="Display Data Model Values"
+                          IsCheckable="True"
+                          IsChecked="{Binding ShowDataModelValues.Value}"/>
+               
+                <MenuItem Header="Apply All Data Bindings During Edit" 
+                          ToolTip="If enabled, updates all data bindings instead of only the one you are editing"
+                          IsCheckable="True"
+                          IsChecked="{Binding AlwaysApplyDataBindings.Value}"/>
+            </MenuItem>
             <MenuItem Header="_Help">
-                <MenuItem Header="Artemis wiki"
+                <MenuItem Header="Artemis Wiki"
                           Icon="{materialDesign:PackIcon Kind=BookEdit}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/" />
@@ -121,7 +152,7 @@
                           Icon="{materialDesign:PackIcon Kind=Layers}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/layers" />
-                <MenuItem Header="Display conditions"
+                <MenuItem Header="Display Conditions"
                           Icon="{materialDesign:PackIcon Kind=NotEqual}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/conditions" />
@@ -129,7 +160,7 @@
                           Icon="{materialDesign:PackIcon Kind=Stopwatch}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/timeline" />
-                <MenuItem Header="Data bindings"
+                <MenuItem Header="Data Bindings"
                           Icon="{materialDesign:PackIcon Kind=VectorLink}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/data-bindings" />
@@ -138,11 +169,11 @@
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://wiki.artemis-rgb.com/guides/user/profiles/scripting" />
                 <Separator />
-                <MenuItem Header="Report a bug"
+                <MenuItem Header="Report a Bug"
                           Icon="{materialDesign:PackIcon Kind=Github}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://github.com/Artemis-RGB/Artemis/issues" />
-                <MenuItem Header="Get help on Discord"
+                <MenuItem Header="Get Help on Discord"
                           Icon="{materialDesign:PackIcon Kind=Discord}"
                           Command="{s:Action OpenUrl}"
                           CommandParameter="https://discord.gg/S3MVaC9" />
@@ -152,7 +183,7 @@
         <Button Grid.Row="0"
                 Grid.Column="2"
                 Style="{StaticResource MaterialDesignIconForegroundButton}"
-                ToolTip="Open debugger"
+                ToolTip="Open Debugger"
                 Margin="10 -4 10 0"
                 Width="34"
                 Height="34"

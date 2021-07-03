@@ -16,6 +16,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public int Order { get; set; }
         public string Name { get; set; }
+        public bool IsExpanded { get; set; }
         public bool Suspended { get; set; }
 
         [BsonRef("ProfileEntity")]

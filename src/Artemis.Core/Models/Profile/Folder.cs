@@ -14,6 +14,8 @@ namespace Artemis.Core
     /// </summary>
     public sealed class Folder : RenderProfileElement
     {
+        private bool _isExpanded;
+
         /// <summary>
         ///     Creates a new instance of the <see cref="Folder" /> class and adds itself to the child collection of the provided
         ///     <paramref name="parent" />
@@ -46,6 +48,7 @@ namespace Artemis.Core
             Profile = profile;
             Parent = parent;
             Name = folderEntity.Name;
+            IsExpanded = folderEntity.IsExpanded;
             Suspended = folderEntity.Suspended;
             Order = folderEntity.Order;
 
@@ -56,6 +59,15 @@ namespace Artemis.Core
         ///     Gets a boolean indicating whether this folder is at the root of the profile tree
         /// </summary>
         public bool IsRootFolder => Parent == Profile;
+
+        /// <summary>
+        ///     Gets or sets a boolean indicating whether this folder is expanded
+        /// </summary>
+        public bool IsExpanded
+        {
+            get => _isExpanded;
+            set => SetAndNotify(ref _isExpanded, value);
+        }
 
         /// <summary>
         ///     Gets the folder entity this folder uses for persistent storage
@@ -72,8 +84,10 @@ namespace Artemis.Core
         {
             List<ILayerProperty> result = new();
             foreach (BaseLayerEffect layerEffect in LayerEffects)
+            {
                 if (layerEffect.BaseProperties != null)
                     result.AddRange(layerEffect.BaseProperties.GetAllLayerProperties());
+            }
 
             return result;
         }
@@ -151,27 +165,6 @@ namespace Artemis.Core
             return $"[Folder] {nameof(Name)}: {Name}, {nameof(Order)}: {Order}";
         }
 
-        internal void CalculateRenderProperties()
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Folder");
-
-            SKPath path = new() {FillType = SKPathFillType.Winding};
-            foreach (ProfileElement child in Children)
-            {
-                if (child is RenderProfileElement effectChild && effectChild.Path != null)
-                    path.AddPath(effectChild.Path);
-            }
-
-            Path = path;
-
-            // Folder render properties are based on child paths and thus require an update
-            if (Parent is Folder folder)
-                folder.CalculateRenderProperties();
-
-            OnRenderPropertiesUpdated();
-        }
-
         #region Rendering
 
         /// <inheritdoc />
@@ -209,7 +202,7 @@ namespace Artemis.Core
 
                     canvas.SaveLayer(layerPaint);
                     canvas.Translate(Bounds.Left - basePosition.X, Bounds.Top - basePosition.Y);
-                    
+
                     // Iterate the children in reverse because the first layer must be rendered last to end up on top
                     for (int index = Children.Count - 1; index > -1; index--)
                         Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
@@ -228,57 +221,6 @@ namespace Artemis.Core
         }
 
         #endregion
-
-        /// <inheritdoc />
-        protected override void Dispose(bool disposing)
-        {
-            Disposed = true;
-
-            Disable();
-            foreach (ProfileElement profileElement in Children)
-                profileElement.Dispose();
-
-            base.Dispose(disposing);
-        }
-
-        internal override void Load()
-        {
-            ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
-            Reset();
-
-            // Load child folders
-            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Folder(Profile, this, childFolder));
-            // Load child layers
-            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
-                ChildrenList.Add(new Layer(Profile, this, childLayer));
-
-            // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
-            for (int index = 0; index < ChildrenList.Count; index++)
-                ChildrenList[index].Order = index + 1;
-
-            LoadRenderElement();
-        }
-
-        internal override void Save()
-        {
-            if (Disposed)
-                throw new ObjectDisposedException("Folder");
-
-            FolderEntity.Id = EntityId;
-            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
-
-            FolderEntity.Order = Order;
-            FolderEntity.Name = Name;
-            FolderEntity.Suspended = Suspended;
-
-            FolderEntity.ProfileId = Profile.EntityId;
-            FolderEntity.ExpandedPropertyGroups.Clear();
-            FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
-
-            SaveRenderElement();
-        }
 
         /// <inheritdoc />
         public override void Enable()
@@ -320,18 +262,87 @@ namespace Artemis.Core
             Enabled = false;
         }
 
-        #region Events
-
         /// <summary>
         ///     Occurs when a property affecting the rendering properties of this folder has been updated
         /// </summary>
         public event EventHandler? RenderPropertiesUpdated;
 
+        /// <inheritdoc />
+        protected override void Dispose(bool disposing)
+        {
+            Disposed = true;
+
+            Disable();
+            foreach (ProfileElement profileElement in Children)
+                profileElement.Dispose();
+
+            base.Dispose(disposing);
+        }
+
+        internal void CalculateRenderProperties()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            SKPath path = new() {FillType = SKPathFillType.Winding};
+            foreach (ProfileElement child in Children)
+            {
+                if (child is RenderProfileElement effectChild && effectChild.Path != null)
+                    path.AddPath(effectChild.Path);
+            }
+
+            Path = path;
+
+            // Folder render properties are based on child paths and thus require an update
+            if (Parent is Folder folder)
+                folder.CalculateRenderProperties();
+
+            OnRenderPropertiesUpdated();
+        }
+
+        internal override void Load()
+        {
+            ExpandedPropertyGroups.AddRange(FolderEntity.ExpandedPropertyGroups);
+            Reset();
+
+            // Load child folders
+            foreach (FolderEntity childFolder in Profile.ProfileEntity.Folders.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Folder(Profile, this, childFolder));
+            // Load child layers
+            foreach (LayerEntity childLayer in Profile.ProfileEntity.Layers.Where(f => f.ParentId == EntityId))
+                ChildrenList.Add(new Layer(Profile, this, childLayer));
+
+            // Ensure order integrity, should be unnecessary but no one is perfect specially me
+            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            for (int index = 0; index < ChildrenList.Count; index++)
+                ChildrenList[index].Order = index + 1;
+
+            LoadRenderElement();
+        }
+
+        internal override void Save()
+        {
+            if (Disposed)
+                throw new ObjectDisposedException("Folder");
+
+            FolderEntity.Id = EntityId;
+            FolderEntity.ParentId = Parent?.EntityId ?? new Guid();
+
+            FolderEntity.Order = Order;
+            FolderEntity.Name = Name;
+            FolderEntity.IsExpanded = IsExpanded;
+            FolderEntity.Suspended = Suspended;
+
+            FolderEntity.ProfileId = Profile.EntityId;
+            FolderEntity.ExpandedPropertyGroups.Clear();
+            FolderEntity.ExpandedPropertyGroups.AddRange(ExpandedPropertyGroups);
+
+            SaveRenderElement();
+        }
+
         private void OnRenderPropertiesUpdated()
         {
             RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
         }
-
-        #endregion
     }
 }

@@ -5,6 +5,7 @@ using System.Windows.Data;
 
 namespace Artemis.UI.Converters
 {
+    [ValueConversion(typeof(Uri), typeof(string))]
     public class UriToFileNameConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

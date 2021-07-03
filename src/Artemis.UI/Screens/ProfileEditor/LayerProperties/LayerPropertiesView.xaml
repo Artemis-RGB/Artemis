@@ -77,7 +77,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="1.5*" />
             </Grid.ColumnDefinitions>
-
+            
             <!-- Left side -->
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
@@ -444,6 +444,28 @@
                         Width="319" />
 
             </Grid>
+
+            <!-- Suspended overlay -->
+            <Border Grid.Row="0" 
+                    Grid.Column="0"
+                    Grid.ColumnSpan="3"
+                    Grid.RowSpan="2"
+                    Panel.ZIndex="3" 
+                    Background="#CD353535" 
+                    Visibility="{Binding SuspendedEditing, Converter={StaticResource BoolToVisibilityConverter}, Mode=OneWay}">
+                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
+                    <materialDesign:PackIcon Kind="TimerOffOutline" Width="150" Height="150" HorizontalAlignment="Center" />
+                    <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 10">
+                        Timeline suspended
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                        The profile is currently running in normal mode and the timeline cannot be edited.
+                    </TextBlock>
+                    <TextBlock Style="{StaticResource MaterialDesignBody2TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                        Press <Run Text="F5" FontWeight="Bold"/> to switch between editor mode and normal mode. Auto-switching can be disabled in the options menu.
+                    </TextBlock>
+                </StackPanel>
+            </Border>
         </Grid>
     </materialDesign:DialogHost>
 </UserControl>

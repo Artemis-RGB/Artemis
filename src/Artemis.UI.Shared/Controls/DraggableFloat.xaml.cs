@@ -27,12 +27,12 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets the minimum value
         /// </summary>
-        public static readonly DependencyProperty MinProperty = DependencyProperty.Register(nameof(Min), typeof(float?), typeof(DraggableFloat));
+        public static readonly DependencyProperty MinProperty = DependencyProperty.Register(nameof(Min), typeof(object), typeof(DraggableFloat));
 
         /// <summary>
         ///     Gets or sets the maximum value
         /// </summary>
-        public static readonly DependencyProperty MaxProperty = DependencyProperty.Register(nameof(Max), typeof(float?), typeof(DraggableFloat));
+        public static readonly DependencyProperty MaxProperty = DependencyProperty.Register(nameof(Max), typeof(object), typeof(DraggableFloat));
 
         /// <summary>
         ///     Occurs when the value has changed
@@ -90,18 +90,18 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets the minimum value
         /// </summary>
-        public float? Min
+        public object? Min
         {
-            get => (float?) GetValue(MinProperty);
+            get => (object?) GetValue(MinProperty);
             set => SetValue(MinProperty, value);
         }
 
         /// <summary>
         ///     Gets or sets the maximum value
         /// </summary>
-        public float? Max
+        public object? Max
         {
-            get => (float?) GetValue(MaxProperty);
+            get => (object?) GetValue(MaxProperty);
             set => SetValue(MaxProperty, value);
         }
 
@@ -207,10 +207,11 @@ namespace Artemis.UI.Shared
                 stepSize = stepSize * 10;
 
             float value = (float) RoundToNearestOf(startValue + stepSize * (x - startX), stepSize);
-            if (Min != null)
-                value = Math.Max(value, Min.Value);
-            if (Max != null)
-                value = Math.Min(value, Max.Value);
+
+            if (Min != null && float.TryParse(Min.ToString(), out float minFloat))
+                value = Math.Max(value, minFloat);
+            if (Max != null && float.TryParse(Max.ToString(), out float maxFloat))
+                value = Math.Min(value, maxFloat);
 
             Value = value;
         }

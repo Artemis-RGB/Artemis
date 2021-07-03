@@ -18,6 +18,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public string Name { get; set; }
         public bool IsFreshImport { get; set; }
+        public Guid LastSelectedProfileElement { get; set; }
 
         public List<FolderEntity> Folders { get; set; }
         public List<LayerEntity> Layers { get; set; }

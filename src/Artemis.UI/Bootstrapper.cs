@@ -27,6 +27,7 @@ namespace Artemis.UI
     {
         private ApplicationStateManager _applicationStateManager;
         private ICoreService _core;
+        private ILogger _exceptionLogger;
 
         public Bootstrapper()
         {
@@ -48,11 +49,11 @@ namespace Artemis.UI
         {
             _applicationStateManager = new ApplicationStateManager(Kernel, Args);
             Core.Utilities.PrepareFirstLaunch();
-
-            ILogger logger = Kernel.Get<ILogger>();
+            
+            _exceptionLogger = Kernel.Get<ILogger>();
             if (_applicationStateManager.FocusExistingInstance())
             {
-                logger.Information("Shutting down because a different instance is already running.");
+                _exceptionLogger.Information("Shutting down because a different instance is already running.");
                 Application.Current.Shutdown(1);
                 return;
             }
@@ -63,7 +64,7 @@ namespace Artemis.UI
             }
             catch (Exception ex)
             {
-                logger.Error($"Failed to set DPI-Awareness: {ex.Message}");
+                _exceptionLogger.Error($"Failed to set DPI-Awareness: {ex.Message}");
             }
 
             IViewManager viewManager = Kernel.Get<IViewManager>();
@@ -76,7 +77,7 @@ namespace Artemis.UI
             }
             catch (Exception e)
             {
-                HandleFatalException(e, logger);
+                HandleFatalException(e);
                 throw;
             }
 
@@ -101,7 +102,7 @@ namespace Artemis.UI
                 }
                 catch (Exception e)
                 {
-                    HandleFatalException(e, logger);
+                    HandleFatalException(e);
                     throw;
                 }
             });
@@ -132,12 +133,11 @@ namespace Artemis.UI
 
         protected override void OnUnhandledException(DispatcherUnhandledExceptionEventArgs e)
         {
-            ILogger logger = Kernel.Get<ILogger>();
-            logger.Fatal(e.Exception, "Unhandled exception");
-
-            IDialogService dialogService = Kernel.Get<IDialogService>();
             try
             {
+                _exceptionLogger.Fatal(e.Exception, "Unhandled exception");
+
+                IDialogService dialogService = Kernel.Get<IDialogService>();
                 dialogService.ShowExceptionDialog("Artemis encountered an error", e.Exception);
             }
             catch (Exception)
@@ -149,9 +149,9 @@ namespace Artemis.UI
             e.Handled = true;
         }
 
-        private void HandleFatalException(Exception e, ILogger logger)
+        private void HandleFatalException(Exception e)
         {
-            logger.Fatal(e, "Fatal exception during initialization, shutting down.");
+            _exceptionLogger.Fatal(e, "Fatal exception during initialization, shutting down.");
             Execute.OnUIThread(() =>
             {
                 _applicationStateManager.DisplayException(e);

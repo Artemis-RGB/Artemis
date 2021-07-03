@@ -126,7 +126,12 @@ namespace Artemis.UI.Screens.Sidebar
 
         public void Handle(RequestSelectSidebarItemEvent message)
         {
-            SidebarScreenViewModel requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
+            SidebarScreenViewModel requested = null;
+            if (message.DisplayName != null)
+                requested = SidebarScreens.FirstOrDefault(s => s.DisplayName == message.DisplayName);
+            else
+                requested = message.ViewModel;
+
             if (requested != null)
                 SelectedSidebarScreen = requested;
         }
@@ -148,6 +153,8 @@ namespace Artemis.UI.Screens.Sidebar
             foreach (SidebarCategoryViewModel sidebarCategoryViewModel in Items)
                 sidebarCategoryViewModel.SelectedProfileConfiguration = sidebarCategoryViewModel.Items.FirstOrDefault(i => i.ProfileConfiguration == profileConfiguration);
 
+            if (_profileEditorService.SuspendEditing)
+                _profileEditorService.SuspendEditing = false;
             _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
             if (profileConfiguration != null)
             {

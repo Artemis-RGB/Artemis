@@ -122,6 +122,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
             set => ProfileEditorService.CurrentTime = TimeSpan.FromSeconds(value / ProfileEditorService.PixelsPerSecond);
         }
 
+        public bool SuspendedEditing => ProfileEditorService.SuspendEditing;
+
         public int PropertyTreeIndex
         {
             get => _propertyTreeIndex;
@@ -190,6 +192,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
             ProfileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             ProfileEditorService.CurrentTimeChanged += ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.SuspendEditingChanged += ProfileEditorServiceOnSuspendEditingChanged;
             ProfileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged += ProfileEditorServiceOnPixelsPerSecondChanged;
 
@@ -200,6 +203,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             ProfileEditorService.SelectedProfileElementChanged -= SelectedProfileEditorServiceOnSelectedProfileElementChanged;
             ProfileEditorService.CurrentTimeChanged -= ProfileEditorServiceOnCurrentTimeChanged;
+            ProfileEditorService.SuspendEditingChanged -= ProfileEditorServiceOnSuspendEditingChanged;
             ProfileEditorService.SelectedDataBindingChanged -= ProfileEditorServiceOnSelectedDataBindingChanged;
             ProfileEditorService.PixelsPerSecondChanged -= ProfileEditorServiceOnPixelsPerSecondChanged;
 
@@ -228,6 +232,11 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
         {
             NotifyOfPropertyChange(nameof(FormattedCurrentTime));
             NotifyOfPropertyChange(nameof(TimeCaretPosition));
+        }
+
+        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(SuspendedEditing));
         }
 
         private void ProfileEditorServiceOnPixelsPerSecondChanged(object sender, EventArgs e)
@@ -559,6 +568,12 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
 
         private void CoreServiceOnFrameRendering(object sender, FrameRenderingEventArgs e)
         {
+            if (!ProfileEditorService.Playing)
+            {
+                CoreService.FrameRendering -= CoreServiceOnFrameRendering;
+                return;
+            }
+
             Execute.PostToUIThread(() =>
             {
                 TimeSpan newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));

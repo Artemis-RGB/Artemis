@@ -179,7 +179,8 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException("ProfileConfiguration");
-
+            if (IsBeingEdited)
+                return true;
             if (Category.IsSuspended || IsSuspended || IsMissingModule)
                 return false;
 

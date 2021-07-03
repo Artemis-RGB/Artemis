@@ -14,6 +14,7 @@ namespace Artemis.Core
     {
         private readonly object _lock = new();
         private bool _isFreshImport;
+        private ProfileElement? _lastSelectedProfileElement;
 
         internal Profile(ProfileConfiguration configuration, ProfileEntity profileEntity) : base(null!)
         {
@@ -58,6 +59,15 @@ namespace Artemis.Core
         {
             get => _isFreshImport;
             set => SetAndNotify(ref _isFreshImport, value);
+        }
+
+        /// <summary>
+        ///     Gets or sets the last selected profile element of this profile
+        /// </summary>
+        public ProfileElement? LastSelectedProfileElement
+        {
+            get => _lastSelectedProfileElement;
+            set => SetAndNotify(ref _lastSelectedProfileElement, value);
         }
 
         /// <summary>
@@ -187,6 +197,15 @@ namespace Artemis.Core
                 }
             }
 
+            if (ProfileEntity.LastSelectedProfileElement != Guid.Empty)
+            {
+                LastSelectedProfileElement = GetAllFolders().FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
+                if (LastSelectedProfileElement == null)
+                    LastSelectedProfileElement = GetAllLayers().FirstOrDefault(f => f.EntityId == ProfileEntity.LastSelectedProfileElement);
+            }
+            else
+                LastSelectedProfileElement = null;
+
             foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
                 scriptConfiguration.Script?.Dispose();
             ScriptConfigurations.Clear();
@@ -201,6 +220,7 @@ namespace Artemis.Core
             ProfileEntity.Id = EntityId;
             ProfileEntity.Name = Configuration.Name;
             ProfileEntity.IsFreshImport = IsFreshImport;
+            ProfileEntity.LastSelectedProfileElement = LastSelectedProfileElement?.EntityId ?? Guid.Empty;
 
             foreach (ProfileElement profileElement in Children)
                 profileElement.Save();
