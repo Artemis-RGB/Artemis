@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -23,16 +22,6 @@ namespace Artemis.Core
         ///     The parent group of this layer property, set after construction
         /// </summary>
         LayerPropertyGroup LayerPropertyGroup { get; }
-
-        /// <summary>
-        ///     Gets a collection of all active scripts assigned to this layer property
-        /// </summary>
-        List<PropertyScript> Scripts { get; }
-
-        /// <summary>
-        /// Gets a collection of all script configurations assigned to this layer property
-        /// </summary>
-        public List<ScriptConfiguration> ScriptConfigurations { get; }
 
         /// <summary>
         ///     Gets the unique path of the property on the layer
@@ -80,8 +69,6 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>
         void Update(Timeline timeline);
-
-        #region Events
 
         /// <summary>
         ///     Occurs when the layer property is disposed
@@ -137,7 +124,5 @@ namespace Artemis.Core
         ///     Occurs when a data binding has been disabled
         /// </summary>
         public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
-
-        #endregion
     }
 }

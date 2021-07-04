@@ -59,6 +59,9 @@ namespace Artemis.Core.ScriptingProviders
         #region Overrides of Script
 
         /// <inheritdoc />
+        public override ScriptType ScriptType => ScriptType.Profile;
+
+        /// <inheritdoc />
         internal override void InternalCleanup()
         {
             lock (Profile.Scripts)

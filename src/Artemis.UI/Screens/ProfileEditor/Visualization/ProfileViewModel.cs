@@ -391,7 +391,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
                 ActivateToolByIndex(2);
         }
 
-        private void ProfileEditorServiceOnSuspendEditingChanged(object? sender, EventArgs e)
+        private void ProfileEditorServiceOnSuspendEditingChanged(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(SuspendedEditing));
             UpdateCanSelectEditTool();
