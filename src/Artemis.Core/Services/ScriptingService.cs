@@ -12,11 +12,13 @@ namespace Artemis.Core.Services
     internal class ScriptingService : IScriptingService
     {
         private readonly IPluginManagementService _pluginManagementService;
+        private readonly IProfileService _profileService;
         private List<ScriptingProvider> _scriptingProviders;
 
         public ScriptingService(IPluginManagementService pluginManagementService, IProfileService profileService)
         {
             _pluginManagementService = pluginManagementService;
+            _profileService = profileService;
 
             InternalGlobalScripts = new List<GlobalScript>();
 
@@ -27,7 +29,7 @@ namespace Artemis.Core.Services
             // No need to sub to Deactivated, scripts will deactivate themselves
             profileService.ProfileActivated += ProfileServiceOnProfileActivated;
 
-            foreach (ProfileConfiguration profileConfiguration in profileService.ProfileConfigurations)
+            foreach (ProfileConfiguration profileConfiguration in _profileService.ProfileConfigurations)
             {
                 if (profileConfiguration.Profile != null)
                     InitializeProfileScripts(profileConfiguration.Profile);
@@ -54,6 +56,12 @@ namespace Artemis.Core.Services
         private void PluginManagementServiceOnPluginFeatureToggled(object? sender, PluginFeatureEventArgs e)
         {
             _scriptingProviders = _pluginManagementService.GetFeaturesOfType<ScriptingProvider>();
+
+            foreach (ProfileConfiguration profileConfiguration in _profileService.ProfileConfigurations)
+            {
+                if (profileConfiguration.Profile != null)
+                    InitializeProfileScripts(profileConfiguration.Profile);
+            }
         }
 
         private void ProfileServiceOnProfileActivated(object? sender, ProfileConfigurationEventArgs e)
@@ -67,30 +75,6 @@ namespace Artemis.Core.Services
             // Initialize the scripts on the profile
             foreach (ScriptConfiguration scriptConfiguration in profile.ScriptConfigurations.Where(c => c.Script == null))
                 CreateScriptInstance(profile, scriptConfiguration);
-
-            foreach (Layer layer in profile.GetAllLayers())
-            {
-                // Initialize the scripts on the layers
-                foreach (ScriptConfiguration scriptConfiguration in layer.ScriptConfigurations.Where(c => c.Script == null))
-                    CreateScriptInstance(layer, scriptConfiguration);
-
-                // Initialize the scripts on the layer properties of layers
-                foreach (ILayerProperty layerProperty in layer.GetAllLayerProperties())
-                {
-                    foreach (ScriptConfiguration scriptConfiguration in layerProperty.ScriptConfigurations.Where(c => c.Script == null))
-                        CreateScriptInstance(layerProperty, scriptConfiguration);
-                }
-            }
-
-            foreach (Folder folder in profile.GetAllFolders())
-            {
-                // Initialize the scripts on the layer properties of folders
-                foreach (ILayerProperty layerProperty in folder.GetAllLayerProperties())
-                {
-                    foreach (ScriptConfiguration scriptConfiguration in layerProperty.ScriptConfigurations.Where(c => c.Script == null))
-                        CreateScriptInstance(layerProperty, scriptConfiguration);
-                }
-            }
         }
 
         public ReadOnlyCollection<GlobalScript> GlobalScripts => InternalGlobalScripts.AsReadOnly();
@@ -129,46 +113,6 @@ namespace Artemis.Core.Services
                 provider.ProfileScriptType,
                 CreateScriptConstructorArgument(provider.ProfileScriptType, profile),
                 CreateScriptConstructorArgument(provider.ProfileScriptType, scriptConfiguration)
-            );
-
-            script.ScriptingProvider = provider;
-            provider.InternalScripts.Add(script);
-            return script;
-        }
-
-        public LayerScript? CreateScriptInstance(Layer layer, ScriptConfiguration scriptConfiguration)
-        {
-            if (scriptConfiguration.Script != null)
-                throw new ArtemisCoreException("The provided script configuration already has an active script");
-
-            ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
-            if (provider == null)
-                return null;
-
-            LayerScript script = (LayerScript) provider.Plugin.Kernel!.Get(
-                provider.LayerScriptType,
-                CreateScriptConstructorArgument(provider.LayerScriptType, layer),
-                CreateScriptConstructorArgument(provider.LayerScriptType, scriptConfiguration)
-            );
-
-            script.ScriptingProvider = provider;
-            provider.InternalScripts.Add(script);
-            return script;
-        }
-
-        public PropertyScript? CreateScriptInstance(ILayerProperty layerProperty, ScriptConfiguration scriptConfiguration)
-        {
-            if (scriptConfiguration.Script != null)
-                throw new ArtemisCoreException("The provided script configuration already has an active script");
-
-            ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
-            if (provider == null)
-                return null;
-
-            PropertyScript script = (PropertyScript) provider.Plugin.Kernel!.Get(
-                provider.PropertyScriptType,
-                CreateScriptConstructorArgument(provider.PropertyScriptType, layerProperty),
-                CreateScriptConstructorArgument(provider.PropertyScriptType, scriptConfiguration)
             );
 
             script.ScriptingProvider = provider;

@@ -249,6 +249,11 @@ namespace Artemis.UI.Screens.ProfileEditor
             await _sidebarVmFactory.SidebarProfileConfigurationViewModel(_profileEditorService.SelectedProfileConfiguration).ViewProperties();
         }
 
+        public void ViewScripts()
+        {
+            _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
+        }
+
         public async Task AdaptProfile()
         {
             if (_profileEditorService.SelectedProfileConfiguration?.Profile == null)
@@ -304,22 +309,7 @@ namespace Artemis.UI.Screens.ProfileEditor
                     _profileEditorService.PasteProfileElement(rootFolder, rootFolder.Children.Count);
             }
         }
-
-        public void OpenProfileScripts()
-        {
-            _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(ProfileConfiguration.Profile));
-        }
-
-        public void OpenLayerScripts()
-        {
-            if (_profileEditorService.SelectedProfileElement is Layer layer)
-                _windowManager.ShowWindow(_scriptVmFactory.ScriptsDialogViewModel(layer));
-        }
-
-        public void OpenLayerPropertyScripts()
-        {
-        }
-
+        
         public void OpenDebugger()
         {
             _debugService.ShowDebugger();

@@ -154,7 +154,7 @@ namespace Artemis.UI.Screens.Sidebar
             VistaOpenFileDialog dialog = new()
             {
                 Filter = "Artemis Profile|*.json",
-                Title = "Export Artemis profile"
+                Title = "Import Artemis profile"
             };
             bool? result = dialog.ShowDialog();
             if (result != true)

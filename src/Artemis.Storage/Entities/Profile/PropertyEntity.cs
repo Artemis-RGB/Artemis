@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Artemis.Storage.Entities.General;
 using Artemis.Storage.Entities.Profile.DataBindings;
 
 namespace Artemis.Storage.Entities.Profile
@@ -10,7 +9,6 @@ namespace Artemis.Storage.Entities.Profile
         {
             KeyframeEntities = new List<KeyframeEntity>();
             DataBindingEntities = new List<DataBindingEntity>();
-            ScriptConfigurations = new List<ScriptConfigurationEntity>();
         }
 
         public string FeatureId { get; set; }
@@ -21,6 +19,5 @@ namespace Artemis.Storage.Entities.Profile
 
         public List<KeyframeEntity> KeyframeEntities { get; set; }
         public List<DataBindingEntity> DataBindingEntities { get; set; }
-        public List<ScriptConfigurationEntity> ScriptConfigurations { get; set; }
     }
 }

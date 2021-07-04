@@ -39,6 +39,11 @@ namespace Artemis.Core.ScriptingProviders
         /// </summary>
         public ScriptConfiguration ScriptConfiguration { get; }
 
+        /// <summary>
+        ///     Gets the script type of this script
+        /// </summary>
+        public abstract ScriptType ScriptType { get; }
+
         #region Event handlers
 
         private void ScriptConfigurationOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -71,7 +76,7 @@ namespace Artemis.Core.ScriptingProviders
             ScriptConfiguration.PropertyChanged -= ScriptConfigurationOnPropertyChanged;
             ScriptConfiguration.Script = null;
             ScriptingProvider.InternalScripts.Remove(this);
-            
+
             // Can't trust those pesky plugin devs!
             InternalCleanup();
 
@@ -99,5 +104,21 @@ namespace Artemis.Core.ScriptingProviders
         }
 
         #endregion
+    }
+
+    /// <summary>
+    ///     Represents a type of script
+    /// </summary>
+    public enum ScriptType
+    {
+        /// <summary>
+        ///     A global script that's always active
+        /// </summary>
+        Global,
+
+        /// <summary>
+        ///     A script tied to a <see cref="Profile" />
+        /// </summary>
+        Profile,
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Artemis.Core.ScriptingProviders;
 using Artemis.Storage.Entities.Profile;
 using Newtonsoft.Json;
 
@@ -31,8 +30,6 @@ namespace Artemis.Core
             Path = null!;
             Entity = null!;
             PropertyDescription = null!;
-            Scripts = new List<PropertyScript>();
-            ScriptConfigurations = new List<ScriptConfiguration>();
 
             CurrentValue = default!;
             DefaultValue = default!;
@@ -59,9 +56,6 @@ namespace Artemis.Core
         protected virtual void Dispose(bool disposing)
         {
             _disposed = true;
-
-            while (Scripts.Count > 1)
-                Scripts[0].Dispose();
 
             foreach (IDataBinding dataBinding in _dataBindings)
                 dataBinding.Dispose();
@@ -154,12 +148,6 @@ namespace Artemis.Core
         public PropertyDescriptionAttribute PropertyDescription { get; internal set; }
 
         /// <inheritdoc />
-        public List<PropertyScript> Scripts { get; }
-
-        /// <inheritdoc />
-        public List<ScriptConfiguration> ScriptConfigurations { get; }
-
-        /// <inheritdoc />
         public string Path { get; private set; }
 
         /// <inheritdoc />
@@ -171,18 +159,12 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("LayerProperty");
 
-            foreach (PropertyScript propertyScript in Scripts)
-                propertyScript.OnPropertyUpdating(timeline.Delta.TotalSeconds);
-
             CurrentValue = BaseValue;
 
             UpdateKeyframes(timeline);
             UpdateDataBindings(timeline);
 
             OnUpdated();
-
-            foreach (PropertyScript propertyScript in Scripts)
-                propertyScript.OnPropertyUpdated(timeline.Delta.TotalSeconds);
         }
 
         /// <inheritdoc />
@@ -762,11 +744,6 @@ namespace Artemis.Core
                 if (dataBinding != null)
                     _dataBindings.Add(dataBinding);
             }
-
-            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
-                scriptConfiguration.Script?.Dispose();
-            ScriptConfigurations.Clear();
-            ScriptConfigurations.AddRange(Entity.ScriptConfigurations.Select(e => new ScriptConfiguration(e)));
         }
 
         /// <summary>
@@ -788,13 +765,6 @@ namespace Artemis.Core
             Entity.DataBindingEntities.Clear();
             foreach (IDataBinding dataBinding in _dataBindings)
                 dataBinding.Save();
-
-            Entity.ScriptConfigurations.Clear();
-            foreach (ScriptConfiguration scriptConfiguration in ScriptConfigurations)
-            {
-                scriptConfiguration.Save();
-                Entity.ScriptConfigurations.Add(scriptConfiguration.Entity);
-            }
         }
 
         /// <summary>
