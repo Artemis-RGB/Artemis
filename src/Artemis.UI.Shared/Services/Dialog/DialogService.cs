@@ -122,7 +122,7 @@ namespace Artemis.UI.Shared.Services
         public void ShowExceptionDialog(string message, Exception exception)
         {
             if (exception == null) throw new ArgumentNullException(nameof(exception));
-            _windowManager.ShowDialog(new ExceptionViewModel(message, exception));
+            Execute.OnUIThread(() => _windowManager.ShowDialog(new ExceptionViewModel(message, exception)));
         }
 
         private IKernel GetBestKernel()

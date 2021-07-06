@@ -470,7 +470,7 @@ namespace Artemis.Core.Services
             // Keep the profile from being rendered by locking it
             lock (profile)
             {
-                if (!profile.UndoStack.Any())
+                if (profile.UndoStack.Count == 0)
                 {
                     _logger.Debug("Undo profile update - Failed, undo stack empty");
                     return false;
@@ -496,7 +496,7 @@ namespace Artemis.Core.Services
             // Keep the profile from being rendered by locking it
             lock (profile)
             {
-                if (!profile.RedoStack.Any())
+                if (profile.RedoStack.Count == 0)
                 {
                     _logger.Debug("Redo profile update - Failed, redo empty");
                     return false;

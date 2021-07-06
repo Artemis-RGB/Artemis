@@ -8,6 +8,7 @@ using Artemis.UI.Screens.Settings.Device;
 using Artemis.UI.Shared.Services;
 using MaterialDesignThemes.Wpf;
 using RGB.NET.Core;
+using Stylet;
 using KeyboardLayoutType = Artemis.Core.KeyboardLayoutType;
 
 namespace Artemis.UI.Services
@@ -62,8 +63,11 @@ namespace Artemis.UI.Services
         private async void WindowServiceOnMainWindowOpened(object sender, EventArgs e)
         {
             List<ArtemisDevice> devices = _rgbService.Devices.Where(device => DeviceNeedsLayout(device) && !_ignoredDevices.Contains(device)).ToList();
-            foreach (ArtemisDevice artemisDevice in devices)
-                await RequestLayoutInput(artemisDevice);
+            await Execute.OnUIThreadAsync(async () =>
+            {
+                foreach (ArtemisDevice artemisDevice in devices)
+                    await RequestLayoutInput(artemisDevice);
+            });
         }
 
         private async void RgbServiceOnDeviceAdded(object sender, DeviceEventArgs e)
@@ -77,7 +81,7 @@ namespace Artemis.UI.Services
                 return;
             }
 
-            await RequestLayoutInput(e.Device);
+            await Execute.OnUIThreadAsync(async () => await RequestLayoutInput(e.Device));
         }
 
         #endregion
