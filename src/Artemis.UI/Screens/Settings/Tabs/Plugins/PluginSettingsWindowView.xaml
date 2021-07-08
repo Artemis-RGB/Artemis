@@ -26,7 +26,14 @@
         <DockPanel>
             <controls:AppBar Type="Dense" Title="{Binding  ActiveItem.Plugin.Info.Name}" DockPanel.Dock="Top" Margin="-18 0 0 0" ShowShadow="False">
                 <controls:AppBar.AppIcon>
-                    <shared:ArtemisIcon Icon="{Binding Icon}"></shared:ArtemisIcon>
+                    <shared:ArtemisIcon Icon="{Binding Plugin.Info.ResolvedIcon}"
+                                        Margin="0 5 0 0"
+                                        Width="20"
+                                        Height="20"
+                                        Grid.Row="0"
+                                        Grid.RowSpan="3"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Top" />
                 </controls:AppBar.AppIcon>
             </controls:AppBar>
 

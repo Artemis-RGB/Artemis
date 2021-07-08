@@ -25,8 +25,8 @@ namespace Artemis.Core
             Scripts = new List<ProfileScript>();
             ScriptConfigurations = new List<ScriptConfiguration>();
 
-            UndoStack = new Stack<string>();
-            RedoStack = new Stack<string>();
+            UndoStack = new MaxStack<string>(20);
+            RedoStack = new MaxStack<string>(20);
 
             Load();
         }
@@ -75,8 +75,8 @@ namespace Artemis.Core
         /// </summary>
         public ProfileEntity ProfileEntity { get; internal set; }
 
-        internal Stack<string> UndoStack { get; set; }
-        internal Stack<string> RedoStack { get; set; }
+        internal MaxStack<string> UndoStack { get; set; }
+        internal MaxStack<string> RedoStack { get; set; }
 
         /// <inheritdoc />
         public override void Update(double deltaTime)

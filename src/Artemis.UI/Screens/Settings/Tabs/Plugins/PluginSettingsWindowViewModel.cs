@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core;
 using Artemis.UI.Shared;
 using Stylet;
 
@@ -11,10 +12,10 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         public PluginSettingsWindowViewModel(PluginConfigurationViewModel configurationViewModel)
         {
             _configurationViewModel = configurationViewModel ?? throw new ArgumentNullException(nameof(configurationViewModel));
-            Icon = configurationViewModel.Plugin.Info.Icon;
+            Plugin = configurationViewModel.Plugin;
         }
 
-        public object Icon { get; }
+        public Plugin Plugin { get; }
 
         protected override void OnInitialActivate()
         {

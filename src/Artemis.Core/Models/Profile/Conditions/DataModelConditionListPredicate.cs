@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Core.Modules;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Conditions;
 
@@ -69,7 +70,10 @@ namespace Artemis.Core
         {
             if (Entity.LeftPath != null)
                 LeftPath = DataModelConditionList.ListType != null
-                    ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), Entity.LeftPath)
+                    ? new DataModelPath(ListPredicateWrapperDataModel.Create(
+                        DataModelConditionList.ListType,
+                        DataModelConditionList.ListPath?.GetPropertyDescription()?.ListItemName
+                    ), Entity.LeftPath)
                     : null;
         }
 
@@ -82,7 +86,10 @@ namespace Artemis.Core
                 if (Entity.RightPath.WrapperType == PathWrapperType.List)
                 {
                     RightPath = DataModelConditionList.ListType != null
-                        ? new DataModelPath(ListPredicateWrapperDataModel.Create(DataModelConditionList.ListType), Entity.RightPath)
+                        ? new DataModelPath(ListPredicateWrapperDataModel.Create(
+                            DataModelConditionList.ListType,
+                            DataModelConditionList.ListPath?.GetPropertyDescription()?.ListItemName
+                        ), Entity.RightPath)
                         : null;
                 }
                 // Right side dynamic

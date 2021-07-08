@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
-using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
@@ -91,6 +90,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         protected override void OnInitialActivate()
         {
             _profileEditorService.SelectedProfileElementChanged += SelectedProfileEditorServiceOnSelectedProfileElementChanged;
+            Update(_profileEditorService.SelectedProfileElement);
+
             base.OnInitialActivate();
         }
 
@@ -102,6 +103,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
         {
+            Update(e.RenderProfileElement);
+        }
+
+        private void Update(RenderProfileElement renderProfileElement)
+        {
             if (RenderProfileElement != null)
             {
                 RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
@@ -109,26 +115,26 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             }
 
-            RenderProfileElement = e.RenderProfileElement;
+            RenderProfileElement = renderProfileElement;
 
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
             NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
 
-            if (e.RenderProfileElement == null)
+            if (renderProfileElement == null)
             {
                 ActiveItem = null;
                 return;
             }
 
             // Ensure the layer has a root display condition group
-            if (e.RenderProfileElement.DisplayCondition == null)
-                e.RenderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
+            if (renderProfileElement.DisplayCondition == null)
+                renderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
             List<Module> modules = new();
             if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
                 modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(e.RenderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
+            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(renderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
             ActiveItem.IsRootGroup = true;
 
             DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
@@ -138,7 +144,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
             RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
         }
-
+        
         private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(DisplayContinuously));

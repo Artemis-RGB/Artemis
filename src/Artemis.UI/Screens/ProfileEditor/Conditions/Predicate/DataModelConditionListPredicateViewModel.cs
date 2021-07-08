@@ -24,7 +24,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             : base(dataModelConditionListPredicate, modules, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
-
+            DataModelPathSegment dataModelPathSegment = dataModelConditionListPredicate.LeftPath.Segments.ToList()[1];
+            var segmentDescription = dataModelPathSegment.GetPropertyDescription();
             LeftSideColor = new SolidColorBrush(Color.FromRgb(71, 108, 188));
         }
 
@@ -47,7 +48,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
 
         public override void Evaluate()
         {
-            throw new NotImplementedException();
+            
         }
 
         public override void UpdateModules()
@@ -88,7 +89,8 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
         private DataModelPropertiesViewModel GetListDataModel()
         {
             ListPredicateWrapperDataModel wrapper = ListPredicateWrapperDataModel.Create(
-                DataModelConditionListPredicate.DataModelConditionList.ListType
+                DataModelConditionListPredicate.DataModelConditionList.ListType!,
+                DataModelConditionListPredicate.DataModelConditionList.ListPath?.GetPropertyDescription()?.ListItemName
             );
 
             return wrapper.CreateViewModel(_dataModelUIService, new DataModelUpdateConfiguration(true));

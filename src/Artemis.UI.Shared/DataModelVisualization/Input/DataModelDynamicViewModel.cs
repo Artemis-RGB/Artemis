@@ -30,12 +30,14 @@ namespace Artemis.UI.Shared.Input
         private bool _isDataModelViewModelOpen;
         private bool _isEnabled = true;
         private string _placeholder = "Select a property";
+        private readonly PluginSetting<bool> _showFullPath;
 
         internal DataModelDynamicViewModel(List<Module> modules, ISettingsService settingsService, IDataModelUIService dataModelUIService)
         {
             _modules = modules;
             _dataModelUIService = dataModelUIService;
             _updateTimer = new Timer(500);
+            _showFullPath = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
 
             ExtraDataModelViewModels = new BindableCollection<DataModelPropertiesViewModel>();
             ShowDataModelValues = settingsService.GetSetting<bool>("ProfileEditor.ShowDataModelValues");
@@ -127,6 +129,8 @@ namespace Artemis.UI.Shared.Input
         /// </summary>
         public PluginSetting<bool> ShowDataModelValues { get; }
 
+        public PluginSetting<bool> ShowFullPath { get; }
+
         /// <summary>
         ///     Gets or sets root the data model view model
         /// </summary>
@@ -177,7 +181,15 @@ namespace Artemis.UI.Shared.Input
         /// <summary>
         ///     Gets the display name of the currently selected property
         /// </summary>
-        public string? DisplayValue => DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+        public string? DisplayValue
+        {
+            get
+            {
+                if (_showFullPath.Value)
+                    return DisplayPath;
+                return DataModelPath?.GetPropertyDescription()?.Name ?? DataModelPath?.Segments.LastOrDefault()?.Identifier;
+            }
+        }
 
         /// <summary>
         ///     Gets the human readable path of the currently selected property
@@ -190,7 +202,8 @@ namespace Artemis.UI.Shared.Input
                     return "Click to select a property";
                 if (!DataModelPath.IsValid)
                     return "Invalid path";
-                return string.Join(" › ", DataModelPath.Segments.Select(s => s.GetPropertyDescription()?.Name ?? s.Identifier));
+
+                return string.Join(" › ", DataModelPath.Segments.Where(s => s.GetPropertyDescription()!= null).Select(s => s.GetPropertyDescription()!.Name));
             }
         }
 
@@ -244,7 +257,9 @@ namespace Artemis.UI.Shared.Input
             ExtraDataModelViewModels.CollectionChanged += ExtraDataModelViewModelsOnCollectionChanged;
             _updateTimer.Start();
             _updateTimer.Elapsed += OnUpdateTimerOnElapsed;
+            _showFullPath.SettingChanged += ShowFullPathOnSettingChanged;
         }
+
 
         private void ExecuteSelectPropertyCommand(object? context)
         {
@@ -271,7 +286,8 @@ namespace Artemis.UI.Shared.Input
                 _updateTimer.Stop();
                 _updateTimer.Dispose();
                 _updateTimer.Elapsed -= OnUpdateTimerOnElapsed;
-
+                _showFullPath.SettingChanged -= ShowFullPathOnSettingChanged;
+                
                 DataModelViewModel?.Dispose();
                 DataModelPath?.Dispose();
             }
@@ -328,6 +344,11 @@ namespace Artemis.UI.Shared.Input
                     OpenSelectedValue(dataModelVisualizationViewModel);
                 }
             }
+        }
+
+        private void ShowFullPathOnSettingChanged(object? sender, EventArgs e)
+        {
+            NotifyOfPropertyChange(nameof(DisplayValue));
         }
 
         #endregion

@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Reflection;
 using Artemis.Core.Modules;
 
 namespace Artemis.Core
 {
     internal class ListPredicateWrapperDataModel<T> : ListPredicateWrapperDataModel
     {
-        [DataModelProperty(Name = "List item", Description = "The current item in the list")]
         public T Value => (UntypedValue is T typedValue ? typedValue : default)!;
     }
 
@@ -26,15 +26,34 @@ namespace Artemis.Core
         public object? UntypedValue { get; set; }
 
         /// <summary>
-        /// Creates a new instance of the <see cref="ListPredicateWrapperDataModel"/> class
+        ///     Gets or sets the name of the list item
         /// </summary>
-        public static ListPredicateWrapperDataModel Create(Type type)
+        [DataModelIgnore]
+        public string? ItemName { get; set; }
+
+        #region Overrides of DataModel
+
+        /// <inheritdoc />
+        public override DataModelPropertyAttribute? GetPropertyDescription(PropertyInfo propertyInfo)
         {
-            object? instance = Activator.CreateInstance(typeof(ListPredicateWrapperDataModel<>).MakeGenericType(type));
+            if (!string.IsNullOrWhiteSpace(ItemName))
+                return new DataModelPropertyAttribute {Name = ItemName};
+            return base.GetPropertyDescription(propertyInfo);
+        }
+
+        #endregion
+
+        /// <summary>
+        ///     Creates a new instance of the <see cref="ListPredicateWrapperDataModel" /> class
+        /// </summary>
+        public static ListPredicateWrapperDataModel Create(Type type, string? name = null)
+        {
+            ListPredicateWrapperDataModel? instance = Activator.CreateInstance(typeof(ListPredicateWrapperDataModel<>).MakeGenericType(type)) as ListPredicateWrapperDataModel;
             if (instance == null)
                 throw new ArtemisCoreException($"Failed to create an instance of ListPredicateWrapperDataModel<T> for type {type.Name}");
-
-            return (ListPredicateWrapperDataModel) instance;
+            
+            instance.ItemName = name;
+            return instance;
         }
     }
 }
