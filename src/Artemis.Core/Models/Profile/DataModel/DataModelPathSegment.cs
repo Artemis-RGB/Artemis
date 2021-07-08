@@ -122,7 +122,7 @@ namespace Artemis.Core
                 return null;
 
             // Static types may have one as an attribute
-            DataModelPropertyAttribute? attribute = (DataModelPropertyAttribute?) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
+            DataModelPropertyAttribute? attribute = DataModelPath.Target?.GetPropertyDescription(propertyInfo);
             if (attribute != null)
             {
                 if (string.IsNullOrWhiteSpace(attribute.Name))
@@ -211,7 +211,7 @@ namespace Artemis.Core
             // A static segment just needs to access the property or filed
             else if (Type == DataModelPathSegmentType.Static)
             {
-                accessorExpression = _property != null 
+                accessorExpression = _property != null
                     ? Expression.Property(expression, _property)
                     : Expression.PropertyOrField(expression, Identifier);
             }

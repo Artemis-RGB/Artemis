@@ -14,17 +14,17 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type? _listType;
 
-        internal DataModelListPropertyViewModel(Type listType, DataModelDisplayViewModel displayViewModel) : base(null, null, null)
+        internal DataModelListPropertyViewModel(Type listType, DataModelDisplayViewModel displayViewModel, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType);
+            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
             DataModel = _listPredicateWrapper;
             ListType = listType;
             DisplayViewModel = displayViewModel;
         }
 
-        internal DataModelListPropertyViewModel(Type listType) : base(null, null, null)
+        internal DataModelListPropertyViewModel(Type listType, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType);
+            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
             DataModel = _listPredicateWrapper;
             ListType = listType;
         }

@@ -122,7 +122,9 @@
                 <MenuItem Header="Display Data Model Values"
                           IsCheckable="True"
                           IsChecked="{Binding ShowDataModelValues.Value}"/>
-               
+                <MenuItem Header="Display Full Condition Paths"
+                          IsCheckable="True"
+                          IsChecked="{Binding ShowFullPaths.Value}"/>
                 <MenuItem Header="Apply All Data Bindings During Edit" 
                           ToolTip="If enabled, updates all data bindings instead of only the one you are editing"
                           IsCheckable="True"

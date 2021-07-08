@@ -16,9 +16,9 @@ namespace Artemis.UI.Shared
         private int _index;
         private Type? _listType;
 
-        internal DataModelListPropertiesViewModel(Type listType) : base(null, null, null)
+        internal DataModelListPropertiesViewModel(Type listType, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType);
+            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
             DataModel = _listPredicateWrapper;
             ListType = listType;
         }

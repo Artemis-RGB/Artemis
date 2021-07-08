@@ -49,6 +49,7 @@ namespace Artemis.Core.Services
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
 
+            HotkeysEnabled = true;
             inputService.KeyboardKeyUp += InputServiceOnKeyboardKeyUp;
 
             if (!_profileCategories.Any())

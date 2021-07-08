@@ -69,6 +69,15 @@ namespace Artemis.Core.Modules
             return Module.HiddenProperties;
         }
 
+        /// <summary>
+        /// Gets the property description of the provided property info
+        /// </summary>
+        /// <returns>If found, the property description attribute, otherwise <see langword="null"/>.</returns>
+        public virtual DataModelPropertyAttribute? GetPropertyDescription(PropertyInfo propertyInfo)
+        {
+            return (DataModelPropertyAttribute?) Attribute.GetCustomAttribute(propertyInfo, typeof(DataModelPropertyAttribute));
+        }
+
         #region Dynamic children
 
         /// <summary>

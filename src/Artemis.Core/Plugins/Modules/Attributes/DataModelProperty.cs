@@ -29,6 +29,11 @@ namespace Artemis.Core.Modules
         public string? Affix { get; set; }
 
         /// <summary>
+        ///     Gets or sets the name of list items, only applicable to enumerable data model properties
+        /// </summary>
+        public string? ListItemName { get; set; }
+
+        /// <summary>
         ///     Gets or sets an optional maximum value, this value is not enforced but used for percentage calculations.
         /// </summary>
         public object? MaxValue { get; set; }
