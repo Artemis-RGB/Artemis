@@ -24,8 +24,6 @@ namespace Artemis.UI.Screens.ProfileEditor.Conditions
             : base(dataModelConditionListPredicate, modules, profileEditorService, dataModelUIService, conditionOperatorService, settingsService)
         {
             _dataModelUIService = dataModelUIService;
-            DataModelPathSegment dataModelPathSegment = dataModelConditionListPredicate.LeftPath.Segments.ToList()[1];
-            var segmentDescription = dataModelPathSegment.GetPropertyDescription();
             LeftSideColor = new SolidColorBrush(Color.FromRgb(71, 108, 188));
         }
 
