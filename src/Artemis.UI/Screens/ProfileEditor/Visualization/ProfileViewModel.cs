@@ -261,8 +261,14 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
 
         public void ResetZoomAndPan()
         {
+            if (!Devices.Any())
+            {
+                PanZoomViewModel.Reset();
+                return;
+            }
+
             // Create a rect surrounding all devices
-            SKRect rect = new SKRect(
+            SKRect rect = new(
                 Devices.Min(d => d.Rectangle.Left),
                 Devices.Min(d => d.Rectangle.Top),
                 Devices.Max(d => d.Rectangle.Right),
