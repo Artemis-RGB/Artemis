@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using Artemis.Core;
@@ -20,11 +21,13 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         private bool _draggingTreeView;
         private TreeItemViewModel _selectedTreeItem;
         private bool _updatingTree;
+        private readonly Timer _timer;
 
         public ProfileTreeViewModel(IProfileEditorService profileEditorService, IProfileTreeVmFactory profileTreeVmFactory)
         {
             _profileEditorService = profileEditorService;
             _profileTreeVmFactory = profileTreeVmFactory;
+            _timer = new Timer(500);
         }
 
         public TreeItemViewModel SelectedTreeItem
@@ -54,12 +57,15 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         {
             Subscribe();
             CreateRootFolderViewModel();
+            _timer.Start();
             base.OnInitialActivate();
         }
 
         protected override void OnClose()
         {
             Unsubscribe();
+            _timer.Stop();
+            _timer.Dispose();
             base.OnClose();
         }
 
@@ -203,12 +209,14 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         {
             _profileEditorService.SelectedProfileChanged += OnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged += OnSelectedProfileElementChanged;
+            _timer.Elapsed += TimerOnElapsed;
         }
 
         private void Unsubscribe()
         {
             _profileEditorService.SelectedProfileChanged -= OnSelectedProfileChanged;
             _profileEditorService.SelectedProfileElementChanged -= OnSelectedProfileElementChanged;
+            _timer.Elapsed -= TimerOnElapsed;
         }
 
         private void OnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
@@ -240,6 +248,11 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree
         private void OnSelectedProfileChanged(object sender, EventArgs e)
         {
             CreateRootFolderViewModel();
+        }
+
+        private void TimerOnElapsed(object sender, ElapsedEventArgs e)
+        {
+            ActiveItem?.UpdateBrokenState();
         }
 
         #endregion
