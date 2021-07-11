@@ -31,7 +31,7 @@ namespace Artemis.Core.LayerBrushes
         internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
             // We don't want rotation on this canvas because that'll displace the LEDs, translations are applied to the points of each LED instead
-            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
+            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation)
                 canvas.SetMatrix(canvas.TotalMatrix.PreConcat(Layer.GetTransformMatrix(true, false, false, true).Invert()));
 
             using SKPath pointsPath = new();
@@ -46,34 +46,38 @@ namespace Artemis.Core.LayerBrushes
             }
 
             // Apply the translation to the points of each LED instead
-            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation) 
+            if (Layer.General.TransformMode.CurrentValue == LayerTransformMode.Normal && SupportsTransformation)
                 pointsPath.Transform(Layer.GetTransformMatrix(true, true, true, true).Invert());
 
             SKPoint[] points = pointsPath.Points;
-            for (int index = 0; index < Layer.Leds.Count; index++)
+
+            TryOrBreak(() =>
             {
-                ArtemisLed artemisLed = Layer.Leds[index];
-                SKPoint renderPoint = points[index * 2 + 1];
-                if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
-                    continue;
+                for (int index = 0; index < Layer.Leds.Count; index++)
+                {
+                    ArtemisLed artemisLed = Layer.Leds[index];
+                    SKPoint renderPoint = points[index * 2 + 1];
+                    if (!float.IsFinite(renderPoint.X) || !float.IsFinite(renderPoint.Y))
+                        continue;
 
-                // Let the brush determine the color
-                ledPaint.Color = GetColor(artemisLed, renderPoint);
+                    // Let the brush determine the color
+                    ledPaint.Color = GetColor(artemisLed, renderPoint);
 
-                SKRect ledRectangle = SKRect.Create(
-                    artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,
-                    artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top,
-                    artemisLed.AbsoluteRectangle.Width,
-                    artemisLed.AbsoluteRectangle.Height
-                );
+                    SKRect ledRectangle = SKRect.Create(
+                        artemisLed.AbsoluteRectangle.Left - Layer.Bounds.Left,
+                        artemisLed.AbsoluteRectangle.Top - Layer.Bounds.Top,
+                        artemisLed.AbsoluteRectangle.Width,
+                        artemisLed.AbsoluteRectangle.Height
+                    );
 
-                canvas.DrawRect(ledRectangle, ledPaint);
-            }
+                    canvas.DrawRect(ledRectangle, ledPaint);
+                }
+            }, "Failed to render");
         }
 
         internal override void Initialize()
         {
-            InitializeProperties();
+            TryOrBreak(InitializeProperties, "Failed to initialize");
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Artemis.Core
     /// <summary>
     ///     Represents an element of a <see cref="Profile" />
     /// </summary>
-    public abstract class ProfileElement : CorePropertyChanged, IDisposable
+    public abstract class ProfileElement : BreakableModel, IDisposable
     {
         private Guid _entityId;
         private string? _name;
@@ -25,7 +25,7 @@ namespace Artemis.Core
             _profile = profile;
             ChildrenList = new List<ProfileElement>();
         }
-        
+
         /// <summary>
         ///     Gets the unique ID of this profile element
         /// </summary>
@@ -120,6 +120,13 @@ namespace Artemis.Core
         {
             return $"{nameof(EntityId)}: {EntityId}, {nameof(Order)}: {Order}, {nameof(Name)}: {Name}";
         }
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => Name ?? GetType().Name;
+
+        #endregion
 
         #region Hierarchy
 
@@ -234,7 +241,7 @@ namespace Artemis.Core
         internal abstract void Save();
 
         #endregion
-
+        
         #region IDisposable
 
         /// <inheritdoc />

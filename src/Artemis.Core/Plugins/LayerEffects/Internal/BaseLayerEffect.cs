@@ -1,5 +1,4 @@
 ﻿using System;
-using Artemis.Core.Services;
 using SkiaSharp;
 
 namespace Artemis.Core.LayerEffects
@@ -7,7 +6,7 @@ namespace Artemis.Core.LayerEffects
     /// <summary>
     ///     For internal use only, please use <see cref="LayerEffect{T}" /> instead
     /// </summary>
-    public abstract class BaseLayerEffect : CorePropertyChanged, IDisposable
+    public abstract class BaseLayerEffect : BreakableModel, IDisposable
     {
         private ILayerEffectConfigurationDialog? _configurationDialog;
         private LayerEffectDescriptor _descriptor;
@@ -182,6 +181,22 @@ namespace Artemis.Core.LayerEffects
 
         internal virtual string GetEffectTypeName() => GetType().Name;
 
+        internal void InternalUpdate(Timeline timeline)
+        {
+            BaseProperties?.Update(timeline);
+            TryOrBreak(() => Update(timeline.Delta.TotalSeconds), "Failed to update");
+        }
+
+        internal void InternalPreProcess(SKCanvas canvas, SKRect renderBounds, SKPaint paint)
+        {
+            TryOrBreak(() => PreProcess(canvas, renderBounds, paint), "Failed to pre-process");
+        }
+
+        internal void InternalPostProcess(SKCanvas canvas, SKRect renderBounds, SKPaint paint)
+        {
+            TryOrBreak(() => PostProcess(canvas, renderBounds, paint), "Failed to post-process");
+        }
+
         /// <summary>
         ///     Enables the layer effect if it isn't already enabled
         /// </summary>
@@ -205,5 +220,12 @@ namespace Artemis.Core.LayerEffects
             DisableLayerEffect();
             Enabled = false;
         }
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => Name;
+
+        #endregion
     }
 }

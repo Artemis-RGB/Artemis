@@ -206,6 +206,7 @@ namespace Artemis.Core
                 GetType().GetProperty(nameof(Transform))!,
                 typeof(PropertyGroupDescriptionAttribute)
             )!;
+
             General.GroupDescription = (PropertyGroupDescriptionAttribute) generalAttribute;
             General.Initialize(this, "General.", Constants.CorePluginFeature);
             Transform.GroupDescription = (PropertyGroupDescriptionAttribute) transformAttribute;
@@ -288,7 +289,7 @@ namespace Artemis.Core
 
             // Adaption hints
             Adapter.Save();
-            
+
             SaveRenderElement();
         }
 
@@ -320,7 +321,7 @@ namespace Artemis.Core
         {
             if (Disposed)
                 throw new ObjectDisposedException("Layer");
-            
+
             UpdateDisplayCondition();
             UpdateTimeline(deltaTime);
 
@@ -366,9 +367,17 @@ namespace Artemis.Core
             if (Enabled)
                 return;
 
-            LayerBrush?.InternalEnable();
-            foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
-                baseLayerEffect.InternalEnable();
+            bool tryOrBreak = TryOrBreak(() => LayerBrush?.InternalEnable(), "Failed to enable layer brush");
+            if (!tryOrBreak)
+                return;
+
+            tryOrBreak = TryOrBreak(() =>
+            {
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
+                    baseLayerEffect.InternalEnable();
+            }, "Failed to enable one or more effects");
+            if (!tryOrBreak)
+                return;
 
             Enabled = true;
         }
@@ -393,17 +402,10 @@ namespace Artemis.Core
 
             General.Update(timeline);
             Transform.Update(timeline);
-            if (LayerBrush != null)
-            {
-                LayerBrush.BaseProperties?.Update(timeline);
-                LayerBrush.Update(timeline.Delta.TotalSeconds);
-            }
+            LayerBrush?.InternalUpdate(timeline);
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-            {
-                baseLayerEffect.BaseProperties?.Update(timeline);
-                baseLayerEffect.Update(timeline.Delta.TotalSeconds);
-            }
+                baseLayerEffect.InternalUpdate(timeline);
         }
 
         private void RenderTimeline(Timeline timeline, SKCanvas canvas, SKPointI basePosition)
@@ -477,9 +479,9 @@ namespace Artemis.Core
         {
             if (LayerBrush == null)
                 throw new ArtemisCoreException("The layer is not yet ready for rendering");
-            
+
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                baseLayerEffect.PreProcess(canvas, bounds, layerPaint);
+                baseLayerEffect.InternalPreProcess(canvas, bounds, layerPaint);
 
             try
             {
@@ -492,7 +494,7 @@ namespace Artemis.Core
                 LayerBrush.InternalRender(canvas, bounds, layerPaint);
 
                 foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                    baseLayerEffect.PostProcess(canvas, bounds, layerPaint);
+                    baseLayerEffect.InternalPostProcess(canvas, bounds, layerPaint);
             }
 
             finally
@@ -722,16 +724,24 @@ namespace Artemis.Core
 
         internal void ActivateLayerBrush()
         {
-            LayerBrushReference? current = General.BrushReference.CurrentValue;
-            if (current == null)
-                return;
+            try
+            {
+                LayerBrushReference? current = General.BrushReference.CurrentValue;
+                if (current == null)
+                    return;
 
-            LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null
-                ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
-                : null;
-            descriptor?.CreateInstance(this);
+                LayerBrushDescriptor? descriptor = current.LayerBrushProviderId != null && current.BrushType != null
+                    ? LayerBrushStore.Get(current.LayerBrushProviderId, current.BrushType)?.LayerBrushDescriptor
+                    : null;
+                descriptor?.CreateInstance(this);
 
-            OnLayerBrushUpdated();
+                OnLayerBrushUpdated();
+                ClearBrokenState("Failed to initialize layer brush");
+            }
+            catch (Exception e)
+            {
+                SetBrokenState("Failed to initialize layer brush", e);
+            }
         }
 
         internal void DeactivateLayerBrush()
@@ -744,6 +754,19 @@ namespace Artemis.Core
             brush.Dispose();
 
             OnLayerBrushUpdated();
+        }
+
+        #endregion
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
+        {
+            if (LayerBrush?.BrokenState != null)
+                yield return LayerBrush;
+            foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => e.BrokenState != null))
+                yield return baseLayerEffect;
         }
 
         #endregion

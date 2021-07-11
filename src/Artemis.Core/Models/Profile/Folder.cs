@@ -183,18 +183,15 @@ namespace Artemis.Core
 
             lock (Timeline)
             {
-                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                {
-                    baseLayerEffect.BaseProperties?.Update(Timeline);
-                    baseLayerEffect.Update(Timeline.Delta.TotalSeconds);
-                }
+                foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended)) 
+                    baseLayerEffect.InternalUpdate(Timeline);
 
                 SKPaint layerPaint = new() {FilterQuality = SKFilterQuality.Low};
                 try
                 {
                     SKRectI rendererBounds = SKRectI.Create(0, 0, Bounds.Width, Bounds.Height);
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                        baseLayerEffect.PreProcess(canvas, rendererBounds, layerPaint);
+                        baseLayerEffect.InternalPreProcess(canvas, rendererBounds, layerPaint);
 
                     // No point rendering if the alpha was set to zero by one of the effects
                     if (layerPaint.Color.Alpha == 0)
@@ -208,7 +205,7 @@ namespace Artemis.Core
                         Children[index].Render(canvas, new SKPointI(Bounds.Left, Bounds.Top));
 
                     foreach (BaseLayerEffect baseLayerEffect in LayerEffects.Where(e => !e.Suspended))
-                        baseLayerEffect.PostProcess(canvas, rendererBounds, layerPaint);
+                        baseLayerEffect.InternalPostProcess(canvas, rendererBounds, layerPaint);
                 }
                 finally
                 {
@@ -228,8 +225,6 @@ namespace Artemis.Core
             if (Enabled)
                 return;
 
-            Debug.WriteLine($"Enabling {this}");
-
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalEnable();
 
@@ -247,8 +242,6 @@ namespace Artemis.Core
         {
             if (!Enabled)
                 return;
-
-            Debug.WriteLine($"Disabled {this}");
 
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.InternalDisable();
@@ -344,5 +337,15 @@ namespace Artemis.Core
         {
             RenderPropertiesUpdated?.Invoke(this, EventArgs.Empty);
         }
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
+        {
+            return LayerEffects.Where(e => e.BrokenState != null);
+        }
+
+        #endregion
     }
 }

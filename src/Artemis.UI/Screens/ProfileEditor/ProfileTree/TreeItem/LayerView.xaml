@@ -6,14 +6,15 @@
     xmlns:s="https://github.com/canton7/Stylet"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
     xmlns:treeItem1="clr-namespace:Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem"
-    xmlns:Converters="clr-namespace:Artemis.UI.Converters"
+    xmlns:converters="clr-namespace:Artemis.UI.Converters"
     xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
     x:Class="Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem.LayerView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
     d:DataContext="{d:DesignInstance {x:Type treeItem1:LayerViewModel}}">
     <UserControl.Resources>
-        <Converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
     <!-- Capture clicks on full tree view item -->
     <StackPanel Margin="-10" Background="Transparent" ContextMenuOpening="{s:Action ContextMenuOpening}">
@@ -57,11 +58,25 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
-            <materialDesign:PackIcon Grid.Column="0" Kind="Layers" Width="16" VerticalAlignment="Center" />
-            <shared:ArtemisIcon Grid.Column="1"
+            <Button Grid.Column="0"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+                    ToolTip="{Binding BrokenState}"
+                    Visibility="{Binding BrokenState, Converter={StaticResource NullToVisibilityConverter}}"
+                    Foreground="White"
+                    Background="#E74C4C"
+                    BorderBrush="#E74C4C"
+                    Width="18"
+                    Height="18"
+                    Margin="0 0 5 0"
+                    Command="{s:Action ShowBrokenStateExceptions}">
+                <materialDesign:PackIcon Kind="AlertCircle" Height="12" Width="12" />
+            </Button>
+            <materialDesign:PackIcon Grid.Column="1" Kind="Layers" Width="16" VerticalAlignment="Center" />
+            <shared:ArtemisIcon Grid.Column="2"
                                 VerticalAlignment="Center"
                                 Icon="{Binding Layer.LayerBrush.Descriptor.Icon}"
                                 Width="16"
@@ -69,8 +84,8 @@
                                 ToolTip="{Binding Layer.LayerBrush.Descriptor.DisplayName, Mode=OneWay}"
                                 Visibility="{Binding ShowIcons, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
                                 Background="Transparent" />
-            <TextBlock Grid.Column="2" Text="{Binding Layer.Name}" VerticalAlignment="Center" Margin="5 0 0 0" />
-            <ToggleButton Grid.Column="3"
+            <TextBlock Grid.Column="3" Text="{Binding Layer.Name}" VerticalAlignment="Center" Margin="5 0 0 0" />
+            <ToggleButton Grid.Column="4"
                           Style="{StaticResource MaterialDesignFlatToggleButton}"
                           Width="18"
                           Height="18"
