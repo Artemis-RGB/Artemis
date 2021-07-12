@@ -61,7 +61,6 @@ namespace Artemis.Core
             if (LayoutCustomLedData.LogicalLayouts == null || !LayoutCustomLedData.LogicalLayouts.Any())
                 return;
 
-            Uri layoutDirectory = new(Path.GetDirectoryName(DeviceLayout.FilePath)! + "\\", UriKind.Absolute);
             // Prefer a matching layout or else a default layout (that has no name)
             LayoutCustomLedDataLogicalLayout logicalLayout = LayoutCustomLedData.LogicalLayouts
                 .OrderBy(l => l.Name == artemisDevice.LogicalLayout)
@@ -69,7 +68,7 @@ namespace Artemis.Core
                 .First();
 
             LogicalName = logicalLayout.Name;
-            Image = new Uri(layoutDirectory, logicalLayout.Image);
+            Image = new Uri(Path.Combine(Path.GetDirectoryName(DeviceLayout.FilePath)!, logicalLayout.Image!), UriKind.Absolute);
         }
     }
 }
