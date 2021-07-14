@@ -1,0 +1,111 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls">
+
+    <ControlTemplate x:Key="TemplateVisualScriptPresenter"
+                     TargetType="{x:Type controls:VisualScriptPresenter}">
+        <Border BorderBrush="{TemplateBinding BorderBrush}"
+                BorderThickness="{TemplateBinding BorderThickness}">
+            <Grid x:Name="PART_CreationBoxParent"
+                  ClipToBounds="True" 
+                  Tag="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+                <Grid.ContextMenu>
+                    <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
+                        <ContextMenu.Template>
+                            <ControlTemplate>
+                                <Border Width="700" Height="300">
+                                    <controls:VisualScriptNodeCreationBox AvailableNodes="{Binding AvailableNodes}" 
+                                                                          CreateNodeCommand="{Binding CreateNodeCommand}" />
+                                </Border>
+                            </ControlTemplate>
+                        </ContextMenu.Template>
+                    </ContextMenu>
+                </Grid.ContextMenu>
+
+                <Canvas x:Name="PART_Canvas"
+                        Width="{Binding SurfaceSize, RelativeSource={RelativeSource TemplatedParent}}"
+                        Height="{Binding SurfaceSize, RelativeSource={RelativeSource TemplatedParent}}"
+                        Background="{TemplateBinding Background}">
+
+                    <Border x:Name="PART_SelectionBorder" 
+                            Background="#3300FF00" 
+                            BorderThickness="1" 
+                            BorderBrush="#FF00CC00" 
+                            CornerRadius="1"
+                            Visibility="Hidden" />
+
+                    <ItemsControl x:Name="PART_NodeList" 
+                                  Panel.ZIndex="0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:VisualScriptNodePresenter Node="{Binding .}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+
+                        <ItemsControl.ItemContainerStyle>
+                            <Style TargetType="ContentPresenter">
+                                <Setter Property="Panel.ZIndex" Value="0"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="Panel.ZIndex" Value="1"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ItemsControl.ItemContainerStyle>
+                    </ItemsControl>
+
+                    <ItemsControl x:Name="PART_CableList"
+                                  Panel.ZIndex="-1">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <controls:VisualScriptCablePresenter Cable="{Binding .}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Canvas>
+            </Grid>
+        </Border>
+    </ControlTemplate>
+
+    <Style x:Key="StyleVisualScriptPresenter" 
+           TargetType="{x:Type controls:VisualScriptPresenter}">
+        <Setter Property="Template" Value="{StaticResource TemplateVisualScriptPresenter}" />
+
+        <Setter Property="SurfaceSize" Value="16384" />
+
+        <Setter Property="Background">
+            <Setter.Value>
+                <DrawingBrush TileMode="Tile" Viewport="0,0,24,24" ViewportUnits="Absolute">
+                    <DrawingBrush.Drawing>
+                        <GeometryDrawing>
+                            <GeometryDrawing.Geometry>
+                                <RectangleGeometry Rect="0,0,24,24"/>
+                            </GeometryDrawing.Geometry>
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="#FF808080" Thickness="0.5"/>
+                            </GeometryDrawing.Pen>
+                        </GeometryDrawing>
+                    </DrawingBrush.Drawing>
+                </DrawingBrush>
+            </Setter.Value>
+        </Setter>
+
+        <Setter Property="BorderThickness" Value="0" />
+    </Style>
+
+    <Style BasedOn="{StaticResource StyleVisualScriptPresenter}"
+           TargetType="{x:Type controls:VisualScriptPresenter}" />
+
+</ResourceDictionary>

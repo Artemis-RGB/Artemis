@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Shared", "Artemi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.UI.Console", "Artemis.ConsoleUI\Artemis.UI.Console.csproj", "{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Artemis.VisualScripting", "Artemis.VisualScripting\Artemis.VisualScripting.csproj", "{CF125C61-FD85-47EE-AF64-38B8F90DD50C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -39,6 +41,10 @@ Global
 		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Debug|x64.Build.0 = Debug|x64
 		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Release|x64.ActiveCfg = Release|x64
 		{ACCC50FD-611A-41C4-B58F-DDC80B47D0CF}.Release|x64.Build.0 = Release|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Debug|x64.ActiveCfg = Debug|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Debug|x64.Build.0 = Debug|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Release|x64.ActiveCfg = Release|x64
+		{CF125C61-FD85-47EE-AF64-38B8F90DD50C}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

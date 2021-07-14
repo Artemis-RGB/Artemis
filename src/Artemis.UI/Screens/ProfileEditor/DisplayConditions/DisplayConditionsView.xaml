@@ -8,6 +8,7 @@
     xmlns:converters="clr-namespace:Artemis.UI.Converters"
     xmlns:displayConditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
     xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+    xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls;assembly=Artemis.VisualScripting"
     x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionsView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
@@ -40,7 +41,9 @@
         <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
         <Grid Grid.Row="2" Grid.Column="0">
-            <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
+            <controls:VisualScriptEditor Script="{Binding Script}" AvailableNodes="{Binding AvailableNodes}" />
+
+            <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
                 <ContentControl s:View.Model="{Binding ActiveItem}" />
             </ScrollViewer>
 
@@ -65,7 +68,7 @@
                     </materialDesign:PackIcon>
                     <TextBlock Grid.Column="1" VerticalAlignment="Center">Click the plus icon to start using display conditions!</TextBlock>
                 </Grid>
-            </materialDesign:Card>
+            </materialDesign:Card>-->
         </Grid>
 
         <Grid Grid.Row="3" Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">

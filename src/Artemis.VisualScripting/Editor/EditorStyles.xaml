@@ -1,0 +1,13 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Styles/VisualScriptCablePresenter.xaml" />
+        <ResourceDictionary Source="Styles/VisualScriptEditor.xaml" />
+        <ResourceDictionary Source="Styles/VisualScriptNodeCreationBox.xaml" />
+        <ResourceDictionary Source="Styles/VisualScriptNodePresenter.xaml" />
+        <ResourceDictionary Source="Styles/VisualScriptPinPresenter.xaml" />
+        <ResourceDictionary Source="Styles/VisualScriptPresenter.xaml" />
+
+        <!-- TODO: Load external -->
+        <ResourceDictionary Source="../Nodes/Styles/StaticValueNodes.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

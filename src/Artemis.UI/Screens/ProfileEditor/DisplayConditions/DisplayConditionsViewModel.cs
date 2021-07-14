@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Artemis.Core;
-using Artemis.Core.Modules;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
+using Artemis.VisualScripting.Model;
+using Artemis.VisualScripting.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
@@ -24,6 +24,35 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             _profileEditorService = profileEditorService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
+
+            AvailableNodes = _nodeService.AvailableNodes;
+            Script = new Script<bool>("Display Condition (TODO)", "TODO");
+        }
+
+        #region TODO
+
+        private static NodeService _nodeService;
+
+        static DisplayConditionsViewModel()
+        {
+            _nodeService = new NodeService();
+            _nodeService.InitializeNodes();
+        }
+
+        #endregion
+
+        private Script<bool> _script;
+        public Script<bool> Script
+        {
+            get => _script;
+            private set => SetAndNotify(ref _script, value);
+        }
+
+        private IEnumerable<NodeData> _availableNodes;
+        public IEnumerable<NodeData> AvailableNodes
+        {
+            get => _availableNodes;
+            set => SetAndNotify(ref _availableNodes, value);
         }
 
         public bool DisplayStartHint
@@ -110,8 +139,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             if (RenderProfileElement != null)
             {
-                RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
-                RenderProfileElement.DisplayCondition.ChildRemoved -= DisplayConditionOnChildrenModified;
+                //RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
+                //RenderProfileElement.DisplayCondition.ChildRemoved -= DisplayConditionOnChildrenModified;
                 RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
             }
 
@@ -128,23 +157,26 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             }
 
             // Ensure the layer has a root display condition group
+            //if (renderProfileElement.DisplayCondition == null)
+            //    renderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
+
             if (renderProfileElement.DisplayCondition == null)
-                renderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
+                renderProfileElement.DisplayCondition = new Script<bool>("Display Condition (TODO)", "-");
 
-            List<Module> modules = new();
-            if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
-                modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
-            ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(renderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
-            ActiveItem.IsRootGroup = true;
+            //List<Module> modules = new();
+            //if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
+            //    modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
+            //ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(renderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
+            //ActiveItem.IsRootGroup = true;
 
-            DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
-            IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
+            //DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
+            //IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
 
-            RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
-            RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
+            //RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
+            //RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
             RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
         }
-        
+
         private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             NotifyOfPropertyChange(nameof(DisplayContinuously));
@@ -154,8 +186,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void DisplayConditionOnChildrenModified(object sender, EventArgs e)
         {
-            DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
-            IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
+            //DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
+            //IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
         }
 
         public void EventTriggerModeSelected()
