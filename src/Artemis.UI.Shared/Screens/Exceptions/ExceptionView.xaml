@@ -10,7 +10,7 @@
                          xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                          xmlns:s="https://github.com/canton7/Stylet"
                          mc:Ignorable="d"
-                         Title="Unhandled exception"
+                         Title="Exception | Artemis"
                          Background="{DynamicResource MaterialDesignPaper}"
                          FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
                          UseLayoutRounding="True"

@@ -23,6 +23,7 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         private readonly IProfileTreeVmFactory _profileTreeVmFactory;
         private readonly IRgbService _rgbService;
         private ProfileElement _profileElement;
+        private string _brokenState;
 
         protected TreeItemViewModel(ProfileElement profileElement,
             IRgbService rgbService,
@@ -47,6 +48,12 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         {
             get => _profileElement;
             set => SetAndNotify(ref _profileElement, value);
+        }
+
+        public string BrokenState
+        {
+            get => _brokenState;
+            set => SetAndNotify(ref _brokenState, value);
         }
 
         public bool CanPasteElement => _profileEditorService.GetCanPasteProfileElement();
@@ -284,6 +291,23 @@ namespace Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem
         public void ContextMenuOpening(object sender, EventArgs e)
         {
             NotifyOfPropertyChange(nameof(CanPasteElement));
+        }
+
+        public abstract void UpdateBrokenState();
+
+        public async Task ShowBrokenStateExceptions()
+        {
+            List<IBreakableModel> broken = ProfileElement.GetBrokenHierarchy().Where(b => b.BrokenStateException != null).ToList();
+
+            foreach (IBreakableModel current in broken)
+            {
+                _dialogService.ShowExceptionDialog($"{current.BrokenDisplayName} - {current.BrokenState}", current.BrokenStateException!);
+                if (broken.Last() != current)
+                {
+                    if (!await _dialogService.ShowConfirmDialog("Broken state", "Do you want to view the next exception?"))
+                        return;
+                }
+            }
         }
 
         private void Subscribe()

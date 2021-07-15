@@ -27,6 +27,7 @@ namespace Artemis.Core
 
             UndoStack = new MaxStack<string>(20);
             RedoStack = new MaxStack<string>(20);
+            Exceptions = new List<Exception>();
 
             Load();
         }
@@ -77,6 +78,7 @@ namespace Artemis.Core
 
         internal MaxStack<string> UndoStack { get; set; }
         internal MaxStack<string> RedoStack { get; set; }
+        internal List<Exception> Exceptions { get; }
 
         /// <inheritdoc />
         public override void Update(double deltaTime)
@@ -113,6 +115,13 @@ namespace Artemis.Core
 
                 foreach (ProfileScript profileScript in Scripts)
                     profileScript.OnProfileRendered(canvas, canvas.LocalClipBounds);
+
+                if (!Exceptions.Any())
+                    return;
+
+                List<Exception> exceptions = new(Exceptions);
+                Exceptions.Clear();
+                throw new AggregateException($"One or more exceptions while rendering profile {Name}", exceptions);
             }
         }
 
@@ -238,5 +247,18 @@ namespace Artemis.Core
                 ProfileEntity.ScriptConfigurations.Add(scriptConfiguration.Entity);
             }
         }
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override IEnumerable<IBreakableModel> GetBrokenHierarchy()
+        {
+            foreach (IBreakableModel breakableModel in GetAllFolders().SelectMany(folders => folders.GetBrokenHierarchy()))
+                yield return breakableModel;
+            foreach (IBreakableModel breakableModel in GetAllLayers().SelectMany(layer => layer.GetBrokenHierarchy()))
+                yield return breakableModel;
+        }
+
+        #endregion
     }
 }

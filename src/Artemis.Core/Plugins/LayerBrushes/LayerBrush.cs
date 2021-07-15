@@ -28,12 +28,12 @@ namespace Artemis.Core.LayerBrushes
 
         internal override void InternalRender(SKCanvas canvas, SKRect bounds, SKPaint paint)
         {
-            Render(canvas, bounds, paint);
+            TryOrBreak(() => Render(canvas, bounds, paint), "Failed to render");
         }
 
         internal override void Initialize()
         {
-            InitializeProperties();
+            TryOrBreak(InitializeProperties, "Failed to initialize");
         }
     }
 }

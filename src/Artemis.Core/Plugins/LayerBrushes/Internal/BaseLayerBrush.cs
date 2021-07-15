@@ -8,7 +8,7 @@ namespace Artemis.Core.LayerBrushes
     /// <summary>
     ///     For internal use only, please use <see cref="LayerBrush{T}" /> or <see cref="PerLedLayerBrush{T}" /> or instead
     /// </summary>
-    public abstract class BaseLayerBrush : CorePropertyChanged, IDisposable
+    public abstract class BaseLayerBrush : BreakableModel, IDisposable
     {
         private LayerBrushType _brushType;
         private ILayerBrushConfigurationDialog? _configurationDialog;
@@ -134,6 +134,12 @@ namespace Artemis.Core.LayerBrushes
             }
         }
 
+        internal void InternalUpdate(Timeline timeline)
+        {
+            BaseProperties?.Update(timeline);
+            TryOrBreak(() => Update(timeline.Delta.TotalSeconds), "Failed to update");
+        }
+
         /// <summary>
         ///     Enables the layer brush if it isn't already enabled
         /// </summary>
@@ -142,7 +148,9 @@ namespace Artemis.Core.LayerBrushes
             if (Enabled)
                 return;
 
-            EnableLayerBrush();
+            if (!TryOrBreak(EnableLayerBrush, "Failed to enable"))
+                return;
+
             Enabled = true;
         }
 
@@ -170,6 +178,13 @@ namespace Artemis.Core.LayerBrushes
             Dispose(true);
             GC.SuppressFinalize(this);
         }
+
+        #region Overrides of BreakableModel
+
+        /// <inheritdoc />
+        public override string BrokenDisplayName => Descriptor.DisplayName;
+
+        #endregion
     }
 
     /// <summary>
