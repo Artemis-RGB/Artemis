@@ -47,11 +47,19 @@ namespace Artemis.VisualScripting.Model
         public void ConnectTo(IPin pin)
         {
             _connectedTo.Add(pin);
+            OnPropertyChanged(nameof(ConnectedTo));
         }
 
         public void DisconnectFrom(IPin pin)
         {
             _connectedTo.Remove(pin);
+            OnPropertyChanged(nameof(ConnectedTo));
+        }
+
+        public void DisconnectAll()
+        {
+            _connectedTo.Clear();
+            OnPropertyChanged(nameof(ConnectedTo));
         }
 
         private void OnNodeResetting(object sender, EventArgs e)

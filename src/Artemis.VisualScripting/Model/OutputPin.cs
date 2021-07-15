@@ -38,4 +38,44 @@ namespace Artemis.VisualScripting.Model
 
         #endregion
     }
+
+    public sealed class OutputPin : Pin
+    {
+        #region Properties & Fields
+
+        public override Type Type { get; }
+        public override object PinValue => Value;
+        public override PinDirection Direction => PinDirection.Output;
+
+        private object _value;
+        public object Value
+        {
+            get
+            {
+                if (!IsEvaluated)
+                    Node?.Evaluate();
+
+                return _value;
+            }
+            set
+            {
+                if (!Type.IsInstanceOfType(value)) throw new ArgumentException($"Value of type '{value?.GetType().Name ?? "null"}' can't be assigned to a pin of type {Type.Name}.");
+
+                _value = value;
+                IsEvaluated = true;
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        internal OutputPin(INode node, Type type, string name)
+            : base(node, name)
+        {
+            this.Type = type;
+        }
+
+        #endregion
+    }
 }

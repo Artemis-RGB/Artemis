@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
 using Artemis.Core.VisualScripting;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.Internal;
@@ -97,28 +100,108 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.Script = script;
             this.Node = node;
 
+            Node.PropertyChanged += OnNodePropertyChanged;
+
             _locationOffset = script.SurfaceSize / 2.0;
 
-            foreach (IPin pin in node.Pins)
-            {
-                if (pin.Direction == PinDirection.Input)
-                    InputPins.Add(new VisualScriptPin(this, pin));
-                else
-                    OutputPins.Add(new VisualScriptPin(this, pin));
-            }
-
-            foreach (IPinCollection pinCollection in node.PinCollections)
-            {
-                if (pinCollection.Direction == PinDirection.Input)
-                    InputPinCollections.Add(new VisualScriptPinCollection(this, pinCollection));
-                else
-                    OutputPinCollections.Add(new VisualScriptPinCollection(this, pinCollection));
-            }
+            ValidatePins();
         }
 
         #endregion
 
         #region Methods
+
+        private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (string.Equals(args.PropertyName, nameof(Node.Pins), StringComparison.OrdinalIgnoreCase)
+             || string.Equals(args.PropertyName, nameof(Node.PinCollections), StringComparison.OrdinalIgnoreCase))
+                ValidatePins();
+        }
+
+        private void ValidatePins()
+        {
+            if (Node == null)
+            {
+                InputPins.Clear();
+                OutputPins.Clear();
+                InputPinCollections.Clear();
+                OutputPinCollections.Clear();
+                return;
+            }
+
+            #region Remove Excessive
+
+            HashSet<IPin> pins = new(Node.Pins);
+            HashSet<IPinCollection> pinCollections = new(Node.PinCollections);
+
+            void ValidatePinList(ObservableCollection<VisualScriptPin> list)
+            {
+                List<VisualScriptPin> pinsToRemove = new();
+                foreach (VisualScriptPin pin in list)
+                    if ((pin.Pin == null) || !pins.Contains(pin.Pin))
+                        pinsToRemove.Add(pin);
+                foreach (VisualScriptPin pin in pinsToRemove)
+                {
+                    pin.DisconnectAll();
+                    list.Remove(pin);
+                }
+            }
+
+            void ValidatePinCollectionList(ObservableCollection<VisualScriptPinCollection> list)
+            {
+                List<VisualScriptPinCollection> pinCollectionsToRemove = new();
+                foreach (VisualScriptPinCollection pinCollection in list)
+                    if ((pinCollection.PinCollection == null) || !pinCollections.Contains(pinCollection.PinCollection))
+                        pinCollectionsToRemove.Add(pinCollection);
+                foreach (VisualScriptPinCollection pinCollection in pinCollectionsToRemove)
+                {
+                    pinCollection.RemoveAll();
+                    list.Remove(pinCollection);
+                }
+            }
+
+            ValidatePinList(InputPins);
+            ValidatePinList(OutputPins);
+            ValidatePinCollectionList(InputPinCollections);
+            ValidatePinCollectionList(OutputPinCollections);
+
+            #endregion
+
+            #region Add Missing
+
+            HashSet<IPin> existingPins = new(InputPins.Concat(OutputPins).Select(x => x.Pin));
+            HashSet<IPinCollection> existingPinCollections = new(InputPinCollections.Concat(OutputPinCollections).Select(x => x.PinCollection));
+
+            foreach (IPin pin in Node.Pins)
+            {
+                if (pin.Direction == PinDirection.Input)
+                {
+                    if (!existingPins.Contains(pin))
+                        InputPins.Add(new VisualScriptPin(this, pin));
+                }
+                else
+                {
+                    if (!existingPins.Contains(pin))
+                        OutputPins.Add(new VisualScriptPin(this, pin));
+                }
+            }
+
+            foreach (IPinCollection pinCollection in Node.PinCollections)
+            {
+                if (pinCollection.Direction == PinDirection.Input)
+                {
+                    if (!existingPinCollections.Contains(pinCollection))
+                        InputPinCollections.Add(new VisualScriptPinCollection(this, pinCollection));
+                }
+                else
+                {
+                    if (!existingPinCollections.Contains(pinCollection))
+                        OutputPinCollections.Add(new VisualScriptPinCollection(this, pinCollection));
+                }
+            }
+
+            #endregion
+        }
 
         public void SnapNodeToGrid()
         {

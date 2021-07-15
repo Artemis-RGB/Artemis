@@ -1,4 +1,5 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Artemis.Core.VisualScripting;
 using Artemis.VisualScripting.ViewModel;
 
@@ -51,6 +52,13 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             pin.DisconnectAll();
             PinCollection.Remove(pin.Pin);
             Pins.Remove(pin);
+        }
+
+        public void RemoveAll()
+        {
+            List<VisualScriptPin> pins = new(Pins);
+            foreach (VisualScriptPin pin in pins)
+                RemovePin(pin);
         }
 
         #endregion
