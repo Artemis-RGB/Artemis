@@ -75,6 +75,15 @@ namespace Artemis.VisualScripting.Model
         {
             InputPin<T> pin = new(this, name);
             _pins.Add(pin);
+            OnPropertyChanged(nameof(Pins));
+            return pin;
+        }
+
+        protected InputPin CreateInputPin(Type type, string name = "")
+        {
+            InputPin pin = new(this, type, name);
+            _pins.Add(pin);
+            OnPropertyChanged(nameof(Pins));
             return pin;
         }
 
@@ -82,13 +91,34 @@ namespace Artemis.VisualScripting.Model
         {
             OutputPin<T> pin = new(this, name);
             _pins.Add(pin);
+            OnPropertyChanged(nameof(Pins));
             return pin;
+        }
+
+        protected OutputPin CreateOutputPin(Type type, string name = "")
+        {
+            OutputPin pin = new(this, type, name);
+            _pins.Add(pin);
+            OnPropertyChanged(nameof(Pins));
+            return pin;
+        }
+
+        protected bool RemovePin(Pin pin)
+        {
+            bool isRemoved = _pins.Remove(pin);
+            if (isRemoved)
+            {
+                pin.DisconnectAll();
+                OnPropertyChanged(nameof(Pins));
+            }
+            return isRemoved;
         }
 
         protected InputPinCollection<T> CreateInputPinCollection<T>(string name = "", int initialCount = 1)
         {
             InputPinCollection<T> pin = new(this, name, initialCount);
             _pinCollections.Add(pin);
+            OnPropertyChanged(nameof(PinCollections));
             return pin;
         }
 
@@ -96,6 +126,7 @@ namespace Artemis.VisualScripting.Model
         {
             OutputPinCollection<T> pin = new(this, name, initialCount);
             _pinCollections.Add(pin);
+            OnPropertyChanged(nameof(PinCollections));
             return pin;
         }
 
