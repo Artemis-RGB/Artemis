@@ -177,8 +177,10 @@ namespace Artemis.VisualScripting.Editor.Controls
             args.Handled = true;
         }
 
-        private bool IsTypeCompatible(Type type) => ((Pin.Pin.Direction == PinDirection.Input) && (Pin.Pin.Type == typeof(object))) || (Pin.Pin.Type == type);
-
+        private bool IsTypeCompatible(Type type) => (Pin.Pin.Type == type)
+                                                 || ((Pin.Pin.Direction == PinDirection.Input) && (Pin.Pin.Type == typeof(object)))
+                                                 || ((Pin.Pin.Direction == PinDirection.Output) && (type == typeof(object)));
+        
         #endregion
     }
 }
