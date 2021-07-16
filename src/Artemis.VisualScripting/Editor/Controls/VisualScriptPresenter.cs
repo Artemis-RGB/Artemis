@@ -213,13 +213,16 @@ namespace Artemis.VisualScripting.Editor.Controls
                     InitializeNode(node);
             }
 
+            VisualScript?.RecreateCables();
+
             CenterAt(new Vector(0, 0));
         }
 
         private void OnVisualScriptPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName == nameof(VisualScript.Cables))
-                _cableList.ItemsSource = VisualScript.Cables;
+                if (_cableList != null)
+                    _cableList.ItemsSource = VisualScript.Cables;
         }
 
         private void OnCanvasPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs args)

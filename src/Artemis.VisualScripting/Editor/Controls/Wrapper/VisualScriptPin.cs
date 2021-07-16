@@ -26,7 +26,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         public VisualScriptNode Node { get; }
         public IPin Pin { get; }
 
-        public ObservableCollection<VisualScriptCable> Connections { get; } = new();
+        public IReadOnlyCollection<VisualScriptCable> Connections => new ReadOnlyCollection<VisualScriptCable>(InternalConnections);
+        internal ObservableCollection<VisualScriptCable> InternalConnections { get; } = new();
 
         private Point _absolutePosition;
         public Point AbsolutePosition
@@ -39,7 +40,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             }
         }
 
-        public Point AbsoluteCableTargetPosition => Pin.Direction == PinDirection.Input ? new Point(AbsolutePosition.X - CABLE_OFFSET, AbsolutePosition.Y) : new Point(AbsolutePosition.X + CABLE_OFFSET, AbsolutePosition.Y);
+        public Point AbsoluteCableTargetPosition => Pin.Direction == PinDirection.Input ? new Point(AbsolutePosition.X - CABLE_OFFSET, AbsolutePosition.Y)
+                                                        : new Point(AbsolutePosition.X + CABLE_OFFSET, AbsolutePosition.Y);
 
         #endregion
 
@@ -62,7 +64,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
                 if (_isConnectingCable != null)
                     SetConnecting(false);
 
-                _isConnectingPin = new VisualScriptPin(null, new IsConnectingPin(Pin.Direction == PinDirection.Input ? PinDirection.Output : PinDirection.Input)) { AbsolutePosition = AbsolutePosition };
+                _isConnectingPin = new VisualScriptPin(null, new IsConnectingPin(Pin.Direction == PinDirection.Input ? PinDirection.Output : PinDirection.Input, Pin.Type))
+                { AbsolutePosition = AbsolutePosition };
                 _isConnectingCable = new VisualScriptCable(this, _isConnectingPin);
                 Node.OnIsConnectingPinChanged(_isConnectingPin);
             }
@@ -77,16 +80,16 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         internal void ConnectTo(VisualScriptCable cable)
         {
-            if (Connections.Contains(cable)) return;
+            if (InternalConnections.Contains(cable)) return;
 
             if (Pin.Direction == PinDirection.Input)
             {
-                List<VisualScriptCable> cables = Connections.ToList();
+                List<VisualScriptCable> cables = InternalConnections.ToList();
                 foreach (VisualScriptCable c in cables)
                     c.Disconnect();
             }
 
-            Connections.Add(cable);
+            InternalConnections.Add(cable);
             Pin.ConnectTo(cable.GetConnectedPin(Pin));
 
             Node?.OnPinConnected(new PinConnectedEventArgs(this, cable));
@@ -94,14 +97,14 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         public void DisconnectAll()
         {
-            List<VisualScriptCable> cables = Connections.ToList();
+            List<VisualScriptCable> cables = InternalConnections.ToList();
             foreach (VisualScriptCable cable in cables)
                 cable.Disconnect();
         }
 
         internal void Disconnect(VisualScriptCable cable)
         {
-            Connections.Remove(cable);
+            InternalConnections.Remove(cable);
             Pin.DisconnectFrom(cable.GetConnectedPin(Pin));
 
             Node?.OnPinDisconnected(new PinDisconnectedEventArgs(this, cable));

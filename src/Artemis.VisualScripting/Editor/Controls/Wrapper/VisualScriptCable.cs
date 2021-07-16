@@ -28,6 +28,10 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         #region Constructors
 
         public VisualScriptCable(VisualScriptPin pin1, VisualScriptPin pin2)
+            : this(pin1, pin2, true)
+        { }
+
+        internal VisualScriptCable(VisualScriptPin pin1, VisualScriptPin pin2, bool connect)
         {
             if ((pin1.Pin.Direction == PinDirection.Input) && (pin2.Pin.Direction == PinDirection.Input))
                 throw new ArgumentException("Can't connect two input pins.");
@@ -38,8 +42,11 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             From = pin1.Pin.Direction == PinDirection.Output ? pin1 : pin2;
             To = pin1.Pin.Direction == PinDirection.Input ? pin1 : pin2;
 
-            From.ConnectTo(this);
-            To.ConnectTo(this);
+            if (connect)
+            {
+                From.ConnectTo(this);
+                To.ConnectTo(this);
+            }
         }
 
         #endregion

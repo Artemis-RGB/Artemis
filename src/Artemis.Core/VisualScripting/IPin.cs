@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Artemis.VisualScripting.Model;
 
 namespace Artemis.Core.VisualScripting
@@ -11,6 +12,8 @@ namespace Artemis.Core.VisualScripting
         PinDirection Direction { get; }
         Type Type { get; }
         object PinValue { get; }
+
+        IReadOnlyList<IPin> ConnectedTo { get; }
 
         bool IsEvaluated { get; set; }
 

@@ -44,10 +44,10 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         public ObservableCollection<VisualScriptNode> Nodes { get; } = new();
 
-        public IEnumerable<VisualScriptCable> Cables => Nodes.SelectMany(n => n.InputPins.SelectMany(p => p.Connections))
-                                                             .Concat(Nodes.SelectMany(n => n.OutputPins.SelectMany(p => p.Connections)))
-                                                             .Concat(Nodes.SelectMany(n => n.InputPinCollections.SelectMany(p => p.Pins).SelectMany(p => p.Connections)))
-                                                             .Concat(Nodes.SelectMany(n => n.OutputPinCollections.SelectMany(p => p.Pins).SelectMany(p => p.Connections)))
+        public IEnumerable<VisualScriptCable> Cables => Nodes.SelectMany(n => n.InputPins.SelectMany(p => p.InternalConnections))
+                                                             .Concat(Nodes.SelectMany(n => n.OutputPins.SelectMany(p => p.InternalConnections)))
+                                                             .Concat(Nodes.SelectMany(n => n.InputPinCollections.SelectMany(p => p.Pins).SelectMany(p => p.InternalConnections)))
+                                                             .Concat(Nodes.SelectMany(n => n.OutputPinCollections.SelectMany(p => p.Pins).SelectMany(p => p.InternalConnections)))
                                                              .Distinct();
 
         public bool IsConnecting => IsConnectingPin != null;
@@ -182,6 +182,36 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         {
             Nodes.Remove(node);
             Script.RemoveNode(node.Node);
+        }
+
+        internal void RecreateCables()
+        {
+            Dictionary<IPin, VisualScriptPin> pinMapping = Nodes.SelectMany(n => n.InputPins)
+                                                                .Concat(Nodes.SelectMany(n => n.OutputPins))
+                                                                .Concat(Nodes.SelectMany(n => n.InputPinCollections.SelectMany(p => p.Pins)))
+                                                                .Concat(Nodes.SelectMany(n => n.OutputPinCollections.SelectMany(p => p.Pins)))
+                                                                .ToDictionary(p => p.Pin, p => p);
+
+            foreach (VisualScriptPin pin in pinMapping.Values)
+                pin.InternalConnections.Clear();
+
+            HashSet<IPin> connectedPins = new();
+            foreach (IPin pin in pinMapping.Keys)
+            {
+                foreach (IPin connectedPin in pin.ConnectedTo)
+                    if (!connectedPins.Contains(connectedPin))
+                    {
+                        VisualScriptPin pin1 = pinMapping[pin];
+                        VisualScriptPin pin2 = pinMapping[connectedPin];
+                        VisualScriptCable cable = new(pin1, pin2, false);
+                        pin1.InternalConnections.Add(cable);
+                        pin2.InternalConnections.Add(cable);
+                    }
+
+                connectedPins.Add(pin);
+            }
+
+            OnPropertyChanged(nameof(Cables));
         }
 
         #endregion
