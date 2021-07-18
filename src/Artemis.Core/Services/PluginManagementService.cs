@@ -90,12 +90,7 @@ namespace Artemis.Core.Services
                 using StreamReader reader = new(metaDataFileEntry.Open());
                 PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
                 string preferred = builtInPluginInfo.PreferredPluginDirectory;
-                string oldPreferred = Path.GetFileNameWithoutExtension(zipFile.Name);
-                // Rename folders to the new format 
-                // TODO: Get rid of this eventually, it's nice to keep around but it's extra IO that's best avoided
-                if (pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == oldPreferred) != null)
-                    Directory.Move(Path.Combine(pluginDirectory.FullName, oldPreferred), Path.Combine(pluginDirectory.FullName, preferred));
-
+                
                 // Find the matching plugin in the plugin folder
                 DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
                 if (match == null)
