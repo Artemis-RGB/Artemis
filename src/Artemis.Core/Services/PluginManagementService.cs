@@ -426,6 +426,7 @@ namespace Artemis.Core.Services
                 catch (Exception e)
                 {
                     _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
+                    featureInfo.LoadException = e;
                 }
             }
 
@@ -613,6 +614,9 @@ namespace Artemis.Core.Services
                     new ArtemisPluginException(pluginFeature.Plugin, $"Exception during SetEnabled(true) on {pluginFeature}", e),
                     "Failed to enable plugin"
                 );
+
+                if (!isAutoEnable)
+                    throw;
             }
             finally
             {

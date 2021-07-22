@@ -17,6 +17,7 @@ namespace Artemis.Core
     [JsonObject(MemberSerialization.OptIn)]
     public class PluginFeatureInfo : CorePropertyChanged, IPrerequisitesSubject
     {
+        private Exception? _loadException;
         private string? _description;
         private string? _icon;
         private PluginFeature? _instance;
@@ -79,6 +80,15 @@ namespace Artemis.Core
         ///     Gets the type of the feature
         /// </summary>
         public Type FeatureType { get; }
+
+        /// <summary>
+        ///     Gets the exception thrown while loading
+        /// </summary>
+        public Exception? LoadException
+        {
+            get => _loadException;
+            internal set => SetAndNotify(ref _loadException, value);
+        }
 
         /// <summary>
         ///     The name of the plugin

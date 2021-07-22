@@ -11,7 +11,7 @@ namespace Artemis.Core
     public abstract class PluginFeature : CorePropertyChanged, IDisposable
     {
         private bool _isEnabled;
-        private Exception? _loadException;
+
         
         /// <summary>
         ///     Gets the plugin feature info related to this feature
@@ -35,15 +35,6 @@ namespace Artemis.Core
         {
             get => _isEnabled;
             internal set => SetAndNotify(ref _isEnabled, value);
-        }
-
-        /// <summary>
-        ///     Gets the exception thrown while loading
-        /// </summary>
-        public Exception? LoadException
-        {
-            get => _loadException;
-            internal set => SetAndNotify(ref _loadException, value);
         }
 
         /// <summary>
@@ -149,10 +140,10 @@ namespace Artemis.Core
                     if (isAutoEnable && GetLockFileCreated())
                     {
                         // Don't wrap existing lock exceptions, simply rethrow them
-                        if (LoadException is ArtemisPluginLockException)
-                            throw LoadException;
+                        if (Info.LoadException is ArtemisPluginLockException)
+                            throw Info.LoadException;
 
-                        throw new ArtemisPluginLockException(LoadException);
+                        throw new ArtemisPluginLockException(Info.LoadException);
                     }
 
                     CreateLockFile();
@@ -165,21 +156,21 @@ namespace Artemis.Core
                     if (!enableTask.Wait(TimeSpan.FromSeconds(15)))
                         throw new ArtemisPluginException(Plugin, "Plugin load timeout");
 
-                    LoadException = null;
+                    Info.LoadException = null;
                     OnEnabled();
                 }
                 // If enable failed, put it back in a disabled state
                 catch (Exception e)
                 {
                     IsEnabled = false;
-                    LoadException = e;
+                    Info.LoadException = e;
                     throw;
                 }
                 finally
                 {
                     // Clean up the lock file unless the failure was due to the lock file
                     // After all, we failed but not miserably :)
-                    if (!(LoadException is ArtemisPluginLockException))
+                    if (Info.LoadException is not ArtemisPluginLockException)
                         DeleteLockFile();
                 }
             }
