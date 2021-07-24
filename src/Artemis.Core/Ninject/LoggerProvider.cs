@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Ninject.Activation;
 using Serilog;
 using Serilog.Core;
@@ -12,7 +13,7 @@ namespace Artemis.Core.Ninject
 
         private static readonly ILogger Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
-            .WriteTo.File(Constants.DataFolder + "logs/Artemis log-.log",
+            .WriteTo.File(Path.Combine(Constants.DataFolder, "logs", "Artemis log-.log"),
                 rollingInterval: RollingInterval.Day,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}")
             .WriteTo.Console()
