@@ -12,7 +12,7 @@ namespace Artemis.Core
     {
         private bool _isEnabled;
 
-        
+
         /// <summary>
         ///     Gets the plugin feature info related to this feature
         /// </summary>
@@ -36,6 +36,8 @@ namespace Artemis.Core
             get => _isEnabled;
             internal set => SetAndNotify(ref _isEnabled, value);
         }
+
+        internal int AutoEnableAttempts { get; set; }
 
         /// <summary>
         ///     Gets the identifier of this plugin feature
@@ -137,6 +139,9 @@ namespace Artemis.Core
 
                 try
                 {
+                    if (isAutoEnable)
+                        AutoEnableAttempts++;
+
                     if (isAutoEnable && GetLockFileCreated())
                     {
                         // Don't wrap existing lock exceptions, simply rethrow them
@@ -157,6 +162,7 @@ namespace Artemis.Core
                         throw new ArtemisPluginException(Plugin, "Plugin load timeout");
 
                     Info.LoadException = null;
+                    AutoEnableAttempts = 0;
                     OnEnabled();
                 }
                 // If enable failed, put it back in a disabled state
