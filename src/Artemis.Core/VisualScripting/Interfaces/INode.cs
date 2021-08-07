@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Artemis.Core.VisualScripting
+namespace Artemis.Core
 {
     public interface INode : INotifyPropertyChanged
     {
         string Name { get; }
         string Description { get; }
+        bool IsExitNode { get; }
 
         public double X { get; set; }
         public double Y { get; set; }
@@ -15,8 +16,8 @@ namespace Artemis.Core.VisualScripting
         public IReadOnlyCollection<IPin> Pins { get; }
         public IReadOnlyCollection<IPinCollection> PinCollections { get; }
 
-        public object CustomView { get; }
-        public object CustomViewModel { get; }
+        public Type? CustomViewModelType { get; }
+        public object? CustomViewModel { get; set; }
 
         event EventHandler Resetting;
 

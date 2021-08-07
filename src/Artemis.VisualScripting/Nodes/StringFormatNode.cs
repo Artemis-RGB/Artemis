@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using Artemis.VisualScripting.Attributes;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [UI("Format", "Formats the input string.")]
+    [Node("Format", "Formats the input string.")]
     public class StringFormatNode : Node
     {
         #region Properties & Fields

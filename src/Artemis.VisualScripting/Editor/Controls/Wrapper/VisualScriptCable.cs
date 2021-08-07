@@ -1,6 +1,5 @@
 ﻿using System;
-using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 using Artemis.VisualScripting.ViewModel;
 
 namespace Artemis.VisualScripting.Editor.Controls.Wrapper

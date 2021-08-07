@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using Artemis.Core.VisualScripting;
+using Artemis.Core;
 using Artemis.VisualScripting.Events;
-using Artemis.VisualScripting.Internal;
-using Artemis.VisualScripting.Model;
 using Artemis.VisualScripting.ViewModel;
 
 namespace Artemis.VisualScripting.Editor.Controls.Wrapper
@@ -255,7 +253,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Script.RemoveNode(this);
         }
 
-        private bool RemoveCanExecute() => Node is not IExitNode;
+        private bool RemoveCanExecute() => !Node.IsExitNode;
 
         #endregion
     }

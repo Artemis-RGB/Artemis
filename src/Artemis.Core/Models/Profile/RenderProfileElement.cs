@@ -66,9 +66,9 @@ namespace Artemis.Core
 
         internal void LoadRenderElement()
         {
-            DisplayCondition = RenderElementEntity.DisplayCondition != null
-                ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
-                : new DataModelConditionGroup(null);
+            // DisplayCondition = RenderElementEntity.DisplayCondition != null
+            //     ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
+            //     : new DataModelConditionGroup(null);
 
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)
@@ -97,8 +97,8 @@ namespace Artemis.Core
             }
 
             // Conditions
-            RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
-            DisplayCondition?.Save();
+            // RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
+            // DisplayCondition?.Save();
 
             // Timeline
             RenderElementEntity.Timeline = Timeline?.Entity;
@@ -125,8 +125,8 @@ namespace Artemis.Core
         {
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
             bool stickToMainSegment = (Timeline.PlayMode == TimelinePlayMode.Repeat || Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle) && DisplayConditionMet;
-            if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-                stickToMainSegment = false;
+            // if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
+                // stickToMainSegment = false;
 
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }
@@ -354,14 +354,14 @@ namespace Artemis.Core
             protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private DataModelConditionGroup? _displayCondition;
+        private NodeScript<bool>? _displayCondition;
         private bool _displayConditionMet;
         private bool _toggledOnByEvent = false;
 
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>
-        public DataModelConditionGroup? DisplayCondition
+        public NodeScript<bool>? DisplayCondition
         {
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
@@ -387,20 +387,22 @@ namespace Artemis.Core
             if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
                 _toggledOnByEvent = false;
 
-            bool conditionMet = DisplayCondition.Evaluate();
+            DisplayCondition.Run();
+            bool conditionMet = DisplayCondition.Result;
             if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
                 conditionMet = false;
 
-            if (!DisplayCondition.ContainsEvents)
-            {
-                // Regular conditions reset the timeline whenever their condition is met and was not met before that
-                if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
-                    Timeline.JumpToStart();
-                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
-                if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
-                    Timeline.JumpToEndSegment();
-            }
-            else if (conditionMet)
+            // if (!DisplayCondition.ContainsEvents)
+            // {
+            //     // Regular conditions reset the timeline whenever their condition is met and was not met before that
+            //     if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
+            //         Timeline.JumpToStart();
+            //     // If regular conditions are no longer met, jump to the end segment if stop mode requires it
+            //     if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
+            //         Timeline.JumpToEndSegment();
+            // }
+            // else if (conditionMet)
+            if (conditionMet)
             {
                 if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
                 {

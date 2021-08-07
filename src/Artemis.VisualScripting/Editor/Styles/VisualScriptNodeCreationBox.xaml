@@ -1,10 +1,10 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
-                    xmlns:model="clr-namespace:Artemis.VisualScripting.Model">
+                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core">
 
     <DataTemplate x:Key="TemplateNodeItem"
-                  DataType="{x:Type model:NodeData}">
+                  DataType="{x:Type core:NodeData}">
         <TextBlock Text="{Binding Name}" />
     </DataTemplate>
 

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.VisualScripting;
+using Artemis.Core;
 using Artemis.VisualScripting.ViewModel;
 
 namespace Artemis.VisualScripting.Editor.Controls.Wrapper

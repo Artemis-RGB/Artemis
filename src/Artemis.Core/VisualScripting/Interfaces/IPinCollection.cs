@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using Artemis.VisualScripting.Model;
 
-namespace Artemis.Core.VisualScripting
+namespace Artemis.Core
 {
     public interface IPinCollection : IEnumerable<IPin>
     {

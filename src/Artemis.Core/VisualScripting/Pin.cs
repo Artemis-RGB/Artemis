@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.ViewModel;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
-    public abstract class Pin : AbstractBindable, IPin
+    public abstract class Pin : CorePropertyChanged, IPin
     {
         #region Properties & Fields
 
@@ -17,7 +15,7 @@ namespace Artemis.VisualScripting.Model
         public bool IsEvaluated
         {
             get => _isEvaluated;
-            set => SetProperty(ref _isEvaluated, value);
+            set => SetAndNotify(ref _isEvaluated, value);
         }
 
         private readonly List<IPin> _connectedTo = new();

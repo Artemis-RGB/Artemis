@@ -1,5 +1,5 @@
 ﻿using System;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Internal
 {

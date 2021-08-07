@@ -6,10 +6,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Artemis.Core.VisualScripting;
+using Artemis.Core;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
-using Artemis.VisualScripting.Model;
 using Artemis.VisualScripting.ViewModel;
+using VisualScript = Artemis.VisualScripting.Editor.Controls.Wrapper.VisualScript;
 
 namespace Artemis.VisualScripting.Editor.Controls
 {
@@ -58,11 +58,11 @@ namespace Artemis.VisualScripting.Editor.Controls
         #region Dependency Properties
 
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(
-            "Script", typeof(IScript), typeof(VisualScriptPresenter), new PropertyMetadata(default(IScript), ScriptChanged));
+            "Script", typeof(INodeScript), typeof(VisualScriptPresenter), new PropertyMetadata(default(INodeScript), ScriptChanged));
 
-        public IScript Script
+        public INodeScript Script
         {
-            get => (IScript)GetValue(ScriptProperty);
+            get => (INodeScript)GetValue(ScriptProperty);
             set => SetValue(ScriptProperty, value);
         }
 
@@ -188,7 +188,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             if (d is not VisualScriptPresenter scriptPresenter) return;
 
-            scriptPresenter.ScriptChanged(args.NewValue is not Script script ? null : new VisualScript(script, scriptPresenter.SurfaceSize, scriptPresenter.GridSize));
+            scriptPresenter.ScriptChanged(args.NewValue is not NodeScript script ? null : new VisualScript(script, scriptPresenter.SurfaceSize, scriptPresenter.GridSize));
         }
 
         private void ScriptChanged(VisualScript newScript)

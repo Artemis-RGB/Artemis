@@ -1,4 +1,4 @@
-﻿namespace Artemis.VisualScripting.Model
+﻿namespace Artemis.Core
 {
     public enum PinDirection
     {

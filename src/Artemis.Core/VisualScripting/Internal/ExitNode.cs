@@ -1,7 +1,4 @@
-﻿using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.Model;
-
-namespace Artemis.VisualScripting.Internal
+﻿namespace Artemis.Core.Internal
 {
     internal interface IExitNode : INode
     { }
@@ -14,6 +11,8 @@ namespace Artemis.VisualScripting.Internal
 
         public T Value { get; private set; }
 
+        public override bool IsExitNode => true;
+        
         #endregion
 
         #region Constructors

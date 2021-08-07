@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
-                    xmlns:model="clr-namespace:Artemis.VisualScripting.Model;assembly=Artemis.Core">
+                    xmlns:model="clr-namespace:Artemis.VisualScripting.Model;assembly=Artemis.Core"
+                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core">
 
     <ControlTemplate x:Key="TemplateVisualScriptPinPresenterInput"
                      TargetType="{x:Type controls:VisualScriptPinPresenter}">
@@ -75,7 +76,7 @@
         <Setter Property="Template" Value="{StaticResource TemplateVisualScriptPinPresenterInput}" />
 
         <Style.Triggers>
-            <DataTrigger Binding="{Binding Pin.Pin.Direction, RelativeSource={RelativeSource Self}}" Value="{x:Static model:PinDirection.Output}">
+            <DataTrigger Binding="{Binding Pin.Pin.Direction, RelativeSource={RelativeSource Self}}" Value="{x:Static core:PinDirection.Output}">
                 <Setter Property="Padding" Value="6,0,0,0" />
                 <Setter Property="Template" Value="{StaticResource TemplateVisualScriptPinPresenterOutput}" />
             </DataTrigger>

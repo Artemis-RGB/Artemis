@@ -10,6 +10,7 @@ using Artemis.UI.Ninject;
 using Artemis.UI.Providers;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.SkiaSharp;
+using Artemis.VisualScripting.Nodes;
 using Serilog;
 
 namespace Artemis.UI.Services
@@ -25,6 +26,7 @@ namespace Artemis.UI.Services
         private readonly IMessageService _messageService;
         private readonly IWebServerService _webServerService;
         private readonly IRgbService _rgbService;
+        private readonly INodeService _nodeService;
         private readonly ISettingsService _settingsService;
         private bool _registeredBuiltInDataModelDisplays;
         private bool _registeredBuiltInDataModelInputs;
@@ -40,6 +42,7 @@ namespace Artemis.UI.Services
             IMessageService messageService,
             IWebServerService webServerService,
             IRgbService rgbService,
+            INodeService nodeService,
             ISettingsService settingsService)
         {
             _logger = logger;
@@ -51,6 +54,7 @@ namespace Artemis.UI.Services
             _messageService = messageService;
             _webServerService = webServerService;
             _rgbService = rgbService;
+            _nodeService = nodeService;
             _settingsService = settingsService;
 
             LoadPluginModules();
@@ -113,6 +117,12 @@ namespace Artemis.UI.Services
             _webServerService.AddController<RemoteController>(Constants.CorePlugin.Features.First().Instance!);
         }
 
+        public void RegisterBuiltInNodeTypes()
+        {
+            foreach (Type nodeType in typeof(SumIntegersNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
+                _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
+        }
+
         /// <inheritdoc />
         public void ApplyPreferredGraphicsContext()
         {
@@ -167,5 +177,6 @@ namespace Artemis.UI.Services
         void RegisterProviders();
         void RegisterControllers();
         void ApplyPreferredGraphicsContext();
+        void RegisterBuiltInNodeTypes();
     }
 }

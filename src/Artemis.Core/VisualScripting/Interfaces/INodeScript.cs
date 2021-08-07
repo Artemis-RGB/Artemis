@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-namespace Artemis.Core.VisualScripting
+namespace Artemis.Core
 {
-    public interface IScript : INotifyPropertyChanged, IDisposable
+    public interface INodeScript : INotifyPropertyChanged, IDisposable
     {
         string Name { get; }
         string Description { get; }
@@ -18,7 +18,7 @@ namespace Artemis.Core.VisualScripting
         void RemoveNode(INode node);
     }
 
-    public interface IScript<out T> : IScript
+    public interface INodeScript<out T> : INodeScript
     {
         T Result { get; }
     }

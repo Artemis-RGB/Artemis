@@ -4,8 +4,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Artemis.Core;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
-using Artemis.VisualScripting.Model;
 
 namespace Artemis.VisualScripting.Editor.Controls
 {

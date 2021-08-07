@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Artemis.Core.VisualScripting;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
     public sealed class InputPinCollection<T> : PinCollection
     {

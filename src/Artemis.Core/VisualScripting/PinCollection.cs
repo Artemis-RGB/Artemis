@@ -2,9 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.VisualScripting;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
     public abstract class PinCollection : IPinCollection
     {

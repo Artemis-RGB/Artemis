@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.Internal;
-using Artemis.VisualScripting.ViewModel;
-using JetBrains.Annotations;
+using Artemis.Core.Internal;
+using Artemis.Core.Properties;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
-    public abstract class Script : AbstractBindable, IScript
+    public abstract class NodeScript : CorePropertyChanged, INodeScript
     {
         #region Properties & Fields
 
@@ -25,7 +23,7 @@ namespace Artemis.VisualScripting.Model
 
         #region Constructors
 
-        public Script(string name, string description)
+        public NodeScript(string name, string description)
         {
             this.Name = name;
             this.Description = description;
@@ -59,7 +57,7 @@ namespace Artemis.VisualScripting.Model
         #endregion
     }
 
-    public class Script<T> : Script, IScript<T>
+    public class NodeScript<T> : NodeScript, INodeScript<T>
     {
         #region Properties & Fields
 
@@ -71,7 +69,7 @@ namespace Artemis.VisualScripting.Model
 
         #region Constructors
 
-        public Script(string name, string description)
+        public NodeScript(string name, string description)
             : base(name, description)
         {
             ExitNode = new ExitNode<T>(name, description);
@@ -79,7 +77,7 @@ namespace Artemis.VisualScripting.Model
         }
 
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature)]
-        private Script(string name, string description, INode exitNode)
+        private NodeScript(string name, string description, INode exitNode)
             : base(name, description)
         {
             ExitNode = exitNode;

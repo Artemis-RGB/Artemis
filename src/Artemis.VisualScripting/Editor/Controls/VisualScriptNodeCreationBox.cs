@@ -5,7 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Editor.Controls
 {

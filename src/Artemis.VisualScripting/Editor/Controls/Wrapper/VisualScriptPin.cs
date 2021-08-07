@@ -2,10 +2,9 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using Artemis.Core.VisualScripting;
+using Artemis.Core;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.Internal;
-using Artemis.VisualScripting.Model;
 using Artemis.VisualScripting.ViewModel;
 
 namespace Artemis.VisualScripting.Editor.Controls.Wrapper

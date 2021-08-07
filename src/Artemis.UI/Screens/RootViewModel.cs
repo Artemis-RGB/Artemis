@@ -172,6 +172,7 @@ namespace Artemis.UI.Screens
             _builtInRegistrationService.RegisterBuiltInDataModelDisplays();
             _builtInRegistrationService.RegisterBuiltInDataModelInputs();
             _builtInRegistrationService.RegisterBuiltInPropertyEditors();
+            _builtInRegistrationService.RegisterBuiltInNodeTypes();
 
             _window = (MaterialWindow) View;
 

@@ -1,43 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Windows;
-using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.ViewModel;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
-    public abstract class Node : AbstractBindable, INode
+    public abstract class Node : CorePropertyChanged, INode
     {
         #region Properties & Fields
 
         private string _name;
+
         public string Name
         {
             get => _name;
-            protected set => SetProperty(ref _name, value);
+            protected set => SetAndNotify(ref _name, value);
         }
 
         private string _description;
+
         public string Description
         {
             get => _description;
-            protected set => SetProperty(ref _description, value);
+            protected set => SetAndNotify(ref _description, value);
         }
 
         private double _x;
+
         public double X
         {
             get => _x;
-            set => SetProperty(ref _x, value);
+            set => SetAndNotify(ref _x, value);
         }
 
         private double _y;
+
         public double Y
         {
             get => _y;
-            set => SetProperty(ref _y, value);
+            set => SetAndNotify(ref _y, value);
         }
+
+        public virtual bool IsExitNode => false;
 
         private readonly List<IPin> _pins = new();
         public IReadOnlyCollection<IPin> Pins => new ReadOnlyCollection<IPin>(_pins);
@@ -45,8 +48,8 @@ namespace Artemis.VisualScripting.Model
         private readonly List<IPinCollection> _pinCollections = new();
         public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
 
-        public object CustomView { get; private set; }
-        public object CustomViewModel { get; private set; }
+        public Type? CustomViewModelType { get; private set; }
+        public object? CustomViewModel { get; set; }
 
         #endregion
 
@@ -59,7 +62,8 @@ namespace Artemis.VisualScripting.Model
         #region Construtors
 
         protected Node()
-        { }
+        {
+        }
 
         protected Node(string name, string description)
         {
@@ -111,6 +115,7 @@ namespace Artemis.VisualScripting.Model
                 pin.DisconnectAll();
                 OnPropertyChanged(nameof(Pins));
             }
+
             return isRemoved;
         }
 
@@ -130,10 +135,9 @@ namespace Artemis.VisualScripting.Model
             return pin;
         }
 
-        protected void RegisterCustomView(DataTemplate view, object viewModel)
+        protected void RegisterCustomViewModel<T>()
         {
-            CustomView = view;
-            CustomViewModel = viewModel;
+            CustomViewModelType = typeof(T);
         }
 
         public abstract void Evaluate();

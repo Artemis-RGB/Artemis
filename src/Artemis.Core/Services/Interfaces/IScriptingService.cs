@@ -4,7 +4,7 @@ using Artemis.Core.ScriptingProviders;
 namespace Artemis.Core.Services
 {
     /// <summary>
-    ///     A service that allows you to manage various types of <see cref="Script" /> instances
+    ///     A service that allows you to manage various types of <see cref="NodeScript" /> instances
     /// </summary>
     public interface IScriptingService : IArtemisService
     {

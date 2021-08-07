@@ -6,8 +6,5 @@
         <ResourceDictionary Source="Styles/VisualScriptNodePresenter.xaml" />
         <ResourceDictionary Source="Styles/VisualScriptPinPresenter.xaml" />
         <ResourceDictionary Source="Styles/VisualScriptPresenter.xaml" />
-
-        <!-- TODO: Load external -->
-        <ResourceDictionary Source="../Nodes/Styles/StaticValueNodes.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

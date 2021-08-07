@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using Artemis.Core.VisualScripting;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Editor.Controls
 {
@@ -15,11 +14,11 @@ namespace Artemis.VisualScripting.Editor.Controls
         #region Dependency Properties
 
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(
-            "Script", typeof(IScript), typeof(VisualScriptEditor), new PropertyMetadata(default(IScript)));
+            "Script", typeof(INodeScript), typeof(VisualScriptEditor), new PropertyMetadata(default(INodeScript)));
 
-        public IScript Script
+        public INodeScript Script
         {
-            get => (IScript)GetValue(ScriptProperty);
+            get => (INodeScript)GetValue(ScriptProperty);
             set => SetValue(ScriptProperty, value);
         }
 

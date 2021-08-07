@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Windows;
-using Artemis.Core.VisualScripting;
+using Artemis.Core;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.ViewModel;
 
@@ -19,7 +19,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         private double _nodeDragAccumulationX;
         private double _nodeDragAccumulationY;
 
-        public IScript Script { get; }
+        public INodeScript Script { get; }
 
         public int SurfaceSize { get; }
         public int GridSize { get; }
@@ -56,7 +56,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         #region Constructors
 
-        public VisualScript(IScript script, int surfaceSize, int gridSize)
+        public VisualScript(INodeScript script, int surfaceSize, int gridSize)
         {
             this.Script = script;
             this.SurfaceSize = surfaceSize;

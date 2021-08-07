@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
                     xmlns:wrapper="clr-namespace:Artemis.VisualScripting.Editor.Controls.Wrapper"
-                    xmlns:model="clr-namespace:Artemis.VisualScripting.Model">
+                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+                    xmlns:s="https://github.com/canton7/Stylet">
 
     <Style x:Key="StyleButtonPinsModify"
            TargetType="Button">
@@ -73,7 +74,7 @@
 
         <Setter Property="ItemTemplate">
             <Setter.Value>
-                <DataTemplate DataType="{x:Type model:Pin}">
+                <DataTemplate DataType="{x:Type core:Pin}">
                     <controls:VisualScriptPinPresenter Margin="0,5,0,3"
                                                        Pin="{Binding .}" />
                 </DataTemplate>
@@ -88,7 +89,7 @@
 
         <Setter Property="ItemTemplate">
             <Setter.Value>
-                <DataTemplate DataType="{x:Type model:Pin}">
+                <DataTemplate DataType="{x:Type core:Pin}">
                     <controls:VisualScriptPinPresenter Margin="0,5,0,3"
                                                        Pin="{Binding .}" />
                 </DataTemplate>
@@ -108,7 +109,7 @@
                                       Style="{StaticResource StylePinListInput}" 
                                       ItemsSource="{Binding Pins}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type model:Pin}">
+                                <DataTemplate DataType="{x:Type core:Pin}">
                                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                                         <controls:VisualScriptPinPresenter Margin="0,5,-3,3"
                                                                            Pin="{Binding .}" />
@@ -141,7 +142,7 @@
                                       Style="{StaticResource StylePinListOutput}" 
                                       ItemsSource="{Binding Pins}">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate DataType="{x:Type model:Pin}">
+                                <DataTemplate DataType="{x:Type core:Pin}">
                                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
                                         <Button Style="{StaticResource StyleButtonPinsModify}"
                                                 Command="{Binding DataContext.RemovePinCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
@@ -207,8 +208,7 @@
                         </Border>
 
                         <Border x:Name="BrdCustomView" Grid.Column="1">
-                            <ContentControl Content="{Binding Node.Node.CustomViewModel, RelativeSource={RelativeSource TemplatedParent}}"
-                                            ContentTemplate="{Binding Node.Node.CustomView, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <ContentControl s:View.Model="{Binding Node.CustomViewModel}"/>
                         </Border>
 
                         <Border x:Name="BrdOutputPins" Grid.Column="2">

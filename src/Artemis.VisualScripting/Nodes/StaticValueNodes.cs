@@ -1,10 +1,9 @@
-﻿using System.Windows;
-using Artemis.VisualScripting.Attributes;
-using Artemis.VisualScripting.Model;
+﻿using Artemis.Core;
+using Artemis.VisualScripting.Nodes.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [UI("Integer-Value", "Outputs an configurable integer value.")]
+    [Node("Integer-Value", "Outputs an configurable integer value.")]
     public class StaticIntegerValueNode : Node
     {
         #region Properties & Fields
@@ -21,7 +20,7 @@ namespace Artemis.VisualScripting.Nodes
             : base("Integer", "Outputs an configurable integer value.")
         {
             Output = CreateOutputPin<int>();
-            RegisterCustomView(Application.Current.FindResource("StaticValueCustomViewTemplate") as DataTemplate, _customViewModel);
+            RegisterCustomViewModel<StaticIntegerValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -36,7 +35,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("Double-Value", "Outputs a configurable double value.")]
+    [Node("Double-Value", "Outputs a configurable double value.")]
     public class StaticDoubleValueNode : Node
     {
         #region Properties & Fields
@@ -53,7 +52,7 @@ namespace Artemis.VisualScripting.Nodes
             : base("Double", "Outputs a configurable double value.")
         {
             Output = CreateOutputPin<double>();
-            RegisterCustomView(Application.Current.FindResource("StaticValueCustomViewTemplate") as DataTemplate, _customViewModel);
+            RegisterCustomViewModel<StaticDoubleValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -68,7 +67,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("String-Value", "Outputs a configurable string value.")]
+    [Node("String-Value", "Outputs a configurable string value.")]
     public class StaticStringValueNode : Node
     {
         #region Properties & Fields
@@ -85,7 +84,7 @@ namespace Artemis.VisualScripting.Nodes
             : base("String", "Outputs a configurable string value.")
         {
             Output = CreateOutputPin<string>();
-            RegisterCustomView(Application.Current.FindResource("StaticValueCustomViewTemplate") as DataTemplate, _customViewModel);
+            RegisterCustomViewModel<StaticStringValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -102,20 +101,7 @@ namespace Artemis.VisualScripting.Nodes
 
     #region CustomViewModels
 
-    public class StaticIntegerValueNodeCustomViewModel
-    {
-        public int Input { get; set; }
-    }
 
-    public class StaticDoubleValueNodeCustomViewModel
-    {
-        public double Input { get; set; }
-    }
-
-    public class StaticStringValueNodeCustomViewModel
-    {
-        public string Input { get; set; }
-    }
 
     #endregion
 }

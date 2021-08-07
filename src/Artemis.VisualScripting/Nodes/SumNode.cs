@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using Artemis.VisualScripting.Attributes;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [UI("Sum (Integer)", "Sums the connected integer values.")]
+    [Node("Sum (Integer)", "Sums the connected integer values.")]
     public class SumIntegersNode : Node
     {
         #region Properties & Fields
@@ -36,7 +35,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("Sum (Double)", "Sums the connected double values.")]
+    [Node("Sum (Double)", "Sums the connected double values.")]
     public class SumDoublesNode : Node
     {
         #region Properties & Fields

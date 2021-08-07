@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Artemis.VisualScripting.Attributes
+namespace Artemis.Core
 {
-    public class UIAttribute : Attribute
+    public class NodeAttribute : Attribute
     {
         #region Properties & Fields
 
@@ -14,18 +14,18 @@ namespace Artemis.VisualScripting.Attributes
 
         #region Constructors
 
-        public UIAttribute(string name)
+        public NodeAttribute(string name)
         {
             this.Name = name;
         }
 
-        public UIAttribute(string name, string description)
+        public NodeAttribute(string name, string description)
         {
             this.Name = name;
             this.Description = description;
         }
 
-        public UIAttribute(string name, string description, string category)
+        public NodeAttribute(string name, string description, string category)
         {
             this.Name = name;
             this.Description = description;

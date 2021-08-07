@@ -1,7 +1,6 @@
 ﻿using System;
-using Artemis.Core.VisualScripting;
 
-namespace Artemis.VisualScripting.Model
+namespace Artemis.Core
 {
     public sealed class OutputPinCollection<T> : PinCollection
     {

@@ -1,9 +1,8 @@
-﻿using Artemis.VisualScripting.Attributes;
-using Artemis.VisualScripting.Model;
+﻿using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [UI("To String", "Converts the input to a string.")]
+    [Node("To String", "Converts the input to a string.")]
     public class ConvertToStringNode : Node
     {
         #region Properties & Fields
@@ -35,7 +34,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("To Integer", "Converts the input to an integer.")]
+    [Node("To Integer", "Converts the input to an integer.")]
     public class ConvertToIntegerNode : Node
     {
         #region Properties & Fields
@@ -70,7 +69,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("To Double", "Converts the input to a double.")]
+    [Node("To Double", "Converts the input to a double.")]
     public class ConvertToDoubleNode : Node
     {
         #region Properties & Fields

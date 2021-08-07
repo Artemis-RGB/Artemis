@@ -1,10 +1,9 @@
 ﻿using System.Collections;
-using Artemis.VisualScripting.Attributes;
-using Artemis.VisualScripting.Model;
+using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [UI("Greater than", "Checks if the first input is greater than the second.")]
+    [Node("Greater than", "Checks if the first input is greater than the second.")]
     public class GreaterThanNode : Node
     {
         #region Properties & Fields
@@ -45,7 +44,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("Less than", "Checks if the first input is less than the second.")]
+    [Node("Less than", "Checks if the first input is less than the second.")]
     public class LessThanNode : Node
     {
         #region Properties & Fields
@@ -86,7 +85,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("Equals", "Checks if the two inputs are equals.")]
+    [Node("Equals", "Checks if the two inputs are equals.")]
     public class EqualsNode : Node
     {
         #region Properties & Fields
@@ -127,7 +126,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [UI("Negate", "Negates the boolean.")]
+    [Node("Negate", "Negates the boolean.")]
     public class NegateNode : Node
     {
         #region Properties & Fields

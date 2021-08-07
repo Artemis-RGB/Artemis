@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Artemis.Core;
+using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
-using Artemis.VisualScripting.Model;
-using Artemis.VisualScripting.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
@@ -16,33 +15,24 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
     {
         private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
+        private readonly INodeService _nodeService;
         private RenderProfileElement _renderProfileElement;
         private bool _displayStartHint;
         private bool _isEventCondition;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, INodeService nodeService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
         {
             _profileEditorService = profileEditorService;
+            _nodeService = nodeService;
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
             AvailableNodes = _nodeService.AvailableNodes;
-            Script = new Script<bool>("Display Condition (TODO)", "TODO");
+            Script = new NodeScript<bool>("Display Condition (TODO)", "TODO");
         }
 
-        #region TODO
 
-        private static NodeService _nodeService;
-
-        static DisplayConditionsViewModel()
-        {
-            _nodeService = new NodeService();
-            _nodeService.InitializeNodes();
-        }
-
-        #endregion
-
-        private Script<bool> _script;
-        public Script<bool> Script
+        private NodeScript<bool> _script;
+        public NodeScript<bool> Script
         {
             get => _script;
             private set => SetAndNotify(ref _script, value);
@@ -161,7 +151,7 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             //    renderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
 
             if (renderProfileElement.DisplayCondition == null)
-                renderProfileElement.DisplayCondition = new Script<bool>("Display Condition (TODO)", "-");
+                renderProfileElement.DisplayCondition = new NodeScript<bool>("Display Condition (TODO)", "-");
 
             //List<Module> modules = new();
             //if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
