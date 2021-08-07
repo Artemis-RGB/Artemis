@@ -4,11 +4,9 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 namespace Artemis.VisualScripting.Nodes
 {
     [Node("Integer-Value", "Outputs an configurable integer value.")]
-    public class StaticIntegerValueNode : Node
+    public class StaticIntegerValueNode : Node<StaticIntegerValueNodeCustomViewModel>
     {
         #region Properties & Fields
-
-        private StaticIntegerValueNodeCustomViewModel _customViewModel = new();
 
         public OutputPin<int> Output { get; }
 
@@ -20,7 +18,6 @@ namespace Artemis.VisualScripting.Nodes
             : base("Integer", "Outputs an configurable integer value.")
         {
             Output = CreateOutputPin<int>();
-            RegisterCustomViewModel<StaticIntegerValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -29,18 +26,16 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = _customViewModel.Input;
+            Output.Value = CustomViewModel.Input;
         }
 
         #endregion
     }
 
     [Node("Double-Value", "Outputs a configurable double value.")]
-    public class StaticDoubleValueNode : Node
+    public class StaticDoubleValueNode : Node<StaticDoubleValueNodeCustomViewModel>
     {
         #region Properties & Fields
-
-        private StaticDoubleValueNodeCustomViewModel _customViewModel = new();
 
         public OutputPin<double> Output { get; }
 
@@ -52,7 +47,6 @@ namespace Artemis.VisualScripting.Nodes
             : base("Double", "Outputs a configurable double value.")
         {
             Output = CreateOutputPin<double>();
-            RegisterCustomViewModel<StaticDoubleValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -61,18 +55,16 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = _customViewModel.Input;
+            Output.Value = CustomViewModel.Input;
         }
 
         #endregion
     }
 
     [Node("String-Value", "Outputs a configurable string value.")]
-    public class StaticStringValueNode : Node
+    public class StaticStringValueNode : Node<StaticStringValueNodeCustomViewModel>
     {
         #region Properties & Fields
-
-        private StaticStringValueNodeCustomViewModel _customViewModel = new();
 
         public OutputPin<string> Output { get; }
 
@@ -84,7 +76,6 @@ namespace Artemis.VisualScripting.Nodes
             : base("String", "Outputs a configurable string value.")
         {
             Output = CreateOutputPin<string>();
-            RegisterCustomViewModel<StaticStringValueNodeCustomViewModel>();
         }
 
         #endregion
@@ -93,15 +84,13 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = _customViewModel.Input;
+            Output.Value = CustomViewModel.Input;
         }
 
         #endregion
     }
 
     #region CustomViewModels
-
-
 
     #endregion
 }

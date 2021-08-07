@@ -16,9 +16,6 @@ namespace Artemis.Core
         public IReadOnlyCollection<IPin> Pins { get; }
         public IReadOnlyCollection<IPinCollection> PinCollections { get; }
 
-        public Type? CustomViewModelType { get; }
-        public object? CustomViewModel { get; set; }
-
         event EventHandler Resetting;
 
         void Evaluate();

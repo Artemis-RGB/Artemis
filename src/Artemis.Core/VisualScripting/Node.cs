@@ -6,6 +6,8 @@ namespace Artemis.Core
 {
     public abstract class Node : CorePropertyChanged, INode
     {
+        public event EventHandler Resetting;
+
         #region Properties & Fields
 
         private string _name;
@@ -48,15 +50,6 @@ namespace Artemis.Core
         private readonly List<IPinCollection> _pinCollections = new();
         public IReadOnlyCollection<IPinCollection> PinCollections => new ReadOnlyCollection<IPinCollection>(_pinCollections);
 
-        public Type? CustomViewModelType { get; private set; }
-        public object? CustomViewModel { get; set; }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler Resetting;
-
         #endregion
 
         #region Construtors
@@ -67,8 +60,8 @@ namespace Artemis.Core
 
         protected Node(string name, string description)
         {
-            this.Name = name;
-            this.Description = description;
+            Name = name;
+            Description = description;
         }
 
         #endregion
@@ -135,11 +128,6 @@ namespace Artemis.Core
             return pin;
         }
 
-        protected void RegisterCustomViewModel<T>()
-        {
-            CustomViewModelType = typeof(T);
-        }
-
         public abstract void Evaluate();
 
         public virtual void Reset()
@@ -148,5 +136,35 @@ namespace Artemis.Core
         }
 
         #endregion
+    }
+
+    public abstract class Node<T> : CustomViewModelNode
+    {
+        protected Node()
+        {
+        }
+
+        protected Node(string name, string description) : base(name, description)
+        {
+        }
+
+        public override Type CustomViewModelType => typeof(T);
+        public T? CustomViewModel => (T?) BaseCustomViewModel;
+    }
+
+    public abstract class CustomViewModelNode : Node
+    {
+        /// <inheritdoc />
+        protected CustomViewModelNode()
+        {
+        }
+
+        /// <inheritdoc />
+        protected CustomViewModelNode(string name, string description) : base(name, description)
+        {
+        }
+
+        public abstract Type CustomViewModelType { get; }
+        public object? BaseCustomViewModel { get; set; }
     }
 }

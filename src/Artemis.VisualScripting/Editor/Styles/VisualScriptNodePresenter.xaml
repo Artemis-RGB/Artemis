@@ -207,6 +207,7 @@
                             </StackPanel>
                         </Border>
 
+                        <!-- TODO: Figure out how to only use this for CustomViewModelNode -->
                         <Border x:Name="BrdCustomView" Grid.Column="1">
                             <ContentControl s:View.Model="{Binding Node.CustomViewModel}"/>
                         </Border>

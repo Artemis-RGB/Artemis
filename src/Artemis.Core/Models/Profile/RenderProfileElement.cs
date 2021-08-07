@@ -386,7 +386,7 @@ namespace Artemis.Core
 
             if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
                 _toggledOnByEvent = false;
-
+            
             DisplayCondition.Run();
             bool conditionMet = DisplayCondition.Result;
             if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)

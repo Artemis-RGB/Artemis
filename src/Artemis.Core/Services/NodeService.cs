@@ -51,8 +51,8 @@ namespace Artemis.Core.Services
         private INode CreateNode(Type nodeType)
         {
             INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
-            if (node.CustomViewModelType != null)
-                node.CustomViewModel = _kernel.Get(node.CustomViewModelType);
+            if (node is CustomViewModelNode customViewModelNode)
+                customViewModelNode.BaseCustomViewModel = _kernel.Get(customViewModelNode.CustomViewModelType);
             return node;
         }
 

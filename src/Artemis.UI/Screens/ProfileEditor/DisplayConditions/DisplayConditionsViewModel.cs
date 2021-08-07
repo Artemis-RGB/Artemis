@@ -27,15 +27,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
 
             AvailableNodes = _nodeService.AvailableNodes;
-            Script = new NodeScript<bool>("Display Condition (TODO)", "TODO");
-        }
-
-
-        private NodeScript<bool> _script;
-        public NodeScript<bool> Script
-        {
-            get => _script;
-            private set => SetAndNotify(ref _script, value);
         }
 
         private IEnumerable<NodeData> _availableNodes;
