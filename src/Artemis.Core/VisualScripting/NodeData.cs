@@ -1,4 +1,5 @@
 ﻿using System;
+using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Core
 {
@@ -13,13 +14,13 @@ namespace Artemis.Core
         public string Description { get; }
         public string Category { get; }
         
-        private Func<INode> _create;
+        private Func<NodeEntity?, INode> _create;
 
         #endregion
 
         #region Constructors
 
-        internal NodeData(Plugin plugin, Type type, string name, string description, string category, Func<INode> create)
+        internal NodeData(Plugin plugin, Type type, string name, string description, string category, Func<NodeEntity?, INode>? create)
         {
             this.Plugin = plugin;
             this.Type = type;
@@ -33,7 +34,7 @@ namespace Artemis.Core
 
         #region Methods
 
-        public INode CreateNode() => _create();
+        public INode CreateNode(NodeEntity? entity) => _create(entity);
 
         #endregion
     }

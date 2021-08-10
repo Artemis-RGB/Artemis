@@ -26,8 +26,10 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = CustomViewModel.Input;
+            Output.Value = (int) (Storage as long? ?? 0);
         }
+
+        public override void Initialize() => Storage ??= 0;
 
         #endregion
     }
@@ -55,8 +57,10 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = CustomViewModel.Input;
+            Output.Value = Storage as double? ?? 0.0;
         }
+
+        public override void Initialize() => Storage ??= 0.0;
 
         #endregion
     }
@@ -84,9 +88,9 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = CustomViewModel.Input;
+            Output.Value = Storage as string;
         }
-
+        
         #endregion
     }
 

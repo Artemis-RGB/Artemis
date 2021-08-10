@@ -7,6 +7,7 @@ using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
+using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -66,6 +67,8 @@ namespace Artemis.Core
 
         internal void LoadRenderElement()
         {
+            DisplayCondition = RenderElementEntity.NodeScript != null ? new NodeScript<bool>(RenderElementEntity.NodeScript) : null;
+
             // DisplayCondition = RenderElementEntity.DisplayCondition != null
             //     ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
             //     : new DataModelConditionGroup(null);
@@ -97,6 +100,8 @@ namespace Artemis.Core
             }
 
             // Conditions
+            DisplayCondition?.Save();
+            RenderElementEntity.NodeScript = DisplayCondition?.Entity;
             // RenderElementEntity.DisplayCondition = DisplayCondition?.Entity;
             // DisplayCondition?.Save();
 
@@ -126,7 +131,7 @@ namespace Artemis.Core
             // The play mode dictates whether to stick to the main segment unless the display conditions contains events
             bool stickToMainSegment = (Timeline.PlayMode == TimelinePlayMode.Repeat || Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle) && DisplayConditionMet;
             // if (DisplayCondition != null && DisplayCondition.ContainsEvents && Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
-                // stickToMainSegment = false;
+            // stickToMainSegment = false;
 
             Timeline.Update(TimeSpan.FromSeconds(deltaTime), stickToMainSegment);
         }
@@ -386,50 +391,51 @@ namespace Artemis.Core
 
             if (Timeline.EventOverlapMode != TimeLineEventOverlapMode.Toggle)
                 _toggledOnByEvent = false;
-            
+
             DisplayCondition.Run();
-            bool conditionMet = DisplayCondition.Result;
+
+            // TODO: Handle this nicely, right now when there's only an exit node we assume true
+            bool conditionMet = DisplayCondition.Nodes.Count() == 1 || DisplayCondition.Result;
             if (Parent is RenderProfileElement parent && !parent.DisplayConditionMet)
                 conditionMet = false;
 
             // if (!DisplayCondition.ContainsEvents)
-            // {
-            //     // Regular conditions reset the timeline whenever their condition is met and was not met before that
-            //     if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
-            //         Timeline.JumpToStart();
-            //     // If regular conditions are no longer met, jump to the end segment if stop mode requires it
-            //     if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
-            //         Timeline.JumpToEndSegment();
-            // }
-            // else if (conditionMet)
-            if (conditionMet)
             {
-                if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
-                {
-                    _toggledOnByEvent = !_toggledOnByEvent;
-                    if (_toggledOnByEvent)
-                        Timeline.JumpToStart();
-                }
-                else
-                {
-                    // Event conditions reset if the timeline finished
-                    if (Timeline.IsFinished)
-                    {
-                        Timeline.JumpToStart();
-                    }
-                    // and otherwise apply their overlap mode
-                    else
-                    {
-                        if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
-                            Timeline.JumpToStart();
-                        else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
-                            Timeline.AddExtraTimeline();
-                        // The third option is ignore which is handled below:
-
-                        // done
-                    }
-                }
+                // Regular conditions reset the timeline whenever their condition is met and was not met before that
+                if (conditionMet && !DisplayConditionMet && Timeline.IsFinished)
+                    Timeline.JumpToStart();
+                // If regular conditions are no longer met, jump to the end segment if stop mode requires it
+                if (!conditionMet && Timeline.StopMode == TimelineStopMode.SkipToEnd)
+                    Timeline.JumpToEndSegment();
             }
+            // else if (conditionMet)
+            // {
+            //     if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle)
+            //     {
+            //         _toggledOnByEvent = !_toggledOnByEvent;
+            //         if (_toggledOnByEvent)
+            //             Timeline.JumpToStart();
+            //     }
+            //     else
+            //     {
+            //         // Event conditions reset if the timeline finished
+            //         if (Timeline.IsFinished)
+            //         {
+            //             Timeline.JumpToStart();
+            //         }
+            //         // and otherwise apply their overlap mode
+            //         else
+            //         {
+            //             if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Restart)
+            //                 Timeline.JumpToStart();
+            //             else if (Timeline.EventOverlapMode == TimeLineEventOverlapMode.Copy)
+            //                 Timeline.AddExtraTimeline();
+            //             // The third option is ignore which is handled below:
+            //
+            //             // done
+            //         }
+            //     }
+            // }
 
             DisplayConditionMet = Timeline.EventOverlapMode == TimeLineEventOverlapMode.Toggle
                 ? _toggledOnByEvent

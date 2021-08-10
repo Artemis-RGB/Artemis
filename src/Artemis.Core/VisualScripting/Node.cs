@@ -42,6 +42,14 @@ namespace Artemis.Core
             set => SetAndNotify(ref _y, value);
         }
 
+        private object? _storage;
+
+        public object? Storage
+        {
+            get => _storage;
+            set => SetAndNotify(ref _storage, value);
+        }
+
         public virtual bool IsExitNode => false;
 
         private readonly List<IPin> _pins = new();
@@ -128,6 +136,8 @@ namespace Artemis.Core
             return pin;
         }
 
+        public virtual void Initialize() { }
+
         public abstract void Evaluate();
 
         public virtual void Reset()
@@ -138,7 +148,7 @@ namespace Artemis.Core
         #endregion
     }
 
-    public abstract class Node<T> : CustomViewModelNode
+    public abstract class Node<T> : CustomViewModelNode where T : CustomNodeViewModel
     {
         protected Node()
         {
@@ -149,7 +159,7 @@ namespace Artemis.Core
         }
 
         public override Type CustomViewModelType => typeof(T);
-        public T? CustomViewModel => (T?) BaseCustomViewModel;
+        public T CustomViewModel => (T) BaseCustomViewModel!;
     }
 
     public abstract class CustomViewModelNode : Node

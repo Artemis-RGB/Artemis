@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Artemis.Storage.Entities.Profile.Nodes;
 using Ninject;
+using Ninject.Parameters;
 
 namespace Artemis.Core.Services
 {
@@ -44,15 +46,25 @@ namespace Artemis.Core.Services
             string description = nodeAttribute?.Description ?? string.Empty;
             string category = nodeAttribute?.Category ?? string.Empty;
 
-            NodeData nodeData = new(plugin, nodeType, name, description, category, () => CreateNode(nodeType));
+            NodeData nodeData = new(plugin, nodeType, name, description, category, (e) => CreateNode(e, nodeType));
             return NodeTypeStore.Add(nodeData);
         }
 
-        private INode CreateNode(Type nodeType)
+        private INode CreateNode(NodeEntity? entity, Type nodeType)
         {
             INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
+
+            if (entity != null)
+            {
+                node.X = entity.X;
+                node.Y = entity.Y;
+                node.Storage = entity.Storage;
+            }
+
             if (node is CustomViewModelNode customViewModelNode)
-                customViewModelNode.BaseCustomViewModel = _kernel.Get(customViewModelNode.CustomViewModelType);
+                customViewModelNode.BaseCustomViewModel = _kernel.Get(customViewModelNode.CustomViewModelType, new ConstructorArgument("node", node));
+
+            node.Initialize();
             return node;
         }
 

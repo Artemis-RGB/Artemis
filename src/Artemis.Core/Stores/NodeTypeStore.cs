@@ -23,7 +23,7 @@ namespace Artemis.Core
                 Registrations.Add(typeRegistration);
             }
 
-            OnDataBindingModifierAdded(new NodeTypeStoreEvent(typeRegistration));
+            OnNodeTypeAdded(new NodeTypeStoreEvent(typeRegistration));
             return typeRegistration;
         }
 
@@ -38,7 +38,7 @@ namespace Artemis.Core
                 typeRegistration.IsInStore = false;
             }
 
-            OnDataBindingModifierRemoved(new NodeTypeStoreEvent(typeRegistration));
+            OnNodeTypeRemoved(new NodeTypeStoreEvent(typeRegistration));
         }
 
         public static IEnumerable<NodeData> GetAll()
@@ -59,19 +59,27 @@ namespace Artemis.Core
 
         #region Events
 
-        public static event EventHandler<NodeTypeStoreEvent>? DataBindingModifierAdded;
-        public static event EventHandler<NodeTypeStoreEvent>? DataBindingModifierRemoved;
+        public static event EventHandler<NodeTypeStoreEvent>? NodeTypeAdded;
+        public static event EventHandler<NodeTypeStoreEvent>? NodeTypeRemoved;
 
-        private static void OnDataBindingModifierAdded(NodeTypeStoreEvent e)
+        private static void OnNodeTypeAdded(NodeTypeStoreEvent e)
         {
-            DataBindingModifierAdded?.Invoke(null, e);
+            NodeTypeAdded?.Invoke(null, e);
         }
 
-        private static void OnDataBindingModifierRemoved(NodeTypeStoreEvent e)
+        private static void OnNodeTypeRemoved(NodeTypeStoreEvent e)
         {
-            DataBindingModifierRemoved?.Invoke(null, e);
+            NodeTypeRemoved?.Invoke(null, e);
         }
 
         #endregion
+
+        public static Plugin? GetPlugin(INode node)
+        {
+            lock (Registrations)
+            {
+                return Registrations.FirstOrDefault(r => r.Plugin.GetType().Assembly == node.GetType().Assembly)?.Plugin;
+            }
+        }
     }
 }

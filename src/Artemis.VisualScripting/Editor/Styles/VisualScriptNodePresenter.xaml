@@ -207,9 +207,18 @@
                             </StackPanel>
                         </Border>
 
-                        <!-- TODO: Figure out how to only use this for CustomViewModelNode -->
                         <Border x:Name="BrdCustomView" Grid.Column="1">
-                            <ContentControl s:View.Model="{Binding Node.CustomViewModel}"/>
+                            <Border.Resources>
+                                <DataTemplate DataType="{x:Type core:CustomViewModelNode}">
+                                    <ContentControl s:View.Model="{Binding BaseCustomViewModel}"/>
+                                </DataTemplate>
+
+                                <DataTemplate DataType="{x:Type core:Node}">
+                                    <Border />
+                                </DataTemplate>
+                            </Border.Resources>
+
+                            <ContentControl Content="{Binding Node}" />
                         </Border>
 
                         <Border x:Name="BrdOutputPins" Grid.Column="2">

@@ -1,15 +1,24 @@
-﻿using Stylet;
+﻿using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
 {
-    public class StaticIntegerValueNodeCustomViewModel : PropertyChangedBase
+    public class StaticIntegerValueNodeCustomViewModel : CustomNodeViewModel
     {
-        private int _input;
+        private readonly StaticIntegerValueNode _node;
+
+        public StaticIntegerValueNodeCustomViewModel(StaticIntegerValueNode node) : base(node)
+        {
+            _node = node;
+        }
 
         public int Input
         {
-            get => _input;
-            set => SetAndNotify(ref _input, value);
+            get => (int)(long) _node.Storage;
+            set
+            {
+                _node.Storage = value;
+                OnPropertyChanged(nameof(Input));
+            }
         }
     }
 }

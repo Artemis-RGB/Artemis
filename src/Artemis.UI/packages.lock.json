@@ -1482,6 +1482,7 @@
         "type": "Project",
         "dependencies": {
           "Artemis.Core": "1.0.0",
+          "Artemis.UI.Shared": "2.0.0",
           "JetBrains.Annotations": "2021.1.0",
           "Stylet": "1.3.6"
         }
