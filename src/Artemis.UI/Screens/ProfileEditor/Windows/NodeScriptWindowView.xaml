@@ -1,0 +1,26 @@
+﻿<mde:MaterialWindow x:Class="Artemis.UI.Screens.ProfileEditor.Windows.NodeScriptWindowView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:mde="https://spiegelp.github.io/MaterialDesignExtensions/winfx/xaml"
+        xmlns:svgc="http://sharpvectors.codeplex.com/svgc/"
+        xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls;assembly=Artemis.VisualScripting"
+        xmlns:windows="clr-namespace:Artemis.UI.Screens.ProfileEditor.Windows"
+        mc:Ignorable="d"
+        Title="Node Script | Artemis"
+        TitleBarIcon="{svgc:SvgImage Source=/Resources/Images/Logo/bow-white.svg}"
+        Foreground="{DynamicResource MaterialDesignBody}"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="pack://application:,,,/MaterialDesignThemes.Wpf;component/Resources/Roboto/#Roboto"
+        UseLayoutRounding="True"
+        FadeContentIfInactive="False"
+        Width="1200"
+        Height="1000"
+        d:DesignHeight="800" d:DesignWidth="800"
+        d:DataContext="{d:DesignInstance windows:NodeScriptWindowViewModel}"
+        Icon="/Resources/Images/Logo/bow.ico">
+    <Grid>
+        <controls:VisualScriptEditor Script="{Binding NodeScript}" AvailableNodes="{Binding AvailableNodes}" />
+    </Grid>
+</mde:MaterialWindow>

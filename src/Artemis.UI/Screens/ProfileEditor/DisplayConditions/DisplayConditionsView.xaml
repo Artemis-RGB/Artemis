@@ -9,6 +9,7 @@
     xmlns:displayConditions="clr-namespace:Artemis.UI.Screens.ProfileEditor.DisplayConditions"
     xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls;assembly=Artemis.VisualScripting"
+    xmlns:shared="clr-namespace:Artemis.UI.Shared;assembly=Artemis.UI.Shared"
     x:Class="Artemis.UI.Screens.ProfileEditor.DisplayConditions.DisplayConditionsView"
     mc:Ignorable="d"
     d:DesignHeight="450" d:DesignWidth="800"
@@ -16,6 +17,7 @@
     <UserControl.Resources>
         <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
         <converters:ComparisonConverter x:Key="ComparisonConverter" />
+        <shared:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
     </UserControl.Resources>
 
     <Grid Margin="10">
@@ -40,35 +42,36 @@
 
         <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
-        <Grid Grid.Row="2" Grid.Column="0">
-            <controls:VisualScriptEditor Script="{Binding RenderProfileElement.DisplayCondition}" AvailableNodes="{Binding AvailableNodes}" />
-
-            <!--<ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" Background="{StaticResource MaterialDesignCardBackground}">
-                <ContentControl s:View.Model="{Binding ActiveItem}" />
-            </ScrollViewer>
-
-            <materialDesign:Card
-                Visibility="{Binding DisplayStartHint, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay}"
-                VerticalAlignment="Top"
-                Background="{DynamicResource PrimaryHueDarkBrush}"
-                Foreground="{DynamicResource PrimaryHueDarkForegroundBrush}"
-                Margin="5 30 5 0"
-                Padding="8"
-                Width="315"
-                HorizontalAlignment="Left">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition />
-                    </Grid.ColumnDefinitions>
-                    <materialDesign:PackIcon Kind="Redo" Margin="0 0 5 0">
-                        <materialDesign:PackIcon.RenderTransform>
-                            <RotateTransform Angle="225" CenterX="8" CenterY="8" />
-                        </materialDesign:PackIcon.RenderTransform>
-                    </materialDesign:PackIcon>
-                    <TextBlock Grid.Column="1" VerticalAlignment="Center">Click the plus icon to start using display conditions!</TextBlock>
-                </Grid>
-            </materialDesign:Card>-->
+        <Grid Grid.Row="2" Grid.Column="0" MouseUp="{s:Action ScriptGridMouseUp}" Cursor="Hand">
+            <controls:VisualScriptEditor Script="{Binding RenderProfileElement.DisplayCondition}"
+                                         Visibility="{Binding RenderProfileElement.DisplayCondition, Converter={StaticResource NullToVisibilityConverter}}" />
+            <Border  Background="#CD353535"  Opacity="0">
+                <Border.Style>
+                    <Style>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type Grid}, Mode=FindAncestor}}" Value="True">
+                                <DataTrigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="1" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.EnterActions>
+                                <DataTrigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity" To="0" Duration="0:0:0.25" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </DataTrigger.ExitActions>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" 
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center">Click to edit script</TextBlock>
+            </Border>
         </Grid>
 
         <Grid Grid.Row="3" Visibility="{Binding IsEventCondition, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">

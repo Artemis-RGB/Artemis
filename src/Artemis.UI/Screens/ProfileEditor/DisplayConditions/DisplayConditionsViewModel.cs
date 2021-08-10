@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using System.Windows.Input;
 using Artemis.Core;
-using Artemis.Core.Services;
 using Artemis.UI.Ninject.Factories;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
@@ -13,33 +11,17 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
     public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
     {
-        private readonly IDataModelConditionsVmFactory _dataModelConditionsVmFactory;
+        private readonly INodeVmFactory _nodeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private readonly INodeService _nodeService;
-        private RenderProfileElement _renderProfileElement;
-        private bool _displayStartHint;
+        private readonly IWindowManager _windowManager;
         private bool _isEventCondition;
+        private RenderProfileElement _renderProfileElement;
 
-        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, INodeService nodeService, IDataModelConditionsVmFactory dataModelConditionsVmFactory)
+        public DisplayConditionsViewModel(IProfileEditorService profileEditorService, IWindowManager windowManager, INodeVmFactory nodeVmFactory)
         {
             _profileEditorService = profileEditorService;
-            _nodeService = nodeService;
-            _dataModelConditionsVmFactory = dataModelConditionsVmFactory;
-
-            AvailableNodes = _nodeService.AvailableNodes;
-        }
-
-        private IEnumerable<NodeData> _availableNodes;
-        public IEnumerable<NodeData> AvailableNodes
-        {
-            get => _availableNodes;
-            set => SetAndNotify(ref _availableNodes, value);
-        }
-
-        public bool DisplayStartHint
-        {
-            get => _displayStartHint;
-            set => SetAndNotify(ref _displayStartHint, value);
+            _windowManager = windowManager;
+            _nodeVmFactory = nodeVmFactory;
         }
 
         public bool IsEventCondition
@@ -111,19 +93,9 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             base.OnClose();
         }
 
-        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
-        {
-            Update(e.RenderProfileElement);
-        }
-
         private void Update(RenderProfileElement renderProfileElement)
         {
-            if (RenderProfileElement != null)
-            {
-                //RenderProfileElement.DisplayCondition.ChildAdded -= DisplayConditionOnChildrenModified;
-                //RenderProfileElement.DisplayCondition.ChildRemoved -= DisplayConditionOnChildrenModified;
-                RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
-            }
+            if (RenderProfileElement != null) RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
 
             RenderProfileElement = renderProfileElement;
 
@@ -137,25 +109,30 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
                 return;
             }
 
-            // Ensure the layer has a root display condition group
-            //if (renderProfileElement.DisplayCondition == null)
-            //    renderProfileElement.DisplayCondition = new DataModelConditionGroup(null);
-
-            if (renderProfileElement.DisplayCondition == null)
-                renderProfileElement.DisplayCondition = new NodeScript<bool>("Display Condition (TODO)", "-");
-
-            //List<Module> modules = new();
-            //if (_profileEditorService.SelectedProfileConfiguration?.Module != null)
-            //    modules.Add(_profileEditorService.SelectedProfileConfiguration.Module);
-            //ActiveItem = _dataModelConditionsVmFactory.DataModelConditionGroupViewModel(renderProfileElement.DisplayCondition, ConditionGroupType.General, modules);
-            //ActiveItem.IsRootGroup = true;
-
-            //DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
-            //IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
-
-            //RenderProfileElement.DisplayCondition.ChildAdded += DisplayConditionOnChildrenModified;
-            //RenderProfileElement.DisplayCondition.ChildRemoved += DisplayConditionOnChildrenModified;
             RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
+        }
+
+        #region Event handlers
+
+        public void ScriptGridMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton != MouseButton.Left)
+                return;
+
+            RenderProfileElement.DisplayCondition ??= new NodeScript<bool>("End Result", "");
+
+            _windowManager.ShowDialog(_nodeVmFactory.NodeScriptWindowViewModel(RenderProfileElement.DisplayCondition));
+            _profileEditorService.SaveSelectedProfileElement();
+        }
+
+        public void EventTriggerModeSelected()
+        {
+            _profileEditorService.SaveSelectedProfileElement();
+        }
+
+        private void SelectedProfileEditorServiceOnSelectedProfileElementChanged(object sender, RenderProfileElementEventArgs e)
+        {
+            Update(e.RenderProfileElement);
         }
 
         private void TimelineOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -165,15 +142,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(EventOverlapMode));
         }
 
-        private void DisplayConditionOnChildrenModified(object sender, EventArgs e)
-        {
-            //DisplayStartHint = !RenderProfileElement.DisplayCondition.Children.Any();
-            //IsEventCondition = RenderProfileElement.DisplayCondition.Children.Any(c => c is DataModelConditionEvent);
-        }
-
-        public void EventTriggerModeSelected()
-        {
-            _profileEditorService.SaveSelectedProfileElement();
-        }
+        #endregion
     }
 }

@@ -5,6 +5,7 @@ using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Header;
 using Artemis.UI.Screens.Plugins;
 using Artemis.UI.Screens.ProfileEditor.Conditions;
+using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding;
@@ -17,6 +18,7 @@ using Artemis.UI.Screens.ProfileEditor.ProfileTree.Dialogs.AdaptionHints;
 using Artemis.UI.Screens.ProfileEditor.ProfileTree.TreeItem;
 using Artemis.UI.Screens.ProfileEditor.Visualization;
 using Artemis.UI.Screens.ProfileEditor.Visualization.Tools;
+using Artemis.UI.Screens.ProfileEditor.Windows;
 using Artemis.UI.Screens.Scripting;
 using Artemis.UI.Screens.Settings.Device;
 using Artemis.UI.Screens.Settings.Device.Tabs;
@@ -122,6 +124,11 @@ namespace Artemis.UI.Ninject.Factories
         SidebarProfileConfigurationViewModel SidebarProfileConfigurationViewModel(ProfileConfiguration profileConfiguration);
         ProfileConfigurationHotkeyViewModel ProfileConfigurationHotkeyViewModel(ProfileConfiguration profileConfiguration, bool isDisableHotkey);
         ModuleActivationRequirementViewModel ModuleActivationRequirementViewModel(IModuleActivationRequirement activationRequirement);
+    }
+
+    public interface INodeVmFactory : IVmFactory
+    {
+        NodeScriptWindowViewModel NodeScriptWindowViewModel(NodeScript nodeScript);
     }
 
     // TODO: Move these two
