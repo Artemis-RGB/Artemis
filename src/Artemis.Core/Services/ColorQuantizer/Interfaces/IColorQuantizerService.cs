@@ -26,5 +26,13 @@ namespace Artemis.Core.Services
         /// <param name="ignoreLimits">Ignore hard limits on whether a color is considered for each category. Result may be <see cref="SKColor.Empty"/> if this is false</param>
         /// <returns>The color found</returns>
         public SKColor FindColorVariation(IEnumerable<SKColor> colors, ColorType type, bool ignoreLimits = false);
+
+        /// <summary>
+        /// Finds all the color variations available and returns a struct containing them all.
+        /// </summary>
+        /// <param name="colors">The colors to find the variations in</param>
+        /// <param name="ignoreLimits">Ignore hard limits on whether a color is considered for each category. Some colors may be <see cref="SKColor.Empty"/> if this is false</param>
+        /// <returns>A swatch containing all color variations</returns>
+        public ColorSwatch FindAllColorVariations(IEnumerable<SKColor> colors, bool ignoreLimits = false);
     }
 }
