@@ -107,7 +107,7 @@ namespace Artemis.Core
                     GetRegionData(skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height, buffer);
 
                     Span<byte> pixelData = stackalloc byte[DATA_PER_PIXEL];
-                    Sampler.SampleColor(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
+                    Sampler.Sample(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
 
                     return GetColor(pixelData);
                 }
@@ -119,7 +119,7 @@ namespace Artemis.Core
                     GetRegionData(skRectI.Left, skRectI.Top, skRectI.Width, skRectI.Height, buffer);
 
                     Span<byte> pixelData = stackalloc byte[DATA_PER_PIXEL];
-                    Sampler.SampleColor(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
+                    Sampler.Sample(new SamplerInfo<byte>(skRectI.Width, skRectI.Height, buffer), pixelData);
 
                     ArrayPool<byte>.Shared.Return(rent);
 

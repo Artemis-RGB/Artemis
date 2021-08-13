@@ -13,7 +13,6 @@ using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
-using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.Services
 {
@@ -106,6 +105,13 @@ namespace Artemis.Core.Services
         {
             if (_rgbService.IsRenderPaused)
                 return;
+
+            if (_rgbService.FlushLeds)
+            {
+                _rgbService.FlushLeds = false;
+                _rgbService.Surface.Update(true);
+                return;
+            }
 
             try
             {
