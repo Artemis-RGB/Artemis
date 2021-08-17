@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -25,11 +26,11 @@ namespace Artemis.VisualScripting.Editor.Controls
         #region Dependency Properties
 
         public static readonly DependencyProperty CableProperty = DependencyProperty.Register(
-            "Cable", typeof(VisualScriptCable), typeof(VisualScriptCablePresenter), new PropertyMetadata(default(VisualScriptCable)));
+            "Cable", typeof(VisualScriptCable), typeof(VisualScriptCablePresenter), new PropertyMetadata(default(VisualScriptCable), CableChanged));
 
         public VisualScriptCable Cable
         {
-            get => (VisualScriptCable)GetValue(CableProperty);
+            get => (VisualScriptCable) GetValue(CableProperty);
             set => SetValue(CableProperty, value);
         }
 
@@ -38,18 +39,37 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public double Thickness
         {
-            get => (double)GetValue(ThicknessProperty);
+            get => (double) GetValue(ThicknessProperty);
             set => SetValue(ThicknessProperty, value);
         }
 
+        public static readonly DependencyProperty ValuePositionProperty = DependencyProperty.Register(
+            "ValuePosition", typeof(Point), typeof(VisualScriptCablePresenter), new PropertyMetadata(default(Point)));
+
+        public Point ValuePosition
+        {
+            get => (Point) GetValue(ValuePositionProperty);
+            set => SetValue(ValuePositionProperty, value);
+        }
+
         #endregion
-        
+
         #region Methods
 
         public override void OnApplyTemplate()
         {
             _path = GetTemplateChild(PART_PATH) as Path ?? throw new NullReferenceException($"The Path '{PART_PATH}' is missing.");
             _path.MouseDown += OnPathMouseDown;
+
+            Unloaded += OnUnloaded;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            if (Cable?.From != null)
+                Cable.From.PropertyChanged += OnPinPropertyChanged;
+            if (Cable?.To != null)
+                Cable.To.PropertyChanged += OnPinPropertyChanged;
         }
 
         private void OnPathMouseDown(object sender, MouseButtonEventArgs args)
@@ -61,6 +81,48 @@ namespace Artemis.VisualScripting.Editor.Controls
             }
             else if (args.ChangedButton == MouseButton.Middle)
                 Cable.Disconnect();
+        }
+
+        private static void CableChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        {
+            if (d is not VisualScriptCablePresenter presenter) return;
+
+            presenter.CableChanged(args);
+        }
+
+        private void CableChanged(DependencyPropertyChangedEventArgs args)
+        {
+            if (args.OldValue is VisualScriptCable oldCable)
+            {
+                oldCable.From.PropertyChanged -= OnPinPropertyChanged;
+                oldCable.To.PropertyChanged -= OnPinPropertyChanged;
+            }
+
+            if (args.NewValue is VisualScriptCable newCable)
+            {
+                newCable.From.PropertyChanged += OnPinPropertyChanged;
+                newCable.To.PropertyChanged += OnPinPropertyChanged;
+            }
+
+            UpdateValuePosition();
+        }
+
+        private void OnPinPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            UpdateValuePosition();
+        }
+
+        private void UpdateValuePosition()
+        {
+            if (Cable.From == null || Cable.To == null)
+                ValuePosition = new Point();
+            else
+            {
+                ValuePosition = new Point(
+                    Cable.From.AbsolutePosition.X + ((Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2),
+                    Cable.From.AbsolutePosition.Y + ((Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2)
+                );
+            }
         }
 
         #endregion

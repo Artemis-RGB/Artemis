@@ -26,7 +26,7 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            Output.Value = (int) (Storage as long? ?? 0);
+            Output.Value = Storage as int? ?? 0;
         }
 
         public override void Initialize() => Storage ??= 0;

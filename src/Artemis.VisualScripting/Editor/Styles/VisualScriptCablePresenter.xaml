@@ -1,33 +1,53 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
-                    xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls">
+                    xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
+                    xmlns:converters="clr-namespace:Artemis.VisualScripting.Converters">
+    <converters:CenterTranslateConverter x:Key="CenterTranslateConverter"/>
 
     <ControlTemplate x:Key="TemplateVisualScriptCablePresenter"
                      TargetType="{x:Type controls:VisualScriptCablePresenter}">
-        <Path x:Name="PART_Path"
-              Stroke="{TemplateBinding BorderBrush}" 
-              StrokeThickness="{TemplateBinding Thickness}"
-              StrokeStartLineCap="Round"
-              StrokeEndLineCap="Round">
-            <Path.Data>
-                <PathGeometry>
-                    <PathGeometry.Figures>
-                        <PathFigureCollection>
-                            <PathFigure StartPoint="{Binding Cable.From.AbsolutePosition, RelativeSource={RelativeSource TemplatedParent}}">
-                                <PathFigure.Segments>
-                                    <PathSegmentCollection>
-                                        <BezierSegment Point1="{Binding Cable.From.AbsoluteCableTargetPosition, RelativeSource={RelativeSource TemplatedParent}}" 
-                                                       Point2="{Binding Cable.To.AbsoluteCableTargetPosition, RelativeSource={RelativeSource TemplatedParent}}" 
-                                                       Point3="{Binding Cable.To.AbsolutePosition, RelativeSource={RelativeSource TemplatedParent}}" />
-                                    </PathSegmentCollection>
-                                </PathFigure.Segments>
-                            </PathFigure>
-                        </PathFigureCollection>
-                    </PathGeometry.Figures>
-                </PathGeometry>
-            </Path.Data>
-        </Path>
+        <Canvas>
+            <Path x:Name="PART_Path"
+                  Stroke="{TemplateBinding BorderBrush}" 
+                  StrokeThickness="{TemplateBinding Thickness}"
+                  StrokeStartLineCap="Round"
+                  StrokeEndLineCap="Round">
+                <Path.Data>
+                    <PathGeometry>
+                        <PathGeometry.Figures>
+                            <PathFigureCollection>
+                                <PathFigure StartPoint="{Binding Cable.From.AbsolutePosition, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <PathFigure.Segments>
+                                        <PathSegmentCollection>
+                                            <BezierSegment Point1="{Binding Cable.From.AbsoluteCableTargetPosition, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                           Point2="{Binding Cable.To.AbsoluteCableTargetPosition, RelativeSource={RelativeSource TemplatedParent}}" 
+                                                           Point3="{Binding Cable.To.AbsolutePosition, RelativeSource={RelativeSource TemplatedParent}}" />
+                                        </PathSegmentCollection>
+                                    </PathFigure.Segments>
+                                </PathFigure>
+                            </PathFigureCollection>
+                        </PathGeometry.Figures>
+                    </PathGeometry>
+                </Path.Data>
+            </Path>
+
+            <Border Canvas.Left="{Binding ValuePosition.X, RelativeSource={RelativeSource TemplatedParent}}"
+                    Canvas.Top="{Binding ValuePosition.Y, RelativeSource={RelativeSource TemplatedParent}}"
+                    Background="#2A2A2A"
+                    BorderBrush="{TemplateBinding BorderBrush}" 
+                    BorderThickness="2"
+                    Padding="6"
+                    CornerRadius="2"
+                    x:Name="PART_ValueDisplay">
+                <Border.RenderTransform>
+                    <TranslateTransform X="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource CenterTranslateConverter}}" 
+                                        Y="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Border}, Converter={StaticResource CenterTranslateConverter}}" />
+                </Border.RenderTransform>
+                <TextBlock Text="{Binding Cable.From.Pin.PinValue, TargetNullValue=-, RelativeSource={RelativeSource TemplatedParent}}" />
+            </Border>
+        </Canvas>
+
     </ControlTemplate>
 
     <Style x:Key="StyleVisualScriptCablePresenter" 
@@ -35,8 +55,6 @@
 
         <Setter Property="BorderBrush" Value="#FFFFFFFF" />
         <Setter Property="Thickness"  Value="4" />
-        <Setter Property="ToolTip" Value="{Binding Cable.From.Pin.PinValue, TargetNullValue=-, RelativeSource={RelativeSource Self}}" />
-
         <Setter Property="Template" Value="{StaticResource TemplateVisualScriptCablePresenter}" />
 
         <Style.Triggers>

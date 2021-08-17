@@ -21,15 +21,9 @@
                     d:DesignHeight="800" d:DesignWidth="800" d:DataContext="{d:DesignInstance debug:DebugViewModel}"
                     Icon="/Resources/Images/Logo/bow.ico"
                     Topmost="{Binding StayOnTopSetting.Value}">
-    <materialDesign:DialogHost IsTabStop="False"
-                               Focusable="False"
-                               Identifier="DebuggerDialog"
-                               DialogTheme="Inherit">
+    <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="DebuggerDialog" DialogTheme="Inherit">
         <DockPanel>
-            <mde:AppBar Type="Dense"
-                        Title="Debugger"
-                        DockPanel.Dock="Top"
-                        Margin="-18 0 0 0">
+            <mde:AppBar Type="Dense" Title="Debugger" DockPanel.Dock="Top" Margin="-18 0 0 0">
                 <mde:AppBar.AppIcon>
                     <materialDesign:PackIcon Kind="Matrix" Width="20" Height="28" />
                 </mde:AppBar.AppIcon>

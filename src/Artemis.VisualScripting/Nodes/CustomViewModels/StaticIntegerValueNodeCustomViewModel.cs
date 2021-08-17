@@ -13,7 +13,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public int Input
         {
-            get => (int)(long) _node.Storage;
+            get => (int) _node.Storage;
             set
             {
                 _node.Storage = value;

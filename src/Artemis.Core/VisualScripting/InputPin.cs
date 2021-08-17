@@ -26,6 +26,7 @@ namespace Artemis.Core
             {
                 _value = value;
                 IsEvaluated = true;
+                OnPropertyChanged(nameof(PinValue));
             }
         }
 
@@ -75,6 +76,7 @@ namespace Artemis.Core
 
                 _value = value;
                 IsEvaluated = true;
+                OnPropertyChanged(nameof(PinValue));
             }
         }
 

@@ -118,6 +118,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
         {
             if (e.ChangedButton != MouseButton.Left)
                 return;
+            if (RenderProfileElement == null)
+                return;
 
             RenderProfileElement.DisplayCondition ??= new NodeScript<bool>("End Result", "");
 
