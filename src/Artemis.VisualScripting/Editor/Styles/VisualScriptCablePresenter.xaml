@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:system="clr-namespace:System;assembly=System.Runtime"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
-                    xmlns:converters="clr-namespace:Artemis.VisualScripting.Converters">
+                    xmlns:converters="clr-namespace:Artemis.VisualScripting.Converters"
+                    xmlns:collections="clr-namespace:System.Collections;assembly=System.Runtime">
     <converters:CenterTranslateConverter x:Key="CenterTranslateConverter"/>
 
     <ControlTemplate x:Key="TemplateVisualScriptCablePresenter"
@@ -76,6 +77,10 @@
 
             <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:String}">
                 <Setter Property="BorderBrush" Value="Gold" />
+            </DataTrigger>
+
+            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type collections:IList}">
+                <Setter Property="BorderBrush" Value="MediumPurple" />
             </DataTrigger>
         </Style.Triggers>
     </Style>

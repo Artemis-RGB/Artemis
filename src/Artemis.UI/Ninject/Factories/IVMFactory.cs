@@ -1,15 +1,10 @@
-﻿using System.Collections.Generic;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Artemis.Core.Modules;
 using Artemis.Core.ScriptingProviders;
 using Artemis.UI.Screens.Header;
 using Artemis.UI.Screens.Plugins;
-using Artemis.UI.Screens.ProfileEditor.Conditions;
-using Artemis.UI.Screens.ProfileEditor.DisplayConditions;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.ConditionalDataBinding;
-using Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings.DirectDataBinding;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.LayerEffects;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline;
 using Artemis.UI.Screens.ProfileEditor.LayerProperties.Tree;
@@ -83,16 +78,6 @@ namespace Artemis.UI.Ninject.Factories
         SelectionRemoveToolViewModel SelectionRemoveToolViewModel(PanZoomViewModel panZoomViewModel);
     }
 
-    public interface IDataModelConditionsVmFactory : IVmFactory
-    {
-        DataModelConditionGroupViewModel DataModelConditionGroupViewModel(DataModelConditionGroup dataModelConditionGroup, ConditionGroupType groupType, List<Module> modules);
-        DataModelConditionListViewModel DataModelConditionListViewModel(DataModelConditionList dataModelConditionList, List<Module> modules);
-        DataModelConditionEventViewModel DataModelConditionEventViewModel(DataModelConditionEvent dataModelConditionEvent, List<Module> modules);
-        DataModelConditionGeneralPredicateViewModel DataModelConditionGeneralPredicateViewModel(DataModelConditionGeneralPredicate dataModelConditionGeneralPredicate, List<Module> modules);
-        DataModelConditionListPredicateViewModel DataModelConditionListPredicateViewModel(DataModelConditionListPredicate dataModelConditionListPredicate, List<Module> modules);
-        DataModelConditionEventPredicateViewModel DataModelConditionEventPredicateViewModel(DataModelConditionEventPredicate dataModelConditionEventPredicate, List<Module> modules);
-    }
-
     public interface ILayerPropertyVmFactory : IVmFactory
     {
         LayerPropertyViewModel LayerPropertyViewModel(ILayerProperty layerProperty);
@@ -131,17 +116,9 @@ namespace Artemis.UI.Ninject.Factories
         NodeScriptWindowViewModel NodeScriptWindowViewModel(NodeScript nodeScript);
     }
 
-    // TODO: Move these two
     public interface IDataBindingsVmFactory
     {
         IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
-        DirectDataBindingModeViewModel<TLayerProperty, TProperty> DirectDataBindingModeViewModel<TLayerProperty, TProperty>(DirectDataBinding<TLayerProperty, TProperty> directDataBinding);
-        DataBindingModifierViewModel<TLayerProperty, TProperty> DataBindingModifierViewModel<TLayerProperty, TProperty>(DataBindingModifier<TLayerProperty, TProperty> modifier);
-
-        ConditionalDataBindingModeViewModel<TLayerProperty, TProperty> ConditionalDataBindingModeViewModel<TLayerProperty, TProperty>(
-            ConditionalDataBinding<TLayerProperty, TProperty> conditionalDataBinding);
-
-        DataBindingConditionViewModel<TLayerProperty, TProperty> DataBindingConditionViewModel<TLayerProperty, TProperty>(DataBindingCondition<TLayerProperty, TProperty> dataBindingCondition);
     }
 
     public interface IPropertyVmFactory

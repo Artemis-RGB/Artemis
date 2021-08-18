@@ -2,14 +2,13 @@
 using System.Windows.Input;
 using Artemis.Core;
 using Artemis.UI.Ninject.Factories;
-using Artemis.UI.Screens.ProfileEditor.Conditions;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionsViewModel : Conductor<DataModelConditionGroupViewModel>, IProfileEditorPanelViewModel
+    public class DisplayConditionsViewModel : Screen, IProfileEditorPanelViewModel
     {
         private readonly INodeVmFactory _nodeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
@@ -102,12 +101,6 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(DisplayContinuously));
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
             NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
-
-            if (renderProfileElement == null)
-            {
-                ActiveItem = null;
-                return;
-            }
 
             RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
         }

@@ -130,7 +130,7 @@ namespace Artemis.Core
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
         ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
-        public DataModelConditionGroup? ActivationCondition { get; set; }
+        public NodeScript<bool>? ActivationCondition { get; set; }
 
         /// <summary>
         ///     Gets or sets the module this profile uses
@@ -168,7 +168,13 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ProfileConfiguration");
 
-            ActivationConditionMet = ActivationCondition == null || ActivationCondition.Evaluate();
+            if (ActivationCondition == null)
+                ActivationConditionMet = true;
+            else
+            {
+                ActivationCondition.Run();
+                ActivationConditionMet = ActivationCondition.Result;
+            }
         }
 
         /// <summary>
@@ -231,7 +237,8 @@ namespace Artemis.Core
 
             Icon.Load();
 
-            ActivationCondition = Entity.ActivationCondition != null ? new DataModelConditionGroup(null, Entity.ActivationCondition) : null;
+            ActivationCondition?.Dispose();
+            ActivationCondition = Entity.ActivationCondition != null ? new NodeScript<bool>(Entity.ActivationCondition) : null;
 
             EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;

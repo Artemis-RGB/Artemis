@@ -22,7 +22,6 @@ namespace Artemis.VisualScripting.Nodes
                 return;
 
             DataModelPath = new DataModelPath(null, pathEntity);
-            CustomViewModel.SelectionViewModel.ChangeDataModelPath(DataModelPath);
             UpdateOutputPin();
         }
         

@@ -29,9 +29,6 @@ namespace Artemis.Core.Services
 
         public ProfileService(ILogger logger,
             IRgbService rgbService,
-            // TODO: Move these two
-            IConditionOperatorService conditionOperatorService,
-            IDataBindingService dataBindingService,
             IProfileCategoryRepository profileCategoryRepository,
             IPluginManagementService pluginManagementService,
             IInputService inputService,

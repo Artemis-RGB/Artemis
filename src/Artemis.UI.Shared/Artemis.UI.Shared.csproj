@@ -77,4 +77,7 @@
   <ItemGroup>
     <Resource Include="Resources\Fonts\RobotoMono-Regular.ttf" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
 </Project>

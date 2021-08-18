@@ -1,8 +1,4 @@
 ﻿using Artemis.Core;
-using Artemis.UI.Shared;
-using Artemis.UI.Shared.Input;
-using Artemis.UI.Shared.Services;
-using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
 {
@@ -10,33 +6,31 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
     {
         private readonly DataModelNode _node;
 
-        public DataModelNodeCustomViewModel(DataModelNode node, IDataModelUIService dataModelUIService) : base(node)
+        public DataModelNodeCustomViewModel(DataModelNode node) : base(node)
         {
             _node = node;
-
-            Execute.OnUIThreadSync(() =>
-            {
-                SelectionViewModel = dataModelUIService.GetDynamicSelectionViewModel(module: null);
-                SelectionViewModel.PropertySelected += SelectionViewModelOnPropertySelected;
-            });
         }
 
-        public DataModelDynamicViewModel SelectionViewModel { get; set; }
-
-        private void SelectionViewModelOnPropertySelected(object? sender, DataModelInputDynamicEventArgs e)
+        public DataModelPath DataModelPath
         {
-            _node.DataModelPath = SelectionViewModel.DataModelPath;
-            if (_node.DataModelPath != null)
+            get => _node.DataModelPath;
+            set
             {
-                _node.DataModelPath.Save();
-                _node.Storage = _node.DataModelPath.Entity;
-            }
-            else
-            {
-                _node.Storage = null;
-            }
+                _node.DataModelPath = value;
+                OnPropertyChanged(nameof(DataModelPath));
 
-            _node.UpdateOutputPin();
+                if (_node.DataModelPath != null)
+                {
+                    _node.DataModelPath.Save();
+                    _node.Storage = _node.DataModelPath.Entity;
+                }
+                else
+                {
+                    _node.Storage = null;
+                }
+
+                _node.UpdateOutputPin();
+            }
         }
     }
 }

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shapes;
+using Artemis.Core;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
 namespace Artemis.VisualScripting.Editor.Controls
@@ -48,7 +51,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public Point ValuePosition
         {
-            get => (Point) GetValue(ValuePositionProperty);
+            get => (Point)GetValue(ValuePositionProperty);
             set => SetValue(ValuePositionProperty, value);
         }
 
@@ -60,7 +63,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             _path = GetTemplateChild(PART_PATH) as Path ?? throw new NullReferenceException($"The Path '{PART_PATH}' is missing.");
             _path.MouseDown += OnPathMouseDown;
-
+            
             Unloaded += OnUnloaded;
         }
 
@@ -104,25 +107,31 @@ namespace Artemis.VisualScripting.Editor.Controls
                 newCable.To.PropertyChanged += OnPinPropertyChanged;
             }
 
+            UpdateBorderBrush();
             UpdateValuePosition();
         }
-
+        
         private void OnPinPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            UpdateValuePosition();
+            if (e.PropertyName == nameof(VisualScriptPin.AbsolutePosition))
+                UpdateValuePosition();
+        }
+
+        private void UpdateBorderBrush()
+        {
+            // if (Cable.From.Pin.Type.IsAssignableTo(typeof(IList)))
+                // BorderBrush = new SolidColorBrush(Colors.MediumPurple);
         }
 
         private void UpdateValuePosition()
         {
             if (Cable.From == null || Cable.To == null)
-                ValuePosition = new Point();
-            else
-            {
-                ValuePosition = new Point(
-                    Cable.From.AbsolutePosition.X + ((Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2),
-                    Cable.From.AbsolutePosition.Y + ((Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2)
-                );
-            }
+                return;
+            
+            ValuePosition = new Point(
+                Cable.From.AbsolutePosition.X + ((Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2),
+                Cable.From.AbsolutePosition.Y + ((Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2)
+            );
         }
 
         #endregion

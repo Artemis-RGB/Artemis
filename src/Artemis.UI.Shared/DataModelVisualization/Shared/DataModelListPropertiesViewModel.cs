@@ -11,15 +11,12 @@ namespace Artemis.UI.Shared
     /// </summary>
     public class DataModelListPropertiesViewModel : DataModelPropertiesViewModel
     {
-        private readonly ListPredicateWrapperDataModel _listPredicateWrapper;
         private object? _displayValue;
         private int _index;
         private Type? _listType;
 
         internal DataModelListPropertiesViewModel(Type listType, string? name) : base(null, null, null)
         {
-            _listPredicateWrapper = ListPredicateWrapperDataModel.Create(listType, name);
-            DataModel = _listPredicateWrapper;
             ListType = listType;
         }
 
@@ -61,8 +58,6 @@ namespace Artemis.UI.Shared
         /// <inheritdoc />
         public override void Update(IDataModelUIService dataModelUIService, DataModelUpdateConfiguration? configuration)
         {
-            _listPredicateWrapper.UntypedValue = DisplayValue;
-
             PopulateProperties(dataModelUIService, configuration);
             if (DisplayViewModel == null)
                 return;

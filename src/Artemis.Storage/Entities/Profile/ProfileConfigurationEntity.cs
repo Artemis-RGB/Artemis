@@ -1,5 +1,6 @@
 ﻿using System;
 using Artemis.Storage.Entities.Profile.Conditions;
+using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Storage.Entities.Profile
 {
@@ -13,7 +14,7 @@ namespace Artemis.Storage.Entities.Profile
 
         public bool IsSuspended { get; set; }
         public int ActivationBehaviour { get; set; }
-        public DataModelConditionGroupEntity ActivationCondition { get; set; }
+        public NodeScriptEntity ActivationCondition { get; set; }
 
         public int HotkeyMode { get; set; }
         public ProfileConfigurationHotkeyEntity EnableHotkey { get; set; }

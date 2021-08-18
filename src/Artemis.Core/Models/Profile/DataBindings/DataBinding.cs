@@ -17,20 +17,20 @@ namespace Artemis.Core
         {
             LayerProperty = dataBindingRegistration.LayerProperty;
             Entity = new DataBindingEntity();
+            Script = new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
 
             ApplyRegistration(dataBindingRegistration);
             Save();
-            ApplyDataBindingMode();
         }
 
         internal DataBinding(LayerProperty<TLayerProperty> layerProperty, DataBindingEntity entity)
         {
             LayerProperty = layerProperty;
             Entity = entity;
+            Script = new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
 
             // Load will add children so be initialized before that
             Load();
-            ApplyDataBindingMode();
         }
 
         /// <summary>
@@ -48,10 +48,7 @@ namespace Artemis.Core
         /// </summary>
         public DataBindingConverter<TLayerProperty, TProperty>? Converter { get; private set; }
 
-        /// <summary>
-        ///     Gets the data binding mode
-        /// </summary>
-        public IDataBindingMode<TLayerProperty, TProperty>? DataBindingMode { get; private set; }
+        public NodeScript<TProperty> Script { get; private set; }
 
         /// <summary>
         ///     Gets or sets the easing time of the data binding
@@ -78,18 +75,18 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
 
-            if (Converter == null || DataBindingMode == null)
+            if (Converter == null)
                 return baseValue;
 
-            TProperty value = DataBindingMode.GetValue(baseValue);
+            Script.Run();
 
             // If no easing is to be applied simple return whatever the current value is
             if (EasingTime == TimeSpan.Zero || !Converter.SupportsInterpolate)
-                return value;
+                return Script.Result;
 
             // If the value changed, update the current and previous values used for easing
-            if (!Equals(value, _currentValue))
-                ResetEasing(value);
+            if (!Equals(Script.Result, _currentValue))
+                ResetEasing(Script.Result);
 
             // Apply interpolation between the previous and current value
             return GetInterpolatedValue();
@@ -118,7 +115,9 @@ namespace Artemis.Core
 
                 if (Registration != null)
                     Registration.DataBinding = null;
-                DataBindingMode?.Dispose();
+
+                Script?.Dispose();
+                Script = null;
             }
         }
 
@@ -221,57 +220,6 @@ namespace Artemis.Core
             GC.SuppressFinalize(this);
         }
 
-        #region Mode management
-
-        /// <summary>
-        ///     Changes the data binding mode of the data binding to the specified <paramref name="dataBindingMode" />
-        /// </summary>
-        public void ChangeDataBindingMode(DataBindingModeType dataBindingMode)
-        {
-            switch (dataBindingMode)
-            {
-                case DataBindingModeType.Direct:
-                    Entity.DataBindingMode = new DirectDataBindingEntity();
-                    break;
-                case DataBindingModeType.Conditional:
-                    Entity.DataBindingMode = new ConditionalDataBindingEntity();
-                    break;
-                default:
-                    Entity.DataBindingMode = null;
-                    break;
-            }
-
-            ApplyDataBindingMode();
-        }
-
-        /// <summary>
-        ///     Replaces the current data binding mode with one based on the provided data binding mode entity
-        /// </summary>
-        /// <param name="dataBindingModeEntity">The data binding mode entity to base the new data binding mode upon</param>
-        public void ApplyDataBindingEntity(IDataBindingModeEntity dataBindingModeEntity)
-        {
-            Entity.DataBindingMode = dataBindingModeEntity;
-            ApplyDataBindingMode();
-        }
-
-        private void ApplyDataBindingMode()
-        {
-            DataBindingMode?.Dispose();
-            DataBindingMode = null;
-
-            switch (Entity.DataBindingMode)
-            {
-                case DirectDataBindingEntity directDataBindingEntity:
-                    DataBindingMode = new DirectDataBinding<TLayerProperty, TProperty>(this, directDataBindingEntity);
-                    break;
-                case ConditionalDataBindingEntity conditionalDataBindingEntity:
-                    DataBindingMode = new ConditionalDataBinding<TLayerProperty, TProperty>(this, conditionalDataBindingEntity);
-                    break;
-            }
-        }
-
-        #endregion
-
         #region Storage
 
         /// <inheritdoc />
@@ -288,7 +236,10 @@ namespace Artemis.Core
             EasingTime = Entity.EasingTime;
             EasingFunction = (Easings.Functions) Entity.EasingFunction;
 
-            DataBindingMode?.Load();
+            Script.Dispose();
+            Script = Entity.NodeScript != null
+                ? new NodeScript<TProperty>(Entity.NodeScript)
+                : new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
         }
 
         /// <inheritdoc />
@@ -307,30 +258,10 @@ namespace Artemis.Core
             Entity.EasingTime = EasingTime;
             Entity.EasingFunction = (int) EasingFunction;
 
-            DataBindingMode?.Save();
+            Script?.Save();
+            Entity.NodeScript = Script?.Entity;
         }
 
         #endregion
-    }
-
-    /// <summary>
-    ///     A mode that determines how the data binding is applied to the layer property
-    /// </summary>
-    public enum DataBindingModeType
-    {
-        /// <summary>
-        ///     Disables the data binding
-        /// </summary>
-        None,
-
-        /// <summary>
-        ///     Replaces the layer property value with the data binding value
-        /// </summary>
-        Direct,
-
-        /// <summary>
-        ///     Replaces the layer property value with the data binding value
-        /// </summary>
-        Conditional
     }
 }

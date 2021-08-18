@@ -7,14 +7,14 @@
         <Border BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}">
             <Grid x:Name="PART_CreationBoxParent"
-                  ClipToBounds="True" 
+                  ClipToBounds="True"
                   Tag="{Binding RelativeSource={RelativeSource TemplatedParent}}">
                 <Grid.ContextMenu>
                     <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}">
                         <ContextMenu.Template>
                             <ControlTemplate>
                                 <Border Width="700" Height="300">
-                                    <controls:VisualScriptNodeCreationBox AvailableNodes="{Binding AvailableNodes}" 
+                                    <controls:VisualScriptNodeCreationBox AvailableNodes="{Binding AvailableNodes}"
                                                                           CreateNodeCommand="{Binding CreateNodeCommand}" />
                                 </Border>
                             </ControlTemplate>
@@ -27,14 +27,14 @@
                         Height="{Binding SurfaceSize, RelativeSource={RelativeSource TemplatedParent}}"
                         Background="{TemplateBinding Background}">
 
-                    <Border x:Name="PART_SelectionBorder" 
-                            Background="#3300FF00" 
-                            BorderThickness="1" 
-                            BorderBrush="#FF00CC00" 
+                    <Border x:Name="PART_SelectionBorder"
+                            Background="#3300FF00"
+                            BorderThickness="1"
+                            BorderBrush="#FF00CC00"
                             CornerRadius="1"
                             Visibility="Hidden" />
 
-                    <ItemsControl x:Name="PART_NodeList" 
+                    <ItemsControl x:Name="PART_NodeList"
                                   Panel.ZIndex="0">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -50,10 +50,10 @@
 
                         <ItemsControl.ItemContainerStyle>
                             <Style TargetType="ContentPresenter">
-                                <Setter Property="Panel.ZIndex" Value="0"/>
+                                <Setter Property="Panel.ZIndex" Value="0" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                        <Setter Property="Panel.ZIndex" Value="1"/>
+                                        <Setter Property="Panel.ZIndex" Value="1" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -79,7 +79,7 @@
         </Border>
     </ControlTemplate>
 
-    <Style x:Key="StyleVisualScriptPresenter" 
+    <Style x:Key="StyleVisualScriptPresenter"
            TargetType="{x:Type controls:VisualScriptPresenter}">
         <Setter Property="Template" Value="{StaticResource TemplateVisualScriptPresenter}" />
 
@@ -87,18 +87,16 @@
 
         <Setter Property="Background">
             <Setter.Value>
-                <DrawingBrush TileMode="Tile" Viewport="0,0,24,24" ViewportUnits="Absolute">
-                    <DrawingBrush.Drawing>
-                        <GeometryDrawing>
-                            <GeometryDrawing.Geometry>
-                                <RectangleGeometry Rect="0,0,24,24"/>
-                            </GeometryDrawing.Geometry>
-                            <GeometryDrawing.Pen>
-                                <Pen Brush="#FF808080" Thickness="0.5"/>
-                            </GeometryDrawing.Pen>
-                        </GeometryDrawing>
-                    </DrawingBrush.Drawing>
-                </DrawingBrush>
+                <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="0 0 20 20" ViewportUnits="Absolute">
+                    <VisualBrush.Visual>
+                        <Canvas>
+                            <Rectangle Width="10" Height="10" Canvas.Top="0" Canvas.Left="0" Fill="Black" Opacity="0.15" />
+                            <Rectangle Width="10" Height="10" Canvas.Top="0" Canvas.Left="10" />
+                            <Rectangle Width="10" Height="10" Canvas.Top="10" Canvas.Left="0" />
+                            <Rectangle Width="10" Height="10" Canvas.Top="10" Canvas.Left="10" Fill="Black" Opacity="0.15" />
+                        </Canvas>
+                    </VisualBrush.Visual>
+                </VisualBrush>
             </Setter.Value>
         </Setter>
 

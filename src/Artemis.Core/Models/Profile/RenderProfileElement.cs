@@ -7,7 +7,6 @@ using Artemis.Core.LayerEffects.Placeholder;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Entities.Profile.Abstract;
-using Newtonsoft.Json;
 using SkiaSharp;
 
 namespace Artemis.Core
@@ -68,11 +67,7 @@ namespace Artemis.Core
         internal void LoadRenderElement()
         {
             DisplayCondition = RenderElementEntity.NodeScript != null ? new NodeScript<bool>(RenderElementEntity.NodeScript) : null;
-
-            // DisplayCondition = RenderElementEntity.DisplayCondition != null
-            //     ? new DataModelConditionGroup(null, RenderElementEntity.DisplayCondition)
-            //     : new DataModelConditionGroup(null);
-
+            
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();

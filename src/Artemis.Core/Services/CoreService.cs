@@ -210,8 +210,6 @@ namespace Artemis.Core.Services
             Version? hidSharpVersion = Assembly.GetAssembly(typeof(HidDevice))!.GetName().Version;
             _logger.Debug("Forcing plugins to use HidSharp {hidSharpVersion}", hidSharpVersion);
 
-            DeserializationLogger.Initialize(Kernel!);
-
             // Initialize the services
             _pluginManagementService.CopyBuiltInPlugins();
             _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
