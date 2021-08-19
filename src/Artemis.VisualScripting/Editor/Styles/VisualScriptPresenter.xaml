@@ -87,13 +87,13 @@
 
         <Setter Property="Background">
             <Setter.Value>
-                <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="0 0 20 20" ViewportUnits="Absolute">
+                <VisualBrush TileMode="Tile" Stretch="Uniform" Viewport="0 0 24 24" ViewportUnits="Absolute">
                     <VisualBrush.Visual>
                         <Canvas>
-                            <Rectangle Width="10" Height="10" Canvas.Top="0" Canvas.Left="0" Fill="Black" Opacity="0.15" />
-                            <Rectangle Width="10" Height="10" Canvas.Top="0" Canvas.Left="10" />
-                            <Rectangle Width="10" Height="10" Canvas.Top="10" Canvas.Left="0" />
-                            <Rectangle Width="10" Height="10" Canvas.Top="10" Canvas.Left="10" Fill="Black" Opacity="0.15" />
+                            <Rectangle Width="12" Height="12" Canvas.Top="0" Canvas.Left="0" Fill="Black" Opacity="0.15" />
+                            <Rectangle Width="12" Height="12" Canvas.Top="0" Canvas.Left="12" />
+                            <Rectangle Width="12" Height="12" Canvas.Top="12" Canvas.Left="0" />
+                            <Rectangle Width="12" Height="12" Canvas.Top="12" Canvas.Left="12" Fill="Black" Opacity="0.15" />
                         </Canvas>
                     </VisualBrush.Visual>
                 </VisualBrush>

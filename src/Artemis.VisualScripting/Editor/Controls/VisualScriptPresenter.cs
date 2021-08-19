@@ -121,7 +121,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         }
 
         public static readonly DependencyProperty GridSizeProperty = DependencyProperty.Register(
-            "GridSize", typeof(int), typeof(VisualScriptPresenter), new PropertyMetadata(24));
+            "GridSize", typeof(int), typeof(VisualScriptPresenter), new PropertyMetadata(12));
 
         public int GridSize
         {
