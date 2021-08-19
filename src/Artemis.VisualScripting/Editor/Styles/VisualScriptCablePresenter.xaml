@@ -62,26 +62,6 @@
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="Thickness" Value="6" />
             </Trigger>
-
-            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Boolean}">
-                <Setter Property="BorderBrush" Value="#FFCD3232" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Int32}">
-                <Setter Property="BorderBrush" Value="LimeGreen" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Double}">
-                <Setter Property="BorderBrush" Value="DodgerBlue" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:String}">
-                <Setter Property="BorderBrush" Value="Gold" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Cable.From.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type collections:IList}">
-                <Setter Property="BorderBrush" Value="MediumPurple" />
-            </DataTrigger>
         </Style.Triggers>
     </Style>
 

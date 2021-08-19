@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Artemis.Core;
+using Artemis.UI.Shared;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
 namespace Artemis.VisualScripting.Editor.Controls
@@ -51,7 +52,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public Point ValuePosition
         {
-            get => (Point)GetValue(ValuePositionProperty);
+            get => (Point) GetValue(ValuePositionProperty);
             set => SetValue(ValuePositionProperty, value);
         }
 
@@ -63,7 +64,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             _path = GetTemplateChild(PART_PATH) as Path ?? throw new NullReferenceException($"The Path '{PART_PATH}' is missing.");
             _path.MouseDown += OnPathMouseDown;
-            
+
             Unloaded += OnUnloaded;
         }
 
@@ -110,7 +111,7 @@ namespace Artemis.VisualScripting.Editor.Controls
             UpdateBorderBrush();
             UpdateValuePosition();
         }
-        
+
         private void OnPinPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             if (e.PropertyName == nameof(VisualScriptPin.AbsolutePosition))
@@ -119,15 +120,15 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void UpdateBorderBrush()
         {
-            // if (Cable.From.Pin.Type.IsAssignableTo(typeof(IList)))
-                // BorderBrush = new SolidColorBrush(Colors.MediumPurple);
+            (Color color, Color _) = TypeUtilities.GetTypeColors(Cable.From.Pin.Type);
+            BorderBrush = new SolidColorBrush(color);
         }
 
         private void UpdateValuePosition()
         {
             if (Cable.From == null || Cable.To == null)
                 return;
-            
+
             ValuePosition = new Point(
                 Cable.From.AbsolutePosition.X + ((Cable.To.AbsolutePosition.X - Cable.From.AbsolutePosition.X) / 2),
                 Cable.From.AbsolutePosition.Y + ((Cable.To.AbsolutePosition.Y - Cable.From.AbsolutePosition.Y) / 2)

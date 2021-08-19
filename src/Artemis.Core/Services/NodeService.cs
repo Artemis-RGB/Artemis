@@ -4,24 +4,19 @@ using System.Reflection;
 using Artemis.Storage.Entities.Profile.Nodes;
 using Ninject;
 using Ninject.Parameters;
+using SkiaSharp;
 
 namespace Artemis.Core.Services
 {
     internal class NodeService : INodeService
     {
-        private readonly IKernel _kernel;
-
         #region Constants
 
         private static readonly Type TYPE_NODE = typeof(INode);
 
         #endregion
 
-        #region Properties & Fields
-
-        public IEnumerable<NodeData> AvailableNodes => NodeTypeStore.GetAll();
-
-        #endregion
+        private readonly IKernel _kernel;
 
         #region Constructors
 
@@ -32,7 +27,19 @@ namespace Artemis.Core.Services
 
         #endregion
 
+        #region Properties & Fields
+
+        public IEnumerable<NodeData> AvailableNodes => NodeTypeStore.GetAll();
+
+        #endregion
+
         #region Methods
+
+        /// <inheritdoc />
+        public TypeColorRegistration? GetTypeColor(Type type)
+        {
+            return NodeTypeStore.GetColor(type);
+        }
 
         public NodeTypeRegistration RegisterNodeType(Plugin plugin, Type nodeType)
         {
@@ -46,8 +53,16 @@ namespace Artemis.Core.Services
             string description = nodeAttribute?.Description ?? string.Empty;
             string category = nodeAttribute?.Category ?? string.Empty;
 
-            NodeData nodeData = new(plugin, nodeType, name, description, category, (e) => CreateNode(e, nodeType));
+            NodeData nodeData = new(plugin, nodeType, name, description, category, e => CreateNode(e, nodeType));
             return NodeTypeStore.Add(nodeData);
+        }
+
+        public TypeColorRegistration RegisterTypeColor(Plugin plugin, Type type, SKColor color)
+        {
+            if (plugin == null) throw new ArgumentNullException(nameof(plugin));
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            return NodeTypeStore.AddColor(type, color, plugin);
         }
 
         private INode CreateNode(NodeEntity? entity, Type nodeType)
@@ -72,20 +87,33 @@ namespace Artemis.Core.Services
     }
 
     /// <summary>
-    /// A service that provides access to the node system
+    ///     A service that provides access to the node system
     /// </summary>
     public interface INodeService : IArtemisService
     {
         /// <summary>
-        /// Gets all available nodes
+        ///     Gets all available nodes
         /// </summary>
         IEnumerable<NodeData> AvailableNodes { get; }
 
         /// <summary>
-        /// Initializes a node of the provided <paramref name="nodeType"/>
+        /// Gets the best matching registration for the provided type
+        /// </summary>
+        TypeColorRegistration? GetTypeColor(Type type);
+
+        /// <summary>
+        ///     Registers a node of the provided <paramref name="nodeType" />
         /// </summary>
         /// <param name="plugin">The plugin the node belongs to</param>
         /// <param name="nodeType">The type of node to initialize</param>
         NodeTypeRegistration RegisterNodeType(Plugin plugin, Type nodeType);
+
+        /// <summary>
+        ///     Registers a type with a provided color for use in the node editor
+        /// </summary>
+        /// <param name="plugin">The plugin making the registration</param>
+        /// <param name="type">The type to associate the color with</param>
+        /// <param name="color">The color to display</param>
+        TypeColorRegistration RegisterTypeColor(Plugin plugin, Type type, SKColor color);
     }
 }

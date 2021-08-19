@@ -80,31 +80,6 @@
                 <Setter Property="Padding" Value="6,0,0,0" />
                 <Setter Property="Template" Value="{StaticResource TemplateVisualScriptPinPresenterOutput}" />
             </DataTrigger>
-
-            <DataTrigger Binding="{Binding Pin.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Object}">
-                <Setter Property="Background" Value="#FFA0A0A0" />
-                <Setter Property="BorderBrush" Value="White" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Pin.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Boolean}">
-                <Setter Property="Background" Value="DarkRed" />
-                <Setter Property="BorderBrush" Value="#FFCD3232" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Pin.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Int32}">
-                <Setter Property="Background" Value="DarkGreen" />
-                <Setter Property="BorderBrush" Value="LimeGreen" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Pin.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:Double}">
-                <Setter Property="Background" Value="Blue" />
-                <Setter Property="BorderBrush" Value="DodgerBlue" />
-            </DataTrigger>
-
-            <DataTrigger Binding="{Binding Pin.Pin.Type, RelativeSource={RelativeSource Self}}" Value="{x:Type system:String}">
-                <Setter Property="Background" Value="DarkGoldenrod" />
-                <Setter Property="BorderBrush" Value="Gold" />
-            </DataTrigger>
         </Style.Triggers>
     </Style>
 

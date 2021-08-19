@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Artemis.Core;
+using Artemis.UI.Shared;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
 namespace Artemis.VisualScripting.Editor.Controls
@@ -108,7 +109,15 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (args.NewValue is VisualScriptPin newPin)
                 newPin.Node.Node.PropertyChanged += OnNodePropertyChanged;
 
+            UpdateBrushes();
             UpdateAbsoluteLocation();
+        }
+
+        private void UpdateBrushes()
+        {
+            (Color border, Color background) = TypeUtilities.GetTypeColors(Pin.Pin.Type);
+            Background = new SolidColorBrush(background);
+            BorderBrush = new SolidColorBrush(border);
         }
 
         private void UpdateAbsoluteLocation()

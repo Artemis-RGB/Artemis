@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Services;
@@ -12,6 +13,7 @@ using Artemis.UI.Shared.Services;
 using Artemis.UI.SkiaSharp;
 using Artemis.VisualScripting.Nodes;
 using Serilog;
+using SkiaSharp;
 
 namespace Artemis.UI.Services
 {
@@ -119,6 +121,13 @@ namespace Artemis.UI.Services
 
         public void RegisterBuiltInNodeTypes()
         {
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(bool), new SKColor(0xFFCD3232));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(string), new SKColor(0xFFFFD700));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(int), new SKColor(0xFF32CD32));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(double), new SKColor(0xFF1E90FF));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(float), new SKColor(0xFFFF7C00));
+            _nodeService.RegisterTypeColor(Constants.CorePlugin, typeof(IList), new SKColor(0xFFC842FF));
+
             foreach (Type nodeType in typeof(SumIntegersNode).Assembly.GetTypes().Where(t => typeof(INode).IsAssignableFrom(t) && t.IsPublic && !t.IsAbstract && !t.IsInterface))
                 _nodeService.RegisterNodeType(Constants.CorePlugin, nodeType);
         }

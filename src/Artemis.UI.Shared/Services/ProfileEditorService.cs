@@ -20,10 +20,10 @@ namespace Artemis.UI.Shared.Services
     {
         private readonly IKernel _kernel;
         private readonly ILogger _logger;
+        private readonly IModuleService _moduleService;
         private readonly IProfileService _profileService;
         private readonly List<PropertyInputRegistration> _registeredPropertyEditors;
         private readonly IRgbService _rgbService;
-        private readonly IModuleService _moduleService;
         private readonly object _selectedProfileElementLock = new();
         private readonly object _selectedProfileLock = new();
         private TimeSpan _currentTime;
@@ -31,7 +31,8 @@ namespace Artemis.UI.Shared.Services
         private int _pixelsPerSecond;
         private bool _suspendEditing;
 
-        public ProfileEditorService(IKernel kernel, ILogger logger, IProfileService profileService, ICoreService coreService, IRgbService rgbService, IModuleService moduleService)
+        public ProfileEditorService(IKernel kernel, ILogger logger, ICoreService coreService, IProfileService profileService, IRgbService rgbService, IModuleService moduleService,
+            INodeService nodeService)
         {
             _kernel = kernel;
             _logger = logger;
@@ -40,7 +41,54 @@ namespace Artemis.UI.Shared.Services
             _moduleService = moduleService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
             coreService.FrameRendered += CoreServiceOnFrameRendered;
+
+            TypeUtilities.NodeService = nodeService;
             PixelsPerSecond = 100;
+        }
+
+        protected virtual void OnSelectedProfileChanged(ProfileConfigurationEventArgs e)
+        {
+            SelectedProfileChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileUpdated(ProfileConfigurationEventArgs e)
+        {
+            SelectedProfileSaved?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
+        {
+            SelectedProfileElementChanged?.Invoke(this, e);
+        }
+
+        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
+        {
+            SelectedProfileElementSaved?.Invoke(this, e);
+        }
+
+        protected virtual void OnCurrentTimeChanged()
+        {
+            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnPixelsPerSecondChanged()
+        {
+            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnSuspendEditingChanged()
+        {
+            SuspendEditingChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnProfilePreviewUpdated()
+        {
+            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected virtual void OnSelectedDataBindingChanged()
+        {
+            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
@@ -89,7 +137,9 @@ namespace Artemis.UI.Shared.Services
                 return;
 
             if (renderElement.Suspended)
+            {
                 renderElement.Disable();
+            }
             else
             {
                 renderElement.Enable();
@@ -104,7 +154,6 @@ namespace Artemis.UI.Shared.Services
         }
 
         public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
-
         public bool Playing { get; set; }
 
         public bool SuspendEditing
@@ -183,10 +232,10 @@ namespace Artemis.UI.Shared.Services
                 // No need to deactivate the profile, if needed it will be deactivated next update
                 if (SelectedProfileConfiguration != null)
                     SelectedProfileConfiguration.IsBeingEdited = false;
-                                                                
+
                 PreviousSelectedProfileConfiguration = SelectedProfileConfiguration;
                 SelectedProfileConfiguration = profileConfiguration;
-                
+
                 // The new profile may need activation
                 if (SelectedProfileConfiguration != null)
                 {
@@ -319,10 +368,8 @@ namespace Artemis.UI.Shared.Services
                 if (existing != null)
                 {
                     if (existing.Plugin != plugin)
-                    {
                         throw new ArtemisSharedUIException($"Cannot register property editor for type {supportedType.Name} because an editor was already " +
                                                            $"registered by {existing.Plugin}");
-                    }
 
                     return existing;
                 }
@@ -367,10 +414,8 @@ namespace Artemis.UI.Shared.Services
 
             if (snapToCurrentTime)
                 // Snap to the current time
-            {
                 if (Math.Abs(time.TotalMilliseconds - CurrentTime.TotalMilliseconds) < tolerance.TotalMilliseconds)
                     return CurrentTime;
-            }
 
             if (snapTimes != null)
             {
@@ -406,9 +451,13 @@ namespace Artemis.UI.Shared.Services
                     viewModelType = registration.ViewModelType.MakeGenericType(layerProperty.GetType().GenericTypeArguments);
             }
             else if (registration != null)
+            {
                 viewModelType = registration.ViewModelType;
+            }
             else
+            {
                 return null;
+            }
 
             if (viewModelType == null)
                 return null;
@@ -427,6 +476,16 @@ namespace Artemis.UI.Shared.Services
                 .Where(led => led.AbsoluteRectangle.IntersectsWith(SKRectI.Round(rect.ToSKRect())))
                 .ToList();
         }
+
+        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileChanged;
+        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileSaved;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementChanged;
+        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementSaved;
+        public event EventHandler? SelectedDataBindingChanged;
+        public event EventHandler? CurrentTimeChanged;
+        public event EventHandler? PixelsPerSecondChanged;
+        public event EventHandler? SuspendEditingChanged;
+        public event EventHandler? ProfilePreviewUpdated;
 
         #region Copy/paste
 
@@ -504,65 +563,6 @@ namespace Artemis.UI.Shared.Services
             }
 
             return pasted;
-        }
-
-        #endregion
-
-        #region Events
-
-        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileChanged;
-        public event EventHandler<ProfileConfigurationEventArgs>? SelectedProfileSaved;
-        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementChanged;
-        public event EventHandler<RenderProfileElementEventArgs>? SelectedProfileElementSaved;
-        public event EventHandler? SelectedDataBindingChanged;
-        public event EventHandler? CurrentTimeChanged;
-        public event EventHandler? PixelsPerSecondChanged;
-        public event EventHandler? SuspendEditingChanged;
-        public event EventHandler? ProfilePreviewUpdated;
-
-        protected virtual void OnSelectedProfileChanged(ProfileConfigurationEventArgs e)
-        {
-            SelectedProfileChanged?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileUpdated(ProfileConfigurationEventArgs e)
-        {
-            SelectedProfileSaved?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementChanged(RenderProfileElementEventArgs e)
-        {
-            SelectedProfileElementChanged?.Invoke(this, e);
-        }
-
-        protected virtual void OnSelectedProfileElementUpdated(RenderProfileElementEventArgs e)
-        {
-            SelectedProfileElementSaved?.Invoke(this, e);
-        }
-
-        protected virtual void OnCurrentTimeChanged()
-        {
-            CurrentTimeChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnPixelsPerSecondChanged()
-        {
-            PixelsPerSecondChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnSuspendEditingChanged()
-        {
-            SuspendEditingChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnProfilePreviewUpdated()
-        {
-            ProfilePreviewUpdated?.Invoke(this, EventArgs.Empty);
-        }
-
-        protected virtual void OnSelectedDataBindingChanged()
-        {
-            SelectedDataBindingChanged?.Invoke(this, EventArgs.Empty);
         }
 
         #endregion

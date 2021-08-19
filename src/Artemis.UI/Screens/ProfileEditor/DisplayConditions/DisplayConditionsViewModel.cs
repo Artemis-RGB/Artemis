@@ -94,7 +94,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 
         private void Update(RenderProfileElement renderProfileElement)
         {
-            if (RenderProfileElement != null) RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
+            if (RenderProfileElement != null) 
+                RenderProfileElement.Timeline.PropertyChanged -= TimelineOnPropertyChanged;
 
             RenderProfileElement = renderProfileElement;
 
@@ -102,7 +103,8 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             NotifyOfPropertyChange(nameof(AlwaysFinishTimeline));
             NotifyOfPropertyChange(nameof(ConditionBehaviourEnabled));
 
-            RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
+            if (RenderProfileElement != null)
+                RenderProfileElement.Timeline.PropertyChanged += TimelineOnPropertyChanged;
         }
 
         #region Event handlers
