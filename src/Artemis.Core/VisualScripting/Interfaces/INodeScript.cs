@@ -8,6 +8,7 @@ namespace Artemis.Core
     {
         string Name { get; }
         string Description { get; }
+        bool HasNodes { get; }
 
         IEnumerable<INode> Nodes { get; }
 

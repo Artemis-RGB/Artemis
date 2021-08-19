@@ -17,9 +17,10 @@ namespace Artemis.Core
         {
             LayerProperty = dataBindingRegistration.LayerProperty;
             Entity = new DataBindingEntity();
-            Script = new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
 
             ApplyRegistration(dataBindingRegistration);
+            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
+
             Save();
         }
 
@@ -27,7 +28,7 @@ namespace Artemis.Core
         {
             LayerProperty = layerProperty;
             Entity = entity;
-            Script = new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
+            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
 
             // Load will add children so be initialized before that
             Load();
@@ -116,8 +117,7 @@ namespace Artemis.Core
                 if (Registration != null)
                     Registration.DataBinding = null;
 
-                Script?.Dispose();
-                Script = null;
+                Script.Dispose();
             }
         }
 
@@ -213,6 +213,13 @@ namespace Artemis.Core
             _reapplyValue = true;
         }
 
+        private string GetScriptName()
+        {
+            if (LayerProperty.GetAllDataBindingRegistrations().Count == 1)
+                return LayerProperty.PropertyDescription.Name ?? LayerProperty.Path;
+            return $"{LayerProperty.PropertyDescription.Name ?? LayerProperty.Path} - {Registration?.DisplayName}";
+        }
+
         /// <inheritdoc />
         public void Dispose()
         {
@@ -238,8 +245,8 @@ namespace Artemis.Core
 
             Script.Dispose();
             Script = Entity.NodeScript != null
-                ? new NodeScript<TProperty>(Entity.NodeScript)
-                : new NodeScript<TProperty>(LayerProperty.PropertyDescription.Name ?? LayerProperty.Path, "");
+                ? new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", Entity.NodeScript)
+                : new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
         }
 
         /// <inheritdoc />

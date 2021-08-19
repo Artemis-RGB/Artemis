@@ -16,13 +16,13 @@ namespace Artemis.Core
 
         public string Name { get; }
         public string Description { get; }
+        public bool HasNodes => _nodes.Count > 1;
 
         private readonly List<INode> _nodes = new();
         public IEnumerable<INode> Nodes => new ReadOnlyCollection<INode>(_nodes);
 
         protected INode ExitNode { get; set; }
         public abstract Type ResultType { get; }
-        public abstract void CreateExitNode(string name, string description = "");
 
         #endregion
 
@@ -38,13 +38,11 @@ namespace Artemis.Core
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
         }
 
-        internal NodeScript(NodeScriptEntity entity)
+        internal NodeScript(string name, string description, NodeScriptEntity entity)
         {
-            this.Name = entity.Name;
-            this.Description = entity.Description;
+            this.Name = name;
+            this.Description = description;
             this.Entity = entity;
-
-            Load();
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -85,40 +83,25 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
-            bool gotExitNode = false;
-
             // Create nodes
             Dictionary<int, INode> nodes = new();
             foreach (NodeEntity entityNode in Entity.Nodes)
             {
-                INode? node = LoadNode(entityNode);
+                INode? node = LoadNode(entityNode, entityNode.IsExitNode ? ExitNode : null);
                 if (node == null)
                     continue;
-
-                if (node.IsExitNode)
-                    gotExitNode = true;
-
                 nodes.Add(entityNode.Id, node);
             }
-
-            if (!gotExitNode)
-                CreateExitNode("Exit node");
-
+            
             LoadConnections(nodes);
 
             _nodes.Clear();
             _nodes.AddRange(nodes.Values);
         }
 
-        private INode? LoadNode(NodeEntity nodeEntity)
+        private INode? LoadNode(NodeEntity nodeEntity, INode? node)
         {
-            INode node;
-            if (nodeEntity.IsExitNode)
-            {
-                CreateExitNode(nodeEntity.Name, nodeEntity.Description);
-                node = ExitNode;
-            }
-            else
+            if (node == null)
             {
                 NodeTypeRegistration? nodeTypeRegistration = NodeTypeStore.Get(nodeEntity.PluginId, nodeEntity.Type);
                 if (nodeTypeRegistration == null)
@@ -127,7 +110,12 @@ namespace Artemis.Core
                 // Create the node
                 node = nodeTypeRegistration.NodeData.CreateNode(nodeEntity);
             }
-            
+            else
+            {
+                node.X = nodeEntity.X;
+                node.Y = nodeEntity.Y;
+            }
+
             // Restore pin collections
             foreach (NodePinCollectionEntity entityNodePinCollection in nodeEntity.PinCollections)
             {
@@ -280,18 +268,17 @@ namespace Artemis.Core
 
         public override Type ResultType => typeof(T);
 
-        public override void CreateExitNode(string name, string description = "")
-        {
-            ExitNode = new ExitNode<T>(name, description);
-        }
-
         #endregion
 
         #region Constructors
 
-        internal NodeScript(NodeScriptEntity entity)
-            : base(entity)
+        internal NodeScript(string name, string description, NodeScriptEntity entity)
+            : base(name, description, entity)
         {
+            ExitNode = new ExitNode<T>(name, description);
+            AddNode(ExitNode);
+
+            Load();
         }
 
         public NodeScript(string name, string description)

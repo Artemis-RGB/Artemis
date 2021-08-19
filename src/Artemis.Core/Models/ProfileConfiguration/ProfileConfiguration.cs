@@ -28,6 +28,7 @@ namespace Artemis.Core
 
             Entity = new ProfileConfigurationEntity();
             Icon = new ProfileConfigurationIcon(Entity) {MaterialIcon = icon};
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
         }
 
         internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
@@ -38,6 +39,8 @@ namespace Artemis.Core
 
             Entity = entity;
             Icon = new ProfileConfigurationIcon(Entity);
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
+
             Load();
         }
 
@@ -130,7 +133,7 @@ namespace Artemis.Core
         ///     Gets the data model condition that must evaluate to <see langword="true" /> for this profile to be activated
         ///     alongside any activation requirements of the <see cref="Module" />, if set
         /// </summary>
-        public NodeScript<bool>? ActivationCondition { get; set; }
+        public NodeScript<bool> ActivationCondition { get; set; }
 
         /// <summary>
         ///     Gets or sets the module this profile uses
@@ -168,7 +171,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("ProfileConfiguration");
 
-            if (ActivationCondition == null)
+            if (!ActivationCondition.HasNodes)
                 ActivationConditionMet = true;
             else
             {
@@ -216,7 +219,7 @@ namespace Artemis.Core
         public void Dispose()
         {
             _disposed = true;
-            ActivationCondition?.Dispose();
+            ActivationCondition.Dispose();
         }
 
         #endregion
@@ -237,8 +240,10 @@ namespace Artemis.Core
 
             Icon.Load();
 
-            ActivationCondition?.Dispose();
-            ActivationCondition = Entity.ActivationCondition != null ? new NodeScript<bool>(Entity.ActivationCondition) : null;
+            ActivationCondition.Dispose();
+            ActivationCondition = Entity.ActivationCondition != null 
+                ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition) 
+                : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
 
             EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;

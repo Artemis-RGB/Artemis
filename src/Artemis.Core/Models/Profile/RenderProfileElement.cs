@@ -18,13 +18,17 @@ namespace Artemis.Core
     {
         private SKRectI _bounds;
         private SKPath? _path;
+        private readonly string _typeDisplayName;
 
         internal RenderProfileElement(Profile profile) : base(profile)
         {
+            _typeDisplayName = this is Layer ? "layer" : "folder";
+            _displayCondition = new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active");
+
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
-
+            
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
         }
@@ -59,15 +63,17 @@ namespace Artemis.Core
             foreach (BaseLayerEffect baseLayerEffect in LayerEffects)
                 baseLayerEffect.Dispose();
 
-            DisplayCondition?.Dispose();
+            DisplayCondition.Dispose();
 
             base.Dispose(disposing);
         }
 
         internal void LoadRenderElement()
         {
-            DisplayCondition = RenderElementEntity.NodeScript != null ? new NodeScript<bool>(RenderElementEntity.NodeScript) : null;
-            
+            DisplayCondition = RenderElementEntity.NodeScript != null
+                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript)
+                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active");
+
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();
@@ -354,14 +360,15 @@ namespace Artemis.Core
             protected set => SetAndNotify(ref _displayConditionMet, value);
         }
 
-        private NodeScript<bool>? _displayCondition;
+        private NodeScript<bool> _displayCondition;
         private bool _displayConditionMet;
         private bool _toggledOnByEvent = false;
+
 
         /// <summary>
         ///     Gets or sets the root display condition group
         /// </summary>
-        public NodeScript<bool>? DisplayCondition
+        public NodeScript<bool> DisplayCondition
         {
             get => _displayCondition;
             set => SetAndNotify(ref _displayCondition, value);
@@ -378,7 +385,7 @@ namespace Artemis.Core
                 return;
             }
 
-            if (DisplayCondition == null)
+            if (!DisplayCondition.HasNodes)
             {
                 DisplayConditionMet = true;
                 return;
