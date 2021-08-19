@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Artemis.Core.DeviceProviders;
@@ -53,7 +52,7 @@ namespace Artemis.Core.Services
 
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             Surface.RegisterUpdateTrigger(UpdateTrigger);
-
+            
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
 
@@ -137,8 +136,14 @@ namespace Artemis.Core.Services
         public bool IsRenderPaused { get; set; }
         public bool RenderOpen { get; private set; }
 
+        /// <inheritdoc />
+        public bool FlushLeds { get; set; }
+
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
+            if (RenderOpen)
+                throw new ArtemisCoreException("Cannot add a device provider while rendering");
+
             lock (_devices)
             {
                 try
@@ -199,6 +204,9 @@ namespace Artemis.Core.Services
 
         public void RemoveDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
+            if (RenderOpen)
+                throw new ArtemisCoreException("Cannot update the remove device provider while rendering");
+
             lock (_devices)
             {
                 try
@@ -267,36 +275,39 @@ namespace Artemis.Core.Services
             if (RenderOpen)
                 throw new ArtemisCoreException("Cannot update the texture while rendering");
 
-            IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
-            if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
-                graphicsContext = _newGraphicsContext;
-
-            if (graphicsContext != null)
-                _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
-            else
-                _logger.Debug("Creating SKTexture with software-based graphics context");
-
-            float evenWidth = Surface.Boundary.Size.Width;
-            if (evenWidth % 2 != 0)
-                evenWidth++;
-            float evenHeight = Surface.Boundary.Size.Height;
-            if (evenHeight % 2 != 0)
-                evenHeight++;
-
-            float renderScale = (float) _renderScaleSetting.Value;
-            int width = Math.Max(1, MathF.Min(evenWidth * renderScale, 4096).RoundToInt());
-            int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
-
-            _texture?.Dispose();
-            _texture = new SKTexture(graphicsContext, width, height, renderScale);
-            _textureBrush.Texture = _texture;
-
-
-            if (!ReferenceEquals(_newGraphicsContext, Constants.ManagedGraphicsContext = _newGraphicsContext))
+            lock (_devices)
             {
-                Constants.ManagedGraphicsContext?.Dispose();
-                Constants.ManagedGraphicsContext = _newGraphicsContext;
-                _newGraphicsContext = null;
+                IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
+                if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
+                    graphicsContext = _newGraphicsContext;
+
+                if (graphicsContext != null)
+                    _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
+                else
+                    _logger.Debug("Creating SKTexture with software-based graphics context");
+
+                float evenWidth = Surface.Boundary.Size.Width;
+                if (evenWidth % 2 != 0)
+                    evenWidth++;
+                float evenHeight = Surface.Boundary.Size.Height;
+                if (evenHeight % 2 != 0)
+                    evenHeight++;
+
+                float renderScale = (float) _renderScaleSetting.Value;
+                int width = Math.Max(1, MathF.Min(evenWidth * renderScale, 4096).RoundToInt());
+                int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
+
+                _texture?.Dispose();
+                _texture = new SKTexture(graphicsContext, width, height, renderScale);
+                _textureBrush.Texture = _texture;
+
+
+                if (!ReferenceEquals(_newGraphicsContext, Constants.ManagedGraphicsContext = _newGraphicsContext))
+                {
+                    Constants.ManagedGraphicsContext?.Dispose();
+                    Constants.ManagedGraphicsContext = _newGraphicsContext;
+                    _newGraphicsContext = null;
+                }
             }
         }
 

@@ -14,15 +14,17 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
     public class SurfaceDeviceViewModel : PropertyChangedBase
     {
         private readonly IRgbService _rgbService;
+        private readonly ISettingsService _settingsService;
         private Cursor _cursor;
         private double _dragOffsetX;
         private double _dragOffsetY;
         private SelectionStatus _selectionStatus;
 
-        public SurfaceDeviceViewModel(ArtemisDevice device, IRgbService rgbService)
+        public SurfaceDeviceViewModel(ArtemisDevice device, IRgbService rgbService, ISettingsService settingsService)
         {
             Device = device;
             _rgbService = rgbService;
+            _settingsService = settingsService;
         }
 
         public ArtemisDevice Device { get; }
@@ -99,6 +101,10 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
         private bool Fits(float x, float y)
         {
             if (x < 0 || y < 0)
+                return false;
+
+            double maxTextureSize = 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+            if (x + Device.Rectangle.Width > maxTextureSize || y + Device.Rectangle.Height > maxTextureSize)
                 return false;
 
             List<SKRect> own = Device.Leds

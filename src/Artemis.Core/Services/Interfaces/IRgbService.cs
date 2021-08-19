@@ -42,6 +42,11 @@ namespace Artemis.Core.Services
         bool RenderOpen { get; }
 
         /// <summary>
+        ///     Gets or sets a boolean indicating whether to flush the RGB.NET LEDs during next update
+        /// </summary>
+        bool FlushLeds { get; set; }
+
+        /// <summary>
         ///     Opens the render pipeline
         /// </summary>
         SKTexture OpenRender();
