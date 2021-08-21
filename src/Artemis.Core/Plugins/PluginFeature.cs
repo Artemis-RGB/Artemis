@@ -75,7 +75,8 @@ namespace Artemis.Core
         /// </param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposing) InternalDisable();
+            if (disposing)
+                SetEnabled(false);
         }
 
         /// <summary>
@@ -102,16 +103,6 @@ namespace Artemis.Core
         internal void StopUpdateMeasure()
         {
             Profiler.StopMeasurement("Update");
-        }
-
-        internal void StartRenderMeasure()
-        {
-            Profiler.StartMeasurement("Render");
-        }
-
-        internal void StopRenderMeasure()
-        {
-            Profiler.StopMeasurement("Render");
         }
 
         internal void SetEnabled(bool enable, bool isAutoEnable = false)
