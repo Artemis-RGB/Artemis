@@ -12,7 +12,7 @@ namespace Artemis.Core
 
         public double X { get; set; }
         public double Y { get; set; }
-        public object Storage { get; set; }
+        public object? Storage { get; set; }
 
         public IReadOnlyCollection<IPin> Pins { get; }
         public IReadOnlyCollection<IPinCollection> PinCollections { get; }

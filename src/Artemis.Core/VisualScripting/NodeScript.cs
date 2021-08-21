@@ -96,7 +96,7 @@ namespace Artemis.Core
                     continue;
                 nodes.Add(entityNode.Id, node);
             }
-            
+
             LoadConnections(nodes);
 
             _nodes.Clear();
@@ -179,7 +179,7 @@ namespace Artemis.Core
                     Type = node.GetType().Name,
                     X = node.X,
                     Y = node.Y,
-                    Storage = node.Storage,
+                    Storage = CoreJson.SerializeObject(node.Storage, true),
                     Name = node.Name,
                     Description = node.Description,
                     IsExitNode = node.IsExitNode

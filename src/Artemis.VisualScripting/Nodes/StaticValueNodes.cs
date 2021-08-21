@@ -88,6 +88,9 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
+            if (Storage is double doubleValue)
+                Storage = (float) doubleValue;
+
             Output.Value = Storage as float? ?? 0.0f;
         }
 

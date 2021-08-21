@@ -19,7 +19,7 @@ namespace Artemis.Storage.Entities.Profile.Nodes
         public bool IsExitNode { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
-        public object Storage { get; set; }
+        public string Storage { get; set; }
 
         public List<NodePinCollectionEntity> PinCollections { get; set; }
     }

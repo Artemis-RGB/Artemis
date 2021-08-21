@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Artemis.Storage.Entities.Profile.Nodes;
+using Newtonsoft.Json;
 using Ninject;
 using Ninject.Parameters;
 using SkiaSharp;
@@ -73,7 +74,14 @@ namespace Artemis.Core.Services
             {
                 node.X = entity.X;
                 node.Y = entity.Y;
-                node.Storage = entity.Storage;
+                try
+                {
+                    node.Storage = CoreJson.DeserializeObject(entity.Storage, true);
+                }
+                catch
+                {
+                    // ignored
+                }
             }
 
             if (node is CustomViewModelNode customViewModelNode)
