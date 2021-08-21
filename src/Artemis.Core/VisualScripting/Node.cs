@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace Artemis.Core
 {
@@ -107,7 +108,7 @@ namespace Artemis.Core
             OnPropertyChanged(nameof(Pins));
             return pin;
         }
-
+        
         protected bool RemovePin(Pin pin)
         {
             bool isRemoved = _pins.Remove(pin);
@@ -136,7 +137,9 @@ namespace Artemis.Core
             return pin;
         }
 
-        public virtual void Initialize() { }
+        public virtual void Initialize(INodeScript script)
+        {
+        }
 
         public abstract void Evaluate();
 
@@ -148,7 +151,7 @@ namespace Artemis.Core
         #endregion
     }
 
-    public abstract class Node<T> : CustomViewModelNode where T : CustomNodeViewModel
+    public abstract class Node<T> : CustomViewModelNode where T : ICustomNodeViewModel
     {
         protected Node()
         {

@@ -14,6 +14,8 @@ namespace Artemis.Core
 
         Type ResultType { get; }
 
+        object? Context { get; set; }
+
         void Run();
         void AddNode(INode node);
         void RemoveNode(INode node);

@@ -24,25 +24,29 @@ namespace Artemis.Core
         protected INode ExitNode { get; set; }
         public abstract Type ResultType { get; }
 
+        public object? Context { get; set; }
+
         #endregion
 
         #region Constructors
 
-        public NodeScript(string name, string description)
+        public NodeScript(string name, string description, object? context = null)
         {
             this.Name = name;
             this.Description = description;
+            this.Context = context;
             this.Entity = new NodeScriptEntity();
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
         }
 
-        internal NodeScript(string name, string description, NodeScriptEntity entity)
+        internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
         {
             this.Name = name;
             this.Description = description;
             this.Entity = entity;
+            this.Context = context;
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -108,7 +112,7 @@ namespace Artemis.Core
                     return null;
 
                 // Create the node
-                node = nodeTypeRegistration.NodeData.CreateNode(nodeEntity);
+                node = nodeTypeRegistration.NodeData.CreateNode(this, nodeEntity);
             }
             else
             {
@@ -272,8 +276,8 @@ namespace Artemis.Core
 
         #region Constructors
 
-        internal NodeScript(string name, string description, NodeScriptEntity entity)
-            : base(name, description, entity)
+        internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
+            : base(name, description, entity, context)
         {
             ExitNode = new ExitNode<T>(name, description);
             AddNode(ExitNode);
@@ -281,8 +285,8 @@ namespace Artemis.Core
             Load();
         }
 
-        public NodeScript(string name, string description)
-            : base(name, description)
+        public NodeScript(string name, string description, object? context = null)
+            : base(name, description, context)
         {
             ExitNode = new ExitNode<T>(name, description);
             AddNode(ExitNode);

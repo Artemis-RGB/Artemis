@@ -13,18 +13,21 @@ namespace Artemis.VisualScripting.Nodes
         {
         }
 
+        public INodeScript Script { get; private set; }
         public OutputPin Output { get; private set; }
         public DataModelPath DataModelPath { get; set; }
 
-        public override void Initialize()
+        public override void Initialize(INodeScript script)
         {
-            if (Storage is not DataModelPathEntity pathEntity) 
+            Script = script;
+
+            if (Storage is not DataModelPathEntity pathEntity)
                 return;
 
             DataModelPath = new DataModelPath(null, pathEntity);
             UpdateOutputPin();
         }
-        
+
         public override void Evaluate()
         {
             if (DataModelPath.IsValid && Output != null)

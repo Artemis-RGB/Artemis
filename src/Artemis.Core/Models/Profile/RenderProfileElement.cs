@@ -23,7 +23,7 @@ namespace Artemis.Core
         internal RenderProfileElement(Profile profile) : base(profile)
         {
             _typeDisplayName = this is Layer ? "layer" : "folder";
-            _displayCondition = new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active");
+            _displayCondition = new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
 
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
@@ -71,8 +71,8 @@ namespace Artemis.Core
         internal void LoadRenderElement()
         {
             DisplayCondition = RenderElementEntity.NodeScript != null
-                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript)
-                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active");
+                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript, Profile)
+                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
 
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)

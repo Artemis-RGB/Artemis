@@ -19,7 +19,7 @@ namespace Artemis.Core
 
         event EventHandler Resetting;
 
-        void Initialize();
+        void Initialize(INodeScript script);
         void Evaluate();
         void Reset();
     }

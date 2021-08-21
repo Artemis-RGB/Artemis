@@ -35,6 +35,38 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
+    [Node("Sum (Float)", "Sums the connected float values.")]
+    public class SumFloatsNode : Node
+    {
+        #region Properties & Fields
+
+        public InputPinCollection<float> Values { get; }
+
+        public OutputPin<float> Sum { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public SumFloatsNode()
+            : base("Sum", "Sums the connected float values.")
+        {
+            Values = CreateInputPinCollection<float>("Values", 2);
+            Sum = CreateOutputPin<float>("Sum");
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Sum.Value = Values.Values.Sum();
+        }
+
+        #endregion
+    }
+
     [Node("Sum (Double)", "Sums the connected double values.")]
     public class SumDoublesNode : Node
     {

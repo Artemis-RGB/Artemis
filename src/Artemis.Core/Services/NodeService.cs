@@ -53,7 +53,7 @@ namespace Artemis.Core.Services
             string description = nodeAttribute?.Description ?? string.Empty;
             string category = nodeAttribute?.Category ?? string.Empty;
 
-            NodeData nodeData = new(plugin, nodeType, name, description, category, e => CreateNode(e, nodeType));
+            NodeData nodeData = new(plugin, nodeType, name, description, category, (s, e) => CreateNode(s, e, nodeType));
             return NodeTypeStore.Add(nodeData);
         }
 
@@ -65,7 +65,7 @@ namespace Artemis.Core.Services
             return NodeTypeStore.AddColor(type, color, plugin);
         }
 
-        private INode CreateNode(NodeEntity? entity, Type nodeType)
+        private INode CreateNode(INodeScript script, NodeEntity? entity, Type nodeType)
         {
             INode node = _kernel.Get(nodeType) as INode ?? throw new InvalidOperationException($"Node {nodeType} is not an INode");
 
@@ -79,7 +79,7 @@ namespace Artemis.Core.Services
             if (node is CustomViewModelNode customViewModelNode)
                 customViewModelNode.BaseCustomViewModel = _kernel.Get(customViewModelNode.CustomViewModelType, new ConstructorArgument("node", node));
 
-            node.Initialize();
+            node.Initialize(script);
             return node;
         }
 

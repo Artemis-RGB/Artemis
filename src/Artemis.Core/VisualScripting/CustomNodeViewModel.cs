@@ -2,14 +2,8 @@
 
 namespace Artemis.Core
 {
-    public class CustomNodeViewModel : CorePropertyChanged
+    public interface ICustomNodeViewModel
     {
-        [JsonIgnore]
         public INode Node { get; }
-
-        public CustomNodeViewModel(INode node)
-        {
-            Node = node;
-        }
     }
 }

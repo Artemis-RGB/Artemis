@@ -383,7 +383,8 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (_creationBoxParent.ContextMenu != null)
                 _creationBoxParent.ContextMenu.IsOpen = false;
 
-            INode node = nodeData.CreateNode(null);
+            INode node = nodeData.CreateNode(Script, null);
+            node.Initialize(Script);
             Script.AddNode(node);
 
             InitializeNode(node, _lastRightClickLocation);

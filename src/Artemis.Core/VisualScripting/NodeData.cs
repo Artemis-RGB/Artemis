@@ -14,13 +14,13 @@ namespace Artemis.Core
         public string Description { get; }
         public string Category { get; }
         
-        private Func<NodeEntity?, INode> _create;
+        private Func<INodeScript, NodeEntity?, INode> _create;
 
         #endregion
 
         #region Constructors
 
-        internal NodeData(Plugin plugin, Type type, string name, string description, string category, Func<NodeEntity?, INode>? create)
+        internal NodeData(Plugin plugin, Type type, string name, string description, string category, Func<INodeScript, NodeEntity?, INode>? create)
         {
             this.Plugin = plugin;
             this.Type = type;
@@ -34,7 +34,7 @@ namespace Artemis.Core
 
         #region Methods
 
-        public INode CreateNode(NodeEntity? entity) => _create(entity);
+        public INode CreateNode(INodeScript script, NodeEntity? entity) => _create(script, entity);
 
         #endregion
     }

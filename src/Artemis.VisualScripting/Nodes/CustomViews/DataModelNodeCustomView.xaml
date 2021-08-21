@@ -8,5 +8,5 @@
              xmlns:controls="clr-namespace:Artemis.UI.Shared.Controls;assembly=Artemis.UI.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <controls:DataModelPicker DataModelPath="{Binding DataModelPath}" ButtonBrush="#434343"/>
+    <controls:DataModelPicker DataModelPath="{Binding DataModelPath}" Modules="{Binding Modules}" ButtonBrush="#434343"/>
 </UserControl>

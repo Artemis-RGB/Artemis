@@ -19,7 +19,7 @@ namespace Artemis.Core
             Entity = new DataBindingEntity();
 
             ApplyRegistration(dataBindingRegistration);
-            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
+            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", LayerProperty.ProfileElement.Profile);
 
             Save();
         }
@@ -28,7 +28,7 @@ namespace Artemis.Core
         {
             LayerProperty = layerProperty;
             Entity = entity;
-            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
+            Script = new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", LayerProperty.ProfileElement.Profile);
 
             // Load will add children so be initialized before that
             Load();
@@ -245,8 +245,8 @@ namespace Artemis.Core
 
             Script.Dispose();
             Script = Entity.NodeScript != null
-                ? new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", Entity.NodeScript)
-                : new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding");
+                ? new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", Entity.NodeScript, LayerProperty.ProfileElement.Profile)
+                : new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", LayerProperty.ProfileElement.Profile);
         }
 
         /// <inheritdoc />

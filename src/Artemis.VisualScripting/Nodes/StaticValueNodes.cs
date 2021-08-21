@@ -29,7 +29,7 @@ namespace Artemis.VisualScripting.Nodes
             Output.Value = Storage as int? ?? 0;
         }
 
-        public override void Initialize() => Storage ??= 0;
+        public override void Initialize(INodeScript script) => Storage ??= 0;
 
         #endregion
     }
@@ -60,7 +60,38 @@ namespace Artemis.VisualScripting.Nodes
             Output.Value = Storage as double? ?? 0.0;
         }
 
-        public override void Initialize() => Storage ??= 0.0;
+        public override void Initialize(INodeScript script) => Storage ??= 0.0;
+
+        #endregion
+    }
+
+    [Node("Float-Value", "Outputs a configurable float value.")]
+    public class StaticFloatValueNode : Node<StaticFloatValueNodeCustomViewModel>
+    {
+        #region Properties & Fields
+
+        public OutputPin<float> Output { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public StaticFloatValueNode()
+            : base("Float", "Outputs a configurable float value.")
+        {
+            Output = CreateOutputPin<float>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Output.Value = Storage as float? ?? 0.0f;
+        }
+
+        public override void Initialize(INodeScript script) => Storage ??= 0.0f;
 
         #endregion
     }

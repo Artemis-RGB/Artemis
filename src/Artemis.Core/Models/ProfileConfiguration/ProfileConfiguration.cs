@@ -28,7 +28,7 @@ namespace Artemis.Core
 
             Entity = new ProfileConfigurationEntity();
             Icon = new ProfileConfigurationIcon(Entity) {MaterialIcon = icon};
-            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
         }
 
         internal ProfileConfiguration(ProfileCategory category, ProfileConfigurationEntity entity)
@@ -39,7 +39,7 @@ namespace Artemis.Core
 
             Entity = entity;
             Icon = new ProfileConfigurationIcon(Entity);
-            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
+            ActivationCondition = new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
 
             Load();
         }
@@ -242,8 +242,8 @@ namespace Artemis.Core
 
             ActivationCondition.Dispose();
             ActivationCondition = Entity.ActivationCondition != null 
-                ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition) 
-                : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active");
+                ? new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", Entity.ActivationCondition, this) 
+                : new NodeScript<bool>("Activate profile", "Whether or not the profile should be active", this);
 
             EnableHotkey = Entity.EnableHotkey != null ? new ProfileConfigurationHotkey(Entity.EnableHotkey) : null;
             DisableHotkey = Entity.DisableHotkey != null ? new ProfileConfigurationHotkey(Entity.DisableHotkey) : null;

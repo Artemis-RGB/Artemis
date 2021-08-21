@@ -40,6 +40,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public string DisplayName { get; }
 
+        /// <inheritdoc />
+        public Type ValueType => typeof(TProperty);
+
         /// <summary>
         ///     Gets the data binding created using this registration
         /// </summary>
@@ -73,6 +76,12 @@ namespace Artemis.Core
 
             // The related entity is left behind, just in case the data binding is added back later
             LayerProperty.DisableDataBinding(DataBinding);
+        }
+
+        /// <inheritdoc />
+        public object? GetValue()
+        {
+            return Getter();
         }
     }
 }
