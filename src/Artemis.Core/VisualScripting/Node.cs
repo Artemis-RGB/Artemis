@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Ninject;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Ninject.Parameters;
 
 namespace Artemis.Core
 {
@@ -149,14 +151,24 @@ namespace Artemis.Core
 
     public abstract class Node<T> : CustomViewModelNode where T : ICustomNodeViewModel
     {
+        [Inject]
+        internal IKernel Kernel { get; set; } = null!;
+
         protected Node()
         { }
 
         protected Node(string name, string description) : base(name, description)
         { }
 
-        public override Type CustomViewModelType => typeof(T);
-        public T CustomViewModel => (T) BaseCustomViewModel!;
+        public virtual T GetViewModel()
+        {
+            return Kernel.Get<T>(new ConstructorArgument("node", this));
+        }
+
+        public override ICustomNodeViewModel GetCustomViewModel()
+        {
+            return GetViewModel();
+        }
     }
 
     public abstract class CustomViewModelNode : Node
@@ -169,7 +181,6 @@ namespace Artemis.Core
         protected CustomViewModelNode(string name, string description) : base(name, description)
         { }
 
-        public abstract Type CustomViewModelType { get; }
-        public object? BaseCustomViewModel { get; set; }
+        public abstract ICustomNodeViewModel GetCustomViewModel();
     }
 }

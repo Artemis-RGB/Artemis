@@ -208,17 +208,7 @@
                         </Border>
 
                         <Border x:Name="BrdCustomView" Grid.Column="1">
-                            <Border.Resources>
-                                <DataTemplate DataType="{x:Type core:CustomViewModelNode}">
-                                    <ContentControl s:View.Model="{Binding BaseCustomViewModel}"/>
-                                </DataTemplate>
-
-                                <DataTemplate DataType="{x:Type core:Node}">
-                                    <Border />
-                                </DataTemplate>
-                            </Border.Resources>
-
-                            <ContentControl Content="{Binding Node}" />
+                            <ContentControl s:View.Model="{TemplateBinding CustomViewModel}"/>
                         </Border>
 
                         <Border x:Name="BrdOutputPins" Grid.Column="2">

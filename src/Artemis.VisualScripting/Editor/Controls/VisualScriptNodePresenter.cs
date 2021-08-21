@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Artemis.Core;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
 namespace Artemis.VisualScripting.Editor.Controls
@@ -21,12 +22,21 @@ namespace Artemis.VisualScripting.Editor.Controls
         #region Dependency Properties
 
         public static readonly DependencyProperty NodeProperty = DependencyProperty.Register(
-            "Node", typeof(VisualScriptNode), typeof(VisualScriptNodePresenter), new PropertyMetadata(default(VisualScriptNode)));
+            "Node", typeof(VisualScriptNode), typeof(VisualScriptNodePresenter), new PropertyMetadata(default(VisualScriptNode), NodePropertyChangedCallback));
 
         public VisualScriptNode Node
         {
-            get => (VisualScriptNode)GetValue(NodeProperty);
+            get => (VisualScriptNode) GetValue(NodeProperty);
             set => SetValue(NodeProperty, value);
+        }
+
+        public static readonly DependencyProperty CustomViewModelProperty = DependencyProperty.Register(
+            "CustomViewModel", typeof(ICustomNodeViewModel), typeof(VisualScriptNodePresenter), new PropertyMetadata(null));
+
+        public ICustomNodeViewModel CustomViewModel
+        {
+            get => (ICustomNodeViewModel) GetValue(CustomViewModelProperty);
+            set => SetValue(CustomViewModelProperty, value);
         }
 
         public static readonly DependencyProperty TitleBrushProperty = DependencyProperty.Register(
@@ -34,7 +44,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public Brush TitleBrush
         {
-            get => (Brush)GetValue(TitleBrushProperty);
+            get => (Brush) GetValue(TitleBrushProperty);
             set => SetValue(TitleBrushProperty, value);
         }
 
@@ -56,8 +66,8 @@ namespace Artemis.VisualScripting.Editor.Controls
             }
 
             Size neededSize = base.MeasureOverride(constraint);
-            int width = (int)Math.Ceiling(neededSize.Width);
-            int height = (int)Math.Ceiling(neededSize.Height);
+            int width = (int) Math.Ceiling(neededSize.Width);
+            int height = (int) Math.Ceiling(neededSize.Height);
 
             return new Size(SnapToGridSize(width), SnapToGridSize(height));
         }
@@ -130,6 +140,20 @@ namespace Artemis.VisualScripting.Editor.Controls
             }
 
             args.Handled = true;
+        }
+
+        private void GetCustomViewModel()
+        {
+            if (Node?.Node is CustomViewModelNode customViewModelNode)
+                CustomViewModel = customViewModelNode.GetCustomViewModel();
+            else
+                CustomViewModel = null;
+        }
+
+        private static void NodePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is VisualScriptNodePresenter presenter)
+                presenter.GetCustomViewModel();
         }
 
         #endregion

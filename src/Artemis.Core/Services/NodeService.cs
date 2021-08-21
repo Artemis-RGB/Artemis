@@ -83,10 +83,7 @@ namespace Artemis.Core.Services
                     // ignored
                 }
             }
-
-            if (node is CustomViewModelNode customViewModelNode)
-                customViewModelNode.BaseCustomViewModel = _kernel.Get(customViewModelNode.CustomViewModelType, new ConstructorArgument("node", node));
-
+            
             node.Initialize(script);
             return node;
         }
