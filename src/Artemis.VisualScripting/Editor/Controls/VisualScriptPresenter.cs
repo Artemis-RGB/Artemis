@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Artemis.Core;
 using Artemis.VisualScripting.Editor.Controls.Wrapper;
 using Artemis.VisualScripting.ViewModel;
@@ -32,11 +33,13 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         #region Properties & Fields
 
+        private bool _fitPending = false;
         private Canvas _canvas;
         private ItemsControl _nodeList;
         private ItemsControl _cableList;
         private Border _selectionBorder;
         private TranslateTransform _canvasViewPortTransform;
+        private ScaleTransform _canvasViewPortScale;
         private Panel _creationBoxParent;
 
         private Vector _viewportCenter = new(0, 0);
@@ -121,7 +124,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         }
 
         public static readonly DependencyProperty GridSizeProperty = DependencyProperty.Register(
-            "GridSize", typeof(int), typeof(VisualScriptPresenter), new PropertyMetadata(12));
+            "GridSize", typeof(int), typeof(VisualScriptPresenter), new PropertyMetadata(24));
 
         public int GridSize
         {
@@ -136,6 +139,15 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             get => (int)GetValue(SurfaceSizeProperty);
             set => SetValue(SurfaceSizeProperty, value);
+        }
+
+        public static readonly DependencyProperty AutoFitScriptProperty = DependencyProperty.Register(
+            "AutoFitScript", typeof(bool), typeof(VisualScriptPresenter), new PropertyMetadata(false, AutoFitScriptChanged));
+
+        public bool AutoFitScript
+        {
+            get => (bool)GetValue(AutoFitScriptProperty);
+            set => SetValue(AutoFitScriptProperty, value);
         }
 
         #endregion
@@ -163,6 +175,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             _canvas.AllowDrop = true;
 
+            _canvas.LayoutTransform = _canvasViewPortScale = new ScaleTransform(MaxScale, MaxScale);
             _canvas.RenderTransform = _canvasViewPortTransform = new TranslateTransform(0, 0);
             _canvas.MouseLeftButtonDown += OnCanvasMouseLeftButtonDown;
             _canvas.MouseLeftButtonUp += OnCanvasMouseLeftButtonUp;
@@ -177,11 +190,22 @@ namespace Artemis.VisualScripting.Editor.Controls
             _cableList.ItemsSource = VisualScript?.Cables;
         }
 
+        private static void AutoFitScriptChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        {
+            if (d is not VisualScriptPresenter scriptPresenter) return;
+
+            if ((args.NewValue as bool?) == true)
+                scriptPresenter.FitScript();
+        }
+
         private void OnSizeChanged(object sender, SizeChangedEventArgs args)
         {
             if (sender is not VisualScriptPresenter scriptPresenter) return;
 
-            scriptPresenter.UpdatePanning();
+            if (AutoFitScript)
+                scriptPresenter.FitScript();
+            else
+                scriptPresenter.UpdatePanning();
         }
 
         private static void ScriptChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
@@ -194,28 +218,33 @@ namespace Artemis.VisualScripting.Editor.Controls
         private void ScriptChanged(VisualScript newScript)
         {
             if (VisualScript != null)
+            {
                 VisualScript.PropertyChanged -= OnVisualScriptPropertyChanged;
+                VisualScript.NodeMoved -= OnVisualScriptNodeMoved;
+                VisualScript.NodeCollectionChanged -= OnVisualScriptNodeCollectionChanged;
+            }
 
             VisualScript = newScript;
 
             if (VisualScript != null)
             {
                 VisualScript.PropertyChanged += OnVisualScriptPropertyChanged;
+                VisualScript.NodeMoved += OnVisualScriptNodeMoved;
+                VisualScript.NodeCollectionChanged += OnVisualScriptNodeCollectionChanged;
 
                 if (_nodeList != null)
                     _nodeList.ItemsSource = VisualScript?.Nodes;
 
                 if (_cableList != null)
                     _cableList.ItemsSource = VisualScript?.Cables;
-
-                VisualScript.Nodes.Clear();
-                foreach (INode node in VisualScript.Script.Nodes)
-                    InitializeNode(node);
             }
 
             VisualScript?.RecreateCables();
 
-            CenterAt(new Vector(0, 0));
+            if (AutoFitScript)
+                FitScript();
+            else
+                CenterAt(new Vector(0, 0));
         }
 
         private void OnVisualScriptPropertyChanged(object sender, PropertyChangedEventArgs args)
@@ -223,6 +252,18 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (args.PropertyName == nameof(VisualScript.Cables))
                 if (_cableList != null)
                     _cableList.ItemsSource = VisualScript.Cables;
+        }
+
+        private void OnVisualScriptNodeMoved(object sender, EventArgs args)
+        {
+            if (AutoFitScript)
+                FitScript();
+        }
+
+        private void OnVisualScriptNodeCollectionChanged(object? sender, EventArgs e)
+        {
+            if (AutoFitScript)
+                FitScript();
         }
 
         private void OnCanvasPreviewMouseRightButtonDown(object sender, MouseButtonEventArgs args)
@@ -261,6 +302,12 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void OnCanvasMouseRightButtonDown(object sender, MouseButtonEventArgs args)
         {
+            if (AutoFitScript)
+            {
+                args.Handled = true;
+                return;
+            }
+
             _dragCanvas = true;
             _dragCanvasStartLocation = args.GetPosition(this);
             _dragCanvasStartOffset = _viewportCenter;
@@ -289,7 +336,7 @@ namespace Artemis.VisualScripting.Editor.Controls
             {
                 if (args.RightButton == MouseButtonState.Pressed)
                 {
-                    Vector newLocation = _dragCanvasStartOffset + (((args.GetPosition(this) - _dragCanvasStartLocation)) * (1.0 / Scale));
+                    Vector newLocation = _dragCanvasStartOffset - (((args.GetPosition(this) - _dragCanvasStartLocation)) * (1.0 / Scale));
                     CenterAt(newLocation);
 
                     _movedDuringDrag = true;
@@ -327,22 +374,24 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void OnCanvasDragOver(object sender, DragEventArgs args)
         {
-            if (VisualScript == null) return;
-
             if (VisualScript.IsConnecting)
                 VisualScript.OnDragOver(args.GetPosition(_canvas));
         }
 
         private void OnCanvasMouseWheel(object sender, MouseWheelEventArgs args)
         {
+            if (AutoFitScript)
+            {
+                args.Handled = true;
+                return;
+            }
+
             if (args.Delta < 0)
                 Scale /= ScaleFactor;
             else
                 Scale *= ScaleFactor;
 
             Scale = Clamp(Scale, MinScale, MaxScale);
-
-            _canvas.LayoutTransform = new ScaleTransform(Scale, Scale);
 
             UpdatePanning();
 
@@ -373,7 +422,61 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (d is not VisualScriptPresenter presenter) return;
             if (presenter.VisualScript == null) return;
 
+            presenter._canvasViewPortScale.ScaleX = presenter.Scale;
+            presenter._canvasViewPortScale.ScaleY = presenter.Scale;
+
             presenter.VisualScript.NodeDragScale = 1.0 / presenter.Scale;
+        }
+
+        private void FitScript()
+        {
+            if (_fitPending) return;
+
+            _fitPending = true;
+            Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(FitScriptAction));
+        }
+
+        private void FitScriptAction()
+        {
+            _fitPending = false;
+
+            if ((Script == null) || (_nodeList == null)) return;
+
+            double minX = double.MaxValue;
+            double maxX = double.MinValue;
+            double minY = double.MaxValue;
+            double maxY = double.MinValue;
+            for (int i = 0; i < _nodeList.Items.Count; i++)
+            {
+                DependencyObject container = _nodeList.ItemContainerGenerator.ContainerFromIndex(i);
+                VisualScriptNodePresenter nodePresenter = GetChildOfType<VisualScriptNodePresenter>(container);
+                if (nodePresenter != null)
+                {
+                    minX = Math.Min(minX, nodePresenter.Node.Node.X);
+                    minY = Math.Min(minY, nodePresenter.Node.Node.Y);
+
+                    maxX = Math.Max(maxX, nodePresenter.Node.Node.X + nodePresenter.ActualWidth);
+                    maxY = Math.Max(maxY, nodePresenter.Node.Node.Y + nodePresenter.ActualHeight);
+                }
+            }
+
+            if (minX >= (double.MaxValue - 1))
+            {
+                Scale = MaxScale;
+                CenterAt(new Vector(0, 0));
+            }
+            else
+            {
+                double width = maxX - minX;
+                double height = maxY - minY;
+
+                double scaleX = ActualWidth / width;
+                double scaleY = ActualHeight / height;
+
+                Scale = Clamp(Math.Min(scaleX, scaleY) / 1.05, 0, MaxScale); //DarthAffe 21.08.2021: 5% Border
+
+                CenterAt(new Vector(minX + (width / 2.0), minY + (height / 2.0)));
+            }
         }
 
         private void CreateNode(NodeData nodeData)
@@ -385,21 +488,10 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             INode node = nodeData.CreateNode(Script, null);
             node.Initialize(Script);
+            node.X = _lastRightClickLocation.X - VisualScript.LocationOffset;
+            node.Y = _lastRightClickLocation.Y - VisualScript.LocationOffset;
+
             Script.AddNode(node);
-
-            InitializeNode(node, _lastRightClickLocation);
-        }
-
-        private void InitializeNode(INode node, Point? initialLocation = null)
-        {
-            VisualScriptNode visualScriptNode = new(VisualScript, node);
-            if (initialLocation != null)
-            {
-                visualScriptNode.X = initialLocation.Value.X;
-                visualScriptNode.Y = initialLocation.Value.Y;
-            }
-            visualScriptNode.SnapNodeToGrid();
-            VisualScript.Nodes.Add(visualScriptNode);
         }
 
         private void CenterAt(Vector vector)
@@ -414,8 +506,8 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (_canvasViewPortTransform == null) return;
 
             double surfaceOffset = (SurfaceSize / 2.0) * Scale;
-            _canvasViewPortTransform.X = (((_viewportCenter.X * Scale) + (ActualWidth / 2.0))) - surfaceOffset;
-            _canvasViewPortTransform.Y = (((_viewportCenter.Y * Scale) + (ActualHeight / 2.0))) - surfaceOffset;
+            _canvasViewPortTransform.X = (((-_viewportCenter.X * Scale) + (ActualWidth / 2.0))) - surfaceOffset;
+            _canvasViewPortTransform.Y = (((-_viewportCenter.Y * Scale) + (ActualHeight / 2.0))) - surfaceOffset;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -434,6 +526,21 @@ namespace Artemis.VisualScripting.Editor.Controls
             double x = Clamp(value.X, min.X, max.X);
             double y = Clamp(value.Y, min.Y, max.Y);
             return new Vector(x, y);
+        }
+
+        public static T GetChildOfType<T>(DependencyObject obj)
+            where T : DependencyObject
+        {
+            if (obj == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(obj); i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(obj, i);
+
+                T result = (child as T) ?? GetChildOfType<T>(child);
+                if (result != null) return result;
+            }
+            return null;
         }
 
         #endregion

@@ -7,10 +7,6 @@ namespace Artemis.VisualScripting.Editor.Controls
 {
     public class VisualScriptEditor : Control
     {
-        #region Properties & Fields
-
-        #endregion
-
         #region Dependency Properties
 
         public static readonly DependencyProperty ScriptProperty = DependencyProperty.Register(
@@ -30,10 +26,6 @@ namespace Artemis.VisualScripting.Editor.Controls
             get => (IEnumerable<NodeData>)GetValue(AvailableNodesProperty);
             set => SetValue(AvailableNodesProperty, value);
         }
-
-        #endregion
-
-        #region Methods
 
         #endregion
     }

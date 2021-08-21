@@ -20,6 +20,13 @@ namespace Artemis.Core
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<IPin> PinAdded;
+        public event EventHandler<IPin> PinRemoved;
+
+        #endregion
+
         #region Constructors
 
         protected PinCollection(INode node, string name, int initialCount)
@@ -35,14 +42,26 @@ namespace Artemis.Core
 
         #region Methods
 
+
         public IPin AddPin()
         {
             IPin pin = CreatePin();
             _pins.Add(pin);
+
+            PinAdded?.Invoke(this, pin);
+
             return pin;
         }
 
-        public bool Remove(IPin pin) => _pins.Remove(pin);
+        public bool Remove(IPin pin)
+        {
+            bool removed = _pins.Remove(pin);
+
+            if (removed)
+                PinRemoved?.Invoke(this, pin);
+
+            return removed;
+        }
 
         protected abstract IPin CreatePin();
 

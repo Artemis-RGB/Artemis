@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace Artemis.Core
 {
     public abstract class Node : CorePropertyChanged, INode
     {
-        public event EventHandler Resetting;
-
         #region Properties & Fields
 
         private string _name;
-
         public string Name
         {
             get => _name;
@@ -20,7 +16,6 @@ namespace Artemis.Core
         }
 
         private string _description;
-
         public string Description
         {
             get => _description;
@@ -28,7 +23,6 @@ namespace Artemis.Core
         }
 
         private double _x;
-
         public double X
         {
             get => _x;
@@ -36,7 +30,6 @@ namespace Artemis.Core
         }
 
         private double _y;
-
         public double Y
         {
             get => _y;
@@ -44,7 +37,6 @@ namespace Artemis.Core
         }
 
         private object? _storage;
-
         public object? Storage
         {
             get => _storage;
@@ -61,11 +53,16 @@ namespace Artemis.Core
 
         #endregion
 
+        #region Events
+
+        public event EventHandler Resetting;
+
+        #endregion
+
         #region Construtors
 
         protected Node()
-        {
-        }
+        { }
 
         protected Node(string name, string description)
         {
@@ -138,8 +135,7 @@ namespace Artemis.Core
         }
 
         public virtual void Initialize(INodeScript script)
-        {
-        }
+        { }
 
         public abstract void Evaluate();
 
@@ -154,12 +150,10 @@ namespace Artemis.Core
     public abstract class Node<T> : CustomViewModelNode where T : ICustomNodeViewModel
     {
         protected Node()
-        {
-        }
+        { }
 
         protected Node(string name, string description) : base(name, description)
-        {
-        }
+        { }
 
         public override Type CustomViewModelType => typeof(T);
         public T CustomViewModel => (T) BaseCustomViewModel!;
@@ -169,13 +163,11 @@ namespace Artemis.Core
     {
         /// <inheritdoc />
         protected CustomViewModelNode()
-        {
-        }
+        { }
 
         /// <inheritdoc />
         protected CustomViewModelNode(string name, string description) : base(name, description)
-        {
-        }
+        { }
 
         public abstract Type CustomViewModelType { get; }
         public object? BaseCustomViewModel { get; set; }

@@ -15,7 +15,10 @@ namespace Artemis.Core
         Type ResultType { get; }
 
         object? Context { get; set; }
-
+        
+        event EventHandler<INode>? NodeAdded;
+        event EventHandler<INode>? NodeRemoved;
+        
         void Run();
         void AddNode(INode node);
         void RemoveNode(INode node);

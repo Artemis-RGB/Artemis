@@ -28,6 +28,13 @@ namespace Artemis.Core
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<INode>? NodeAdded;
+        public event EventHandler<INode>? NodeRemoved;
+
+        #endregion
+
         #region Constructors
 
         public NodeScript(string name, string description, object? context = null)
@@ -67,11 +74,15 @@ namespace Artemis.Core
         public void AddNode(INode node)
         {
             _nodes.Add(node);
+
+            NodeAdded?.Invoke(this, node);
         }
 
         public void RemoveNode(INode node)
         {
             _nodes.Remove(node);
+
+            NodeRemoved?.Invoke(this, node);
         }
 
         public void Dispose()

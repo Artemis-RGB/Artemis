@@ -27,6 +27,13 @@ namespace Artemis.Core
 
         #endregion
 
+        #region Events
+
+        public event EventHandler<IPin> PinConnected;
+        public event EventHandler<IPin> PinDisconnected;
+
+        #endregion
+
         #region Constructors
 
         protected Pin(INode node, string name = "")
@@ -46,18 +53,27 @@ namespace Artemis.Core
         {
             _connectedTo.Add(pin);
             OnPropertyChanged(nameof(ConnectedTo));
+
+            PinConnected?.Invoke(this, pin);
         }
 
         public void DisconnectFrom(IPin pin)
         {
             _connectedTo.Remove(pin);
             OnPropertyChanged(nameof(ConnectedTo));
+
+            PinDisconnected?.Invoke(this, pin);
         }
 
         public void DisconnectAll()
         {
+            List<IPin> connectedPins = new(_connectedTo);
+
             _connectedTo.Clear();
             OnPropertyChanged(nameof(ConnectedTo));
+
+            foreach (IPin pin in connectedPins)
+                PinDisconnected?.Invoke(this, pin);
         }
 
         private void OnNodeResetting(object sender, EventArgs e)

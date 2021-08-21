@@ -16,6 +16,9 @@ namespace Artemis.Core
 
         bool IsEvaluated { get; set; }
 
+        event EventHandler<IPin> PinConnected;
+        event EventHandler<IPin> PinDisconnected;
+
         void ConnectTo(IPin pin);
         void DisconnectFrom(IPin pin);
     }

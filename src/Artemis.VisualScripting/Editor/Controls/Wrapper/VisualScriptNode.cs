@@ -13,7 +13,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
     {
         #region Properties & Fields
 
-        private double _locationOffset;
+        private readonly Dictionary<IPin, VisualScriptPin> _pinMapping = new();
 
         public VisualScript Script { get; }
         public INode Node { get; }
@@ -55,20 +55,20 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         public double X
         {
-            get => Node.X + _locationOffset;
+            get => Node.X + Script.LocationOffset;
             set
             {
-                Node.X = value - _locationOffset;
+                Node.X = value - Script.LocationOffset;
                 OnPropertyChanged();
             }
         }
 
         public double Y
         {
-            get => Node.Y + _locationOffset;
+            get => Node.Y + Script.LocationOffset;
             set
             {
-                Node.Y = value - _locationOffset;
+                Node.Y = value - Script.LocationOffset;
                 OnPropertyChanged();
             }
         }
@@ -100,8 +100,6 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
             Node.PropertyChanged += OnNodePropertyChanged;
 
-            _locationOffset = script.SurfaceSize / 2.0;
-
             ValidatePins();
         }
 
@@ -114,6 +112,12 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             if (string.Equals(args.PropertyName, nameof(Node.Pins), StringComparison.OrdinalIgnoreCase)
              || string.Equals(args.PropertyName, nameof(Node.PinCollections), StringComparison.OrdinalIgnoreCase))
                 ValidatePins();
+
+            else if (string.Equals(args.PropertyName, nameof(Node.X), StringComparison.OrdinalIgnoreCase))
+                OnPropertyChanged(nameof(X));
+
+            else if (string.Equals(args.PropertyName, nameof(Node.Y), StringComparison.OrdinalIgnoreCase))
+                OnPropertyChanged(nameof(Y));
         }
 
         private void ValidatePins()
@@ -199,7 +203,29 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             }
 
             #endregion
+
+            #region Pin Mapping
+
+            _pinMapping.Clear();
+
+            foreach (VisualScriptPin pin in InputPins)
+                _pinMapping.Add(pin.Pin, pin);
+
+            foreach (VisualScriptPin pin in OutputPins)
+                _pinMapping.Add(pin.Pin, pin);
+
+            foreach (VisualScriptPinCollection pinCollection in InputPinCollections)
+                foreach (VisualScriptPin pin in pinCollection.Pins)
+                    _pinMapping.Add(pin.Pin, pin);
+
+            foreach (VisualScriptPinCollection pinCollection in OutputPinCollections)
+                foreach (VisualScriptPin pin in pinCollection.Pins)
+                    _pinMapping.Add(pin.Pin, pin);
+
+            #endregion
         }
+
+        internal VisualScriptPin GetVisualPin(IPin pin) => ((pin != null) && _pinMapping.TryGetValue(pin, out VisualScriptPin visualScriptPin)) ? visualScriptPin : null;
 
         public void SnapNodeToGrid()
         {
@@ -219,8 +245,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             OnIsSelectedChanged(IsSelected, alterSelection);
         }
 
-        public void DragStart() => DragStarting?.Invoke(this, new EventArgs());
-        public void DragEnd() => DragEnding?.Invoke(this, new EventArgs());
+        public void DragStart() => DragStarting?.Invoke(this, EventArgs.Empty);
+        public void DragEnd() => DragEnding?.Invoke(this, EventArgs.Empty);
         public void DragMove(double dx, double dy) => DragMoving?.Invoke(this, new VisualScriptNodeDragMovingEventArgs(dx, dy));
 
         private void OnIsSelectedChanged(bool isSelected, bool alterSelection) => IsSelectedChanged?.Invoke(this, new VisualScriptNodeIsSelectedChangedEventArgs(isSelected, alterSelection));

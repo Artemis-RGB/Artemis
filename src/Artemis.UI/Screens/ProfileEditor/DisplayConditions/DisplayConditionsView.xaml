@@ -43,8 +43,9 @@
         <Separator Grid.Row="1" Grid.Column="0" Style="{StaticResource MaterialDesignDarkSeparator}" Margin="-2 0" />
 
         <Grid Grid.Row="2" Grid.Column="0" MouseUp="{s:Action ScriptGridMouseUp}" Cursor="Hand">
-            <controls:VisualScriptEditor Script="{Binding RenderProfileElement.DisplayCondition}"
-                                         Visibility="{Binding RenderProfileElement.DisplayCondition, Converter={StaticResource NullToVisibilityConverter}}" />
+            <controls:VisualScriptPresenter Script="{Binding RenderProfileElement.DisplayCondition}"
+                                            AutoFitScript="True"
+                                            Visibility="{Binding RenderProfileElement.DisplayCondition, Converter={StaticResource NullToVisibilityConverter}}" />
             <Border Opacity="0">
                 <Border.Background>
                     <SolidColorBrush Color="{Binding Color, Source={StaticResource MaterialDesignCardBackground}}" Opacity="0.75" />

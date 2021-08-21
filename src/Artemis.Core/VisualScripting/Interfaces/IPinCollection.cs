@@ -9,6 +9,9 @@ namespace Artemis.Core
         PinDirection Direction { get; }
         Type Type { get; }
 
+        event EventHandler<IPin> PinAdded;
+        event EventHandler<IPin> PinRemoved;
+
         IPin AddPin();
         bool Remove(IPin pin);
     }

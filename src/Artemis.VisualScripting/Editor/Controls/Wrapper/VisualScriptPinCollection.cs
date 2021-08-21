@@ -12,6 +12,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         public VisualScriptNode Node { get; }
         public IPinCollection PinCollection { get; }
 
+        private readonly Dictionary<IPin, VisualScriptPin> _pinMapping = new();
         public ObservableCollection<VisualScriptPin> Pins { get; } = new();
 
         #endregion
@@ -33,27 +34,47 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.Node = node;
             this.PinCollection = pinCollection;
 
+            pinCollection.PinAdded += OnPinCollectionPinAdded;
+            pinCollection.PinRemoved += OnPinCollectionPinRemoved;
+
             foreach (IPin pin in PinCollection)
-                Pins.Add(new VisualScriptPin(node, pin));
+            {
+                VisualScriptPin visualScriptPin = new(node, pin);
+                _pinMapping.Add(pin, visualScriptPin);
+                Pins.Add(visualScriptPin);
+            }
         }
 
         #endregion
 
         #region Methods
 
+        private void OnPinCollectionPinRemoved(object sender, IPin pin)
+        {
+            if (!_pinMapping.TryGetValue(pin, out VisualScriptPin visualScriptPin)) return;
+
+            visualScriptPin.DisconnectAll();
+            Pins.Remove(visualScriptPin);
+        }
+
+        private void OnPinCollectionPinAdded(object sender, IPin pin)
+        {
+            if (_pinMapping.ContainsKey(pin)) return;
+
+            VisualScriptPin visualScriptPin = new(Node, pin);
+            _pinMapping.Add(pin, visualScriptPin);
+            Pins.Add(visualScriptPin);
+        }
+
         public void AddPin()
         {
-            IPin pin = PinCollection.AddPin();
-            Pins.Add(new VisualScriptPin(Node, pin));
+            PinCollection.AddPin();
         }
 
         public void RemovePin(VisualScriptPin pin)
         {
-            pin.DisconnectAll();
             PinCollection.Remove(pin.Pin);
-            Pins.Remove(pin);
         }
-
         public void RemoveAll()
         {
             List<VisualScriptPin> pins = new(Pins);

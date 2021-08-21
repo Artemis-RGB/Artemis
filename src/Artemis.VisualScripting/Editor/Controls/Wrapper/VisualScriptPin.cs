@@ -19,6 +19,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         #region Properties & Fields
 
+        private bool _isConnectionUpdated = false;
+
         private VisualScriptPin _isConnectingPin;
         private VisualScriptCable _isConnectingCable;
 
@@ -39,8 +41,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             }
         }
 
-        public Point AbsoluteCableTargetPosition => Pin.Direction == PinDirection.Input ? new Point(AbsolutePosition.X - CABLE_OFFSET, AbsolutePosition.Y)
-                                                        : new Point(AbsolutePosition.X + CABLE_OFFSET, AbsolutePosition.Y);
+        public Point AbsoluteCableTargetPosition => Pin.Direction == PinDirection.Input ? new Point(AbsolutePosition.X - CABLE_OFFSET, AbsolutePosition.Y) : new Point(AbsolutePosition.X + CABLE_OFFSET, AbsolutePosition.Y);
 
         #endregion
 
@@ -50,11 +51,21 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         {
             this.Node = node;
             this.Pin = pin;
+
+            pin.PinConnected += PinConnectionChanged;
+            pin.PinDisconnected += PinConnectionChanged;
         }
 
         #endregion
 
         #region Methods
+
+        private void PinConnectionChanged(object sender, IPin pin)
+        {
+            if (_isConnectionUpdated) return;
+
+            Node?.Script?.RequestCableRecreation();
+        }
 
         public void SetConnecting(bool isConnecting)
         {
@@ -63,8 +74,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
                 if (_isConnectingCable != null)
                     SetConnecting(false);
 
-                _isConnectingPin = new VisualScriptPin(null, new IsConnectingPin(Pin.Direction == PinDirection.Input ? PinDirection.Output : PinDirection.Input, Pin.Type))
-                { AbsolutePosition = AbsolutePosition };
+                _isConnectingPin = new VisualScriptPin(null, new IsConnectingPin(Pin.Direction == PinDirection.Input ? PinDirection.Output : PinDirection.Input, Pin.Type)) { AbsolutePosition = AbsolutePosition };
                 _isConnectingCable = new VisualScriptCable(this, _isConnectingPin);
                 Node.OnIsConnectingPinChanged(_isConnectingPin);
             }
@@ -81,6 +91,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
         {
             if (InternalConnections.Contains(cable)) return;
 
+            _isConnectionUpdated = true;
+
             if (Pin.Direction == PinDirection.Input)
             {
                 List<VisualScriptCable> cables = InternalConnections.ToList();
@@ -92,21 +104,31 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Pin.ConnectTo(cable.GetConnectedPin(Pin));
 
             Node?.OnPinConnected(new PinConnectedEventArgs(this, cable));
+
+            _isConnectionUpdated = false;
         }
 
         public void DisconnectAll()
         {
+            _isConnectionUpdated = true;
+
             List<VisualScriptCable> cables = InternalConnections.ToList();
             foreach (VisualScriptCable cable in cables)
                 cable.Disconnect();
+
+            _isConnectionUpdated = false;
         }
 
         internal void Disconnect(VisualScriptCable cable)
         {
+            _isConnectionUpdated = true;
+
             InternalConnections.Remove(cable);
             Pin.DisconnectFrom(cable.GetConnectedPin(Pin));
 
             Node?.OnPinDisconnected(new PinDisconnectedEventArgs(this, cable));
+
+            _isConnectionUpdated = false;
         }
 
         #endregion

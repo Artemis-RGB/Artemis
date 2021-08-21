@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using Artemis.Core;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.ViewModel;
@@ -13,6 +15,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
     public class VisualScript : AbstractBindable
     {
         #region Properties & Fields
+
+        private bool _cableRecreationPending = false;
 
         private readonly HashSet<VisualScriptNode> _selectedNodes = new();
         private readonly Dictionary<VisualScriptNode, (double X, double Y)> _nodeStartPositions = new();
@@ -31,6 +35,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             set => SetProperty(ref _nodeDragScale, value);
         }
 
+        internal double LocationOffset { get; }
+
         private VisualScriptPin _isConnectingPin;
         private VisualScriptPin IsConnectingPin
         {
@@ -42,6 +48,7 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             }
         }
 
+        private readonly Dictionary<INode, VisualScriptNode> _nodeMapping = new();
         public ObservableCollection<VisualScriptNode> Nodes { get; } = new();
 
         public IEnumerable<VisualScriptCable> Cables => Nodes.SelectMany(n => n.InputPins.SelectMany(p => p.InternalConnections))
@@ -54,6 +61,13 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         #endregion
 
+        #region Events
+
+        public event EventHandler NodeMoved;
+        public event EventHandler NodeCollectionChanged;
+
+        #endregion
+
         #region Constructors
 
         public VisualScript(INodeScript script, int surfaceSize, int gridSize)
@@ -62,7 +76,15 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.SurfaceSize = surfaceSize;
             this.GridSize = gridSize;
 
+            LocationOffset = SurfaceSize / 2.0;
+
             Nodes.CollectionChanged += OnNodeCollectionChanged;
+
+            script.NodeAdded += OnScriptNodeAdded;
+            script.NodeRemoved += OnScriptRemovedAdded;
+
+            foreach (INode node in Script.Nodes)
+                InitializeNode(node);
         }
 
         #endregion
@@ -85,31 +107,69 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
                 RegisterNodes(args.NewItems.Cast<VisualScriptNode>());
         }
 
+        private void OnScriptNodeAdded(object sender, INode node)
+        {
+            if (_nodeMapping.ContainsKey(node)) return;
+
+            InitializeNode(node);
+        }
+
+        private void OnScriptRemovedAdded(object sender, INode node)
+        {
+            if (!_nodeMapping.TryGetValue(node, out VisualScriptNode visualScriptNode)) return;
+
+            Nodes.Remove(visualScriptNode);
+        }
+
+        private void InitializeNode(INode node)
+        {
+            VisualScriptNode visualScriptNode = new(this, node);
+            visualScriptNode.SnapNodeToGrid();
+            Nodes.Add(visualScriptNode);
+        }
+
         private void RegisterNodes(IEnumerable<VisualScriptNode> nodes)
         {
             foreach (VisualScriptNode node in nodes)
             {
+                _nodeMapping.Add(node.Node, node);
+
                 node.IsSelectedChanged += OnNodeIsSelectedChanged;
                 node.DragStarting += OnNodeDragStarting;
                 node.DragEnding += OnNodeDragEnding;
                 node.DragMoving += OnNodeDragMoving;
+                node.PropertyChanged += OnNodePropertyChanged;
 
                 if (node.IsSelected)
                     _selectedNodes.Add(node);
             }
+
+            NodeCollectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void UnregisterNodes(IEnumerable<VisualScriptNode> nodes)
         {
             foreach (VisualScriptNode node in nodes)
             {
+                _nodeMapping.Remove(node.Node);
+
                 node.IsSelectedChanged -= OnNodeIsSelectedChanged;
                 node.DragStarting -= OnNodeDragStarting;
                 node.DragEnding -= OnNodeDragEnding;
                 node.DragMoving -= OnNodeDragMoving;
+                node.PropertyChanged -= OnNodePropertyChanged;
 
                 _selectedNodes.Remove(node);
             }
+
+            NodeCollectionChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void OnNodePropertyChanged(object sender, PropertyChangedEventArgs args)
+        {
+            if (string.Equals(args.PropertyName, nameof(VisualScriptNode.X), StringComparison.OrdinalIgnoreCase)
+             || string.Equals(args.PropertyName, nameof(VisualScriptNode.Y), StringComparison.OrdinalIgnoreCase))
+                NodeMoved?.Invoke(this, EventArgs.Empty);
         }
 
         private void OnNodeIsSelectedChanged(object sender, VisualScriptNodeIsSelectedChangedEventArgs args)
@@ -184,8 +244,18 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             Script.RemoveNode(node.Node);
         }
 
+        internal void RequestCableRecreation()
+        {
+            if (_cableRecreationPending) return;
+
+            _cableRecreationPending = true;
+            Application.Current.Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(RecreateCables));
+        }
+
         internal void RecreateCables()
         {
+            _cableRecreationPending = false;
+
             Dictionary<IPin, VisualScriptPin> pinMapping = Nodes.SelectMany(n => n.InputPins)
                                                                 .Concat(Nodes.SelectMany(n => n.OutputPins))
                                                                 .Concat(Nodes.SelectMany(n => n.InputPinCollections.SelectMany(p => p.Pins)))
@@ -200,13 +270,13 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             {
                 foreach (IPin connectedPin in pin.ConnectedTo)
                     if (!connectedPins.Contains(connectedPin))
-                    {
-                        VisualScriptPin pin1 = pinMapping[pin];
-                        VisualScriptPin pin2 = pinMapping[connectedPin];
-                        VisualScriptCable cable = new(pin1, pin2, false);
-                        pin1.InternalConnections.Add(cable);
-                        pin2.InternalConnections.Add(cable);
-                    }
+                        if (pinMapping.TryGetValue(pin, out VisualScriptPin pin1)
+                         && pinMapping.TryGetValue(connectedPin, out VisualScriptPin pin2))
+                        {
+                            VisualScriptCable cable = new(pin1, pin2, false);
+                            pin1.InternalConnections.Add(cable);
+                            pin2.InternalConnections.Add(cable);
+                        }
 
                 connectedPins.Add(pin);
             }
