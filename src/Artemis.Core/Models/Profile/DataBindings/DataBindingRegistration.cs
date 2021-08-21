@@ -67,7 +67,7 @@ namespace Artemis.Core
             DataBinding = new DataBinding<TLayerProperty, TProperty>(LayerProperty, dataBinding);
             return DataBinding;
         }
-
+        
         /// <inheritdoc />
         public void ClearDataBinding()
         {

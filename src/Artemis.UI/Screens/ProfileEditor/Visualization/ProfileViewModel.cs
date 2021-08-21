@@ -313,15 +313,11 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             if (SuspendedEditing || !_settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true).Value || _profileEditorService.SelectedProfile == null)
                 return;
 
-            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllFolders()
+            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllRenderElements()
                 .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
                 .SelectMany(p => p.GetAllDataBindingRegistrations()))
                 dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
-            foreach (IDataBindingRegistration dataBindingRegistration in _profileEditorService.SelectedProfile.GetAllLayers()
-                .SelectMany(f => f.GetAllLayerProperties(), (f, p) => p)
-                .SelectMany(p => p.GetAllDataBindingRegistrations()))
-                dataBindingRegistration.GetDataBinding()?.UpdateWithDelta(delta);
-
+            
             // TODO: Only update when there are data bindings
             if (!_profileEditorService.Playing)
                 _profileEditorService.UpdateProfilePreview();

@@ -19,5 +19,10 @@ namespace Artemis.Core
         ///     Applies the data binding to the layer property
         /// </summary>
         void Apply();
+        
+        /// <summary>
+        ///     If the data binding is enabled, loads the node script for that data binding
+        /// </summary>
+        void LoadNodeScript();
     }
 }

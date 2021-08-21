@@ -438,10 +438,8 @@ namespace Artemis.Core.Services
             profile.Save();
             if (includeChildren)
             {
-                foreach (Folder folder in profile.GetAllFolders())
-                    folder.Save();
-                foreach (Layer layer in profile.GetAllLayers())
-                    layer.Save();
+                foreach (RenderProfileElement child in profile.GetAllRenderElements())
+                    child.Save();
             }
 
             // If there are no changes, don't bother saving
@@ -599,11 +597,9 @@ namespace Artemis.Core.Services
 
             profile.Save();
 
-            foreach (Folder folder in profile.GetAllFolders())
-                folder.Save();
-            foreach (Layer layer in profile.GetAllLayers())
-                layer.Save();
-
+            foreach (RenderProfileElement renderProfileElement in profile.GetAllRenderElements()) 
+                renderProfileElement.Save();
+            
             _logger.Debug("Adapt profile - Saving " + profile);
             profile.RedoStack.Clear();
             profile.UndoStack.Push(memento);

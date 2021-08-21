@@ -70,10 +70,6 @@ namespace Artemis.Core
 
         internal void LoadRenderElement()
         {
-            DisplayCondition = RenderElementEntity.NodeScript != null
-                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript, Profile)
-                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
-
             Timeline = RenderElementEntity.Timeline != null
                 ? new Timeline(RenderElementEntity.Timeline)
                 : new Timeline();
@@ -109,6 +105,19 @@ namespace Artemis.Core
             // Timeline
             RenderElementEntity.Timeline = Timeline?.Entity;
             Timeline?.Save();
+        }
+
+        internal void LoadNodeScript()
+        {
+            DisplayCondition = RenderElementEntity.NodeScript != null
+                ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript, Profile)
+                : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
+
+            foreach (ILayerProperty layerProperty in GetAllLayerProperties())
+            {
+                foreach (IDataBindingRegistration dataBindingRegistration in layerProperty.GetAllDataBindingRegistrations()) 
+                    dataBindingRegistration.GetDataBinding()?.LoadNodeScript();
+            }
         }
 
         internal void OnLayerEffectsUpdated()

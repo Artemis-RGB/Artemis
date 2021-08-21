@@ -242,7 +242,11 @@ namespace Artemis.Core
 
             EasingTime = Entity.EasingTime;
             EasingFunction = (Easings.Functions) Entity.EasingFunction;
+        }
 
+        /// <inheritdoc />
+        public void LoadNodeScript()
+        {
             Script.Dispose();
             Script = Entity.NodeScript != null
                 ? new NodeScript<TProperty>(GetScriptName(), "The value to put into the data binding", Entity.NodeScript, LayerProperty.ProfileElement.Profile)
