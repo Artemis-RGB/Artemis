@@ -66,15 +66,15 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
             NotifyOfPropertyChange(nameof(SelectedLayerProperty));
         }
 
-        #region Overrides of CustomNodeViewModel
-
-        /// <inheritdoc />
-        protected override void OnDisplay()
+        public override void OnActivate()
         {
             GetProfileElements();
             GetLayerProperties();
         }
 
-        #endregion
+        public override void OnDeactivate()
+        {
+            base.OnDeactivate();
+        }
     }
 }

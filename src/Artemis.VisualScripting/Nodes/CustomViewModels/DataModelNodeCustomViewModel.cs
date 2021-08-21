@@ -1,4 +1,5 @@
-﻿using Artemis.Core;
+﻿using System.ComponentModel;
+using Artemis.Core;
 using Artemis.Core.Modules;
 using Stylet;
 
@@ -26,7 +27,6 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
             set
             {
                 _node.DataModelPath = value;
-                OnPropertyChanged(nameof(DataModelPath));
 
                 if (_node.DataModelPath != null)
                 {
@@ -41,8 +41,8 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
                 _node.UpdateOutputPin();
             }
         }
-
-        public void Initialize()
+        
+        public override void OnActivate()
         {
             if (Modules != null)
                 return;
@@ -52,17 +52,19 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
                 Modules.Add(scriptProfile.Configuration.Module);
             else if (_node.Script.Context is ProfileConfiguration profileConfiguration && profileConfiguration.Module != null)
                 Modules.Add(profileConfiguration.Module);
+
+            _node.PropertyChanged += NodeOnPropertyChanged;
         }
 
-        #region Overrides of CustomNodeViewModel
-
-        /// <inheritdoc />
-        protected override void OnDisplay()
+        public override void OnDeactivate()
         {
-            Initialize();
-            base.OnDisplay();
+            _node.PropertyChanged -= NodeOnPropertyChanged;
         }
 
-        #endregion
+        private void NodeOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(DataModelNode.DataModelPath))
+                OnPropertyChanged(nameof(DataModelPath));
+        }
     }
 }

@@ -60,10 +60,21 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            if (!int.TryParse(Input.Value?.ToString(), out int value))
+            Integer.Value = Input.Value switch
+            {
+                int input => input,
+                double input => (int) input,
+                float input => (int) input,
+                _ => TryParse(Input.Value)
+            };
+        }
+
+        private int TryParse(object input)
+        {
+            if (!int.TryParse(input?.ToString(), out int value))
                 value = 0;
 
-            Integer.Value = value;
+            return value;
         }
 
         #endregion
@@ -95,10 +106,67 @@ namespace Artemis.VisualScripting.Nodes
 
         public override void Evaluate()
         {
-            if (!double.TryParse(Input.Value?.ToString(), out double value))
-                value = 0;
+            Double.Value = Input.Value switch
+            {
+                int input => input,
+                double input => input,
+                float input => input,
+                _ => TryParse(Input.Value)
+            };
+        }
 
-            Double.Value = value;
+        private double TryParse(object input)
+        {
+            if (!double.TryParse(input?.ToString(), out double value))
+                value = 0.0;
+
+            return value;
+        }
+
+        #endregion
+    }
+
+    [Node("To Float", "Converts the input to a float.")]
+    public class ConvertToFloatNode : Node
+    {
+        #region Properties & Fields
+
+        public InputPin<object> Input { get; }
+
+        public OutputPin<float> Float { get; }
+
+        #endregion
+
+        #region Constructors
+
+        public ConvertToFloatNode()
+            : base("To Float", "Converts the input to a float.")
+        {
+            Input = CreateInputPin<object>();
+            Float = CreateOutputPin<float>();
+        }
+
+        #endregion
+
+        #region Methods
+
+        public override void Evaluate()
+        {
+            Float.Value = Input.Value switch
+            {
+                int input => input,
+                double input => (float) input,
+                float input => input,
+                _ => TryParse(Input.Value)
+            };
+        }
+
+        private float TryParse(object input)
+        {
+            if (!float.TryParse(input?.ToString(), out float value))
+                value = 0.0f;
+
+            return value;
         }
 
         #endregion

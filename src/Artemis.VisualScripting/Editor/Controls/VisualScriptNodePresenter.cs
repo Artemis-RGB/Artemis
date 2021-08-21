@@ -50,6 +50,15 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         #endregion
 
+        #region Constructors
+
+        public VisualScriptNodePresenter()
+        {
+            Unloaded += OnUnloaded;
+        }
+
+        #endregion
+
         #region Methods
 
         protected override Size MeasureOverride(Size constraint)
@@ -144,8 +153,13 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void GetCustomViewModel()
         {
+            CustomViewModel?.OnDeactivate();
+
             if (Node?.Node is CustomViewModelNode customViewModelNode)
+            {
                 CustomViewModel = customViewModelNode.GetCustomViewModel();
+                CustomViewModel.OnActivate();
+            }
             else
                 CustomViewModel = null;
         }
@@ -154,6 +168,12 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             if (d is VisualScriptNodePresenter presenter)
                 presenter.GetCustomViewModel();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            CustomViewModel?.OnDeactivate();
+            CustomViewModel = null;
         }
 
         #endregion

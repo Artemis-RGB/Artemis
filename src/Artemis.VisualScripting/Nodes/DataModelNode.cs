@@ -9,13 +9,20 @@ namespace Artemis.VisualScripting.Nodes
     [Node("Data Model-Value", "Outputs a selectable data model value.")]
     public class DataModelNode : Node<DataModelNodeCustomViewModel>
     {
+        private DataModelPath _dataModelPath;
+
         public DataModelNode() : base("Data Model", "Outputs a selectable data model value")
         {
         }
 
         public INodeScript Script { get; private set; }
         public OutputPin Output { get; private set; }
-        public DataModelPath DataModelPath { get; set; }
+
+        public DataModelPath DataModelPath
+        {
+            get => _dataModelPath;
+            set => SetAndNotify(ref _dataModelPath , value);
+        }
 
         public override void Initialize(INodeScript script)
         {
@@ -36,7 +43,10 @@ namespace Artemis.VisualScripting.Nodes
 
         public void UpdateOutputPin()
         {
-            if (Pins.Contains(Output))
+            if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
+                return;
+
+            if (Output != null && Pins.Contains(Output))
             {
                 RemovePin(Output);
                 Output = null;

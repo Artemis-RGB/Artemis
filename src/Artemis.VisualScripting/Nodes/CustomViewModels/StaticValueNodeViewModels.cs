@@ -1,4 +1,4 @@
-﻿using Artemis.Core;
+﻿using System.ComponentModel;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
 {
@@ -13,12 +13,24 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public double Input
         {
-            get => (double) _node.Storage;
-            set
-            {
-                _node.Storage = value;
+            get => (double) (_node.Storage ?? 0.0);
+            set => _node.Storage = value;
+        }
+
+        public override void OnActivate()
+        {
+            _node.PropertyChanged += NodeOnPropertyChanged;
+        }
+
+        public override void OnDeactivate()
+        {
+            _node.PropertyChanged -= NodeOnPropertyChanged;
+        }
+
+        private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Node.Storage))
                 OnPropertyChanged(nameof(Input));
-            }
         }
     }
 
@@ -33,12 +45,24 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public float Input
         {
-            get => (float)_node.Storage;
-            set
-            {
-                _node.Storage = value;
+            get => (float) (_node.Storage ?? 0f);
+            set => _node.Storage = value;
+        }
+
+        public override void OnActivate()
+        {
+            _node.PropertyChanged += NodeOnPropertyChanged;
+        }
+
+        public override void OnDeactivate()
+        {
+            _node.PropertyChanged -= NodeOnPropertyChanged;
+        }
+
+        private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Node.Storage))
                 OnPropertyChanged(nameof(Input));
-            }
         }
     }
 
@@ -53,17 +77,24 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public int Input
         {
-            get
-            {
-                if (_node.Storage is long longInput)
-                    return (int)longInput;
-                return (int)_node.Storage;
-            }
-            set
-            {
-                _node.Storage = value;
+            get => _node.Storage is long longInput ? (int) longInput : (int) (_node.Storage ?? 0);
+            set => _node.Storage = value;
+        }
+
+        public override void OnActivate()
+        {
+            _node.PropertyChanged += NodeOnPropertyChanged;
+        }
+
+        public override void OnDeactivate()
+        {
+            _node.PropertyChanged -= NodeOnPropertyChanged;
+        }
+
+        private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Node.Storage))
                 OnPropertyChanged(nameof(Input));
-            }
         }
     }
 
@@ -78,12 +109,24 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public string Input
         {
-            get => (string)_node.Storage;
-            set
-            {
-                _node.Storage = value;
+            get => (string) _node.Storage;
+            set => _node.Storage = value;
+        }
+
+        public override void OnActivate()
+        {
+            _node.PropertyChanged += NodeOnPropertyChanged;
+        }
+
+        public override void OnDeactivate()
+        {
+            _node.PropertyChanged -= NodeOnPropertyChanged;
+        }
+
+        private void NodeOnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(Node.Storage))
                 OnPropertyChanged(nameof(Input));
-            }
         }
     }
 }

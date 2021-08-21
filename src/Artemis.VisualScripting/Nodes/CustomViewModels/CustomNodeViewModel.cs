@@ -1,10 +1,9 @@
-﻿using System.Windows;
-using Artemis.Core;
+﻿using Artemis.Core;
 using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
 {
-    public abstract class CustomNodeViewModel : PropertyChangedBase, IViewAware, ICustomNodeViewModel
+    public abstract class CustomNodeViewModel : PropertyChangedBase, ICustomNodeViewModel
     {
         protected CustomNodeViewModel(INode node)
         {
@@ -13,21 +12,17 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
 
         public INode Node { get; }
 
-        #region Implementation of IViewAware
+        #region Implementation of ICustomNodeViewModel
 
         /// <inheritdoc />
-        public void AttachView(UIElement view)
-        {
-            View = view;
-            OnDisplay();
-        }
-
-        protected virtual void OnDisplay()
+        public virtual void OnActivate()
         {
         }
 
         /// <inheritdoc />
-        public UIElement View { get; private set; }
+        public virtual void OnDeactivate()
+        {
+        }
 
         #endregion
     }
