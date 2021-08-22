@@ -96,7 +96,7 @@ namespace Artemis.Core
 
         private void Evaluate()
         {
-            Value = ConnectedTo.Count > 0 ? ConnectedTo[0].PinValue : default;
+            Value = ConnectedTo.Count > 0 ? ConnectedTo[0].PinValue : Type.GetDefault();
         }
 
         #endregion

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Artemis.Storage.Entities.Profile;
 
 namespace Artemis.Core
@@ -22,6 +21,21 @@ namespace Artemis.Core
         ///     The parent group of this layer property, set after construction
         /// </summary>
         LayerPropertyGroup LayerPropertyGroup { get; }
+
+        /// <summary>
+        ///     Gets the data binding of this property
+        /// </summary>
+        IDataBinding BaseDataBinding { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether the layer has any data binding properties
+        /// </summary>
+        public bool HasDataBinding { get; }
+
+        /// <summary>
+        ///     Gets a boolean indicating whether data bindings are supported on this type of property
+        /// </summary>
+        public bool DataBindingsSupported { get; }
 
         /// <summary>
         ///     Gets the unique path of the property on the layer
@@ -48,11 +62,6 @@ namespace Artemis.Core
         void Initialize(RenderProfileElement profileElement, LayerPropertyGroup group, PropertyEntity entity, bool fromStorage, PropertyDescriptionAttribute description, string path);
 
         /// <summary>
-        ///     Returns a list off all data binding registrations
-        /// </summary>
-        List<IDataBindingRegistration> GetAllDataBindingRegistrations();
-
-        /// <summary>
         ///     Attempts to load and add the provided keyframe entity to the layer property
         /// </summary>
         /// <param name="keyframeEntity">The entity representing the keyframe to add</param>
@@ -69,6 +78,12 @@ namespace Artemis.Core
         /// </summary>
         /// <param name="timeline">The timeline to apply to the property</param>
         void Update(Timeline timeline);
+
+
+        /// <summary>
+        /// Updates just the data binding instead of the entire layer
+        /// </summary>
+        void UpdateDataBinding();
 
         /// <summary>
         ///     Occurs when the layer property is disposed
@@ -104,25 +119,5 @@ namespace Artemis.Core
         ///     Occurs when a keyframe was removed from the layer property
         /// </summary>
         public event EventHandler<LayerPropertyEventArgs>? KeyframeRemoved;
-
-        /// <summary>
-        ///     Occurs when a data binding property has been added
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertyRegistered;
-
-        /// <summary>
-        ///     Occurs when all data binding properties have been removed
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingPropertiesCleared;
-
-        /// <summary>
-        ///     Occurs when a data binding has been enabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingEnabled;
-
-        /// <summary>
-        ///     Occurs when a data binding has been disabled
-        /// </summary>
-        public event EventHandler<LayerPropertyEventArgs>? DataBindingDisabled;
     }
 }

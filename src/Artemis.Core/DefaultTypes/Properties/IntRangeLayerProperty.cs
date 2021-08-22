@@ -5,11 +5,15 @@
     {
         internal IntRangeLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, new IntDataBindingConverter<IntRange>(), "Start");
-            RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new IntDataBindingConverter<IntRange>(), "End");
-
             CurrentValueSet += OnCurrentValueSet;
             DefaultValue = new IntRange();
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, "Start");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, "End");
         }
 
         /// <inheritdoc />

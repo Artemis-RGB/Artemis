@@ -61,7 +61,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
             if (_node.ProfileElement == null)
                 return;
 
-            LayerProperties.AddRange(_node.ProfileElement.GetAllLayerProperties().Where(l => l.GetAllDataBindingRegistrations().Any()));
+            LayerProperties.AddRange(_node.ProfileElement.GetAllLayerProperties().Where(l => l.DataBindingsSupported));
             _selectedLayerProperty = _node.LayerProperty;
             NotifyOfPropertyChange(nameof(SelectedLayerProperty));
         }

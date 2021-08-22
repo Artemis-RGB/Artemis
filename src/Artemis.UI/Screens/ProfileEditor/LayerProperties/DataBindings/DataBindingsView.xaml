@@ -4,20 +4,48 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:s="https://github.com/canton7/Stylet"
+             xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls;assembly=Artemis.VisualScripting"
+             xmlns:layerProperties="clr-namespace:Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              mc:Ignorable="d"
-             d:DesignHeight="450" d:DesignWidth="800">
-    <TabControl ItemsSource="{Binding Items}" 
-                SelectedIndex="{Binding SelectedItemIndex}" 
-                Style="{StaticResource MaterialDesignTabControl}" >
-        <TabControl.ContentTemplate>
-            <DataTemplate>
-                <ContentControl s:View.Model="{Binding}" TextElement.Foreground="{DynamicResource MaterialDesignBody}" />
-            </DataTemplate>
-        </TabControl.ContentTemplate>
-        <TabControl.ItemTemplate>
-            <DataTemplate>
-                <TextBlock Margin="-12 0" Text="{Binding DisplayName}"></TextBlock>
-        </DataTemplate>
-        </TabControl.ItemTemplate>
-    </TabControl>
+             d:DesignHeight="450" d:DesignWidth="800"
+             d:DataContext="{d:DesignInstance {x:Type layerProperties:DataBindingsViewModel}}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       VerticalAlignment="Center"
+                       Margin="15 0"
+                       Text="{Binding DataBinding.BaseLayerProperty.PropertyDescription.Name}" />
+            <CheckBox Grid.Column="1"
+                      VerticalAlignment="Center"
+                      IsChecked="{Binding DataBindingEnabled}">
+                Enable data binding
+            </CheckBox>
+        </Grid>
+
+        <controls:VisualScriptPresenter Grid.Row="1" AvailableNodes="{Binding AvailableNodes}" Script="{Binding DataBinding.Script}" />
+        <Border Grid.Row="1" Background="{StaticResource MaterialDesignToolBarBackground}"
+                Visibility="{Binding DataBindingEnabled, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">
+                <materialDesign:PackIcon Kind="TransitConnectionVariant" Width="100" Height="100" HorizontalAlignment="Center" />
+                <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" Margin="0 25">
+                    Enable this data binding to use nodes!
+                </TextBlock>
+                <TextBlock Style="{StaticResource MaterialDesignBody1TextBlock}" TextWrapping="Wrap" HorizontalAlignment="Center" TextAlignment="Center">
+                    When you enable data bindings you can no longer use keyframes or normal values for this property. <LineBreak />
+                    Instead you'll be using our node scripting system to set a value based on the data model or values of other layers/folders.
+                </TextBlock>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+
 </UserControl>

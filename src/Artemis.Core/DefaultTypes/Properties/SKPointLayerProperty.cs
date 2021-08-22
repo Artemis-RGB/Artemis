@@ -7,8 +7,13 @@ namespace Artemis.Core
     {
         internal SKPointLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue.X, value => CurrentValue = new SKPoint(value, CurrentValue.Y), new FloatDataBindingConverter<SKPoint>(), "X");
-            RegisterDataBindingProperty(() => CurrentValue.Y, value => CurrentValue = new SKPoint(CurrentValue.X, value), new FloatDataBindingConverter<SKPoint>(), "Y");
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.X, value => CurrentValue = new SKPoint(value, CurrentValue.Y), "X");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Y, value => CurrentValue = new SKPoint(CurrentValue.X, value), "Y");
         }
 
         /// <summary>

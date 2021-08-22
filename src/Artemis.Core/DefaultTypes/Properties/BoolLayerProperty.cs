@@ -5,8 +5,13 @@
     {
         internal BoolLayerProperty()
         {
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
             KeyframesSupported = false;
-            RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, new GeneralDataBindingConverter<bool>(), "Value");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue, value => CurrentValue = value, "Value");
         }
 
         /// <summary>

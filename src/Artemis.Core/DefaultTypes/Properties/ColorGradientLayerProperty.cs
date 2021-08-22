@@ -12,7 +12,6 @@ namespace Artemis.Core
         internal ColorGradientLayerProperty()
         {
             KeyframesSupported = false;
-            DataBindingsSupported = true;
             DefaultValue = new ColorGradient();
 
             CurrentValueSet += OnCurrentValueSet;
@@ -20,7 +19,7 @@ namespace Artemis.Core
 
         private void CreateDataBindingRegistrations()
         {
-            ClearDataBindingProperties();
+            DataBinding.ClearDataBindingProperties();
             if (CurrentValue == null)
                 return;
 
@@ -33,7 +32,7 @@ namespace Artemis.Core
                     CurrentValue[stopIndex].Color = value;
                 }
 
-                RegisterDataBindingProperty(() => CurrentValue[stopIndex].Color, Setter, new ColorStopDataBindingConverter(), $"Color #{stopIndex + 1}");
+                DataBinding.RegisterDataBindingProperty(() => CurrentValue[stopIndex].Color, Setter, $"Color #{stopIndex + 1}");
             }
         }
 
@@ -71,7 +70,7 @@ namespace Artemis.Core
 
         private void SubscribedGradientOnPropertyChanged(object? sender, NotifyCollectionChangedEventArgs args)
         {
-            if (CurrentValue.Count != GetAllDataBindingRegistrations().Count)
+            if (CurrentValue.Count != DataBinding.Properties.Count)
                 CreateDataBindingRegistrations();
         }
 
@@ -88,26 +87,5 @@ namespace Artemis.Core
         }
 
         #endregion
-    }
-
-    internal class ColorStopDataBindingConverter : DataBindingConverter<ColorGradient, SKColor>
-    {
-        public ColorStopDataBindingConverter()
-        {
-            SupportsInterpolate = true;
-            SupportsSum = true;
-        }
-
-        /// <inheritdoc />
-        public override SKColor Sum(SKColor a, SKColor b)
-        {
-            return a.Sum(b);
-        }
-
-        /// <inheritdoc />
-        public override SKColor Interpolate(SKColor a, SKColor b, double progress)
-        {
-            return a.Interpolate(b, (float) progress);
-        }
     }
 }

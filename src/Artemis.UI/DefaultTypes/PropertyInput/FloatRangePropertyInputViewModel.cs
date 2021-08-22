@@ -9,15 +9,10 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
 {
     public class FloatRangePropertyInputViewModel : PropertyInputViewModel<FloatRange>
     {
-        private readonly DataBindingRegistration<FloatRange, float> _startRegistration;
-        private readonly DataBindingRegistration<FloatRange, float> _endRegistration;
-
         public FloatRangePropertyInputViewModel(LayerProperty<FloatRange> layerProperty,
             IProfileEditorService profileEditorService,
             IModelValidator<FloatRangePropertyInputViewModel> validator) : base(layerProperty, profileEditorService, validator)
         {
-            _startRegistration = layerProperty.GetDataBindingRegistration<float>("Start");
-            _endRegistration = layerProperty.GetDataBindingRegistration<float>("End");
         }
 
         public float Start
@@ -48,19 +43,11 @@ namespace Artemis.UI.DefaultTypes.PropertyInput
             }
         }
 
-        public bool IsStartEnabled => _startRegistration.DataBinding == null;
-        public bool IsEndEnabled => _endRegistration.DataBinding == null;
 
         protected override void OnInputValueChanged()
         {
             NotifyOfPropertyChange(nameof(Start));
             NotifyOfPropertyChange(nameof(End));
-        }
-
-        protected override void OnDataBindingsChanged()
-        {
-            NotifyOfPropertyChange(nameof(IsStartEnabled));
-            NotifyOfPropertyChange(nameof(IsEndEnabled));
         }
     }
 

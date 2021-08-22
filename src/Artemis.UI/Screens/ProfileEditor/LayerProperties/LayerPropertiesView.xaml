@@ -156,7 +156,6 @@
                     </DockPanel>
                 </Border>
 
-
                 <!-- Properties tree -->
                 <materialDesign:DialogHost Identifier="PropertyTreeDialogHost" DialogTheme="Inherit" CloseOnClickAway="True" Grid.Row="1">
                     <materialDesign:Transitioner x:Name="PropertyTreeTransitioner" SelectedIndex="{Binding PropertyTreeIndex}" DefaultTransitionOrigin="0.9, 0.9" AutoApplyTransitionOrigins="True">

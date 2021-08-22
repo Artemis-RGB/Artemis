@@ -113,11 +113,8 @@ namespace Artemis.Core
                 ? new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", RenderElementEntity.NodeScript, Profile)
                 : new NodeScript<bool>($"Activate {_typeDisplayName}", $"Whether or not this {_typeDisplayName} should be active", Profile);
 
-            foreach (ILayerProperty layerProperty in GetAllLayerProperties())
-            {
-                foreach (IDataBindingRegistration dataBindingRegistration in layerProperty.GetAllDataBindingRegistrations()) 
-                    dataBindingRegistration.GetDataBinding()?.LoadNodeScript();
-            }
+            foreach (ILayerProperty layerProperty in GetAllLayerProperties()) 
+                layerProperty.BaseDataBinding.LoadNodeScript();
         }
 
         internal void OnLayerEffectsUpdated()

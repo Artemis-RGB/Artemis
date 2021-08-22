@@ -27,7 +27,7 @@
                                Min="{Binding Start}"
                                DragStarted="{s:Action InputDragStarted}"
                                DragEnded="{s:Action InputDragEnded}"
-                               IsEnabled="{Binding IsEndEnabled}" />
+                               IsEnabled="{Binding IsEnabled}" />
         <TextBlock Width="25" Text="{Binding LayerProperty.PropertyDescription.InputAffix}" VerticalAlignment="Center" />
     </StackPanel>
 </UserControl>

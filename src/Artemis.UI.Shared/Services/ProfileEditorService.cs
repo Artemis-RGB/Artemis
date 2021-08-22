@@ -115,7 +115,7 @@ namespace Artemis.UI.Shared.Services
             // Trigger selected data binding change
             if (SelectedDataBinding != null)
             {
-                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties().FirstOrDefault(p => p.Path == SelectedDataBinding.Path);
+                SelectedDataBinding = SelectedProfileElement?.GetAllLayerProperties().FirstOrDefault(p => p.Path == SelectedDataBinding.BaseLayerProperty.Path)?.BaseDataBinding;
                 OnSelectedDataBindingChanged();
             }
 
@@ -184,7 +184,7 @@ namespace Artemis.UI.Shared.Services
         public ProfileConfiguration? SelectedProfileConfiguration { get; private set; }
         public Profile? SelectedProfile => SelectedProfileConfiguration?.Profile;
         public RenderProfileElement? SelectedProfileElement { get; private set; }
-        public ILayerProperty? SelectedDataBinding { get; private set; }
+        public IDataBinding? SelectedDataBinding { get; private set; }
 
         public TimeSpan CurrentTime
         {
@@ -303,9 +303,9 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public void ChangeSelectedDataBinding(ILayerProperty? layerProperty)
+        public void ChangeSelectedDataBinding(IDataBinding? dataBinding)
         {
-            SelectedDataBinding = layerProperty;
+            SelectedDataBinding = dataBinding;
             OnSelectedDataBindingChanged();
         }
 

@@ -5,11 +5,15 @@
     {
         internal FloatRangeLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, new FloatDataBindingConverter<FloatRange>(), "Start");
-            RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, new FloatDataBindingConverter<FloatRange>(), "End");
-
             CurrentValueSet += OnCurrentValueSet;
             DefaultValue = new FloatRange();
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Start, value => CurrentValue.Start = value, "Start");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.End, value => CurrentValue.End = value, "End");
         }
 
         /// <inheritdoc />

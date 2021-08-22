@@ -1,88 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Artemis.Core;
-using Artemis.UI.Ninject.Factories;
+using Artemis.Core.Services;
 using Artemis.UI.Shared.Services;
 using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
 {
-    public class DataBindingsViewModel : Conductor<IDataBindingViewModel>.Collection.AllActive
+    public class DataBindingsViewModel : Screen
     {
-        private readonly IDataBindingsVmFactory _dataBindingsVmFactory;
         private readonly IProfileEditorService _profileEditorService;
-        private ILayerProperty _selectedDataBinding;
-        private int _selectedItemIndex;
-        private bool _updating;
+        private IDataBinding _dataBinding;
 
-        public DataBindingsViewModel(IProfileEditorService profileEditorService, IDataBindingsVmFactory dataBindingsVmFactory)
+        public DataBindingsViewModel(IProfileEditorService profileEditorService, INodeService nodeService)
         {
             _profileEditorService = profileEditorService;
-            _dataBindingsVmFactory = dataBindingsVmFactory;
+            AvailableNodes =  nodeService.AvailableNodes.ToList();
         }
 
-        public int SelectedItemIndex
+        public List<NodeData> AvailableNodes { get; }
+
+        public IDataBinding DataBinding
         {
-            get => _selectedItemIndex;
-            set => SetAndNotify(ref _selectedItemIndex, value);
+            get => _dataBinding;
+            set => SetAndNotify(ref _dataBinding, value);
         }
 
-        private void CreateDataBindingViewModels()
+        public bool DataBindingEnabled
         {
-            int oldIndex = SelectedItemIndex;
-            Items.Clear();
-
-            ILayerProperty layerProperty = _profileEditorService.SelectedDataBinding;
-            if (layerProperty == null)
-                return;
-
-            List<IDataBindingRegistration> registrations = layerProperty.GetAllDataBindingRegistrations();
-
-            // Create a data binding VM for each data bindable property. These VMs will be responsible for retrieving
-            // and creating the actual data bindings
-            Items.AddRange(registrations.Select(registration => _dataBindingsVmFactory.DataBindingViewModel(registration)));
-
-            SelectedItemIndex = Items.Count < oldIndex ? 0 : oldIndex;
+            get => _dataBinding?.IsEnabled ?? false;
+            set
+            {
+                if (_dataBinding != null)
+                    _dataBinding.IsEnabled = value;
+            }
         }
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {
-            CreateDataBindingViewModels();
             SubscribeToSelectedDataBinding();
-
-            SelectedItemIndex = 0;
         }
 
         private void SubscribeToSelectedDataBinding()
         {
-            if (_selectedDataBinding != null)
+            if (DataBinding != null)
             {
-                _selectedDataBinding.DataBindingPropertyRegistered -= DataBindingRegistrationsChanged;
-                _selectedDataBinding.DataBindingPropertiesCleared -= DataBindingRegistrationsChanged;
+                DataBinding.DataBindingEnabled -= DataBindingOnDataBindingToggled;
+                DataBinding.DataBindingDisabled -= DataBindingOnDataBindingToggled;
             }
 
-            _selectedDataBinding = _profileEditorService.SelectedDataBinding;
-            if (_selectedDataBinding != null)
+            DataBinding = _profileEditorService.SelectedDataBinding;
+            if (DataBinding != null)
             {
-                _selectedDataBinding.DataBindingPropertyRegistered += DataBindingRegistrationsChanged;
-                _selectedDataBinding.DataBindingPropertiesCleared += DataBindingRegistrationsChanged;
+                DataBinding.DataBindingEnabled += DataBindingOnDataBindingToggled;
+                DataBinding.DataBindingDisabled += DataBindingOnDataBindingToggled;
+
+                OnPropertyChanged(nameof(DataBindingEnabled));
             }
         }
 
-        private void DataBindingRegistrationsChanged(object sender, LayerPropertyEventArgs e)
+        private void DataBindingOnDataBindingToggled(object? sender, DataBindingEventArgs e)
         {
-            if (_updating)
-                return;
-
-            _updating = true;
-            Execute.PostToUIThread(async () =>
-            {
-                await Task.Delay(200);
-                CreateDataBindingViewModels();
-                _updating = false;
-            });
+            OnPropertyChanged(nameof(DataBindingEnabled));
         }
 
         #region Overrides of Screen
@@ -90,15 +70,8 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         protected override void OnInitialActivate()
         {
             _profileEditorService.SelectedDataBindingChanged += ProfileEditorServiceOnSelectedDataBindingChanged;
-            CreateDataBindingViewModels();
             SubscribeToSelectedDataBinding();
             base.OnInitialActivate();
-        }
-
-        protected override void OnActivate()
-        {
-            SelectedItemIndex = 0;
-            base.OnActivate();
         }
 
         protected override void OnClose()

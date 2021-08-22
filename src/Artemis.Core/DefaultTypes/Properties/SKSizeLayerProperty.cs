@@ -7,8 +7,13 @@ namespace Artemis.Core
     {
         internal SKSizeLayerProperty()
         {
-            RegisterDataBindingProperty(() => CurrentValue.Width, (value) => CurrentValue = new SKSize(value, CurrentValue.Height), new FloatDataBindingConverter<SKSize>(), "Width");
-            RegisterDataBindingProperty(() => CurrentValue.Height, (value) => CurrentValue = new SKSize(CurrentValue.Width, value), new FloatDataBindingConverter<SKSize>(), "Height");
+        }
+
+        /// <inheritdoc />
+        protected override void OnInitialize()
+        {
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Width, (value) => CurrentValue = new SKSize(value, CurrentValue.Height), "Width");
+            DataBinding.RegisterDataBindingProperty(() => CurrentValue.Height, (value) => CurrentValue = new SKSize(CurrentValue.Width, value), "Height");
         }
 
         /// <summary>

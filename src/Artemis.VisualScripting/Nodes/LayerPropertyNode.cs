@@ -26,16 +26,16 @@ namespace Artemis.VisualScripting.Nodes
                     return;
                 }
 
-                List<IDataBindingRegistration> list = LayerProperty.GetAllDataBindingRegistrations();
+                List<IDataBindingProperty> list = LayerProperty.BaseDataBinding.Properties.ToList();
                 int index = 0;
                 foreach (IPin pin in Pins)
                 {
                     OutputPin outputPin = (OutputPin) pin;
-                    IDataBindingRegistration dataBindingRegistration = list[index];
+                    IDataBindingProperty dataBindingProperty = list[index];
                     index++;
 
                     // TODO: Is this really non-nullable?
-                    outputPin.Value = dataBindingRegistration.GetValue();
+                    outputPin.Value = dataBindingProperty.GetValue();
                 }
             }
         }
@@ -108,7 +108,7 @@ namespace Artemis.VisualScripting.Nodes
             if (LayerProperty == null)
                 return;
 
-            foreach (IDataBindingRegistration dataBindingRegistration in LayerProperty.GetAllDataBindingRegistrations())
+            foreach (IDataBindingProperty dataBindingRegistration in LayerProperty.BaseDataBinding.Properties)
                 CreateOutputPin(dataBindingRegistration.ValueType, dataBindingRegistration.DisplayName);
         }
 

@@ -116,11 +116,6 @@ namespace Artemis.UI.Ninject.Factories
         NodeScriptWindowViewModel NodeScriptWindowViewModel(NodeScript nodeScript);
     }
 
-    public interface IDataBindingsVmFactory
-    {
-        IDataBindingViewModel DataBindingViewModel(IDataBindingRegistration registration);
-    }
-
     public interface IPropertyVmFactory
     {
         ITreePropertyViewModel TreePropertyViewModel(ILayerProperty layerProperty, LayerPropertyViewModel layerPropertyViewModel);

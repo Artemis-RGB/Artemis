@@ -45,6 +45,11 @@ namespace Artemis.UI.Shared
         public LayerProperty<T> LayerProperty { get; }
 
         /// <summary>
+        /// Gets a boolean indicating whether the layer property should be enabled
+        /// </summary>
+        public bool IsEnabled => !LayerProperty.HasDataBinding;
+
+        /// <summary>
         ///     Gets the profile editor service
         /// </summary>
         public IProfileEditorService ProfileEditorService { get; }
@@ -85,8 +90,8 @@ namespace Artemis.UI.Shared
         {
             LayerProperty.Updated += LayerPropertyOnUpdated;
             LayerProperty.CurrentValueSet += LayerPropertyOnUpdated;
-            LayerProperty.DataBindingEnabled += LayerPropertyOnDataBindingChange;
-            LayerProperty.DataBindingDisabled += LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBinding.DataBindingEnabled += OnDataBindingChange;
+            LayerProperty.DataBinding.DataBindingDisabled += OnDataBindingChange;
             UpdateInputValue();
             base.OnInitialActivate();
         }
@@ -96,8 +101,8 @@ namespace Artemis.UI.Shared
         {
             LayerProperty.Updated -= LayerPropertyOnUpdated;
             LayerProperty.CurrentValueSet -= LayerPropertyOnUpdated;
-            LayerProperty.DataBindingEnabled -= LayerPropertyOnDataBindingChange;
-            LayerProperty.DataBindingDisabled -= LayerPropertyOnDataBindingChange;
+            LayerProperty.DataBinding.DataBindingEnabled -= OnDataBindingChange;
+            LayerProperty.DataBinding.DataBindingDisabled -= OnDataBindingChange;
             base.OnClose();
         }
 
@@ -194,8 +199,9 @@ namespace Artemis.UI.Shared
             UpdateInputValue();
         }
 
-        private void LayerPropertyOnDataBindingChange(object? sender, LayerPropertyEventArgs e)
+        private void OnDataBindingChange(object? sender, DataBindingEventArgs e)
         {
+            NotifyOfPropertyChange(nameof(IsEnabled));
             OnDataBindingsChanged();
         }
 
