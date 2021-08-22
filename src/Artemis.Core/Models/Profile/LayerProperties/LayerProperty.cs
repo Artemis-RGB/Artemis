@@ -105,9 +105,7 @@ namespace Artemis.Core
 
         private bool _isHidden;
 
-        /// <summary>
-        ///     Gets or sets whether the property is hidden in the UI
-        /// </summary>
+        /// <inheritdoc />
         public bool IsHidden
         {
             get => _isHidden;

@@ -37,6 +37,7 @@
 
   <ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+    <PackageReference Include="SkiaSharp" Version="2.80.3" />
     <PackageReference Include="Stylet" Version="1.3.6" />
   </ItemGroup>
 

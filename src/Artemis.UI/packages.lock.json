@@ -535,8 +535,8 @@
       },
       "SkiaSharp": {
         "type": "Transitive",
-        "resolved": "2.80.2",
-        "contentHash": "D25rzdCwh+3L+XyXqpNa+H/yiLJbE3/R3K/XexwHyQjGdzZvSufFW3oqf3En7hhqSIsxsJ8f5NEZ0J5W5wlGBg==",
+        "resolved": "2.80.3",
+        "contentHash": "qX6tGNP3+MXNYe2pKm0PCRiJ/cx+LTeLaggwZifB7sUMXhECfKKKHJq45VqZKt37xQegnCCdf1jHXwmHeJQs5Q==",
         "dependencies": {
           "System.Memory": "4.5.3"
         }
@@ -1484,6 +1484,7 @@
           "Artemis.Core": "1.0.0",
           "Artemis.UI.Shared": "2.0.0",
           "JetBrains.Annotations": "2021.1.0",
+          "SkiaSharp": "2.80.3",
           "Stylet": "1.3.6"
         }
       }

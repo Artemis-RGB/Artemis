@@ -45,11 +45,11 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
         private void GetProfileElements()
         {
             ProfileElements.Clear();
-            if (_node.Script.Context is not Profile profile) 
+            if (_node.Script.Context is not Profile profile)
                 return;
 
             List<RenderProfileElement> elements = new(profile.GetAllRenderElements());
-            
+
             ProfileElements.AddRange(elements.OrderBy(e => e.Order));
             _selectedProfileElement = _node.ProfileElement;
             NotifyOfPropertyChange(nameof(SelectedProfileElement));
@@ -61,7 +61,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
             if (_node.ProfileElement == null)
                 return;
 
-            LayerProperties.AddRange(_node.ProfileElement.GetAllLayerProperties().Where(l => l.DataBindingsSupported));
+            LayerProperties.AddRange(_node.ProfileElement.GetAllLayerProperties().Where(l => !l.IsHidden && l.DataBindingsSupported));
             _selectedLayerProperty = _node.LayerProperty;
             NotifyOfPropertyChange(nameof(SelectedLayerProperty));
         }

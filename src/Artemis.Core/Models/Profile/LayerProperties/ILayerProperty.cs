@@ -23,6 +23,11 @@ namespace Artemis.Core
         LayerPropertyGroup LayerPropertyGroup { get; }
 
         /// <summary>
+        ///     Gets or sets whether the property is hidden in the UI
+        /// </summary>
+        public bool IsHidden { get; set; }
+
+        /// <summary>
         ///     Gets the data binding of this property
         /// </summary>
         IDataBinding BaseDataBinding { get; }

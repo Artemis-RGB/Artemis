@@ -178,9 +178,13 @@ namespace Artemis.Core
             Entity.Description = Description;
 
             Entity.Nodes.Clear();
-            int id = 0;
+            
+            // No need to save the exit node if that's all there is
+            if (Nodes.Count() == 1)
+                return;
 
-            Dictionary<INode, int> nodes = new();
+            int id = 0;
+            
             foreach (INode node in Nodes)
             {
                 NodeEntity nodeEntity = new()
@@ -208,7 +212,6 @@ namespace Artemis.Core
                 }
 
                 Entity.Nodes.Add(nodeEntity);
-                nodes.Add(node, id);
                 id++;
             }
 
@@ -216,20 +219,21 @@ namespace Artemis.Core
             Entity.Connections.Clear();
             foreach (INode node in Nodes)
             {
-                SavePins(nodes, node, -1, node.Pins);
+                SavePins(node, -1, node.Pins);
 
                 int pinCollectionId = 0;
                 foreach (IPinCollection pinCollection in node.PinCollections)
                 {
-                    SavePins(nodes, node, pinCollectionId, pinCollection);
+                    SavePins(node, pinCollectionId, pinCollection);
                     pinCollectionId++;
                 }
             }
         }
 
-        private void SavePins(Dictionary<INode, int> nodes, INode node, int collectionId, IEnumerable<IPin> pins)
+        private void SavePins(INode node, int collectionId, IEnumerable<IPin> pins)
         {
             int sourcePinId = 0;
+            List<INode> nodes = Nodes.ToList();
             foreach (IPin sourcePin in pins.Where(p => p.Direction == PinDirection.Input))
             {
                 foreach (IPin targetPin in sourcePin.ConnectedTo)
@@ -249,11 +253,11 @@ namespace Artemis.Core
                     Entity.Connections.Add(new NodeConnectionEntity()
                     {
                         SourceType = sourcePin.Type.Name,
-                        SourceNode = nodes[node],
+                        SourceNode = nodes.IndexOf(node),
                         SourcePinCollectionId = collectionId,
                         SourcePinId = sourcePinId,
                         TargetType = targetPin.Type.Name,
-                        TargetNode = nodes[targetPin.Node],
+                        TargetNode = nodes.IndexOf(targetPin.Node),
                         TargetPinCollectionId = targetPinCollectionId,
                         TargetPinId = targetPinId,
                     });
