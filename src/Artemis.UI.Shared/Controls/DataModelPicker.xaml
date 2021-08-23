@@ -19,7 +19,7 @@
                     <DataTemplate x:Key="DataModelDataTemplate">
                         <Control x:Name="TemplateControl" Focusable="False" Template="{StaticResource DataModelSelectionTemplate}" />
                         <DataTemplate.Triggers>
-                            <DataTrigger Binding="{Binding Data.ShowDataModelValues.Value, Source={StaticResource DataContextProxy}}" Value="True">
+                            <DataTrigger Binding="{Binding Data.ShowDataModelValues, Source={StaticResource DataContextProxy}}" Value="True">
                                 <Setter TargetName="TemplateControl" Property="Template" Value="{StaticResource DataModelSelectionTemplateWithValues}" />
                             </DataTrigger>
                         </DataTemplate.Triggers>

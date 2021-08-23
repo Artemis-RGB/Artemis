@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using Artemis.Core;
 using Artemis.Core.Modules;
+using Artemis.Core.Services;
 using Stylet;
 
 namespace Artemis.VisualScripting.Nodes.CustomViewModels
@@ -10,10 +11,16 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
         private readonly DataModelNode _node;
         private BindableCollection<Module> _modules;
 
-        public DataModelNodeCustomViewModel(DataModelNode node) : base(node)
+        public DataModelNodeCustomViewModel(DataModelNode node, ISettingsService settingsService) : base(node)
         {
             _node = node;
+
+            ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
+            ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         }
+
+        public PluginSetting<bool> ShowFullPaths { get; }
+        public PluginSetting<bool> ShowDataModelValues { get; }
 
         public BindableCollection<Module> Modules
         {
@@ -41,7 +48,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
                 _node.UpdateOutputPin();
             }
         }
-        
+
         public override void OnActivate()
         {
             if (Modules != null)
