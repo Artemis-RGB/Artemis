@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using Artemis.Core.DeviceProviders;
@@ -28,7 +27,6 @@ namespace Artemis.Core.Services
         private readonly PluginSetting<int> _targetFrameRateSetting;
         private readonly TextureBrush _textureBrush = new(ITexture.Empty) {CalculationMode = RenderMode.Absolute};
         private Dictionary<Led, ArtemisLed> _ledMap;
-        private bool _modifyingProviders;
         private ListLedGroup? _surfaceLedGroup;
         private SKTexture? _texture;
 
@@ -52,8 +50,9 @@ namespace Artemis.Core.Services
             _ledMap = new Dictionary<Led, ArtemisLed>();
 
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
+            SetRenderPaused(true);
             Surface.RegisterUpdateTrigger(UpdateTrigger);
-
+            
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
 
@@ -82,16 +81,14 @@ namespace Artemis.Core.Services
 
         private void UpdateLedGroup()
         {
-            lock (_devices)
+            bool changedRenderPaused = SetRenderPaused(true);
+            try
             {
-                if (_modifyingProviders)
-                    return;
-
                 _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
 
                 if (_surfaceLedGroup == null)
                 {
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
                     OnLedsChanged();
                     return;
                 }
@@ -102,10 +99,16 @@ namespace Artemis.Core.Services
                     _surfaceLedGroup.Detach();
 
                     // Apply the application wide brush and decorator
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
                     OnLedsChanged();
                 }
             }
+            finally
+            {
+                if (changedRenderPaused)
+                    SetRenderPaused(false);
+            }
+            
         }
 
         private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
@@ -137,91 +140,90 @@ namespace Artemis.Core.Services
         public bool IsRenderPaused { get; set; }
         public bool RenderOpen { get; private set; }
 
+        /// <inheritdoc />
+        public bool FlushLeds { get; set; }
+
         public void AddDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
-            lock (_devices)
+            bool changedRenderPaused = SetRenderPaused(true);
+
+            try
             {
-                try
+                List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
+                Surface.Detach(toRemove.Select(d => d.RgbDevice));
+                foreach (ArtemisDevice device in toRemove)
+                    RemoveDevice(device);
+
+                List<Exception> providerExceptions = new();
+
+                void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
                 {
-                    _modifyingProviders = true;
-
-                    List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
-                    Surface.Detach(toRemove.Select(d => d.RgbDevice));
-                    foreach (ArtemisDevice device in toRemove)
-                        RemoveDevice(device);
-
-                    List<Exception> providerExceptions = new();
-
-                    void DeviceProviderOnException(object? sender, ExceptionEventArgs e)
-                    {
-                        if (e.IsCritical)
-                            providerExceptions.Add(e.Exception);
-                        else
-                            _logger.Warning(e.Exception, "Device provider {deviceProvider} threw non-critical exception", deviceProvider.GetType().Name);
-                    }
-
-                    deviceProvider.Exception += DeviceProviderOnException;
-                    deviceProvider.Initialize();
-                    Surface.Attach(deviceProvider.Devices);
-                    deviceProvider.Exception -= DeviceProviderOnException;
-                    if (providerExceptions.Count == 1)
-                        throw new ArtemisPluginException("RGB.NET threw exception: " + providerExceptions.First().Message, providerExceptions.First());
-                    if (providerExceptions.Count > 1)
-                        throw new ArtemisPluginException("RGB.NET threw multiple exceptions", new AggregateException(providerExceptions));
-
-                    if (!deviceProvider.Devices.Any())
-                    {
-                        _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
-                        return;
-                    }
-
-                    foreach (IRGBDevice rgbDevice in deviceProvider.Devices)
-                    {
-                        ArtemisDevice artemisDevice = GetArtemisDevice(rgbDevice);
-                        AddDevice(artemisDevice);
-                        _logger.Debug("Device provider {deviceProvider} added {deviceName}", deviceProvider.GetType().Name, rgbDevice.DeviceInfo.DeviceName);
-                    }
-
-                    _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
+                    if (e.IsCritical)
+                        providerExceptions.Add(e.Exception);
+                    else
+                        _logger.Warning(e.Exception, "Device provider {deviceProvider} threw non-critical exception", deviceProvider.GetType().Name);
                 }
-                catch (Exception e)
+
+                deviceProvider.Exception += DeviceProviderOnException;
+                deviceProvider.Initialize();
+                Surface.Attach(deviceProvider.Devices);
+                deviceProvider.Exception -= DeviceProviderOnException;
+                if (providerExceptions.Count == 1)
+                    throw new ArtemisPluginException("RGB.NET threw exception: " + providerExceptions.First().Message, providerExceptions.First());
+                if (providerExceptions.Count > 1)
+                    throw new ArtemisPluginException("RGB.NET threw multiple exceptions", new AggregateException(providerExceptions));
+
+                if (!deviceProvider.Devices.Any())
                 {
-                    _logger.Error(e, "Exception during device loading for device provider {deviceProvider}", deviceProvider.GetType().Name);
-                    throw;
+                    _logger.Warning("Device provider {deviceProvider} has no devices", deviceProvider.GetType().Name);
+                    return;
                 }
-                finally
+
+                foreach (IRGBDevice rgbDevice in deviceProvider.Devices)
                 {
-                    _modifyingProviders = false;
-                    UpdateLedGroup();
+                    ArtemisDevice artemisDevice = GetArtemisDevice(rgbDevice);
+                    AddDevice(artemisDevice);
+                    _logger.Debug("Device provider {deviceProvider} added {deviceName}", deviceProvider.GetType().Name, rgbDevice.DeviceInfo.DeviceName);
                 }
+
+                _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Exception during device loading for device provider {deviceProvider}", deviceProvider.GetType().Name);
+                throw;
+            }
+            finally
+            {
+                UpdateLedGroup();
+                if (changedRenderPaused)
+                    SetRenderPaused(false);
             }
         }
 
         public void RemoveDeviceProvider(IRGBDeviceProvider deviceProvider)
         {
-            lock (_devices)
+            bool changedRenderPaused = SetRenderPaused(true);
+
+            try
             {
-                try
-                {
-                    _modifyingProviders = true;
+                List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
+                Surface.Detach(toRemove.Select(d => d.RgbDevice));
+                foreach (ArtemisDevice device in toRemove)
+                    RemoveDevice(device);
 
-                    List<ArtemisDevice> toRemove = _devices.Where(a => deviceProvider.Devices.Any(d => a.RgbDevice == d)).ToList();
-                    Surface.Detach(toRemove.Select(d => d.RgbDevice));
-                    foreach (ArtemisDevice device in toRemove)
-                        RemoveDevice(device);
-
-                    _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
-                }
-                catch (Exception e)
-                {
-                    _logger.Error(e, "Exception during device removal for device provider {deviceProvider}", deviceProvider.GetType().Name);
-                    throw;
-                }
-                finally
-                {
-                    _modifyingProviders = false;
-                    UpdateLedGroup();
-                }
+                _devices.Sort((a, b) => a.ZIndex - b.ZIndex);
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Exception during device removal for device provider {deviceProvider}", deviceProvider.GetType().Name);
+                throw;
+            }
+            finally
+            {
+                UpdateLedGroup();
+                if (changedRenderPaused)
+                    SetRenderPaused(false);
             }
         }
 
@@ -231,6 +233,24 @@ namespace Artemis.Core.Services
 
             UpdateTrigger.Dispose();
             Surface.Dispose();
+        }
+
+        public bool SetRenderPaused(bool paused)
+        {
+            if (IsRenderPaused == paused)
+                return false;
+
+            if (paused)
+            {
+                UpdateTrigger.Stop();
+            }
+            else
+            {
+                UpdateTrigger.Start();
+            }
+
+            IsRenderPaused = paused;
+            return true;
         }
 
         public event EventHandler<DeviceEventArgs>? DeviceAdded;
@@ -267,36 +287,39 @@ namespace Artemis.Core.Services
             if (RenderOpen)
                 throw new ArtemisCoreException("Cannot update the texture while rendering");
 
-            IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
-            if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
-                graphicsContext = _newGraphicsContext;
-
-            if (graphicsContext != null)
-                _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
-            else
-                _logger.Debug("Creating SKTexture with software-based graphics context");
-
-            float evenWidth = Surface.Boundary.Size.Width;
-            if (evenWidth % 2 != 0)
-                evenWidth++;
-            float evenHeight = Surface.Boundary.Size.Height;
-            if (evenHeight % 2 != 0)
-                evenHeight++;
-
-            float renderScale = (float) _renderScaleSetting.Value;
-            int width = Math.Max(1, MathF.Min(evenWidth * renderScale, 4096).RoundToInt());
-            int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
-
-            _texture?.Dispose();
-            _texture = new SKTexture(graphicsContext, width, height, renderScale);
-            _textureBrush.Texture = _texture;
-
-
-            if (!ReferenceEquals(_newGraphicsContext, Constants.ManagedGraphicsContext = _newGraphicsContext))
+            lock (_devices)
             {
-                Constants.ManagedGraphicsContext?.Dispose();
-                Constants.ManagedGraphicsContext = _newGraphicsContext;
-                _newGraphicsContext = null;
+                IManagedGraphicsContext? graphicsContext = Constants.ManagedGraphicsContext = _newGraphicsContext;
+                if (!ReferenceEquals(graphicsContext, _newGraphicsContext))
+                    graphicsContext = _newGraphicsContext;
+
+                if (graphicsContext != null)
+                    _logger.Debug("Creating SKTexture with graphics context {graphicsContext}", graphicsContext.GetType().Name);
+                else
+                    _logger.Debug("Creating SKTexture with software-based graphics context");
+
+                float evenWidth = Surface.Boundary.Size.Width;
+                if (evenWidth % 2 != 0)
+                    evenWidth++;
+                float evenHeight = Surface.Boundary.Size.Height;
+                if (evenHeight % 2 != 0)
+                    evenHeight++;
+
+                float renderScale = (float) _renderScaleSetting.Value;
+                int width = Math.Max(1, MathF.Min(evenWidth * renderScale, 4096).RoundToInt());
+                int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
+
+                _texture?.Dispose();
+                _texture = new SKTexture(graphicsContext, width, height, renderScale);
+                _textureBrush.Texture = _texture;
+
+
+                if (!ReferenceEquals(_newGraphicsContext, Constants.ManagedGraphicsContext = _newGraphicsContext))
+                {
+                    Constants.ManagedGraphicsContext?.Dispose();
+                    Constants.ManagedGraphicsContext = _newGraphicsContext;
+                    _newGraphicsContext = null;
+                }
             }
         }
 
@@ -315,12 +338,22 @@ namespace Artemis.Core.Services
 
         public void AutoArrangeDevices()
         {
-            SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
-            surfaceArrangement.Arrange(_devices);
-            foreach (ArtemisDevice artemisDevice in _devices)
-                artemisDevice.ApplyDefaultCategories();
+            bool changedRenderPaused = SetRenderPaused(true);
 
-            SaveDevices();
+            try
+            {
+                SurfaceArrangement surfaceArrangement = SurfaceArrangement.GetDefaultArrangement();
+                surfaceArrangement.Arrange(_devices);
+                foreach (ArtemisDevice artemisDevice in _devices)
+                    artemisDevice.ApplyDefaultCategories();
+
+                SaveDevices();
+            }
+            finally
+            {
+                if (changedRenderPaused)
+                    SetRenderPaused(false);
+            }
         }
 
         public ArtemisLayout? ApplyBestDeviceLayout(ArtemisDevice device)
@@ -391,7 +424,7 @@ namespace Artemis.Core.Services
             _deviceRepository.Save(device.DeviceEntity);
 
             DeviceProvider deviceProvider = device.DeviceProvider;
-            
+
             // Feels bad but need to in order to get the initial LEDs back
             _pluginManagementService.DisablePluginFeature(deviceProvider, false);
             Thread.Sleep(500);

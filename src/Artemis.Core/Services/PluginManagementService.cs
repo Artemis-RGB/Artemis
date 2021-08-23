@@ -5,6 +5,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 using Artemis.Core.DeviceProviders;
 using Artemis.Core.Ninject;
 using Artemis.Storage.Entities.General;
@@ -90,11 +91,6 @@ namespace Artemis.Core.Services
                 using StreamReader reader = new(metaDataFileEntry.Open());
                 PluginInfo builtInPluginInfo = CoreJson.DeserializeObject<PluginInfo>(reader.ReadToEnd())!;
                 string preferred = builtInPluginInfo.PreferredPluginDirectory;
-                string oldPreferred = Path.GetFileNameWithoutExtension(zipFile.Name);
-                // Rename folders to the new format 
-                // TODO: Get rid of this eventually, it's nice to keep around but it's extra IO that's best avoided
-                if (pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == oldPreferred) != null)
-                    Directory.Move(Path.Combine(pluginDirectory.FullName, oldPreferred), Path.Combine(pluginDirectory.FullName, preferred));
 
                 // Find the matching plugin in the plugin folder
                 DirectoryInfo? match = pluginDirectory.EnumerateDirectories().FirstOrDefault(d => d.Name == preferred);
@@ -431,6 +427,7 @@ namespace Artemis.Core.Services
                 catch (Exception e)
                 {
                     _logger.Warning(new ArtemisPluginException(plugin, "Failed to instantiate feature", e), "Failed to instantiate feature", plugin);
+                    featureInfo.LoadException = e;
                 }
             }
 
@@ -614,10 +611,38 @@ namespace Artemis.Core.Services
             }
             catch (Exception e)
             {
-                _logger.Warning(
-                    new ArtemisPluginException(pluginFeature.Plugin, $"Exception during SetEnabled(true) on {pluginFeature}", e),
-                    "Failed to enable plugin"
-                );
+                if (isAutoEnable)
+                {
+                    // Schedule a retry based on the amount of attempts
+                    if (pluginFeature.AutoEnableAttempts < 4)
+                    {
+                        TimeSpan retryDelay = TimeSpan.FromSeconds(pluginFeature.AutoEnableAttempts * 10);
+                        _logger.Warning(
+                            e,
+                            "Plugin feature '{feature} - {plugin}' failed to enable during attempt ({attempt}/3), scheduling a retry in {retryDelay}.",
+                            pluginFeature,
+                            pluginFeature.Plugin,
+                            pluginFeature.AutoEnableAttempts,
+                            retryDelay
+                        );
+
+                        Task.Run(async () =>
+                        {
+                            await Task.Delay(retryDelay);
+                            if (!pluginFeature.IsEnabled)
+                                EnablePluginFeature(pluginFeature, saveState, true);
+                        });
+                    }
+                    else
+                    {
+                        _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable after 3 attempts, giving up.", pluginFeature, pluginFeature.Plugin);
+                    }
+                }
+                else
+                {
+                    _logger.Warning(e, "Plugin feature '{feature} - {plugin}' failed to enable.", pluginFeature, pluginFeature.Plugin);
+                    throw;
+                }
             }
             finally
             {

@@ -140,7 +140,7 @@ namespace Artemis.UI.Screens.Settings.Device.Tabs
             Device.GreenScale = GreenScale / 100f;
             Device.BlueScale = BlueScale / 100f;
 
-            _rgbService.Surface.Update(true);
+            _rgbService.FlushLeds = true;
         }
 
         public void BrowseCustomLayout(object sender, MouseEventArgs e)

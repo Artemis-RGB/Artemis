@@ -18,8 +18,8 @@ namespace Artemis.Core
         public static void PrepareFirstLaunch()
         {
             CreateAccessibleDirectory(Constants.DataFolder);
-            CreateAccessibleDirectory(Constants.DataFolder + "plugins");
-            CreateAccessibleDirectory(Constants.DataFolder + "user layouts");
+            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder ,"plugins"));
+            CreateAccessibleDirectory(Path.Combine(Constants.DataFolder ,"user layouts"));
         }
 
         /// <summary>

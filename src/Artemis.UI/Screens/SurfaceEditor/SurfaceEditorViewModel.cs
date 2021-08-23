@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -106,6 +107,9 @@ namespace Artemis.UI.Screens.SurfaceEditor
             set => SetAndNotify(ref _colorFirstLedOnly, value);
         }
 
+        public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+        public double MaxTextureSizeIndicatorThickness => 2 / PanZoomViewModel.Zoom;
+
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
         {
             Core.Utilities.OpenUrl(e.Uri.AbsoluteUri);
@@ -155,7 +159,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
         protected override void OnInitialActivate()
         {
             LoadWorkspaceSettings();
-            SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService)));
+            SurfaceDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex).Select(d => new SurfaceDeviceViewModel(d, _rgbService, _settingsService)));
             ListDeviceViewModels.AddRange(_rgbService.EnabledDevices.OrderBy(d => d.ZIndex * -1).Select(d => new ListDeviceViewModel(d, this)));
 
             List<ArtemisDevice> shuffledDevices = _rgbService.EnabledDevices.OrderBy(d => Guid.NewGuid()).ToList();
@@ -168,7 +172,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             }
 
             _coreService.FrameRendering += CoreServiceOnFrameRendering;
-
+            PanZoomViewModel.PropertyChanged += PanZoomViewModelOnPropertyChanged;
             base.OnInitialActivate();
         }
 
@@ -179,8 +183,15 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ListDeviceViewModels.Clear();
 
             _coreService.FrameRendering -= CoreServiceOnFrameRendering;
+            PanZoomViewModel.PropertyChanged -= PanZoomViewModelOnPropertyChanged;
 
             base.OnClose();
+        }
+
+        private void PanZoomViewModelOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == nameof(PanZoomViewModel.Zoom))
+                NotifyOfPropertyChange(nameof(MaxTextureSizeIndicatorThickness));
         }
 
         #endregion
@@ -322,7 +333,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SurfaceDeviceViewModel device = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect).FirstOrDefault();
             if (device != null)
             {
-                _rgbService.IsRenderPaused = true;
+                _rgbService.SetRenderPaused(true);
                 _mouseDragStatus = MouseDragStatus.Dragging;
                 // If the device is not selected, deselect others and select only this one (if shift not held)
                 if (device.SelectionStatus != SelectionStatus.Selected)
@@ -367,7 +378,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             }
 
             _mouseDragStatus = MouseDragStatus.None;
-            _rgbService.IsRenderPaused = false;
+            _rgbService.SetRenderPaused(false);
             ApplySurfaceSelection();
         }
 

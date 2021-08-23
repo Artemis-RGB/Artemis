@@ -37,7 +37,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         }
 
         public PluginFeatureInfo FeatureInfo { get; }
-        public Exception LoadException => FeatureInfo.Instance?.LoadException;
+        public Exception LoadException => FeatureInfo.LoadException;
 
         public bool ShowShield { get; }
 
@@ -81,7 +81,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
         public async Task InstallPrerequisites()
         {
             if (FeatureInfo.Prerequisites.Any())
-                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
+                await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
         }
 
         public async Task RemovePrerequisites()
@@ -119,9 +119,16 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
 
         private async Task UpdateEnabled(bool enable)
         {
-            if (IsEnabled == enable || FeatureInfo.Instance == null)
+            if (IsEnabled == enable)
             {
                 NotifyOfPropertyChange(nameof(IsEnabled));
+                return;
+            }
+
+            if (FeatureInfo.Instance == null)
+            {
+                NotifyOfPropertyChange(nameof(IsEnabled));
+                _messageService.ShowMessage($"Feature '{FeatureInfo.Name}' is in a broken state and cannot enable.", "VIEW LOGS", ShowLogsFolder);
                 return;
             }
 
@@ -144,7 +151,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                     // Check if all prerequisites are met async
                     if (!FeatureInfo.ArePrerequisitesMet())
                     {
-                        await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> { FeatureInfo });
+                        await PluginPrerequisitesInstallDialogViewModel.Show(_dialogService, new List<IPrerequisitesSubject> {FeatureInfo});
                         if (!FeatureInfo.ArePrerequisitesMet())
                         {
                             NotifyOfPropertyChange(nameof(IsEnabled));
@@ -156,7 +163,7 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
                 }
                 catch (Exception e)
                 {
-                    _messageService.ShowMessage($"Failed to enable {FeatureInfo.Name}\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
+                    _messageService.ShowMessage($"Failed to enable '{FeatureInfo.Name}'.\r\n{e.Message}", "VIEW LOGS", ShowLogsFolder);
                 }
                 finally
                 {

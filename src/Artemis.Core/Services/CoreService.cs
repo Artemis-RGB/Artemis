@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Ninject;
 using Artemis.Core.ScriptingProviders;
@@ -13,7 +14,6 @@ using RGB.NET.Core;
 using Serilog;
 using Serilog.Events;
 using SkiaSharp;
-using Module = Artemis.Core.Modules.Module;
 
 namespace Artemis.Core.Services
 {
@@ -59,7 +59,6 @@ namespace Artemis.Core.Services
             _frameStopWatch = new Stopwatch();
             StartupArguments = new List<string>();
 
-            _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
         }
@@ -106,6 +105,13 @@ namespace Artemis.Core.Services
         {
             if (_rgbService.IsRenderPaused)
                 return;
+
+            if (_rgbService.FlushLeds)
+            {
+                _rgbService.FlushLeds = false;
+                _rgbService.Surface.Update(true);
+                return;
+            }
 
             try
             {
@@ -214,7 +220,7 @@ namespace Artemis.Core.Services
             _pluginManagementService.CopyBuiltInPlugins();
             _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
 
-            _rgbService.IsRenderPaused = false;
+            _rgbService.SetRenderPaused(false);
             OnInitialized();
         }
 
