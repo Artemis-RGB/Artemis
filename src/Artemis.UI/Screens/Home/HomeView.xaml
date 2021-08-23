@@ -62,7 +62,7 @@
                       VerticalAlignment="Bottom"
                       Margin="0 0 0 32">
             <StackPanel>
-                <materialDesign:Card Width="840" Margin="8 16" Height="Auto">
+                <materialDesign:Card Width="852" Margin="8" Height="Auto">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -86,23 +86,15 @@
                             </TextBlock>
                         </StackPanel>
                         <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
-                            <DockPanel>
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        DockPanel.Dock="Right"
-                                        Command="{s:Action OpenUrl}"
-                                        CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/plugins">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="OpenInBrowser" />
-                                        <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                           TextWrapping="Wrap"
-                                           Margin="16"
-                                           VerticalAlignment="Center">
-                                    Want more plugins? You can find them on our wiki.
-                                </TextBlock>
-                            </DockPanel>
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Right"
+                                    Command="{s:Action OpenUrl}"
+                                    CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="OpenInBrowser" />
+                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
+                                </StackPanel>
+                            </Button>                            
                         </Border>
                     </Grid>
                 </materialDesign:Card>
