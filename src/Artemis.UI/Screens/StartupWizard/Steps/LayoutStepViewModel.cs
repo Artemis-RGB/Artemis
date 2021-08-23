@@ -31,14 +31,14 @@ namespace Artemis.UI.Screens.StartupWizard.Steps
         /// <inheritdoc />
         protected override void OnActivate()
         {
-            _rgbService.IsRenderPaused = true;
+            _rgbService.SetRenderPaused(true);
             base.OnActivate();
         }
 
         /// <inheritdoc />
         protected override void OnDeactivate()
         {
-            _rgbService.IsRenderPaused = false;
+            _rgbService.SetRenderPaused(false);
             base.OnDeactivate();
         }
 

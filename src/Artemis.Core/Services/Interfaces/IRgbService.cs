@@ -34,13 +34,13 @@ namespace Artemis.Core.Services
         /// <summary>
         ///     Gets or sets whether rendering should be paused
         /// </summary>
-        bool IsRenderPaused { get; set; }
+        bool IsRenderPaused { get; }
 
         /// <summary>
         ///     Gets a boolean indicating whether the render pipeline is open
         /// </summary>
         bool RenderOpen { get; }
-
+        
         /// <summary>
         ///     Gets or sets a boolean indicating whether to flush the RGB.NET LEDs during next update
         /// </summary>
@@ -137,6 +137,13 @@ namespace Artemis.Core.Services
         /// </summary>
         /// <param name="device">The device to disable</param>
         void DisableDevice(ArtemisDevice device);
+
+        /// <summary>
+        /// Pauses or resumes rendering, method won't return until the current frame finished rendering
+        /// </summary>
+        /// <param name="paused"></param>
+        /// <returns><see langword="true"/> if the pause state was changed; otherwise <see langword="false"/>.</returns>
+        bool SetRenderPaused(bool paused);
 
         /// <summary>
         ///     Occurs when a single device was added

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Artemis.Core.Ninject;
 using Artemis.Core.ScriptingProviders;
@@ -58,7 +59,6 @@ namespace Artemis.Core.Services
             _frameStopWatch = new Stopwatch();
             StartupArguments = new List<string>();
 
-            _rgbService.IsRenderPaused = true;
             _rgbService.Surface.Updating += SurfaceOnUpdating;
             _loggingLevel.SettingChanged += (sender, args) => ApplyLoggingLevel();
         }
@@ -222,7 +222,7 @@ namespace Artemis.Core.Services
             _pluginManagementService.CopyBuiltInPlugins();
             _pluginManagementService.LoadPlugins(StartupArguments, IsElevated);
 
-            _rgbService.IsRenderPaused = false;
+            _rgbService.SetRenderPaused(false);
             OnInitialized();
         }
 
