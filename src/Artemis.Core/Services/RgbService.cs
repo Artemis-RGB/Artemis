@@ -71,7 +71,7 @@ namespace Artemis.Core.Services
 
         private void UtilitiesOnShutdownRequested(object? sender, EventArgs e)
         {
-            IsRenderPaused = true;
+            SetRenderPaused(true);
         }
 
         private void SurfaceOnLayoutChanged(SurfaceLayoutChangedEventArgs args)
