@@ -468,7 +468,7 @@ namespace Artemis.Core
             Entity = entity ?? throw new ArgumentNullException(nameof(entity));
             PropertyDescription = description ?? throw new ArgumentNullException(nameof(description));
             IsLoadedFromStorage = fromStorage;
-            DataBinding = new DataBinding<T>(this);
+            DataBinding = Entity.DataBinding != null ? new DataBinding<T>(this, Entity.DataBinding) : new DataBinding<T>(this);
 
             if (PropertyDescription.DisableKeyframes)
                 KeyframesSupported = false;

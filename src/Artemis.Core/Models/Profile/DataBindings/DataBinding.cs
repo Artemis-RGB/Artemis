@@ -211,6 +211,8 @@ namespace Artemis.Core
         {
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
+
+            IsEnabled = Entity.IsEnabled;
         }
 
         /// <inheritdoc />
@@ -229,6 +231,7 @@ namespace Artemis.Core
                 throw new ObjectDisposedException("DataBinding");
 
             Script.Save();
+            Entity.IsEnabled = IsEnabled;
             Entity.NodeScript = Script?.Entity;
         }
 

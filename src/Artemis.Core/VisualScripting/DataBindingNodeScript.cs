@@ -31,6 +31,8 @@ namespace Artemis.Core
             DataBindingExitNode = new DataBindingExitNode<TLayerProperty>(dataBinding);
             ExitNode = DataBindingExitNode;
             AddNode(ExitNode);
+
+            Load();
         }
     }
 }
