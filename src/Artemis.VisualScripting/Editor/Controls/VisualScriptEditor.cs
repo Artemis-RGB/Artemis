@@ -27,6 +27,15 @@ namespace Artemis.VisualScripting.Editor.Controls
             set => SetValue(AvailableNodesProperty, value);
         }
 
+        public static readonly DependencyProperty AlwaysShowValuesProperty = DependencyProperty.Register(
+            "AlwaysShowValues", typeof(bool), typeof(VisualScriptEditor), new PropertyMetadata(default(bool)));
+
+        public bool AlwaysShowValues
+        {
+            get => (bool)GetValue(AlwaysShowValuesProperty);
+            set => SetValue(AlwaysShowValuesProperty, value);
+        }
+
         #endregion
     }
 }

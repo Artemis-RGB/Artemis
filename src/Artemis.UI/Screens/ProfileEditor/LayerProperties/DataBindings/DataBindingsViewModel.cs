@@ -13,13 +13,15 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
         private readonly IProfileEditorService _profileEditorService;
         private IDataBinding _dataBinding;
 
-        public DataBindingsViewModel(IProfileEditorService profileEditorService, INodeService nodeService)
+        public DataBindingsViewModel(IProfileEditorService profileEditorService, INodeService nodeService, ISettingsService settingsService)
         {
             _profileEditorService = profileEditorService;
             AvailableNodes =  nodeService.AvailableNodes.ToList();
+            AlwaysShowValues = settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
         }
 
         public List<NodeData> AvailableNodes { get; }
+        public PluginSetting<bool> AlwaysShowValues { get; }
 
         public IDataBinding DataBinding
         {
@@ -36,6 +38,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.DataBindings
                     _dataBinding.IsEnabled = value;
             }
         }
+
 
         private void ProfileEditorServiceOnSelectedDataBindingChanged(object sender, EventArgs e)
         {

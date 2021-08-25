@@ -124,7 +124,11 @@
                           IsChecked="{Binding ShowDataModelValues.Value}"/>
                 <MenuItem Header="Display Full Condition Paths"
                           IsCheckable="True"
-                          IsChecked="{Binding ShowFullPaths.Value}"/>
+                          IsChecked="{Binding ShowFullPaths.Value}"/>  
+                <MenuItem Header="Always Display Cable Values"
+                          ToolTip="If enabled, cable values are always shown instead of only on hover"
+                          IsCheckable="True"
+                          IsChecked="{Binding AlwaysShowValues.Value}"/>
                 <MenuItem Header="Apply All Data Bindings During Edit" 
                           ToolTip="If enabled, updates all data bindings instead of only the one you are editing"
                           IsCheckable="True"

@@ -31,7 +31,10 @@
             </CheckBox>
         </Grid>
 
-        <controls:VisualScriptPresenter Grid.Row="1" AvailableNodes="{Binding AvailableNodes}" Script="{Binding DataBinding.Script}" />
+        <controls:VisualScriptPresenter Grid.Row="1" 
+                                        AvailableNodes="{Binding AvailableNodes}" 
+                                        Script="{Binding DataBinding.Script}" 
+                                        AlwaysShowValues="{Binding AlwaysShowValues.Value}"/>
         <Border Grid.Row="1" Background="{StaticResource MaterialDesignToolBarBackground}"
                 Visibility="{Binding DataBindingEnabled, Converter={x:Static s:BoolToVisibilityConverter.InverseInstance}, Mode=OneWay}">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16">

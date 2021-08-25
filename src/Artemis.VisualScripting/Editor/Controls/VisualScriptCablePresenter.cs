@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,6 +25,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         #region Properties & Fields
 
         private Path _path;
+        private Border _valueBorder;
 
         #endregion
 
@@ -56,6 +58,15 @@ namespace Artemis.VisualScripting.Editor.Controls
             set => SetValue(ValuePositionProperty, value);
         }
 
+        public static readonly DependencyProperty AlwaysShowValuesProperty = DependencyProperty.Register(
+            "AlwaysShowValues", typeof(bool), typeof(VisualScriptCablePresenter), new PropertyMetadata(default(bool), AlwaysShowValuesChanged));
+
+        public bool AlwaysShowValues
+        {
+            get => (bool) GetValue(AlwaysShowValuesProperty);
+            set => SetValue(AlwaysShowValuesProperty, value);
+        }
+
         #endregion
 
         #region Methods
@@ -63,9 +74,15 @@ namespace Artemis.VisualScripting.Editor.Controls
         public override void OnApplyTemplate()
         {
             _path = GetTemplateChild(PART_PATH) as Path ?? throw new NullReferenceException($"The Path '{PART_PATH}' is missing.");
-            _path.MouseDown += OnPathMouseDown;
-
+            _valueBorder = GetTemplateChild("PART_ValueDisplay") as Border ?? throw new NullReferenceException("The Border 'PART_ValueDisplay' is missing.");
+           
+            _path.MouseEnter += (_, _) => UpdateValueVisibility();
+            _path.MouseLeave += (_, _) => UpdateValueVisibility();
+            _valueBorder.MouseEnter += (_, _) => UpdateValueVisibility();
+            _valueBorder.MouseLeave += (_, _) => UpdateValueVisibility();
             Unloaded += OnUnloaded;
+
+            UpdateValueVisibility();
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -110,6 +127,26 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             UpdateBorderBrush();
             UpdateValuePosition();
+        }
+
+        private static void AlwaysShowValuesChanged(DependencyObject d, DependencyPropertyChangedEventArgs args)
+        {
+            if (d is not VisualScriptCablePresenter presenter) return;
+
+            presenter.UpdateValueVisibility();
+        }
+
+        private void UpdateValueVisibility()
+        {
+            if (_valueBorder == null)
+                return;
+
+            if (AlwaysShowValues && Cable.From.Connections.LastOrDefault() == Cable)
+                _valueBorder.Visibility = Visibility.Visible;
+            else if (_valueBorder.IsMouseOver || _path.IsMouseOver)
+                _valueBorder.Visibility = Visibility.Visible;
+            else
+                _valueBorder.Visibility = Visibility.Collapsed;
         }
 
         private void OnPinPropertyChanged(object sender, PropertyChangedEventArgs e)

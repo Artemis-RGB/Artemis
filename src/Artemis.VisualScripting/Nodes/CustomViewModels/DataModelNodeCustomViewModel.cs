@@ -11,11 +11,9 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
         private readonly DataModelNode _node;
         private BindableCollection<Module> _modules;
 
-        public DataModelNodeCustomViewModel(DataModelNode node, ISettingsService settingsService, IPluginManagementService test) : base(node)
+        public DataModelNodeCustomViewModel(DataModelNode node, ISettingsService settingsService) : base(node)
         {
             _node = node;
-
-            var tessst = test.GetFeaturesOfType<Module>();
 
             ShowFullPaths = settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
             ShowDataModelValues = settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
@@ -38,7 +36,7 @@ namespace Artemis.VisualScripting.Nodes.CustomViewModels
                 if (ReferenceEquals(_node.DataModelPath, value))
                     return;
 
-                _node.DataModelPath.Dispose();
+                _node.DataModelPath?.Dispose();
                 _node.DataModelPath = value;
                 _node.DataModelPath.Save();
 

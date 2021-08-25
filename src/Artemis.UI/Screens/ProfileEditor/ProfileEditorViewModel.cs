@@ -119,6 +119,7 @@ namespace Artemis.UI.Screens.ProfileEditor
         public PluginSetting<bool> StopOnFocusLoss => _settingsService.GetSetting("ProfileEditor.StopOnFocusLoss", true);
         public PluginSetting<bool> ShowDataModelValues => _settingsService.GetSetting("ProfileEditor.ShowDataModelValues", false);
         public PluginSetting<bool> ShowFullPaths => _settingsService.GetSetting("ProfileEditor.ShowFullPaths", true);
+        public PluginSetting<bool> AlwaysShowValues => _settingsService.GetSetting("ProfileEditor.AlwaysShowValues", true);
         public PluginSetting<bool> FocusSelectedLayer => _settingsService.GetSetting("ProfileEditor.FocusSelectedLayer", true);
         public PluginSetting<bool> AlwaysApplyDataBindings => _settingsService.GetSetting("ProfileEditor.AlwaysApplyDataBindings", true);
 
@@ -194,6 +195,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             StopOnFocusLoss.AutoSave = true;
             ShowDataModelValues.AutoSave = true;
             ShowFullPaths.AutoSave = true;
+            AlwaysShowValues.AutoSave = true;
             FocusSelectedLayer.AutoSave = true;
             AlwaysApplyDataBindings.AutoSave = true;
 
@@ -208,6 +210,7 @@ namespace Artemis.UI.Screens.ProfileEditor
             StopOnFocusLoss.AutoSave = false;
             ShowDataModelValues.AutoSave = false;
             ShowFullPaths.AutoSave = false;
+            AlwaysShowValues.AutoSave = false;
             FocusSelectedLayer.AutoSave = false;
             AlwaysApplyDataBindings.AutoSave = false;
 

@@ -114,6 +114,15 @@ namespace Artemis.VisualScripting.Editor.Controls
             set => SetValue(AvailableNodesProperty, value);
         }
 
+        public static readonly DependencyProperty AlwaysShowValuesProperty = DependencyProperty.Register(
+            "AlwaysShowValues", typeof(bool), typeof(VisualScriptPresenter), new PropertyMetadata(default(bool)));
+
+        public bool AlwaysShowValues
+        {
+            get => (bool)GetValue(AlwaysShowValuesProperty);
+            set => SetValue(AlwaysShowValuesProperty, value);
+        }
+
         public static readonly DependencyProperty CreateNodeCommandProperty = DependencyProperty.Register(
             "CreateNodeCommand", typeof(ICommand), typeof(VisualScriptPresenter), new PropertyMetadata(default(ICommand)));
 

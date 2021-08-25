@@ -45,7 +45,9 @@ namespace Artemis.VisualScripting.Nodes
                 if (Output == null)
                     UpdateOutputPin(false);
 
-                Output.Value = DataModelPath.GetValue() ?? Output.Type.GetDefault();
+                object pathValue = DataModelPath.GetValue();
+                if (pathValue != null)
+                    Output.Value = pathValue;
             }
         }
 

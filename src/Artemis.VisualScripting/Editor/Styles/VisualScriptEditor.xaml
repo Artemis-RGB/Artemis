@@ -8,7 +8,8 @@
                 BorderThickness="{TemplateBinding BorderThickness}"
                 Background="{TemplateBinding Background}">
             <controls:VisualScriptPresenter Script="{TemplateBinding Script}"
-                                            AvailableNodes="{TemplateBinding AvailableNodes}" />
+                                            AvailableNodes="{TemplateBinding AvailableNodes}" 
+                                            AlwaysShowValues="{TemplateBinding AlwaysShowValues}"/>
         </Border>
     </ControlTemplate>
 
