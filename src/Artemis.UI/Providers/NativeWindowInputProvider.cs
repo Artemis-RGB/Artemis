@@ -21,6 +21,7 @@ namespace Artemis.UI.Providers
         private readonly IInputService _inputService;
         private readonly ILogger _logger;
         private DateTime _lastMouseUpdate;
+        private int _lastProcessId;
         private SpongeWindow _sponge;
         private System.Timers.Timer _taskManagerTimer;
 
@@ -88,9 +89,15 @@ namespace Artemis.UI.Providers
 
         private void TaskManagerTimerOnElapsed(object sender, ElapsedEventArgs e)
         {
+            int processId = WindowUtilities.GetActiveProcessId();
+            if (processId == _lastProcessId)
+                return;
+
+            _lastProcessId = processId;
+
             // If task manager has focus then we can't track keys properly, release everything to avoid them getting stuck
             // Same goes for Idle which is what you get when you press Ctrl+Alt+Del
-            Process active = Process.GetProcessById(WindowUtilities.GetActiveProcessId());
+            Process active = Process.GetProcessById(processId);
             if (active?.ProcessName == "Taskmgr" || active?.ProcessName == "Idle")
                 _inputService.ReleaseAll();
         }
@@ -164,7 +171,7 @@ namespace Artemis.UI.Providers
 
         private int _mouseDeltaX;
         private int _mouseDeltaY;
-
+        
         private void HandleMouseData(RawInputData data, RawInputMouseData mouseData)
         {
             // Only submit mouse movement 25 times per second but increment the delta
