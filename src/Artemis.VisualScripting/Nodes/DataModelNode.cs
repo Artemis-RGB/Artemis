@@ -3,11 +3,12 @@ using System.Linq;
 using Artemis.Core;
 using Artemis.Storage.Entities.Profile;
 using Artemis.VisualScripting.Nodes.CustomViewModels;
+using Stylet;
 
 namespace Artemis.VisualScripting.Nodes
 {
     [Node("Data Model-Value", "Outputs a selectable data model value.")]
-    public class DataModelNode : Node<DataModelNodeCustomViewModel>
+    public class DataModelNode : Node<DataModelNodeCustomViewModel>, IDisposable
     {
         private DataModelPath _dataModelPath;
 
@@ -21,7 +22,7 @@ namespace Artemis.VisualScripting.Nodes
         public DataModelPath DataModelPath
         {
             get => _dataModelPath;
-            set => SetAndNotify(ref _dataModelPath , value);
+            set => SetAndNotify(ref _dataModelPath, value);
         }
 
         public override void Initialize(INodeScript script)
@@ -32,29 +33,58 @@ namespace Artemis.VisualScripting.Nodes
                 return;
 
             DataModelPath = new DataModelPath(null, pathEntity);
-            UpdateOutputPin();
+            DataModelPath.PathValidated += DataModelPathOnPathValidated;
+
+            UpdateOutputPin(false);
         }
 
         public override void Evaluate()
         {
-            if (DataModelPath.IsValid && Output != null)
-                Output.Value = DataModelPath.GetValue()!;
-        }
-
-        public void UpdateOutputPin()
-        {
-            if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
-                return;
-
-            if (Output != null && Pins.Contains(Output))
+            if (DataModelPath.IsValid)
             {
-                RemovePin(Output);
-                Output = null;
-            }
+                if (Output == null)
+                    UpdateOutputPin(false);
 
-            Type type = DataModelPath?.GetPropertyType();
-            if (type != null)
-                Output = CreateOutputPin(type);
+                Output.Value = DataModelPath.GetValue() ?? Output.Type.GetDefault();
+            }
         }
+
+        public void UpdateOutputPin(bool loadConnections)
+        {
+            Execute.OnUIThread(() =>
+            {
+                if (Output != null && Output.Type == DataModelPath?.GetPropertyType())
+                    return;
+
+                if (Output != null)
+                {
+                    RemovePin(Output);
+                    Output = null;
+                }
+
+                Type type = DataModelPath?.GetPropertyType();
+                if (type != null)
+                    Output = CreateOutputPin(type);
+
+                if (loadConnections && Script is NodeScript nodeScript) 
+                    nodeScript.LoadConnections();
+            });
+        }
+
+        private void DataModelPathOnPathValidated(object sender, EventArgs e)
+        {
+            UpdateOutputPin(true);
+           
+        }
+
+        #region IDisposable
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            DataModelPath.Dispose();
+        }
+
+        #endregion
     }
 }

@@ -44,7 +44,10 @@ namespace Artemis.UI.Shared.Controls
         /// <summary>
         ///     Gets or sets the brush to use when drawing the button
         /// </summary>
-        public static readonly DependencyProperty ShowFullPathProperty = DependencyProperty.Register(nameof(ShowFullPath), typeof(bool), typeof(DataModelPicker));
+        public static readonly DependencyProperty ShowFullPathProperty = DependencyProperty.Register(
+            nameof(ShowFullPath), typeof(bool), typeof(DataModelPicker),
+            new FrameworkPropertyMetadata(ShowFullPathPropertyCallback)
+        );
 
         /// <summary>
         ///     Gets or sets the brush to use when drawing the button
@@ -86,7 +89,7 @@ namespace Artemis.UI.Shared.Controls
         public DataModelPicker()
         {
             SelectPropertyCommand = new DelegateCommand(ExecuteSelectPropertyCommand);
-
+            Unloaded += (_, _) => DataModelViewModel?.Dispose();
             InitializeComponent();
             GetDataModel();
             UpdateValueDisplay();
@@ -253,7 +256,12 @@ namespace Artemis.UI.Shared.Controls
             if (context is not DataModelVisualizationViewModel selected)
                 return;
 
-            DataModelPath = selected.DataModelPath;
+            if (selected.DataModelPath == null)
+                return;
+            if (selected.DataModelPath.Equals(DataModelPath))
+                return;
+
+            DataModelPath = new DataModelPath(selected.DataModelPath);
             OnDataModelPathSelected(new DataModelSelectedEventArgs(DataModelPath));
         }
 
@@ -278,6 +286,14 @@ namespace Artemis.UI.Shared.Controls
             dataModelPicker.UpdateValueDisplay();
         }
 
+        private static void ShowFullPathPropertyCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not DataModelPicker dataModelPicker)
+                return;
+
+            dataModelPicker.UpdateValueDisplay();
+        }
+
         private static void ModulesPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not DataModelPicker dataModelPicker)
@@ -290,6 +306,9 @@ namespace Artemis.UI.Shared.Controls
         {
             if (d is not DataModelPicker dataModelPicker)
                 return;
+
+            if (e.OldValue is DataModelPropertiesViewModel vm)
+                vm.Dispose();
         }
 
         private static void ExtraDataModelViewModelsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)

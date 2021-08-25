@@ -295,7 +295,10 @@ namespace Artemis.Core
         private void DynamicChildOnDynamicChildAdded(object? sender, DynamicDataModelChildEventArgs e)
         {
             if (e.Key == Identifier)
+            {
+                DataModelPath.Invalidate();
                 DataModelPath.Initialize();
+            }
         }
 
         private void DynamicChildOnDynamicChildRemoved(object? sender, DynamicDataModelChildEventArgs e)

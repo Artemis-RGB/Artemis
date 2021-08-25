@@ -83,7 +83,7 @@ namespace Artemis.Core.Services
                     // ignored
                 }
             }
-            
+
             node.Initialize(script);
             return node;
         }

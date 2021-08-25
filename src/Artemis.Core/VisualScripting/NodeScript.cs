@@ -10,6 +10,14 @@ namespace Artemis.Core
 {
     public abstract class NodeScript : CorePropertyChanged, INodeScript, IStorageModel
     {
+        private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
+        {
+            Load();
+        }
+
+        public event EventHandler<INode>? NodeAdded;
+        public event EventHandler<INode>? NodeRemoved;
+
         #region Properties & Fields
 
         internal NodeScriptEntity Entity { get; }
@@ -28,21 +36,14 @@ namespace Artemis.Core
 
         #endregion
 
-        #region Events
-
-        public event EventHandler<INode>? NodeAdded;
-        public event EventHandler<INode>? NodeRemoved;
-
-        #endregion
-
         #region Constructors
 
         public NodeScript(string name, string description, object? context = null)
         {
-            this.Name = name;
-            this.Description = description;
-            this.Context = context;
-            this.Entity = new NodeScriptEntity();
+            Name = name;
+            Description = description;
+            Context = context;
+            Entity = new NodeScriptEntity();
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -50,10 +51,10 @@ namespace Artemis.Core
 
         internal NodeScript(string name, string description, NodeScriptEntity entity, object? context = null)
         {
-            this.Name = name;
-            this.Description = description;
-            this.Entity = entity;
-            this.Context = context;
+            Name = name;
+            Description = description;
+            Entity = entity;
+            Context = context;
 
             NodeTypeStore.NodeTypeAdded += NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved += NodeTypeStoreOnNodeTypeChanged;
@@ -89,6 +90,12 @@ namespace Artemis.Core
         {
             NodeTypeStore.NodeTypeAdded -= NodeTypeStoreOnNodeTypeChanged;
             NodeTypeStore.NodeTypeRemoved -= NodeTypeStoreOnNodeTypeChanged;
+
+            foreach (INode node in _nodes)
+            {
+                if (node is IDisposable disposable)
+                    disposable.Dispose();
+            }
         }
 
         #endregion
@@ -98,20 +105,18 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
+            _nodes.Clear();
+
             // Create nodes
-            Dictionary<int, INode> nodes = new();
             foreach (NodeEntity entityNode in Entity.Nodes)
             {
                 INode? node = LoadNode(entityNode, entityNode.IsExitNode ? ExitNode : null);
                 if (node == null)
                     continue;
-                nodes.Add(entityNode.Id, node);
+                _nodes.Add(node);
             }
 
-            LoadConnections(nodes);
-
-            _nodes.Clear();
-            _nodes.AddRange(nodes.Values);
+            LoadConnections();
         }
 
         private INode? LoadNode(NodeEntity nodeEntity, INode? node)
@@ -147,12 +152,19 @@ namespace Artemis.Core
             return node;
         }
 
-        private void LoadConnections(Dictionary<int, INode> nodes)
+        /// <summary>
+        ///     Loads missing connections between the nodes of this node script from the <see cref="Entity"/>
+        /// </summary>
+        public void LoadConnections()
         {
+            List<INode> nodes = Nodes.ToList();
             foreach (NodeConnectionEntity nodeConnectionEntity in Entity.Connections)
             {
-                // Find the source and target node
-                if (!nodes.TryGetValue(nodeConnectionEntity.SourceNode, out INode? source) || !nodes.TryGetValue(nodeConnectionEntity.TargetNode, out INode? target))
+                INode? source = nodes.ElementAtOrDefault(nodeConnectionEntity.SourceNode);
+                if (source == null)
+                    continue;
+                INode? target = nodes.ElementAtOrDefault(nodeConnectionEntity.TargetNode);
+                if (target == null)
                     continue;
 
                 IPin? sourcePin = nodeConnectionEntity.SourcePinCollectionId == -1
@@ -165,9 +177,15 @@ namespace Artemis.Core
                 // Ensure both nodes have the required pins
                 if (sourcePin == null || targetPin == null)
                     continue;
+                // Ensure the connection is valid
+                if (sourcePin.Direction == targetPin.Direction)
+                    continue;
 
-                targetPin.ConnectTo(sourcePin);
-                sourcePin.ConnectTo(targetPin);
+                // Only connect the nodes if they aren't already connected (LoadConnections may be called twice or more)
+                if (!targetPin.ConnectedTo.Contains(sourcePin))
+                    targetPin.ConnectTo(sourcePin);
+                if (!sourcePin.ConnectedTo.Contains(targetPin))
+                    sourcePin.ConnectTo(targetPin);
             }
         }
 
@@ -178,13 +196,12 @@ namespace Artemis.Core
             Entity.Description = Description;
 
             Entity.Nodes.Clear();
-            
+
             // No need to save the exit node if that's all there is
             if (Nodes.Count() == 1)
                 return;
 
             int id = 0;
-            
             foreach (INode node in Nodes)
             {
                 NodeEntity nodeEntity = new()
@@ -248,9 +265,11 @@ namespace Artemis.Core
                         targetPinId = targetCollection.ToList().IndexOf(targetPin);
                     }
                     else
+                    {
                         targetPinId = targetPin.Node.Pins.IndexOf(targetPin);
+                    }
 
-                    Entity.Connections.Add(new NodeConnectionEntity()
+                    Entity.Connections.Add(new NodeConnectionEntity
                     {
                         SourceType = sourcePin.Type.Name,
                         SourceNode = nodes.IndexOf(node),
@@ -259,21 +278,12 @@ namespace Artemis.Core
                         TargetType = targetPin.Type.Name,
                         TargetNode = nodes.IndexOf(targetPin.Node),
                         TargetPinCollectionId = targetPinCollectionId,
-                        TargetPinId = targetPinId,
+                        TargetPinId = targetPinId
                     });
                 }
 
                 sourcePinId++;
             }
-        }
-
-        #endregion
-
-        #region Event handlers
-
-        private void NodeTypeStoreOnNodeTypeChanged(object? sender, NodeTypeStoreEvent e)
-        {
-            Load();
         }
 
         #endregion

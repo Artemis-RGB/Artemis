@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Artemis.Storage.Entities.Profile.Nodes;
 
 namespace Artemis.Core
 {
@@ -16,6 +17,7 @@ namespace Artemis.Core
 
         public IReadOnlyCollection<IPin> Pins { get; }
         public IReadOnlyCollection<IPinCollection> PinCollections { get; }
+        
 
         event EventHandler Resetting;
 

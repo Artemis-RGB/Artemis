@@ -60,7 +60,7 @@ namespace Artemis.Core
             if (!IsEnabled)
                 return;
 
-            // TODO: Update the base node
+            // TODO: Update the 'base value' node
 
             Script.Run();
         }
@@ -77,7 +77,7 @@ namespace Artemis.Core
             if (_disposed)
                 throw new ObjectDisposedException("DataBinding");
             if (Properties.Any(d => d.DisplayName == displayName))
-                throw new ArtemisCoreException($"A databinding property named '{displayName}' is already registered.");
+                throw new ArtemisCoreException($"A data binding property named '{displayName}' is already registered.");
 
             DataBindingProperty<TProperty> property = new(getter, setter, displayName);
             _properties.Add(property);
@@ -110,6 +110,8 @@ namespace Artemis.Core
             if (disposing)
             {
                 _disposed = true;
+                _isEnabled = false;
+
                 Script.Dispose();
             }
         }
