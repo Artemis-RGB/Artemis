@@ -18,6 +18,7 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="ArtemisSidebar.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
         </ResourceDictionary>
     </UserControl.Resources>
     <materialDesign:DialogHost IsTabStop="False" Focusable="False" Identifier="SidebarDialog" DialogTheme="Inherit" DialogMargin="14">
@@ -74,7 +75,8 @@
                      Margin="0 2"
                      ItemContainerStyle="{StaticResource SidebarListBoxItem}"
                      ItemsSource="{Binding SidebarScreens}"
-                     SelectedItem="{Binding SelectedSidebarScreen}">
+                     SelectedItem="{Binding SelectedSidebarScreen}"
+                     IsEnabled="{Binding ActivatingProfile, Converter={StaticResource InverseBooleanConverter}}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
@@ -105,7 +107,11 @@
                                   dd:DragDrop.DropHandler="{Binding}">
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <ContentControl s:View.Model="{Binding}" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Stretch" IsTabStop="False" />
+                                <ContentControl s:View.Model="{Binding}" 
+                                                VerticalContentAlignment="Stretch" 
+                                                HorizontalContentAlignment="Stretch" 
+                                                IsTabStop="False" 
+                                                IsEnabled="{Binding DataContext.ActivatingProfile, RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Converter={StaticResource InverseBooleanConverter}}" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

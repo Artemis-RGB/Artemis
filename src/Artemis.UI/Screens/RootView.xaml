@@ -61,6 +61,19 @@
                                 VerticalContentAlignment="Stretch"
                                 HorizontalContentAlignment="Stretch"
                                 IsTabStop="False" />
+
+                <Border Grid.Row="1" Visibility="{Binding SidebarViewModel.ActivatingProfile, Converter={x:Static s:BoolToVisibilityConverter.Instance}, Mode=OneWay, Delay=2000}">
+                    <Border.Background>
+                        <SolidColorBrush Color="{Binding Path=Color, Source={StaticResource MaterialDesignToolBarBackground}}" Opacity="0.5"></SolidColorBrush>
+                    </Border.Background>
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}" Value="0" IsIndeterminate="True" Width="50" Height="50" Margin="20"/>
+                        <TextBlock TextAlignment="Center"  Style="{StaticResource MaterialDesignHeadline5TextBlock}">
+                            Activating profile...
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
                 <materialDesign:Snackbar Grid.Row="0"
                                          Grid.RowSpan="2"
                                          x:Name="MainSnackbar"
