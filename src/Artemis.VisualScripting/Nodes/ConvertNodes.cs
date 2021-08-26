@@ -2,7 +2,7 @@
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("To String", "Converts the input to a string.")]
+    [Node("To String", "Converts the input to a string.", "Conversion", InputType = typeof(object), OutputType = typeof(string))]
     public class ConvertToStringNode : Node
     {
         #region Properties & Fields
@@ -34,7 +34,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("To Integer", "Converts the input to an integer.")]
+    [Node("To Integer", "Converts the input to an integer.", "Conversion", InputType = typeof(object), OutputType = typeof(int))]
     public class ConvertToIntegerNode : Node
     {
         #region Properties & Fields
@@ -80,7 +80,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("To Double", "Converts the input to a double.")]
+    [Node("To Double", "Converts the input to a double.", "Conversion", InputType = typeof(object), OutputType = typeof(double))]
     public class ConvertToDoubleNode : Node
     {
         #region Properties & Fields
@@ -126,7 +126,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("To Float", "Converts the input to a float.")]
+    [Node("To Float", "Converts the input to a float.", "Conversion", InputType = typeof(object), OutputType = typeof(float))]
     public class ConvertToFloatNode : Node
     {
         #region Properties & Fields

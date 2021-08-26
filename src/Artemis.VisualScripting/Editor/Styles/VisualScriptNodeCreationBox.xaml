@@ -1,28 +1,35 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls"
-                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core">
+                    xmlns:core="clr-namespace:Artemis.Core;assembly=Artemis.Core"
+                    xmlns:behaviors="clr-namespace:Artemis.VisualScripting.Behaviors">
 
     <DataTemplate x:Key="TemplateNodeItem"
                   DataType="{x:Type core:NodeData}">
-        <TextBlock Text="{Binding Name}" />
+        <TextBlock Margin="8 0 0 0"
+                   Text="{Binding Name}"
+                   ToolTip="{Binding Description}" 
+                   behaviors:HighlightTermBehavior.TermToBeHighlighted="{Binding Text, ElementName=PART_SearchBox}"
+                   behaviors:HighlightTermBehavior.Text="{Binding Name}"
+                   behaviors:HighlightTermBehavior.HighlightForeground="{StaticResource Primary600Foreground}"
+                   behaviors:HighlightTermBehavior.HighlightBackground="{StaticResource Primary600}"/>
     </DataTemplate>
 
     <ControlTemplate x:Key="TemplateVisualScriptNodeCreationBox"
                      TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
-        <Border Background="{TemplateBinding Background}" 
+        <Border Background="{TemplateBinding Background}"
                 BorderBrush="{TemplateBinding BorderBrush}"
                 BorderThickness="{TemplateBinding BorderThickness}">
             <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <Border Padding="2"
                         BorderThickness="1"
                         BorderBrush="#A0FFFFFF">
-                    <TextBox x:Name="PART_SearchBox" 
+                    <TextBox x:Name="PART_SearchBox"
                              Background="Transparent"
                              Foreground="#FFFFFFFF"
                              CaretBrush="#FFFFFFFF"
@@ -33,13 +40,43 @@
                          Grid.Row="1"
                          Background="Transparent"
                          Foreground="#FFFFFFFF"
-                         BorderThickness="0" 
-                         ItemTemplate="{StaticResource TemplateNodeItem}" />
+                         BorderThickness="0"
+                         ItemTemplate="{StaticResource TemplateNodeItem}">
+                    <ListBox.GroupStyle>
+                        <GroupStyle>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="{x:Type GroupItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+                                                <Expander Header="{Binding Name}" IsExpanded="True">
+                                                    <Expander.HeaderTemplate>
+                                                        <DataTemplate>
+                                                            <TextBlock Text="{Binding}" FontWeight="Bold" FontSize="16" Margin="0 8 8 8" />
+                                                        </DataTemplate>
+                                                    </Expander.HeaderTemplate>
+                                                    <Expander.Style>
+                                                        <Style TargetType="Expander">
+                                                            <Setter Property="Foreground" Value="AliceBlue"></Setter>
+                                                        </Style>
+                                                    </Expander.Style>
+                                                    <ItemsPresenter />
+                                                </Expander>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                        </GroupStyle>
+                    </ListBox.GroupStyle>
+                </ListBox>
+
+
             </Grid>
         </Border>
     </ControlTemplate>
 
-    <Style x:Key="StyleVisualScriptNodeCreationBox" 
+    <Style x:Key="StyleVisualScriptNodeCreationBox"
            TargetType="{x:Type controls:VisualScriptNodeCreationBox}">
         <Setter Property="Background" Value="#DD333333" />
         <Setter Property="BorderBrush" Value="#FF222222" />

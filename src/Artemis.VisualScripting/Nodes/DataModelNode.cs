@@ -7,7 +7,7 @@ using Stylet;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Data Model-Value", "Outputs a selectable data model value.")]
+    [Node("Data Model-Value", "Outputs a selectable data model value.", "External")]
     public class DataModelNode : Node<DataModelNodeCustomViewModel>, IDisposable
     {
         private DataModelPath _dataModelPath;

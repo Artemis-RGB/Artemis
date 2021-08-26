@@ -3,7 +3,7 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Integer-Value", "Outputs an configurable integer value.")]
+    [Node("Integer-Value", "Outputs an configurable integer value.", "Static", OutputType = typeof(int))]
     public class StaticIntegerValueNode : Node<StaticIntegerValueNodeCustomViewModel>
     {
         #region Properties & Fields
@@ -34,7 +34,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Double-Value", "Outputs a configurable double value.")]
+    [Node("Double-Value", "Outputs a configurable double value.", "Static", OutputType = typeof(double))]
     public class StaticDoubleValueNode : Node<StaticDoubleValueNodeCustomViewModel>
     {
         #region Properties & Fields
@@ -65,7 +65,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Float-Value", "Outputs a configurable float value.")]
+    [Node("Float-Value", "Outputs a configurable float value.", "Static", OutputType = typeof(float))]
     public class StaticFloatValueNode : Node<StaticFloatValueNodeCustomViewModel>
     {
         #region Properties & Fields
@@ -99,7 +99,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("String-Value", "Outputs a configurable string value.")]
+    [Node("String-Value", "Outputs a configurable string value.", "Static", OutputType = typeof(string))]
     public class StaticStringValueNode : Node<StaticStringValueNodeCustomViewModel>
     {
         #region Properties & Fields
@@ -127,8 +127,4 @@ namespace Artemis.VisualScripting.Nodes
         
         #endregion
     }
-
-    #region CustomViewModels
-
-    #endregion
 }

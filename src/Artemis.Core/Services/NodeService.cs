@@ -53,8 +53,8 @@ namespace Artemis.Core.Services
             string name = nodeAttribute?.Name ?? nodeType.Name;
             string description = nodeAttribute?.Description ?? string.Empty;
             string category = nodeAttribute?.Category ?? string.Empty;
-
-            NodeData nodeData = new(plugin, nodeType, name, description, category, (s, e) => CreateNode(s, e, nodeType));
+            
+            NodeData nodeData = new(plugin, nodeType, name, description, category, nodeAttribute?.InputType, nodeAttribute?.OutputType, (s, e) => CreateNode(s, e, nodeType));
             return NodeTypeStore.Add(nodeData);
         }
 

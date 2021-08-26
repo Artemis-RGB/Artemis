@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -65,7 +66,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public INodeScript Script
         {
-            get => (INodeScript)GetValue(ScriptProperty);
+            get => (INodeScript) GetValue(ScriptProperty);
             set => SetValue(ScriptProperty, value);
         }
 
@@ -74,7 +75,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public double Scale
         {
-            get => (double)GetValue(ScaleProperty);
+            get => (double) GetValue(ScaleProperty);
             set => SetValue(ScaleProperty, value);
         }
 
@@ -83,7 +84,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public double MinScale
         {
-            get => (double)GetValue(MinScaleProperty);
+            get => (double) GetValue(MinScaleProperty);
             set => SetValue(MinScaleProperty, value);
         }
 
@@ -92,7 +93,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public double MaxScale
         {
-            get => (double)GetValue(MaxScaleProperty);
+            get => (double) GetValue(MaxScaleProperty);
             set => SetValue(MaxScaleProperty, value);
         }
 
@@ -101,7 +102,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public double ScaleFactor
         {
-            get => (double)GetValue(ScaleFactorProperty);
+            get => (double) GetValue(ScaleFactorProperty);
             set => SetValue(ScaleFactorProperty, value);
         }
 
@@ -110,7 +111,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public IEnumerable<NodeData> AvailableNodes
         {
-            get => (IEnumerable<NodeData>)GetValue(AvailableNodesProperty);
+            get => (IEnumerable<NodeData>) GetValue(AvailableNodesProperty);
             set => SetValue(AvailableNodesProperty, value);
         }
 
@@ -119,8 +120,17 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public bool AlwaysShowValues
         {
-            get => (bool)GetValue(AlwaysShowValuesProperty);
+            get => (bool) GetValue(AlwaysShowValuesProperty);
             set => SetValue(AlwaysShowValuesProperty, value);
+        }
+
+        public static readonly DependencyProperty SourcePinProperty = DependencyProperty.Register(
+            "SourcePin", typeof(VisualScriptPin), typeof(VisualScriptPresenter), new PropertyMetadata(default(VisualScriptPin)));
+
+        public VisualScriptPin SourcePin
+        {
+            get => (VisualScriptPin) GetValue(SourcePinProperty);
+            set => SetValue(SourcePinProperty, value);
         }
 
         public static readonly DependencyProperty CreateNodeCommandProperty = DependencyProperty.Register(
@@ -128,7 +138,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public ICommand CreateNodeCommand
         {
-            get => (ICommand)GetValue(CreateNodeCommandProperty);
+            get => (ICommand) GetValue(CreateNodeCommandProperty);
             private set => SetValue(CreateNodeCommandProperty, value);
         }
 
@@ -137,7 +147,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public int GridSize
         {
-            get => (int)GetValue(GridSizeProperty);
+            get => (int) GetValue(GridSizeProperty);
             set => SetValue(GridSizeProperty, value);
         }
 
@@ -146,7 +156,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public int SurfaceSize
         {
-            get => (int)GetValue(SurfaceSizeProperty);
+            get => (int) GetValue(SurfaceSizeProperty);
             set => SetValue(SurfaceSizeProperty, value);
         }
 
@@ -155,7 +165,7 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public bool AutoFitScript
         {
-            get => (bool)GetValue(AutoFitScriptProperty);
+            get => (bool) GetValue(AutoFitScriptProperty);
             set => SetValue(AutoFitScriptProperty, value);
         }
 
@@ -194,7 +204,7 @@ namespace Artemis.VisualScripting.Editor.Controls
             _canvas.MouseMove += OnCanvasMouseMove;
             _canvas.MouseWheel += OnCanvasMouseWheel;
             _canvas.DragOver += OnCanvasDragOver;
-
+            _canvas.Drop += OnCanvasDrop;
             _nodeList.ItemsSource = VisualScript?.Nodes;
             _cableList.ItemsSource = VisualScript?.Cables;
         }
@@ -387,6 +397,34 @@ namespace Artemis.VisualScripting.Editor.Controls
                 VisualScript.OnDragOver(args.GetPosition(_canvas));
         }
 
+        private void OnCanvasDrop(object sender, DragEventArgs args)
+        {
+            if (!args.Data.GetDataPresent(typeof(VisualScriptPin))) return;
+
+            VisualScriptPin sourcePin = (VisualScriptPin) args.Data.GetData(typeof(VisualScriptPin));
+            if (sourcePin == null) return;
+
+            if (_creationBoxParent.ContextMenu != null)
+            {
+                SourcePin = sourcePin;
+
+                _lastRightClickLocation = args.GetPosition(_canvas);
+                _creationBoxParent.ContextMenu.IsOpen = true;
+                _creationBoxParent.ContextMenu.DataContext = this;
+
+                void ContextMenuOnClosed(object s, RoutedEventArgs e)
+                {
+                    SourcePin = null;
+                    if (_creationBoxParent.ContextMenu != null)
+                        _creationBoxParent.ContextMenu.Closed -= ContextMenuOnClosed;
+                }
+
+                _creationBoxParent.ContextMenu.Closed += ContextMenuOnClosed;
+            }
+
+            args.Handled = true;
+        }
+
         private void OnCanvasMouseWheel(object sender, MouseWheelEventArgs args)
         {
             if (AutoFitScript)
@@ -415,8 +453,8 @@ namespace Artemis.VisualScripting.Editor.Controls
 
             for (int i = 0; i < _nodeList.Items.Count; i++)
             {
-                ContentPresenter nodeControl = (ContentPresenter)_nodeList.ItemContainerGenerator.ContainerFromIndex(i);
-                VisualScriptNode node = (VisualScriptNode)nodeControl.Content;
+                ContentPresenter nodeControl = (ContentPresenter) _nodeList.ItemContainerGenerator.ContainerFromIndex(i);
+                VisualScriptNode node = (VisualScriptNode) nodeControl.Content;
 
                 double nodeWidth = nodeControl.ActualWidth;
                 double nodeHeight = nodeControl.ActualHeight;
@@ -492,13 +530,31 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             if (nodeData == null) return;
 
-            if (_creationBoxParent.ContextMenu != null)
-                _creationBoxParent.ContextMenu.IsOpen = false;
-
             INode node = nodeData.CreateNode(Script, null);
             node.Initialize(Script);
             node.X = _lastRightClickLocation.X - VisualScript.LocationOffset;
             node.Y = _lastRightClickLocation.Y - VisualScript.LocationOffset;
+
+            if (SourcePin != null)
+            {
+                // Connect to the first matching input or output pin
+                List<IPin> pins = node.Pins.ToList();
+                pins.AddRange(node.PinCollections.SelectMany(c => c));
+                pins = pins.Where(p => p.Type == typeof(object) || p.Type == SourcePin.Pin.Type).OrderBy(p => p.Type != typeof(object)).ToList();
+                
+                IPin preferredPin = SourcePin.Pin.Direction == PinDirection.Input
+                    ? pins.FirstOrDefault(p => p.Direction == PinDirection.Output)
+                    : pins.FirstOrDefault(p => p.Direction == PinDirection.Input);
+
+                if (preferredPin != null)
+                {
+                    preferredPin.ConnectTo(SourcePin.Pin);
+                    SourcePin.Pin.ConnectTo(preferredPin);
+                }
+            }
+
+            if (_creationBoxParent.ContextMenu != null)
+                _creationBoxParent.ContextMenu.IsOpen = false;
 
             Script.AddNode(node);
         }
@@ -549,6 +605,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 T result = (child as T) ?? GetChildOfType<T>(child);
                 if (result != null) return result;
             }
+
             return null;
         }
 

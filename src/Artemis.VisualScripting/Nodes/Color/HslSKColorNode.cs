@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
-    [Node("HSL Color", "Creates a color from hue, saturation and lightness values")]
+    [Node("HSL Color", "Creates a color from hue, saturation and lightness values", "Color", InputType = typeof(float), OutputType = typeof(SKColor))]
     public class HslSKColorNode : Node
     {
         public HslSKColorNode() : base("HSL Color", "Creates a color from hue, saturation and lightness values")

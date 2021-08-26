@@ -3,7 +3,7 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Greater than", "Checks if the first input is greater than the second.")]
+    [Node("Greater than", "Checks if the first input is greater than the second.", "Operators", InputType = typeof(object), OutputType = typeof(bool))]
     public class GreaterThanNode : Node
     {
         #region Properties & Fields
@@ -44,7 +44,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Less than", "Checks if the first input is less than the second.")]
+    [Node("Less than", "Checks if the first input is less than the second.", "Operators", InputType = typeof(object), OutputType = typeof(bool))]
     public class LessThanNode : Node
     {
         #region Properties & Fields
@@ -85,7 +85,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Equals", "Checks if the two inputs are equals.")]
+    [Node("Equals", "Checks if the two inputs are equals.", "Operators", InputType = typeof(bool), OutputType = typeof(bool))]
     public class EqualsNode : Node
     {
         #region Properties & Fields
@@ -126,7 +126,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Negate", "Negates the boolean.")]
+    [Node("Negate", "Negates the boolean.", "Operators", InputType = typeof(bool), OutputType = typeof(bool))]
     public class NegateNode : Node
     {
         #region Properties & Fields

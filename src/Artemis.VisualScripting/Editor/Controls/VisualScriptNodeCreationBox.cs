@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using Artemis.Core;
+using Artemis.VisualScripting.Editor.Controls.Wrapper;
 
 namespace Artemis.VisualScripting.Editor.Controls
 {
@@ -37,16 +38,26 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         public IEnumerable AvailableNodes
         {
-            get => (IEnumerable)GetValue(AvailableNodesProperty);
+            get => (IEnumerable) GetValue(AvailableNodesProperty);
             set => SetValue(AvailableNodesProperty, value);
         }
+
+        public static readonly DependencyProperty SourcePinProperty = DependencyProperty.Register(
+            "SourcePin", typeof(VisualScriptPin), typeof(VisualScriptNodeCreationBox), new PropertyMetadata(default(VisualScriptPin), OnSourcePinChanged));
+
+        public VisualScriptPin SourcePin
+        {
+            get => (VisualScriptPin) GetValue(SourcePinProperty);
+            set => SetValue(SourcePinProperty, value);
+        }
+
 
         public static readonly DependencyProperty CreateNodeCommandProperty = DependencyProperty.Register(
             "CreateNodeCommand", typeof(ICommand), typeof(VisualScriptNodeCreationBox), new PropertyMetadata(default(ICommand)));
 
         public ICommand CreateNodeCommand
         {
-            get => (ICommand)GetValue(CreateNodeCommandProperty);
+            get => (ICommand) GetValue(CreateNodeCommandProperty);
             set => SetValue(CreateNodeCommandProperty, value);
         }
 
@@ -63,10 +74,21 @@ namespace Artemis.VisualScripting.Editor.Controls
             _contentList.IsSynchronizedWithCurrentItem = false;
             _contentList.SelectionChanged += OnContentListSelectionChanged;
             _contentList.SelectionMode = SelectionMode.Single;
+            IsVisibleChanged += OnIsVisibleChanged;
 
             _searchBox.Focus();
             _contentView?.Refresh();
             ItemsSourceChanged();
+        }
+
+        private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is not true)
+                return;
+
+            _searchBox.Focus();
+            _searchBox.SelectionStart = 0;
+            _searchBox.SelectionLength = _searchBox.Text.Length;
         }
 
         private void OnSearchBoxTextChanged(object sender, TextChangedEventArgs args)
@@ -86,7 +108,14 @@ namespace Artemis.VisualScripting.Editor.Controls
             if (_searchBox == null) return false;
             if (o is not NodeData nodeData) return false;
 
-            return nodeData.Name.Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase);
+            bool nameContains = nodeData.Name.Contains(_searchBox.Text, StringComparison.OrdinalIgnoreCase);
+
+            if (SourcePin == null || SourcePin.Pin.Type == typeof(object))
+                return nameContains;
+
+            if (SourcePin.Pin.Direction == PinDirection.Input)
+                return nameContains && (nodeData.OutputType == typeof(object) || nodeData.OutputType == SourcePin.Pin.Type);
+            return nameContains && (nodeData.InputType == typeof(object) || nodeData.InputType == SourcePin.Pin.Type);
         }
 
         private void ItemsSourceChanged()
@@ -100,7 +129,16 @@ namespace Artemis.VisualScripting.Editor.Controls
             }
             else
             {
-                _collectionViewSource = new CollectionViewSource { Source = AvailableNodes, SortDescriptions = { new SortDescription("Name", ListSortDirection.Ascending)}};
+                _collectionViewSource = new CollectionViewSource
+                {
+                    Source = AvailableNodes,
+                    SortDescriptions =
+                    {
+                        new SortDescription(nameof(NodeData.Category), ListSortDirection.Ascending),
+                        new SortDescription(nameof(NodeData.Name), ListSortDirection.Ascending)
+                    },
+                    GroupDescriptions = {new PropertyGroupDescription(nameof(NodeData.Category))}
+                };
                 _contentView = _collectionViewSource.View;
                 _contentView.Filter += Filter;
             }
@@ -109,6 +147,8 @@ namespace Artemis.VisualScripting.Editor.Controls
         }
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs args) => (d as VisualScriptNodeCreationBox)?.ItemsSourceChanged();
+
+        private static void OnSourcePinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) => (d as VisualScriptNodeCreationBox)?._contentView.Refresh();
 
         #endregion
     }

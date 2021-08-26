@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Easing
 {
-    [Node("Color Easing", "Outputs an eased color value")]
+    [Node("Color Easing", "Outputs an eased color value", "Easing", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
     public class SKColorEasingNode : Node
     {
         private DateTime _lastEvaluate = DateTime.MinValue;

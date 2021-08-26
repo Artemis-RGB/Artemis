@@ -3,7 +3,7 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes.Easing
 {
-    [Node("Double Easing", "Outputs an eased double value")]
+    [Node("Double Easing", "Outputs an eased double value", "Easing", InputType = typeof(double), OutputType = typeof(double))]
     public class DoubleEasingNode : Node
     {
         private DateTime _lastEvaluate = DateTime.MinValue;

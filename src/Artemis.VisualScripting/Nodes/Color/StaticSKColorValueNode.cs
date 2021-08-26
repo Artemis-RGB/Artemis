@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
-    [Node("Color-Value", "Outputs a configurable color value.")]
+    [Node("Color-Value", "Outputs a configurable color value.", "Static", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
     public class StaticSKColorValueNode : Node<StaticSKColorValueNodeCustomViewModel>
     {
         #region Constructors

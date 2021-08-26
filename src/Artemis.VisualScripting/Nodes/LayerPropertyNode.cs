@@ -6,7 +6,7 @@ using Artemis.VisualScripting.Nodes.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Layer/Folder Property", "Outputs the property of a selected layer or folder")]
+    [Node("Layer/Folder Property", "Outputs the property of a selected layer or folder", "External")]
     public class LayerPropertyNode : Node<LayerPropertyNodeCustomViewModel>
     {
         private readonly object _layerPropertyLock = new();

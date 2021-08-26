@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
-    [Node("Brighten Color", "Brightens a color by a specified amount in percent")]
+    [Node("Brighten Color", "Brightens a color by a specified amount in percent", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
     public class BrightenSKColorNode : Node
     {
         public BrightenSKColorNode() : base("Brighten Color", "Brightens a color by a specified amount in percent")
@@ -20,7 +20,7 @@ namespace Artemis.VisualScripting.Nodes.Color
         public override void Evaluate()
         {
             Input.Value.ToHsl(out float h, out float s, out float l);
-            l *= (Percentage.Value + 100f) / 100f;
+            l += l * (Percentage.Value / 100f);
             Output.Value = SKColor.FromHsl(h, s, l);
         }
     }

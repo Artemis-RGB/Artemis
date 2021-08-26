@@ -3,7 +3,7 @@ using Artemis.VisualScripting.Nodes.Easing.CustomViewModels;
 
 namespace Artemis.VisualScripting.Nodes.Easing
 {
-    [Node("Easing Type", "Outputs a selectable easing type.")]
+    [Node("Easing Type", "Outputs a selectable easing type.", "Easing", OutputType = typeof(Easings.Functions))]
     public class EasingTypeNode : Node<EasingTypeNodeCustomViewModel>
     {
         public EasingTypeNode() : base("Easing Type", "Outputs a selectable easing type.")

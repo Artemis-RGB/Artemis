@@ -3,7 +3,7 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Format", "Formats the input string.")]
+    [Node("Format", "Formats the input string.", "Text", InputType = typeof(object), OutputType = typeof(string))]
     public class StringFormatNode : Node
     {
         #region Properties & Fields

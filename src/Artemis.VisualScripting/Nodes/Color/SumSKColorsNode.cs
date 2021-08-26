@@ -3,7 +3,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
-    [Node("Sum (Color)", "Sums the connected color values.")]
+    [Node("Sum (Color)", "Sums the connected color values.", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
     public class SumSKColorsNode : Node
     {
         #region Properties & Fields

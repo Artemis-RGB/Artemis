@@ -4,7 +4,7 @@ using SkiaSharp;
 
 namespace Artemis.VisualScripting.Nodes.Color
 {
-    [Node("Desaturate Color", "Desaturates a color by a specified amount in percent")]
+    [Node("Desaturate Color", "Desaturates a color by a specified amount in percent", "Color", InputType = typeof(SKColor), OutputType = typeof(SKColor))]
     public class DesaturateSKColorNode : Node
     {
         public DesaturateSKColorNode() : base("Desaturate Color", "Desaturates a color by a specified amount in percent")
@@ -21,9 +21,8 @@ namespace Artemis.VisualScripting.Nodes.Color
         public override void Evaluate()
         {
             Input.Value.ToHsl(out float h, out float s, out float l);
-            s -= Percentage.Value;
-            s = Math.Clamp(s, 0, 100);
-            Output.Value = SKColor.FromHsl(h, s, l);
+            s -= s * (Percentage.Value / 100f);
+            Output.Value = SKColor.FromHsl(h, Math.Clamp(s, 0f, 100f), l);
         }
     }
 }

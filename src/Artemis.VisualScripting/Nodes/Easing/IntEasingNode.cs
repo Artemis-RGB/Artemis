@@ -3,7 +3,7 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes.Easing
 {
-    [Node("Integer Easing", "Outputs an eased integer value")]
+    [Node("Integer Easing", "Outputs an eased integer value", "Easing", InputType = typeof(int), OutputType = typeof(int))]
     public class IntEasingNode : Node
     {
         private DateTime _lastEvaluate = DateTime.MinValue;

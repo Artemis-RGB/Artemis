@@ -15,6 +15,7 @@
                             <ControlTemplate>
                                 <Border Width="700" Height="300">
                                     <controls:VisualScriptNodeCreationBox AvailableNodes="{Binding AvailableNodes}"
+                                                                          SourcePin="{Binding SourcePin}"
                                                                           CreateNodeCommand="{Binding CreateNodeCommand}" />
                                 </Border>
                             </ControlTemplate>

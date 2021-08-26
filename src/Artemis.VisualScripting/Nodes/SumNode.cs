@@ -3,7 +3,7 @@ using Artemis.Core;
 
 namespace Artemis.VisualScripting.Nodes
 {
-    [Node("Sum (Integer)", "Sums the connected integer values.")]
+    [Node("Sum (Integer)", "Sums the connected integer values.", "Mathematics", InputType = typeof(int), OutputType = typeof(int))]
     public class SumIntegersNode : Node
     {
         #region Properties & Fields
@@ -35,7 +35,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Sum (Float)", "Sums the connected float values.")]
+    [Node("Sum (Float)", "Sums the connected float values.", "Mathematics", InputType = typeof(float), OutputType = typeof(float))]
     public class SumFloatsNode : Node
     {
         #region Properties & Fields
@@ -67,7 +67,7 @@ namespace Artemis.VisualScripting.Nodes
         #endregion
     }
 
-    [Node("Sum (Double)", "Sums the connected double values.")]
+    [Node("Sum (Double)", "Sums the connected double values.", "Mathematics", InputType = typeof(double), OutputType = typeof(double))]
     public class SumDoublesNode : Node
     {
         #region Properties & Fields
