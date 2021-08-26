@@ -83,6 +83,9 @@ namespace Artemis.Core
         {
             _nodes.Remove(node);
 
+            if (node is IDisposable disposable)
+                disposable.Dispose();
+
             NodeRemoved?.Invoke(this, node);
         }
 
@@ -105,7 +108,9 @@ namespace Artemis.Core
         /// <inheritdoc />
         public void Load()
         {
-            _nodes.Clear();
+            List<INode> removeNodes = _nodes.Where(n => !n.IsExitNode).ToList();
+            foreach (INode removeNode in removeNodes) 
+                RemoveNode(removeNode);
 
             // Create nodes
             foreach (NodeEntity entityNode in Entity.Nodes)
@@ -113,7 +118,9 @@ namespace Artemis.Core
                 INode? node = LoadNode(entityNode, entityNode.IsExitNode ? ExitNode : null);
                 if (node == null)
                     continue;
-                _nodes.Add(node);
+
+                if (!entityNode.IsExitNode)
+                    AddNode(node);
             }
 
             LoadConnections();

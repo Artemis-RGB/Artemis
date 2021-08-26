@@ -234,7 +234,7 @@ namespace Artemis.Core
 
             Script.Save();
             Entity.IsEnabled = IsEnabled;
-            Entity.NodeScript = Script?.Entity;
+            Entity.NodeScript = Script.Entity.Nodes.Any() ? Script.Entity : null;
         }
 
         #endregion

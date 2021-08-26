@@ -28,8 +28,9 @@
                     <materialDesign:PackIcon Kind="FreehandLine" Width="20" Height="28" />
                 </mde:AppBar.AppIcon>
             </mde:AppBar>
-            <controls:VisualScriptEditor Script="{Binding NodeScript}" AvailableNodes="{Binding AvailableNodes}" />
-
+            <controls:VisualScriptEditor Script="{Binding NodeScript}" 
+                                         AvailableNodes="{Binding AvailableNodes}" 
+                                         AlwaysShowValues="{Binding AlwaysShowValues.Value}" />
         </DockPanel>
     </materialDesign:DialogHost>
 </mde:MaterialWindow>
