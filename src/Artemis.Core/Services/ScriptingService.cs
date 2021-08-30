@@ -6,17 +6,20 @@ using System.Reflection;
 using Artemis.Core.ScriptingProviders;
 using Ninject;
 using Ninject.Parameters;
+using Serilog;
 
 namespace Artemis.Core.Services
 {
     internal class ScriptingService : IScriptingService
     {
+        private readonly ILogger _logger;
         private readonly IPluginManagementService _pluginManagementService;
         private readonly IProfileService _profileService;
         private List<ScriptingProvider> _scriptingProviders;
 
-        public ScriptingService(IPluginManagementService pluginManagementService, IProfileService profileService)
+        public ScriptingService(ILogger logger, IPluginManagementService pluginManagementService, IProfileService profileService)
         {
+            _logger = logger;
             _pluginManagementService = pluginManagementService;
             _profileService = profileService;
 
@@ -81,43 +84,71 @@ namespace Artemis.Core.Services
 
         public GlobalScript? CreateScriptInstance(ScriptConfiguration scriptConfiguration)
         {
-            if (scriptConfiguration.Script != null)
-                throw new ArtemisCoreException("The provided script configuration already has an active script");
+            GlobalScript? script = null;
+            try
+            {
+                if (scriptConfiguration.Script != null)
+                    throw new ArtemisCoreException("The provided script configuration already has an active script");
 
-            ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
-            if (provider == null)
+                ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
+                if (provider == null)
+                    return null;
+
+                script = (GlobalScript) provider.Plugin.Kernel!.Get(
+                    provider.GlobalScriptType,
+                    CreateScriptConstructorArgument(provider.GlobalScriptType, scriptConfiguration)
+                );
+
+                script.ScriptingProvider = provider;
+                script.ScriptingService = this;
+                provider.InternalScripts.Add(script);
+                InternalGlobalScripts.Add(script);
+
+                scriptConfiguration.Script = script;
+                return script;
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to initialize global script");
+                script?.Dispose();
                 return null;
-
-            GlobalScript script = (GlobalScript) provider.Plugin.Kernel!.Get(
-                provider.GlobalScriptType,
-                CreateScriptConstructorArgument(provider.GlobalScriptType, scriptConfiguration)
-            );
-
-            script.ScriptingProvider = provider;
-            script.ScriptingService = this;
-            provider.InternalScripts.Add(script);
-            InternalGlobalScripts.Add(script);
-            return script;
+            }
         }
 
         public ProfileScript? CreateScriptInstance(Profile profile, ScriptConfiguration scriptConfiguration)
         {
-            if (scriptConfiguration.Script != null)
-                throw new ArtemisCoreException("The provided script configuration already has an active script");
+            ProfileScript? script = null;
+            try
+            {
+                if (scriptConfiguration.Script != null)
+                    throw new ArtemisCoreException("The provided script configuration already has an active script");
 
-            ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
-            if (provider == null)
+                ScriptingProvider? provider = _scriptingProviders.FirstOrDefault(p => p.Id == scriptConfiguration.ScriptingProviderId);
+                if (provider == null)
+                    return null;
+
+                script = (ProfileScript) provider.Plugin.Kernel!.Get(
+                    provider.ProfileScriptType,
+                    CreateScriptConstructorArgument(provider.ProfileScriptType, profile),
+                    CreateScriptConstructorArgument(provider.ProfileScriptType, scriptConfiguration)
+                );
+
+                script.ScriptingProvider = provider;
+                provider.InternalScripts.Add(script);
+                lock (profile)
+                {
+                    scriptConfiguration.Script = script;
+                    profile.Scripts.Add(script);
+                }
+
+                return script;
+            }
+            catch (Exception e)
+            {
+                _logger.Warning(e, "Failed to initialize profile script");
+                script?.Dispose();
                 return null;
-
-            ProfileScript script = (ProfileScript) provider.Plugin.Kernel!.Get(
-                provider.ProfileScriptType,
-                CreateScriptConstructorArgument(provider.ProfileScriptType, profile),
-                CreateScriptConstructorArgument(provider.ProfileScriptType, scriptConfiguration)
-            );
-
-            script.ScriptingProvider = provider;
-            provider.InternalScripts.Add(script);
-            return script;
+            }
         }
 
         /// <inheritdoc />

@@ -96,7 +96,7 @@
                                    Grid.Column="1"
                                    Style="{StaticResource MaterialDesignBody1TextBlock}"
                                    Padding="0">
-                            Robert 'Spoinky' Beekman
+                            Robert Beekman
                         </TextBlock>
                         <TextBlock Grid.Column="1"
                                    Grid.Row="1"
@@ -111,7 +111,7 @@
                                     Style="{StaticResource MaterialDesignIconForegroundButton}"
                                     ToolTip="View GitHub profile"
                                     Command="{s:Action OpenUrl}"
-                                    CommandParameter="https://github.com/SpoinkyNL/">
+                                    CommandParameter="https://github.com/RobertWasTaken/">
                                 <materialDesign:PackIcon Kind="Github" Width="20" Height="20" />
                             </Button>
                         </StackPanel>
