@@ -8,7 +8,7 @@ namespace Artemis.Core
     {
         INode Node { get; }
 
-        string Name { get; }
+        string Name { get; set; }
         PinDirection Direction { get; }
         Type Type { get; }
         object PinValue { get; }

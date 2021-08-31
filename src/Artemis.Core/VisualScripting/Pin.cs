@@ -10,9 +10,15 @@ namespace Artemis.Core
         #region Properties & Fields
 
         public INode Node { get; }
-        public string Name { get; }
+
+        public string Name
+        {
+            get => _name;
+            set => SetAndNotify(ref _name, value);
+        }
 
         private bool _isEvaluated;
+
         public bool IsEvaluated
         {
             get => _isEvaluated;
@@ -20,6 +26,7 @@ namespace Artemis.Core
         }
 
         private readonly List<IPin> _connectedTo = new();
+        private string _name;
         public IReadOnlyList<IPin> ConnectedTo => new ReadOnlyCollection<IPin>(_connectedTo);
 
         public abstract PinDirection Direction { get; }

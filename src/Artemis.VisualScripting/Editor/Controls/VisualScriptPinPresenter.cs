@@ -71,6 +71,9 @@ namespace Artemis.VisualScripting.Editor.Controls
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             LayoutUpdated -= OnLayoutUpdated;
+            if (Pin != null)
+                Pin.Node.Node.PropertyChanged -= OnNodePropertyChanged;
+
             _nodePresenter = null;
         }
 

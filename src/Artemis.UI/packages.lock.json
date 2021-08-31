@@ -281,6 +281,11 @@
         "resolved": "5.0.0",
         "contentHash": "umBECCoMC+sOUgm083yFr8SxTobUOcPFH4AXigdO2xJiszCHAnmeDl4qPphJt+oaJ/XIfV1wOjIts2nRnki61Q=="
       },
+      "Microsoft.Extensions.ObjectPool": {
+        "type": "Transitive",
+        "resolved": "5.0.9",
+        "contentHash": "grj0e6Me0EQsgaurV0fxP0xd8sz8eZVK+Jb816DPzNADHaqXaXJD3xZX9SFjyDl3ykAYvD0y77o5vRd9Hzsk9g=="
+      },
       "Microsoft.NETCore.Platforms": {
         "type": "Transitive",
         "resolved": "5.0.0",
@@ -380,6 +385,14 @@
         "dependencies": {
           "Castle.Core": "4.2.0",
           "Ninject": "3.3.3"
+        }
+      },
+      "NoStringEvaluating": {
+        "type": "Transitive",
+        "resolved": "2.2.1",
+        "contentHash": "dYvWeDdSXrfWreWu17XUNCZD1QAbeMuyOLwVxNBBy+mbs1O/QjsYr1uQPCJWqYRF2Rd5nQBLFbFWybz4Ndh68g==",
+        "dependencies": {
+          "Microsoft.Extensions.ObjectPool": "5.0.9"
         }
       },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl": {
@@ -1479,6 +1492,8 @@
           "Artemis.Core": "1.0.0",
           "Artemis.UI.Shared": "2.0.0",
           "JetBrains.Annotations": "2021.1.0",
+          "Ninject": "3.3.4",
+          "NoStringEvaluating": "2.2.1",
           "SkiaSharp": "2.80.3",
           "Stylet": "1.3.6"
         }

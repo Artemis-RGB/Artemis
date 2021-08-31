@@ -28,6 +28,7 @@ namespace Artemis.UI.Shared
         {
             _gradientConverter = new ColorGradientToGradientStopsConverter();
             InitializeComponent();
+            Unloaded += OnUnloaded;
         }
 
         /// <summary>
@@ -121,7 +122,7 @@ namespace Artemis.UI.Shared
 
         private void UpdateGradientStops()
         {
-            GradientPreview.GradientStops = (GradientStopCollection)_gradientConverter.Convert(ColorGradient, null!, null!, null!);
+            GradientPreview.GradientStops = (GradientStopCollection) _gradientConverter.Convert(ColorGradient, null!, null!, null!);
         }
 
         private void UIElement_OnMouseUp(object sender, MouseButtonEventArgs e)
@@ -135,6 +136,11 @@ namespace Artemis.UI.Shared
                 await _colorPickerService.ShowGradientPicker(ColorGradient, DialogHost);
                 OnDialogClosed();
             });
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            ColorGradient.CollectionChanged -= GradientChanged;
         }
 
         /// <inheritdoc />

@@ -88,9 +88,9 @@ namespace Artemis.VisualScripting.Editor.Controls
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             if (Cable?.From != null)
-                Cable.From.PropertyChanged += OnPinPropertyChanged;
+                Cable.From.PropertyChanged -= OnPinPropertyChanged;
             if (Cable?.To != null)
-                Cable.To.PropertyChanged += OnPinPropertyChanged;
+                Cable.To.PropertyChanged -= OnPinPropertyChanged;
         }
 
         private void OnPathMouseDown(object sender, MouseButtonEventArgs args)

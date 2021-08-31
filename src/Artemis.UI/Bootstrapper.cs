@@ -17,6 +17,7 @@ using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using Artemis.UI.Stylet;
 using Artemis.UI.Utilities;
+using Artemis.VisualScripting.Ninject;
 using Ninject;
 using Serilog;
 using Stylet;
@@ -127,6 +128,8 @@ namespace Artemis.UI
             kernel.Load<SharedUIModule>();
             // Load the core assembly's module
             kernel.Load<CoreModule>();
+            // Load the nodes module
+            kernel.Load<NoStringNinjectModule>();
 
             base.ConfigureIoC(kernel);
         }
