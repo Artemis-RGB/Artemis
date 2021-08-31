@@ -305,9 +305,16 @@ namespace Artemis.Core.Services
             }
         }
 
+        public bool IsKeyDown(KeyboardKey key)
+        {
+            return _pressedKeys.Any(p => p.Value.Contains(key));
+        }
+
         #endregion
 
         #region Mouse
+
+        private readonly HashSet<MouseButton> _pressedButtons = new();
 
         private void InputProviderOnMouseButtonDataReceived(object? sender, InputProviderMouseButtonEventArgs e)
         {
@@ -320,9 +327,17 @@ namespace Artemis.Core.Services
             ArtemisMouseButtonUpDownEventArgs eventArgs = new(e.Device, led, e.Button, e.IsDown);
             OnMouseButtonUpDown(eventArgs);
             if (e.IsDown)
+            {
+                if (!_pressedButtons.Contains(e.Button))
+                    _pressedButtons.Add(e.Button);
                 OnMouseButtonDown(eventArgs);
+            }
             else
+            {
+                if (_pressedButtons.Contains(e.Button))
+                    _pressedButtons.Remove(e.Button);
                 OnMouseButtonUp(eventArgs);
+            }
 
             // _logger.Verbose("Mouse button data: LED ID: {ledId}, button: {button}, is down: {isDown}, device: {device} ", ledId, e.Button, e.IsDown, e.Device);
         }
@@ -337,6 +352,11 @@ namespace Artemis.Core.Services
         {
             OnMouseMove(new ArtemisMouseMoveEventArgs(e.Device, e.CursorX, e.CursorY, e.DeltaX, e.DeltaY));
             // _logger.Verbose("Mouse move data: XY: {X},{Y} - delta XY: {deltaX},{deltaY} - device: {device} ", e.CursorX, e.CursorY, e.DeltaX, e.DeltaY, e.Device);
+        }
+
+        public bool IsButtonDown(MouseButton button)
+        {
+            return _pressedButtons.Contains(button);
         }
 
         #endregion
