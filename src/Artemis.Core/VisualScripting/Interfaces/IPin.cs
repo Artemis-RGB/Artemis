@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Artemis.Core.Events;
 
 namespace Artemis.Core
 {
@@ -16,8 +17,8 @@ namespace Artemis.Core
 
         bool IsEvaluated { get; set; }
 
-        event EventHandler<IPin> PinConnected;
-        event EventHandler<IPin> PinDisconnected;
+        event EventHandler<SingleValueEventArgs<IPin>> PinConnected;
+        event EventHandler<SingleValueEventArgs<IPin>> PinDisconnected;
 
         void ConnectTo(IPin pin);
         void DisconnectFrom(IPin pin);

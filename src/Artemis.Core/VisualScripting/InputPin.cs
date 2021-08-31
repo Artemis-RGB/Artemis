@@ -42,10 +42,12 @@ namespace Artemis.Core
         #endregion
 
         #region Methods
-        
+
         private void Evaluate()
         {
-            Value = ConnectedTo.Count > 0 ? (T)ConnectedTo[0].PinValue : default;
+            if (ConnectedTo.Count > 0)
+                if (ConnectedTo[0].PinValue is T value)
+                    Value = value;
         }
 
         #endregion

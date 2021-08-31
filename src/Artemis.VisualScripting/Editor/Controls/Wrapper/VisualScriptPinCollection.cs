@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Artemis.Core;
+using Artemis.Core.Events;
+using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.ViewModel;
 
 namespace Artemis.VisualScripting.Editor.Controls.Wrapper
@@ -34,8 +36,8 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.Node = node;
             this.PinCollection = pinCollection;
 
-            pinCollection.PinAdded += OnPinCollectionPinAdded;
-            pinCollection.PinRemoved += OnPinCollectionPinRemoved;
+            PinAddedEventManager.AddHandler(pinCollection, OnPinCollectionPinAdded);
+            PinRemovedEventManager.AddHandler(pinCollection, OnPinCollectionPinRemoved);
 
             foreach (IPin pin in PinCollection)
             {
@@ -49,32 +51,27 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
         #region Methods
 
-        private void OnPinCollectionPinRemoved(object sender, IPin pin)
+        private void OnPinCollectionPinRemoved(object sender, SingleValueEventArgs<IPin> args)
         {
-            if (!_pinMapping.TryGetValue(pin, out VisualScriptPin visualScriptPin)) return;
+            if (!_pinMapping.TryGetValue(args.Value, out VisualScriptPin visualScriptPin)) return;
 
             visualScriptPin.DisconnectAll();
             Pins.Remove(visualScriptPin);
         }
 
-        private void OnPinCollectionPinAdded(object sender, IPin pin)
+        private void OnPinCollectionPinAdded(object sender, SingleValueEventArgs<IPin> args)
         {
-            if (_pinMapping.ContainsKey(pin)) return;
+            if (_pinMapping.ContainsKey(args.Value)) return;
 
-            VisualScriptPin visualScriptPin = new(Node, pin);
-            _pinMapping.Add(pin, visualScriptPin);
+            VisualScriptPin visualScriptPin = new(Node, args.Value);
+            _pinMapping.Add(args.Value, visualScriptPin);
             Pins.Add(visualScriptPin);
         }
 
-        public void AddPin()
-        {
-            PinCollection.AddPin();
-        }
+        public void AddPin() => PinCollection.AddPin();
 
-        public void RemovePin(VisualScriptPin pin)
-        {
-            PinCollection.Remove(pin.Pin);
-        }
+        public void RemovePin(VisualScriptPin pin) => PinCollection.Remove(pin.Pin);
+
         public void RemoveAll()
         {
             List<VisualScriptPin> pins = new(Pins);

@@ -98,7 +98,10 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.Script = script;
             this.Node = node;
 
-            Node.PropertyChanged += OnNodePropertyChanged;
+            PropertyChangedEventManager.AddHandler(Node, OnNodePropertyChanged, nameof(Node.Pins));
+            PropertyChangedEventManager.AddHandler(Node, OnNodePropertyChanged, nameof(Node.PinCollections));
+            PropertyChangedEventManager.AddHandler(Node, OnNodePropertyChanged, nameof(Node.X));
+            PropertyChangedEventManager.AddHandler(Node, OnNodePropertyChanged, nameof(Node.Y));
 
             ValidatePins();
         }

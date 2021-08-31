@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Artemis.Core.Events;
 using Artemis.Core.Internal;
 using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile.Nodes;
@@ -15,8 +16,8 @@ namespace Artemis.Core
             Load();
         }
 
-        public event EventHandler<INode>? NodeAdded;
-        public event EventHandler<INode>? NodeRemoved;
+        public event EventHandler<SingleValueEventArgs<INode>>? NodeAdded;
+        public event EventHandler<SingleValueEventArgs<INode>>? NodeRemoved;
 
         #region Properties & Fields
 
@@ -76,7 +77,7 @@ namespace Artemis.Core
         {
             _nodes.Add(node);
 
-            NodeAdded?.Invoke(this, node);
+            NodeAdded?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
 
         public void RemoveNode(INode node)
@@ -86,7 +87,7 @@ namespace Artemis.Core
             if (node is IDisposable disposable)
                 disposable.Dispose();
 
-            NodeRemoved?.Invoke(this, node);
+            NodeRemoved?.Invoke(this, new SingleValueEventArgs<INode>(node));
         }
 
         public void Dispose()
@@ -109,7 +110,7 @@ namespace Artemis.Core
         public void Load()
         {
             List<INode> removeNodes = _nodes.Where(n => !n.IsExitNode).ToList();
-            foreach (INode removeNode in removeNodes) 
+            foreach (INode removeNode in removeNodes)
                 RemoveNode(removeNode);
 
             // Create nodes
@@ -148,7 +149,7 @@ namespace Artemis.Core
             {
                 IPinCollection? collection = node.PinCollections.FirstOrDefault(c => c.Name == entityNodePinCollection.Name &&
                                                                                      c.Type.Name == entityNodePinCollection.Type &&
-                                                                                     (int) c.Direction == entityNodePinCollection.Direction);
+                                                                                     (int)c.Direction == entityNodePinCollection.Direction);
                 if (collection == null)
                     continue;
 
@@ -230,7 +231,7 @@ namespace Artemis.Core
                     {
                         Name = nodePinCollection.Name,
                         Type = nodePinCollection.Type.Name,
-                        Direction = (int) nodePinCollection.Direction,
+                        Direction = (int)nodePinCollection.Direction,
                         Amount = nodePinCollection.Count()
                     });
                 }
@@ -300,7 +301,7 @@ namespace Artemis.Core
     {
         #region Properties & Fields
 
-        public T Result => ((ExitNode<T>) ExitNode).Value;
+        public T Result => ((ExitNode<T>)ExitNode).Value;
 
         public override Type ResultType => typeof(T);
 

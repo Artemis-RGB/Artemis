@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Artemis.Core.Events;
 
 namespace Artemis.Core
 {
@@ -22,8 +23,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler<IPin> PinAdded;
-        public event EventHandler<IPin> PinRemoved;
+        public event EventHandler<SingleValueEventArgs<IPin>> PinAdded;
+        public event EventHandler<SingleValueEventArgs<IPin>> PinRemoved;
 
         #endregion
 
@@ -48,7 +49,7 @@ namespace Artemis.Core
             IPin pin = CreatePin();
             _pins.Add(pin);
 
-            PinAdded?.Invoke(this, pin);
+            PinAdded?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
 
             return pin;
         }
@@ -58,7 +59,7 @@ namespace Artemis.Core
             bool removed = _pins.Remove(pin);
 
             if (removed)
-                PinRemoved?.Invoke(this, pin);
+                PinRemoved?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
 
             return removed;
         }
