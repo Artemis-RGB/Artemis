@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.Internal;
 using Artemis.VisualScripting.ViewModel;
@@ -52,15 +53,15 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
             this.Node = node;
             this.Pin = pin;
 
-            pin.PinConnected += PinConnectionChanged;
-            pin.PinDisconnected += PinConnectionChanged;
+            PinConnectedEventManager.AddHandler(pin, PinConnectionChanged);
+            PinDisconnectedEventManager.AddHandler(pin, PinConnectionChanged);
         }
 
         #endregion
 
         #region Methods
 
-        private void PinConnectionChanged(object sender, IPin pin)
+        private void PinConnectionChanged(object sender, SingleValueEventArgs<IPin> pin)
         {
             if (_isConnectionUpdated) return;
 

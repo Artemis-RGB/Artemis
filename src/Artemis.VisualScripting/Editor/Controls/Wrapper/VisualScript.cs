@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Threading;
 using Artemis.Core;
+using Artemis.Core.Events;
 using Artemis.VisualScripting.Events;
 using Artemis.VisualScripting.ViewModel;
 
@@ -78,10 +79,9 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
 
             LocationOffset = SurfaceSize / 2.0;
 
-            Nodes.CollectionChanged += OnNodeCollectionChanged;
-
-            script.NodeAdded += OnScriptNodeAdded;
-            script.NodeRemoved += OnScriptRemovedAdded;
+            CollectionChangedEventManager.AddHandler(Nodes, OnNodeCollectionChanged);
+            NodeAddedEventManager.AddHandler(script, OnScriptNodeAdded);
+            NodeRemovedEventManager.AddHandler(script, OnScriptNodeRemoved);
 
             foreach (INode node in Script.Nodes)
                 InitializeNode(node);
@@ -107,16 +107,16 @@ namespace Artemis.VisualScripting.Editor.Controls.Wrapper
                 RegisterNodes(args.NewItems.Cast<VisualScriptNode>());
         }
 
-        private void OnScriptNodeAdded(object sender, INode node)
+        private void OnScriptNodeAdded(object sender, SingleValueEventArgs<INode> args)
         {
-            if (_nodeMapping.ContainsKey(node)) return;
+            if (_nodeMapping.ContainsKey(args.Value)) return;
 
-            InitializeNode(node);
+            InitializeNode(args.Value);
         }
 
-        private void OnScriptRemovedAdded(object sender, INode node)
+        private void OnScriptNodeRemoved(object sender, SingleValueEventArgs<INode> args)
         {
-            if (!_nodeMapping.TryGetValue(node, out VisualScriptNode visualScriptNode)) return;
+            if (!_nodeMapping.TryGetValue(args.Value, out VisualScriptNode visualScriptNode)) return;
 
             Nodes.Remove(visualScriptNode);
         }

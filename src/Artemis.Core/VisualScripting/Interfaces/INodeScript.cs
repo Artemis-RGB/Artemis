@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Artemis.Core.Events;
 
 namespace Artemis.Core
 {
@@ -16,8 +17,8 @@ namespace Artemis.Core
 
         object? Context { get; set; }
         
-        event EventHandler<INode>? NodeAdded;
-        event EventHandler<INode>? NodeRemoved;
+        event EventHandler<SingleValueEventArgs<INode>>? NodeAdded;
+        event EventHandler<SingleValueEventArgs<INode>>? NodeRemoved;
         
         void Run();
         void AddNode(INode node);

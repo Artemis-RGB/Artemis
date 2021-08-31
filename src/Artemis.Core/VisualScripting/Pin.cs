@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Artemis.Core.Events;
 
 namespace Artemis.Core
 {
@@ -29,8 +30,8 @@ namespace Artemis.Core
 
         #region Events
 
-        public event EventHandler<IPin> PinConnected;
-        public event EventHandler<IPin> PinDisconnected;
+        public event EventHandler<SingleValueEventArgs<IPin>> PinConnected;
+        public event EventHandler<SingleValueEventArgs<IPin>> PinDisconnected;
 
         #endregion
 
@@ -54,7 +55,7 @@ namespace Artemis.Core
             _connectedTo.Add(pin);
             OnPropertyChanged(nameof(ConnectedTo));
 
-            PinConnected?.Invoke(this, pin);
+            PinConnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         public void DisconnectFrom(IPin pin)
@@ -62,7 +63,7 @@ namespace Artemis.Core
             _connectedTo.Remove(pin);
             OnPropertyChanged(nameof(ConnectedTo));
 
-            PinDisconnected?.Invoke(this, pin);
+            PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         public void DisconnectAll()
@@ -73,7 +74,7 @@ namespace Artemis.Core
             OnPropertyChanged(nameof(ConnectedTo));
 
             foreach (IPin pin in connectedPins)
-                PinDisconnected?.Invoke(this, pin);
+                PinDisconnected?.Invoke(this, new SingleValueEventArgs<IPin>(pin));
         }
 
         private void OnNodeResetting(object sender, EventArgs e)
