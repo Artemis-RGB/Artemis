@@ -77,6 +77,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.Plugins
             base.OnInitialActivate();
         }
 
+        public void OpenUrl(string url)
+        {
+            Core.Utilities.OpenUrl(url);
+        }
+
         public async Task ImportPlugin()
         {
             VistaOpenFileDialog dialog = new() {Filter = "ZIP files (*.zip)|*.zip", Title = "Import Artemis plugin"};

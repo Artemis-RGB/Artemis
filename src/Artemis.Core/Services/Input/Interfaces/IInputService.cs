@@ -40,7 +40,19 @@ namespace Artemis.Core.Services
         /// </summary>
         void ReleaseAll();
 
-        #region Events
+        /// <summary>
+        ///     Determines whether the provided key is pressed by any device
+        /// </summary>
+        /// <param name="key">The key to check</param>
+        /// <returns><see langword="true" /> if the key is pressed; otherwise <see langword="false" /></returns>
+        bool IsKeyDown(KeyboardKey key);
+
+        /// <summary>
+        ///     Determines whether the button key is pressed by any device
+        /// </summary>
+        /// <param name="button">The button to check</param>
+        /// <returns><see langword="true" /> if the button is pressed; otherwise <see langword="false" /></returns>
+        bool IsButtonDown(MouseButton button);
 
         /// <summary>
         ///     Occurs whenever a key on a keyboard was pressed or released
@@ -91,8 +103,6 @@ namespace Artemis.Core.Services
         ///     Occurs when a device has been identified after calling <see cref="IdentifyDevice" />
         /// </summary>
         public event EventHandler DeviceIdentified;
-
-        #endregion
 
         #region Identification
 

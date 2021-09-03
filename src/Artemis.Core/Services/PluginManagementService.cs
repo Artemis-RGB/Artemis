@@ -199,6 +199,12 @@ namespace Artemis.Core.Services
 
         public void LoadPlugins(List<string> startupArguments, bool isElevated)
         {
+            if (startupArguments.Contains("--no-plugins"))
+            {
+                _logger.Warning("Artemis launched with --no-plugins, skipping the loading of plugins");
+                return;
+            }
+
             bool ignorePluginLock = startupArguments.Contains("--ignore-plugin-lock");
             bool stayElevated = startupArguments.Contains("--force-elevation");
             bool droppedAdmin = startupArguments.Contains("--dropped-admin");

@@ -3,7 +3,6 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Artemis.UI.Shared.Services;
-using Castle.Core.Internal;
 using FluentValidation;
 using Stylet;
 
@@ -70,7 +69,7 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties.Timeline.Dialogs
             if (parts.Length == 1)
                 return TimeSpan.FromSeconds(double.Parse(parts[0]));
             // Only milliseconds provided with a leading .
-            if (parts[0].IsNullOrEmpty())
+            if (string.IsNullOrEmpty(parts[0]))
             {
                 // Add trailing zeros so 2.5 becomes 2.500, can't seem to make double.Parse do that
                 while (parts[0].Length < 3) parts[0] += "0";

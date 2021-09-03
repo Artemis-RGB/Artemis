@@ -333,7 +333,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             SurfaceDeviceViewModel device = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect).FirstOrDefault();
             if (device != null)
             {
-                _rgbService.IsRenderPaused = true;
+                _rgbService.SetRenderPaused(true);
                 _mouseDragStatus = MouseDragStatus.Dragging;
                 // If the device is not selected, deselect others and select only this one (if shift not held)
                 if (device.SelectionStatus != SelectionStatus.Selected)
@@ -378,7 +378,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             }
 
             _mouseDragStatus = MouseDragStatus.None;
-            _rgbService.IsRenderPaused = false;
+            _rgbService.SetRenderPaused(false);
             ApplySurfaceSelection();
         }
 

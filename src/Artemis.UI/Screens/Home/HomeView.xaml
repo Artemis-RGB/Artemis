@@ -38,199 +38,185 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Image Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="100" Width="100" />
-            <StackPanel Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center">
-                <TextBlock Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">
-                    <Run Text="Welcome to Artemis, the unified" />
-                    <Run Text="RGB">
-                        <Run.Foreground>
-                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
-                                <GradientStop Color="#f19d25" />
-                                <GradientStop Color="#f63d3d" Offset="0.2" />
-                                <GradientStop Color="#c93cec" Offset="0.4" />
-                                <GradientStop Color="#2667f4" Offset="0.6" />
-                                <GradientStop Color="#1cb6e7" Offset="0.8" />
-                                <GradientStop Color="#2df4b5" Offset="1" />
-                            </LinearGradientBrush>
-                        </Run.Foreground>
-                    </Run>
-                    <Run Text="platform." />
-                </TextBlock>
-                <Button Style="{StaticResource MaterialDesignFlatButton}"
-                        Foreground="{StaticResource SecondaryHueMidBrush}"
-                        materialDesign:RippleAssist.Feedback="{StaticResource SecondaryHueMidBrush}"
-                        Command="{x:Static materialDesign:DrawerHost.OpenDrawerCommand}">
-                    <StackPanel Orientation="Horizontal">
-                        <materialDesign:PackIcon Kind="Binoculars" />
-                        <TextBlock Margin="8 0 0 0">EXPLORE</TextBlock>
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+            <Image Source="{svgc:SvgImage Source=/Resources/Images/Logo/bow.svg}" Height="80" Width="80" />
+            <TextBlock Grid.Column="1" Margin="24 0 0 0" VerticalAlignment="Center" Style="{StaticResource MaterialDesignHeadline4TextBlock}" TextWrapping="Wrap">
+                <Run Text="Welcome to Artemis, the unified" />
+                <Run Text="RGB">
+                    <Run.Foreground>
+                        <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                            <GradientStop Color="#f19d25" />
+                            <GradientStop Color="#f63d3d" Offset="0.2" />
+                            <GradientStop Color="#c93cec" Offset="0.4" />
+                            <GradientStop Color="#2667f4" Offset="0.6" />
+                            <GradientStop Color="#1cb6e7" Offset="0.8" />
+                            <GradientStop Color="#2df4b5" Offset="1" />
+                        </LinearGradientBrush>
+                    </Run.Foreground>
+                </Run>
+                <Run Text="platform." />
+            </TextBlock>
         </Grid>
+
         <ScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                       HorizontalAlignment="Center"
                       VerticalAlignment="Bottom"
                       Margin="0 0 0 32">
-
-            <StackPanel Orientation="Horizontal">
-                <materialDesign:Card Width="420" Margin="8 2 4 16" Height="Auto">
+            <StackPanel>
+                <materialDesign:Card Width="852" Margin="8" Height="Auto">
                     <Grid VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="155" />
-                            <RowDefinition Height="95" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200" />
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
-                        <materialDesign:PackIcon Kind="Discord" Width="140" Height="140"
-                                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <materialDesign:PackIcon Kind="Plug" Width="140" Height="140" HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <StackPanel Grid.Row="0" Grid.Column="1">
-                            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Have a chat</TextBlock>
-                            <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
+                            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Plugins</TextBlock>
+                            <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                       TextWrapping="Wrap" Margin="16 0 16 8"
                                        Foreground="{DynamicResource MaterialDesignBodyLight}"
                                        VerticalAlignment="Top">
-                                If you need help, have some feedback or have any other questions feel free to contact us through any of the
-                                following channels.
+                                Artemis is built up using plugins. This means devices, brushes, effects and modules (for supporting games!) can all be added via plugins.  <LineBreak /> <LineBreak />
+                                Under Settings > Plugins you can find your currently installed plugins, these default plugins are created by Artemis developers.
+                                <LineBreak /> <LineBreak />
+                                We're also keeping track of a list of third-party plugins on our wiki.
                             </TextBlock>
                         </StackPanel>
-                        <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
-                                BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
-                            <DockPanel>
-                                <Grid Margin="8">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition />
-                                        <RowDefinition />
-                                    </Grid.RowDefinitions>
-                                    <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                            HorizontalAlignment="Left"
-                                            x:Name="GitHubButton" Command="{s:Action OpenUrl}"
-                                            CommandParameter="https://github.com/Artemis-RGB/Artemis">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Github" />
-                                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Grid.Row="0" Style="{DynamicResource MaterialDesignFlatButton}"
-                                            HorizontalAlignment="Right"
-                                            x:Name="WebsiteButton" Command="{s:Action OpenUrl}"
-                                            CommandParameter="https://artemis-rgb.com">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Web" />
-                                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
-                                            HorizontalAlignment="Left"
-                                            x:Name="DiscordButton" Command="{s:Action OpenUrl}"
-                                            CommandParameter="https://discordapp.com/invite/S3MVaC9">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Discord" />
-                                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
-                                        </StackPanel>
-                                    </Button>
-                                    <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
-                                            HorizontalAlignment="Right"
-                                            x:Name="MailButton" Command="{s:Action OpenUrl}"
-                                            CommandParameter="mailto:spoinky.nl@gmail.com">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="Email" />
-                                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
-                                        </StackPanel>
-                                    </Button>
-                                </Grid>
-                            </DockPanel>
+                        <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0" BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
+                            <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                    HorizontalAlignment="Right"
+                                    Command="{s:Action OpenUrl}"
+                                    CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="OpenInBrowser" />
+                                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
+                                </StackPanel>
+                            </Button>                            
                         </Border>
                     </Grid>
                 </materialDesign:Card>
-                <materialDesign:Card Width="420" Margin="8 2 4 16" Height="Auto">
-                    <Grid VerticalAlignment="Stretch">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="155" />
-                            <RowDefinition Height="95" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <materialDesign:PackIcon Kind="Github" Width="160" Height="160"
-                                                 HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        <StackPanel Grid.Row="0" Grid.Column="1">
-                            <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Open Source</TextBlock>
-                            <TextBlock TextWrapping="Wrap" Margin="16 0 16 8"
-                                       Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                       VerticalAlignment="Top">
-                                This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button,
-                                I like numbers. You could even make plugins, there's a full documentation on the website
-                            </TextBlock>
-                        </StackPanel>
-                        <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
-                                BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
-                            <DockPanel>
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        DockPanel.Dock="Right"
-                                        x:Name="DonateButton"
-                                        Command="{s:Action OpenUrl}"
-                                        CommandParameter="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Gift" />
-                                        <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
-                                    </StackPanel>
-                                </Button>
-                                <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
-                                           TextWrapping="Wrap"
-                                           Margin="16"
-                                           VerticalAlignment="Center">
-                                    Feel like you want to make a donation? It would be gratefully received. Click the button to donate via PayPal.
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:Card Width="420" Margin="8 2 4 16" Height="Auto">
+                        <Grid VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="175" />
+                                <RowDefinition Height="95" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon Kind="Discord" Width="140" Height="140"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <StackPanel Grid.Row="0" Grid.Column="1">
+                                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Have a chat</TextBlock>
+                                <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                           TextWrapping="Wrap" Margin="16 0 16 8"
+                                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                           VerticalAlignment="Top">
+                                    If you need help, have some feedback or have any other questions feel free to contact us through any of the
+                                    following channels.
                                 </TextBlock>
-                            </DockPanel>
-                        </Border>
-                    </Grid>
-                </materialDesign:Card>
+                            </StackPanel>
+                            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
+                                <DockPanel>
+                                    <Grid Margin="8">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition />
+                                            <RowDefinition />
+                                        </Grid.RowDefinitions>
+                                        <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left"
+                                                x:Name="GitHubButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://github.com/Artemis-RGB/Artemis">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Github" />
+                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">GitHub</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Grid.Row="0" Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Right"
+                                                x:Name="WebsiteButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://artemis-rgb.com">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Web" />
+                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Website</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Left"
+                                                x:Name="DiscordButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="https://discordapp.com/invite/S3MVaC9">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Discord" />
+                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Discord</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                        <Button Grid.Row="1" Style="{DynamicResource MaterialDesignFlatButton}"
+                                                HorizontalAlignment="Right"
+                                                x:Name="MailButton" Command="{s:Action OpenUrl}"
+                                                CommandParameter="mailto:spoinky.nl@gmail.com">
+                                            <StackPanel Orientation="Horizontal">
+                                                <materialDesign:PackIcon Kind="Email" />
+                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">E-mail</TextBlock>
+                                            </StackPanel>
+                                        </Button>
+                                    </Grid>
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </materialDesign:Card>
+                    <materialDesign:Card Width="420" Margin="8 2 4 16" Height="Auto">
+                        <Grid VerticalAlignment="Stretch">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="175" />
+                                <RowDefinition Height="95" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="200" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <materialDesign:PackIcon Kind="Github" Width="160" Height="160"
+                                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            <StackPanel Grid.Row="0" Grid.Column="1">
+                                <TextBlock Style="{StaticResource MaterialDesignHeadline5TextBlock}" Margin="16 16 16 8">Open Source</TextBlock>
+                                <TextBlock Style="{StaticResource MaterialDesignTextBlock}"
+                                           TextWrapping="Wrap" Margin="16 0 16 8"
+                                           Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                           VerticalAlignment="Top">
+                                    This project is completely open source. If you like it and want to say thanks you could hit the GitHub Star button,
+                                    I like numbers. You could even make plugins, there's a full documentation on the website
+                                </TextBlock>
+                            </StackPanel>
+                            <Border Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" BorderThickness="0 1 0 0"
+                                    BorderBrush="{DynamicResource MaterialDesignDivider}" Padding="8">
+                                <DockPanel>
+                                    <Button Style="{DynamicResource MaterialDesignFlatButton}"
+                                            DockPanel.Dock="Right"
+                                            x:Name="DonateButton"
+                                            Command="{s:Action OpenUrl}"
+                                            CommandParameter="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=VQBAEJYUFLU4J">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Gift" />
+                                            <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Donate</TextBlock>
+                                        </StackPanel>
+                                    </Button>
+                                    <TextBlock Foreground="{DynamicResource MaterialDesignBodyLight}"
+                                               TextWrapping="Wrap"
+                                               Margin="16"
+                                               VerticalAlignment="Center">
+                                        Feel like you want to make a donation? It would be gratefully received. Click the button to donate via PayPal.
+                                    </TextBlock>
+                                </DockPanel>
+                            </Border>
+                        </Grid>
+                    </materialDesign:Card>
+                </StackPanel>
             </StackPanel>
-
         </ScrollViewer>
-        <!-- PopupBox could be nice in the future when we actually have some stuff to send ppl to -->
-        <!--<materialDesign:PopupBox Style="{StaticResource MaterialDesignMultiFloatingActionPopupBox}"
-                                 HorizontalAlignment="Right" VerticalAlignment="Bottom"
-                                 Margin="32" Grid.Row="1">
-            --><!-- add the visibility binding https://github.com/ButchersBoy/MaterialDesignInXamlToolkit/issues/723 --><!--
-            <StackPanel Visibility="{Binding Path=IsPopupOpen, ElementName=MyPopupBox, Converter={StaticResource BoolToVisibilityConverter}}">
-                <Button ToolTip="GitHub" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
-                    <materialDesign:PackIcon Kind="Github" Height="20" Width="20" />
-                </Button>
-                <Button ToolTip="Twitter" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
-                        Background="{DynamicResource PrimaryHueMidBrush}"
-                        Foreground="{DynamicResource PrimaryHueMidForegroundBrush}">
-                    <materialDesign:PackIcon Kind="Twitter" />
-                </Button>
-                <Button ToolTip="Chat" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
-                    --><!-- mix up the colours by brinking in a named palette (see merged dictionaries at top) --><!--
-                    <Button.Background>
-                        <SolidColorBrush Color="{StaticResource GreenPrimary500}" />
-                    </Button.Background>
-                    <Button.Foreground>
-                        <SolidColorBrush Color="{StaticResource GreenPrimary500Foreground}" />
-                    </Button.Foreground>
-                    <materialDesign:PackIcon Kind="Message" />
-                </Button>
-                <Button ToolTip="Email" Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis"
-                        Background="{DynamicResource SecondaryHueMidBrush}"
-                        Foreground="{DynamicResource SecondaryHueMidForegroundBrush}"
-                        >
-                    <materialDesign:PackIcon Kind="Email" />
-                </Button>
-                <Button ToolTip="Feel like you want to make a donation?  It would be gratefully received.  Click the button to donate via Pledgie." 
-                    Command="{s:Action OpenUrl}" CommandParameter="https://github.com/SpoinkyNL/Artemis">
-                    <Button.Background>
-                        <SolidColorBrush Color="{StaticResource GreenPrimary200}" />
-                    </Button.Background>
-                    <Button.Foreground>
-                        <SolidColorBrush Color="{StaticResource GreenPrimary200Foreground}" />
-                    </Button.Foreground>
-                    <materialDesign:PackIcon Kind="Gift" />
-                </Button>
-            </StackPanel>
-        </materialDesign:PopupBox>-->
     </Grid>
 </UserControl>

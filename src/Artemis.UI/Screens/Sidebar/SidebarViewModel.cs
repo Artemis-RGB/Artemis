@@ -35,6 +35,7 @@ namespace Artemis.UI.Screens.Sidebar
         private MainScreenViewModel _selectedScreen;
         private readonly SidebarScreenViewModel<ProfileEditorViewModel> _profileEditor;
         private readonly DefaultDropHandler _defaultDropHandler;
+        private bool _activatingProfile;
 
         public SidebarViewModel(IKernel kernel,
             IEventAggregator eventAggregator,
@@ -96,6 +97,12 @@ namespace Artemis.UI.Screens.Sidebar
             }
         }
 
+        public bool ActivatingProfile
+        {
+            get => _activatingProfile;
+            set => SetAndNotify(ref _activatingProfile, value);
+        }
+
         private void ActivateScreenViewModel(SidebarScreenViewModel screenViewModel)
         {
             SelectedScreen = screenViewModel.CreateInstance(_kernel);
@@ -155,18 +162,34 @@ namespace Artemis.UI.Screens.Sidebar
 
             if (_profileEditorService.SuspendEditing)
                 _profileEditorService.SuspendEditing = false;
-            _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
-            if (profileConfiguration != null)
+
+            Task.Run(() =>
             {
-                // Little workaround to clear the selected item in the menu, ugly but oh well
-                if (_selectedSidebarScreen != _profileEditor)
+                try
                 {
-                    _selectedSidebarScreen = null;
-                    NotifyOfPropertyChange(nameof(SelectedSidebarScreen));
+                    ActivatingProfile = true;
+                    _profileEditorService.ChangeSelectedProfileConfiguration(profileConfiguration);
+                }
+                finally
+                {
+                    ActivatingProfile = false;
                 }
 
-                SelectedSidebarScreen = _profileEditor;
-            }
+                if (profileConfiguration == null)
+                    return;
+
+                Execute.PostToUIThread(() =>
+                {
+                    // Little workaround to clear the selected item in the menu, ugly but oh well
+                    if (_selectedSidebarScreen != _profileEditor)
+                    {
+                        _selectedSidebarScreen = null;
+                        NotifyOfPropertyChange(nameof(SelectedSidebarScreen));
+                    }
+
+                    SelectedSidebarScreen = _profileEditor;
+                });
+            });
         }
 
         #region Overrides of Screen
@@ -212,7 +235,7 @@ namespace Artemis.UI.Screens.Sidebar
                 Items[index].ProfileCategory.Order = index;
 
             // Bit dumb but gets the job done
-            foreach (SidebarCategoryViewModel viewModel in Items) 
+            foreach (SidebarCategoryViewModel viewModel in Items)
                 _profileService.SaveProfileCategory(viewModel.ProfileCategory);
         }
 

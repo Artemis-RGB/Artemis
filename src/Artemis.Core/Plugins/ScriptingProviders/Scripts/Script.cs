@@ -20,8 +20,6 @@ namespace Artemis.Core.ScriptingProviders
                 throw new ArtemisCoreException("The provided script configuration already has an active script");
 
             ScriptConfiguration = configuration;
-            ScriptConfiguration.Script = this;
-
             ScriptConfiguration.PropertyChanged += ScriptConfigurationOnPropertyChanged;
         }
 

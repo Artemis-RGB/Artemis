@@ -20,6 +20,7 @@
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="200" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <TextBlock Grid.Column="0" TextWrapping="Wrap">
                 The list below shows all loaded plugins. <LineBreak />
@@ -38,7 +39,17 @@
                      Margin="5 0"
                      Text="{Binding SearchPluginInput, Delay=300, UpdateSourceTrigger=PropertyChanged}" />
 
-            <Button Grid.Column="3"
+            <Button Grid.Column="3" Style="{DynamicResource MaterialDesignFlatButton}"
+                    HorizontalAlignment="Right"
+                    Command="{s:Action OpenUrl}"
+                    CommandParameter="https://wiki.artemis-rgb.com/en/guides/user/plugins">
+                <StackPanel Orientation="Horizontal">
+                    <materialDesign:PackIcon Kind="OpenInBrowser" />
+                    <TextBlock Margin="8 0 0 0" VerticalAlignment="Center">Get more plugins</TextBlock>
+                </StackPanel>
+            </Button>
+
+            <Button Grid.Column="4"
                     HorizontalAlignment="Right"
                     Style="{StaticResource MaterialDesignRaisedButton}"
                     Command="{s:Action ImportPlugin}"

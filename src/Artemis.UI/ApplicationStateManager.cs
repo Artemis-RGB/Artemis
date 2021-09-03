@@ -92,7 +92,10 @@ namespace Artemis.UI
             using HttpClient client = new();
             try
             {
-                HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground"));
+                CancellationTokenSource cts = new();
+                cts.CancelAfter(2000);
+                
+                HttpResponseMessage httpResponseMessage = client.Send(new HttpRequestMessage(HttpMethod.Post, url + "remote/bring-to-foreground"), cts.Token);
                 httpResponseMessage.EnsureSuccessStatusCode();
                 return true;
             }
