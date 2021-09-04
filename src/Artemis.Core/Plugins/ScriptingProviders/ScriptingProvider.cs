@@ -44,6 +44,11 @@ namespace Artemis.Core.ScriptingProviders
     /// </summary>
     public abstract class ScriptingProvider : PluginFeature
     {
+        protected ScriptingProvider()
+        {
+            Scripts = new(InternalScripts);
+        }
+
         /// <summary>
         ///     Gets the name of the scripting language this provider provides
         /// </summary>
@@ -52,7 +57,7 @@ namespace Artemis.Core.ScriptingProviders
         /// <summary>
         ///     Gets a list of all active scripts belonging to this scripting provider
         /// </summary>
-        public ReadOnlyCollection<Script> Scripts => InternalScripts.AsReadOnly();
+        public ReadOnlyCollection<Script> Scripts { get; }
 
         internal abstract Type GlobalScriptType { get; }
         internal abstract Type ProfileScriptType { get; }

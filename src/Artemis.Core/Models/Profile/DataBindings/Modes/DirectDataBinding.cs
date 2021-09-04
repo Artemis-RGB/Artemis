@@ -17,7 +17,7 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             Entity = entity;
-
+            Modifiers = new(_modifiers);
             Load();
         }
 
@@ -29,7 +29,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a list of modifiers applied to this data binding
         /// </summary>
-        public ReadOnlyCollection<DataBindingModifier<TLayerProperty, TProperty>> Modifiers => _modifiers.AsReadOnly();
+        public ReadOnlyCollection<DataBindingModifier<TLayerProperty, TProperty>> Modifiers { get; }
 
         internal DirectDataBindingEntity Entity { get; }
 

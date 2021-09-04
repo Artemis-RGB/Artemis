@@ -114,6 +114,12 @@ namespace Artemis.Core.Modules
         private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
         private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
 
+        public Module()
+        {
+            DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
+            HiddenProperties = new(HiddenPropertiesList);
+        }
+
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
@@ -122,7 +128,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets a read only collection of default profile paths
         /// </summary>
-        public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths => _defaultProfilePaths.AsReadOnly();
+        public IReadOnlyCollection<(DefaultCategoryName, string)> DefaultProfilePaths { get; }
 
         /// <summary>
         ///     A list of activation requirements
@@ -176,7 +182,7 @@ namespace Artemis.Core.Modules
         /// <summary>
         ///     Gets a list of all properties ignored at runtime using <c>IgnoreProperty(x => x.y)</c>
         /// </summary>
-        public ReadOnlyCollection<PropertyInfo> HiddenProperties => HiddenPropertiesList.AsReadOnly();
+        public ReadOnlyCollection<PropertyInfo> HiddenProperties { get; }
 
         internal DataModel? InternalDataModel { get; set; }
 

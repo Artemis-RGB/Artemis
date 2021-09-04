@@ -18,13 +18,14 @@ namespace Artemis.Core.LayerEffects
         protected LayerEffectProvider()
         {
             _layerEffectDescriptors = new List<LayerEffectDescriptor>();
+            LayerEffectDescriptors = new(_layerEffectDescriptors);
             Disabled += OnDisabled;
         }
 
         /// <summary>
         ///     A read-only collection of all layer effects added with <see cref="RegisterLayerEffectDescriptor{T}" />
         /// </summary>
-        public ReadOnlyCollection<LayerEffectDescriptor> LayerEffectDescriptors => _layerEffectDescriptors.AsReadOnly();
+        public ReadOnlyCollection<LayerEffectDescriptor> LayerEffectDescriptors { get; }
 
         /// <summary>
         ///     Adds a layer effect descriptor for a given layer effect, so that it appears in the UI.

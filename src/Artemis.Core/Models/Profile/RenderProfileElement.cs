@@ -24,6 +24,7 @@ namespace Artemis.Core
             Timeline = new Timeline();
             ExpandedPropertyGroups = new List<string>();
             LayerEffectsList = new List<BaseLayerEffect>();
+            LayerEffects = new(LayerEffectsList);
 
             LayerEffectStore.LayerEffectAdded += LayerEffectStoreOnLayerEffectAdded;
             LayerEffectStore.LayerEffectRemoved += LayerEffectStoreOnLayerEffectRemoved;
@@ -223,12 +224,12 @@ namespace Artemis.Core
 
         #region Effect management
 
-        internal List<BaseLayerEffect> LayerEffectsList;
+        internal readonly List<BaseLayerEffect> LayerEffectsList;
 
         /// <summary>
         ///     Gets a read-only collection of the layer effects on this entity
         /// </summary>
-        public ReadOnlyCollection<BaseLayerEffect> LayerEffects => LayerEffectsList.AsReadOnly();
+        public ReadOnlyCollection<BaseLayerEffect> LayerEffects { get; }
 
         /// <summary>
         ///     Adds a the layer effect described inthe provided <paramref name="descriptor" />

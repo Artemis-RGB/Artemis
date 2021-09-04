@@ -24,6 +24,7 @@ namespace Artemis.Core.Services
             _profileService = profileService;
 
             InternalGlobalScripts = new List<GlobalScript>();
+            GlobalScripts = new(InternalGlobalScripts);
 
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;
             _pluginManagementService.PluginFeatureDisabled += PluginManagementServiceOnPluginFeatureToggled;
@@ -80,7 +81,7 @@ namespace Artemis.Core.Services
                 CreateScriptInstance(profile, scriptConfiguration);
         }
 
-        public ReadOnlyCollection<GlobalScript> GlobalScripts => InternalGlobalScripts.AsReadOnly();
+        public ReadOnlyCollection<GlobalScript> GlobalScripts { get; }
 
         public GlobalScript? CreateScriptInstance(ScriptConfiguration scriptConfiguration)
         {
