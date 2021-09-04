@@ -36,7 +36,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+  	<Page Include="Properties\DesignTimeResources.xaml" Condition="'$(DesignTime)'=='true' OR ('$(SolutionPath)'!='' AND Exists('$(SolutionPath)') AND '$(BuildingInsideVisualStudio)'!='true' AND '$(BuildingInsideExpressionBlend)'!='true')">
+  	  <Generator>MSBuild:Compile</Generator>
+  	  <SubType>Designer</SubType>
+  	  <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+  	</Page>
+  </ItemGroup>
+
+	<ItemGroup>
     <PackageReference Include="JetBrains.Annotations" Version="2021.1.0" />
+    <PackageReference Include="MaterialDesignThemes" Version="4.1.0" />
     <PackageReference Include="Ninject" Version="3.3.4" />
     <PackageReference Include="NoStringEvaluating" Version="2.2.1" />
     <PackageReference Include="SkiaSharp" Version="2.80.3" />

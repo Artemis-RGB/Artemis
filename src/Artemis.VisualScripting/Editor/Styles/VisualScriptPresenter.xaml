@@ -2,6 +2,12 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:controls="clr-namespace:Artemis.VisualScripting.Editor.Controls">
 
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/MaterialDesignColors;component/Themes/Recommended/Primary/MaterialDesignColor.Teal.xaml" />
+
+    </ResourceDictionary.MergedDictionaries>
     <ControlTemplate x:Key="TemplateVisualScriptPresenter"
                      TargetType="{x:Type controls:VisualScriptPresenter}">
         <Border BorderBrush="{TemplateBinding BorderBrush}"
@@ -29,11 +35,14 @@
                         Background="{TemplateBinding Background}">
 
                     <Border x:Name="PART_SelectionBorder"
-                            Background="#3300FF00"
                             BorderThickness="1"
-                            BorderBrush="#FF00CC00"
+                            BorderBrush="{StaticResource PrimaryHueLightBrush}"
                             CornerRadius="1"
-                            Visibility="Hidden" />
+                            Visibility="Hidden">
+                        <Border.Background>
+                            <SolidColorBrush Color="{DynamicResource Primary400}" Opacity="0.25" />
+                        </Border.Background>
+                    </Border>
 
                     <ItemsControl x:Name="PART_NodeList"
                                   Panel.ZIndex="0">

@@ -8,6 +8,15 @@
         "resolved": "2021.1.0",
         "contentHash": "n9JSw5Z+F+6gp9vSv4aLH6p/bx3GAYA6FZVq1wJq/TJySv/kPgFKLGFeS7A8Xa5X4/GWorh5gd43yjamUgnBNA=="
       },
+      "MaterialDesignThemes": {
+        "type": "Direct",
+        "requested": "[4.1.0, )",
+        "resolved": "4.1.0",
+        "contentHash": "WqrO9AbtdE4pLPtDk/C5BZRnkgWFwVGyUHWj7tRJrgnKl089DEobVXBCLeqp2mkgBeFHj4Xe3AfWyhmlnO6AZA==",
+        "dependencies": {
+          "MaterialDesignColors": "2.0.1"
+        }
+      },
       "Ninject": {
         "type": "Direct",
         "requested": "[3.3.4, )",
@@ -97,14 +106,6 @@
         "dependencies": {
           "MaterialDesignColors": "1.2.7",
           "MaterialDesignThemes": "3.2.0"
-        }
-      },
-      "MaterialDesignThemes": {
-        "type": "Transitive",
-        "resolved": "4.1.0",
-        "contentHash": "WqrO9AbtdE4pLPtDk/C5BZRnkgWFwVGyUHWj7tRJrgnKl089DEobVXBCLeqp2mkgBeFHj4Xe3AfWyhmlnO6AZA==",
-        "dependencies": {
-          "MaterialDesignColors": "2.0.1"
         }
       },
       "McMaster.NETCore.Plugins": {
