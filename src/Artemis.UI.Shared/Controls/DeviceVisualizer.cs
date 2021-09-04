@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -9,15 +11,15 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using Artemis.Core;
-using Stylet;
 
 namespace Artemis.UI.Shared
 {
     /// <summary>
     ///     Visualizes an <see cref="ArtemisDevice" /> with optional per-LED colors
     /// </summary>
-    public class DeviceVisualizer : FrameworkElement, IDisposable
+    public class DeviceVisualizer : FrameworkElement
     {
         /// <summary>
         ///     The device to visualize
@@ -34,14 +36,16 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     A list of LEDs to highlight
         /// </summary>
-        public static readonly DependencyProperty HighlightedLedsProperty = DependencyProperty.Register(nameof(HighlightedLeds), typeof(IEnumerable<ArtemisLed>), typeof(DeviceVisualizer),
-            new FrameworkPropertyMetadata(default(IEnumerable<ArtemisLed>)));
+        public static readonly DependencyProperty HighlightedLedsProperty = DependencyProperty.Register(nameof(HighlightedLeds), typeof(ObservableCollection<ArtemisLed>), typeof(DeviceVisualizer),
+            new FrameworkPropertyMetadata(default(ObservableCollection<ArtemisLed>), HighlightedLedsPropertyChanged));
 
         private readonly DrawingGroup _backingStore;
         private readonly List<DeviceVisualizerLed> _deviceVisualizerLeds;
-        private readonly Timer _timer;
+        private readonly DispatcherTimer _timer;
         private BitmapImage? _deviceImage;
         private ArtemisDevice? _oldDevice;
+        private List<DeviceVisualizerLed> _highlightedLeds;
+        private List<DeviceVisualizerLed> _dimmedLeds;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="DeviceVisualizer" /> class
@@ -50,9 +54,10 @@ namespace Artemis.UI.Shared
         {
             _backingStore = new DrawingGroup();
             _deviceVisualizerLeds = new List<DeviceVisualizerLed>();
+            _dimmedLeds = new List<DeviceVisualizerLed>();
 
             // Run an update timer at 25 fps
-            _timer = new Timer(40);
+            _timer = new DispatcherTimer(DispatcherPriority.Render) {Interval = TimeSpan.FromMilliseconds(40)};
 
             MouseLeftButtonUp += OnMouseLeftButtonUp;
             Loaded += OnLoaded;
@@ -80,9 +85,9 @@ namespace Artemis.UI.Shared
         /// <summary>
         ///     Gets or sets a list of LEDs to highlight
         /// </summary>
-        public IEnumerable<ArtemisLed>? HighlightedLeds
+        public ObservableCollection<ArtemisLed>? HighlightedLeds
         {
-            get => (IEnumerable<ArtemisLed>) GetValue(HighlightedLedsProperty);
+            get => (ObservableCollection<ArtemisLed>) GetValue(HighlightedLedsProperty);
             set => SetValue(HighlightedLedsProperty, value);
         }
 
@@ -158,9 +163,8 @@ namespace Artemis.UI.Shared
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
-                _timer.Dispose();
+                _timer.Stop();
         }
-
 
         private static Size ResizeKeepAspect(Size src, double maxWidth, double maxHeight)
         {
@@ -191,8 +195,10 @@ namespace Artemis.UI.Shared
         private void OnUnloaded(object? sender, RoutedEventArgs e)
         {
             _timer.Stop();
-            _timer.Elapsed -= TimerOnTick;
+            _timer.Tick -= TimerOnTick;
 
+            if (HighlightedLeds != null)
+                HighlightedLeds.CollectionChanged -= HighlightedLedsChanged;
             if (_oldDevice != null)
             {
                 if (Device != null)
@@ -223,16 +229,34 @@ namespace Artemis.UI.Shared
         private void OnLoaded(object? sender, RoutedEventArgs e)
         {
             _timer.Start();
-            _timer.Elapsed += TimerOnTick;
+            _timer.Tick += TimerOnTick;
         }
 
         private void TimerOnTick(object? sender, EventArgs e)
         {
-            Execute.PostToUIThread(() =>
+            if (ShowColors && Visibility == Visibility.Visible)
+                Render();
+        }
+
+        private void Render()
+        {
+            DrawingContext drawingContext = _backingStore.Append();
+
+            if (_highlightedLeds.Any())
             {
-                if (ShowColors && Visibility == Visibility.Visible)
-                    Render();
-            });
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _highlightedLeds)
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
+
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _dimmedLeds)
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, true);
+            }
+            else
+            {
+                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
+                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
+            }
+
+            drawingContext.Close();
         }
 
         private void UpdateTransform()
@@ -241,22 +265,12 @@ namespace Artemis.UI.Shared
             InvalidateMeasure();
         }
 
-        private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
-        }
-
-        private static void ShowColorsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
-            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
-        }
-
         private void SetupForDevice()
         {
             _deviceImage = null;
             _deviceVisualizerLeds.Clear();
+            _highlightedLeds = new List<DeviceVisualizerLed>();
+            _dimmedLeds = new List<DeviceVisualizerLed>();
 
             if (Device == null)
                 return;
@@ -319,40 +333,47 @@ namespace Artemis.UI.Shared
 
         private void DeviceUpdated(object? sender, EventArgs e)
         {
-            Execute.PostToUIThread(SetupForDevice);
+            Dispatcher.Invoke(SetupForDevice);
         }
 
         private void DevicePropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
-            Execute.PostToUIThread(SetupForDevice);
+            Dispatcher.Invoke(SetupForDevice);
         }
 
-        private void Render()
+        private static void DevicePropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            DrawingContext drawingContext = _backingStore.Append();
+            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
+            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
+        }
 
-            if (HighlightedLeds != null && HighlightedLeds.Any())
+        private static void ShowColorsPropertyChangedCallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
+            deviceVisualizer.Dispatcher.Invoke(() => { deviceVisualizer.SetupForDevice(); });
+        }
+
+        private static void HighlightedLedsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            DeviceVisualizer deviceVisualizer = (DeviceVisualizer) d;
+            if (e.OldValue is ObservableCollection<ArtemisLed> oldCollection)
+                oldCollection.CollectionChanged -= deviceVisualizer.HighlightedLedsChanged;
+            if (e.NewValue is ObservableCollection<ArtemisLed> newCollection)
+                newCollection.CollectionChanged += deviceVisualizer.HighlightedLedsChanged;
+        }
+
+        private void HighlightedLedsChanged(object? sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        {
+            if (HighlightedLeds != null)
             {
-                // Faster on large devices, maybe a bit slower on smaller ones but that's ok
-                ILookup<ArtemisLed, ArtemisLed> toHighlight = HighlightedLeds.ToLookup(l => l);
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, !toHighlight.Contains(deviceVisualizerLed.Led));
+                _highlightedLeds = _deviceVisualizerLeds.Where(l => HighlightedLeds.Contains(l.Led)).ToList();
+                _dimmedLeds = _deviceVisualizerLeds.Where(l => !HighlightedLeds.Contains(l.Led)).ToList();
             }
             else
             {
-                foreach (DeviceVisualizerLed deviceVisualizerLed in _deviceVisualizerLeds)
-                    deviceVisualizerLed.RenderColor(_backingStore, drawingContext, false);
+                _highlightedLeds = new List<DeviceVisualizerLed>();
+                _dimmedLeds = new List<DeviceVisualizerLed>();
             }
-
-            drawingContext.Close();
-        }
-
-
-        /// <inheritdoc />
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
         }
     }
 }

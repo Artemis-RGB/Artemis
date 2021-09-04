@@ -152,17 +152,23 @@ namespace Artemis.UI.Screens.Shared
             PanY = rect.Top * -1 * Zoom;
         }
 
-        public Rect TransformContainingRect(Rectangle rect)
-        {
-            return TransformContainingRect(rect.ToWindowsRect(1));
-        }
-
         public Rect TransformContainingRect(Rect rect)
         {
             // Create the same transform group the view is using
             TransformGroup transformGroup = new();
             transformGroup.Children.Add(new ScaleTransform(Zoom, Zoom));
             transformGroup.Children.Add(new TranslateTransform(PanX, PanY));
+
+            // Apply it to the device rect
+            return transformGroup.TransformBounds(rect);
+        }
+
+        public Rect UnTransformContainingRect(Rect rect)
+        {
+            // Create the same transform group the view is using
+            TransformGroup transformGroup = new();
+            transformGroup.Children.Add(new TranslateTransform(PanX * -1, PanY * -1));
+            transformGroup.Children.Add(new ScaleTransform(1 / Zoom, 1 / Zoom));
 
             // Apply it to the device rect
             return transformGroup.TransformBounds(rect);
