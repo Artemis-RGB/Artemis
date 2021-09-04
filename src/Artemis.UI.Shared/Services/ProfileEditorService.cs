@@ -12,7 +12,6 @@ using Ninject.Parameters;
 using Serilog;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
-using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -93,9 +92,11 @@ namespace Artemis.UI.Shared.Services
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
         {
-            if (!_doTick) return;
+            if (!_doTick)
+                return;
             _doTick = false;
-            Execute.PostToUIThread(OnProfilePreviewUpdated);
+
+            OnProfilePreviewUpdated();
         }
 
         private void ReloadProfile()
@@ -193,6 +194,7 @@ namespace Artemis.UI.Shared.Services
             {
                 if (_currentTime.Equals(value)) return;
                 _currentTime = value;
+
                 Tick();
                 OnCurrentTimeChanged();
             }

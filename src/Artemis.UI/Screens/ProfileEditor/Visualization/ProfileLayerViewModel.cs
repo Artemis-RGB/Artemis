@@ -8,6 +8,8 @@ using Artemis.UI.Extensions;
 using Artemis.UI.Screens.Shared;
 using Artemis.UI.Services;
 using Artemis.UI.Shared.Services;
+using SkiaSharp;
+using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.Visualization
 {
@@ -95,6 +97,16 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             CreateViewportRectangle();
         }
 
+        #region Updating
+
+        private LayerShape _lastShape;
+        private Rect _lastBounds;
+
+        private SKPoint _lastAnchor;
+        private SKPoint _lastPosition;
+        private double _lastRotation;
+        private SKSize _lastScale;
+
         private void CreateShapeGeometry()
         {
             if (Layer.LayerShape == null || !Layer.Leds.Any())
@@ -104,21 +116,22 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             }
 
             Rect bounds = _layerEditorService.GetLayerBounds(Layer);
-            Geometry shapeGeometry = Geometry.Empty;
-            switch (Layer.LayerShape)
+
+            // Only bother the UI thread for both of these if we're sure
+            if (HasShapeChanged(bounds))
             {
-                case EllipseShape _:
-                    shapeGeometry = new EllipseGeometry(bounds);
-                    break;
-                case RectangleShape _:
-                    shapeGeometry = new RectangleGeometry(bounds);
-                    break;
+                Execute.OnUIThreadSync(() =>
+                {
+                    if (Layer.LayerShape is RectangleShape)
+                        ShapeGeometry = new RectangleGeometry(bounds);
+                    if (Layer.LayerShape is EllipseShape)
+                        ShapeGeometry = new EllipseGeometry(bounds);
+                });
             }
-
-            if (Layer.LayerBrush == null || Layer.LayerBrush.SupportsTransformation)
-                shapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer);
-
-            ShapeGeometry = shapeGeometry;
+            if ((Layer.LayerBrush == null || Layer.LayerBrush.SupportsTransformation) && HasTransformationChanged())
+            {
+                Execute.OnUIThreadSync(() => ShapeGeometry.Transform = _layerEditorService.GetLayerTransformGroup(Layer));
+            }
         }
 
         private void CreateViewportRectangle()
@@ -132,44 +145,30 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization
             ViewportRectangle = _layerEditorService.GetLayerBounds(Layer);
         }
 
-        private Geometry CreateRectangleGeometry(ArtemisLed led)
+        private bool HasShapeChanged(Rect bounds)
         {
-            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
-            return new RectangleGeometry(rect);
+            bool result = !Equals(_lastBounds, bounds) || !Equals(_lastShape, Layer.LayerShape);
+            _lastShape = Layer.LayerShape;
+            _lastBounds = bounds;
+            return result;
         }
 
-        private Geometry CreateCircleGeometry(ArtemisLed led)
+        private bool HasTransformationChanged()
         {
-            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
-            return new EllipseGeometry(rect);
+            bool result = _lastAnchor != Layer.Transform.AnchorPoint.CurrentValue ||
+                          _lastPosition != Layer.Transform.Position.CurrentValue ||
+                          _lastRotation != Layer.Transform.Rotation.CurrentValue ||
+                          _lastScale != Layer.Transform.Scale.CurrentValue;
+
+            _lastAnchor = Layer.Transform.AnchorPoint.CurrentValue;
+            _lastPosition = Layer.Transform.Position.CurrentValue;
+            _lastRotation = Layer.Transform.Rotation.CurrentValue;
+            _lastScale = Layer.Transform.Scale.CurrentValue;
+
+            return result;
         }
 
-        private Geometry CreateCustomGeometry(ArtemisLed led, double deflateAmount)
-        {
-            Rect rect = led.RgbLed.AbsoluteBoundary.ToWindowsRect(1);
-            try
-            {
-                PathGeometry geometry = Geometry.Combine(
-                    Geometry.Empty,
-                    Geometry.Parse(led.RgbLed.ShapeData),
-                    GeometryCombineMode.Union,
-                    new TransformGroup
-                    {
-                        Children = new TransformCollection
-                        {
-                            new ScaleTransform(rect.Width, rect.Height),
-                            new TranslateTransform(rect.X, rect.Y)
-                        }
-                    }
-                );
-
-                return geometry;
-            }
-            catch (Exception)
-            {
-                return CreateRectangleGeometry(led);
-            }
-        }
+        #endregion
 
         #region Overrides of Screen
 

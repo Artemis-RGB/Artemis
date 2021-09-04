@@ -25,7 +25,8 @@ namespace Artemis.UI.Shared
             HitTestResultBehavior ResultCallback(HitTestResult r) => HitTestResultBehavior.Continue;
             HitTestFilterBehavior FilterCallback(DependencyObject e)
             {
-                if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context)) result.Add(context);
+                if (e is FrameworkElement fe && fe.DataContext is T context && !result.Contains(context))
+                    result.Add(context);
                 return HitTestFilterBehavior.Continue;
             }
 

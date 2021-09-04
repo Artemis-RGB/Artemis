@@ -583,30 +583,28 @@ namespace Artemis.UI.Screens.ProfileEditor.LayerProperties
                 return;
             }
 
-            Execute.PostToUIThread(() =>
+            TimeSpan newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
+            if (SelectedProfileElement != null)
             {
-                TimeSpan newTime = ProfileEditorService.CurrentTime.Add(TimeSpan.FromSeconds(e.DeltaTime));
-                if (SelectedProfileElement != null)
+                if (Repeating && RepeatTimeline)
                 {
-                    if (Repeating && RepeatTimeline)
-                    {
-                        if (newTime > SelectedProfileElement.Timeline.Length)
-                            newTime = TimeSpan.Zero;
-                    }
-                    else if (Repeating && RepeatSegment)
-                    {
-                        if (newTime > GetCurrentSegmentEnd())
-                            newTime = GetCurrentSegmentStart();
-                    }
-                    else if (newTime > SelectedProfileElement.Timeline.Length)
-                    {
-                        newTime = SelectedProfileElement.Timeline.Length;
-                        Pause();
-                    }
+                    if (newTime > SelectedProfileElement.Timeline.Length)
+                        newTime = TimeSpan.Zero;
                 }
+                else if (Repeating && RepeatSegment)
+                {
+                    if (newTime > GetCurrentSegmentEnd())
+                        newTime = GetCurrentSegmentStart();
+                }
+                else if (newTime > SelectedProfileElement.Timeline.Length)
+                {
+                    newTime = SelectedProfileElement.Timeline.Length;
+                    Pause();
+                }
+            }
 
-                ProfileEditorService.CurrentTime = newTime;
-            });
+            // Update current time on high priority to keep things buttery smooth as if you're using the mouse ༼ つ ◕_◕ ༽つ
+            Execute.OnUIThreadSync(() => ProfileEditorService.CurrentTime = newTime);
         }
 
         #endregion
