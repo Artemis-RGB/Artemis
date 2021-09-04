@@ -114,7 +114,7 @@ namespace Artemis.Core.Modules
         private readonly List<(DefaultCategoryName, string)> _defaultProfilePaths = new();
         private readonly List<(DefaultCategoryName, string)> _pendingDefaultProfilePaths = new();
 
-        public Module()
+        protected Module()
         {
             DefaultProfilePaths = new ReadOnlyCollection<(DefaultCategoryName, string)>(_defaultProfilePaths);
             HiddenProperties = new(HiddenPropertiesList);

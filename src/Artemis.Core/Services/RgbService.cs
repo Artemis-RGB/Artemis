@@ -89,6 +89,7 @@ namespace Artemis.Core.Services
             try
             {
                 _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
+                LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
 
                 if (_surfaceLedGroup == null)
                 {
@@ -138,7 +139,7 @@ namespace Artemis.Core.Services
 
         public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
         public IReadOnlyCollection<ArtemisDevice> Devices { get; }
-        public IReadOnlyDictionary<Led, ArtemisLed> LedMap { get; }
+        public IReadOnlyDictionary<Led, ArtemisLed> LedMap { get; private set; }
 
         public RGBSurface Surface { get; set; }
         public bool IsRenderPaused { get; set; }
