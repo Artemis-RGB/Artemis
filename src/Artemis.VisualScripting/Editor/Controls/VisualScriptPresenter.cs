@@ -198,8 +198,6 @@ namespace Artemis.VisualScripting.Editor.Controls
             _canvas.RenderTransform = _canvasViewPortTransform = new TranslateTransform(0, 0);
             _canvas.MouseLeftButtonDown += OnCanvasMouseLeftButtonDown;
             _canvas.MouseLeftButtonUp += OnCanvasMouseLeftButtonUp;
-            _canvas.MouseRightButtonDown += OnCanvasMouseRightButtonDown;
-            _canvas.MouseRightButtonUp += OnCanvasMouseRightButtonUp;
             _canvas.PreviewMouseRightButtonDown += OnCanvasPreviewMouseRightButtonDown;
             _canvas.MouseMove += OnCanvasMouseMove;
             _canvas.MouseWheel += OnCanvasMouseWheel;
@@ -292,6 +290,27 @@ namespace Artemis.VisualScripting.Editor.Controls
 
         private void OnCanvasMouseLeftButtonDown(object sender, MouseButtonEventArgs args)
         {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl))
+            {
+                if (AutoFitScript)
+                {
+                    args.Handled = true;
+                    return;
+                }
+
+                _dragCanvas = true;
+                _dragCanvasStartLocation = args.GetPosition(this);
+                _dragCanvasStartOffset = _viewportCenter;
+
+                _movedDuringDrag = false;
+
+                _canvas.CaptureMouse();
+
+                args.Handled = true;
+
+                return;
+            }
+
             VisualScript.DeselectAllNodes();
 
             _boxSelect = true;
@@ -317,29 +336,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 SelectWithinRectangle(new Rect(Canvas.GetLeft(_selectionBorder), Canvas.GetTop(_selectionBorder), _selectionBorder.Width, _selectionBorder.Height));
                 args.Handled = _movedDuringDrag;
             }
-        }
 
-        private void OnCanvasMouseRightButtonDown(object sender, MouseButtonEventArgs args)
-        {
-            if (AutoFitScript)
-            {
-                args.Handled = true;
-                return;
-            }
-
-            _dragCanvas = true;
-            _dragCanvasStartLocation = args.GetPosition(this);
-            _dragCanvasStartOffset = _viewportCenter;
-
-            _movedDuringDrag = false;
-
-            _canvas.CaptureMouse();
-
-            args.Handled = true;
-        }
-
-        private void OnCanvasMouseRightButtonUp(object sender, MouseButtonEventArgs args)
-        {
             if (_dragCanvas)
             {
                 _dragCanvas = false;
@@ -353,7 +350,7 @@ namespace Artemis.VisualScripting.Editor.Controls
         {
             if (_dragCanvas)
             {
-                if (args.RightButton == MouseButtonState.Pressed)
+                if (args.LeftButton == MouseButtonState.Pressed && (Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl)))
                 {
                     Vector newLocation = _dragCanvasStartOffset - (((args.GetPosition(this) - _dragCanvasStartLocation)) * (1.0 / Scale));
                     CenterAt(newLocation);
@@ -541,7 +538,7 @@ namespace Artemis.VisualScripting.Editor.Controls
                 List<IPin> pins = node.Pins.ToList();
                 pins.AddRange(node.PinCollections.SelectMany(c => c));
                 pins = pins.Where(p => p.Type == typeof(object) || p.Type == SourcePin.Pin.Type).OrderBy(p => p.Type != typeof(object)).ToList();
-                
+
                 IPin preferredPin = SourcePin.Pin.Direction == PinDirection.Input
                     ? pins.FirstOrDefault(p => p.Direction == PinDirection.Output)
                     : pins.FirstOrDefault(p => p.Direction == PinDirection.Input);

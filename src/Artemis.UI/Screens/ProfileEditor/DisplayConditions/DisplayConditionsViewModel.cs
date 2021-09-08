@@ -8,7 +8,7 @@ using Stylet;
 
 namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
 {
-    public class DisplayConditionsViewModel : Screen, IProfileEditorPanelViewModel
+    public class DisplayConditionsViewModel : Conductor<DisplayConditionEventViewModel>.Collection.OneActive, IProfileEditorPanelViewModel
     {
         private readonly INodeVmFactory _nodeVmFactory;
         private readonly IProfileEditorService _profileEditorService;
@@ -21,6 +21,11 @@ namespace Artemis.UI.Screens.ProfileEditor.DisplayConditions
             _profileEditorService = profileEditorService;
             _windowManager = windowManager;
             _nodeVmFactory = nodeVmFactory;
+
+            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 1"});
+            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 2"});
+            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 3"});
+            Items.Add(new DisplayConditionEventViewModel() { DisplayName = "Event 4"});
         }
 
         public bool IsEventCondition

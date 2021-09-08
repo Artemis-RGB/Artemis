@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -58,8 +59,8 @@ namespace Artemis.UI.Shared.Controls
         ///     A list of extra modules to show data models of
         /// </summary>
         public static readonly DependencyProperty ModulesProperty = DependencyProperty.Register(
-            nameof(Modules), typeof(BindableCollection<Module>), typeof(DataModelPicker),
-            new FrameworkPropertyMetadata(new BindableCollection<Module>(), FrameworkPropertyMetadataOptions.None, ModulesPropertyChangedCallback)
+            nameof(Modules), typeof(ObservableCollection<Module>), typeof(DataModelPicker),
+            new FrameworkPropertyMetadata(new ObservableCollection<Module>(), FrameworkPropertyMetadataOptions.None, ModulesPropertyChangedCallback)
         );
 
         /// <summary>
@@ -74,16 +75,16 @@ namespace Artemis.UI.Shared.Controls
         ///     A list of data model view models to show
         /// </summary>
         public static readonly DependencyProperty ExtraDataModelViewModelsProperty = DependencyProperty.Register(
-            nameof(ExtraDataModelViewModels), typeof(BindableCollection<DataModelPropertiesViewModel>), typeof(DataModelPicker),
-            new FrameworkPropertyMetadata(new BindableCollection<DataModelPropertiesViewModel>(), FrameworkPropertyMetadataOptions.None, ExtraDataModelViewModelsPropertyChangedCallback)
+            nameof(ExtraDataModelViewModels), typeof(ObservableCollection<DataModelPropertiesViewModel>), typeof(DataModelPicker),
+            new FrameworkPropertyMetadata(new ObservableCollection<DataModelPropertiesViewModel>(), FrameworkPropertyMetadataOptions.None, ExtraDataModelViewModelsPropertyChangedCallback)
         );
 
         /// <summary>
         ///     A list of data model view models to show
         /// </summary>
         public static readonly DependencyProperty FilterTypesProperty = DependencyProperty.Register(
-            nameof(FilterTypes), typeof(BindableCollection<Type>), typeof(DataModelPicker),
-            new FrameworkPropertyMetadata(new BindableCollection<Type>())
+            nameof(FilterTypes), typeof(ObservableCollection<Type>), typeof(DataModelPicker),
+            new FrameworkPropertyMetadata(new ObservableCollection<Type>())
         );
 
         public DataModelPicker()
@@ -143,9 +144,9 @@ namespace Artemis.UI.Shared.Controls
         /// <summary>
         ///     Gets or sets a list of extra modules to show data models of
         /// </summary>
-        public BindableCollection<Module>? Modules
+        public ObservableCollection<Module>? Modules
         {
-            get => (BindableCollection<Module>) GetValue(ModulesProperty);
+            get => (ObservableCollection<Module>) GetValue(ModulesProperty);
             set => SetValue(ModulesProperty, value);
         }
 
@@ -161,18 +162,18 @@ namespace Artemis.UI.Shared.Controls
         /// <summary>
         ///     Gets or sets a list of data model view models to show
         /// </summary>
-        public BindableCollection<DataModelPropertiesViewModel>? ExtraDataModelViewModels
+        public ObservableCollection<DataModelPropertiesViewModel>? ExtraDataModelViewModels
         {
-            get => (BindableCollection<DataModelPropertiesViewModel>) GetValue(ExtraDataModelViewModelsProperty);
+            get => (ObservableCollection<DataModelPropertiesViewModel>) GetValue(ExtraDataModelViewModelsProperty);
             set => SetValue(ExtraDataModelViewModelsProperty, value);
         }
 
         /// <summary>
         ///     Gets or sets the types of properties this view model will allow to be selected
         /// </summary>
-        public BindableCollection<Type>? FilterTypes
+        public ObservableCollection<Type>? FilterTypes
         {
-            get => (BindableCollection<Type>) GetValue(FilterTypesProperty);
+            get => (ObservableCollection<Type>) GetValue(FilterTypesProperty);
             set => SetValue(FilterTypesProperty, value);
         }
 

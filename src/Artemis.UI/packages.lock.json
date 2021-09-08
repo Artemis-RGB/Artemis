@@ -1492,6 +1492,7 @@
           "Artemis.Core": "1.0.0",
           "Artemis.UI.Shared": "2.0.0",
           "JetBrains.Annotations": "2021.1.0",
+          "MaterialDesignThemes": "4.1.0",
           "Ninject": "3.3.4",
           "NoStringEvaluating": "2.2.1",
           "SkiaSharp": "2.80.3",

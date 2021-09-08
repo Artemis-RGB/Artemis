@@ -84,7 +84,7 @@ namespace Artemis.VisualScripting.Nodes
         /// <inheritdoc />
         public void Dispose()
         {
-            DataModelPath.Dispose();
+            DataModelPath?.Dispose();
         }
 
         #endregion
