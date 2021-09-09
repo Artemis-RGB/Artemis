@@ -306,7 +306,7 @@ namespace Artemis.Core
                 ChildrenList.Add(new Layer(Profile, this, childLayer));
 
             // Ensure order integrity, should be unnecessary but no one is perfect specially me
-            ChildrenList = ChildrenList.OrderBy(c => c.Order).ToList();
+            ChildrenList.Sort((a,b) => a.Order.CompareTo(b.Order));
             for (int index = 0; index < ChildrenList.Count; index++)
                 ChildrenList[index].Order = index + 1;
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Artemis.Core;
 using Artemis.Core.Modules;
@@ -26,10 +27,13 @@ namespace Artemis.UI.Shared.Services
             _kernel = kernel;
             _registeredDataModelEditors = new List<DataModelVisualizationRegistration>();
             _registeredDataModelDisplays = new List<DataModelVisualizationRegistration>();
+
+            RegisteredDataModelEditors = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelEditors);
+            RegisteredDataModelDisplays = new ReadOnlyCollection<DataModelVisualizationRegistration>(_registeredDataModelDisplays);
         }
 
-        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors => _registeredDataModelEditors.AsReadOnly();
-        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays => _registeredDataModelDisplays.AsReadOnly();
+        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelEditors { get; }
+        public IReadOnlyCollection<DataModelVisualizationRegistration> RegisteredDataModelDisplays { get; }
 
         public DataModelPropertiesViewModel GetMainDataModelVisualization()
         {

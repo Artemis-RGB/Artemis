@@ -38,6 +38,8 @@ namespace Artemis.UI.Shared.Services
             _rgbService = rgbService;
             _moduleService = moduleService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
+
+            RegisteredPropertyEditors = new(_registeredPropertyEditors);
             coreService.FrameRendered += CoreServiceOnFrameRendered;
             PixelsPerSecond = 100;
         }
@@ -104,7 +106,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
+        public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors { get; }
 
         public bool Playing { get; set; }
 

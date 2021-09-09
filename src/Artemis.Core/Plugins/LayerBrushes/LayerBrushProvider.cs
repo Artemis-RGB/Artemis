@@ -17,13 +17,14 @@ namespace Artemis.Core.LayerBrushes
         protected LayerBrushProvider()
         {
             _layerBrushDescriptors = new List<LayerBrushDescriptor>();
+            LayerBrushDescriptors = new(_layerBrushDescriptors);
             Disabled += OnDisabled;
         }
 
         /// <summary>
         ///     A read-only collection of all layer brushes added with <see cref="RegisterLayerBrushDescriptor{T}" />
         /// </summary>
-        public ReadOnlyCollection<LayerBrushDescriptor> LayerBrushDescriptors => _layerBrushDescriptors.AsReadOnly();
+        public ReadOnlyCollection<LayerBrushDescriptor> LayerBrushDescriptors { get; }
 
         /// <summary>
         ///     Registers a layer brush descriptor for a given layer brush, so that it appears in the UI.

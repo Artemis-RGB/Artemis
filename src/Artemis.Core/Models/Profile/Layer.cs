@@ -43,6 +43,7 @@ namespace Artemis.Core
             _transform = new LayerTransformProperties();
 
             _leds = new List<ArtemisLed>();
+            Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
 
             Adapter = new LayerAdapter(this);
             Initialize();
@@ -67,6 +68,7 @@ namespace Artemis.Core
             _transform = new LayerTransformProperties();
 
             _leds = new List<ArtemisLed>();
+            Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
 
             Adapter = new LayerAdapter(this);
             Load();
@@ -76,7 +78,7 @@ namespace Artemis.Core
         /// <summary>
         ///     A collection of all the LEDs this layer is assigned to.
         /// </summary>
-        public ReadOnlyCollection<ArtemisLed> Leds => _leds.AsReadOnly();
+        public ReadOnlyCollection<ArtemisLed> Leds { get; private set; }
 
         /// <summary>
         ///     Defines the shape that is rendered by the <see cref="LayerBrush" />.
@@ -679,6 +681,7 @@ namespace Artemis.Core
             }
 
             _leds = leds;
+            Leds = new ReadOnlyCollection<ArtemisLed>(_leds);
             CalculateRenderProperties();
         }
 

@@ -13,6 +13,11 @@ namespace Artemis.Core
     {
         private readonly List<DataModelConditionPart> _children = new();
 
+        protected DataModelConditionPart()
+        {
+            Children = new(_children);
+        }
+
         /// <summary>
         ///     Gets the parent of this part
         /// </summary>
@@ -21,7 +26,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets the children of this part
         /// </summary>
-        public ReadOnlyCollection<DataModelConditionPart> Children => _children.AsReadOnly();
+        public ReadOnlyCollection<DataModelConditionPart> Children { get; }
 
         /// <summary>
         ///     Adds a child to the display condition part's <see cref="Children" /> collection

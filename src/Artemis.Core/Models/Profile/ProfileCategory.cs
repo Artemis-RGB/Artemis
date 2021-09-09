@@ -24,12 +24,15 @@ namespace Artemis.Core
         {
             _name = name;
             Entity = new ProfileCategoryEntity();
+            ProfileConfigurations = new(_profileConfigurations);
         }
 
         internal ProfileCategory(ProfileCategoryEntity entity)
         {
             _name = null!;
             Entity = entity;
+            ProfileConfigurations = new(_profileConfigurations);
+
             Load();
         }
 
@@ -73,7 +76,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read only collection of the profiles inside this category
         /// </summary>
-        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations => _profileConfigurations.AsReadOnly();
+        public ReadOnlyCollection<ProfileConfiguration> ProfileConfigurations { get; }
 
         /// <summary>
         ///     Gets the unique ID of this category

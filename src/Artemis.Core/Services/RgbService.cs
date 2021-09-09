@@ -49,6 +49,10 @@ namespace Artemis.Core.Services
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
 
+            EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
+            Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
+            LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
+
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             SetRenderPaused(true);
             Surface.RegisterUpdateTrigger(UpdateTrigger);
@@ -85,6 +89,7 @@ namespace Artemis.Core.Services
             try
             {
                 _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
+                LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
 
                 if (_surfaceLedGroup == null)
                 {
@@ -132,9 +137,9 @@ namespace Artemis.Core.Services
             _texture?.Invalidate();
         }
 
-        public IReadOnlyCollection<ArtemisDevice> EnabledDevices => _enabledDevices.AsReadOnly();
-        public IReadOnlyCollection<ArtemisDevice> Devices => _devices.AsReadOnly();
-        public IReadOnlyDictionary<Led, ArtemisLed> LedMap => new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
+        public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
+        public IReadOnlyCollection<ArtemisDevice> Devices { get; }
+        public IReadOnlyDictionary<Led, ArtemisLed> LedMap { get; private set; }
 
         public RGBSurface Surface { get; set; }
         public bool IsRenderPaused { get; set; }
