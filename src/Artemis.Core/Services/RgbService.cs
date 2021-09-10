@@ -25,7 +25,7 @@ namespace Artemis.Core.Services
         private readonly IPluginManagementService _pluginManagementService;
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private readonly TextureBrush _textureBrush = new(ITexture.Empty) {CalculationMode = RenderMode.Absolute};
+        private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
         private Dictionary<Led, ArtemisLed> _ledMap;
         private ListLedGroup? _surfaceLedGroup;
         private SKTexture? _texture;
@@ -39,6 +39,7 @@ namespace Artemis.Core.Services
             _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
 
             Surface = new RGBSurface();
+            Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
@@ -56,7 +57,7 @@ namespace Artemis.Core.Services
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             SetRenderPaused(true);
             Surface.RegisterUpdateTrigger(UpdateTrigger);
-            
+
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
 
@@ -93,7 +94,7 @@ namespace Artemis.Core.Services
 
                 if (_surfaceLedGroup == null)
                 {
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
                     OnLedsChanged();
                     return;
                 }
@@ -104,7 +105,7 @@ namespace Artemis.Core.Services
                     _surfaceLedGroup.Detach();
 
                     // Apply the application wide brush and decorator
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
                     OnLedsChanged();
                 }
             }
@@ -113,7 +114,6 @@ namespace Artemis.Core.Services
                 if (changedRenderPaused)
                     SetRenderPaused(false);
             }
-            
         }
 
         private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
@@ -134,7 +134,12 @@ namespace Artemis.Core.Services
 
         private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
+            Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
+            
             _texture?.Invalidate();
+            foreach (ArtemisDevice artemisDevice in Devices)
+                artemisDevice.CalculateRenderProperties();
+            OnLedsChanged();
         }
 
         public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
@@ -315,7 +320,7 @@ namespace Artemis.Core.Services
                 int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
 
                 _texture?.Dispose();
-                _texture = new SKTexture(graphicsContext, width, height, renderScale);
+                _texture = new SKTexture(graphicsContext, width, height, renderScale, Devices);
                 _textureBrush.Texture = _texture;
 
 
