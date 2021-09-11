@@ -36,7 +36,7 @@ namespace Artemis.Core.Services
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
+            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
 
             Surface = new RGBSurface();
             Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
