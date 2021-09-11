@@ -18,13 +18,14 @@ namespace Artemis.Core
         {
             DataBinding = dataBinding;
             Entity = entity;
+            Conditions = new(_conditions);
             Load();
         }
 
         /// <summary>
         ///     Gets a list of conditions applied to this data binding
         /// </summary>
-        public ReadOnlyCollection<DataBindingCondition<TLayerProperty, TProperty>> Conditions => _conditions.AsReadOnly();
+        public ReadOnlyCollection<DataBindingCondition<TLayerProperty, TProperty>> Conditions { get; }
 
         internal ConditionalDataBindingEntity Entity { get; }
 

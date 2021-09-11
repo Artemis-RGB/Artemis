@@ -216,11 +216,11 @@ namespace Artemis.UI.Screens.Settings.Tabs.General
 
         public double RenderScale
         {
-            get => _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+            get => _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
             set
             {
-                _settingsService.GetSetting("Core.RenderScale", 0.5).Value = value;
-                _settingsService.GetSetting("Core.RenderScale", 0.5).Save();
+                _settingsService.GetSetting("Core.RenderScale", 0.25).Value = value;
+                _settingsService.GetSetting("Core.RenderScale", 0.25).Save();
             }
         }
 

@@ -26,6 +26,9 @@ namespace Artemis.Core.Modules
             // These are both set right after construction to keep the constructor of inherited classes clean
             Module = null!;
             DataModelDescription = null!;
+
+            ActivePaths = new(_activePaths);
+            DynamicChildren = new(_dynamicChildren);
         }
 
         /// <summary>
@@ -52,13 +55,13 @@ namespace Artemis.Core.Modules
         ///     Gets an read-only dictionary of all dynamic children
         /// </summary>
         [DataModelIgnore]
-        public ReadOnlyDictionary<string, DynamicChild> DynamicChildren => new(_dynamicChildren);
+        public ReadOnlyDictionary<string, DynamicChild> DynamicChildren { get; }
 
         /// <summary>
         ///     Gets a read-only list of <see cref="DataModelPath" />s targeting this data model
         /// </summary>
         [DataModelIgnore]
-        public ReadOnlyCollection<DataModelPath> ActivePaths => _activePaths.AsReadOnly();
+        public ReadOnlyCollection<DataModelPath> ActivePaths { get; }
 
         /// <summary>
         ///     Returns a read-only collection of all properties in this datamodel that are to be ignored

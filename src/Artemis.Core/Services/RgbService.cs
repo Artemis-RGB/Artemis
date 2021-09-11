@@ -25,7 +25,7 @@ namespace Artemis.Core.Services
         private readonly IPluginManagementService _pluginManagementService;
         private readonly PluginSetting<double> _renderScaleSetting;
         private readonly PluginSetting<int> _targetFrameRateSetting;
-        private readonly TextureBrush _textureBrush = new(ITexture.Empty) {CalculationMode = RenderMode.Absolute};
+        private readonly SKTextureBrush _textureBrush = new(null) {CalculationMode = RenderMode.Absolute};
         private Dictionary<Led, ArtemisLed> _ledMap;
         private ListLedGroup? _surfaceLedGroup;
         private SKTexture? _texture;
@@ -36,9 +36,10 @@ namespace Artemis.Core.Services
             _pluginManagementService = pluginManagementService;
             _deviceRepository = deviceRepository;
             _targetFrameRateSetting = settingsService.GetSetting("Core.TargetFrameRate", 25);
-            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.5);
+            _renderScaleSetting = settingsService.GetSetting("Core.RenderScale", 0.25);
 
             Surface = new RGBSurface();
+            Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
 
             // Let's throw these for now
             Surface.Exception += SurfaceOnException;
@@ -49,10 +50,14 @@ namespace Artemis.Core.Services
             _devices = new List<ArtemisDevice>();
             _ledMap = new Dictionary<Led, ArtemisLed>();
 
+            EnabledDevices = new ReadOnlyCollection<ArtemisDevice>(_enabledDevices);
+            Devices = new ReadOnlyCollection<ArtemisDevice>(_devices);
+            LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
+
             UpdateTrigger = new TimerUpdateTrigger {UpdateFrequency = 1.0 / _targetFrameRateSetting.Value};
             SetRenderPaused(true);
             Surface.RegisterUpdateTrigger(UpdateTrigger);
-            
+
             Utilities.ShutdownRequested += UtilitiesOnShutdownRequested;
         }
 
@@ -85,10 +90,11 @@ namespace Artemis.Core.Services
             try
             {
                 _ledMap = new Dictionary<Led, ArtemisLed>(_devices.SelectMany(d => d.Leds).ToDictionary(l => l.RgbLed));
+                LedMap = new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
 
                 if (_surfaceLedGroup == null)
                 {
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
                     OnLedsChanged();
                     return;
                 }
@@ -99,7 +105,7 @@ namespace Artemis.Core.Services
                     _surfaceLedGroup.Detach();
 
                     // Apply the application wide brush and decorator
-                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) { Brush = _textureBrush };
+                    _surfaceLedGroup = new ListLedGroup(Surface, LedMap.Select(l => l.Key)) {Brush = _textureBrush};
                     OnLedsChanged();
                 }
             }
@@ -108,7 +114,6 @@ namespace Artemis.Core.Services
                 if (changedRenderPaused)
                     SetRenderPaused(false);
             }
-            
         }
 
         private void TargetFrameRateSettingOnSettingChanged(object? sender, EventArgs e)
@@ -129,12 +134,17 @@ namespace Artemis.Core.Services
 
         private void RenderScaleSettingOnSettingChanged(object? sender, EventArgs e)
         {
+            Utilities.RenderScaleMultiplier = (int) (1 / _renderScaleSetting.Value);
+            
             _texture?.Invalidate();
+            foreach (ArtemisDevice artemisDevice in Devices)
+                artemisDevice.CalculateRenderProperties();
+            OnLedsChanged();
         }
 
-        public IReadOnlyCollection<ArtemisDevice> EnabledDevices => _enabledDevices.AsReadOnly();
-        public IReadOnlyCollection<ArtemisDevice> Devices => _devices.AsReadOnly();
-        public IReadOnlyDictionary<Led, ArtemisLed> LedMap => new ReadOnlyDictionary<Led, ArtemisLed>(_ledMap);
+        public IReadOnlyCollection<ArtemisDevice> EnabledDevices { get; }
+        public IReadOnlyCollection<ArtemisDevice> Devices { get; }
+        public IReadOnlyDictionary<Led, ArtemisLed> LedMap { get; private set; }
 
         public RGBSurface Surface { get; set; }
         public bool IsRenderPaused { get; set; }
@@ -310,7 +320,7 @@ namespace Artemis.Core.Services
                 int height = Math.Max(1, MathF.Min(evenHeight * renderScale, 4096).RoundToInt());
 
                 _texture?.Dispose();
-                _texture = new SKTexture(graphicsContext, width, height, renderScale);
+                _texture = new SKTexture(graphicsContext, width, height, renderScale, Devices);
                 _textureBrush.Texture = _texture;
 
 

@@ -37,6 +37,9 @@ namespace Artemis.Core
 
             _layerProperties = new List<ILayerProperty>();
             _layerPropertyGroups = new List<LayerPropertyGroup>();
+
+            LayerProperties = new(_layerProperties);
+            LayerPropertyGroups = new(_layerPropertyGroups);
         }
 
         /// <summary>
@@ -96,12 +99,12 @@ namespace Artemis.Core
         /// <summary>
         ///     A list of all layer properties in this group
         /// </summary>
-        public ReadOnlyCollection<ILayerProperty> LayerProperties => _layerProperties.AsReadOnly();
+        public ReadOnlyCollection<ILayerProperty> LayerProperties { get; }
 
         /// <summary>
         ///     A list of al child groups in this group
         /// </summary>
-        public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups => _layerPropertyGroups.AsReadOnly();
+        public ReadOnlyCollection<LayerPropertyGroup> LayerPropertyGroups { get; }
 
         /// <summary>
         ///     Recursively gets all layer properties on this group and any subgroups

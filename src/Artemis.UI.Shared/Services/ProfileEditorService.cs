@@ -12,7 +12,6 @@ using Ninject.Parameters;
 using Serilog;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
-using Stylet;
 
 namespace Artemis.UI.Shared.Services
 {
@@ -39,15 +38,19 @@ namespace Artemis.UI.Shared.Services
             _rgbService = rgbService;
             _moduleService = moduleService;
             _registeredPropertyEditors = new List<PropertyInputRegistration>();
+
+            RegisteredPropertyEditors = new(_registeredPropertyEditors);
             coreService.FrameRendered += CoreServiceOnFrameRendered;
             PixelsPerSecond = 100;
         }
 
         private void CoreServiceOnFrameRendered(object? sender, FrameRenderedEventArgs e)
         {
-            if (!_doTick) return;
+            if (!_doTick)
+                return;
             _doTick = false;
-            Execute.PostToUIThread(OnProfilePreviewUpdated);
+
+            OnProfilePreviewUpdated();
         }
 
         private void ReloadProfile()
@@ -103,7 +106,7 @@ namespace Artemis.UI.Shared.Services
             }
         }
 
-        public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors => _registeredPropertyEditors.AsReadOnly();
+        public ReadOnlyCollection<PropertyInputRegistration> RegisteredPropertyEditors { get; }
 
         public bool Playing { get; set; }
 
@@ -144,6 +147,7 @@ namespace Artemis.UI.Shared.Services
             {
                 if (_currentTime.Equals(value)) return;
                 _currentTime = value;
+
                 Tick();
                 OnCurrentTimeChanged();
             }

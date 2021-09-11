@@ -59,8 +59,18 @@ namespace Artemis.Core
 
         internal void CalculateRectangles()
         {
-            Rectangle = RgbLed.Boundary.ToSKRect();
-            AbsoluteRectangle = RgbLed.AbsoluteBoundary.ToSKRect();
+            Rectangle = Utilities.CreateScaleCompatibleRect(
+                RgbLed.Boundary.Location.X,
+                RgbLed.Boundary.Location.Y,
+                RgbLed.Boundary.Size.Width,
+                RgbLed.Boundary.Size.Height
+            );
+            AbsoluteRectangle = Utilities.CreateScaleCompatibleRect(
+                RgbLed.AbsoluteBoundary.Location.X,
+                RgbLed.AbsoluteBoundary.Location.Y,
+                RgbLed.AbsoluteBoundary.Size.Width,
+                RgbLed.AbsoluteBoundary.Size.Height
+            );
         }
     }
 }

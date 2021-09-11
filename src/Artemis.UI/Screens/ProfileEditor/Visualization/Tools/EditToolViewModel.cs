@@ -51,7 +51,7 @@ namespace Artemis.UI.Screens.ProfileEditor.Visualization.Tools
 
         private void Update()
         {
-            if (!(ProfileEditorService.SelectedProfileElement is Layer layer))
+            if (ProfileEditorService.SelectedProfileElement is not Layer layer)
                 return;
 
             ShapePath = _layerEditorService.GetLayerPath(layer, true, true, true);

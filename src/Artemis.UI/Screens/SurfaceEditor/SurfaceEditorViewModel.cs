@@ -18,6 +18,7 @@ using Artemis.UI.Screens.SurfaceEditor.Visualization;
 using Artemis.UI.Shared;
 using Artemis.UI.Shared.Services;
 using SkiaSharp;
+using SkiaSharp.Views.WPF;
 using Stylet;
 using MouseButton = System.Windows.Input.MouseButton;
 
@@ -107,7 +108,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             set => SetAndNotify(ref _colorFirstLedOnly, value);
         }
 
-        public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+        public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
         public double MaxTextureSizeIndicatorThickness => 2 / PanZoomViewModel.Zoom;
 
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)
@@ -305,7 +306,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (e.LeftButton == MouseButtonState.Pressed)
                 StartMouseDrag(sender, position, relative);
             else
-                StopMouseDrag(sender, position);
+                StopMouseDrag(position);
         }
 
         // ReSharper disable once UnusedMember.Global - Called from view
@@ -323,7 +324,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             if (_mouseDragStatus == MouseDragStatus.Dragging)
                 MoveSelected(relative);
             else if (_mouseDragStatus == MouseDragStatus.Selecting)
-                UpdateSelection(sender, position);
+                UpdateSelection(position);
         }
 
         private void StartMouseDrag(object sender, Point position, Point relative)
@@ -360,17 +361,18 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ApplySurfaceSelection();
         }
 
-        private void StopMouseDrag(object sender, Point position)
+        private void StopMouseDrag(Point position)
         {
             if (_mouseDragStatus != MouseDragStatus.Dragging)
             {
-                RectangleGeometry selectedRect = new(new Rect(_mouseDragStartPoint, position));
-                List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, selectedRect);
+                SKRect hitTestRect = PanZoomViewModel.UnTransformContainingRect(new Rect(_mouseDragStartPoint, position)).ToSKRect();
                 foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
-                    if (devices.Contains(device))
+                {
+                    if (device.Device.Rectangle.IntersectsWith(hitTestRect))
                         device.SelectionStatus = SelectionStatus.Selected;
                     else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                         device.SelectionStatus = SelectionStatus.None;
+                }
             }
             else
             {
@@ -382,7 +384,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             ApplySurfaceSelection();
         }
 
-        private void UpdateSelection(object sender, Point position)
+        private void UpdateSelection(Point position)
         {
             if (IsPanKeyDown())
                 return;
@@ -390,12 +392,14 @@ namespace Artemis.UI.Screens.SurfaceEditor
             Rect selectedRect = new(_mouseDragStartPoint, position);
             SelectionRectangle.Rect = selectedRect;
 
-            List<SurfaceDeviceViewModel> devices = HitTestUtilities.GetHitViewModels<SurfaceDeviceViewModel>((Visual) sender, SelectionRectangle);
+            SKRect hitTestRect = PanZoomViewModel.UnTransformContainingRect(new Rect(_mouseDragStartPoint, position)).ToSKRect();
             foreach (SurfaceDeviceViewModel device in SurfaceDeviceViewModels)
-                if (devices.Contains(device))
+            {
+                if (device.Device.Rectangle.IntersectsWith(hitTestRect))
                     device.SelectionStatus = SelectionStatus.Selected;
                 else if (!Keyboard.IsKeyDown(Key.LeftShift) && !Keyboard.IsKeyDown(Key.RightShift))
                     device.SelectionStatus = SelectionStatus.None;
+            }
 
             ApplySurfaceSelection();
         }

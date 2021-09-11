@@ -188,8 +188,7 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <Canvas>
-                        <Rectangle ClipToBounds="False"
-                                   Width="{Binding MaxTextureSize}"
+                        <Rectangle Width="{Binding MaxTextureSize}"
                                    Height="{Binding MaxTextureSize}"
                                    Stroke="{DynamicResource SecondaryHueMidBrush}"
                                    StrokeThickness="{Binding MaxTextureSizeIndicatorThickness}"
