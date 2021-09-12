@@ -18,7 +18,12 @@ resources:
     type: github
     endpoint: github.com_SpoinkyNL
     name: Artemis-RGB/Artemis.Plugins
-    ref: master    
+    ref: master
+  - repository: GamePlugins
+    type: github
+    endpoint: github.com_SpoinkyNL
+    name: Artemis-RGB/Artemis.Plugins.Games
+    ref: master
 
 pool:
   vmImage: 'windows-latest'
@@ -27,6 +32,7 @@ variables:
   artemisSolution: '**/Artemis.sln'
   rgbSolution: '**/RGB.NET.sln'
   pluginProjects: '**/Artemis.Plugins.*.csproj'
+  gamePluginProjects: '**/Artemis.Plugins.Games.*.csproj'
   BuildId: $(Build.BuildId)
   BuildNumber: $(Build.BuildNumber)
   SourceBranch: $(Build.SourceBranch)
@@ -39,6 +45,8 @@ steps:
   path: s/Artemis
 - checkout: Plugins
   path: s/Artemis.Plugins
+- checkout: GamePlugins
+  path: s/Artemis.Plugins.Games
 
 - task: DotNetCoreCLI@2
   displayName: 'RGB.NET - Build'
@@ -75,14 +83,14 @@ steps:
 
 # Copy Artemis binaries to where plugin projects expect them
 - task: CopyFiles@2
-  displayName: 'Plugins - Prepare Artemis binaries'
+  displayName: 'Artemis.Plugins - Prepare Artemis binaries'
   inputs:
     SourceFolder: '$(Build.ArtifactStagingDirectory)/build'
     Contents: '**'
     TargetFolder: 'Artemis/src/Artemis.UI/bin/net5.0-windows'
 
 - task: PowerShell@2
-  displayName: 'Plugins - Insert build number into plugin.json'
+  displayName: 'Artemis.Plugins - Insert build number into plugin.json'
   inputs:
     targetType: 'inline'
     script: |
@@ -94,6 +102,29 @@ steps:
           $a | ConvertTo-Json | Set-Content $_.FullName
       }
     workingDirectory: 'Artemis.Plugins'
+
+- task: DotNetCoreCLI@2
+  displayName: 'Artemis.Plugins.Games - Publish'
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    arguments: '--runtime win-x64 --configuration Release --self-contained false --output $(Build.ArtifactStagingDirectory)/build/Plugins'
+    projects: '$(pluginProjects)'
+    zipAfterPublish: true
+
+- task: PowerShell@2
+  displayName: 'Artemis.Plugins.Games - Insert build number into plugin.json'
+  inputs:
+    targetType: 'inline'
+    script: |
+      Get-ChildItem -Recurse -Filter plugin.json  | 
+      Foreach-Object {
+          $buidNumber = "1.0.1." + $Env:BUILD_BUILDID;
+          $a = Get-Content $_.FullName | ConvertFrom-Json
+          $a.Version = $buidNumber;
+          $a | ConvertTo-Json | Set-Content $_.FullName
+      }
+    workingDirectory: 'Artemis.Plugins.Games'
 
 - task: DotNetCoreCLI@2
   displayName: 'Plugins - Publish'
