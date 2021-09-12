@@ -103,7 +103,7 @@ namespace Artemis.UI.Screens.SurfaceEditor.Visualization
             if (x < 0 || y < 0)
                 return false;
 
-            double maxTextureSize = 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+            double maxTextureSize = 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
             if (x + Device.Rectangle.Width > maxTextureSize || y + Device.Rectangle.Height > maxTextureSize)
                 return false;
 

@@ -45,6 +45,7 @@ namespace Artemis.Core
                 _baseValue = default!;
 
             _keyframes = new List<LayerPropertyKeyframe<T>>();
+            Keyframes = new(_keyframes);
         }
 
         /// <summary>
@@ -229,7 +230,7 @@ namespace Artemis.Core
         #region Keyframes
 
         private bool _keyframesEnabled;
-        private List<LayerPropertyKeyframe<T>> _keyframes;
+        private readonly List<LayerPropertyKeyframe<T>> _keyframes;
 
         /// <summary>
         ///     Gets whether keyframes are supported on this type of property
@@ -255,7 +256,7 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read-only list of all the keyframes on this layer property
         /// </summary>
-        public ReadOnlyCollection<LayerPropertyKeyframe<T>> Keyframes => _keyframes.AsReadOnly();
+        public ReadOnlyCollection<LayerPropertyKeyframe<T>> Keyframes { get; }
 
         /// <summary>
         ///     Gets the current keyframe in the timeline according to the current progress
@@ -328,7 +329,7 @@ namespace Artemis.Core
         /// </summary>
         internal void SortKeyframes()
         {
-            _keyframes = _keyframes.OrderBy(k => k.Position).ToList();
+            _keyframes.Sort((a, b) => a.Position.CompareTo(b.Position));
         }
 
         private void UpdateKeyframes(Timeline timeline)

@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Artemis.Core;
+using RGB.NET.Core;
 using SkiaSharp;
 using SkiaSharp.Views.WPF;
+using Point = System.Windows.Point;
 
 namespace Artemis.UI.Services
 {
@@ -12,12 +15,15 @@ namespace Artemis.UI.Services
         /// <inheritdoc />
         public Rect GetLayerBounds(Layer layer)
         {
-            // Adjust the render rectangle for the difference in render scale
-            return new(
-                layer.Bounds.Left,
-                layer.Bounds.Top,
-                Math.Max(0, layer.Bounds.Width),
-                Math.Max(0, layer.Bounds.Height)
+            return new Rect(
+                new Point(
+                    layer.Leds.Min(l => l.RgbLed.AbsoluteBoundary.Location.X),
+                    layer.Leds.Min(l => l.RgbLed.AbsoluteBoundary.Location.Y
+                    )),
+                new Point(
+                    layer.Leds.Max(l => l.RgbLed.AbsoluteBoundary.Location.X + l.RgbLed.AbsoluteBoundary.Size.Width),
+                    layer.Leds.Max(l => l.RgbLed.AbsoluteBoundary.Location.Y + l.RgbLed.AbsoluteBoundary.Size.Height
+                    ))
             );
         }
 
@@ -94,15 +100,16 @@ namespace Artemis.UI.Services
         /// <inheritdoc />
         public SKPoint GetScaledPoint(Layer layer, SKPoint point, bool absolute)
         {
+            SKRect bounds = GetLayerBounds(layer).ToSKRect();
             if (absolute)
                 return new SKPoint(
-                    100f / layer.Bounds.Width * (point.X - layer.Bounds.Left) / 100f,
-                    100f / layer.Bounds.Height * (point.Y - layer.Bounds.Top) / 100f
+                    100 / bounds.Width * (point.X - bounds.Left) / 100,
+                    100 / bounds.Height * (point.Y - bounds.Top) / 100
                 );
 
             return new SKPoint(
-                100f / layer.Bounds.Width * point.X / 100f,
-                100f / layer.Bounds.Height * point.Y / 100f
+                100 / bounds.Width * point.X / 100,
+                100 / bounds.Height * point.Y / 100
             );
         }
 

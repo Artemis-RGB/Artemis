@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using Artemis.Core.Modules;
+using Artemis.Core.Properties;
 using Artemis.Storage.Entities.Profile;
 using Artemis.Storage.Repositories.Interfaces;
 using Newtonsoft.Json;
@@ -39,8 +40,7 @@ namespace Artemis.Core.Services
             _profileCategoryRepository = profileCategoryRepository;
             _pluginManagementService = pluginManagementService;
             _profileRepository = profileRepository;
-            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll()
-                .Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
+            _profileCategories = new List<ProfileCategory>(_profileCategoryRepository.GetAll().Select(c => new ProfileCategory(c)).OrderBy(c => c.Order));
 
             _rgbService.LedsChanged += RgbServiceOnLedsChanged;
             _pluginManagementService.PluginFeatureEnabled += PluginManagementServiceOnPluginFeatureToggled;

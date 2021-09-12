@@ -343,8 +343,7 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}">Render scale</TextBlock>
                             <TextBlock Style="{StaticResource MaterialDesignTextBlock}" Foreground="{DynamicResource MaterialDesignNavigationItemSubheader}" TextWrapping="Wrap">
-                                Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces. <LineBreak />
-                                <Run Foreground="GoldenRod">A scale of 25% may be required for very large surfaces but could cause LED dimming or bleeding.</Run>
+                                Sets the resolution Artemis renders at, higher scale means more CPU-usage, especially on large surfaces.
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Row="0" Grid.Column="1" VerticalAlignment="Center">

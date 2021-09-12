@@ -108,7 +108,7 @@ namespace Artemis.UI.Screens.SurfaceEditor
             set => SetAndNotify(ref _colorFirstLedOnly, value);
         }
 
-        public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.5).Value;
+        public double MaxTextureSize => 4096 / _settingsService.GetSetting("Core.RenderScale", 0.25).Value;
         public double MaxTextureSizeIndicatorThickness => 2 / PanZoomViewModel.Zoom;
 
         public void OpenHyperlink(object sender, RequestNavigateEventArgs e)

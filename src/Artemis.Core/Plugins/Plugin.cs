@@ -30,6 +30,9 @@ namespace Artemis.Core
 
             _features = new List<PluginFeatureInfo>();
             _profilers = new List<Profiler>();
+
+            Features = new(_features);
+            Profilers = new(_profilers);
         }
 
         /// <summary>
@@ -64,12 +67,12 @@ namespace Artemis.Core
         /// <summary>
         ///     Gets a read-only collection of all features this plugin provides
         /// </summary>
-        public ReadOnlyCollection<PluginFeatureInfo> Features => _features.AsReadOnly();
+        public ReadOnlyCollection<PluginFeatureInfo> Features { get; }
 
         /// <summary>
         ///     Gets a read-only collection of profiles running on the plugin
         /// </summary>
-        public ReadOnlyCollection<Profiler> Profilers => _profilers.AsReadOnly();
+        public ReadOnlyCollection<Profiler> Profilers { get; }
 
         /// <summary>
         ///     The assembly the plugin code lives in

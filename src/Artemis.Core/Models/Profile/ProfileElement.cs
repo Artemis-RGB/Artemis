@@ -18,12 +18,13 @@ namespace Artemis.Core
         private Profile _profile;
         private bool _suspended;
 
-        internal List<ProfileElement> ChildrenList;
+        internal readonly List<ProfileElement> ChildrenList;
 
         internal ProfileElement(Profile profile)
         {
             _profile = profile;
             ChildrenList = new List<ProfileElement>();
+            Children = new(ChildrenList);
         }
 
         /// <summary>
@@ -56,16 +57,7 @@ namespace Artemis.Core
         /// <summary>
         ///     The element's children
         /// </summary>
-        public ReadOnlyCollection<ProfileElement> Children
-        {
-            get
-            {
-                lock (ChildrenList)
-                {
-                    return ChildrenList.AsReadOnly();
-                }
-            }
-        }
+        public ReadOnlyCollection<ProfileElement> Children { get; }
 
         /// <summary>
         ///     The order in which this element appears in the update loop and editor
